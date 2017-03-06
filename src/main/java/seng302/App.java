@@ -26,7 +26,7 @@ public class App
         for (int i = 1; i <= numBoats; i++){
             places.add(i);
         }
-        Collections.shuffle(places, new Random(System.nanoTime()));
+        Collections.shuffle(places, new Random());
         for (int j = 0; j < numBoats; j++) {
             boats.get(j).setFinishingPlace(places.get(j));
         }

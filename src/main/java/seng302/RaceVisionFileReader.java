@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by mjt169 on 6/03/17.
@@ -22,11 +23,19 @@ public class RaceVisionFileReader {
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(filePath));
+            ArrayList<Boat> allBoats = new ArrayList<>();
+
             String line = br.readLine();
             while (line != null){
-                starters.add(new Boat(line));
+                allBoats.add(new Boat(line));
                 line = br.readLine();
             }
+
+            Random ran = new Random();
+            for (int i = 0; i < Config.NUM_BOATS_IN_RACE; i++){
+                starters.add(allBoats.remove(ran.nextInt(allBoats.size())));
+            }
+
         } catch (FileNotFoundException e) {
             System.err.printf("Starter file could not be found at %s\n", filePath);
         } catch (IOException e) {
