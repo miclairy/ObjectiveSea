@@ -10,10 +10,19 @@ import java.util.ArrayList;
 
 public class Display {
 
-    public static void printStartersList(ArrayList<String> starters) {
+    public static void printStartersList(ArrayList<Boat> starters) {
         System.out.println("Boats in this race:");
-        for (String boat : starters) {
-            System.out.println(boat);
+        for (Boat boat : starters) {
+            System.out.println(boat.getName());
+        }
+    }
+
+    public static void printFinishersList(ArrayList<Boat> finishers) {
+        finishers.sort(BoatUtils.orderByPlacing);
+
+        System.out.println("Finishing order:");
+        for (Boat boat : finishers) {
+            System.out.printf("%d. %s\n", boat.getFinishingPlace(), boat.getName());
         }
     }
 
