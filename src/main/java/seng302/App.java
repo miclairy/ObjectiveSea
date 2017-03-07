@@ -4,6 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
+/**
+ * Created by mjt169 on 6/03/17.
+ * Edited by cjd137 on 7/03/17.
+ * Main App class to control program
+ */
+
+
 public class App 
 {
     public static void main( String[] args )
@@ -11,7 +18,17 @@ public class App
         System.out.println( "RaceVision\n" );
 
         ArrayList<Boat> boatsInRace = RaceVisionFileReader.importStarters();
+        ArrayList<Mark> marksOnCourse = Course.importMarks();
         Display.printStartersList(boatsInRace);
+
+        for(int i = 0; i<marksOnCourse.size(); i++) {
+        	System.out.println();
+        	
+        	if(marksOnCourse.size() != i+1 && i != 0) {
+            	randomizeFinishingOrder(boatsInRace);
+        		Display.printMarksList(boatsInRace, marksOnCourse, i);
+        	}
+        }
 
         System.out.println();
 
