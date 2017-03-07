@@ -13,6 +13,16 @@ import java.util.Random;
  */
 
 public class Course {
+
+    private ArrayList<Mark> marks;
+
+    public Course(ArrayList<Mark> marks) {
+        this.marks = marks;
+    }
+
+    public ArrayList<Mark> getMarks(){
+        return this.marks;
+    }
 	
 
 }

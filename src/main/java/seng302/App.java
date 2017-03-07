@@ -2,6 +2,7 @@ package seng302;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.PriorityQueue;
 import java.util.Random;
 
 /**
@@ -16,20 +17,17 @@ public class App
     public static void main( String[] args )
     {
         Config.initializeConfig();
-        System.out.println( "RaceVision\n" );
+        String name = "America's Cup Race";
+        System.out.printf( "%s\n\n", name );
 
         ArrayList<Boat> boatsInRace = RaceVisionFileReader.importStarters();
-        ArrayList<Mark> marksOnCourse = RaceVisionFileReader.importMarks();
-        Display.printStartersList(boatsInRace);
+        Course course = new Course(RaceVisionFileReader.importMarks());
+        Race race = new Race(name, course, boatsInRace);
 
-        for(int i = 0; i<marksOnCourse.size(); i++) {
-        	System.out.println();
-        	
-        	if(marksOnCourse.size() != i+1 && i != 0) {
-            	randomizeOrder(boatsInRace);
-        		Display.printMarksList(boatsInRace, marksOnCourse, i);
-        	}
-        }
+        //this queue can be used to pull events to print to screen
+        PriorityQueue<Event> events = race.getEvents();
+
+        Display.printStartersList(boatsInRace);
 
         System.out.println();
 
