@@ -18,7 +18,7 @@ public class App
         System.out.println( "RaceVision\n" );
 
         ArrayList<Boat> boatsInRace = RaceVisionFileReader.importStarters();
-        ArrayList<Mark> marksOnCourse = Course.importMarks();
+        ArrayList<Mark> marksOnCourse = RaceVisionFileReader.importMarks();
         Display.printStartersList(boatsInRace);
 
         for(int i = 0; i<marksOnCourse.size(); i++) {
