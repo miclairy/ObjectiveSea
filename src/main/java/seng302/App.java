@@ -25,19 +25,19 @@ public class App
         	System.out.println();
         	
         	if(marksOnCourse.size() != i+1 && i != 0) {
-            	randomizeFinishingOrder(boatsInRace);
+            	randomizeOrder(boatsInRace);
         		Display.printMarksList(boatsInRace, marksOnCourse, i);
         	}
         }
 
         System.out.println();
 
-        randomizeFinishingOrder(boatsInRace);
+        randomizeOrder(boatsInRace);
         Display.printFinishersList(boatsInRace);
 
     }
 
-    private static void randomizeFinishingOrder(ArrayList<Boat> boats){
+    private static void randomizeOrder(ArrayList<Boat> boats){
         int numBoats = boats.size();
         ArrayList<Integer> places = new ArrayList<>();
         for (int i = 1; i <= numBoats; i++){

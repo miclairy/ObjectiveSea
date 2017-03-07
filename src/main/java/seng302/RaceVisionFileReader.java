@@ -33,7 +33,7 @@ public class RaceVisionFileReader {
             }
 
         } catch (FileNotFoundException e) {
-            System.err.printf("Course ile could not be found at %s\n", filePath);
+            System.err.printf("Course file could not be found at %s\n", filePath);
         } catch (IOException e) {
             System.err.printf("Error reading course file. Check it is in the correct format.");
         }
