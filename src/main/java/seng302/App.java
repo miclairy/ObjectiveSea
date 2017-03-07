@@ -15,6 +15,7 @@ public class App
 {
     public static void main( String[] args )
     {
+        Config.initializeConfig();
         System.out.println( "RaceVision\n" );
 
         ArrayList<Boat> boatsInRace = RaceVisionFileReader.importStarters();
