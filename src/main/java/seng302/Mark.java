@@ -2,7 +2,7 @@ package seng302;
 
 /**
  * Created by cjd137 on 7/03/17.
- * Class to specify the marks/gates on the course and to calculate distances and degrees from one mark/gate to the other
+ * Class to specify the marks/gates on the course.
  */
 
 public class Mark {
