@@ -8,14 +8,20 @@ package seng302;
 public class Boat {
 
     private String name;
+    private double speed;
     private int finishingPlace;
 
-    public Boat(String name){
+    public Boat(String name, double speed){
         this.name = name;
+        this.speed = speed;
     }
 
     public String getName(){
         return this.name;
+    }
+
+    public double getSpeed(){
+        return this.speed;
     }
 
     public int getFinishingPlace(){

@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.StringTokenizer;
 
 /**
  * Created by mjt169 on 6/03/17.
@@ -51,7 +52,10 @@ public class RaceVisionFileReader {
 
             String line = br.readLine();
             while (line != null){
-                allBoats.add(new Boat(line));
+                StringTokenizer st = new StringTokenizer((line));
+                String name = st.nextToken(",");
+                double speed = Double.parseDouble(st.nextToken());
+                allBoats.add(new Boat(name, speed));
                 line = br.readLine();
             }
 
