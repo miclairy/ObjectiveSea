@@ -24,7 +24,8 @@ public class Display {
     public static void printStartersList(ArrayList<Boat> starters) {
         System.out.println("Boats in this race:");
         for (Boat boat : starters) {
-            System.out.println(boat.getName());
+            System.out.printf("Team: %s  Boat speed: %d",boat.getName(), boat.getSpeed());
+
         }
     }
 
