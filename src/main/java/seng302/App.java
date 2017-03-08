@@ -18,26 +18,11 @@ public class App
     {
         Config.initializeConfig();
         String name = "America's Cup Race";
-        System.out.printf( "%s\n\n", name );
 
         ArrayList<Boat> boatsInRace = RaceVisionFileReader.importStarters();
         Course course = new Course(RaceVisionFileReader.importMarks());
         Race race = new Race(name, course, boatsInRace);
-
-        //this queue can be used to pull events to print to screen
-        PriorityQueue<Event> events = race.getEvents();
-
-        Display.printStartersList(boatsInRace);
-
-        System.out.println();
-
-        Display.printEventQueue(events);
-
-        System.out.println();
-
-        randomizeOrder(boatsInRace);
-        Display.printFinishersList(boatsInRace);
-
+        Display.displayRace(race);
     }
 
     private static void randomizeOrder(ArrayList<Boat> boats){

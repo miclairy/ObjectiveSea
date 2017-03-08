@@ -26,20 +26,46 @@ public class Race {
 
     private PriorityQueue<Event> generateEvents(ArrayList<Boat> boats, ArrayList<Mark> marks){
         PriorityQueue<Event> eventQueue = new PriorityQueue<>();
+        PriorityQueue<PassMarkEvent> finishingOrder = new PriorityQueue<>();
 
         Random ran = new Random();
         int max = baseTimeFactor + maxVariance;
         int min = baseTimeFactor - maxVariance;
 
+        eventQueue.add(new GenericRaceEvent(0, "Race Start"));
         for (Boat boat : boats) {
             int timePassed = 0;
             for (Mark mark : marks) {
-                int travelTime = ran.nextInt(max - min + 1) + min;
-                timePassed += travelTime;
-                eventQueue.add(new PassMarkEvent(timePassed, mark, boat));
+                if (!mark.isStart()) {
+                    int travelTime = ran.nextInt(max - min + 1) + min;
+                    timePassed += travelTime;
+                    eventQueue.add(new PassMarkEvent(timePassed, mark, boat));
+                    if (mark.isFinish()){
+                        finishingOrder.add(new PassMarkEvent(timePassed, mark, boat));
+                    }
+                }
             }
         }
+
+        int place = 1;
+        PassMarkEvent finishEvent;
+        do  {
+            finishEvent = finishingOrder.poll();
+            finishEvent.getInvolvedBoat().setFinishingPlace(place);
+            place++;
+        } while (finishingOrder.size() > 0);
+
+        eventQueue.add(new RaceEndEvent(finishEvent.getTime() + 1, boats,"Race Ended"));
+
         return eventQueue;
+    }
+
+    public ArrayList<Boat> getCompetitors() {
+        return this.competitors;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public PriorityQueue<Event> getEvents(){

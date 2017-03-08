@@ -12,6 +12,13 @@ import java.util.PriorityQueue;
 
 public class Display {
 
+    public static void displayRace(Race race){
+        System.out.printf( "%s\n\n", race.getName());
+        printStartersList(race.getCompetitors());
+        System.out.println();
+        printEventQueue(race.getEvents());
+    }
+
     public static void printStartersList(ArrayList<Boat> starters) {
         System.out.println("Boats in this race:");
         for (Boat boat : starters) {
@@ -38,21 +45,22 @@ public class Display {
     }
 
     public static void printEventQueue(PriorityQueue<Event> events) {
-
         while(events.size() != 0) {
             Event currentEvent = events.poll();
-
             new java.util.Timer().schedule(
                     new java.util.TimerTask() {
                         @Override
                         public void run() {
                             System.out.printf("%s\n", currentEvent.printEvent());
+                            if (currentEvent instanceof RaceEndEvent){
+                                System.out.println();
+                                printFinishersList(((RaceEndEvent) currentEvent).getFinishers());
+                            }
                         }
                     },
                     currentEvent.getTime()*Config.TIME_SCALE*100
             );
         }
-
     }
 }
 

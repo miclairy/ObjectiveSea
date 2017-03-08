@@ -23,5 +23,28 @@ public abstract class Event implements Comparable<Event> {
         return Integer.compare(this.time, other.time);
     }
 
+    protected String getFormattedTime(){
+        int secondTime = 0;
+        int minuteTime = 0;
+        String formattedSecondTime;
+
+        if(this.getTime() > 59) {
+            minuteTime = this.getTime() / 60;
+            secondTime = this.getTime() - (minuteTime * 60);
+        }
+        else {
+            secondTime = this.getTime();
+        }
+
+        formattedSecondTime = Integer.toString(secondTime);
+
+        if(secondTime < 10)
+        {
+            formattedSecondTime = "0" + formattedSecondTime.toString();
+        }
+
+        return String.format("%dm%ss", minuteTime, formattedSecondTime);
+    }
+
     public abstract String printEvent();
 }
