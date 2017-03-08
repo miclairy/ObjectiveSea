@@ -1,6 +1,7 @@
 package seng302;
 
 import java.util.ArrayList;
+import java.util.PriorityQueue;
 
 /**
  * Created by mjt169 on 6/03/17.
@@ -35,4 +36,23 @@ public class Display {
     		System.out.printf("%d. %s\n", boat.getFinishingPlace(), boat.getName());
     	}	
     }
+
+    public static void printEventQueue(PriorityQueue<Event> events) {
+
+        while(events.size() != 0) {
+            Event currentEvent = events.poll();
+
+            new java.util.Timer().schedule(
+                    new java.util.TimerTask() {
+                        @Override
+                        public void run() {
+                            System.out.printf("%s\n", currentEvent.printEvent());
+                        }
+                    },
+                    currentEvent.getTime()*Config.TIME_SCALE*100
+            );
+        }
+
+    }
 }
+

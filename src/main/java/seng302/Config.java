@@ -14,6 +14,7 @@ public class Config {
 
     private static final String CONFIG_PATH = "data/config.txt";
     public static int NUM_BOATS_IN_RACE;
+    public static int TIME_SCALE;
 
     public static void initializeConfig(){
         try {
@@ -26,6 +27,9 @@ public class Config {
                 switch(token) {
                     case "NUMBOATS":
                         NUM_BOATS_IN_RACE = Integer.parseInt(st.nextToken());
+                        break;
+                    case "TIMESCALE":
+                        TIME_SCALE = Integer.parseInt(st.nextToken());
                         break;
                     default:
                         throw new IOException("Invalid Token.");

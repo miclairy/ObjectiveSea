@@ -17,6 +17,25 @@ public class PassMarkEvent extends Event {
 
     @Override
     public String printEvent(){
-        return String.format("%d: %s passed mark %s", this.getTime(), this.boat.getName(), this.mark.getName());
+        int secondTime = 0;
+        int minuteTime = 0;
+        String formattedSecondTime;
+
+        if(this.getTime() > 59) {
+            minuteTime = this.getTime() / 60;
+            secondTime = this.getTime() - (minuteTime * 60);
+        }
+        else {
+            secondTime = this.getTime();
+        }
+
+        formattedSecondTime = Integer.toString(secondTime);
+
+        if(secondTime < 10)
+        {
+            formattedSecondTime = "0" + formattedSecondTime.toString();
+        }
+
+        return String.format("%s passed mark %s at %d:%sm",  this.boat.getName(), this.mark.getName(), minuteTime, formattedSecondTime);
     }
 }

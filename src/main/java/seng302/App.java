@@ -31,6 +31,10 @@ public class App
 
         System.out.println();
 
+        Display.printEventQueue(events);
+
+        System.out.println();
+
         randomizeOrder(boatsInRace);
         Display.printFinishersList(boatsInRace);
 
@@ -47,4 +51,5 @@ public class App
             boats.get(j).setFinishingPlace(places.get(j));
         }
     }
+
 }
