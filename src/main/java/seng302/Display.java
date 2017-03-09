@@ -18,7 +18,7 @@ public class Display {
         System.out.printf( "%s\n\n", race.getName());
         printStartersList(race.getCompetitors());
         System.out.println();
-        printEventQueue(race.getEvents());
+        printEventQueue(race.getEvents(), race.getTotalEventTime());
     }
 
     public static void printStartersList(ArrayList<Boat> starters) {
@@ -47,12 +47,12 @@ public class Display {
     	}	
     }
 
-    public static void printEventQueue(PriorityQueue<Event> events) {
+    public static void printEventQueue(PriorityQueue<Event> events, int totalEventTime) {
         long lastDelay = 0;
         final Timer timer = new Timer();
         while(events.size() != 0) {
             Event currentEvent = events.poll();
-            long delay = currentEvent.getTime() * Config.TIME_SCALE * 100;
+            long delay = (long)(((double)currentEvent.getTime() / totalEventTime) * Config.TIME_SCALE);
             final TimerTask task = new TimerTask() {
                 @Override
                 public void run() {
