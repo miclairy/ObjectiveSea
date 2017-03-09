@@ -2,6 +2,8 @@ package seng302;
 
 import java.util.ArrayList;
 import java.util.PriorityQueue;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by mjt169 on 6/03/17.
@@ -22,7 +24,8 @@ public class Display {
     public static void printStartersList(ArrayList<Boat> starters) {
         System.out.println("Boats in this race:");
         for (Boat boat : starters) {
-            System.out.println(boat.getName());
+            System.out.printf("Team: %s  Boat speed: %d",boat.getName(), boat.getSpeed());
+
         }
     }
 
@@ -45,22 +48,32 @@ public class Display {
     }
 
     public static void printEventQueue(PriorityQueue<Event> events) {
+        long lastDelay = 0;
+        final Timer timer = new Timer();
         while(events.size() != 0) {
             Event currentEvent = events.poll();
-            new java.util.Timer().schedule(
-                    new java.util.TimerTask() {
-                        @Override
-                        public void run() {
-                            System.out.printf("%s\n", currentEvent.printEvent());
-                            if (currentEvent instanceof RaceEndEvent){
-                                System.out.println();
-                                printFinishersList(((RaceEndEvent) currentEvent).getFinishers());
-                            }
-                        }
-                    },
-                    currentEvent.getTime()*Config.TIME_SCALE*100
-            );
+            long delay = currentEvent.getTime() * Config.TIME_SCALE * 100;
+            final TimerTask task = new TimerTask() {
+                @Override
+                public void run() {
+                    System.out.printf("%s\n", currentEvent.printEvent());
+                    if (currentEvent instanceof RaceEndEvent) {
+                        System.out.println();
+                        printFinishersList(((RaceEndEvent) currentEvent).getFinishers());
+                    }
+                }
+            };
+            lastDelay = delay;
+            timer.schedule(task, delay);
         }
+        final TimerTask cleanup = new TimerTask() {
+            @Override
+            public void run() {
+                timer.cancel();
+                timer.purge();
+            }
+        };
+        timer.schedule(cleanup, lastDelay + 1);
     }
 }
 
