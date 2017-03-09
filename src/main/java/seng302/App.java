@@ -2,7 +2,6 @@ package seng302;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.PriorityQueue;
 import java.util.Random;
 
 /**
@@ -20,7 +19,7 @@ public class App
         String name = "America's Cup Race";
 
         ArrayList<Boat> boatsInRace = RaceVisionFileReader.importStarters();
-        Course course = new Course(RaceVisionFileReader.importMarks());
+        Course course = RaceVisionFileReader.importCourse();
         Race race = new Race(name, course, boatsInRace);
         Display.displayRace(race);
     }

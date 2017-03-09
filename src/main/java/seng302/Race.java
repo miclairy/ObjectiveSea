@@ -14,34 +14,31 @@ public class Race {
     private ArrayList<Boat> competitors;
     private PriorityQueue<Event> events;
 
-    private static final int baseTimeFactor = 100;
-    private static final int maxVariance = 51;
-
     public Race(String name, Course course, ArrayList<Boat> competitors) {
         this.name = name;
         this.course = course;
         this.competitors = competitors;
-        events = generateEvents(competitors, this.course.getMarks());
+        events = generateEvents(competitors, course);
     }
 
-    private PriorityQueue<Event> generateEvents(ArrayList<Boat> boats, ArrayList<Mark> marks){
+    private PriorityQueue<Event> generateEvents(ArrayList<Boat> boats, Course course){
         PriorityQueue<Event> eventQueue = new PriorityQueue<>();
         PriorityQueue<PassMarkEvent> finishingOrder = new PriorityQueue<>();
-
-        Random ran = new Random();
-        int max = baseTimeFactor + maxVariance;
-        int min = baseTimeFactor - maxVariance;
+        ArrayList<Mark> marks = course.getCourseOrder();
 
         eventQueue.add(new GenericRaceEvent(0, "Race Start"));
         for (Boat boat : boats) {
-            int timePassed = 0;
-            for (Mark mark : marks) {
+            double speed = boat.getSpeed();
+            double timePassed = 0;
+            for (int i = 0; i < marks.size(); i++) {
+                Mark mark = marks.get(i);
                 if (!mark.isStart()) {
-                    int travelTime = ran.nextInt(max - min + 1) + min;
+                    double distance = course.distanceBetweenMarks(i, i-1);
+                    double travelTime = distance / speed;
                     timePassed += travelTime;
-                    eventQueue.add(new PassMarkEvent(timePassed, mark, boat));
+                    eventQueue.add(new PassMarkEvent((int)timePassed, mark, boat));
                     if (mark.isFinish()){
-                        finishingOrder.add(new PassMarkEvent(timePassed, mark, boat));
+                        finishingOrder.add(new PassMarkEvent((int)timePassed, mark, boat));
                     }
                 }
             }

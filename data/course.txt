@@ -1,4 +1,15 @@
 Start
+0 0
+Mark
+0 10000
+Leeward Gate
+0 20000
+Windward Gate
+0 30000
+Finish
+0 50000
+Mark Order:
+Start
 Mark
 Leeward Gate
 Windward Gate

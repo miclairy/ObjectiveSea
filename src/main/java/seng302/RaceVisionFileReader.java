@@ -20,17 +20,31 @@ public class RaceVisionFileReader {
     private static final String STARTERS_FILE = "starters.txt";
     private static final String COURSE_FILE = "course.txt";
 
-    public static ArrayList<Mark> importMarks() {
-        ArrayList<Mark> marks = new ArrayList<>();
+    public static Course importCourse() {
+        ArrayList<Mark> inOrderMarks = new ArrayList<>();
         String filePath = DATA_PATH + COURSE_FILE;
+        Course course = new Course();
 
         try {
             BufferedReader br = new BufferedReader(new FileReader(filePath));
             
-            String line = br.readLine();
-            while (line != null){
-                marks.add(new Mark(line));
-                line = br.readLine();
+            String markName = br.readLine();
+            while (markName != null){
+                String line = br.readLine();
+                StringTokenizer st = new StringTokenizer(line);
+                double lat = Double.parseDouble(st.nextToken());
+                double lon = Double.parseDouble(st.nextToken());
+                course.addNewMark(new Mark(markName, lat, lon));
+                markName = br.readLine();
+                if (markName.equals("Mark Order:")){
+                    markName = null;
+                    String mark = br.readLine();
+                    while (mark != null) {
+                        course.addMarkInOrder(mark);
+                        mark = br.readLine();
+                    }
+                }
+
             }
 
         } catch (FileNotFoundException e) {
@@ -39,7 +53,7 @@ public class RaceVisionFileReader {
             System.err.printf("Error reading course file. Check it is in the correct format.");
         }
 
-        return marks;
+        return course;
     }
     
     public static ArrayList<Boat> importStarters(){
