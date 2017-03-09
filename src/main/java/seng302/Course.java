@@ -13,6 +13,8 @@ public class Course {
     private ArrayList<Mark> courseOrder;
     private HashMap<String, Mark> marks;
 
+    private static final double EARTH_RADIUS_IN_NAUTICAL_MILES = 3437.74677;
+
     public Course() {
         this.marks = new HashMap<>();
         this.courseOrder = new ArrayList<>();
@@ -29,11 +31,7 @@ public class Course {
     public double distanceBetweenMarks(int markIndex1, int markIndex2){
         Mark mark1 = this.courseOrder.get(markIndex1);
         Mark mark2 = this.courseOrder.get(markIndex2);
-        double latDist = Math.pow((mark2.getLat() - mark1.getLat()), 2);
-        double lonDist = Math.pow((mark2.getLon() - mark1.getLon()), 2);
-        double totalDist = Math.pow((latDist + lonDist), 0.5);
         double distance = greaterCircleDistance(mark1.getLat(), mark2.getLat(), mark1.getLon(), mark2.getLon());
-        System.out.println(distance);
         return distance;
     }
 
@@ -42,17 +40,18 @@ public class Course {
         lat2 = Math.toRadians(lat2);
         lon1 = Math.toRadians(lon1);
         lon2 = Math.toRadians(lon2);
-        double r = 3437.74677;
-        return r * Math.acos(Math.sin(lat1) * Math.sin(lat2) +
+        return this.EARTH_RADIUS_IN_NAUTICAL_MILES * Math.acos(Math.sin(lat1) * Math.sin(lat2) +
                 Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1));
     }
 
     public double headingsBetweenMarks(int markIndex1, int markIndex2){
         Mark mark1 = this.courseOrder.get(markIndex1);
         Mark mark2 = this.courseOrder.get(markIndex2);
-        double latitude = mark2.getLat() - mark1.getLat();
-        double longitude = mark2.getLon() - mark1.getLon();
-        double heading = Math.toDegrees(Math.atan2(latitude, longitude));
+        double Ldelta = Math.toRadians(mark2.getLon()) - Math.toRadians(mark1.getLon());
+        double X = Math.cos(Math.toRadians(mark2.getLat())) * Math.sin(Ldelta);
+        double Y = Math.cos(Math.toRadians(mark1.getLat())) * Math.sin(Math.toRadians(mark2.getLat()))
+                - Math.sin(Math.toRadians(mark1.getLat())) * Math.cos(Math.toRadians(mark2.getLat())) * Math.cos(Ldelta);
+        double heading = Math.toDegrees(Math.atan2(X, Y));
         if(heading < 0){
             heading += 360;
         }
