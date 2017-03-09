@@ -1,17 +1,18 @@
 Start
-20 10
+32.295783 -64.855621
 Mark
-30 10
+32.293312 -64.842918
 Leeward Gate
-30 -60
+32.285465 -64.848117
 Windward Gate
--2 31
+32.308199 -64.830509
 Finish
-24 -53
+32.316308 -64.837859
 Mark Order:
 Start
 Mark
 Leeward Gate
 Windward Gate
 Leeward Gate
+Windward Gate
 Finish

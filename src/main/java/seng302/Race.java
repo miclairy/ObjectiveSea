@@ -35,12 +35,14 @@ public class Race {
                 Mark mark = marks.get(i);
                 if (!mark.isStart()) {
                     double distance = course.distanceBetweenMarks(i-1 , i);
-                    double travelTime = distance / speed;
-                    double heading = course.headingsBetweenMarks(i-1, i);
+                    double travelTime = distance / (speed / 3600);
                     timePassed += travelTime;
-                    eventQueue.add(new PassMarkEvent((int)timePassed, mark, boat, heading));
-                    if (mark.isFinish()){
-                        finishingOrder.add(new PassMarkEvent((int)timePassed, mark, boat, heading));
+                    if (mark.isFinish()) {
+                        eventQueue.add(new PassMarkEvent((int)timePassed, mark, boat, null));
+                        finishingOrder.add(new PassMarkEvent((int)timePassed, mark, boat, null));
+                    } else {
+                        double heading = course.headingsBetweenMarks(i, i + 1);
+                        eventQueue.add(new PassMarkEvent((int)timePassed, mark, boat, heading));
                     }
                 }
             }

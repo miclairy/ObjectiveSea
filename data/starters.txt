@@ -1,12 +1,12 @@
-Oracle Team USA, 90
-Ben Ainslie Racing, 84.3
-SoftBank Team Japan, 22.5
-Team France, 62.4
-Artemis Racing, 124.2
-Emirates Team New Zealand, 98.4
-Royal Vancouver YC, 45.6
-Team Russia, 45.2
-Greek Team, 94.6
-Chinese Team, 88.1
-Bermuda Team, 80.9
-German Team, 80.0
+Oracle Team USA, 30.3
+Ben Ainslie Racing, 34.5
+SoftBank Team Japan, 32.5
+Team France, 32.4
+Artemis Racing, 34.2
+Emirates Team New Zealand, 40.0
+Royal Vancouver YC, 35.6
+Team Russia, 35.2
+Greek Team, 34.6
+Chinese Team, 38.1
+Bermuda Team, 30.9
+German Team, 30.0
