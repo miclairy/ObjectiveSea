@@ -29,12 +29,9 @@ public class Course {
     public double distanceBetweenMarks(int markIndex1, int markIndex2){
         Mark mark1 = this.courseOrder.get(markIndex1);
         Mark mark2 = this.courseOrder.get(markIndex2);
-        System.out.println((mark1.getLat() - mark2.getLat()));
-        System.out.println((mark1.getLon() - mark2.getLon()));
         double latDist = Math.pow((mark1.getLat() - mark2.getLat()), 2);
         double lonDist = Math.pow((mark1.getLon() - mark2.getLon()), 2);
         double totalDist = Math.pow((latDist + lonDist), 0.5);
-        System.out.println(totalDist);
         return totalDist;
     }
 
