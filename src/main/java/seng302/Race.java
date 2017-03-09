@@ -13,6 +13,7 @@ public class Race {
     private Course course;
     private ArrayList<Boat> competitors;
     private PriorityQueue<Event> events;
+    private int totalEventTime;
 
     public Race(String name, Course course, ArrayList<Boat> competitors) {
         this.name = name;
@@ -52,7 +53,8 @@ public class Race {
             place++;
         } while (finishingOrder.size() > 0);
 
-        eventQueue.add(new RaceEndEvent(finishEvent.getTime() + 1, boats,"Race Ended"));
+        this.totalEventTime = finishEvent.getTime() + 1;
+        eventQueue.add(new RaceEndEvent(totalEventTime, boats,"Race Ended"));
 
         return eventQueue;
     }
@@ -67,6 +69,10 @@ public class Race {
 
     public PriorityQueue<Event> getEvents(){
         return this.events;
+    }
+
+    public int getTotalEventTime() {
+        return this.totalEventTime;
     }
 
 

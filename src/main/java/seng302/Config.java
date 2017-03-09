@@ -29,7 +29,7 @@ public class Config {
                         NUM_BOATS_IN_RACE = Integer.parseInt(st.nextToken());
                         break;
                     case "TIMESCALE":
-                        TIME_SCALE = Integer.parseInt(st.nextToken());
+                        TIME_SCALE = (int)(Double.parseDouble(st.nextToken()) * 60000); //convert mins to milleseconds
                         break;
                     default:
                         throw new IOException("Invalid Token.");
