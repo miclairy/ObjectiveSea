@@ -29,10 +29,22 @@ public class Course {
     public double distanceBetweenMarks(int markIndex1, int markIndex2){
         Mark mark1 = this.courseOrder.get(markIndex1);
         Mark mark2 = this.courseOrder.get(markIndex2);
-        double latDist = Math.pow((mark1.getLat() - mark2.getLat()), 2);
-        double lonDist = Math.pow((mark1.getLon() - mark2.getLon()), 2);
+        double latDist = Math.pow((mark2.getLat() - mark1.getLat()), 2);
+        double lonDist = Math.pow((mark2.getLon() - mark1.getLon()), 2);
         double totalDist = Math.pow((latDist + lonDist), 0.5);
         return totalDist;
+    }
+
+    public double headingsBetweenMarks(int markIndex1, int markIndex2){
+        Mark mark1 = this.courseOrder.get(markIndex1);
+        Mark mark2 = this.courseOrder.get(markIndex2);
+        double latitude = mark2.getLat() - mark1.getLat();
+        double longitude = mark2.getLon() - mark1.getLon();
+        double heading = Math.toDegrees(Math.atan2(latitude, longitude));
+        if(heading < 0){
+            heading += 360;
+        }
+        return heading;
     }
 
     public ArrayList<Mark> getCourseOrder(){
