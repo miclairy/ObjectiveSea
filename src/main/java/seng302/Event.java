@@ -23,6 +23,10 @@ public abstract class Event implements Comparable<Event> {
         return Integer.compare(this.time, other.time);
     }
 
+    /**
+     * This function creates a printable formatted time.
+     * This could be improved.
+     */
     protected String getFormattedTime(){
         int secondTime = 0;
         int minuteTime = 0;

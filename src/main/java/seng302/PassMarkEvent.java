@@ -18,6 +18,10 @@ public class PassMarkEvent extends Event {
     }
 
     @Override
+    /**
+     * THis function prints the events as each boat passes a mark/gate with the time and the heading.
+     * \u00B0 is unicode character for the degrees symbol.
+     */
     public String printEvent(){
         if (this.heading != null) {
             return String.format("%s: %s passed mark %s at %.0f\u00B0",

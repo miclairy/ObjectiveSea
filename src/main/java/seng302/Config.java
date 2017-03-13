@@ -16,6 +16,10 @@ public class Config {
     public static int NUM_BOATS_IN_RACE;
     public static int TIME_SCALE;
 
+
+    /**
+     * This function deals with importing the configuration file, and reading each property of that file.
+     */
     public static void initializeConfig(){
         try {
             BufferedReader br = new BufferedReader(new FileReader(CONFIG_PATH));

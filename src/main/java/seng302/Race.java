@@ -22,6 +22,12 @@ public class Race {
         events = generateEvents(competitors, course);
     }
 
+    /**
+     * THis is one of the main functions which generates the events of the race.
+     * *More stuff here*
+     *
+     */
+
     private PriorityQueue<Event> generateEvents(ArrayList<Boat> boats, Course course){
         PriorityQueue<Event> eventQueue = new PriorityQueue<>();
         PriorityQueue<PassMarkEvent> finishingOrder = new PriorityQueue<>();

@@ -28,6 +28,10 @@ public class Course {
         courseOrder.add(marks.get(markName));
     }
 
+    /**
+     * This functio finds the distance between each mark on the course
+     * Uses greaterCircleDistance function to calculate actual distance
+     */
     public double distanceBetweenMarks(int markIndex1, int markIndex2){
         Mark mark1 = this.courseOrder.get(markIndex1);
         Mark mark2 = this.courseOrder.get(markIndex2);
@@ -35,6 +39,9 @@ public class Course {
         return distance;
     }
 
+    /**
+     * Calculates distances using formula that uses the coordinate locations.
+     */
     public double greaterCircleDistance(double lat1, double lat2, double lon1, double lon2){
         lat1 = Math.toRadians(lat1);
         lat2 = Math.toRadians(lat2);
@@ -44,6 +51,10 @@ public class Course {
                 Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1));
     }
 
+    /**
+     * This function uses heading calculations to find the headings between two marks.
+     * Returns heading in degrees.
+     */
     public double headingsBetweenMarks(int markIndex1, int markIndex2){
         Mark mark1 = this.courseOrder.get(markIndex1);
         Mark mark2 = this.courseOrder.get(markIndex2);
@@ -58,6 +69,9 @@ public class Course {
         return heading;
     }
 
+    /**
+     * Getter for the course order
+     */
     public ArrayList<Mark> getCourseOrder(){
         return this.courseOrder;
     }

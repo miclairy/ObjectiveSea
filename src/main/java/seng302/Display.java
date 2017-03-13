@@ -14,6 +14,11 @@ import java.util.TimerTask;
 
 public class Display {
 
+    /**
+     * This is one of the main functions for displaying the race.
+     * This invokes the function to print the starters list as well as invokes
+     * the event queue to pull each event off to show in order of completion.
+     */
     public static void displayRace(Race race){
         System.out.printf( "%s\n\n", race.getName());
         printStartersList(race.getCompetitors());
@@ -21,6 +26,9 @@ public class Display {
         printEventQueue(race.getEvents(), race.getTotalEventTime());
     }
 
+    /**
+     * This function takes each boat from the ArrayList of type Boat and prints the boat name and speed.
+     */
     public static void printStartersList(ArrayList<Boat> starters) {
         System.out.println("Boats in this race:");
         for (Boat boat : starters) {
@@ -29,6 +37,10 @@ public class Display {
         }
     }
 
+    /**
+     * This function also takes each boat from the ArrayList of type Boat and prints the finishing place and
+     * the boat name.
+     */
     public static void printFinishersList(ArrayList<Boat> finishers) {
         finishers.sort(BoatUtils.orderByPlacing);
 
@@ -37,7 +49,11 @@ public class Display {
             System.out.printf("%d. %s\n", boat.getFinishingPlace(), boat.getName());
         }
     }
-    
+
+    /**
+     * NOT IN USE/SUPERSEDED BY printEventQueue FUNCTION
+     * This function prints each mark from the ArrayList of type Mark
+     */
     public static void printMarksList(ArrayList<Boat> markPassers, ArrayList<Mark> marks, int markNumber) {
     	markPassers.sort(BoatUtils.orderByPlacing);
     	
@@ -47,6 +63,13 @@ public class Display {
     	}	
     }
 
+    /**
+     * This function takes the events from the PriorityQueue of type event(event queue) and the total time
+     * which the race took and creates a timer and a scheduler which prints the events as they happen.
+     * Time delay is scaled to the time of the TIME_SCALE from the config file.
+     * A TimerTask is initially created and used with the given delay throughout the race.
+     * Once the race is finished, the TimerDelay thread is closed and purged.
+     */
     public static void printEventQueue(PriorityQueue<Event> events, int totalEventTime) {
         long lastDelay = 0;
         final Timer timer = new Timer();
