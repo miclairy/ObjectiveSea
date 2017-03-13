@@ -3,8 +3,8 @@ package seng302;
 import java.util.*;
 
 /**
- * Created by mjt169 on 7/03/17.
- * A Race encompasses a course and some competitors, and the events occur throughout the race.
+ * Created on 7/03/17.
+ * A Race encompasses a course and some competitors, and the events that occur throughout the race.
  * For now, events are randomly pre-computed and stored in a queue ready to be read by other classes such as Display
  */
 public class Race {
@@ -23,11 +23,14 @@ public class Race {
     }
 
     /**
-     * THis is one of the main functions which generates the events of the race.
-     * *More stuff here*
-     *
+     * Generates the events that occur in the race using as simple methodology as possible
+     * The queue will have a 'Race Start' event at it's head, and a 'Race Finish' event at it's tail
+     * Between them will be a series of PassMarkEvents for every boat passing every mark in the course, calculated
+     * using a constant speed for each boat (as defined in the Boat object).
+     * @param boats - each boat in the race
+     * @param course - the course with the definition of marks for the race
+     * @return a priority queue of race events
      */
-
     private PriorityQueue<Event> generateEvents(ArrayList<Boat> boats, Course course){
         PriorityQueue<Event> eventQueue = new PriorityQueue<>();
         PriorityQueue<PassMarkEvent> finishingOrder = new PriorityQueue<>();
@@ -62,6 +65,8 @@ public class Race {
             place++;
         } while (finishingOrder.size() > 0);
 
+        /** Set the total event time as 1 second longer than the last boat takes to finish to ensure events are
+         * are displayed in a sensible order, i.e. 'Race Ended' event is always displayed last*/
         this.totalEventTime = finishEvent.getTime() + 1;
         eventQueue.add(new RaceEndEvent(totalEventTime, boats,"Race Ended"));
 
@@ -83,6 +88,4 @@ public class Race {
     public int getTotalEventTime() {
         return this.totalEventTime;
     }
-
-
 }

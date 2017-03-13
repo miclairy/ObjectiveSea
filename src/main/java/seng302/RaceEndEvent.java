@@ -3,7 +3,10 @@ package seng302;
 import java.util.ArrayList;
 
 /**
- * Created by Mikey on 3/9/2017.
+ * Created on 3/9/2017.
+ * Extends event.
+ * Occurs when each boat has finished the race.
+ * TODO: consider boats that DNF (do not finish)
  */
 public class RaceEndEvent extends Event {
 

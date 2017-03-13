@@ -1,7 +1,9 @@
 package seng302;
 
 /**
- * Created by mjt169 on 7/03/17.
+ * Created on 7/03/17.
+ * A PassMarkEvent represents the event that occurs when a Boat passes a Mark.
+ * It also encapsulates the heading the boat has as it leaves the mark.
  */
 
 public class PassMarkEvent extends Event {
@@ -19,7 +21,7 @@ public class PassMarkEvent extends Event {
 
     @Override
     /**
-     * THis function prints the events as each boat passes a mark/gate with the time and the heading.
+     * This function prints the events as each boat passes a mark/gate with the time and the heading.
      * \u00B0 is unicode character for the degrees symbol.
      */
     public String printEvent(){
@@ -39,6 +41,9 @@ public class PassMarkEvent extends Event {
         }
     }
 
+    /**
+     * @return the boat which has passed the mark
+     */
     public Boat getInvolvedBoat(){
         return this.boat;
     }

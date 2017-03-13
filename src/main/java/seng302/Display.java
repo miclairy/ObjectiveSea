@@ -6,8 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Created by mjt169 on 6/03/17.
- * Edited by cjd137 on 7/03/17.
+ * Created on 6/03/17.
  * Class to manage the output display.
  * For now this will be simple text-based output to terminal
  */
@@ -18,6 +17,7 @@ public class Display {
      * This is one of the main functions for displaying the race.
      * This invokes the function to print the starters list as well as invokes
      * the event queue to pull each event off to show in order of completion.
+     * @param race - a defined and setup race object which contains a generated Event queue
      */
     public static void displayRace(Race race){
         System.out.printf( "%s\n\n", race.getName());
@@ -28,6 +28,7 @@ public class Display {
 
     /**
      * This function takes each boat from the ArrayList of type Boat and prints the boat name and speed.
+     * @param starters - all boats that started the race
      */
     public static void printStartersList(ArrayList<Boat> starters) {
         System.out.println("Boats in this race:");
@@ -39,7 +40,8 @@ public class Display {
 
     /**
      * This function also takes each boat from the ArrayList of type Boat and prints the finishing place and
-     * the boat name.
+     * the boat name in order from first to last.
+     * @param finishers - an ArrayList of Boat objects with defined finishing parameters
      */
     public static void printFinishersList(ArrayList<Boat> finishers) {
         finishers.sort(BoatUtils.orderByPlacing);
@@ -51,7 +53,7 @@ public class Display {
     }
 
     /**
-     * NOT IN USE/SUPERSEDED BY printEventQueue FUNCTION
+     * @deprecated SUPERSEDED BY printEventQueue FUNCTION
      * This function prints each mark from the ArrayList of type Mark
      */
     public static void printMarksList(ArrayList<Boat> markPassers, ArrayList<Mark> marks, int markNumber) {
@@ -69,6 +71,8 @@ public class Display {
      * Time delay is scaled to the time of the TIME_SCALE from the config file.
      * A TimerTask is initially created and used with the given delay throughout the race.
      * Once the race is finished, the TimerDelay thread is closed and purged.
+     * @param events - a PriorityQueue of event objects, ordered such that the head of the queue occurs first in time
+     * @param totalEventTime - the total time in seconds that the event takes, used to scale the time
      */
     public static void printEventQueue(PriorityQueue<Event> events, int totalEventTime) {
         long lastDelay = 0;
