@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by cjd137 on 7/03/17.
+ * Created on 7/03/17.
  * Class to figure out the mark locations and degrees.
  */
 
@@ -20,17 +20,27 @@ public class Course {
         this.courseOrder = new ArrayList<>();
     }
 
+    /**
+     * Puts mark into the marks HashMap, with the name of the mark as the Key
+     * @param mark - a defined Mark object
+     */
     public void addNewMark(Mark mark){
         marks.put(mark.getName(), mark);
     }
 
+    /**
+     * Appends a mark to the course order ArrayList. The mark must already exist in the marks HashMap
+     * @param markName - the name of the mark to look up in the marks HashMap
+     */
     public void addMarkInOrder(String markName){
         courseOrder.add(marks.get(markName));
     }
 
     /**
-     * This functio finds the distance between each mark on the course
-     * Uses greaterCircleDistance function to calculate actual distance
+     * This function finds the distance between each mark on the course
+     * @param markIndex1 - the index in the courseOrder array of the source mark
+     * @param markIndex2 - the index in the courseOrder array of the destination mark
+     * @return distance between source mark and destination mark in nautical miles
      */
     public double distanceBetweenMarks(int markIndex1, int markIndex2){
         Mark mark1 = this.courseOrder.get(markIndex1);
@@ -40,7 +50,12 @@ public class Course {
     }
 
     /**
-     * Calculates distances using formula that uses the coordinate locations.
+     * Calculates distance between two lat lon locations in nautical miles
+     * @param lat1 - the latitude of the source point, in degrees
+     * @param lon1 - the longitude of the source point, in degrees
+     * @param lat2 - the latitude of the source point, in degrees
+     * @param lon2 - the longitude of the source point, in degrees
+     * @return distance from (lat1, lon1) to (lat2, lon2) in nautical miles
      */
     public double greaterCircleDistance(double lat1, double lat2, double lon1, double lon2){
         lat1 = Math.toRadians(lat1);
@@ -53,7 +68,9 @@ public class Course {
 
     /**
      * This function uses heading calculations to find the headings between two marks.
-     * Returns heading in degrees.
+     * @param markIndex1 - the index in the courseOrder array of the source mark
+     * @param markIndex2 - the index in the courseOrder array of the destination mark
+     * @return heading - in degrees, from source mark to destination mark
      */
     public double headingsBetweenMarks(int markIndex1, int markIndex2){
         Mark mark1 = this.courseOrder.get(markIndex1);

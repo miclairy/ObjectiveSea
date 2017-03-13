@@ -5,11 +5,9 @@ import java.util.Collections;
 import java.util.Random;
 
 /**
- * Created by mjt169 on 6/03/17.
- * Edited by cjd137 on 7/03/17.
+ * Created on 6/03/17.
  * Main App class to control program
  */
-
 
 public class App 
 {
@@ -24,6 +22,11 @@ public class App
         Display.displayRace(race);
     }
 
+    /**
+     * @deprecated
+     * Function to randomize the finishing order of a list of boats
+     * Sets unique, in-order finishing places on the boats
+     * @param boats - an ArrayList of boats*/
     private static void randomizeOrder(ArrayList<Boat> boats){
         int numBoats = boats.size();
         ArrayList<Integer> places = new ArrayList<>();

@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 
 /**
- * Created by mjt169 on 6/03/17.
- * A set of configuration options used throughout the software
+ * Created on 6/03/17.
+ * A set of configuration options used throughout the software, read from a config file at startup.
  */
 public class Config {
 
@@ -16,9 +16,11 @@ public class Config {
     public static int NUM_BOATS_IN_RACE;
     public static int TIME_SCALE;
 
-
     /**
-     * This function deals with importing the configuration file, and reading each property of that file.
+     * This function finds a config file located at CONFIG_PATH and sets any properties it finds in the file.
+     * Example format for property-value pair: NUMBOATS=6
+     *
+     * @throws IOException and ends at the first unrecognised token it comes across
      */
     public static void initializeConfig(){
         try {
