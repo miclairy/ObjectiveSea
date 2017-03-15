@@ -23,8 +23,6 @@ import java.util.Random;
 public class Main extends Application {
 
     private static ArrayList<Boat> boatsInRace;
-    private static ArrayList<Color> colors = new ArrayList<>((Arrays.asList(Color.DEEPPINK, Color.DARKVIOLET, Color.YELLOW,
-            Color.RED, Color.DARKGOLDENROD, Color.GREEN)));;
 
 
     @Override
@@ -32,15 +30,24 @@ public class Main extends Application {
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
         primaryStage.setTitle("Sail Fast");
         primaryStage.setScene(new Scene(parent, 1000, 700));
-        primaryStage.setMaximized(true);
+        primaryStage.setMaximized(false);
         primaryStage.setMinHeight(700);
         primaryStage.setMinWidth(1000);
+
+        String name = "America's Cup Race";
+        boatsInRace = RaceVisionFileReader.importStarters();
+        Course course = RaceVisionFileReader.importCourse();
+        Race race = new Race(name, course, boatsInRace);
+
 
         Group root = new Group();
         Canvas canvas = new Canvas(1000, 700);
         GraphicsContext gc = canvas.getGraphicsContext2D();
-        drawBoats(root);
         root.getChildren().add(canvas);
+        Display.root = root;
+        Display.displayRace(race);
+        Display.drawBoats();
+
         primaryStage.setScene(new Scene(root, Color.LIGHTBLUE));
         primaryStage.show();
 
@@ -51,12 +58,8 @@ public class Main extends Application {
     {
 
         Config.initializeConfig();
-        String name = "America's Cup Race";
 
-        boatsInRace = RaceVisionFileReader.importStarters();
-        Course course = RaceVisionFileReader.importCourse();
-        Race race = new Race(name, course, boatsInRace);
-        Display.displayRace(race);
+
         launch(args);
 
     }
@@ -74,18 +77,6 @@ public class Main extends Application {
 
     }
 
-    public void drawBoats(Group root){
-
-        int i = 0;
-
-        for (Boat boat : boatsInRace) {
-            Circle boatImage = new Circle(50.0f * i, 50.0f, 10.0f);
-            boatImage.setFill(colors.get(i));
-            root.getChildren().add(boatImage);
-            boat.setIcon(boatImage);
-            i++;
-        }
-    }
 
     }
 

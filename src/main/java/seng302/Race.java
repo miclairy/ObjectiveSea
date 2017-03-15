@@ -19,7 +19,7 @@ public class Race {
         this.name = name;
         this.course = course;
         this.competitors = competitors;
-        events = generateEvents(competitors, course);
+
     }
 
     private PriorityQueue<Event> generateEvents(ArrayList<Boat> boats, Course course){
@@ -78,5 +78,7 @@ public class Race {
         return this.totalEventTime;
     }
 
-
+    public void setEvents() {
+        events = generateEvents(competitors, course);
+    }
 }

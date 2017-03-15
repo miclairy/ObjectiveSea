@@ -1,9 +1,10 @@
 package seng302;
 
-import java.util.ArrayList;
-import java.util.PriorityQueue;
-import java.util.Timer;
-import java.util.TimerTask;
+import javafx.scene.Group;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+
+import java.util.*;
 
 /**
  * Created by mjt169 on 6/03/17.
@@ -14,7 +15,14 @@ import java.util.TimerTask;
 
 public class Display {
 
+    public static Race race;
+    public static Group root;
+    private static ArrayList<Color> colors = new ArrayList<>((Arrays.asList(Color.DEEPPINK, Color.DARKVIOLET, Color.YELLOW,
+            Color.RED, Color.DARKGOLDENROD, Color.GREEN)));
+
     public static void displayRace(Race race){
+        Display.race = race;
+        race.setEvents();
         System.out.printf( "%s\n\n", race.getName());
         printStartersList(race.getCompetitors());
         System.out.println();
@@ -75,5 +83,20 @@ public class Display {
         };
         timer.schedule(cleanup, lastDelay + 1);
     }
+
+
+    public static void drawBoats(){
+
+        int i = 0;
+
+        for (Boat boat : race.getCompetitors()) {
+            Circle boatImage = new Circle(boat.getCurrentPositionX() * i, 50.0f, 10.0f);
+            boatImage.setFill(colors.get(i));
+            root.getChildren().add(boatImage);
+            boat.setIcon(boatImage);
+            i++;
+        }
+    }
+
 }
 
