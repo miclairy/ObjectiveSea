@@ -58,6 +58,35 @@ public class Course {
         return heading;
     }
 
+    public void courseSizePoints() {
+        double latMax, latMin;
+        latMax = latMin = this.courseOrder.get(0).getLat();
+        double lonMax, lonMin;
+        lonMax = lonMin = this.courseOrder.get(0).getLon();
+
+        for(int i = 0; i < this.courseOrder.size(); i++) {
+
+            if(this.courseOrder.get(i).getLat() > latMax) {
+                latMax = this.courseOrder.get(i).getLat();
+            }
+            else if(this.courseOrder.get(i).getLat() < latMin) {
+                latMin = this.courseOrder.get(i).getLat();
+            }
+
+            if(this.courseOrder.get(i).getLon() > lonMax) {
+                lonMax = this.courseOrder.get(i).getLon();
+            }
+            else if(this.courseOrder.get(i).getLon() < lonMin) {
+                lonMin = this.courseOrder.get(i).getLon();
+            }
+
+
+        }
+        System.out.printf("Max X, Y = %f,%f   Min X, Y = %f,%f", latMax, lonMax, latMin, lonMin);
+        //0.004 lat and lon changes for padding
+
+    }
+
     public ArrayList<Mark> getCourseOrder(){
         return this.courseOrder;
     }

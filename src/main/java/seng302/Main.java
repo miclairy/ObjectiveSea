@@ -51,6 +51,7 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root, Color.web("#aae7df")));
         primaryStage.show();
 
+        course.courseSizePoints();
     }
 
 
