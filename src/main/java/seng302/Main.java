@@ -26,8 +26,9 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
+        DisplayUtils displayUtils = new DisplayUtils();
         primaryStage.setTitle("Sail Fast");
-        primaryStage.setScene(new Scene(parent, 1000, 700));
+        primaryStage.setScene(new Scene(parent, displayUtils.getWidthHeight().get(0), displayUtils.getWidthHeight().get(1)));
         primaryStage.setMaximized(false);
         primaryStage.setMinHeight(700);
         primaryStage.setMinWidth(1000);
@@ -35,13 +36,12 @@ public class Main extends Application {
         String name = "America's Cup Race";
         boatsInRace = RaceVisionFileReader.importStarters();
         Course course = RaceVisionFileReader.importCourse();
-        DisplayUtils displayUtils = new DisplayUtils();
 
-        // This is an example
         course.getCourseSize();
         displayUtils.setMaxMinLatLon(course.getBoundaries());
         displayUtils.setScreenSize(0.75);
 
+        // This is an example
         /**
         ArrayList<Double> tester;
         tester = displayUtils.convertFromLatLon(32.308199, -64.830509);
@@ -54,7 +54,7 @@ public class Main extends Application {
 
 
         Group root = new Group();
-        Canvas canvas = new Canvas(1000, 700);
+        Canvas canvas = new Canvas(displayUtils.getWidthHeight().get(0), displayUtils.getWidthHeight().get(1));
         GraphicsContext gc = canvas.getGraphicsContext2D();
         root.getChildren().add(canvas);
         Display display = new Display(root, race);

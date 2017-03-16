@@ -11,6 +11,7 @@ public class DisplayUtils {
 
     private double width;
     private double height;
+    private ArrayList<Double> getWidthHeight;
     private double minLat;
     private double minLon;
     private double maxLat;
@@ -68,6 +69,13 @@ public class DisplayUtils {
     }
 
     public void setWidthHeight(double newWidth, double newHeight) { this.width = newWidth; this.height = newHeight;}
+
+    public ArrayList<Double> getWidthHeight() {
+        this.getWidthHeight = new ArrayList<>();
+        this.getWidthHeight.add(this.width);
+        this.getWidthHeight.add(this.height);
+        return this.getWidthHeight;
+    }
 
 
 }
