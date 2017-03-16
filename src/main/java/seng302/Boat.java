@@ -35,19 +35,25 @@ public class Boat {
             cumulativeDistance += course.distanceBetweenMarks(currentMarkIndex, currentMarkIndex + 1);
             currentMarkIndex++;
         }
-        currentMarkIndex--;
 
-        lastPassedMark = currentMarkIndex;
-        double restOfLeg = cumulativeDistance - distanceTraveled;
-        double legLength = course.distanceBetweenMarks(currentMarkIndex, currentMarkIndex + 1);
-        double percent = 1 - (restOfLeg / legLength);
+        if (cumulativeDistance <= distanceTraveled ) {
+            lastPassedMark = currentMarkIndex;
+            Mark finishMark = courseOrder.get(currentMarkIndex);
+            currentLat = finishMark.getLat();
+            currentLon = finishMark.getLon();
+        } else{
+            currentMarkIndex--;
+            lastPassedMark = currentMarkIndex;
+            double restOfLeg = cumulativeDistance - distanceTraveled;
+            double legLength = course.distanceBetweenMarks(currentMarkIndex, currentMarkIndex + 1);
+            double percent = 1 - (restOfLeg / legLength);
 
-        Mark startMark = courseOrder.get(currentMarkIndex);
-        Mark endMark = courseOrder.get(currentMarkIndex+1);
+            Mark startMark = courseOrder.get(currentMarkIndex);
+            Mark endMark = courseOrder.get(currentMarkIndex+1);
 
-        currentLat = (endMark.getLat() - startMark.getLat()) * percent + startMark.getLat();
-        currentLon = (endMark.getLon() - startMark.getLon()) * percent + startMark.getLon();
-
+            currentLat = (endMark.getLat() - startMark.getLat()) * percent + startMark.getLat();
+            currentLon = (endMark.getLon() - startMark.getLon()) * percent + startMark.getLon();
+        }
     }
 
     public String getName() {

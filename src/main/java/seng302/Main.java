@@ -10,12 +10,10 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.scene.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
@@ -44,10 +42,8 @@ public class Main extends Application {
         Canvas canvas = new Canvas(1000, 700);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         root.getChildren().add(canvas);
-        Display.root = root;
-        Display.displayRace(race);
-        Display.drawBoats();
-
+        Display display = new Display(root, race);
+        display.start();
         primaryStage.setScene(new Scene(root, Color.web("#aae7df")));
         primaryStage.show();
 
