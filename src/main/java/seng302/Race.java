@@ -78,6 +78,10 @@ public class Race {
         return this.totalEventTime;
     }
 
+    public Course getCourse() {
+        return course;
+    }
+
     public void setEvents() {
         events = generateEvents(competitors, course);
     }

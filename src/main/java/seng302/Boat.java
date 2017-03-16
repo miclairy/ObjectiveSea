@@ -2,7 +2,7 @@ package seng302;
 
 import javafx.scene.shape.Shape;
 
-import java.util.Collection;
+import java.util.ArrayList;
 
 /**
  * Created by mjt169 on 6/03/17.
@@ -15,8 +15,9 @@ public class Boat {
     private double speed;
     private int finishingPlace;
     private Shape icon;
-    private int currentPositionX = 50;
-    private int currentPositionY = 100;
+    private double currentLat = 50;
+    private double currentLon = 100;
+    private int lastPassedMark;
 
     public Boat(String name, double speed) {
         this.name = name;
@@ -24,9 +25,29 @@ public class Boat {
     }
 
 
-    public void setLocation(double totalTime, double leg_distance, Course course) {
-        double totalDistance = speed * totalTime;
-        currentPositionX = (int) totalDistance / 200;
+    public void setLocation(double totalTime, Course course) {
+        double distanceTraveled = speed * totalTime;
+
+        int currentMarkIndex = 0;
+        double cumulativeDistance = 0;
+        ArrayList<Mark> courseOrder = course.getCourseOrder();
+        while(cumulativeDistance <= distanceTraveled && currentMarkIndex < courseOrder.size() - 1){
+            cumulativeDistance += course.distanceBetweenMarks(currentMarkIndex, currentMarkIndex + 1);
+            currentMarkIndex++;
+        }
+        currentMarkIndex--;
+
+        lastPassedMark = currentMarkIndex;
+        double restOfLeg = cumulativeDistance - distanceTraveled;
+        double legLength = course.distanceBetweenMarks(currentMarkIndex, currentMarkIndex + 1);
+        double percent = 1 - (restOfLeg / legLength);
+
+        Mark startMark = courseOrder.get(currentMarkIndex);
+        Mark endMark = courseOrder.get(currentMarkIndex+1);
+
+        currentLat = (endMark.getLat() - startMark.getLat()) * percent + startMark.getLat();
+        currentLon = (endMark.getLon() - startMark.getLon()) * percent + startMark.getLon();
+
     }
 
     public String getName() {
@@ -49,11 +70,19 @@ public class Boat {
         return icon;
     }
 
+    public int getLastPassedMark() {
+        return lastPassedMark;
+    }
+
     public void setIcon(Shape icon) {
         this.icon = icon;
     }
 
-    public int getCurrentPositionX() {
-        return currentPositionX;
+    public double getCurrentLat() {
+        return currentLat;
     }
+    public double getCurrentLon() {
+        return currentLon;
+    }
+
 }
