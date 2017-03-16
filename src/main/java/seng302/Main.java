@@ -35,6 +35,21 @@ public class Main extends Application {
         String name = "America's Cup Race";
         boatsInRace = RaceVisionFileReader.importStarters();
         Course course = RaceVisionFileReader.importCourse();
+        DisplayUtils displayUtils = new DisplayUtils();
+
+        // This is an example
+        course.getCourseSize();
+        displayUtils.setMaxMinLatLon(course.getBoundaries());
+        displayUtils.setScreenSize(0.75);
+
+        /**
+        ArrayList<Double> tester;
+        tester = displayUtils.convertFromLatLon(32.308199, -64.830509);
+        double x = tester.get(0);
+        double y = tester.get(1);
+        System.out.printf("X Coord = %f     Y Coord = %f\n", x, y);
+        */
+
         Race race = new Race(name, course, boatsInRace);
 
 
@@ -46,8 +61,6 @@ public class Main extends Application {
         display.start();
         primaryStage.setScene(new Scene(root, Color.web("#aae7df")));
         primaryStage.show();
-
-        course.courseSizePoints();
     }
 
 
