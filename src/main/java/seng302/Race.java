@@ -34,19 +34,20 @@ public class Race {
     private PriorityQueue<Event> generateEvents(ArrayList<Boat> boats, Course course){
         PriorityQueue<Event> eventQueue = new PriorityQueue<>();
         PriorityQueue<PassMarkEvent> finishingOrder = new PriorityQueue<>();
-        ArrayList<Mark> marks = course.getCourseOrder();
+        ArrayList<CompoundMark> marks = course.getCourseOrder();
 
         eventQueue.add(new GenericRaceEvent(0, "Race Start"));
         for (Boat boat : boats) {
             double speed = boat.getSpeed();
             double timePassed = 0;
             for (int i = 0; i < marks.size(); i++) {
-                Mark mark = marks.get(i);
+                CompoundMark mark = marks.get(i);
                 if (!mark.isStart()) {
                     double distance = course.distanceBetweenMarks(i-1 , i);
                     double travelTime = distance / (speed / 3600);
                     timePassed += travelTime;
                     if (mark.isFinish()) {
+                        System.out.println("Finished");
                         eventQueue.add(new PassMarkEvent((int)timePassed, mark, boat, null));
                         finishingOrder.add(new PassMarkEvent((int)timePassed, mark, boat, null));
                     } else {
@@ -61,7 +62,9 @@ public class Race {
         PassMarkEvent finishEvent;
         do  {
             finishEvent = finishingOrder.poll();
-            finishEvent.getInvolvedBoat().setFinishingPlace(place);
+            System.err.println("pass");
+            Boat boat = finishEvent.getInvolvedBoat();
+            boat.setFinishingPlace(place);
             place++;
         } while (finishingOrder.size() > 0);
 

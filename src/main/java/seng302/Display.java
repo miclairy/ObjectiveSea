@@ -56,7 +56,7 @@ public class Display {
      * @deprecated SUPERSEDED BY printEventQueue FUNCTION
      * This function prints each mark from the ArrayList of type Mark
      */
-    public static void printMarksList(ArrayList<Boat> markPassers, ArrayList<Mark> marks, int markNumber) {
+    public static void printMarksList(ArrayList<Boat> markPassers, ArrayList<CompoundMark> marks, int markNumber) {
     	markPassers.sort(BoatUtils.orderByPlacing);
     	
     	System.out.printf("Mark: %s\n", marks.get(markNumber).getName());

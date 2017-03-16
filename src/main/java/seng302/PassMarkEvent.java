@@ -8,11 +8,11 @@ package seng302;
 
 public class PassMarkEvent extends Event {
 
-    private Mark mark;
+    private CompoundMark mark;
     private Boat boat;
     private Double heading;
 
-    PassMarkEvent(int time, Mark mark, Boat boat, Double heading) {
+    PassMarkEvent(int time, CompoundMark mark, Boat boat, Double heading) {
         super(time);
         this.mark = mark;
         this.boat = boat;

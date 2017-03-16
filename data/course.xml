@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<course>
+
+    <marks>
+        <mark start="start">
+            <name>Start line</name>
+            <latlon>
+                <lat>32.295783</lat>
+                <lon>-64.854621</lon>
+            </latlon>
+            <latlon>
+                <lat>32.295783</lat>
+                <lon>-64.855621</lon>
+            </latlon>
+        </mark>
+
+        <mark>
+            <name>Mark</name>
+            <latlon>
+                <lat>32.293312</lat>
+                <lon>-64.842918</lon>
+            </latlon>
+        </mark>
+
+        <mark>
+            <name>Leeward Gate</name>
+            <latlon>
+                <lat>32.286465</lat>
+                <lon>-64.848117</lon>
+            </latlon>
+            <latlon>
+                <lat>32.285465</lat>
+                <lon>-64.848117</lon>
+            </latlon>
+        </mark>
+
+        <mark>
+            <name>Windward Gate</name>
+            <latlon>
+                <lat>32.309199</lat>
+                <lon>-64.830509</lon>
+            </latlon>
+            <latlon>
+                <lat>32.308199</lat>
+                <lon>-64.830509</lon>
+            </latlon>
+        </mark>
+
+        <mark finish="finish">
+            <name>Finish line</name>
+            <latlon>
+                <lat>32.316308</lat>
+                <lon>-64.838859</lon>
+            </latlon>
+            <latlon>
+                <lat>32.316308</lat>
+                <lon>-64.837859</lon>
+            </latlon>
+        </mark>
+    </marks>
+
+    <legs>
+        <leg>Mark</leg>
+        <repeatingleg times="1">
+            <leg>Leeward Gate</leg>
+            <leg>Windward Gate</leg>
+        </repeatingleg>
+        <leg>Finish</leg>
+    </legs>
+
+</course>
