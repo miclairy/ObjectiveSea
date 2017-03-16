@@ -17,7 +17,7 @@ public class App
         String name = "America's Cup Race";
 
         ArrayList<Boat> boatsInRace = RaceVisionFileReader.importStarters();
-        Course course = RaceVisionFileReader.importCourseFromXML();
+        Course course = RaceVisionFileReader.importCourse();
         Race race = new Race(name, course, boatsInRace);
         Display.displayRace(race);
     }

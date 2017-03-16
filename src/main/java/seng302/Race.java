@@ -47,7 +47,6 @@ public class Race {
                     double travelTime = distance / (speed / 3600);
                     timePassed += travelTime;
                     if (mark.isFinish()) {
-                        System.out.println("Finished");
                         eventQueue.add(new PassMarkEvent((int)timePassed, mark, boat, null));
                         finishingOrder.add(new PassMarkEvent((int)timePassed, mark, boat, null));
                     } else {
@@ -62,9 +61,7 @@ public class Race {
         PassMarkEvent finishEvent;
         do  {
             finishEvent = finishingOrder.poll();
-            System.err.println("pass");
-            Boat boat = finishEvent.getInvolvedBoat();
-            boat.setFinishingPlace(place);
+            finishEvent.getInvolvedBoat().setFinishingPlace(place);
             place++;
         } while (finishingOrder.size() > 0);
 

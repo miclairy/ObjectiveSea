@@ -60,12 +60,11 @@
     </marks>
 
     <legs>
+        <leg>Start line</leg>
         <leg>Mark</leg>
-        <repeatingleg times="1">
-            <leg>Leeward Gate</leg>
-            <leg>Windward Gate</leg>
-        </repeatingleg>
-        <leg>Finish</leg>
+        <leg>Leeward Gate</leg>
+        <leg>Windward Gate</leg>
+        <leg>Finish line</leg>
     </legs>
 
 </course>

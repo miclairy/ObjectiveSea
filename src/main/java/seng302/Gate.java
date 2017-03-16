@@ -2,6 +2,8 @@ package seng302;
 
 /**
  * Created on 16/03/17.
+ * A Gate has a marked point at either end
+ * The lat and lon properties inherited from CompoundMark define the midpoint of the gate
  */
 public class Gate extends CompoundMark {
 
