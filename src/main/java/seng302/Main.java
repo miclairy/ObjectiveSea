@@ -48,7 +48,7 @@ public class Main extends Application {
         Display.displayRace(race);
         Display.drawBoats();
 
-        primaryStage.setScene(new Scene(root, Color.LIGHTBLUE));
+        primaryStage.setScene(new Scene(root, Color.web("#aae7df")));
         primaryStage.show();
 
     }

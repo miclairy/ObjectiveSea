@@ -17,8 +17,8 @@ public class Display {
 
     public static Race race;
     public static Group root;
-    private static ArrayList<Color> colors = new ArrayList<>((Arrays.asList(Color.DEEPPINK, Color.DARKVIOLET, Color.YELLOW,
-            Color.RED, Color.DARKGOLDENROD, Color.GREEN)));
+    private static ArrayList<Color> colors = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#A0D468"), Color.web("#FC6E51"),
+            Color.web("#FFCE54"), Color.web("#48CFAD"), Color.web("#4FC1E9"), Color.web("#656D78"))));
 
     public static void displayRace(Race race){
         Display.race = race;
@@ -87,16 +87,16 @@ public class Display {
 
     public static void drawBoats(){
 
-        int i = 0;
+        int i = 1;
 
         for (Boat boat : race.getCompetitors()) {
             Circle boatImage = new Circle(boat.getCurrentPositionX() * i, 50.0f, 10.0f);
             boatImage.setFill(colors.get(i));
+            boatImage.setStroke(Color.WHITE);
             root.getChildren().add(boatImage);
             boat.setIcon(boatImage);
             i++;
         }
     }
-
 }
 
