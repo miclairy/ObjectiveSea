@@ -27,6 +27,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
         DisplayUtils displayUtils = new DisplayUtils();
+        displayUtils.setScreenSize(0.75);
         primaryStage.setTitle("Sail Fast");
         primaryStage.setScene(new Scene(parent, displayUtils.getWidthHeight().get(0), displayUtils.getWidthHeight().get(1)));
         primaryStage.setMaximized(false);
@@ -39,12 +40,11 @@ public class Main extends Application {
 
         course.getCourseSize();
         displayUtils.setMaxMinLatLon(course.getBoundaries());
-        displayUtils.setScreenSize(0.75);
 
         // This is an example
         /**
         ArrayList<Double> tester;
-        tester = displayUtils.convertFromLatLon(32.308199, -64.830509);
+        tester = displayUtils.convertFromLatLon(32.295783, -64.855621);
         double x = tester.get(0);
         double y = tester.get(1);
         System.out.printf("X Coord = %f     Y Coord = %f\n", x, y);
