@@ -94,7 +94,7 @@ public class Display extends Thread {
 
     @Override
     public void run(){
-        double timeIncrement = 50;
+        double timeIncrement = 0.000277778; //hours = 1 second
         boolean finished = false;
         while (!finished){
             finished = true;
@@ -107,7 +107,7 @@ public class Display extends Thread {
             redrawBoats();
 
             try {
-                this.sleep(500);
+                this.sleep(500); //speed up multiple of 2
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -132,7 +132,8 @@ public class Display extends Thread {
 
     public void redrawBoats(){
         for (Boat boat : race.getCompetitors()) {
-            boat.getIcon().relocate(Math.abs(boat.getCurrentLat()) , Math.abs(boat.getCurrentLon()) );
+            ArrayList<Double> xy = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
+            boat.getIcon().relocate(xy.get(0) , xy.get(1));
         }
         }
 }
