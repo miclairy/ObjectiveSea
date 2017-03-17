@@ -51,8 +51,14 @@ public class Boat {
             Mark startMark = courseOrder.get(currentMarkIndex);
             Mark endMark = courseOrder.get(currentMarkIndex+1);
 
-            currentLat = (endMark.getLat() - startMark.getLat()) * percent + startMark.getLat();
-            currentLon = (endMark.getLon() - startMark.getLon()) * percent + startMark.getLon();
+            // convert the lat lon to x y to display correctly
+            // TODO boat gets to finsh in 2 loops???
+            ArrayList<Double> startXY = DisplayUtils.convertFromLatLon(startMark.getLat(), startMark.getLon());
+            ArrayList<Double> endXY = DisplayUtils.convertFromLatLon(endMark.getLat(), endMark.getLon());
+
+            currentLat = (endXY.get(0)- startXY.get(0)) * percent + startXY.get(0);
+            currentLon = (endXY.get(1)- startXY.get(1)) * percent + startXY.get(1);
+
         }
     }
 
