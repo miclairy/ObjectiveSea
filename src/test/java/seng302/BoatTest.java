@@ -11,17 +11,19 @@ import static org.junit.Assert.assertTrue;
 public class BoatTest
 {
     @Test
-    public void setLocationTest() {
+    public void updateLocationTest() {
         Course course = new Course();
-        Mark mark1 = new Mark("Mark1", 50, 30);
-        Mark mark2 = new Mark("Mark2", 60, 60);
-        course.addNewMark(mark1);
-        course.addNewMark(mark2);
-        course.addMarkInOrder("Mark1");
-        course.addMarkInOrder("Mark2");
+        Mark start = new Mark("Start", 50, 30);
+        Mark mark = new Mark("Mark", 60, 60);
+        course.addNewMark(start);
+        course.addNewMark(mark);
+        course.addMarkInOrder("Start");
+        course.addMarkInOrder("Mark");
 
         Boat boat = new Boat("TestBoat", 10);
-        boat.setLocation(58.95, course);
+        boat.setPosition(start.getLat(), start.getLon());
+
+        boat.updateLocation(58.95, course);
         assertEquals(55, (int) Math.round(boat.getCurrentLat()));
         assertEquals(45, (int) Math.round(boat.getCurrentLon()));
     }

@@ -94,17 +94,16 @@ public class Display extends Thread {
 
     @Override
     public void run(){
-        double time = 0;
+        double timeIncrement = 5;
         boolean finished = false;
         while (!finished){
             finished = true;
             for (Boat boat : race.getCompetitors()){
-                boat.setLocation(time, race.getCourse());
-                if (boat.getLastPassedMark() < race.getCourse().getCourseOrder().size() - 1){
+                boat.updateLocation(timeIncrement, race.getCourse());
+                if (!boat.isFinished()){
                     finished = false;
                 }
             }
-
             redrawBoats();
 
             try {
@@ -112,7 +111,6 @@ public class Display extends Thread {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            time += 5;
         }
 
     }

@@ -19,7 +19,14 @@ public class Race {
         this.name = name;
         this.course = course;
         this.competitors = competitors;
+        setStartingPositions();
+    }
 
+    private void setStartingPositions(){
+        Mark startingPosition = course.getCourseOrder().get(0);
+        for (Boat boat : competitors){
+            boat.setPosition(startingPosition.getLat(), startingPosition.getLon());
+        }
     }
 
     private PriorityQueue<Event> generateEvents(ArrayList<Boat> boats, Course course){
