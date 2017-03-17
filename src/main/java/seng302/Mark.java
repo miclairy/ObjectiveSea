@@ -1,7 +1,7 @@
 package seng302;
 
 /**
- * Created by cjd137 on 7/03/17.
+ * Created on 7/03/17.
  * Class to specify the marks/gates on the course.
  */
 
@@ -11,6 +11,7 @@ public class Mark {
     private double lat;
     private double lon;
 
+    //TODO: improve how Start and Finish marks are defined/recognised.
 	private static final String START_MARK = "Start";
     private static final String FINISH_MARK = "Finish";
 	

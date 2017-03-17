@@ -19,10 +19,18 @@ public abstract class Event implements Comparable<Event> {
         return this.time;
     }
 
+    /**
+     * Simple comparator for events using their time such that a sooner occurring event will come before a later one
+     */
     public int compareTo(Event other) {
         return Integer.compare(this.time, other.time);
     }
 
+    /**
+     * This function creates a printable formatted time.
+     * TODO: This could be improved.
+     * @return the time property of the Event, formatted in minutes and seconds as XXmYYs
+     */
     protected String getFormattedTime(){
         int secondTime = 0;
         int minuteTime = 0;

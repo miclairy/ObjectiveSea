@@ -7,8 +7,7 @@ import javafx.scene.shape.Circle;
 import java.util.*;
 
 /**
- * Created by mjt169 on 6/03/17.
- * Edited by cjd137 on 7/03/17.
+ * Created on 6/03/17.
  * Class to manage the output display.
  * For now this will be simple text-based output to terminal
  */
