@@ -42,12 +42,8 @@ public class Course {
         lon1 = Math.toRadians(lon1);
         lon2 = Math.toRadians(lon2);
 
-        double dLong = lon1 - lon2;
-        double dLat = lat1 - lat2;
-        double a = Math.pow(Math.sin(dLat/2), 2) + Math.cos(lat1) *
-                Math.cos(lat2) * Math.pow(Math.sin(dLong/2), 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return EARTH_RADIUS_IN_NAUTICAL_MILES * c;
+        return EARTH_RADIUS_IN_NAUTICAL_MILES * Math.acos(Math.sin(lat1) * Math.sin(lat2) +
+                Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1));
     }
 
     public double headingsBetweenMarks(int markIndex1, int markIndex2){
