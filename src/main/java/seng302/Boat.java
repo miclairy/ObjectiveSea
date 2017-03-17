@@ -27,11 +27,21 @@ public class Boat {
         this.lastPassedMark = 0;
     }
 
+    /**
+     * Sets the latitude and longitude of the boat
+     * @param lat the latitude of the boat
+     * @param lon the longitude of the boat
+     */
     public void setPosition(double lat, double lon){
         currentLat = lat;
         currentLon = lon;
     }
 
+    /**
+     * Updates the boat's coordinates by how much it moved in timePassed hours on the course
+     * @param timePassed the amount of race hours since the last update
+     * @param course the course the boat is racing on
+     */
     public void updateLocation(double timePassed, Course course) {
         if(finished){
             return;

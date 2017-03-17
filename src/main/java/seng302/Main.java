@@ -66,12 +66,8 @@ public class Main extends Application {
 
     public static void main( String[] args )
     {
-
         Config.initializeConfig();
-
-
         launch(args);
-
     }
 
     private static void randomizeOrder(ArrayList<Boat> boats){
@@ -88,5 +84,5 @@ public class Main extends Application {
     }
 
 
-    }
+}
 

@@ -1,5 +1,7 @@
 package seng302;
 
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -10,6 +12,14 @@ import static org.junit.Assert.assertTrue;
  */
 public class BoatTest
 {
+    private Boat boat;
+    private double DELTA = 1e-6;
+
+    @Before
+    public void before(){
+        boat = new Boat("TestBoat", 10);
+    }
+
     @Test
     public void updateLocationTest() {
         Course course = new Course();
@@ -20,11 +30,57 @@ public class BoatTest
         course.addMarkInOrder("Start");
         course.addMarkInOrder("Mark");
 
-        Boat boat = new Boat("TestBoat", 10);
         boat.setPosition(start.getLat(), start.getLon());
 
         boat.updateLocation(58.95, course);
         assertEquals(55, (int) Math.round(boat.getCurrentLat()));
         assertEquals(45, (int) Math.round(boat.getCurrentLon()));
+    }
+
+    @Test
+    public void setLocationTest(){
+        boat.setPosition(25, 50.7);
+        assertEquals(25, boat.getCurrentLat(), DELTA);
+        assertEquals(50.7, boat.getCurrentLon(), DELTA);
+    }
+
+    @Test
+    public void passedMarkTest() {
+        Course course = new Course();
+        Mark start = new Mark("Start", 50, 30);
+        Mark mark = new Mark("Mark", 50, 30.5);
+        Mark finish = new Mark("Finish", 50.5, 30.5);
+        course.addNewMark(start);
+        course.addNewMark(mark);
+        course.addNewMark(finish);
+        course.addMarkInOrder("Start");
+        course.addMarkInOrder("Mark");
+        course.addMarkInOrder("Finish");
+
+        boat.setPosition(50, 30);
+        boat.updateLocation(2, course);
+
+        assertEquals(50.01194, boat.getCurrentLat(), DELTA);
+        assertEquals(30.5, boat.getCurrentLon(), DELTA);
+        assertEquals( 1, boat.getLastPassedMark());
+    }
+
+
+    @Test
+    public void finishedRaceTest() {
+        Course course = new Course();
+        Mark start = new Mark("Start", 51.55, 30.11);
+        Mark finish = new Mark("Finish", 51.56, 30.12);
+        course.addNewMark(start);
+        course.addNewMark(finish);
+        course.addMarkInOrder("Start");
+        course.addMarkInOrder("Finish");
+
+        boat.setPosition(51.55, 30.11);
+        boat.updateLocation(20, course);
+
+        assertTrue(boat.isFinished());
+        assertEquals(51.56, boat.getCurrentLat(), DELTA);
+        assertEquals(30.12, boat.getCurrentLon(), DELTA);
     }
 }
