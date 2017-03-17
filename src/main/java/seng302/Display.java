@@ -94,7 +94,7 @@ public class Display extends Thread {
 
     @Override
     public void run(){
-        double timeIncrement = 5;
+        double timeIncrement = 50;
         boolean finished = false;
         while (!finished){
             finished = true;

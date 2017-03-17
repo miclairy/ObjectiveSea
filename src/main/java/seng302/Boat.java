@@ -40,7 +40,7 @@ public class Boat {
         Mark nextMark = courseOrder.get(lastPassedMark+1);
 
         double distanceGained = timePassed * speed;
-        double distanceLeftInLeg = Course.greaterCircleDistance(currentLat, nextMark.getLat(), nextMark.getLon(), currentLon);
+        double distanceLeftInLeg = Course.greaterCircleDistance(currentLat, nextMark.getLat(), currentLon, nextMark.getLon());
 
         //If boat moves more than the remaining distance in the leg
         while(distanceGained > distanceLeftInLeg && lastPassedMark < courseOrder.size()-1){
@@ -52,7 +52,7 @@ public class Boat {
 
             if(lastPassedMark < courseOrder.size()-1){
                 nextMark = courseOrder.get(lastPassedMark+1);
-                distanceLeftInLeg = Course.greaterCircleDistance(currentLat, currentLon, nextMark.getLat(), nextMark.getLon());
+                distanceLeftInLeg = Course.greaterCircleDistance(currentLat, nextMark.getLat(), currentLon, nextMark.getLon());
             }
         }
 
