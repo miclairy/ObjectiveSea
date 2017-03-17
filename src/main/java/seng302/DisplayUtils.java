@@ -42,7 +42,7 @@ public class DisplayUtils {
         xyCoords.add((double) xCoord);
         xyCoords.add((double) yCoord);
 
-     return xyCoords;
+        return xyCoords;
     }
     /**
      * This function sets and maximum and minimum latitudes and longitudes of the course.

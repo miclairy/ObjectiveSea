@@ -21,8 +21,8 @@ public class DisplayUtilsTest {
         latLon.add(32.316308 + 0.004); //Lat Max
         latLon.add(-64.830509 + 0.004); //Lon Max
 
-        DisplayUtils.setWidthHeight(2560, 1440);
-        DisplayUtils.setScreenSize(0.75);
+        double multiplier = 0.75;
+        DisplayUtils.setWidthHeight(2560*multiplier, 1440*multiplier);
         DisplayUtils.setMaxMinLatLon(latLon);
 
         ArrayList<Double> tester;
