@@ -22,13 +22,9 @@ public class DisplayUtils {
      * and the change in multiplier to the screen size.
      * @param lat This is the required Latitude to find the Y coordinate.
      * @param lon This is the required Longitude to find the X coordinate.
-     * @return Returns an x and a y coordinate for use in placement of boats and/or marks/gates.
+     * @return Returns CartesianPoint with an x and a y coordinate for use in placement of boats and/or marks/gates.
      */
-    public static ArrayList<Double> convertFromLatLon(double lat, double lon) {
-
-        ArrayList<Double> xyCoords = new ArrayList<>();
-        int xCoord;
-        int yCoord;
+    public static CartesianPoint convertFromLatLon(double lat, double lon) {
 
         double changeInLat = maxLat - minLat;
         double changeInLon = maxLon - minLon;
@@ -36,24 +32,25 @@ public class DisplayUtils {
         double lonPerPixel = width/changeInLon;
         double latPerPixel = height/changeInLat;
 
-        xCoord = (int) Math.round(Math.abs((lon - minLon)*lonPerPixel));
-        yCoord = (int) Math.round(Math.abs((lat - minLat)*latPerPixel));
+        int xCoord = (int) Math.round(Math.abs((lon - minLon)*lonPerPixel));
+        int yCoord = (int) Math.round(Math.abs((lat - minLat)*latPerPixel));
 
-        xyCoords.add((double) xCoord);
-        xyCoords.add((double) yCoord);
-
-        return xyCoords;
+        CartesianPoint point = new CartesianPoint(xCoord, yCoord);
+        return point;
     }
+
     /**
      * This function sets and maximum and minimum latitudes and longitudes of the course.
-     * @param maxMinLatLon This ArrayList holds the minimum and maximum Latitudes and Longitudes of the course.
+     * @param minLat The minimum latitude of the course
+     * @param minLon The minimum longitude of the course
+     * @param maxLat The maximum latitude of the course
+     * @param maxLon The maximum longitude of the course
      */
-    public static void setMaxMinLatLon(ArrayList<Double> maxMinLatLon) {
-
-        minLat = maxMinLatLon.get(0);
-        minLon = maxMinLatLon.get(1);
-        maxLat = maxMinLatLon.get(2);
-        maxLon = maxMinLatLon.get(3);
+    public static void setMaxMinLatLon(double minLat, double minLon, double maxLat, double maxLon) {
+        DisplayUtils.minLat = minLat;
+        DisplayUtils.minLon = minLon;
+        DisplayUtils.maxLat = maxLat;
+        DisplayUtils.maxLon = maxLon;
     }
 
     /**

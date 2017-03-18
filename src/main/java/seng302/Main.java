@@ -38,18 +38,10 @@ public class Main extends Application {
         boatsInRace = RaceVisionFileReader.importStarters();
         Course course = RaceVisionFileReader.importCourse();
 
-        course.getCourseSize();
-        displayUtils.setMaxMinLatLon(course.getBoundaries());
+        course.initCourseLatLon();
+        displayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
 
         // This is an example
-        /**
-        ArrayList<Double> tester;
-        tester = displayUtils.convertFromLatLon(32.295783, -64.855621);
-        double x = tester.get(0);
-        double y = tester.get(1);
-        System.out.printf("X Coord = %f     Y Coord = %f\n", x, y);
-        */
-
         Race race = new Race(name, course, boatsInRace);
 
 

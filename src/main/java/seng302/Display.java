@@ -70,8 +70,8 @@ public class Display extends Thread {
      */
     public void redrawBoats(){
         for (Boat boat : race.getCompetitors()) {
-            ArrayList<Double> xy = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
-            boat.getIcon().relocate(xy.get(0) , xy.get(1));
+            CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
+            boat.getIcon().relocate(point.getX(), point.getY());
         }
     }
 }
