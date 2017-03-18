@@ -11,6 +11,7 @@ import java.util.HashMap;
 public class Course {
 
     private ArrayList<Mark> courseOrder;
+    private double minLat, minLon, maxLat, maxLon;
     private HashMap<String, Mark> marks;
 
     private static final double EARTH_RADIUS_IN_NAUTICAL_MILES = 3437.74677;
@@ -57,12 +58,13 @@ public class Course {
      * @param lon2 - the longitude of the source point, in degrees
      * @return distance from (lat1, lon1) to (lat2, lon2) in nautical miles
      */
-    public double greaterCircleDistance(double lat1, double lat2, double lon1, double lon2){
+    public static double greaterCircleDistance(double lat1, double lat2, double lon1, double lon2){
         lat1 = Math.toRadians(lat1);
         lat2 = Math.toRadians(lat2);
         lon1 = Math.toRadians(lon1);
         lon2 = Math.toRadians(lon2);
-        return this.EARTH_RADIUS_IN_NAUTICAL_MILES * Math.acos(Math.sin(lat1) * Math.sin(lat2) +
+
+        return EARTH_RADIUS_IN_NAUTICAL_MILES * Math.acos(Math.sin(lat1) * Math.sin(lat2) +
                 Math.cos(lat1) * Math.cos(lat2) * Math.cos(lon2 - lon1));
     }
 
@@ -87,12 +89,53 @@ public class Course {
     }
 
     /**
+     * This function grabs all the latitude and longitude points for each mark/gate
+     * The furthest most points to the North and East are found and made the max latitude and longitude
+     * The furthest most points to the South and West are also found and made the min latitude and longitude.
+     * This is then added to an ArrayList for future use.
+     */
+    public void initCourseLatLon() {
+        maxLat = minLat = this.courseOrder.get(0).getLat();
+        maxLon = minLon = this.courseOrder.get(0).getLon();
+
+        for(int i = 0; i < this.courseOrder.size(); i++) {
+
+            if(this.courseOrder.get(i).getLat() > maxLat) {
+                maxLat = this.courseOrder.get(i).getLat();
+            } else if(this.courseOrder.get(i).getLat() < minLat) {
+                minLat = this.courseOrder.get(i).getLat();
+            }
+
+            if(this.courseOrder.get(i).getLon() > maxLon) {
+                maxLon = this.courseOrder.get(i).getLon();
+            } else if(this.courseOrder.get(i).getLon() < minLon) {
+                minLon = this.courseOrder.get(i).getLon();
+            }
+        }
+        //Adding padding of 0.004 to each coordinate to make sure the visual area is large enough
+        minLat -= 0.004; minLon -= 0.004; maxLat += 0.004; maxLon += 0.004;
+    }
+
+    /**
      * Getter for the course order
      */
     public ArrayList<Mark> getCourseOrder(){
         return this.courseOrder;
     }
 
+    public double getMinLat() {
+        return minLat;
+    }
 
+    public double getMinLon() {
+        return minLon;
+    }
 
+    public double getMaxLat() {
+        return maxLat;
+    }
+
+    public double getMaxLon() {
+        return maxLon;
+    }
 }

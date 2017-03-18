@@ -1,5 +1,6 @@
 package seng302;
 
+import java.util.Collection;
 import java.util.Comparator;
 
 /**
@@ -17,4 +18,5 @@ public class BoatUtils {
             return Integer.compare(boat1.getFinishingPlace(), boat2.getFinishingPlace());
         }
     };
+
 }

@@ -1,9 +1,10 @@
 package seng302;
 
-import java.util.ArrayList;
-import java.util.PriorityQueue;
-import java.util.Timer;
-import java.util.TimerTask;
+import javafx.scene.Group;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+
+import java.util.*;
 
 /**
  * Created on 6/03/17.
@@ -11,96 +12,67 @@ import java.util.TimerTask;
  * For now this will be simple text-based output to terminal
  */
 
-public class Display {
+public class Display extends Thread {
 
-    /**
-     * This is one of the main functions for displaying the race.
-     * This invokes the function to print the starters list as well as invokes
-     * the event queue to pull each event off to show in order of completion.
-     * @param race - a defined and setup race object which contains a generated Event queue
-     */
-    public static void displayRace(Race race){
-        System.out.printf( "%s\n\n", race.getName());
-        printStartersList(race.getCompetitors());
-        System.out.println();
-        printEventQueue(race.getEvents(), race.getTotalEventTime());
+    private Race race;
+    private Group root;
+    private final ArrayList<Color> COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#A0D468"), Color.web("#FC6E51"),
+            Color.web("#FFCE54"), Color.web("#48CFAD"), Color.web("#4FC1E9"), Color.web("#656D78"))));
+
+    public Display(Group root, Race race) {
+        this.root = root;
+        this.race = race;
+        race.setEvents();
+        drawBoats();
     }
 
-    /**
-     * This function takes each boat from the ArrayList of type Boat and prints the boat name and speed.
-     * @param starters - all boats that started the race
-     */
-    public static void printStartersList(ArrayList<Boat> starters) {
-        System.out.println("Boats in this race:");
-        for (Boat boat : starters) {
-            System.out.printf("%s - %.2f knots\n",boat.getName(), boat.getSpeed());
-
-        }
-    }
-
-    /**
-     * This function also takes each boat from the ArrayList of type Boat and prints the finishing place and
-     * the boat name in order from first to last.
-     * @param finishers - an ArrayList of Boat objects with defined finishing parameters
-     */
-    public static void printFinishersList(ArrayList<Boat> finishers) {
-        finishers.sort(BoatUtils.orderByPlacing);
-
-        System.out.println("Finishing order:");
-        for (Boat boat : finishers) {
-            System.out.printf("%d. %s\n", boat.getFinishingPlace(), boat.getName());
-        }
-    }
-
-    /**
-     * @deprecated SUPERSEDED BY printEventQueue FUNCTION
-     * This function prints each mark from the ArrayList of type Mark
-     */
-    public static void printMarksList(ArrayList<Boat> markPassers, ArrayList<Mark> marks, int markNumber) {
-    	markPassers.sort(BoatUtils.orderByPlacing);
-    	
-    	System.out.printf("Mark: %s\n", marks.get(markNumber).getName());
-    	for (Boat boat : markPassers) {
-    		System.out.printf("%d. %s\n", boat.getFinishingPlace(), boat.getName());
-    	}	
-    }
-
-    /**
-     * This function takes the events from the PriorityQueue of type event(event queue) and the total time
-     * which the race took and creates a timer and a scheduler which prints the events as they happen.
-     * Time delay is scaled to the time of the TIME_SCALE from the config file.
-     * A TimerTask is initially created and used with the given delay throughout the race.
-     * Once the race is finished, the TimerDelay thread is closed and purged.
-     * @param events - a PriorityQueue of event objects, ordered such that the head of the queue occurs first in time
-     * @param totalEventTime - the total time in seconds that the event takes, used to scale the time
-     */
-    public static void printEventQueue(PriorityQueue<Event> events, int totalEventTime) {
-        long lastDelay = 0;
-        final Timer timer = new Timer();
-        while(events.size() != 0) {
-            Event currentEvent = events.poll();
-            long delay = (long)(((double)currentEvent.getTime() / totalEventTime) * Config.TIME_SCALE);
-            final TimerTask task = new TimerTask() {
-                @Override
-                public void run() {
-                    System.out.printf("%s\n", currentEvent.printEvent());
-                    if (currentEvent instanceof RaceEndEvent) {
-                        System.out.println();
-                        printFinishersList(((RaceEndEvent) currentEvent).getFinishers());
-                    }
+    @Override
+    public void run(){
+        double timeIncrement = 0.000277778; //hours = 1 second
+        boolean finished = false;
+        while (!finished){
+            finished = true;
+            for (Boat boat : race.getCompetitors()){
+                boat.updateLocation(timeIncrement, race.getCourse());
+                if (!boat.isFinished()){
+                    finished = false;
                 }
-            };
-            lastDelay = delay;
-            timer.schedule(task, delay);
-        }
-        final TimerTask cleanup = new TimerTask() {
-            @Override
-            public void run() {
-                timer.cancel();
-                timer.purge();
             }
-        };
-        timer.schedule(cleanup, lastDelay + 1);
+            redrawBoats();
+
+            try {
+                this.sleep(50); //speed up multiple of 2
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    /**
+     * Draws them boat icons and fills them with colour
+     */
+
+    public void drawBoats(){
+        int i = 1;
+        for (Boat boat : race.getCompetitors()) {
+            Circle boatImage = new Circle(Math.abs(boat.getCurrentLat() * i), Math.abs(boat.getCurrentLon()) , 5.0f);
+            boatImage.setFill(COLORS.get(i));
+            boatImage.setStroke(Color.WHITE);
+            root.getChildren().add(boatImage);
+            boat.setIcon(boatImage);
+            i++;
+        }
+    }
+
+    /**
+     * Update each boat icon's position on screen, translating from the boat's latlon to cartesian coordinates
+     */
+    public void redrawBoats(){
+        for (Boat boat : race.getCompetitors()) {
+            CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
+            boat.getIcon().relocate(point.getX(), point.getY());
+        }
     }
 }
 
