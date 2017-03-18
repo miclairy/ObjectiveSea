@@ -20,4 +20,11 @@ public class Gate extends CompoundMark {
         this.end2Lon = lon2;
     }
 
+    public double getEnd1Lat() {return end1Lat;}
+
+    public double getEnd1Lon() {return end1Lon;}
+
+    public double getEnd2Lat() {return end2Lat;}
+
+    public double getEnd2Lon() {return end2Lon;}
 }

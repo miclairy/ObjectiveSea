@@ -11,6 +11,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
+
 import javafx.scene.*;
 
 import java.util.ArrayList;
@@ -28,7 +30,7 @@ public class Main extends Application {
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
         DisplayUtils displayUtils = new DisplayUtils();
         displayUtils.setScreenSize(0.75);
-        primaryStage.setTitle("Sail Fast");
+        primaryStage.setTitle("Race Vision");
         primaryStage.setScene(new Scene(parent, displayUtils.getWidthHeight().get(0), displayUtils.getWidthHeight().get(1)));
         primaryStage.setMaximized(false);
         primaryStage.setMinHeight(700);

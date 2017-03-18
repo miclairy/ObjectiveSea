@@ -3,6 +3,7 @@ package seng302;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 
 import java.util.*;
 
@@ -23,6 +24,7 @@ public class Display extends Thread {
         this.root = root;
         this.race = race;
         race.setEvents();
+        drawCourse();
         drawBoats();
     }
 
@@ -48,6 +50,37 @@ public class Display extends Thread {
         }
 
     }
+
+
+    /**
+     * Draws all of the marks from the course
+     */
+    public void drawCourse(){
+        for(CompoundMark mark : race.getCourse().getCourseOrder()){
+            if(mark instanceof Gate){
+                Gate gate  = (Gate) mark;
+                CartesianPoint point1 = DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon());
+                CartesianPoint point2 = DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon());
+                Circle circle1 = new Circle(point1.getX(), point1.getY(), 3.5f);
+                circle1.setFill(Color.WHITE);
+                Circle circle2 = new Circle(point2.getX(), point2.getY(), 3.5f);
+                circle2.setFill(Color.WHITE);
+                if(gate.isStart() | gate.isFinish()){
+                    Line line = new Line(point1.getX(),point1.getY(), point2.getX(), point2.getY());
+                    line.setStroke(Color.web("#70aaa2"));
+                    root.getChildren().add(line);
+                }
+                root.getChildren().add(circle1);
+                root.getChildren().add(circle2);
+            }else{
+                CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
+                Circle circle = new Circle(point.getX(), point.getY(), 3.5f);
+                circle.setFill(Color.WHITE);
+                root.getChildren().add(circle);
+            }
+        }
+    }
+
 
     /**
      * Draws them boat icons and fills them with colour

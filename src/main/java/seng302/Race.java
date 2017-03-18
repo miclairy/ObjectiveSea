@@ -23,7 +23,7 @@ public class Race {
     }
 
     private void setStartingPositions(){
-        Mark startingPosition = course.getCourseOrder().get(0);
+        CompoundMark startingPosition = course.getCourseOrder().get(0);
         for (Boat boat : competitors){
             boat.setPosition(startingPosition.getLat(), startingPosition.getLon());
         }

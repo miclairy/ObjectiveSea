@@ -123,6 +123,10 @@ public class Course {
         return this.courseOrder;
     }
 
+    public HashMap<String, CompoundMark> getMarks() {
+        return marks;
+    }
+
     public double getMinLat() {
         return minLat;
     }
