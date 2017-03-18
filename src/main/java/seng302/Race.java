@@ -19,7 +19,14 @@ public class Race {
         this.name = name;
         this.course = course;
         this.competitors = competitors;
-        events = generateEvents(competitors, course);
+        setStartingPositions();
+    }
+
+    private void setStartingPositions(){
+        Mark startingPosition = course.getCourseOrder().get(0);
+        for (Boat boat : competitors){
+            boat.setPosition(startingPosition.getLat(), startingPosition.getLon());
+        }
     }
 
     /**
@@ -87,5 +94,13 @@ public class Race {
 
     public int getTotalEventTime() {
         return this.totalEventTime;
+    }
+
+    public Course getCourse() {
+        return course;
+    }
+
+    public void setEvents() {
+        events = generateEvents(competitors, course);
     }
 }
