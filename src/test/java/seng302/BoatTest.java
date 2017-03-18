@@ -4,6 +4,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -31,8 +33,9 @@ public class BoatTest
         course.addMarkInOrder("Mark");
 
         boat.setPosition(start.getLat(), start.getLon());
-
-        boat.updateLocation(58.95, course);
+        ArrayList<Boat> competitors = new ArrayList<>();
+        competitors.add(boat);
+        boat.updateLocation(58.95, course, new Race("", course, competitors));
         assertEquals(55, (int) Math.round(boat.getCurrentLat()));
         assertEquals(45, (int) Math.round(boat.getCurrentLon()));
     }
@@ -58,7 +61,9 @@ public class BoatTest
         course.addMarkInOrder("Finish");
 
         boat.setPosition(50, 30);
-        boat.updateLocation(2, course);
+        ArrayList<Boat> competitors = new ArrayList<>();
+        competitors.add(boat);
+        boat.updateLocation(2, course, new Race("", course, competitors));
 
         assertEquals(50.01194, boat.getCurrentLat(), DELTA);
         assertEquals(30.5, boat.getCurrentLon(), DELTA);
@@ -77,7 +82,9 @@ public class BoatTest
         course.addMarkInOrder("Finish");
 
         boat.setPosition(51.55, 30.11);
-        boat.updateLocation(20, course);
+        ArrayList<Boat> competitors = new ArrayList<>();
+        competitors.add(boat);
+        boat.updateLocation(20, course, new Race("", course, competitors));
 
         assertTrue(boat.isFinished());
         assertEquals(51.56, boat.getCurrentLat(), DELTA);

@@ -1,6 +1,11 @@
 package seng302;
 
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+
 import java.util.*;
+
+import static javafx.collections.FXCollections.observableArrayList;
 
 /**
  * Created on 7/03/17.
@@ -14,6 +19,7 @@ public class Race {
     private ArrayList<Boat> competitors;
     private PriorityQueue<Event> events;
     private int totalEventTime;
+    private ArrayList<Boat> placings = new ArrayList<>();
 
     public Race(String name, Course course, ArrayList<Boat> competitors) {
         this.name = name;
@@ -100,7 +106,17 @@ public class Race {
         return course;
     }
 
+    public ArrayList<Boat> getPlacings() {
+        return placings;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public void setEvents() {
         events = generateEvents(competitors, course);
     }
+
+
 }

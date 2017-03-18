@@ -33,7 +33,7 @@ public class Display extends Thread {
         while (!finished){
             finished = true;
             for (Boat boat : race.getCompetitors()){
-                boat.updateLocation(timeIncrement, race.getCourse());
+                boat.updateLocation(timeIncrement, race.getCourse(), race);
                 if (!boat.isFinished()){
                     finished = false;
                 }
@@ -50,7 +50,7 @@ public class Display extends Thread {
     }
 
     /**
-     * Draws them boat icons and fills them with colour
+     * Draws the boat icons and fills them with colour
      */
 
     public void drawBoats(){

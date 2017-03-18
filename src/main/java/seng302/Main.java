@@ -7,11 +7,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.scene.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,7 +17,7 @@ import java.util.Random;
 public class Main extends Application {
 
     private static ArrayList<Boat> boatsInRace;
-
+    private static Race race;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -34,24 +30,7 @@ public class Main extends Application {
         primaryStage.setMinHeight(700);
         primaryStage.setMinWidth(1000);
 
-        String name = "America's Cup Race";
-        boatsInRace = RaceVisionFileReader.importStarters();
-        Course course = RaceVisionFileReader.importCourse();
-
-        course.initCourseLatLon();
-        displayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
-
-        // This is an example
-        Race race = new Race(name, course, boatsInRace);
-
-
-        Group root = new Group();
-        Canvas canvas = new Canvas(displayUtils.getWidthHeight().get(0), displayUtils.getWidthHeight().get(1));
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        root.getChildren().add(canvas);
-        Display display = new Display(root, race);
-        display.start();
-        primaryStage.setScene(new Scene(root, Color.web("#aae7df")));
+        //primaryStage.setScene(new Scene(root, Color.web("#aae7df")));
         primaryStage.show();
     }
 
@@ -59,6 +38,13 @@ public class Main extends Application {
     public static void main( String[] args )
     {
         Config.initializeConfig();
+        String name = "America's Cup Race";
+        boatsInRace = RaceVisionFileReader.importStarters();
+        Course course = RaceVisionFileReader.importCourse();
+        race = new Race(name, course, boatsInRace);
+        course.initCourseLatLon();
+        DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
+
         launch(args);
     }
 
@@ -75,6 +61,8 @@ public class Main extends Application {
 
     }
 
-
+    public static Race getRace() {
+        return Main.race;
+    }
 }
 
