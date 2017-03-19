@@ -1,5 +1,6 @@
 package seng302;
 
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -39,6 +40,13 @@ public class Display extends Thread {
                 }
             }
             redrawBoats();
+
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    Controller.updatePlacings();
+                }
+            });
 
             try {
                 this.sleep(50); //speed up multiple of 2

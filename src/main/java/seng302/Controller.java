@@ -15,6 +15,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import static javafx.collections.FXCollections.observableArrayList;
@@ -33,12 +34,20 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
-        canvas.setWidth(DisplayUtils.getWidthHeight().get(0));
-        canvas.setHeight(DisplayUtils.getWidthHeight().get(1));
+        //canvas.setWidth(DisplayUtils.getWidthHeight().get(0));
+        //canvas.setHeight(DisplayUtils.getWidthHeight().get(1));
         GraphicsContext gc = canvas.getGraphicsContext2D();
         Display display = new Display(root, Main.getRace());
         placings.setItems(finishers);
         display.start();
+    }
+
+    public static void updatePlacings(){
+        finishers.clear();
+        for (int i = 0; i < Main.getRace().getPlacings().size(); i++){
+            finishers.add(i+1 + " : " + Main.getRace().getPlacings().get(i).getName());
+        }
+
     }
 
 }
