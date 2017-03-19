@@ -10,9 +10,9 @@ import java.util.HashMap;
 
 public class Course {
 
-    private ArrayList<Mark> courseOrder;
+    private ArrayList<CompoundMark> courseOrder;
     private double minLat, minLon, maxLat, maxLon;
-    private HashMap<String, Mark> marks;
+    private HashMap<String, CompoundMark> marks;
 
     private static final double EARTH_RADIUS_IN_NAUTICAL_MILES = 3437.74677;
 
@@ -25,7 +25,7 @@ public class Course {
      * Puts mark into the marks HashMap, with the name of the mark as the Key
      * @param mark - a defined Mark object
      */
-    public void addNewMark(Mark mark){
+    public void addNewMark(CompoundMark mark){
         marks.put(mark.getName(), mark);
     }
 
@@ -44,8 +44,8 @@ public class Course {
      * @return distance between source mark and destination mark in nautical miles
      */
     public double distanceBetweenMarks(int markIndex1, int markIndex2){
-        Mark mark1 = this.courseOrder.get(markIndex1);
-        Mark mark2 = this.courseOrder.get(markIndex2);
+        CompoundMark mark1 = this.courseOrder.get(markIndex1);
+        CompoundMark mark2 = this.courseOrder.get(markIndex2);
         double distance = greaterCircleDistance(mark1.getLat(), mark2.getLat(), mark1.getLon(), mark2.getLon());
         return distance;
     }
@@ -75,8 +75,8 @@ public class Course {
      * @return heading - in degrees, from source mark to destination mark
      */
     public double headingsBetweenMarks(int markIndex1, int markIndex2){
-        Mark mark1 = this.courseOrder.get(markIndex1);
-        Mark mark2 = this.courseOrder.get(markIndex2);
+        CompoundMark mark1 = this.courseOrder.get(markIndex1);
+        CompoundMark mark2 = this.courseOrder.get(markIndex2);
         double Ldelta = Math.toRadians(mark2.getLon()) - Math.toRadians(mark1.getLon());
         double X = Math.cos(Math.toRadians(mark2.getLat())) * Math.sin(Ldelta);
         double Y = Math.cos(Math.toRadians(mark1.getLat())) * Math.sin(Math.toRadians(mark2.getLat()))
@@ -119,8 +119,12 @@ public class Course {
     /**
      * Getter for the course order
      */
-    public ArrayList<Mark> getCourseOrder(){
+    public ArrayList<CompoundMark> getCourseOrder(){
         return this.courseOrder;
+    }
+
+    public HashMap<String, CompoundMark> getMarks() {
+        return marks;
     }
 
     public double getMinLat() {

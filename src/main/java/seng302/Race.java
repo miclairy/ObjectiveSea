@@ -22,10 +22,20 @@ public class Race {
         setStartingPositions();
     }
 
-    private void setStartingPositions(){
-        Mark startingPosition = course.getCourseOrder().get(0);
+    /**
+     * Spreads the starting positions of the boats over the start line
+     */
+    public void setStartingPositions(){
+        Gate startingLine = (Gate)course.getCourseOrder().get(0);
+        int spaces = competitors.size(); //Num boats
+        double dLat = (startingLine.getEnd2Lat() - startingLine.getEnd1Lat()) / spaces;
+        double dLon = (startingLine.getEnd2Lon() - startingLine.getEnd1Lon()) / spaces;
+        double curLat = startingLine.getEnd1Lat() + dLat;
+        double curLon = startingLine.getEnd1Lon() + dLon;
         for (Boat boat : competitors){
-            boat.setPosition(startingPosition.getLat(), startingPosition.getLon());
+            boat.setPosition(curLat, curLon);
+            curLat += dLat;
+            curLon += dLon;
         }
     }
 
@@ -41,14 +51,14 @@ public class Race {
     private PriorityQueue<Event> generateEvents(ArrayList<Boat> boats, Course course){
         PriorityQueue<Event> eventQueue = new PriorityQueue<>();
         PriorityQueue<PassMarkEvent> finishingOrder = new PriorityQueue<>();
-        ArrayList<Mark> marks = course.getCourseOrder();
+        ArrayList<CompoundMark> marks = course.getCourseOrder();
 
         eventQueue.add(new GenericRaceEvent(0, "Race Start"));
         for (Boat boat : boats) {
             double speed = boat.getSpeed();
             double timePassed = 0;
             for (int i = 0; i < marks.size(); i++) {
-                Mark mark = marks.get(i);
+                CompoundMark mark = marks.get(i);
                 if (!mark.isStart()) {
                     double distance = course.distanceBetweenMarks(i-1 , i);
                     double travelTime = distance / (speed / 3600);

@@ -5,20 +5,22 @@ package seng302;
  * Class to specify the marks/gates on the course.
  */
 
-public class Mark {
+public class CompoundMark {
+
+    private enum MarkType {
+        START, FINISH, NORMAL
+    }
 	
 	private String name;
     private double lat;
     private double lon;
+    private MarkType type;
 
-    //TODO: improve how Start and Finish marks are defined/recognised.
-	private static final String START_MARK = "Start";
-    private static final String FINISH_MARK = "Finish";
-	
-    public Mark(String name, double lat, double lon){
+    public CompoundMark(String name, double lat, double lon){
         this.name = name;
         this.lat = lat;
         this.lon = lon;
+        this.type = MarkType.NORMAL;
     }
 	
     public String getName(){
@@ -33,11 +35,19 @@ public class Mark {
         return lat;
     }
 
+    public void setMarkAsStart(){
+        this.type = MarkType.START;
+    }
+
+    public void setMarkAsFinish(){
+        this.type = MarkType.FINISH;
+    }
+
     public boolean isStart(){
-        return getName().equals(START_MARK);
+        return this.type == MarkType.START;
     }
     public boolean isFinish(){
-        return getName().equals(FINISH_MARK);
+        return this.type == MarkType.FINISH;
     }
 
 }

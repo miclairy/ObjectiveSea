@@ -1,81 +1,222 @@
 package seng302;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.StringTokenizer;
 
 /**
  * Created on 6/03/17.
- * Collection of methods for reading in data from files. Files must be located in the DATA_PATH folder
+ * Collection of methods for reading in data from files. Files must be located in the DEFAULT_FILE_PATH folder
  * TODO: exit program or use some default values on failed read, rather than catching exceptions and failing later
  */
 
 public class RaceVisionFileReader {
 
-    private static final String DATA_PATH = "data/";
-    private static final String STARTERS_FILE = "starters.txt";
-    private static final String COURSE_FILE = "course.txt";
+    private static final String DEFAULT_FILE_PATH = "/defaultFiles/";
+    private static final String DEFAULT_STARTERS_FILE = "starters.txt";
+    private static final String DEFAULT_COURSE_FILE = "AC35-course.xml";
+
+    private static Document dom;
 
     /**
-     * Imports file found at COURSE_FILE in DATA_PATH
-     *
-     * Marks defined as:
-     *      MarkName
-     *      Latitude Longitude
-     *
-     * Example file format:
-     *      Mark 1
-     *      123.4 56.8
-     *      Mark 2
-     *      345.6 -34.5
-     *      Mark Order:
-     *      Mark 1
-     *      Mark 2
-     *      Mark 1
-     *
-     * @return course - a Course object as specified in the file
+     * Manages importing the course from the correct place
+     * If a file path is specified, this will be used, otherwise a default is packaged with the jar.
+     * Currently this an XML file at DEFAULT_FILE_PATH/DEFAULT_COURSE_FILE
+     * @return a Course object
      */
-    public static Course importCourse() {
-        String filePath = DATA_PATH + COURSE_FILE;
+    public static Course importCourse(String filePath) {
+        try {
+            if (filePath != null && !filePath.isEmpty()) {
+                parseXMLFile(filePath, false);
+            } else {
+                String resourcePath = DEFAULT_FILE_PATH + DEFAULT_COURSE_FILE;
+                parseXMLFile(resourcePath, true);
+            }
+            return importCourseFromXML();
+        }  catch (IOException ioe) {
+            System.err.printf("Unable to read %s as a course definition file. " +
+                    "Ensure it is correctly formatted.\n", filePath);
+            ioe.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Attempts to read the desired XML file into the Document parser
+     * @param filePath - the location of the file to be read, must be XML
+     * @param isResource specifies whether the file is packaged in the resources folder
+     * @throws IOException if the file is not found
+     */
+    public static void parseXMLFile(String filePath, boolean isResource) throws IOException{
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        try {
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            if (isResource){
+                dom = db.parse(RaceVisionFileReader.class.getResourceAsStream(filePath));
+            } else {
+                dom = db.parse(filePath);
+            }
+        } catch(ParserConfigurationException pce) {
+            pce.printStackTrace();
+        } catch(SAXException se) {
+            se.printStackTrace();
+        }
+    }
+
+    /**
+     * Decodes an XML file into a Course object
+     *
+     * Expected file structure:
+     * <course>
+     *     <marks>
+     *         //definitions of each mark (see parseMark)
+     *     </marks>
+     *     <legs>
+     *          <leg>[Start Mark]</leg>
+     *          <leg>[A Mark]</leg>
+     *          ...
+     *          <leg>[Finish Mark]</leg>
+     *     </legs>
+     * </course>
+     *
+     * @return a Course object
+     */
+    public static Course importCourseFromXML() {
         Course course = new Course();
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(filePath));
-            
-            String markName = br.readLine();
-            while (markName != null){
-                /** define each mark */
-                String line = br.readLine();
-                StringTokenizer st = new StringTokenizer(line);
-                double lat = Double.parseDouble(st.nextToken());
-                double lon = Double.parseDouble(st.nextToken());
-                course.addNewMark(new Mark(markName, lat, lon));
-                markName = br.readLine();
+            Element root = dom.getDocumentElement();
+            if (root.getTagName() != XMLTags.Course.COURSE) {
+                String message = String.format("The root tag must be <%s>.", XMLTags.Course.COURSE);
+                throw new XMLParseException(XMLTags.Course.COURSE, message);
+            }
 
-                if (markName.equals("Mark Order:")){
-                    /** once 'Mark Order' token found, read in order of marks throughout course */
-                    markName = null;
-                    String mark = br.readLine();
-                    while (mark != null) {
-                        course.addMarkInOrder(mark);
-                        mark = br.readLine();
+            NodeList nodes = root.getChildNodes();
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Node node = nodes.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) node;
+                    switch (element.getTagName()) {
+                        case XMLTags.Course.MARKS:
+                            NodeList marks = element.getElementsByTagName(XMLTags.Course.MARK);
+                            for (int j = 0; j < marks.getLength(); j++) {
+                                course.addNewMark(parseMark((Element) marks.item(j)));
+                            }
+                            break;
+                        case XMLTags.Course.LEGS:
+                            NodeList legs = element.getElementsByTagName(XMLTags.Course.LEG);
+                            for (int k = 0; k < legs.getLength(); k++) {
+                                course.addMarkInOrder(legs.item(k).getTextContent());
+                            }
                     }
                 }
             }
-        } catch (FileNotFoundException e) {
-            System.err.printf("Course file could not be found at %s\n", filePath);
-        } catch (IOException e) {
-            System.err.printf("Error reading course file. Check it is in the correct format.");
+        } catch (XMLParseException e) {
+            System.err.printf("Error reading course file around tag <%s>.\n", e.getTag());
+            e.printStackTrace();
         }
+
         return course;
     }
 
     /**
-     * Imports file found at STARTERS_FILE in DATA_PATH
+     * Decodes a mark element into a CompoundMark object
+     *
+     * Expected structure of a mark:
+     * <mark>
+     *     <name>Name is required</name>
+     *     <latlon>
+     *         <lat>...</lat>
+     *         <lon>...</lon>
+     *     </latlon>
+     * </mark>
+     *
+     * If multiple <latlon> tags exist, the Mark will be interpreted as a Gate object
+     *
+     * To define a mark as the start mark use the start attribute, e.g.
+     * <mark start="start">
+     *
+     * To define a mark as the finish mark use the finish attribute, e.g.
+     * <mark start="finish">
+     *
+     * @param markElement - an XML <mark> element
+     * @return a CompoundMark (potentially Gate) object
+     * @throws XMLParseException when an expected tag is missing or unexpectedly formatted
+     */
+    private static CompoundMark parseMark(Element markElement) throws XMLParseException {
+        CompoundMark mark;
+
+        NodeList nameNodes = markElement.getElementsByTagName(XMLTags.Course.NAME);
+        if (nameNodes.getLength() < 1) {
+            throw new XMLParseException(XMLTags.Course.NAME, "Required tag was not defined.");
+        }
+        String name = nameNodes.item(0).getTextContent();
+        NodeList latlons = markElement.getElementsByTagName(XMLTags.Course.LATLON);
+        if (latlons.getLength() < 1) {
+            throw new XMLParseException(XMLTags.Course.LATLON, "Required tag was not defined.");
+        }
+        double lat1 = extractLatitude((Element) latlons.item(0));
+        double lon1 = extractLongitude((Element) latlons.item(0));
+
+        if (latlons.getLength() > 1) { //it is a gate (or start or finish)
+            double lat2 = extractLatitude((Element) latlons.item(1));
+            double lon2 = extractLongitude((Element) latlons.item(1));
+            mark = new Gate(name, lat1, lon1, lat2, lon2);
+        } else { //it is just a single-point mark
+            mark = new CompoundMark(name, lat1, lon1);
+        }
+
+        //Check whether the mark has a start or finish attribute
+        NamedNodeMap attr = markElement.getAttributes();
+        if (attr.getNamedItem(XMLTags.Course.START) != null){
+            mark.setMarkAsStart();
+        }
+        if (attr.getNamedItem(XMLTags.Course.FINISH) != null){
+            mark.setMarkAsFinish();
+        }
+
+        return mark;
+    }
+
+    /**
+     * Pulls the latitude from an XML <lat> element and parses it as a double
+     * @param latlon
+     * @return a double representing a latitude
+     * @throws XMLParseException if no <lat> tag exists
+     */
+    private static double extractLatitude(Element latlon) throws XMLParseException {
+        NodeList anyLats = latlon.getElementsByTagName(XMLTags.Course.LAT);
+        if (anyLats.getLength() < 1) {
+            throw new XMLParseException(XMLTags.Course.LAT, "Required tag was not defined.");
+        }
+        Node latElement = anyLats.item(0);
+        return Double.parseDouble(latElement.getTextContent());
+    }
+
+    /**
+     * Pulls the longitude from an XML <lon> element and parses it as a double
+     * @param latlon
+     * @return a double representing a longitude
+     * @throws XMLParseException if no <lon> tag exists
+     */
+    private static double extractLongitude(Element latlon) throws XMLParseException {
+        NodeList anyLons = latlon.getElementsByTagName(XMLTags.Course.LON);
+        if (anyLons.getLength() < 1) {
+            throw new XMLParseException(XMLTags.Course.LON, "Required tag was not defined.");
+        }
+        Node lonElement = anyLons.item(0);
+        return Double.parseDouble(lonElement.getTextContent());
+    }
+
+    /**
+     * Imports file found at DEFAULT_STARTERS_FILE in DEFAULT_FILE_PATH in resources folder
      *
      * Boats defined as:
      *      BoatName, Speed
@@ -83,12 +224,18 @@ public class RaceVisionFileReader {
      * Speed is expected in knots
      * @return starters - ArrayList of Boat objects defined in file
      */
-    public static ArrayList<Boat> importStarters(){
+    public static ArrayList<Boat> importStarters(String filePath){
         ArrayList<Boat> starters = new ArrayList<>();
-        String filePath = DATA_PATH + STARTERS_FILE;
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(filePath));
+            BufferedReader br;
+            if (filePath != null && !filePath.isEmpty()) {
+                br = new BufferedReader(new FileReader(filePath));
+            } else {
+                filePath = DEFAULT_FILE_PATH + DEFAULT_STARTERS_FILE;
+                br = new BufferedReader(
+                        new InputStreamReader(RaceVisionFileReader.class.getResourceAsStream(filePath)));
+            }
             ArrayList<Boat> allBoats = new ArrayList<>();
 
             String line = br.readLine();
@@ -104,6 +251,7 @@ public class RaceVisionFileReader {
             for (int i = 0; i < Config.NUM_BOATS_IN_RACE; i++){
                 starters.add(allBoats.remove(ran.nextInt(allBoats.size())));
             }
+            br.close();
 
         } catch (FileNotFoundException e) {
             System.err.printf("Starters file could not be found at %s\n", filePath);
