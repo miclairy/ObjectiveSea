@@ -61,7 +61,6 @@ public class Display extends Thread {
         ds.setOffsetY(0.0f);
         ds.setOffsetX(0.0f);
         ds.setColor(Color.web("#89cac1"));
-
         for(CompoundMark mark : race.getCourse().getCourseOrder()){
             if(mark instanceof Gate){
                 Gate gate  = (Gate) mark;
