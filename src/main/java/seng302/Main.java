@@ -4,10 +4,14 @@ package seng302;
  * Created by cba62 on 15/03/17.
  */
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
+
+import javafx.scene.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,13 +22,34 @@ public class Main extends Application {
 
     private static ArrayList<Boat> boatsInRace;
     private static Race race;
+    private static DisplayUtils displayUtils;
+
+    @Override
+    public void init(){
+        Config.initializeConfig();
+
+        String courseFile = getParameters().getNamed().get("course");
+        String boatsFile = getParameters().getNamed().get("boats");
+        ArrayList<Boat> boatsInRace = RaceVisionFileReader.importStarters(boatsFile);
+        Course course = RaceVisionFileReader.importCourse(courseFile);
+        //for now if we fail to read in a course or boats, then exit the program immediately
+        if (boatsInRace.isEmpty() || course == null) {
+            Platform.exit();
+        }
+        course.initCourseLatLon();
+
+        displayUtils = new DisplayUtils();
+        displayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
+
+        String name = "America's Cup Race";
+        race = new Race(name, course, boatsInRace);
+    }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
-        DisplayUtils displayUtils = new DisplayUtils();
-        displayUtils.setScreenSize(0.75);
-        primaryStage.setTitle("Sail Fast");
+        DisplayUtils.setScreenSize(0.75);
+        primaryStage.setTitle("Race Vision");
         primaryStage.setScene(new Scene(parent, displayUtils.getWidthHeight().get(0), displayUtils.getWidthHeight().get(1)));
         primaryStage.setMaximized(false);
         primaryStage.setMinHeight(700);
@@ -58,7 +83,6 @@ public class Main extends Application {
         for (int j = 0; j < numBoats; j++) {
             boats.get(j).setFinishingPlace(places.get(j));
         }
-
     }
 
     public static Race getRace() {

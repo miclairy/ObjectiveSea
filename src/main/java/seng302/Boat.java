@@ -46,8 +46,8 @@ public class Boat {
         if(finished){
             return;
         }
-        ArrayList<Mark> courseOrder = course.getCourseOrder();
-        Mark nextMark = courseOrder.get(lastPassedMark+1);
+        ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
+        CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
 
         double distanceGained = timePassed * speed;
         double distanceLeftInLeg = Course.greaterCircleDistance(currentLat, nextMark.getLat(), currentLon, nextMark.getLon());

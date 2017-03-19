@@ -4,6 +4,8 @@ import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
+import javafx.scene.effect.DropShadow;
 
 import java.util.*;
 
@@ -24,6 +26,7 @@ public class Display extends Thread {
         this.root = root;
         this.race = race;
         race.setEvents();
+        drawCourse();
         drawBoats();
     }
 
@@ -56,6 +59,47 @@ public class Display extends Thread {
         }
 
     }
+
+
+    /**
+     * Draws all of the marks from the course
+     */
+    public void drawCourse(){
+        DropShadow ds = new DropShadow();
+        ds.setOffsetY(0.0f);
+        ds.setOffsetX(0.0f);
+        ds.setColor(Color.web("#89cac1"));
+        for(CompoundMark mark : race.getCourse().getCourseOrder()){
+            if(mark instanceof Gate){
+                Gate gate  = (Gate) mark;
+                ArrayList<CartesianPoint> points = new ArrayList<>();
+                points.add(DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon()));
+                points.add(DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon()));
+                for(CartesianPoint point : points){
+                    Circle circle = new Circle(point.getX(), point.getY(), 4f);
+                    circle.setFill(Color.WHITE);
+                    circle.setStroke(Color.web("#cdfaf4"));
+                    circle.strokeWidthProperty().set(2.0);
+                    circle.setEffect(ds);
+                    if(gate.isStart() | gate.isFinish()){
+                        Line line = new Line(point.getX(),point.getY(), points.get(1).getX(), points.get(1).getY());
+                        line.setStroke(Color.web("#70aaa2"));
+                        root.getChildren().add(line);
+                    }
+                    root.getChildren().add(circle);
+                }
+            }else{
+                CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
+                Circle circle = new Circle(point.getX(), point.getY(), 4f);
+                circle.setFill(Color.WHITE);
+                circle.setStroke(Color.web("#cdfaf4"));
+                circle.strokeWidthProperty().set(2.0);
+                circle.setEffect(ds);
+                root.getChildren().add(circle);
+            }
+        }
+    }
+
 
     /**
      * Draws the boat icons and fills them with colour

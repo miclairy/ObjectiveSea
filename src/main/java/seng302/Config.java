@@ -1,9 +1,6 @@
 package seng302;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.StringTokenizer;
 
 /**
@@ -12,19 +9,20 @@ import java.util.StringTokenizer;
  */
 public class Config {
 
-    private static final String CONFIG_PATH = "data/config.txt";
+    private static final String DEFAULT_CONFIG_PATH = "/defaultFiles/config.txt";
     public static int NUM_BOATS_IN_RACE;
     public static int TIME_SCALE;
 
     /**
-     * This function finds a config file located at CONFIG_PATH and sets any properties it finds in the file.
+     * This function finds a config file located at DEFAULT_CONFIG_PATH and sets any properties it finds in the file.
      * Example format for property-value pair: NUMBOATS=6
      *
      * @throws IOException and ends at the first unrecognised token it comes across
      */
     public static void initializeConfig(){
         try {
-            BufferedReader br = new BufferedReader(new FileReader(CONFIG_PATH));
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(Config.class.getResourceAsStream(DEFAULT_CONFIG_PATH)));
             String line = br.readLine();
             while (line != null){
                 StringTokenizer st = new StringTokenizer(line);
@@ -44,7 +42,7 @@ public class Config {
                 line = br.readLine();
             }
         } catch (FileNotFoundException e) {
-            System.err.printf("Config file could not be found at %s\n", CONFIG_PATH);
+            System.err.printf("Config file could not be found at %s\n", DEFAULT_CONFIG_PATH);
         } catch (IOException e) {
             System.err.printf("Error reading config file. Check it is in the correct format: %s", e);
         }

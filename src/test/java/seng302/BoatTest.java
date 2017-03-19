@@ -25,8 +25,8 @@ public class BoatTest
     @Test
     public void updateLocationTest() {
         Course course = new Course();
-        Mark start = new Mark("Start", 50, 30);
-        Mark mark = new Mark("Mark", 60, 60);
+        CompoundMark start = new CompoundMark("Start", 50, 30);
+        CompoundMark mark = new CompoundMark("Mark", 60, 60);
         course.addNewMark(start);
         course.addNewMark(mark);
         course.addMarkInOrder("Start");
@@ -50,9 +50,9 @@ public class BoatTest
     @Test
     public void passedMarkTest() {
         Course course = new Course();
-        Mark start = new Mark("Start", 50, 30);
-        Mark mark = new Mark("Mark", 50, 30.5);
-        Mark finish = new Mark("Finish", 50.5, 30.5);
+        CompoundMark start = new CompoundMark("Start", 50, 30);
+        CompoundMark mark = new CompoundMark("Mark", 50, 30.5);
+        CompoundMark finish = new CompoundMark("Finish", 50.5, 30.5);
         course.addNewMark(start);
         course.addNewMark(mark);
         course.addNewMark(finish);
@@ -74,8 +74,8 @@ public class BoatTest
     @Test
     public void finishedRaceTest() {
         Course course = new Course();
-        Mark start = new Mark("Start", 51.55, 30.11);
-        Mark finish = new Mark("Finish", 51.56, 30.12);
+        CompoundMark start = new CompoundMark("Start", 51.55, 30.11);
+        CompoundMark finish = new CompoundMark("Finish", 51.56, 30.12);
         course.addNewMark(start);
         course.addNewMark(finish);
         course.addMarkInOrder("Start");
