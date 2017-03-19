@@ -22,10 +22,20 @@ public class Race {
         setStartingPositions();
     }
 
-    private void setStartingPositions(){
-        CompoundMark startingPosition = course.getCourseOrder().get(0);
+    /**
+     * Spreads the starting positions of the boats over the start line
+     */
+    public void setStartingPositions(){
+        Gate startingLine = (Gate)course.getCourseOrder().get(0);
+        int spaces = competitors.size(); //Num boats
+        double dLat = (startingLine.getEnd2Lat() - startingLine.getEnd1Lat()) / spaces;
+        double dLon = (startingLine.getEnd2Lon() - startingLine.getEnd1Lon()) / spaces;
+        double curLat = startingLine.getEnd1Lat() + dLat;
+        double curLon = startingLine.getEnd1Lon() + dLon;
         for (Boat boat : competitors){
-            boat.setPosition(startingPosition.getLat(), startingPosition.getLon());
+            boat.setPosition(curLat, curLon);
+            curLat += dLat;
+            curLon += dLon;
         }
     }
 
