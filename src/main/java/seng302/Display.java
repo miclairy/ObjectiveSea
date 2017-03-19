@@ -57,7 +57,6 @@ public class Display extends Thread {
      * Draws all of the marks from the course
      */
     public void drawCourse(){
-
         DropShadow ds = new DropShadow();
         ds.setOffsetY(0.0f);
         ds.setOffsetX(0.0f);
@@ -66,29 +65,22 @@ public class Display extends Thread {
         for(CompoundMark mark : race.getCourse().getCourseOrder()){
             if(mark instanceof Gate){
                 Gate gate  = (Gate) mark;
-                CartesianPoint point1 = DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon());
-                CartesianPoint point2 = DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon());
-
-                Circle circle1 = new Circle(point1.getX(), point1.getY(), 4f);
-                circle1.setFill(Color.WHITE);
-                circle1.setStroke(Color.web("#cdfaf4"));
-                circle1.strokeWidthProperty().set(2.0);
-                circle1.setEffect(ds);
-
-                Circle circle2 = new Circle(point2.getX(), point2.getY(), 4f);
-                circle2.setFill(Color.WHITE);
-                circle2.setStroke(Color.web("#cdfaf4"));
-                circle1.strokeWidthProperty().set(2.0);
-                circle2.setEffect(ds);
-
-                circle2.strokeWidthProperty().set(2.0);
-                if(gate.isStart() | gate.isFinish()){
-                    Line line = new Line(point1.getX(),point1.getY(), point2.getX(), point2.getY());
-                    line.setStroke(Color.web("#70aaa2"));
-                    root.getChildren().add(line);
+                ArrayList<CartesianPoint> points = new ArrayList<>();
+                points.add(DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon()));
+                points.add(DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon()));
+                for(CartesianPoint point : points){
+                    Circle circle = new Circle(point.getX(), point.getY(), 4f);
+                    circle.setFill(Color.WHITE);
+                    circle.setStroke(Color.web("#cdfaf4"));
+                    circle.strokeWidthProperty().set(2.0);
+                    circle.setEffect(ds);
+                    if(gate.isStart() | gate.isFinish()){
+                        Line line = new Line(point.getX(),point.getY(), points.get(1).getX(), points.get(1).getY());
+                        line.setStroke(Color.web("#70aaa2"));
+                        root.getChildren().add(line);
+                    }
+                    root.getChildren().add(circle);
                 }
-                root.getChildren().add(circle1);
-                root.getChildren().add(circle2);
             }else{
                 CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
                 Circle circle = new Circle(point.getX(), point.getY(), 4f);
