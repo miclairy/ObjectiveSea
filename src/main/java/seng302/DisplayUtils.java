@@ -33,7 +33,7 @@ public class DisplayUtils {
         double latPerPixel = height/changeInLat;
 
         int xCoord = (int) Math.round(Math.abs((lon - minLon)*lonPerPixel));
-        int yCoord = (int) Math.round(Math.abs((lat - minLat)*latPerPixel));
+        int yCoord = (int) Math.round(Math.abs(height - ((lat - minLat)*latPerPixel)));
 
         CartesianPoint point = new CartesianPoint(xCoord, yCoord);
         return point;
