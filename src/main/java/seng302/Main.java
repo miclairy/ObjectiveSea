@@ -20,8 +20,8 @@ import java.util.Random;
 
 public class Main extends Application {
 
-    private static ArrayList<Boat> boatsInRace;
     private static Race race;
+    private static Course course;
     private static DisplayUtils displayUtils;
 
     @Override
@@ -31,7 +31,7 @@ public class Main extends Application {
         String courseFile = getParameters().getNamed().get("course");
         String boatsFile = getParameters().getNamed().get("boats");
         ArrayList<Boat> boatsInRace = RaceVisionFileReader.importStarters(boatsFile);
-        Course course = RaceVisionFileReader.importCourse(courseFile);
+        course = RaceVisionFileReader.importCourse(courseFile);
         //for now if we fail to read in a course or boats, then exit the program immediately
         if (boatsInRace.isEmpty() || course == null) {
             Platform.exit();
@@ -54,8 +54,6 @@ public class Main extends Application {
         primaryStage.setMaximized(false);
         primaryStage.setMinHeight(700);
         primaryStage.setMinWidth(1000);
-
-        //primaryStage.setScene(new Scene(root, Color.web("#aae7df")));
         primaryStage.show();
     }
 
@@ -63,13 +61,6 @@ public class Main extends Application {
     public static void main( String[] args )
     {
         Config.initializeConfig();
-        String name = "America's Cup Race";
-        boatsInRace = RaceVisionFileReader.importStarters();
-        Course course = RaceVisionFileReader.importCourse();
-        race = new Race(name, course, boatsInRace);
-        course.initCourseLatLon();
-        DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
-
         launch(args);
     }
 
