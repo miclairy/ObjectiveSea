@@ -11,6 +11,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.ResourceBundle;
 
 import static javafx.collections.FXCollections.observableArrayList;
@@ -26,13 +28,13 @@ public class Controller implements Initializable {
     @FXML
     private AnchorPane canvasAnchor;
 
-    private static ObservableList<String> finishers = observableArrayList();
+    private static ObservableList<String> formattedDisplayOrder = observableArrayList();
 
     private static CartesianPoint canvasSize;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        placings.setItems(finishers);
+        placings.setItems(formattedDisplayOrder);
         canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> canvasSize.setX((double) newValue));
         canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> canvasSize.setY((double) newValue));
         canvasSize = new CartesianPoint(canvas.getWidth(), canvas.getHeight());
@@ -45,9 +47,12 @@ public class Controller implements Initializable {
     }
 
     public static void updatePlacings(){
-        finishers.clear();
-        for (int i = 0; i < Main.getRace().getPlacings().size(); i++){
-            finishers.add(i+1 + " : " + Main.getRace().getPlacings().get(i).getName());
+        ArrayList<Boat> raceOrder = Main.getRace().getRaceOrder();
+        Collections.sort(raceOrder);
+        formattedDisplayOrder.clear();
+        for (int i = 0; i < raceOrder.size(); i++){
+            String boatName = raceOrder.get(i).getName();
+            formattedDisplayOrder.add(String.format("%d : %s", i+1, boatName));
         }
 
     }

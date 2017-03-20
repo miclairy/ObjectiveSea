@@ -35,7 +35,7 @@ public class BoatTest
         boat.setPosition(start.getLat(), start.getLon());
         ArrayList<Boat> competitors = new ArrayList<>();
         competitors.add(boat);
-        boat.updateLocation(58.95, course, new Race("", course, competitors));
+        boat.updateLocation(58.95, course);
         assertEquals(55, (int) Math.round(boat.getCurrentLat()));
         assertEquals(45, (int) Math.round(boat.getCurrentLon()));
     }
@@ -63,7 +63,7 @@ public class BoatTest
         boat.setPosition(50, 30);
         ArrayList<Boat> competitors = new ArrayList<>();
         competitors.add(boat);
-        boat.updateLocation(2, course, new Race("", course, competitors));
+        boat.updateLocation(2, course);
 
         assertEquals(50.01194, boat.getCurrentLat(), DELTA);
         assertEquals(30.5, boat.getCurrentLon(), DELTA);
@@ -84,7 +84,7 @@ public class BoatTest
         boat.setPosition(51.55, 30.11);
         ArrayList<Boat> competitors = new ArrayList<>();
         competitors.add(boat);
-        boat.updateLocation(20, course, new Race("", course, competitors));
+        boat.updateLocation(20, course);
 
         assertTrue(boat.isFinished());
         assertEquals(51.56, boat.getCurrentLat(), DELTA);

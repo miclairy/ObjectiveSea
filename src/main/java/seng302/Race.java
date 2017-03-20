@@ -19,13 +19,14 @@ public class Race {
     private ArrayList<Boat> competitors;
     private PriorityQueue<Event> events;
     private int totalEventTime;
-    private ArrayList<Boat> placings = new ArrayList<>();
+    private ArrayList<Boat> raceOrder = new ArrayList<>();
 
     public Race(String name, Course course, ArrayList<Boat> competitors) {
         this.name = name;
         this.course = course;
         this.competitors = competitors;
         setStartingPositions();
+        raceOrder.addAll(competitors);
     }
 
     /**
@@ -116,8 +117,8 @@ public class Race {
         return course;
     }
 
-    public ArrayList<Boat> getPlacings() {
-        return placings;
+    public ArrayList<Boat> getRaceOrder() {
+        return raceOrder;
     }
 
     public void setName(String name) {
