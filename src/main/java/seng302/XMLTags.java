@@ -24,5 +24,8 @@ public class XMLTags {
         public static final String LEGS = "legs";
         public static final String LEG = "leg";
 
+        //wind
+        public static final String WIND = "wind";
+
     }
 }

@@ -96,7 +96,7 @@ public class Display extends Thread {
     }
 
     public void drawWindArrow(){
-        double windDirection = 180;
+        double windDirection = race.getCourse().getWindDirection();
         ImageView imv = new ImageView();
         Image windArrow = new Image("graphics/arrow.png");
         imv.setImage(windArrow);
