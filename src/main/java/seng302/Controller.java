@@ -1,11 +1,14 @@
 package seng302;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.AnchorPane;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -16,11 +19,12 @@ public class Controller implements Initializable {
 
     @FXML
     public Canvas canvas;
-    public static Canvas staticCanvas;
     @FXML
     private ListView<String> placings;
     @FXML
     private Group root;
+    @FXML
+    private AnchorPane canvasAnchor;
 
     private static ObservableList<String> finishers = observableArrayList();
 
@@ -28,10 +32,10 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        staticCanvas = canvas;
         placings.setItems(finishers);
-        //canvasSize = new CartesianPoint(canvas.getWidth(), canvas.getHeight());
-        DisplayUtils.setScreenSize(1);
+        canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> canvasSize.setX((double) newValue));
+        canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> canvasSize.setY((double) newValue));
+        canvasSize = new CartesianPoint(canvas.getWidth(), canvas.getHeight());
         Course course = Main.getRace().getCourse();
         course.initCourseLatLon();
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());

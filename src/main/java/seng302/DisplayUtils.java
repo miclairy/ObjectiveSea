@@ -1,9 +1,5 @@
 package seng302;
 
-import javafx.scene.control.Control;
-
-import java.awt.*;
-import java.util.ArrayList;
 
 /**
  * Created by cjd137 on 17/03/2017.
@@ -11,9 +7,6 @@ import java.util.ArrayList;
 
 public class DisplayUtils {
 
-    private static double width;
-    private static double height;
-    private static ArrayList<Double> getWidthHeight;
     private static double minLat;
     private static double minLon;
     private static double maxLat;
@@ -31,11 +24,11 @@ public class DisplayUtils {
         double changeInLat = maxLat - minLat;
         double changeInLon = maxLon - minLon;
 
-        double lonPerPixel = Controller.staticCanvas.getWidth()/changeInLon;
-        double latPerPixel = Controller.staticCanvas.getHeight()/changeInLat;
+        double lonPerPixel = Controller.getCanvasSize().getX()/changeInLon; //getx() gets width
+        double latPerPixel = Controller.getCanvasSize().getY()/changeInLat; //gety() gets height
 
         int xCoord = (int) Math.round(Math.abs((lon - minLon)*lonPerPixel));
-        int yCoord = (int) Math.round(Math.abs(Controller.staticCanvas.getHeight() - ((lat - minLat)*latPerPixel)));
+        int yCoord = (int) Math.round(Math.abs(Controller.getCanvasSize().getY() - ((lat - minLat)*latPerPixel)));
 
         CartesianPoint point = new CartesianPoint(xCoord, yCoord);
         return point;
@@ -55,26 +48,6 @@ public class DisplayUtils {
         DisplayUtils.maxLon = maxLon;
     }
 
-    /**
-     * This function takes a multiplier and changes the size of the screen to the multiplied value.
-     */
-    public static void setScreenSize(double multiplier) {
-        //Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        double newWidth = Controller.staticCanvas.getWidth();
-        double newHeight = Controller.staticCanvas.getHeight();
-
-        width = Math.round(newWidth*(multiplier));
-        height = Math.round(newHeight*(multiplier));
-    }
-
-    public static void setWidthHeight(double newWidth, double newHeight) { width = newWidth; height = newHeight;}
-
-    public static ArrayList<Double> getWidthHeight() {
-        getWidthHeight = new ArrayList<>();
-        getWidthHeight.add(width);
-        getWidthHeight.add(height);
-        return getWidthHeight;
-    }
 
 
 }
