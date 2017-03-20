@@ -26,6 +26,6 @@ public class DisplayUtilsTest {
         CartesianPoint testPoint = DisplayUtils.convertFromLatLon(32.295783, -64.855621);
 
         assertEquals(232, (int) testPoint.getX());
-        assertEquals(398, (int) testPoint.getY());
+        assertEquals(682, (int) testPoint.getY());
     }
 }

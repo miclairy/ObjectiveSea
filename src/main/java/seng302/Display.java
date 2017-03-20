@@ -52,7 +52,7 @@ public class Display extends Thread {
             });
 
             try {
-                this.sleep(500); //speed up multiple of 2
+                this.sleep(50); //speed up multiple of 2
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -22,7 +22,6 @@ public class Main extends Application {
 
     private static Race race;
     private static Course course;
-    private static DisplayUtils displayUtils;
 
     @Override
     public void init(){
@@ -36,11 +35,6 @@ public class Main extends Application {
         if (boatsInRace.isEmpty() || course == null) {
             Platform.exit();
         }
-        course.initCourseLatLon();
-
-        displayUtils = new DisplayUtils();
-        displayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
-
         String name = "America's Cup Race";
         race = new Race(name, course, boatsInRace);
     }
@@ -48,13 +42,13 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
-        DisplayUtils.setScreenSize(0.75);
         primaryStage.setTitle("Race Vision");
-        primaryStage.setScene(new Scene(parent, displayUtils.getWidthHeight().get(0), displayUtils.getWidthHeight().get(1)));
-        primaryStage.setMaximized(false);
+        primaryStage.setScene(new Scene(parent));
+        primaryStage.setMaximized(true);
         primaryStage.setMinHeight(700);
         primaryStage.setMinWidth(1000);
         primaryStage.show();
+
     }
 
 
