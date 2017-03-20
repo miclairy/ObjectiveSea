@@ -134,7 +134,7 @@ public class Course {
     }
 
     public void setWindDirection(double windDirection) {
-        this.windDirection = windDirection;
+        this.windDirection = (windDirection + 360) % 360;
     }
 
     public double getMinLat() {
