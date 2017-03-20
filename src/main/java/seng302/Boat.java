@@ -1,6 +1,7 @@
 package seng302;
 
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 
@@ -15,6 +16,7 @@ public class Boat {
     private double speed;
     private int finishingPlace;
     private Shape icon;
+    private Text annotation;
     private double currentLat;
     private double currentLon;
     private int lastPassedMark;
@@ -105,6 +107,8 @@ public class Boat {
         this.icon = icon;
     }
 
+    public void setAnnotation(Text annotation) {this.annotation = annotation;}
+
     public double getCurrentLat() {
         return currentLat;
     }
@@ -116,4 +120,6 @@ public class Boat {
     public boolean isFinished() {
         return finished;
     }
+
+    public Text getAnnotation() {return annotation;}
 }

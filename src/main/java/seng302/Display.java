@@ -7,6 +7,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.text.Text;
 
 import java.util.*;
 
@@ -29,6 +30,7 @@ public class Display extends Thread {
         race.setEvents();
         drawCourse();
         drawBoats();
+        drawBoatAnnotations();
     }
 
     @Override
@@ -130,7 +132,28 @@ public class Display extends Thread {
         for (Boat boat : race.getCompetitors()) {
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
             boat.getIcon().relocate(point.getX(), point.getY());
+            redrawBoatAnnotations(boat);
         }
+    }
+
+
+    public void drawBoatAnnotations(){
+        for(Boat boat : race.getCompetitors()){
+            CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
+            Text annotation = new Text();
+            annotation.setText(boat.getName().toString());
+            DisplayUtils.checkIntersection(root, point.getX(), point.getY());
+            annotation.setX(point.getX() + 5);
+            annotation.setY(point.getY() + 5);
+            boat.setAnnotation(annotation);
+            root.getChildren().add(annotation);
+        }
+    }
+
+    public void redrawBoatAnnotations(Boat boat){
+        CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
+        DisplayUtils.checkIntersection(root, point.getX(), point.getY());
+        boat.getAnnotation().relocate(point.getX() + 5, point.getY() + 5);
     }
 }
 

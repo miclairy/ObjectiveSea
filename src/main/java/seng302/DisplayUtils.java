@@ -2,6 +2,7 @@ package seng302;
 
 import java.awt.*;
 import java.util.ArrayList;
+import javafx.scene.Group;
 
 /**
  * Created by cjd137 on 17/03/2017.
@@ -72,6 +73,17 @@ public class DisplayUtils {
         getWidthHeight.add(width);
         getWidthHeight.add(height);
         return getWidthHeight;
+    }
+
+    public static boolean checkIntersection(Group root, Double x, Double y){
+        boolean contains = false;
+        for(int i = 0; i < (root.getChildren().size() -1); i++){
+            if(root.getChildren().get(i).getBoundsInParent().contains(x,y)){
+                contains = true;
+            }
+        }
+        System.out.println(contains);
+        return contains;
     }
 
 
