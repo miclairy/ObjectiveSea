@@ -25,7 +25,7 @@ public class BoatTest
     @Test
     public void updateLocationTest() {
         Course course = new Course();
-        CompoundMark start = new CompoundMark("Start", 50, 30);
+        Gate start = new Gate("Start", 50, 30, 50.02, 30.02);
         CompoundMark mark = new CompoundMark("Mark", 60, 60);
         course.addNewMark(start);
         course.addNewMark(mark);
@@ -50,9 +50,9 @@ public class BoatTest
     @Test
     public void passedMarkTest() {
         Course course = new Course();
-        CompoundMark start = new CompoundMark("Start", 50, 30);
+        Gate start = new Gate("Start", 50, 30, 50.02, 30.02);
         CompoundMark mark = new CompoundMark("Mark", 50, 30.5);
-        CompoundMark finish = new CompoundMark("Finish", 50.5, 30.5);
+        Gate finish = new Gate("Finish", 50.5, 30.5, 50.52, 30.52);
         course.addNewMark(start);
         course.addNewMark(mark);
         course.addNewMark(finish);
@@ -65,8 +65,8 @@ public class BoatTest
         competitors.add(boat);
         boat.updateLocation(2, course, new Race("", course, competitors));
 
-        assertEquals(50.01194, boat.getCurrentLat(), DELTA);
-        assertEquals(30.5, boat.getCurrentLon(), DELTA);
+        assertEquals(50.0242104224617, boat.getCurrentLat(), DELTA);
+        assertEquals(30.500474714165914, boat.getCurrentLon(), DELTA);
         assertEquals( 1, boat.getLastPassedMark());
     }
 
@@ -74,8 +74,8 @@ public class BoatTest
     @Test
     public void finishedRaceTest() {
         Course course = new Course();
-        CompoundMark start = new CompoundMark("Start", 51.55, 30.11);
-        CompoundMark finish = new CompoundMark("Finish", 51.56, 30.12);
+        Gate start = new Gate("Start", 51.55, 30.11, 51.60, 30.16);
+        Gate finish = new Gate("Finish", 51.56, 30.12, 51.61, 30.18);
         course.addNewMark(start);
         course.addNewMark(finish);
         course.addMarkInOrder("Start");
@@ -87,7 +87,7 @@ public class BoatTest
         boat.updateLocation(20, course, new Race("", course, competitors));
 
         assertTrue(boat.isFinished());
-        assertEquals(51.56, boat.getCurrentLat(), DELTA);
-        assertEquals(30.12, boat.getCurrentLon(), DELTA);
+        assertEquals(51.585, boat.getCurrentLat(), DELTA);
+        assertEquals(30.15, boat.getCurrentLon(), DELTA);
     }
 }
