@@ -41,7 +41,7 @@ public class Display extends Thread{
         while (!finished){
             finished = true;
             for (Boat boat : race.getCompetitors()){
-                boat.updateLocation(timeIncrement, race.getCourse(), race);
+                boat.updateLocation(timeIncrement, race.getCourse());
                 if (!boat.isFinished()){
                     finished = false;
                 }

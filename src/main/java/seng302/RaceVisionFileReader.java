@@ -246,7 +246,7 @@ public class RaceVisionFileReader {
             while (line != null){
                 StringTokenizer st = new StringTokenizer((line));
                 String name = st.nextToken(",");
-                String nickName = st.nextToken();
+                String nickName = st.nextToken().trim();
                 double speed = Double.parseDouble(st.nextToken());
                 allBoats.add(new Boat(name, nickName, speed));
                 line = br.readLine();

@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * Class to encapsulate properties associated with a boat.
  */
 
-public class Boat {
+public class Boat implements Comparable<Boat>{
 
     private String name;
     private String nickName;
@@ -46,10 +46,11 @@ public class Boat {
      * @param timePassed the amount of race hours since the last update
      * @param course the course the boat is racing on
      */
-    public void updateLocation(double timePassed, Course course, Race race) {
+    public void updateLocation(double timePassed, Course course) {
         if(finished){
             return;
         }
+
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
         CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
 
@@ -73,13 +74,16 @@ public class Boat {
         //Check if boat has finished
         if(lastPassedMark == courseOrder.size()-1){
             finished = true;
-            race.getPlacings().add(this);
         } else{
             //Move the remaining distance in leg
             double percentGained = (distanceGained / distanceLeftInLeg);
             currentLat = currentLat + percentGained * (nextMark.getLat() - currentLat);
             currentLon = currentLon + percentGained * (nextMark.getLon() - currentLon);
         }
+    }
+
+    public int compareTo(Boat otherBoat){
+        return otherBoat.getLastPassedMark() - lastPassedMark;
     }
 
     public String getName() {
