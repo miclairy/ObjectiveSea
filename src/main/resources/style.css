@@ -17,4 +17,7 @@
     -fx-box-border: transparent;
 }
 
+#annotation{
+    -fx-font-family: 'helvetica';
+}
 

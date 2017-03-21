@@ -1,6 +1,7 @@
 package seng302;
 
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 
@@ -12,16 +13,19 @@ import java.util.ArrayList;
 public class Boat {
 
     private String name;
+    private String nickName;
     private double speed;
     private int finishingPlace;
     private Shape icon;
+    private Text annotation;
     private double currentLat;
     private double currentLon;
     private int lastPassedMark;
     private boolean finished;
 
-    public Boat(String name, double speed) {
+    public Boat(String name, String nickName, double speed) {
         this.name = name;
+        this.nickName = nickName;
         this.speed = speed;
         this.finished = false;
         this.lastPassedMark = 0;
@@ -82,6 +86,8 @@ public class Boat {
         return this.name;
     }
 
+    public String getNickName() {return nickName;}
+
     public double getSpeed() {
         return this.speed;
     }
@@ -106,6 +112,8 @@ public class Boat {
         this.icon = icon;
     }
 
+    public void setAnnotation(Text annotation) {this.annotation = annotation;}
+
     public double getCurrentLat() {
         return currentLat;
     }
@@ -117,4 +125,6 @@ public class Boat {
     public boolean isFinished() {
         return finished;
     }
+
+    public Text getAnnotation() {return annotation;}
 }
