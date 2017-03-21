@@ -115,6 +115,10 @@ public class RaceVisionFileReader {
                             for (int k = 0; k < legs.getLength(); k++) {
                                 course.addMarkInOrder(legs.item(k).getTextContent());
                             }
+                            break;
+                        case XMLTags.Course.WIND:
+                            course.setWindDirection(Double.parseDouble(element.getTextContent()));
+                            break;
                     }
                 }
             }

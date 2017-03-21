@@ -1,0 +1,20 @@
+#placings {
+    -fx-control-inner-background: #2a2a2a;
+    -fx-font-family: 'helvetica';
+    -fx-font-size: 18px;
+    -fx-text-fill: White;
+    -fx-focus-color: transparent;
+}
+
+.split-pane {
+    -fx-background-insets: 0, 0;
+    -fx-padding: 0;
+}
+
+.split-pane *.split-pane-divider {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-box-border: transparent;
+}
+
+
