@@ -1,5 +1,9 @@
 package seng302;
 
+import javafx.scene.shape.Circle;
+
+import java.util.ArrayList;
+
 /**
  * Created on 7/03/17.
  * Class to specify the marks/gates on the course.
@@ -15,6 +19,7 @@ public class CompoundMark {
     private double lat;
     private double lon;
     private MarkType type;
+    private ArrayList<Circle> icons = new ArrayList<>();
 
     public CompoundMark(String name, double lat, double lon){
         this.name = name;
@@ -50,4 +55,11 @@ public class CompoundMark {
         return this.type == MarkType.FINISH;
     }
 
+    public void addIcon(Circle circle) {
+        icons.add(circle);
+    }
+
+    public ArrayList<Circle> getIcons() {
+        return icons;
+    }
 }

@@ -46,7 +46,7 @@ public class Boat {
      * @param timePassed the amount of race hours since the last update
      * @param course the course the boat is racing on
      */
-    public void updateLocation(double timePassed, Course course) {
+    public void updateLocation(double timePassed, Course course, Race race) {
         if(finished){
             return;
         }
@@ -73,6 +73,7 @@ public class Boat {
         //Check if boat has finished
         if(lastPassedMark == courseOrder.size()-1){
             finished = true;
+            race.getPlacings().add(this);
         } else{
             //Move the remaining distance in leg
             double percentGained = (distanceGained / distanceLeftInLeg);
