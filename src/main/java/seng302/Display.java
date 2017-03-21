@@ -8,14 +8,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
 
 import java.util.*;
 
 /**
  * Created on 6/03/17.
  * Class to manage the output display.
- * For now this will be simple text-based output to terminal
  */
 
 public class Display extends Thread{
@@ -30,8 +31,9 @@ public class Display extends Thread{
         this.race = race;
         race.setEvents();
         drawCourse();
-        drawBoats();
         drawBoatAnnotations();
+        drawBoats();
+
     }
 
 
@@ -143,9 +145,10 @@ public class Display extends Thread{
      */
     private void redrawBoats(){
         for (Boat boat : race.getCompetitors()) {
+            redrawBoatAnnotations(boat);
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
             boat.getIcon().relocate(point.getX(), point.getY());
-            redrawBoatAnnotations(boat);
+
         }
     }
 
@@ -160,13 +163,36 @@ public class Display extends Thread{
             annotation.setY(point.getY() + 15);
             boat.setAnnotation(annotation);
             root.getChildren().add(annotation);
+            drawBoatWake(boat, point);
         }
+    }
+
+    public void drawBoatWake(Boat boat,  CartesianPoint point){
+
+        Polygon wake = new Polygon();
+        wake.getPoints().addAll(new Double[]{
+                0.0, 0.0,
+                10.0, 20.0,
+                20.0, 10.0
+                });
+
+        root.getChildren().add(wake);
+        boat.setWake(wake);
+        //wake.setRotate(boat.getHeading() + 45);
+        wake.getTransforms().add(new Rotate(boat.getHeading(), 0.0, 0.0));
     }
 
     public void redrawBoatAnnotations(Boat boat){
         double adjustX = 10;
         CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
         boat.getAnnotation().relocate((point.getX() + 10), point.getY() + 15);
+
+        boat.getWake().relocate(point.getX(), point.getY());
+        boat.getWake().setRotate(boat.getHeading() + 45);
+        double pivotx = boat.getWake().getPoints().get(0);
+        double pivoty = boat.getWake().getPoints().get(1);
+        boat.getWake().getTransforms().add(new Rotate(boat.getHeading(), pivotx, pivoty));
+
         if(DisplayUtils.checkBounds(boat.getAnnotation())){
             adjustX -= boat.getAnnotation().getBoundsInParent().getWidth();
             boat.getAnnotation().relocate((point.getX() + adjustX), point.getY() + 15);
@@ -176,7 +202,6 @@ public class Display extends Thread{
     private void redrawCourse(){
         for (CompoundMark mark : race.getCourse().getMarks().values()){
             CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
-
 
             if (mark instanceof Gate){
                 Gate gate = (Gate) mark;
