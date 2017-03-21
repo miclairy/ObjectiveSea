@@ -1,7 +1,5 @@
 package seng302;
 
-import java.awt.*;
-import java.util.ArrayList;
 
 /**
  * Created by cjd137 on 17/03/2017.
@@ -9,16 +7,13 @@ import java.util.ArrayList;
 
 public class DisplayUtils {
 
-    private static double width;
-    private static double height;
-    private static ArrayList<Double> getWidthHeight;
     private static double minLat;
     private static double minLon;
     private static double maxLat;
     private static double maxLon;
 
     /**
-     * This function takes the given lat and lon and returns a x,y coordinate scaled to the screen size
+     * This function takes the given lat and lon and returns a x,y coordinate scaled to the canvas size
      * and the change in multiplier to the screen size.
      * @param lat This is the required Latitude to find the Y coordinate.
      * @param lon This is the required Longitude to find the X coordinate.
@@ -29,11 +24,18 @@ public class DisplayUtils {
         double changeInLat = maxLat - minLat;
         double changeInLon = maxLon - minLon;
 
-        double lonPerPixel = width/changeInLon;
-        double latPerPixel = height/changeInLat;
+        double lonPerPixel = Controller.getCanvasSize().getX()/changeInLon; //getx() gets width
+        double latPerPixel = Controller.getCanvasSize().getY()/changeInLat; //gety() gets height
 
-        int xCoord = (int) Math.round(Math.abs((lon - minLon)*lonPerPixel));
-        int yCoord = (int) Math.round(Math.abs(height - ((lat - minLat)*latPerPixel)));
+        if(changeInLat > changeInLon) {
+            lonPerPixel = Controller.getCanvasSize().getX()/changeInLat;
+        } else {
+            latPerPixel = Controller.getCanvasSize().getY()/changeInLon;
+        }
+
+        int xCoord = (int) (((Controller.getCanvasSize().getX() - Math.round(Math.abs((changeInLon)*lonPerPixel)))/2)
+                            + Math.round(Math.abs((lon - minLon)*lonPerPixel)));
+        int yCoord = (int) Math.round(Math.abs(Controller.getCanvasSize().getY() - ((lat - minLat)*latPerPixel)));
 
         CartesianPoint point = new CartesianPoint(xCoord, yCoord);
         return point;
@@ -53,26 +55,6 @@ public class DisplayUtils {
         DisplayUtils.maxLon = maxLon;
     }
 
-    /**
-     * This function takes a multiplier and changes the size of the screen to the multiplied value.
-     */
-    public static void setScreenSize(double multiplier) {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        double newWidth = screenSize.getWidth();
-        double newHeight = screenSize.getHeight();
-
-        width = Math.round(newWidth*(multiplier));
-        height = Math.round(newHeight*(multiplier));
-    }
-
-    public static void setWidthHeight(double newWidth, double newHeight) { width = newWidth; height = newHeight;}
-
-    public static ArrayList<Double> getWidthHeight() {
-        getWidthHeight = new ArrayList<>();
-        getWidthHeight.add(width);
-        getWidthHeight.add(height);
-        return getWidthHeight;
-    }
 
 
 }
