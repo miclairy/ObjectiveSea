@@ -50,8 +50,7 @@ public class Controller implements Initializable {
         formattedDisplayOrder.clear();
         for (int i = 0; i < raceOrder.size(); i++){
             Boat boat = raceOrder.get(i);
-            String boatName = boat.getName();
-            String displayString = String.format("%d : %s - ", i+1, boatName);
+            String displayString = String.format("%d : %s (%s) - ", i+1, boat.getName(), boat.getNickName());
             if(raceOrder.get(i).isFinished()){
                 displayString += "Finished!";
             } else{
