@@ -51,8 +51,15 @@ public class Controller implements Initializable {
         Collections.sort(raceOrder);
         formattedDisplayOrder.clear();
         for (int i = 0; i < raceOrder.size(); i++){
-            String boatName = raceOrder.get(i).getName();
-            formattedDisplayOrder.add(String.format("%d : %s", i+1, boatName));
+            Boat boat = raceOrder.get(i);
+            String boatName = boat.getName();
+            String displayString = String.format("%d : %s - ", i+1, boatName);
+            if(raceOrder.get(i).isFinished()){
+                displayString += "Finished!";
+            } else{
+                displayString += boat.getSpeed() + " knots";
+            }
+            formattedDisplayOrder.add(displayString);
         }
 
     }

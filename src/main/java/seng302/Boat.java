@@ -47,9 +47,6 @@ public class Boat implements Comparable<Boat>{
             return;
         }
 
-//        //Test by sabotaging the Chinese Team
-//        if(name.equals("Chinese Team") && lastPassedMark == 2) return;
-
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
         CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
 
