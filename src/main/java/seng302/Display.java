@@ -1,6 +1,8 @@
 package seng302;
 
 import javafx.scene.Group;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -89,10 +91,22 @@ public class Display extends Thread {
                 circle.setEffect(ds);
                 root.getChildren().add(circle);
             }
+            drawWindArrow();
         }
     }
 
-
+    public void drawWindArrow(){
+        double windDirection = race.getCourse().getWindDirection();
+        ImageView imv = new ImageView();
+        Image windArrow = new Image("graphics/arrow.png");
+        imv.setImage(windArrow);
+        imv.setFitHeight(40);
+        imv.setFitWidth(40);
+        imv.setX(imv.getX() + 15);
+        imv.setY(imv.getY() + 15);
+        imv.setRotate(windDirection);
+        root.getChildren().add(imv);
+    }
     /**
      * Draws them boat icons and fills them with colour
      */

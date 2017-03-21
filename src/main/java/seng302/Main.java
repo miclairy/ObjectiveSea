@@ -52,6 +52,7 @@ public class Main extends Application {
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
         displayUtils.setScreenSize(0.75);
         primaryStage.setTitle("Race Vision");
+        primaryStage.getIcons().add(new Image("graphics/icon.png"));
         primaryStage.setScene(new Scene(parent, displayUtils.getWidthHeight().get(0), displayUtils.getWidthHeight().get(1)));
         primaryStage.setMaximized(false);
         primaryStage.setMinHeight(700);
@@ -62,6 +63,7 @@ public class Main extends Application {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         root.getChildren().add(canvas);
         Display display = new Display(root, race);
+        root.getStylesheets().add("/style.css");
         display.start();
         primaryStage.setScene(new Scene(root, Color.web("#aae7df")));
         primaryStage.show();
