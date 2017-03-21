@@ -127,7 +127,7 @@ public class Display extends Thread{
             boundary.getPoints().add(point.getY());
         }
 
-        boundary.setFill(Color.FIREBRICK);
+        boundary.setFill(Color.rgb(255, 255, 255, 0.3));
         boundary.setStroke(Color.BLACK);
         root.getChildren().add(boundary);
     }
@@ -196,6 +196,7 @@ public class Display extends Thread{
     }
 
     private void redrawCourse(){
+        redrawBoundary();
         for (CompoundMark mark : race.getCourse().getMarks().values()){
             CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
 
@@ -223,7 +224,6 @@ public class Display extends Thread{
                 }
             }
         }
-        redrawBoundary();
     }
 
     public void redrawBoundary(){
