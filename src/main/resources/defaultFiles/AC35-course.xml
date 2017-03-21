@@ -64,9 +64,33 @@
         <leg>Mark</leg>
         <leg>Leeward Gate</leg>
         <leg>Windward Gate</leg>
+        <leg>Leeward Gate</leg>
         <leg>Finish line</leg>
     </legs>
 
     <wind>225</wind>
+
+    <boundary>
+        <latlon>
+            <lat>32.317379</lat>
+            <lon>-64.839291</lon>
+        </latlon>
+        <latlon>
+            <lat>32.316379</lat>
+            <lon>-34.836291</lon>
+        </latlon>
+        <latlon>
+            <lat>32.327779</lat>
+            <lon>-64.837291</lon>
+        </latlon>
+        <latlon>
+            <lat>32.332379</lat>
+            <lon>-64.839291</lon>
+        </latlon>
+        <latlon>
+            <lat>32.332479</lat>
+            <lon>-64.839291</lon>
+        </latlon>
+    </boundary>
 
 </course>

@@ -8,6 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
 
 import java.util.*;
@@ -61,7 +62,6 @@ public class Display extends Thread{
                 e.printStackTrace();
             }
         }
-
     }
 
 
@@ -69,6 +69,12 @@ public class Display extends Thread{
      * Draws all of the marks from the course
      */
     private void drawCourse(){
+        drawBoundary();
+        drawMarks();
+        drawWindArrow();
+    }
+
+    public void drawMarks(){
         DropShadow ds = new DropShadow();
         ds.setOffsetY(0.0f);
         ds.setOffsetX(0.0f);
@@ -106,8 +112,21 @@ public class Display extends Thread{
                 root.getChildren().add(circle);
                 mark.addIcon(circle);
             }
-            drawWindArrow();
         }
+    }
+
+    public void drawBoundary(){
+        Polygon boundary = new Polygon();
+        System.out.println(race.getCourse().getBoundary());
+        for(Coordinate coord : race.getCourse().getBoundary()){
+            CartesianPoint point = DisplayUtils.convertFromLatLon(coord.getLat(), coord.getLon());
+            boundary.getPoints().add(point.getX());
+            boundary.getPoints().add(point.getY());
+        }
+
+        boundary.setFill(Color.FIREBRICK);
+        boundary.setStroke(Color.BLACK);
+        root.getChildren().add(boundary);
     }
 
     public void drawWindArrow(){

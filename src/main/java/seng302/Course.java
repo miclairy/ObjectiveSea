@@ -11,6 +11,7 @@ import java.util.HashMap;
 public class Course {
 
     private ArrayList<CompoundMark> courseOrder;
+    private ArrayList<Coordinate> boundary;
     private double minLat, minLon, maxLat, maxLon;
     private HashMap<String, CompoundMark> marks;
     private double windDirection;
@@ -20,6 +21,7 @@ public class Course {
     public Course() {
         this.marks = new HashMap<>();
         this.courseOrder = new ArrayList<>();
+        this.boundary = new ArrayList<>();
     }
 
     /**
@@ -38,6 +40,13 @@ public class Course {
         courseOrder.add(marks.get(markName));
     }
 
+    /**
+     * Appends a coordinate (lat/long) to the boundary list to make a polygon
+     * @param coord The coordinate of a new boundary point
+     */
+    public void addToBoundary(Coordinate coord){
+        boundary.add(coord);
+    }
     /**
      * This function finds the distance between each mark on the course
      * @param markIndex1 - the index in the courseOrder array of the source mark
@@ -151,5 +160,9 @@ public class Course {
 
     public double getMaxLon() {
         return maxLon;
+    }
+
+    public ArrayList<Coordinate> getBoundary() {
+        return boundary;
     }
 }
