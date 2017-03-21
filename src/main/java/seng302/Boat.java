@@ -13,6 +13,7 @@ import java.util.ArrayList;
 public class Boat {
 
     private String name;
+    private String nickName;
     private double speed;
     private int finishingPlace;
     private Shape icon;
@@ -22,8 +23,9 @@ public class Boat {
     private int lastPassedMark;
     private boolean finished;
 
-    public Boat(String name, double speed) {
+    public Boat(String name, String nickName, double speed) {
         this.name = name;
+        this.nickName = nickName;
         this.speed = speed;
         this.finished = false;
         this.lastPassedMark = 0;
@@ -82,6 +84,8 @@ public class Boat {
     public String getName() {
         return this.name;
     }
+
+    public String getNickName() {return nickName;}
 
     public double getSpeed() {
         return this.speed;

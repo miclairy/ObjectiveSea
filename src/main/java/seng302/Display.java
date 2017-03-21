@@ -141,7 +141,7 @@ public class Display extends Thread {
         for(Boat boat : race.getCompetitors()){
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
             Text annotation = new Text();
-            annotation.setText(boat.getName().toString());
+            annotation.setText(boat.getNickName().toString());
             annotation.setId("annotation");
             annotation.setX(point.getX() + 10);
             annotation.setY(point.getY() + 15);
