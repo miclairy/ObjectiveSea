@@ -27,7 +27,14 @@ public class DisplayUtils {
         double lonPerPixel = Controller.getCanvasSize().getX()/changeInLon; //getx() gets width
         double latPerPixel = Controller.getCanvasSize().getY()/changeInLat; //gety() gets height
 
-        int xCoord = (int) Math.round(Math.abs((lon - minLon)*lonPerPixel));
+        if(changeInLat > changeInLon) {
+            lonPerPixel = Controller.getCanvasSize().getX()/changeInLat;
+        } else {
+            latPerPixel = Controller.getCanvasSize().getY()/changeInLon;
+        }
+
+        int xCoord = (int) (((Controller.getCanvasSize().getX() - Math.round(Math.abs((changeInLon)*lonPerPixel)))/2)
+                            + Math.round(Math.abs((lon - minLon)*lonPerPixel)));
         int yCoord = (int) Math.round(Math.abs(Controller.getCanvasSize().getY() - ((lat - minLat)*latPerPixel)));
 
         CartesianPoint point = new CartesianPoint(xCoord, yCoord);

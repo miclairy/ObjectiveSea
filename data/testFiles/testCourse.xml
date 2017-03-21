@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<course>
+
+    <marks>
+        <mark start="start">
+            <name>Start</name>
+            <latlon>
+                <lat>0</lat>
+                <lon>0</lon>
+            </latlon>
+            <latlon>
+                <lat>0</lat>
+                <lon>1</lon>
+            </latlon>
+        </mark>
+
+        <mark>
+            <name>Mark</name>
+            <latlon>
+                <lat>2</lat>
+                <lon>2</lon>
+            </latlon>
+        </mark>
+
+        <mark>
+            <name>Gate</name>
+            <latlon>
+                <lat>3</lat>
+                <lon>3</lon>
+            </latlon>
+            <latlon>
+                <lat>4</lat>
+                <lon>4</lon>
+            </latlon>
+        </mark>
+
+        <mark finish="finish">
+            <name>Finish</name>
+            <latlon>
+                <lat>0</lat>
+                <lon>5</lon>
+            </latlon>
+            <latlon>
+                <lat>0</lat>
+                <lon>6</lon>
+            </latlon>
+        </mark>
+    </marks>
+
+    <legs>
+        <leg>Start</leg>
+        <leg>Mark</leg>
+        <leg>Gate</leg>
+        <leg>Finish</leg>
+    </legs>
+
+    <wind>200</wind>
+
+</course>
