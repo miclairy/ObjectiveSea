@@ -98,6 +98,12 @@ public class Course {
         return heading;
     }
 
+    /**
+     * This function updates the min/max latitude/longitude if the new corresponding coordinate is lower/greater than
+     * before
+     * @param newLat the new latitude
+     * @param newLon the new longitude
+     */
     public void updateMinMaxLatLon(double newLat, double newLon){
         if(newLat > maxLat) {
             maxLat = newLat;

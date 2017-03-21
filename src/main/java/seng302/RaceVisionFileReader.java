@@ -195,6 +195,11 @@ public class RaceVisionFileReader {
         return mark;
     }
 
+    /**
+     * @param latlons A node with lat and lons tags
+     * @return a Coordainte object indicating a point on the boundary
+     * @throws XMLParseException XMLParseException if no <lat> or <lon> tag exists
+     */
     private static Coordinate parseBoundaryCoord(Node latlons) throws XMLParseException{
         double lat = extractLatitude((Element) latlons);
         double lon = extractLongitude((Element) latlons);

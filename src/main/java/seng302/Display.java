@@ -25,7 +25,7 @@ public class Display extends Thread{
     private Group root;
     private final ArrayList<Color> COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#A0D468"), Color.web("#FC6E51"),
             Color.web("#FFCE54"), Color.web("#48CFAD"), Color.web("#4FC1E9"), Color.web("#656D78"))));
-    private Polygon boundary;
+    private Polygon raceArea;
     private final Color COURSE_COLOR = Color.web("#aae7df");
 
     public Display(Group root, Race race) {
@@ -66,16 +66,18 @@ public class Display extends Thread{
         }
     }
 
-
     /**
-     * Draws all of the marks from the course
+     * Draws the the whole course by calling the corresponding methods to draw the race area, marks and wind arrow
      */
     private void drawCourse(){
-        drawBoundary();
+        drawRaceArea();
         drawMarks();
         drawWindArrow();
     }
 
+    /**
+     * Draws all of marks from the course
+     */
     public void drawMarks(){
         DropShadow ds = new DropShadow();
         ds.setOffsetY(0.0f);
@@ -118,20 +120,26 @@ public class Display extends Thread{
         }
     }
 
-    public void drawBoundary(){
-        boundary = new Polygon();
+    /**
+     * Draws the race area from the coordinates of the boundary points of the course.
+     */
+    public void drawRaceArea(){
+        raceArea = new Polygon();
         for(Coordinate coord : race.getCourse().getBoundary()){
             CartesianPoint point = DisplayUtils.convertFromLatLon(coord.getLat(), coord.getLon());
-            boundary.getPoints().add(point.getX());
-            boundary.getPoints().add(point.getY());
+            raceArea.getPoints().add(point.getX());
+            raceArea.getPoints().add(point.getY());
         }
 
-        boundary.setFill(COURSE_COLOR);
-        boundary.setStroke(Color.BLACK);
-        root.getChildren().add(boundary);
-        boundary.toBack();
+        raceArea.setFill(COURSE_COLOR);
+        raceArea.setStroke(Color.BLACK);
+        root.getChildren().add(raceArea);
+        raceArea.toBack();
     }
 
+    /**
+     * Draws and rotates an arrow indicating the direction of the wind
+     */
     public void drawWindArrow(){
         double windDirection = race.getCourse().getWindDirection();
         ImageView imv = new ImageView();
@@ -144,10 +152,10 @@ public class Display extends Thread{
         imv.setRotate(windDirection);
         root.getChildren().add(imv);
     }
+
     /**
      * Draws the boat icons and fills them with colour
      */
-
     private void drawBoats(){
         int i = 1;
         for (Boat boat : race.getCompetitors()) {
@@ -196,7 +204,7 @@ public class Display extends Thread{
     }
 
     private void redrawCourse(){
-        redrawBoundary();
+        redrawRaceArea();
         for (CompoundMark mark : race.getCourse().getMarks().values()){
             CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
 
@@ -226,9 +234,12 @@ public class Display extends Thread{
         }
     }
 
-    public void redrawBoundary(){
-        root.getChildren().remove(boundary);
-        drawBoundary();
+    /**
+     * Redraws the raceArea to account for change in window size
+     */
+    public void redrawRaceArea(){
+        root.getChildren().remove(raceArea);
+        drawRaceArea();
     }
 }
 
