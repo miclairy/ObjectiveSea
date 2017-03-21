@@ -17,7 +17,7 @@ public class BoatTest
 
     @Before
     public void before(){
-        boat = new Boat("TestBoat", 10);
+        boat = new Boat("TestBoat", "testNickname", 10);
     }
 
     @Test
