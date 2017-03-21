@@ -86,8 +86,6 @@ public class Display extends Thread{
                 Gate gate  = (Gate) mark;
                 ArrayList<CartesianPoint> points = new ArrayList<>();
                 CartesianPoint point1 = DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon());
-                System.out.println(gate.getName());
-                System.out.println(point1.getX() + " " + point1.getY());
                 points.add(DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon()));
                 points.add(DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon()));
 
