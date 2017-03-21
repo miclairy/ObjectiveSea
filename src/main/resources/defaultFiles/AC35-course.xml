@@ -72,24 +72,20 @@
 
     <boundary>
         <latlon>
-            <lat>32.317379</lat>
-            <lon>-64.839291</lon>
+            <lat>32.296577</lat>
+            <lon>-64.854304</lon>
         </latlon>
         <latlon>
-            <lat>32.316379</lat>
-            <lon>-34.836291</lon>
+            <lat>32.293771</lat>
+            <lon>-64.855242</lon>
         </latlon>
         <latlon>
-            <lat>32.327779</lat>
-            <lon>-64.837291</lon>
+            <lat>32.303771</lat>
+            <lon>-64.845242</lon>
         </latlon>
         <latlon>
-            <lat>32.332379</lat>
-            <lon>-64.839291</lon>
-        </latlon>
-        <latlon>
-            <lat>32.332479</lat>
-            <lon>-64.839291</lon>
+            <lat>32.293771</lat>
+            <lon>-64.845242</lon>
         </latlon>
     </boundary>
 

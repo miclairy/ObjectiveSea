@@ -98,6 +98,19 @@ public class Course {
         return heading;
     }
 
+    public void updateMinMaxLatLon(double newLat, double newLon){
+        if(newLat > maxLat) {
+            maxLat = newLat;
+        } else if(newLat < minLat) {
+            minLat = newLat;
+        }
+        if(newLon > maxLon) {
+            maxLon = newLon;
+        } else if(newLon < minLon) {
+            minLon = newLon;
+        }
+    }
+
     /**
      * This function grabs all the latitude and longitude points for each mark/gate
      * The furthest most points to the North and East are found and made the max latitude and longitude
@@ -108,19 +121,11 @@ public class Course {
         maxLat = minLat = this.courseOrder.get(0).getLat();
         maxLon = minLon = this.courseOrder.get(0).getLon();
 
-        for(int i = 0; i < this.courseOrder.size(); i++) {
-
-            if(this.courseOrder.get(i).getLat() > maxLat) {
-                maxLat = this.courseOrder.get(i).getLat();
-            } else if(this.courseOrder.get(i).getLat() < minLat) {
-                minLat = this.courseOrder.get(i).getLat();
-            }
-
-            if(this.courseOrder.get(i).getLon() > maxLon) {
-                maxLon = this.courseOrder.get(i).getLon();
-            } else if(this.courseOrder.get(i).getLon() < minLon) {
-                minLon = this.courseOrder.get(i).getLon();
-            }
+        for(CompoundMark mark : courseOrder){
+            updateMinMaxLatLon(mark.getLat(), mark.getLon());
+        }
+        for(Coordinate coord : boundary){
+            updateMinMaxLatLon(coord.getLat(), coord.getLon());
         }
         //Adding padding of 0.004 to each coordinate to make sure the visual area is large enough
         minLat -= 0.004; minLon -= 0.004; maxLat += 0.004; maxLon += 0.004;

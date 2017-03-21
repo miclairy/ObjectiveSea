@@ -25,6 +25,7 @@ public class Display extends Thread{
     private Group root;
     private final ArrayList<Color> COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#A0D468"), Color.web("#FC6E51"),
             Color.web("#FFCE54"), Color.web("#48CFAD"), Color.web("#4FC1E9"), Color.web("#656D78"))));
+    private Polygon boundary;
 
     public Display(Group root, Race race) {
         this.root = root;
@@ -83,6 +84,9 @@ public class Display extends Thread{
             if(mark instanceof Gate){
                 Gate gate  = (Gate) mark;
                 ArrayList<CartesianPoint> points = new ArrayList<>();
+                CartesianPoint point1 = DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon());
+                System.out.println(gate.getName());
+                System.out.println(point1.getX() + " " + point1.getY());
                 points.add(DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon()));
                 points.add(DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon()));
 
@@ -116,8 +120,7 @@ public class Display extends Thread{
     }
 
     public void drawBoundary(){
-        Polygon boundary = new Polygon();
-        System.out.println(race.getCourse().getBoundary());
+        boundary = new Polygon();
         for(Coordinate coord : race.getCourse().getBoundary()){
             CartesianPoint point = DisplayUtils.convertFromLatLon(coord.getLat(), coord.getLon());
             boundary.getPoints().add(point.getX());
@@ -220,6 +223,12 @@ public class Display extends Thread{
                 }
             }
         }
+        redrawBoundary();
+    }
+
+    public void redrawBoundary(){
+        root.getChildren().remove(boundary);
+        drawBoundary();
     }
 }
 
