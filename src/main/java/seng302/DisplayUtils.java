@@ -1,5 +1,7 @@
 package seng302;
+import javafx.scene.Node;
 
+import javax.naming.ldap.Control;
 
 /**
  * Created by cjd137 on 17/03/2017.
@@ -53,6 +55,14 @@ public class DisplayUtils {
         DisplayUtils.minLon = minLon;
         DisplayUtils.maxLat = maxLat;
         DisplayUtils.maxLon = maxLon;
+    }
+
+    public static boolean checkBounds(Node node){
+        boolean outsideBound = false;
+        if(node.getBoundsInParent().getMaxX() > Controller.getCanvasSize().getX()){
+            outsideBound = true;
+        }
+        return outsideBound;
     }
 
 
