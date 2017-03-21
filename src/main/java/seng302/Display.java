@@ -26,6 +26,7 @@ public class Display extends Thread{
     private final ArrayList<Color> COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#A0D468"), Color.web("#FC6E51"),
             Color.web("#FFCE54"), Color.web("#48CFAD"), Color.web("#4FC1E9"), Color.web("#656D78"))));
     private Polygon boundary;
+    private final Color COURSE_COLOR = Color.web("#aae7df");
 
     public Display(Group root, Race race) {
         this.root = root;
@@ -127,9 +128,10 @@ public class Display extends Thread{
             boundary.getPoints().add(point.getY());
         }
 
-        boundary.setFill(Color.rgb(255, 255, 255, 0.3));
+        boundary.setFill(COURSE_COLOR);
         boundary.setStroke(Color.BLACK);
         root.getChildren().add(boundary);
+        boundary.toBack();
     }
 
     public void drawWindArrow(){
