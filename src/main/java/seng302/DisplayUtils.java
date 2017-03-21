@@ -3,6 +3,7 @@ package seng302;
 import java.awt.*;
 import java.util.ArrayList;
 import javafx.scene.Group;
+import javafx.scene.Node;
 
 /**
  * Created by cjd137 on 17/03/2017.
@@ -75,15 +76,22 @@ public class DisplayUtils {
         return getWidthHeight;
     }
 
-    public static boolean checkIntersection(Group root, Double x, Double y){
+    public static boolean checkIntersection(Group root, Node node){
         boolean contains = false;
-        for(int i = 0; i < (root.getChildren().size() -1); i++){
-            if(root.getChildren().get(i).getBoundsInParent().contains(x,y)){
+        for(int i = 1; i < (root.getChildren().size()); i++){
+            if(node.intersects(root.getChildren().get(i).getBoundsInParent())){
                 contains = true;
             }
         }
-        System.out.println(contains);
         return contains;
+    }
+
+    public static boolean checkBounds(Node node){
+        boolean outsideBound = false;
+        if(node.getBoundsInParent().getMaxX() > getWidthHeight.get(0)){
+            outsideBound = true;
+        }
+        return outsideBound;
     }
 
 

@@ -142,18 +142,22 @@ public class Display extends Thread {
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
             Text annotation = new Text();
             annotation.setText(boat.getName().toString());
-            DisplayUtils.checkIntersection(root, point.getX(), point.getY());
-            annotation.setX(point.getX() + 5);
-            annotation.setY(point.getY() + 5);
+            annotation.setId("annotation");
+            annotation.setX(point.getX() + 10);
+            annotation.setY(point.getY() + 15);
             boat.setAnnotation(annotation);
             root.getChildren().add(annotation);
         }
     }
 
     public void redrawBoatAnnotations(Boat boat){
+        double adjustX = 10;
         CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
-        DisplayUtils.checkIntersection(root, point.getX(), point.getY());
-        boat.getAnnotation().relocate(point.getX() + 5, point.getY() + 5);
+        boat.getAnnotation().relocate((point.getX() + 10), point.getY() + 15);
+        if(DisplayUtils.checkBounds(boat.getAnnotation())){
+            adjustX -= boat.getAnnotation().getBoundsInParent().getWidth();
+            boat.getAnnotation().relocate((point.getX() + adjustX), point.getY() + 15);
+        }
     }
 }
 
