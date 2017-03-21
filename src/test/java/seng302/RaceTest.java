@@ -52,11 +52,11 @@ public class RaceTest {
 
         Race race = new Race("Test Race", course, boats);
 
-        testBoat1.updateLocation(2, course, race);
-        testBoat2.updateLocation(2, course, race);
+        testBoat1.updateLocation(2, course);
+        testBoat2.updateLocation(2, course);
         ArrayList<Boat> places = new ArrayList<>();
         places.add(testBoat1);
         places.add(testBoat2);
-        assertEquals(places, race.getPlacings());
+        assertEquals(places, race.getRaceOrder());
     }
 }
