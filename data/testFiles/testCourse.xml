@@ -56,4 +56,20 @@
 
     <wind>200</wind>
 
+    <boundary>
+        <latlon>
+            <lat>32.5</lat>
+            <lon>-60.1</lon>
+        </latlon>
+
+        <latlon>
+            <lat>32.0</lat>
+            <lon>-60.1</lon>
+        </latlon>
+
+        <latlon>
+            <lat>32.0</lat>
+            <lon>-60.0</lon>
+        </latlon>
+    </boundary>
 </course>
