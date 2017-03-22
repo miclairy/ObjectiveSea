@@ -48,15 +48,15 @@ public class Display extends Thread{
                     finished = false;
                 }
             }
+
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
                     Controller.updatePlacings();
                     redrawCourse();
-                    redrawBoats();
                 }
             });
-
+            redrawBoats();
             try {
                 Thread.sleep(50); //speed up multiple of 2
             } catch (InterruptedException e) {
@@ -86,7 +86,7 @@ public class Display extends Thread{
                 ArrayList<CartesianPoint> points = new ArrayList<>();
                 points.add(DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon()));
                 points.add(DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon()));
-                if(gate.isStart() | gate.isFinish()){
+                if(gate.isStart() || gate.isFinish()){
                     Line line = new Line(points.get(0).getX(),points.get(0).getY(), points.get(1).getX(), points.get(1).getY());
                     line.setStroke(Color.web("#70aaa2"));
                     root.getChildren().add(line);
@@ -131,6 +131,7 @@ public class Display extends Thread{
         boundary.setFill(Color.web("#88e6ef"));
         boundary.setStroke(Color.web("#407a97"));
         root.getChildren().add(boundary);
+        boundary.toBack();
     }
 
     public void drawWindArrow(){
@@ -168,7 +169,6 @@ public class Display extends Thread{
         for (Boat boat : race.getCompetitors()) {
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
             boat.getIcon().relocate(point.getX(), point.getY());
-            boat.getIcon().toFront();
             redrawBoatAnnotations(boat);
         }
     }
