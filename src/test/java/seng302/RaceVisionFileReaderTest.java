@@ -28,6 +28,18 @@ public class RaceVisionFileReaderTest {
         Assert.assertTrue(course.getMarks().get("Finish") instanceof Gate);
         Assert.assertTrue(course.getMarks().get("Gate") instanceof Gate);
         Assert.assertFalse(course.getMarks().get("Mark") instanceof Gate);
+
+        //Boundary
+        Assert.assertEquals(course.getBoundary().size(), 3);
+        Assert.assertEquals(course.getBoundary().get(0).getLat(), 32.5, 0);
+        Assert.assertEquals(course.getBoundary().get(0).getLon(), -60.1, 0);
+
+        Assert.assertEquals(course.getBoundary().get(1).getLat(), 32.0, 0);
+        Assert.assertEquals(course.getBoundary().get(1).getLon(), -60.1, 0);
+
+        Assert.assertEquals(course.getBoundary().get(2).getLat(), 32.0, 0);
+        Assert.assertEquals(course.getBoundary().get(2).getLon(), -60.0, 0);
+
     }
 
     @Test

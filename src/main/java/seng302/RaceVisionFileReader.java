@@ -119,6 +119,12 @@ public class RaceVisionFileReader {
                         case XMLTags.Course.WIND:
                             course.setWindDirection(Double.parseDouble(element.getTextContent()));
                             break;
+                        case XMLTags.Course.BOUNDARY:
+                            NodeList boundaryCoords = element.getElementsByTagName(XMLTags.Course.LATLON);
+                            for (int k = 0; k < boundaryCoords.getLength(); k++) {
+                                course.addToBoundary(parseBoundaryCoord(boundaryCoords.item(k)));
+                            }
+                            break;
                     }
                 }
             }
@@ -187,6 +193,17 @@ public class RaceVisionFileReader {
         }
 
         return mark;
+    }
+
+    /**
+     * @param latlons A node with lat and lons tags
+     * @return a Coordainte object indicating a point on the boundary
+     * @throws XMLParseException XMLParseException if no <lat> or <lon> tag exists
+     */
+    private static Coordinate parseBoundaryCoord(Node latlons) throws XMLParseException{
+        double lat = extractLatitude((Element) latlons);
+        double lon = extractLongitude((Element) latlons);
+        return new Coordinate(lat, lon);
     }
 
     /**

@@ -21,3 +21,7 @@
     -fx-font-family: 'helvetica';
 }
 
+#boundary{
+-fx-opacity: 0.2;
+}
+

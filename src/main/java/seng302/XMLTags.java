@@ -27,5 +27,8 @@ public class XMLTags {
         //wind
         public static final String WIND = "wind";
 
+        //boundary
+        public static final String BOUNDARY = "boundary";
+
     }
 }
