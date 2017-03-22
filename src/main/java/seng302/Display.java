@@ -163,40 +163,42 @@ public class Display extends Thread{
             annotation.setY(point.getY() + 15);
             boat.setAnnotation(annotation);
             root.getChildren().add(annotation);
-            drawBoatWake(boat, point);
+            drawBoatWake(boat);
         }
     }
 
-    public void drawBoatWake(Boat boat,  CartesianPoint point){
+    public void drawBoatWake(Boat boat){
 
         Polygon wake = new Polygon();
         wake.getPoints().addAll(new Double[]{
+                5.0, 20.0,
                 0.0, 0.0,
-                10.0, 20.0,
-                20.0, 10.0
+                10.0, 0.0
                 });
 
         root.getChildren().add(wake);
         boat.setWake(wake);
-        //wake.setRotate(boat.getHeading() + 45);
-        wake.getTransforms().add(new Rotate(boat.getHeading(), 0.0, 0.0));
+        //wake.setFill(Color.web("#84daff"));
     }
 
     public void redrawBoatAnnotations(Boat boat){
         double adjustX = 10;
         CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
         boat.getAnnotation().relocate((point.getX() + 10), point.getY() + 15);
-
-        boat.getWake().relocate(point.getX(), point.getY());
-        boat.getWake().setRotate(boat.getHeading() + 45);
-        double pivotx = boat.getWake().getPoints().get(0);
-        double pivoty = boat.getWake().getPoints().get(1);
-        boat.getWake().getTransforms().add(new Rotate(boat.getHeading(), pivotx, pivoty));
-
+        redrawWake(boat, point);
         if(DisplayUtils.checkBounds(boat.getAnnotation())){
             adjustX -= boat.getAnnotation().getBoundsInParent().getWidth();
             boat.getAnnotation().relocate((point.getX() + adjustX), point.getY() + 15);
         }
+    }
+
+    private void redrawWake(Boat boat, CartesianPoint point){
+        boat.getWake().getTransforms().clear();
+        boat.getWake().relocate(point.getX(), point.getY());
+        double pivotx = boat.getWake().getPoints().get(0);
+        double pivoty = boat.getWake().getPoints().get(1);
+        boat.getWake().getTransforms().add(new Rotate(boat.getHeading() - 180, pivotx, pivoty));
+
     }
 
     private void redrawCourse(){
