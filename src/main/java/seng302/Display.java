@@ -1,5 +1,6 @@
 package seng302;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
@@ -18,10 +19,11 @@ import java.util.*;
  * For now this will be simple text-based output to terminal
  */
 
-public class Display extends Thread{
+public class Display extends AnimationTimer {
 
     private Race race;
     private Group root;
+    private double previousTime = 0;
     private final ArrayList<Color> COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#A0D468"), Color.web("#FC6E51"),
             Color.web("#FFCE54"), Color.web("#48CFAD"), Color.web("#4FC1E9"), Color.web("#656D78"))));
 
@@ -30,37 +32,30 @@ public class Display extends Thread{
         this.race = race;
         race.setEvents();
         drawCourse();
-        drawBoats();
         drawBoatAnnotations();
+        drawBoats();
+
+    }
+
+    @Override
+    public void handle(long currentTime) {
+        if (previousTime == 0) {
+            previousTime = currentTime;
+            return;
+        }
+        double secondsElapsed = (currentTime - previousTime) / 1e9f;
+        previousTime = currentTime;
+        run(secondsElapsed);
     }
 
 
-    public void run(){
-        double timeIncrement = 0.000277778; //hours = 1 second
-        boolean finished = false;
-        while (!finished){
-            finished = true;
+    public void run(double timeIncrement){
             for (Boat boat : race.getCompetitors()){
                 boat.updateLocation(timeIncrement, race.getCourse());
-                if (!boat.isFinished()){
-                    finished = false;
-                }
             }
             redrawBoats();
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    Controller.updatePlacings();
-                    redrawCourse();
-                }
-            });
-
-            try {
-                Thread.sleep(50); //speed up multiple of 2
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+            Controller.updatePlacings();
+            redrawCourse();
 
     }
 
@@ -177,7 +172,6 @@ public class Display extends Thread{
         for (CompoundMark mark : race.getCourse().getMarks().values()){
             CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
 
-
             if (mark instanceof Gate){
                 Gate gate = (Gate) mark;
                 ArrayList<CartesianPoint> points = new ArrayList<>();
@@ -202,5 +196,7 @@ public class Display extends Thread{
             }
         }
     }
+
+
 }
 
