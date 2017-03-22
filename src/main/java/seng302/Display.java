@@ -8,6 +8,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.text.Text;
 
 import java.util.*;
 
@@ -30,6 +31,7 @@ public class Display extends Thread{
         race.setEvents();
         drawCourse();
         drawBoats();
+        drawBoatAnnotations();
     }
 
 
@@ -39,7 +41,7 @@ public class Display extends Thread{
         while (!finished){
             finished = true;
             for (Boat boat : race.getCompetitors()){
-                boat.updateLocation(timeIncrement, race.getCourse(), race);
+                boat.updateLocation(timeIncrement, race.getCourse());
                 if (!boat.isFinished()){
                     finished = false;
                 }
@@ -143,6 +145,31 @@ public class Display extends Thread{
         for (Boat boat : race.getCompetitors()) {
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
             boat.getIcon().relocate(point.getX(), point.getY());
+            redrawBoatAnnotations(boat);
+        }
+    }
+
+
+    public void drawBoatAnnotations(){
+        for(Boat boat : race.getCompetitors()){
+            CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
+            Text annotation = new Text();
+            annotation.setText(boat.getNickName().toString());
+            annotation.setId("annotation");
+            annotation.setX(point.getX() + 10);
+            annotation.setY(point.getY() + 15);
+            boat.setAnnotation(annotation);
+            root.getChildren().add(annotation);
+        }
+    }
+
+    public void redrawBoatAnnotations(Boat boat){
+        double adjustX = 10;
+        CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
+        boat.getAnnotation().relocate((point.getX() + 10), point.getY() + 15);
+        if(DisplayUtils.checkBounds(boat.getAnnotation())){
+            adjustX -= boat.getAnnotation().getBoundsInParent().getWidth();
+            boat.getAnnotation().relocate((point.getX() + adjustX), point.getY() + 15);
         }
     }
 

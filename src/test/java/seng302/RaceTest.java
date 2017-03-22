@@ -17,8 +17,8 @@ public class RaceTest {
         course.addMarkInOrder("StartLine");
         ArrayList<Boat> boats = new ArrayList<Boat>();
 
-        Boat testBoat1 = new Boat("Boat 1", 10);
-        Boat testBoat2 = new Boat("Boat 2", 15);
+        Boat testBoat1 = new Boat("Boat 1", "1", 10);
+        Boat testBoat2 = new Boat("Boat 2", "2",15);
 
         boats.add(testBoat1);
         boats.add(testBoat2);
@@ -44,19 +44,19 @@ public class RaceTest {
         course.addMarkInOrder("Finish");
         ArrayList<Boat> boats = new ArrayList<>();
 
-        Boat testBoat1 = new Boat("Boat 1", 10);
-        Boat testBoat2 = new Boat("Boat 2", 15);
+        Boat testBoat1 = new Boat("Boat 1","1", 10);
+        Boat testBoat2 = new Boat("Boat 2", "2",15);
 
         boats.add(testBoat1);
         boats.add(testBoat2);
 
         Race race = new Race("Test Race", course, boats);
 
-        testBoat1.updateLocation(2, course, race);
-        testBoat2.updateLocation(2, course, race);
+        testBoat1.updateLocation(2, course);
+        testBoat2.updateLocation(2, course);
         ArrayList<Boat> places = new ArrayList<>();
         places.add(testBoat1);
         places.add(testBoat2);
-        assertEquals(places, race.getPlacings());
+        assertEquals(places, race.getRaceOrder());
     }
 }

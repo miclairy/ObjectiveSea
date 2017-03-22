@@ -1,6 +1,6 @@
-Oracle Team USA, 30.3
-Land Rover BAR  , 34.5
-SoftBank Team Japan, 32.5
-Groupama Team France, 32.4
-Artemis Racing, 34.2
-Emirates Team New Zealand, 40.0
+Oracle Team USA, USA, 30.3
+Land Rover BAR, GBR, 34.5
+SoftBank Team Japan, JPN, 32.5
+Groupama Team France, FRA, 32.4
+Artemis Racing, SWE, 34.2
+Emirates Team New Zealand, NZL, 40.0

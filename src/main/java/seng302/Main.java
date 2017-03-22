@@ -43,6 +43,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
         primaryStage.setTitle("Race Vision");
+        primaryStage.getIcons().add(new Image("graphics/icon.png"));
         primaryStage.setScene(new Scene(parent));
         primaryStage.setMaximized(true);
         primaryStage.setMinHeight(700);
