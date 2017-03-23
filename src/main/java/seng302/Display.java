@@ -46,6 +46,7 @@ public class Display extends AnimationTimer {
         double secondsElapsed = (currentTime - previousTime) / 1e9f;
         previousTime = currentTime;
         run(secondsElapsed);
+        Controller.updateFPSCounter(currentTime);
     }
 
 
@@ -196,7 +197,5 @@ public class Display extends AnimationTimer {
             }
         }
     }
-
-
 }
 
