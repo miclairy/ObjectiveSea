@@ -176,9 +176,10 @@ public class Display extends Thread{
 
     public void drawBoatAnnotations(){
         for(Boat boat : race.getCompetitors()){
+            String annotationText = boat.getNickName().toString() + ", " + boat.getSpeed() + "kn";
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
             Text annotation = new Text();
-            annotation.setText(boat.getNickName().toString());
+            annotation.setText(annotationText);
             annotation.setId("annotation");
             annotation.setX(point.getX() + 10);
             annotation.setY(point.getY() + 15);
