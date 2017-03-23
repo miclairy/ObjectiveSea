@@ -2,6 +2,7 @@ package seng302;
 
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
+import javafx.scene.shape.Path;
 
 import java.util.ArrayList;
 
@@ -22,6 +23,7 @@ public class Boat implements Comparable<Boat>{
     private double currentLon;
     private int lastPassedMark;
     private boolean finished;
+    private Path path;
 
     public Boat(String name, String nickName, double speed) {
         this.name = name;
@@ -131,4 +133,9 @@ public class Boat implements Comparable<Boat>{
     }
 
     public Text getAnnotation() {return annotation;}
+
+    public void setPath(Path path) {this.path = path;}
+
+    public Path getPath() {return path;}
+
 }

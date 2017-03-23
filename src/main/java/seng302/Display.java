@@ -10,6 +10,8 @@ import javafx.scene.shape.Line;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Text;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.*;
 
 import java.util.*;
 
@@ -33,6 +35,7 @@ public class Display extends Thread{
         race.setEvents();
         drawCourse();
         drawBoats();
+        drawBoatPath();
         drawBoatAnnotations();
     }
 
@@ -170,6 +173,7 @@ public class Display extends Thread{
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
             boat.getIcon().relocate(point.getX(), point.getY());
             redrawBoatAnnotations(boat);
+            redrawBoatPath(boat);
         }
     }
 
@@ -232,6 +236,24 @@ public class Display extends Thread{
     public void redrawBoundary(){
         root.getChildren().remove(boundary);
         drawBoundary();
+    }
+
+    public void drawBoatPath(){
+        for(Boat boat : race.getCompetitors()){
+            CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
+            Path boatPath = new Path();
+            boatPath.getElements().add(new MoveTo(point.getX(), point.getY()));
+            boatPath.getStrokeDashArray().addAll(3.0,7.0,3.0,7.0);
+            boatPath.setId("boatPath");
+            boatPath.setStroke(Color.WHITE);
+            boat.setPath(boatPath);
+            root.getChildren().add(boatPath);
+        }
+    }
+
+    public void redrawBoatPath(Boat boat){
+        boat.getPath().getElements().add(new LineTo(boat.getIcon().getLayoutX(), boat.getIcon().getLayoutY()));
+
     }
 }
 
