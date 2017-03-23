@@ -12,6 +12,7 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Scale;
 
 import java.util.*;
 
@@ -156,14 +157,13 @@ public class Display extends Thread{
     private void drawBoats(){
         int i = 1;
         for (Boat boat : race.getCompetitors()) {
-            //Circle boatImage = new Circle(Math.abs(boat.getCurrentLat() * i), Math.abs(boat.getCurrentLon()) , 5.0f);
             Polyline boatImage = new Polyline();
             boatImage.getPoints().addAll(new Double[]{
-                    5.0, 20.0,
-                    0.0, 0.0,
-                    10.0, 0.0,
-                    5.0, 20.0,
-                    5.0, 0.0
+                    5.0, 0.0,
+                    10.0, 20.0,
+                    0.0 , 20.0,
+                    5.0, 0.0,
+                    5.0, 20.0
                     }
             );
             boatImage.setFill(COLORS.get(i));
@@ -183,7 +183,7 @@ public class Display extends Thread{
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
             boat.getIcon().relocate(point.getX(), point.getY());
             boat.getIcon().getTransforms().clear();
-            boat.getIcon().getTransforms().add(new Rotate(boat.getHeading() , 5.0, 20.0));
+            boat.getIcon().getTransforms().add(new Rotate(boat.getHeading(), 5.0, 0.0));
             //boat.getIcon().toFront();
         }
     }
@@ -207,9 +207,9 @@ public class Display extends Thread{
 
         Polyline wake = new Polyline();
         wake.getPoints().addAll(new Double[]{
-                0.0, 0.0,
-                5.0, 20.0,
-                10.0, 0.0
+                0.0, 30.0,
+                3.5, 0.0,
+                7.0, 30.0
                 });
 
         root.getChildren().add(wake);
@@ -232,15 +232,10 @@ public class Display extends Thread{
     private void redrawWake(Boat boat, CartesianPoint point){
         boat.getWake().getTransforms().clear();
         double scale = boat.getSpeed() * 1/50;  // 1/50 is used for scaling nicely was eyeballed
-        boat.getWake().setScaleY(scale);
-        boat.getWake().setScaleX(scale);
+        boat.getWake().getTransforms().add(new Scale(scale, scale,3.5, 0));
         double wakeHeight = boat.getWake().getLayoutBounds().getHeight();
-        boat.getWake().setTranslateX(point.getX());
-        boat.getWake().setTranslateY(point.getY() );
-        double pivotx = boat.getWake().getPoints().get(2);
-        double pivoty = boat.getWake().getPoints().get(3);
-        boat.getWake().getTransforms().add(new Rotate(boat.getHeading(), pivotx, pivoty));
-
+        boat.getWake().relocate(point.getX(), point.getY());
+        boat.getWake().getTransforms().add(new Rotate(boat.getHeading(), 3.5, 0));
     }
 
     private void redrawCourse(){
