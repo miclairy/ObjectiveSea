@@ -53,11 +53,12 @@ public class Display extends Thread{
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
+                    redrawBoats();
+
                     Controller.updatePlacings();
                     redrawCourse();
                 }
             });
-            redrawBoats();
             try {
                 Thread.sleep(50); //speed up multiple of 2
             } catch (InterruptedException e) {
@@ -171,7 +172,7 @@ public class Display extends Thread{
             redrawBoatAnnotations(boat);
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
             boat.getIcon().relocate(point.getX(), point.getY());
-
+            boat.getIcon().toFront();
         }
     }
 
@@ -217,10 +218,15 @@ public class Display extends Thread{
 
     private void redrawWake(Boat boat, CartesianPoint point){
         boat.getWake().getTransforms().clear();
-        boat.getWake().relocate(point.getX(), point.getY());
-        double pivotx = boat.getWake().getPoints().get(0);
-        double pivoty = boat.getWake().getPoints().get(1);
-        boat.getWake().getTransforms().add(new Rotate(boat.getHeading() - 180, pivotx, pivoty));
+        double scale = boat.getSpeed() * 1/50;
+        boat.getWake().setScaleY(scale);
+        boat.getWake().setScaleX(scale);
+        double wakeHeight = boat.getWake().getLayoutBounds().getHeight();
+        boat.getWake().setTranslateX(point.getX()); //+ (scale * wakeHeight) * 0.025);
+        boat.getWake().setTranslateY(point.getY() - (scale * wakeHeight / 2) - 4); //- (scale * wakeHeight) * 0.725);
+        boat.getWake().getTransforms().add(new Rotate(boat.getHeading() -180, 5.0, 20.0));
+
+        boat.getWake().toFront();
 
     }
 
