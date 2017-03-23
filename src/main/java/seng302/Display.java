@@ -9,6 +9,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Polyline;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 
@@ -155,7 +156,16 @@ public class Display extends Thread{
     private void drawBoats(){
         int i = 1;
         for (Boat boat : race.getCompetitors()) {
-            Circle boatImage = new Circle(Math.abs(boat.getCurrentLat() * i), Math.abs(boat.getCurrentLon()) , 5.0f);
+            //Circle boatImage = new Circle(Math.abs(boat.getCurrentLat() * i), Math.abs(boat.getCurrentLon()) , 5.0f);
+            Polyline boatImage = new Polyline();
+            boatImage.getPoints().addAll(new Double[]{
+                    5.0, 20.0,
+                    0.0, 0.0,
+                    10.0, 0.0,
+                    5.0, 20.0,
+                    5.0, 0.0
+                    }
+            );
             boatImage.setFill(COLORS.get(i));
             boatImage.setStroke(Color.WHITE);
             root.getChildren().add(boatImage);
@@ -172,7 +182,9 @@ public class Display extends Thread{
             redrawBoatAnnotations(boat);
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
             boat.getIcon().relocate(point.getX(), point.getY());
-            boat.getIcon().toFront();
+            boat.getIcon().getTransforms().clear();
+            boat.getIcon().getTransforms().add(new Rotate(boat.getHeading() , 5.0, 20.0));
+            //boat.getIcon().toFront();
         }
     }
 
@@ -193,16 +205,17 @@ public class Display extends Thread{
 
     public void drawBoatWake(Boat boat){
 
-        Polygon wake = new Polygon();
+        Polyline wake = new Polyline();
         wake.getPoints().addAll(new Double[]{
-                5.0, 20.0,
                 0.0, 0.0,
+                5.0, 20.0,
                 10.0, 0.0
                 });
 
         root.getChildren().add(wake);
         boat.setWake(wake);
-        //wake.setFill(Color.web("#84daff"));
+        wake.setFill(Color.web("#84daff"));
+        wake.setStroke(Color.web("#eaf2ff"));
     }
 
     public void redrawBoatAnnotations(Boat boat){
@@ -218,15 +231,15 @@ public class Display extends Thread{
 
     private void redrawWake(Boat boat, CartesianPoint point){
         boat.getWake().getTransforms().clear();
-        double scale = boat.getSpeed() * 1/50;
+        double scale = boat.getSpeed() * 1/50;  // 1/50 is used for scaling nicely was eyeballed
         boat.getWake().setScaleY(scale);
         boat.getWake().setScaleX(scale);
         double wakeHeight = boat.getWake().getLayoutBounds().getHeight();
-        boat.getWake().setTranslateX(point.getX()); //+ (scale * wakeHeight) * 0.025);
-        boat.getWake().setTranslateY(point.getY() - (scale * wakeHeight / 2) - 4); //- (scale * wakeHeight) * 0.725);
-        boat.getWake().getTransforms().add(new Rotate(boat.getHeading() -180, 5.0, 20.0));
-
-        boat.getWake().toFront();
+        boat.getWake().setTranslateX(point.getX());
+        boat.getWake().setTranslateY(point.getY() );
+        double pivotx = boat.getWake().getPoints().get(2);
+        double pivoty = boat.getWake().getPoints().get(3);
+        boat.getWake().getTransforms().add(new Rotate(boat.getHeading(), pivotx, pivoty));
 
     }
 

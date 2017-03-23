@@ -2,6 +2,7 @@ package seng302;
 
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 
@@ -24,7 +25,7 @@ public class Boat implements Comparable<Boat>{
     private double currentLon;
     private int lastPassedMark;
     private boolean finished;
-    private Polygon wake;
+    private Polyline wake;
     private double heading;
 
     public Boat(String name, String nickName, double speed) {
@@ -80,6 +81,7 @@ public class Boat implements Comparable<Boat>{
         if(lastPassedMark == courseOrder.size()-1){
             finished = true;
             heading = 0;
+            speed = 0;
         } else{
             //Move the remaining distance in leg
             double percentGained = (distanceGained / distanceLeftInLeg);
@@ -138,11 +140,11 @@ public class Boat implements Comparable<Boat>{
 
     public Text getAnnotation() {return annotation;}
 
-    public void setWake(Polygon wake) {
+    public void setWake(Polyline wake) {
         this.wake = wake;
     }
 
-    public Polygon getWake() {
+    public Polyline getWake() {
         return wake;
     }
 
