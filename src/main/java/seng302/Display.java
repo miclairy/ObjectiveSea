@@ -25,6 +25,7 @@ public class Display extends Thread{
     private Group root;
     private final ArrayList<Color> COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#A0D468"), Color.web("#FC6E51"),
             Color.web("#FFCE54"), Color.web("#48CFAD"), Color.web("#4FC1E9"), Color.web("#656D78"))));
+    private Polygon boundary;
 
     public Display(Group root, Race race) {
         this.root = root;
@@ -48,7 +49,7 @@ public class Display extends Thread{
                     finished = false;
                 }
             }
-            redrawBoats();
+
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
@@ -56,14 +57,13 @@ public class Display extends Thread{
                     redrawCourse();
                 }
             });
-
+            redrawBoats();
             try {
                 Thread.sleep(50); //speed up multiple of 2
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-
     }
 
 
@@ -71,17 +71,28 @@ public class Display extends Thread{
      * Draws all of the marks from the course
      */
     private void drawCourse(){
+        drawBoundary();
+        drawMarks();
+        drawWindArrow();
+    }
+
+    public void drawMarks(){
         DropShadow ds = new DropShadow();
         ds.setOffsetY(0.0f);
         ds.setOffsetX(0.0f);
-        ds.setColor(Color.web("#89cac1"));
+        ds.setColor(Color.web("#6db1b7"));
         for(CompoundMark mark : race.getCourse().getMarks().values()){
             if(mark instanceof Gate){
                 Gate gate  = (Gate) mark;
                 ArrayList<CartesianPoint> points = new ArrayList<>();
                 points.add(DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon()));
                 points.add(DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon()));
-
+                if(gate.isStart() || gate.isFinish()){
+                    Line line = new Line(points.get(0).getX(),points.get(0).getY(), points.get(1).getX(), points.get(1).getY());
+                    line.setStroke(Color.web("#70aaa2"));
+                    root.getChildren().add(line);
+                    gate.setLine(line);
+                }
                 for(CartesianPoint point : points){
                     Circle circle = new Circle(point.getX(), point.getY(), 4f);
                     circle.setFill(Color.WHITE);
@@ -90,13 +101,6 @@ public class Display extends Thread{
                     circle.setEffect(ds);
                     root.getChildren().add(circle);
                     gate.addIcon(circle);
-                }
-
-                if(gate.isStart() | gate.isFinish()){
-                    Line line = new Line(points.get(0).getX(),points.get(0).getY(), points.get(1).getX(), points.get(1).getY());
-                    line.setStroke(Color.web("#70aaa2"));
-                    root.getChildren().add(line);
-                    gate.setLine(line);
                 }
             }else{
                 CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
@@ -108,8 +112,27 @@ public class Display extends Thread{
                 root.getChildren().add(circle);
                 mark.addIcon(circle);
             }
-            drawWindArrow();
         }
+    }
+
+    public void drawBoundary(){
+        DropShadow ds = new DropShadow();
+        ds.setOffsetY(0.0f);
+        ds.setOffsetX(0.0f);
+        ds.setSpread(0.4);
+        ds.setColor(Color.web("#6db1b7"));
+        boundary = new Polygon();
+        for(Coordinate coord : race.getCourse().getBoundary()){
+            CartesianPoint point = DisplayUtils.convertFromLatLon(coord.getLat(), coord.getLon());
+            boundary.getPoints().add(point.getX());
+            boundary.getPoints().add(point.getY());
+        }
+        boundary.setId("boundary");
+        boundary.setEffect(ds);
+        boundary.setFill(Color.web("#88e6ef"));
+        boundary.setStroke(Color.web("#407a97"));
+        root.getChildren().add(boundary);
+        boundary.toBack();
     }
 
     public void drawWindArrow(){
@@ -210,16 +233,17 @@ public class Display extends Thread{
                 ArrayList<CartesianPoint> points = new ArrayList<>();
                 points.add(DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon()));
                 points.add(DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon()));
-                for (int i = 0; i < mark.getIcons().size(); i++) {
-                    mark.getIcons().get(i).setCenterX(points.get(i).getX());
-                    mark.getIcons().get(i).setCenterY(points.get(i).getY());
-                }
                 if (gate.getLine() != null) {
                     root.getChildren().remove(gate.getLine());
                     Line line = new Line(points.get(0).getX(), points.get(0).getY(), points.get(1).getX(), points.get(1).getY());
                     line.setStroke(Color.web("#70aaa2"));
                     root.getChildren().add(line);
                     gate.setLine(line);
+                }
+                for (int i = 0; i < mark.getIcons().size(); i++) {
+                    mark.getIcons().get(i).toFront();
+                    mark.getIcons().get(i).setCenterX(points.get(i).getX());
+                    mark.getIcons().get(i).setCenterY(points.get(i).getY());
                 }
             } else {
                 for (Circle icon : mark.getIcons()) {
@@ -228,6 +252,12 @@ public class Display extends Thread{
                 }
             }
         }
+        redrawBoundary();
+    }
+
+    public void redrawBoundary(){
+        root.getChildren().remove(boundary);
+        drawBoundary();
     }
 }
 
