@@ -17,6 +17,10 @@
     -fx-box-border: transparent;
 }
 
+#settingsPane {
+    -fx-background-color: #2a2a2a;
+}
+
 #annotation{
     -fx-font-family: 'helvetica';
 }
