@@ -1,23 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.embed.swing.*?>
+<?import java.lang.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.canvas.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<SplitPane dividerPositions="0.7842809364548495" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.Controller" stylesheets="@style.css">
+<SplitPane dividerPositions="0.7842809364548495" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.Controller">
   <items>
     <AnchorPane fx:id="canvasAnchor" minHeight="200.0" minWidth="200.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: #aae7df;">
          <children>
             <Group fx:id="root" layoutY="-1.0">
                <children>
                   <Canvas fx:id="canvas" height="400.0" width="466.0" />
+                  <Label fx:id="fpsLabel" alignment="TOP_LEFT" centerShape="false" contentDisplay="BOTTOM" prefHeight="36.0" prefWidth="64.0" />
                </children>
             </Group>
          </children></AnchorPane>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="398.0" prefWidth="203.0">
+      <GridPane fx:id="sidePane">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="369.0" minHeight="10.0" percentHeight="90" prefHeight="369.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="188.0" minHeight="10.0" percentHeight="10" prefHeight="31.0" vgrow="SOMETIMES" />
+        </rowConstraints>
          <children>
-            <ListView fx:id="placings" layoutX="-64.0" layoutY="131.0" prefHeight="398.0" prefWidth="126.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-         </children></AnchorPane>
+            <ListView fx:id="placings" />
+            <Pane fx:id="settingsPane" maxHeight="100.0" prefHeight="20.0" styleClass="settingsPane" stylesheets="@style.css" GridPane.rowIndex="1">
+               <children>
+                  <CheckBox fx:id="fpsToggle" layoutX="19.0" layoutY="17.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#fpsToggle" selected="true" text="Toggle FPS" textFill="WHITE" />
+               </children></Pane>
+         </children>
+      </GridPane>
   </items>
 </SplitPane>
