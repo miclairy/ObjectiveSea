@@ -1,7 +1,6 @@
 package seng302;
 
 import javafx.animation.AnimationTimer;
-import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -24,6 +23,7 @@ public class Display extends AnimationTimer {
     private Race race;
     private Group root;
     private double previousTime = 0;
+    private ImageView currentWindArrow;
     private final ArrayList<Color> COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#A0D468"), Color.web("#FC6E51"),
             Color.web("#FFCE54"), Color.web("#48CFAD"), Color.web("#4FC1E9"), Color.web("#656D78"))));
 
@@ -57,7 +57,7 @@ public class Display extends AnimationTimer {
             redrawBoats();
             Controller.updatePlacings();
             redrawCourse();
-
+            redrawWindArrow();
     }
 
 
@@ -102,22 +102,29 @@ public class Display extends AnimationTimer {
                 root.getChildren().add(circle);
                 mark.addIcon(circle);
             }
-            drawWindArrow();
         }
+        drawWindArrow();
     }
 
+    /**
+     * Draws the wind direction arrow from the course on the canvas.
+     */
     public void drawWindArrow(){
+
         double windDirection = race.getCourse().getWindDirection();
         ImageView imv = new ImageView();
         Image windArrow = new Image("graphics/arrow.png");
         imv.setImage(windArrow);
         imv.setFitHeight(40);
         imv.setFitWidth(40);
-        imv.setX(imv.getX() + 15);
-        imv.setY(imv.getY() + 15);
+        imv.setX(Controller.getCanvasSize().getX() - 60);
+        imv.setY(15);
         imv.setRotate(windDirection);
         root.getChildren().add(imv);
+        currentWindArrow = imv;
     }
+
+
     /**
      * Draws the boat icons and fills them with colour
      */
@@ -145,7 +152,6 @@ public class Display extends AnimationTimer {
         }
     }
 
-
     public void drawBoatAnnotations(){
         for(Boat boat : race.getCompetitors()){
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
@@ -158,6 +164,7 @@ public class Display extends AnimationTimer {
             root.getChildren().add(annotation);
         }
     }
+
 
     public void redrawBoatAnnotations(Boat boat){
         double adjustX = 10;
@@ -196,6 +203,13 @@ public class Display extends AnimationTimer {
                 }
             }
         }
+    }
+
+    /**
+     * Moves compass arrow to correct position when canvas is resized.
+     */
+    public void redrawWindArrow() {
+        currentWindArrow.setX(Controller.getCanvasSize().getX() - 60);
     }
 }
 
