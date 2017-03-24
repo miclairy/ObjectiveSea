@@ -13,8 +13,12 @@
 
 .split-pane *.split-pane-divider {
     -fx-background-color: transparent;
-    -fx-padding: 0;
+    -fx-padding: 0.6;
     -fx-box-border: transparent;
+}
+
+#settingsPane {
+    -fx-background-color: #2a2a2a;
 }
 
 #annotation{

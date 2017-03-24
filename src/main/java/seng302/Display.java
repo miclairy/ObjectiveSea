@@ -1,6 +1,6 @@
 package seng302;
 
-import javafx.application.Platform;
+import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -21,10 +21,12 @@ import java.util.*;
  * Class to manage the output display.
  */
 
-public class Display extends Thread{
+public class Display extends AnimationTimer {
 
     private Race race;
     private Group root;
+    private double previousTime = 0;
+    private ImageView currentWindArrow;
     private final ArrayList<Color> COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#A0D468"), Color.web("#FC6E51"),
             Color.web("#FFCE54"), Color.web("#48CFAD"), Color.web("#4FC1E9"), Color.web("#656D78"))));
     private Polygon boundary;
@@ -36,37 +38,29 @@ public class Display extends Thread{
         drawCourse();
         drawBoatAnnotations();
         drawBoats();
+    }
 
+    @Override
+    public void handle(long currentTime) {
+        if (previousTime == 0) {
+            previousTime = currentTime;
+            return;
+        }
+        double secondsElapsed = (currentTime - previousTime) / 1e9f;
+        previousTime = currentTime;
+        run(secondsElapsed);
+        Controller.updateFPSCounter(currentTime);
     }
 
 
-    public void run(){
-        double timeIncrement = 0.000277778; //hours = 1 second
-        boolean finished = false;
-        while (!finished){
-            finished = true;
+    public void run(double timeIncrement){
             for (Boat boat : race.getCompetitors()){
                 boat.updateLocation(timeIncrement, race.getCourse());
-                if (!boat.isFinished()){
-                    finished = false;
-                }
             }
-
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    redrawBoats();
-
-                    Controller.updatePlacings();
-                    redrawCourse();
-                }
-            });
-            try {
-                Thread.sleep(50); //speed up multiple of 2
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+            redrawBoats();
+            Controller.updatePlacings();
+            redrawCourse();
+            redrawWindArrow();
     }
 
 
@@ -76,7 +70,6 @@ public class Display extends Thread{
     private void drawCourse(){
         drawBoundary();
         drawMarks();
-        drawWindArrow();
     }
 
     public void drawMarks(){
@@ -116,6 +109,7 @@ public class Display extends Thread{
                 mark.addIcon(circle);
             }
         }
+        drawWindArrow();
     }
 
     public void drawBoundary(){
@@ -138,6 +132,9 @@ public class Display extends Thread{
         boundary.toBack();
     }
 
+    /**
+     * Draws the wind direction arrow from the course on the canvas.
+     */
     public void drawWindArrow(){
         double windDirection = race.getCourse().getWindDirection();
         ImageView imv = new ImageView();
@@ -145,11 +142,14 @@ public class Display extends Thread{
         imv.setImage(windArrow);
         imv.setFitHeight(40);
         imv.setFitWidth(40);
-        imv.setX(imv.getX() + 15);
-        imv.setY(imv.getY() + 15);
+        imv.setX(Controller.getCanvasSize().getX() - 60);
+        imv.setY(15);
         imv.setRotate(windDirection);
         root.getChildren().add(imv);
+        currentWindArrow = imv;
     }
+
+
     /**
      * Draws the boat icons and fills them with colour
      */
@@ -189,12 +189,12 @@ public class Display extends Thread{
         }
     }
 
-
     public void drawBoatAnnotations(){
         for(Boat boat : race.getCompetitors()){
+            String annotationText = boat.getNickName().toString() + ", " + boat.getSpeed() + "kn";
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
             Text annotation = new Text();
-            annotation.setText(boat.getNickName().toString());
+            annotation.setText(annotationText);
             annotation.setId("annotation");
             annotation.setX(point.getX() + 10);
             annotation.setY(point.getY() + 15);
@@ -274,6 +274,13 @@ public class Display extends Thread{
     public void redrawBoundary(){
         root.getChildren().remove(boundary);
         drawBoundary();
+    }
+
+    /**
+     * Moves compass arrow to correct position when canvas is resized.
+     */
+    public void redrawWindArrow() {
+        currentWindArrow.setX(Controller.getCanvasSize().getX() - 60);
     }
 }
 
