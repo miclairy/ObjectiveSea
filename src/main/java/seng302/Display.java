@@ -28,13 +28,13 @@ public class Display extends AnimationTimer {
     private final ArrayList<Color> COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#A0D468"), Color.web("#FC6E51"),
             Color.web("#FFCE54"), Color.web("#48CFAD"), Color.web("#4FC1E9"), Color.web("#656D78"))));
     private Polygon boundary;
+    private double annotationsLevel;
 
     public Display(Group root, Race race) {
         this.root = root;
         this.race = race;
         race.setEvents();
         drawCourse();
-        drawBoatAnnotations();
         drawBoats();
     }
 
@@ -171,7 +171,9 @@ public class Display extends AnimationTimer {
         for (Boat boat : race.getCompetitors()) {
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
             boat.getIcon().relocate(point.getX(), point.getY());
-            redrawBoatAnnotations(boat);
+            if (annotationsLevel > 0) {
+                redrawBoatAnnotations(boat);
+            }
         }
     }
 
@@ -240,6 +242,19 @@ public class Display extends AnimationTimer {
      */
     public void redrawWindArrow() {
         currentWindArrow.setX(Controller.getCanvasSize().getX() - 60);
+    }
+
+    public void changeAnnotations(double level) {
+        annotationsLevel = level;
+
+        if (annotationsLevel == 0) {
+            for (Boat boat : race.getCompetitors()) {
+                root.getChildren().remove(boat.getAnnotation());
+            }
+        } else if (annotationsLevel == 1){
+            drawBoatAnnotations();
+        }
+
     }
 }
 

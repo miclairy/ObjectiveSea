@@ -3,6 +3,8 @@ package seng302;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.property.adapter.JavaBeanStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -37,6 +39,8 @@ public class Controller implements Initializable {
     private Label fpsLabel;
     @FXML
     private CheckBox fpsToggle;
+    @FXML
+    private Slider annotationsSlider;
 
     public static SimpleStringProperty fpsString = new SimpleStringProperty();
     private static final long[] frameTimes = new long[100];
@@ -46,6 +50,7 @@ public class Controller implements Initializable {
     private static ObservableList<String> formattedDisplayOrder = observableArrayList();
 
     private static CartesianPoint canvasSize;
+    private Display display;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -56,11 +61,22 @@ public class Controller implements Initializable {
         Course course = Main.getRace().getCourse();
         course.initCourseLatLon();
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
-        Display display = new Display(root, Main.getRace());
+        display = new Display(root, Main.getRace());
+        setAnnotations();
         fpsString.set("60.0");
         fpsLabel.textProperty().bind(fpsString);
         display.start();
 
+    }
+
+    private void setAnnotations() {
+        annotationsSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                display.changeAnnotations((double) newValue);
+            }
+        });
+        annotationsSlider.adjustValue(annotationsSlider.getMax());
     }
 
     public static void updatePlacings(){
@@ -110,4 +126,6 @@ public class Controller implements Initializable {
     public static CartesianPoint getCanvasSize() {
         return canvasSize;
     }
+
+
 }
