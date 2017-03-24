@@ -68,7 +68,6 @@ public class Display extends AnimationTimer {
     private void drawCourse(){
         drawBoundary();
         drawMarks();
-        drawWindArrow();
     }
 
     public void drawMarks(){
