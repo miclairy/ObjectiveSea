@@ -22,22 +22,23 @@ public class DisplayUtils {
      * @return Returns CartesianPoint with an x and a y coordinate for use in placement of boats and/or marks/gates.
      */
     public static CartesianPoint convertFromLatLon(double lat, double lon) {
+        double canvasY = Controller.getCanvasSize().getY();
+        double canvasX = Controller.getCanvasSize().getX();
 
         double changeInLat = maxLat - minLat;
         double changeInLon = maxLon - minLon;
 
-        double lonPerPixel = Controller.getCanvasSize().getX()/changeInLon; //getx() gets width
-        double latPerPixel = Controller.getCanvasSize().getY()/changeInLat; //gety() gets height
+        double xPerLon = canvasX/changeInLon;
+        double yPerLat = canvasY/changeInLat;
 
-        if(changeInLat > changeInLon) {
-            lonPerPixel = Controller.getCanvasSize().getX()/changeInLat;
+        if (yPerLat > xPerLon) {
+            yPerLat = xPerLon;
         } else {
-            latPerPixel = Controller.getCanvasSize().getY()/changeInLon;
+            xPerLon = yPerLat;
         }
 
-        int xCoord = (int) (((Controller.getCanvasSize().getX() - Math.round(Math.abs((changeInLon)*lonPerPixel)))/2)
-                            + Math.round(Math.abs((lon - minLon)*lonPerPixel)));
-        int yCoord = (int) Math.round(Math.abs(Controller.getCanvasSize().getY() - ((lat - minLat)*latPerPixel)));
+        int xCoord = (int) ((canvasX - changeInLon * xPerLon) / 2 + (lon - minLon) * xPerLon);
+        int yCoord = (int) (canvasY - ((canvasY - changeInLat * yPerLat) / 2 + (lat - minLat) * yPerLat));
 
         CartesianPoint point = new CartesianPoint(xCoord, yCoord);
         return point;

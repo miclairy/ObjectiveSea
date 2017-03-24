@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
  */
 
 public class DisplayUtilsTest {
-
     //TODO fix unit test!!
 //    @Test
 //    public void getXYCoords(){
@@ -29,4 +28,5 @@ public class DisplayUtilsTest {
 //        assertEquals(232, (int) testPoint.getX());
 //        assertEquals(682, (int) testPoint.getY());
 //    }
+
 }
