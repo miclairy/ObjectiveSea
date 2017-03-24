@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.embed.swing.*?>
-<?import java.lang.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.canvas.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<SplitPane dividerPositions="0.7842809364548495" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.Controller">
+<SplitPane dividerPositions="0.7842809364548495" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.Controller">
   <items>
     <AnchorPane fx:id="canvasAnchor" minHeight="200.0" minWidth="200.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: #aae7df;">
          <children>
@@ -18,20 +25,35 @@
                </children>
             </Group>
          </children></AnchorPane>
-      <GridPane fx:id="sidePane">
+      <GridPane fx:id="sidePane" prefHeight="394.0" prefWidth="128.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
         <rowConstraints>
-          <RowConstraints maxHeight="369.0" minHeight="10.0" percentHeight="90" prefHeight="369.0" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="188.0" minHeight="10.0" percentHeight="10" prefHeight="31.0" vgrow="SOMETIMES" />
+          <RowConstraints />
+          <RowConstraints maxHeight="316.0" minHeight="308.0" percentHeight="70.0" prefHeight="308.0" vgrow="ALWAYS" />
+            <RowConstraints vgrow="NEVER" />
+            <RowConstraints percentHeight="30.0" vgrow="NEVER" />
         </rowConstraints>
          <children>
-            <ListView fx:id="placings" />
-            <Pane fx:id="settingsPane" maxHeight="100.0" prefHeight="20.0" styleClass="settingsPane" stylesheets="@style.css" GridPane.rowIndex="1">
+            <ListView fx:id="placings" prefHeight="240.0" prefWidth="128.0" GridPane.rowIndex="1" />
+            <VBox fx:id="settingsPane" prefHeight="136.0" prefWidth="128.0" styleClass="settingsPane" stylesheets="@style.css" GridPane.rowIndex="3">
                <children>
-                  <CheckBox fx:id="fpsToggle" layoutX="19.0" layoutY="17.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#fpsToggle" selected="true" text="Toggle FPS" textFill="WHITE" />
-               </children></Pane>
+                  <AnchorPane>
+                     <children>
+                        <Label alignment="CENTER" prefHeight="17.0" prefWidth="128.0" text="Annotations" textAlignment="CENTER" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                     </children>
+                  </AnchorPane>
+                  <Slider fx:id="annotationsSlider" majorTickUnit="1.0" max="2.0" min="1.0" minorTickCount="0" prefHeight="10.0" prefWidth="128.0" showTickMarks="true" snapToTicks="true" />
+                  <HBox layoutY="5.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="18.0" prefWidth="128.0">
+                     <children>
+                        <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="41.0" prefWidth="114.0" text="None" textFill="WHITE" HBox.hgrow="ALWAYS" />
+                        <Label graphicTextGap="1.0" text="All" textAlignment="RIGHT" textFill="WHITE" HBox.hgrow="ALWAYS" />
+                     </children>
+                  </HBox>
+                  <CheckBox fx:id="fpsToggle" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#fpsToggle" selected="true" text="Toggle FPS" textFill="WHITE" />
+               </children>
+            </VBox>
          </children>
       </GridPane>
   </items>
