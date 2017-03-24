@@ -1,6 +1,7 @@
 package seng302;
 
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -58,5 +59,25 @@ public class RaceTest {
         places.add(testBoat1);
         places.add(testBoat2);
         assertEquals(places, race.getRaceOrder());
+    }
+
+    @Test
+    public void totalRaceTimeTest(){
+        Course course = new Course();
+        CompoundMark mark1 = new Gate("TestMark1", 1, 1, 1, 1);
+        CompoundMark mark2 = new CompoundMark("TestMark2", 2, 2);
+        course.addNewMark(mark1);
+        course.addNewMark(mark2);
+        course.addMarkInOrder("TestMark1");
+        course.addMarkInOrder("TestMark2");
+        ArrayList<Boat> boats = new ArrayList<>();
+
+        Boat testBoat1 = new Boat("Boat 1","1", 10);
+
+        boats.add(testBoat1);
+
+        Race race = new Race("Test Race", course, boats);
+        race.setTotalRaceTime();
+        Assert.assertEquals(race.getTotalRaceTime(), 30841, 1);
     }
 }

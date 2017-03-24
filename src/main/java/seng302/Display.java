@@ -32,7 +32,6 @@ public class Display extends AnimationTimer {
     public Display(Group root, Race race) {
         this.root = root;
         this.race = race;
-        race.setEvents();
         drawCourse();
         drawBoatAnnotations();
         drawBoats();
@@ -45,6 +44,7 @@ public class Display extends AnimationTimer {
             return;
         }
         double secondsElapsed = (currentTime - previousTime) / 1e9f;
+        //secondsElapsed /= Controller.getTimeScaleFactor();
         previousTime = currentTime;
         run(secondsElapsed);
         Controller.updateFPSCounter(currentTime);
@@ -147,11 +147,9 @@ public class Display extends AnimationTimer {
         currentWindArrow = imv;
     }
 
-
     /**
      * Draws the boat icons and fills them with colour
      */
-
     private void drawBoats(){
         int i = 1;
         for (Boat boat : race.getCompetitors()) {

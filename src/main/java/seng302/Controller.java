@@ -1,8 +1,6 @@
 package seng302;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.property.adapter.JavaBeanStringProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -10,9 +8,7 @@ import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.RowConstraints;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -44,7 +40,6 @@ public class Controller implements Initializable {
     private static boolean arrayFilled = false ;
 
     private static ObservableList<String> formattedDisplayOrder = observableArrayList();
-
     private static CartesianPoint canvasSize;
 
     @Override
@@ -53,14 +48,18 @@ public class Controller implements Initializable {
         canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> canvasSize.setX((double) newValue));
         canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> canvasSize.setY((double) newValue));
         canvasSize = new CartesianPoint(canvas.getWidth(), canvas.getHeight());
-        Course course = Main.getRace().getCourse();
+
+        Race race = Main.getRace();
+        Course course = race.getCourse();
         course.initCourseLatLon();
+        race.setTotalRaceTime();
+
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
-        Display display = new Display(root, Main.getRace());
+        Display display = new Display(root, race);
         fpsString.set("60.0");
         fpsLabel.textProperty().bind(fpsString);
-        display.start();
 
+        display.start();
     }
 
     public static void updatePlacings(){
@@ -77,7 +76,6 @@ public class Controller implements Initializable {
             }
             formattedDisplayOrder.add(displayString);
         }
-
     }
 
     /**
