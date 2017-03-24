@@ -54,7 +54,7 @@ public class Boat implements Comparable<Boat>{
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
         CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
 
-        double distanceGained = timePassed * speed;
+        double distanceGained = timePassed * speed / 360; // 3600 for accurate speed
         double distanceLeftInLeg = Course.greaterCircleDistance(currentLat, nextMark.getLat(), currentLon, nextMark.getLon());
 
         //If boat moves more than the remaining distance in the leg

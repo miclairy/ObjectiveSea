@@ -1,12 +1,18 @@
 package seng302;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.property.adapter.JavaBeanStringProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.RowConstraints;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -22,9 +28,20 @@ public class Controller implements Initializable {
     @FXML
     private ListView<String> placings;
     @FXML
+    private GridPane sidePane;
+    @FXML
     private Group root;
     @FXML
     private AnchorPane canvasAnchor;
+    @FXML
+    private Label fpsLabel;
+    @FXML
+    private CheckBox fpsToggle;
+
+    public static SimpleStringProperty fpsString = new SimpleStringProperty();
+    private static final long[] frameTimes = new long[100];
+    private static int frameTimeIndex = 0 ;
+    private static boolean arrayFilled = false ;
 
     private static ObservableList<String> formattedDisplayOrder = observableArrayList();
 
@@ -40,6 +57,8 @@ public class Controller implements Initializable {
         course.initCourseLatLon();
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
         Display display = new Display(root, Main.getRace());
+        fpsString.set("60.0");
+        fpsLabel.textProperty().bind(fpsString);
         display.start();
 
     }
@@ -59,6 +78,33 @@ public class Controller implements Initializable {
             formattedDisplayOrder.add(displayString);
         }
 
+    }
+
+    /**
+     * Updates the fps counter to the current fps of the average of the last 100 frames of the Application.
+     * @param now Is the current time
+     */
+    public static void updateFPSCounter(long now) {
+        long oldFrameTime = frameTimes[frameTimeIndex];
+        frameTimes[frameTimeIndex] = now;
+        frameTimeIndex = (frameTimeIndex + 1) % frameTimes.length;
+        if (frameTimeIndex == 0) {
+            arrayFilled = true;
+        }
+        if (arrayFilled) {
+            long elapsedNanos = now - oldFrameTime;
+            long elapsedNanosPerFrame = elapsedNanos / frameTimes.length;
+            double frameRate = 1_000_000_000.0 / elapsedNanosPerFrame;
+            fpsString.set(String.format("%.1f", frameRate));
+        }
+    }
+
+    @FXML
+    /**
+     * Called from the GUI when the fpsToggle checkbox is clicked. Updates visibility of fpsLabel.
+     */
+    private void fpsToggle(){
+        fpsLabel.setVisible(fpsToggle.isSelected());
     }
 
     public static CartesianPoint getCanvasSize() {
