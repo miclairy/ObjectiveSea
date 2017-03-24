@@ -267,7 +267,6 @@ public class Display extends AnimationTimer {
         boat.getPath().getElements().add(new MoveTo(pathStart.getX(), pathStart.getY()));
         for(ArrayList<Double> points : boat.getPathCoords()){
             CartesianPoint currPoint = DisplayUtils.convertFromLatLon(points.get(0), points.get(1));
-            Line line = new Line();
             boat.getPath().getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
         }
     }

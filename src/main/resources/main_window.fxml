@@ -35,7 +35,7 @@
             <ListView fx:id="placings" />
             <Pane fx:id="settingsPane" maxHeight="100.0" prefHeight="20.0" styleClass="settingsPane" stylesheets="@style.css" GridPane.rowIndex="1">
                <children>
-                  <CheckBox fx:id="fpsToggle" layoutX="19.0" layoutY="17.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#fpsToggle" selected="true" text="Toggle FPS" textFill="WHITE" />
+                  <CheckBox fx:id="fpsToggle" layoutX="19.0" layoutY="17.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#fpsToggle" selected="true" text="Display FPS" textFill="WHITE" />
                </children></Pane>
          </children>
       </GridPane>
