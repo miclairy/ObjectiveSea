@@ -171,7 +171,8 @@ public class Display extends Thread{
     private void redrawBoats(){
         for (Boat boat : race.getCompetitors()) {
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
-            boat.getIcon().relocate(point.getX(), point.getY());
+            boat.getIcon().setCenterX(point.getX());
+            boat.getIcon().setCenterY(point.getY());
             redrawBoatAnnotations(boat);
             redrawBoatPath(boat);
         }
@@ -240,20 +241,28 @@ public class Display extends Thread{
 
     public void drawBoatPath(){
         for(Boat boat : race.getCompetitors()){
-            CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
-            Path boatPath = new Path();
-            boatPath.getElements().add(new MoveTo(point.getX(), point.getY()));
-            boatPath.getStrokeDashArray().addAll(3.0,7.0,3.0,7.0);
-            boatPath.setId("boatPath");
-            boatPath.setStroke(Color.WHITE);
-            boat.setPath(boatPath);
-            root.getChildren().add(boatPath);
+            Path path = new Path();
+            boat.setPath(path);
+            boat.getPath().getStrokeDashArray().addAll(3.0,7.0,3.0,7.0);
+            boat.getPath().setId("boatPath");
+            boat.getPath().setOpacity(0.8);
+            boat.getPath().setStroke(boat.getIcon().getFill());
+            root.getChildren().add(path);
         }
     }
 
     public void redrawBoatPath(Boat boat){
-        boat.getPath().getElements().add(new LineTo(boat.getIcon().getLayoutX(), boat.getIcon().getLayoutY()));
+        boat.setPathCoords(boat.getCurrentLat(), boat.getCurrentLon());
+        CartesianPoint pathStart = DisplayUtils.convertFromLatLon(boat.getPathCoords().get(0).get(0), boat.getPathCoords().get(0).get(1));
+        boat.getPath().getElements().clear();
+        boat.getPath().getElements().add(new MoveTo(pathStart.getX(), pathStart.getY()));
 
+        ArrayList<PathElement> lines = new ArrayList<>();
+        for(ArrayList<Double> points : boat.getPathCoords()){
+            CartesianPoint currPoint = DisplayUtils.convertFromLatLon(points.get(0), points.get(1));
+            lines.add(new LineTo(currPoint.getX(), currPoint.getY()));
+        }
+        boat.getPath().getElements().addAll(lines);
     }
 }
 

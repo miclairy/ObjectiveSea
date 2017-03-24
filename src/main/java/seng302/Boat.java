@@ -3,7 +3,9 @@ package seng302;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.scene.shape.Path;
+import javafx.scene.shape.Circle;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -17,13 +19,14 @@ public class Boat implements Comparable<Boat>{
     private String nickName;
     private double speed;
     private int finishingPlace;
-    private Shape icon;
+    private Circle icon;
     private Text annotation;
     private double currentLat;
     private double currentLon;
     private int lastPassedMark;
     private boolean finished;
     private Path path;
+    private ArrayList<ArrayList<Double>> pathCoords;
 
     public Boat(String name, String nickName, double speed) {
         this.name = name;
@@ -31,6 +34,7 @@ public class Boat implements Comparable<Boat>{
         this.speed = speed;
         this.finished = false;
         this.lastPassedMark = 0;
+        this.pathCoords = new ArrayList<>();
     }
 
     /**
@@ -84,6 +88,15 @@ public class Boat implements Comparable<Boat>{
         }
     }
 
+    public ArrayList<ArrayList<Double>> getPathCoords() {return pathCoords;}
+
+    public void setPathCoords(Double lat, Double lon){
+        ArrayList<Double> newPoint= new ArrayList<>();
+        newPoint.add(lat);
+        newPoint.add(lon);
+        this.pathCoords.add(newPoint);
+    }
+
     public int compareTo(Boat otherBoat){
         return otherBoat.getLastPassedMark() - lastPassedMark;
     }
@@ -106,7 +119,7 @@ public class Boat implements Comparable<Boat>{
         this.finishingPlace = place;
     }
 
-    public Shape getIcon() {
+    public Circle getIcon() {
         return icon;
     }
 
@@ -114,9 +127,7 @@ public class Boat implements Comparable<Boat>{
         return lastPassedMark;
     }
 
-    public void setIcon(Shape icon) {
-        this.icon = icon;
-    }
+    public void setIcon(Circle icon) {this.icon = icon;}
 
     public void setAnnotation(Text annotation) {this.annotation = annotation;}
 
