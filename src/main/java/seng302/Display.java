@@ -177,6 +177,7 @@ public class Display extends AnimationTimer {
             boat.getIcon().setCenterY(point.getY());
             redrawBoatAnnotations(boat);
             redrawBoatPath(boat);
+            boat.getIcon().toFront();
         }
     }
 
@@ -264,9 +265,9 @@ public class Display extends AnimationTimer {
         CartesianPoint pathStart = DisplayUtils.convertFromLatLon(boat.getPathCoords().get(0).get(0), boat.getPathCoords().get(0).get(1));
         boat.getPath().getElements().clear();
         boat.getPath().getElements().add(new MoveTo(pathStart.getX(), pathStart.getY()));
-
         for(ArrayList<Double> points : boat.getPathCoords()){
             CartesianPoint currPoint = DisplayUtils.convertFromLatLon(points.get(0), points.get(1));
+            Line line = new Line();
             boat.getPath().getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
         }
     }

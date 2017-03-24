@@ -29,7 +29,22 @@
 -fx-opacity: 0.2;
 }
 
-#boatPath{
-
+#fpsLabel{
+    -fx-content-display: center;
+    -fx-padding: 10 10 10 18;
+    -fx-opacity: 0.8;
+    -fx-font-family: 'helvetica';
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: White;
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 20px;
 }
 
+#fpsToggle{
+    -fx-font-family: 'helvetica';
+}
+
+#fpsToggle *.box{
+    -fx-background-color: #1a1a1a;
+}
