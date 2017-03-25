@@ -12,7 +12,7 @@ public class Config {
     private static final String DEFAULT_CONFIG_PATH = "/defaultFiles/config.txt";
     private static final String EXPECTED_CONFIG_PATH = "config.txt";
     public static int NUM_BOATS_IN_RACE;
-    public static int TIME_SCALE;
+    public static int TIME_SCALE_IN_SECONDS;
 
     /**
      * This function finds a config file located at DEFAULT_CONFIG_PATH and sets any properties it finds in the file.
@@ -37,7 +37,7 @@ public class Config {
                         NUM_BOATS_IN_RACE = Integer.parseInt(st.nextToken());
                         break;
                     case "TIMESCALE":
-                        TIME_SCALE = (int)(Double.parseDouble(st.nextToken()) * 60000); //convert mins to milleseconds
+                        TIME_SCALE_IN_SECONDS = (int)TimeUtils.convertMinutesToSeconds(Double.parseDouble(st.nextToken()));
                         break;
                     default:
                         throw new IOException("Invalid Token.");

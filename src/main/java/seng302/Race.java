@@ -1,8 +1,5 @@
 package seng302;
 
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-
 import java.util.*;
 
 import static javafx.collections.FXCollections.observableArrayList;
@@ -77,7 +74,8 @@ public class Race {
      * slowest boat's speed. Adds a small buffer time for the start/end of race and variation in boat movements.
      */
     public void setTotalRaceTime(){
-        double bufferTimeInSeconds = 300; //extra time in minutes to allow the race to begin and end smoothly
+        double bufferTimeInSeconds = 0; //extra time in seconds to allow the race to begin and end smoothly
+        //currently set to 0 as we have no wait time
 
         double slowestBoatSpeed = Double.MAX_VALUE;
         for (Boat competitor : competitors) {
@@ -89,9 +87,8 @@ public class Race {
             courseDistance += course.distanceBetweenMarks(i - 1, i);
         }
 
-        double totalRaceTimeInSeconds = (courseDistance / slowestBoatSpeed) * 3600; //convert hours to seconds
+        double totalRaceTimeInSeconds = TimeUtils.convertHoursToSeconds(courseDistance / slowestBoatSpeed);
         totalRaceTimeInSeconds += bufferTimeInSeconds;
-        System.out.println(totalRaceTimeInSeconds);
         this.totalRaceTime = totalRaceTimeInSeconds;
     }
 }

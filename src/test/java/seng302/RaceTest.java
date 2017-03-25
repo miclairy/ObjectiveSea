@@ -78,6 +78,6 @@ public class RaceTest {
 
         Race race = new Race("Test Race", course, boats);
         race.setTotalRaceTime();
-        Assert.assertEquals(race.getTotalRaceTime(), 30841, 1);
+        Assert.assertEquals(30542, Math.round(race.getTotalRaceTime()), 1);
     }
 }

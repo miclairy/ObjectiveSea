@@ -43,22 +43,26 @@ public class Display extends AnimationTimer {
             previousTime = currentTime;
             return;
         }
-        double secondsElapsed = (currentTime - previousTime) / 1e9f;
-        //secondsElapsed /= Controller.getTimeScaleFactor();
-        previousTime = currentTime;
-        run(secondsElapsed);
+        double secondsElapsed = TimeUtils.convertNanosecondsToSeconds(currentTime - previousTime);
+        //scale time based on the input config value
+        double scaledSecondsElapsed = secondsElapsed * race.getTotalRaceTime() / (Config.TIME_SCALE_IN_SECONDS);
+        run(scaledSecondsElapsed); //using scaled time
+
         Controller.updateFPSCounter(currentTime);
+        //update clock here using scaledSecondsElapsed
+
+        previousTime = currentTime;
     }
 
 
-    public void run(double timeIncrement){
-            for (Boat boat : race.getCompetitors()){
-                boat.updateLocation(timeIncrement, race.getCourse());
-            }
-            redrawBoats();
-            Controller.updatePlacings();
-            redrawCourse();
-            redrawWindArrow();
+    public void run(double secondsElapsed){
+        for (Boat boat : race.getCompetitors()){
+            boat.updateLocation(TimeUtils.convertSecondsToHours(secondsElapsed), race.getCourse());
+        }
+        redrawBoats();
+        Controller.updatePlacings();
+        redrawCourse();
+        redrawWindArrow();
     }
 
 
