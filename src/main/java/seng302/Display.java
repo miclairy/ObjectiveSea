@@ -76,10 +76,6 @@ public class Display extends AnimationTimer {
      * Draws all of the marks from the course
      */
     public void drawMarks(){
-        DropShadow ds = new DropShadow();
-        ds.setOffsetY(0.0f);
-        ds.setOffsetX(0.0f);
-        ds.setColor(Color.web("#6db1b7"));
         for(CompoundMark mark : race.getCourse().getMarks().values()){
             if(mark instanceof Gate){
                 Gate gate  = (Gate) mark;
@@ -94,20 +90,14 @@ public class Display extends AnimationTimer {
                 }
                 for(CartesianPoint point : points){
                     Circle circle = new Circle(point.getX(), point.getY(), 4f);
-                    circle.setFill(Color.WHITE);
-                    circle.setStroke(Color.web("#cdfaf4"));
-                    circle.strokeWidthProperty().set(2.0);
-                    circle.setEffect(ds);
+                    circle.setId("mark");
                     root.getChildren().add(circle);
                     gate.addIcon(circle);
                 }
             }else{
                 CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
                 Circle circle = new Circle(point.getX(), point.getY(), 4f);
-                circle.setFill(Color.WHITE);
-                circle.setStroke(Color.web("#cdfaf4"));
-                circle.strokeWidthProperty().set(2.0);
-                circle.setEffect(ds);
+                circle.setId("mark");
                 root.getChildren().add(circle);
                 mark.addIcon(circle);
             }
@@ -168,6 +158,7 @@ public class Display extends AnimationTimer {
             root.getChildren().add(boatImage);
             boat.setIcon(boatImage);
             i++;
+            drawBoatWake(boat);
         }
     }
 
@@ -181,10 +172,11 @@ public class Display extends AnimationTimer {
             boat.getIcon().setTranslateX(point.getX());
             boat.getIcon().getTransforms().clear();
             boat.getIcon().getTransforms().add(new Rotate(boat.getHeading(), 5.0, 0.0));
-            boat.getIcon().relocate(point.getX(), point.getY());
             if (annotationsLevel > 0) {
                 moveBoatAnnotations(boat);
             }
+            moveWake(boat, point);
+            boat.getIcon().toFront();
         }
     }
 
@@ -202,7 +194,6 @@ public class Display extends AnimationTimer {
             annotation.setY(point.getY() + 15);
             boat.setAnnotation(annotation);
             root.getChildren().add(annotation);
-            drawBoatWake(boat);
         }
     }
 
@@ -221,8 +212,7 @@ public class Display extends AnimationTimer {
 
         root.getChildren().add(wake);
         boat.setWake(wake);
-        wake.setFill(Color.web("#84daff"));
-        wake.setStroke(Color.web("#eaf2ff"));
+        wake.setId("wake");
     }
 
     /**
@@ -233,7 +223,6 @@ public class Display extends AnimationTimer {
         double adjustX = 10;
         CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
         boat.getAnnotation().relocate((point.getX() + 10), point.getY() + 15);
-        moveWake(boat, point);
         if(DisplayUtils.checkBounds(boat.getAnnotation())){
             adjustX -= boat.getAnnotation().getBoundsInParent().getWidth();
             boat.getAnnotation().relocate((point.getX() + adjustX), point.getY() + 15);
@@ -244,13 +233,13 @@ public class Display extends AnimationTimer {
         boat.getWake().getTransforms().clear();
         double scale = boat.getSpeed() / WAKE_SCALE_FACTOR;
         boat.getWake().getTransforms().add(new Scale(scale, scale,5, 0));
-        double wakeHeight = boat.getWake().getLayoutBounds().getHeight();
         boat.getWake().setTranslateY(point.getY());
         boat.getWake().setTranslateX(point.getX());
         boat.getWake().getTransforms().add(new Rotate(boat.getHeading(), 5, 0));
     }
 
     public void redrawCourse(){
+        redrawBoundary();
         for (CompoundMark mark : race.getCourse().getMarks().values()){
             CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
 
@@ -267,7 +256,7 @@ public class Display extends AnimationTimer {
                     gate.setLine(line);
                 }
                 for (int i = 0; i < mark.getIcons().size(); i++) {
-                    //mark.getIcons().get(i).toFront();
+                    mark.getIcons().get(i).toFront();
                     mark.getIcons().get(i).setCenterX(points.get(i).getX());
                     mark.getIcons().get(i).setCenterY(points.get(i).getY());
                 }

@@ -32,6 +32,18 @@
     -fx-opacity: 0.2;
 }
 
+#wake{
+    -fx-stroke: #eaf2ff;
+    -fx-fill: rgb(132, 218, 255);
+}
+
+#mark{
+    -fx-fill: white;
+    -fx-effect: dropshadow(gaussian, #6db1b7, 10, 0.2, 0, 0);
+    -fx-stroke: #cdfaf4;
+    -fx-stroke-width: 2.0;
+}
+
 .slider .thumb {
     -fx-background-color: #3b3b3b;
 }
