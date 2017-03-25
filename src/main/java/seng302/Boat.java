@@ -80,7 +80,6 @@ public class Boat implements Comparable<Boat>{
         //Check if boat has finished
         if(lastPassedMark == courseOrder.size()-1){
             finished = true;
-            heading = 0;
             speed = 0;
         } else{
             //Move the remaining distance in leg
