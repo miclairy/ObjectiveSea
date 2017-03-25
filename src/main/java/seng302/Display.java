@@ -57,7 +57,7 @@ public class Display extends AnimationTimer {
      * Body of main loop of animation
      * @param timeIncrement
      */
-    public void run(double timeIncrement){
+    private void run(double timeIncrement){
             for (Boat boat : race.getCompetitors()){
                 boat.updateLocation(timeIncrement, race.getCourse());
             }
@@ -75,7 +75,7 @@ public class Display extends AnimationTimer {
     /**
      * Draws all of the marks from the course
      */
-    public void drawMarks(){
+    private void drawMarks(){
         for(CompoundMark mark : race.getCourse().getMarks().values()){
             if(mark instanceof Gate){
                 Gate gate  = (Gate) mark;
@@ -108,7 +108,7 @@ public class Display extends AnimationTimer {
     /**
      * Draws the boundary and adds styling from the course array of co-ordinates
      */
-    public void drawBoundary(){
+    private void drawBoundary(){
         boundary = new Polygon();
         boundary.setId("boundary");
         for(Coordinate coord : race.getCourse().getBoundary()){
@@ -123,7 +123,7 @@ public class Display extends AnimationTimer {
     /**
      * Draws the wind direction arrow from the course on the canvas.
      */
-    public void drawWindArrow(){
+    private void drawWindArrow(){
         double windDirection = race.getCourse().getWindDirection();
         ImageView imv = new ImageView();
         Image windArrow = new Image("graphics/arrow.png");
@@ -183,7 +183,7 @@ public class Display extends AnimationTimer {
     /**
      * Adds an text annotation to each boat offset by 10, 15.
      */
-    public void drawBoatAnnotations(){
+    private void drawBoatAnnotations(){
         for(Boat boat : race.getCompetitors()){
             String annotationText = boat.getNickName().toString() + ", " + boat.getSpeed() + "kn";
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
@@ -201,7 +201,7 @@ public class Display extends AnimationTimer {
      * Draws initial boat wake which is a V shaped polyline. Which is then coloured and attached to the boat.
      * @param boat to attach the wake to.
      */
-    public void drawBoatWake(Boat boat){
+    private void drawBoatWake(Boat boat){
 
         Polyline wake = new Polyline();
         wake.getPoints().addAll(new Double[]{
@@ -219,7 +219,7 @@ public class Display extends AnimationTimer {
      * Move's the annotation to where the boat is now.
      * @param boat
      */
-    public void moveBoatAnnotations(Boat boat){
+    private void moveBoatAnnotations(Boat boat){
         double adjustX = 10;
         CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
         boat.getAnnotation().relocate((point.getX() + 10), point.getY() + 15);
@@ -270,7 +270,7 @@ public class Display extends AnimationTimer {
 
     }
 
-    public void redrawBoundary(){
+    private void redrawBoundary(){
         boundary.getPoints().clear();
         for(Coordinate coord : race.getCourse().getBoundary()){
             CartesianPoint point = DisplayUtils.convertFromLatLon(coord.getLat(), coord.getLon());
@@ -287,17 +287,22 @@ public class Display extends AnimationTimer {
         currentWindArrow.setX(Controller.getCanvasSize().getX() - 60);
     }
 
+    /**
+     * When the slider gets to either 0 or 1 change the annotations to be on or off. Don't make more annotations if
+     * there are already annotations.
+     * @param level
+     */
     public void changeAnnotations(double level) {
-        annotationsLevel = level;
 
-        if (annotationsLevel == 0) {
+        if (level == 0) {
             for (Boat boat : race.getCompetitors()) {
                 root.getChildren().remove(boat.getAnnotation());
             }
-        } else if (annotationsLevel == 1){
+            annotationsLevel = 0;
+        } else if (level == 1 && annotationsLevel != 1){
             drawBoatAnnotations();
+            annotationsLevel = 1.0;
         }
-
     }
 }
 
