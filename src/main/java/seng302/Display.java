@@ -57,8 +57,6 @@ public class Display extends AnimationTimer {
             }
             redrawBoats();
             Controller.updatePlacings();
-            redrawCourse();
-            redrawWindArrow();
     }
 
 
@@ -111,21 +109,13 @@ public class Display extends AnimationTimer {
     }
 
     public void drawBoundary(){
-        DropShadow ds = new DropShadow();
-        ds.setOffsetY(0.0f);
-        ds.setOffsetX(0.0f);
-        ds.setSpread(0.4);
-        ds.setColor(Color.web("#6db1b7"));
         boundary = new Polygon();
+        boundary.setId("boundary");
         for(Coordinate coord : race.getCourse().getBoundary()){
             CartesianPoint point = DisplayUtils.convertFromLatLon(coord.getLat(), coord.getLon());
             boundary.getPoints().add(point.getX());
             boundary.getPoints().add(point.getY());
         }
-        boundary.setId("boundary");
-        boundary.setEffect(ds);
-        boundary.setFill(Color.web("#88e6ef"));
-        boundary.setStroke(Color.web("#407a97"));
         root.getChildren().add(boundary);
         boundary.toBack();
     }
@@ -201,7 +191,8 @@ public class Display extends AnimationTimer {
         }
     }
 
-    private void redrawCourse(){
+    public void redrawCourse(){
+        redrawBoundary();
         for (CompoundMark mark : race.getCourse().getMarks().values()){
             CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
 
@@ -218,7 +209,7 @@ public class Display extends AnimationTimer {
                     gate.setLine(line);
                 }
                 for (int i = 0; i < mark.getIcons().size(); i++) {
-                    mark.getIcons().get(i).toFront();
+                    //mark.getIcons().get(i).toFront();
                     mark.getIcons().get(i).setCenterX(points.get(i).getX());
                     mark.getIcons().get(i).setCenterY(points.get(i).getY());
                 }
@@ -229,12 +220,17 @@ public class Display extends AnimationTimer {
                 }
             }
         }
-        redrawBoundary();
+
     }
 
     public void redrawBoundary(){
-        root.getChildren().remove(boundary);
-        drawBoundary();
+        boundary.getPoints().clear();
+        for(Coordinate coord : race.getCourse().getBoundary()){
+            CartesianPoint point = DisplayUtils.convertFromLatLon(coord.getLat(), coord.getLon());
+            boundary.getPoints().add(point.getX());
+            boundary.getPoints().add(point.getY());
+        }
+
     }
 
     /**

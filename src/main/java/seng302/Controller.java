@@ -55,13 +55,24 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         placings.setItems(formattedDisplayOrder);
-        canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> canvasSize.setX((double) newValue));
-        canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> canvasSize.setY((double) newValue));
         canvasSize = new CartesianPoint(canvas.getWidth(), canvas.getHeight());
         Course course = Main.getRace().getCourse();
         course.initCourseLatLon();
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
         display = new Display(root, Main.getRace());
+
+        canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
+            canvasSize.setX((double) newValue);
+            display.redrawCourse();
+            display.redrawWindArrow();
+        });
+
+        canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> {
+            canvasSize.setY((double) newValue);
+            display.redrawCourse();
+            display.redrawWindArrow();
+        });
+
         setAnnotations();
         fpsString.set("60.0");
         fpsLabel.textProperty().bind(fpsString);
