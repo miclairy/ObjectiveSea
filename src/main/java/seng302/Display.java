@@ -9,14 +9,16 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Polyline;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
+import javafx.scene.transform.Scale;
 
 import java.util.*;
 
 /**
  * Created on 6/03/17.
  * Class to manage the output display.
- * For now this will be simple text-based output to terminal
  */
 
 public class Display extends AnimationTimer {
@@ -28,6 +30,7 @@ public class Display extends AnimationTimer {
     private final ArrayList<Color> COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#A0D468"), Color.web("#FC6E51"),
             Color.web("#FFCE54"), Color.web("#48CFAD"), Color.web("#4FC1E9"), Color.web("#656D78"))));
     private Polygon boundary;
+    private final double WAKE_SCALE_FACTOR = 50;
 
     public Display(Group root, Race race) {
         this.root = root;
@@ -50,26 +53,30 @@ public class Display extends AnimationTimer {
         Controller.updateFPSCounter(currentTime);
     }
 
-
+    /**
+     * Body of main loop of animation
+     * @param timeIncrement
+     */
     public void run(double timeIncrement){
             for (Boat boat : race.getCompetitors()){
                 boat.updateLocation(timeIncrement, race.getCourse());
             }
-            redrawBoats();
+            moveBoats();
             Controller.updatePlacings();
             redrawCourse();
             redrawWindArrow();
     }
 
 
-    /**
-     * Draws all of the marks from the course
-     */
     private void drawCourse(){
         drawBoundary();
         drawMarks();
     }
 
+
+    /**
+     * Draws all of the marks from the course
+     */
     public void drawMarks(){
         DropShadow ds = new DropShadow();
         ds.setOffsetY(0.0f);
@@ -110,6 +117,9 @@ public class Display extends AnimationTimer {
         drawWindArrow();
     }
 
+    /**
+     * Draws the boundary and adds styling from the course array of co-ordinates
+     */
     public void drawBoundary(){
         DropShadow ds = new DropShadow();
         ds.setOffsetY(0.0f);
@@ -149,13 +159,20 @@ public class Display extends AnimationTimer {
 
 
     /**
-     * Draws the boat icons and fills them with colour
+     * Draws the boat icons (triangles with lines in the middle) and fills them with colour
      */
-
     private void drawBoats(){
         int i = 1;
         for (Boat boat : race.getCompetitors()) {
-            Circle boatImage = new Circle(Math.abs(boat.getCurrentLat() * i), Math.abs(boat.getCurrentLon()) , 5.0f);
+            Polyline boatImage = new Polyline();
+            boatImage.getPoints().addAll(new Double[]{
+                    5.0, 0.0,
+                    10.0, 20.0,
+                    0.0 , 20.0,
+                    5.0, 0.0,
+                    5.0, 20.0
+                    }
+            );
             boatImage.setFill(COLORS.get(i));
             boatImage.setStroke(Color.WHITE);
             root.getChildren().add(boatImage);
@@ -167,14 +184,20 @@ public class Display extends AnimationTimer {
     /**
      * Update each boat icon's position on screen, translating from the boat's latlon to cartesian coordinates
      */
-    private void redrawBoats(){
+    private void moveBoats(){
         for (Boat boat : race.getCompetitors()) {
+            moveBoatAnnotations(boat);
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
-            boat.getIcon().relocate(point.getX(), point.getY());
-            redrawBoatAnnotations(boat);
+            boat.getIcon().setTranslateY(point.getY());
+            boat.getIcon().setTranslateX(point.getX());
+            boat.getIcon().getTransforms().clear();
+            boat.getIcon().getTransforms().add(new Rotate(boat.getHeading(), 5.0, 0.0));
         }
     }
 
+    /**
+     * Adds an text annotation to each boat offset by 10, 15.
+     */
     public void drawBoatAnnotations(){
         for(Boat boat : race.getCompetitors()){
             String annotationText = boat.getNickName().toString() + ", " + boat.getSpeed() + "kn";
@@ -186,20 +209,55 @@ public class Display extends AnimationTimer {
             annotation.setY(point.getY() + 15);
             boat.setAnnotation(annotation);
             root.getChildren().add(annotation);
+            drawBoatWake(boat);
         }
     }
 
-    public void redrawBoatAnnotations(Boat boat){
+    /**
+     * Draws initial boat wake which is a V shaped polyline. Which is then coloured and attached to the boat.
+     * @param boat to attach the wake to.
+     */
+    public void drawBoatWake(Boat boat){
+
+        Polyline wake = new Polyline();
+        wake.getPoints().addAll(new Double[]{
+                0.0 , 50.0,
+                5.0, 0.0,
+                10.0, 50.0
+                });
+
+        root.getChildren().add(wake);
+        boat.setWake(wake);
+        wake.setFill(Color.web("#84daff"));
+        wake.setStroke(Color.web("#eaf2ff"));
+    }
+
+    /**
+     * Move's the annotation to where the boat is now.
+     * @param boat
+     */
+    public void moveBoatAnnotations(Boat boat){
         double adjustX = 10;
         CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
         boat.getAnnotation().relocate((point.getX() + 10), point.getY() + 15);
+        moveWake(boat, point);
         if(DisplayUtils.checkBounds(boat.getAnnotation())){
             adjustX -= boat.getAnnotation().getBoundsInParent().getWidth();
             boat.getAnnotation().relocate((point.getX() + adjustX), point.getY() + 15);
         }
     }
 
-    private void redrawCourse(){
+    private void moveWake(Boat boat, CartesianPoint point){
+        boat.getWake().getTransforms().clear();
+        double scale = boat.getSpeed() / WAKE_SCALE_FACTOR;
+        boat.getWake().getTransforms().add(new Scale(scale, scale,5, 0));
+        double wakeHeight = boat.getWake().getLayoutBounds().getHeight();
+        boat.getWake().setTranslateY(point.getY());
+        boat.getWake().setTranslateX(point.getX());
+        boat.getWake().getTransforms().add(new Rotate(boat.getHeading(), 5, 0));
+    }
+
+    public void redrawCourse(){
         for (CompoundMark mark : race.getCourse().getMarks().values()){
             CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
 
