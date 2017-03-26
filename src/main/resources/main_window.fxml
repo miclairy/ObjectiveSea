@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.canvas.Canvas?>
@@ -15,7 +21,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<SplitPane dividerPositions="0.7842809364548495" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.Controller">
+<SplitPane dividerPositions="0.7842809364548495" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.Controller">
   <items>
     <AnchorPane fx:id="canvasAnchor" minHeight="200.0" minWidth="200.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: #aae7df;">
          <children>
@@ -37,7 +43,7 @@
             <RowConstraints percentHeight="30.0" vgrow="NEVER" />
         </rowConstraints>
          <children>
-            <ListView fx:id="placings" prefHeight="240.0" prefWidth="128.0" GridPane.rowIndex="1" />
+            <ListView fx:id="placings" prefHeight="272.0" prefWidth="128.0" GridPane.rowIndex="1" />
             <VBox fx:id="settingsPane" prefHeight="136.0" prefWidth="128.0" styleClass="settingsPane" stylesheets="@style.css" GridPane.rowIndex="3">
                <children>
                   <AnchorPane>
@@ -45,7 +51,7 @@
                         <Label fx:id="lblAnnotation" alignment="CENTER" prefHeight="17.0" prefWidth="128.0" text="Annotations" textAlignment="CENTER" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children>
                   </AnchorPane>
-                  <Slider fx:id="annotationsSlider" majorTickUnit="1.0" max="1.0" minorTickCount="0" prefHeight="10.0" prefWidth="128.0" showTickMarks="true" snapToTicks="true">
+                  <Slider fx:id="annotationsSlider" majorTickUnit="1.0" max="2.0" minorTickCount="0" prefHeight="10.0" prefWidth="128.0" showTickMarks="true" snapToTicks="true">
                      <padding>
                         <Insets top="4.0" />
                      </padding></Slider>

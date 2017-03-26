@@ -184,9 +184,7 @@ public class Display extends AnimationTimer {
     /**
      * Adds an text annotation to a boat offset by 10, 15.
      */
-    private void drawBoatAnnotation(Boat boat, BoatDisplay displayBoat){
-
-            String annotationText = boat.getNickName().toString() + ", " + boat.getSpeed() + "kn";
+    private void drawBoatAnnotation(Boat boat, BoatDisplay displayBoat, String annotationText){
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
             Text annotation = new Text();
             annotation.setText(annotationText);
@@ -300,9 +298,18 @@ public class Display extends AnimationTimer {
             annotationsLevel = 0;
         } else if (level == 1 && annotationsLevel != 1){
             for (BoatDisplay displayBoat :displayBoats) {
-                drawBoatAnnotation(displayBoat.getBoat(), displayBoat);
+                root.getChildren().remove(displayBoat.getAnnotation());
+                String annotationText = displayBoat.getBoat().getNickName().toString();
+                drawBoatAnnotation(displayBoat.getBoat(), displayBoat, annotationText);
             }
             annotationsLevel = 1.0;
+        } else if (level == 2 && annotationsLevel != 2) {
+            for (BoatDisplay displayBoat : displayBoats) {
+                String annotationText = displayBoat.getBoat().getNickName().toString() + ", " + displayBoat.getBoat().getSpeed() + "kn";
+                root.getChildren().remove(displayBoat.getAnnotation());
+                drawBoatAnnotation(displayBoat.getBoat(), displayBoat, annotationText);
+            }
+            annotationsLevel = 2.0;
         }
     }
 }
