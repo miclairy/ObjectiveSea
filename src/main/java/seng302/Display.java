@@ -7,7 +7,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
 import javafx.scene.text.Text;
@@ -32,13 +31,20 @@ public class Display extends AnimationTimer {
     private Polygon boundary;
     private double annotationsLevel;
     private final double WAKE_SCALE_FACTOR = 50;
+    private ArrayList<BoatDisplay> displayBoats = new ArrayList<>();
 
     public Display(Group root, Race race) {
         this.root = root;
         this.race = race;
-        race.setEvents();
+        int i = 1;
+        for (Boat boat : race.getCompetitors()){
+            BoatDisplay displayBoat = new BoatDisplay(boat);
+            displayBoats.add(displayBoat);
+            drawBoat(displayBoat, COLORS.get(i));
+            i++;
+        }
         drawCourse();
-        drawBoats();
+
     }
 
     @Override
@@ -61,7 +67,12 @@ public class Display extends AnimationTimer {
             for (Boat boat : race.getCompetitors()){
                 boat.updateLocation(timeIncrement, race.getCourse());
             }
-            moveBoats();
+            for (BoatDisplay boat: displayBoats) {
+                CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
+                moveBoat(boat, point);
+                moveWake(boat, point);
+                moveBoatAnnotation(boat, point);
+            }
             Controller.updatePlacings();
     }
 
@@ -141,50 +152,40 @@ public class Display extends AnimationTimer {
     /**
      * Draws the boat icons (triangles with lines in the middle) and fills them with colour
      */
-    private void drawBoats(){
-        int i = 1;
-        for (Boat boat : race.getCompetitors()) {
-            Polyline boatImage = new Polyline();
-            boatImage.getPoints().addAll(new Double[]{
-                    5.0, 0.0,
-                    10.0, 20.0,
-                    0.0 , 20.0,
-                    5.0, 0.0,
-                    5.0, 20.0
-                    }
-            );
-            boatImage.setFill(COLORS.get(i));
-            boatImage.setStroke(Color.WHITE);
-            root.getChildren().add(boatImage);
-            boat.setIcon(boatImage);
-            i++;
-            drawBoatWake(boat);
-        }
+    private void drawBoat(BoatDisplay boat, Color color){
+        Polyline boatImage = new Polyline();
+        boatImage.getPoints().addAll(new Double[]{
+                5.0, 0.0,
+                10.0, 20.0,
+                0.0 , 20.0,
+                5.0, 0.0,
+                5.0, 20.0
+                }
+        );
+        boatImage.setFill(color);
+        boatImage.setStroke(Color.WHITE);
+        root.getChildren().add(boatImage);
+        boat.setIcon(boatImage);
+        drawBoatWake(boat);
+
     }
 
     /**
-     * Update each boat icon's position on screen, translating from the boat's latlon to cartesian coordinates
+     * Update a boat icon's position on screen, translating from the boat's latlon to cartesian coordinates
      */
-    private void moveBoats(){
-        for (Boat boat : race.getCompetitors()) {
-            CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
+    private void moveBoat(BoatDisplay boat, CartesianPoint point){
             boat.getIcon().setTranslateY(point.getY());
             boat.getIcon().setTranslateX(point.getX());
             boat.getIcon().getTransforms().clear();
-            boat.getIcon().getTransforms().add(new Rotate(boat.getHeading(), 5.0, 0.0));
-            if (annotationsLevel > 0) {
-                moveBoatAnnotations(boat);
-            }
-            moveWake(boat, point);
+            boat.getIcon().getTransforms().add(new Rotate(boat.getBoat().getHeading(), 5.0, 0.0));
             boat.getIcon().toFront();
-        }
     }
 
     /**
-     * Adds an text annotation to each boat offset by 10, 15.
+     * Adds an text annotation to a boat offset by 10, 15.
      */
-    private void drawBoatAnnotations(){
-        for(Boat boat : race.getCompetitors()){
+    private void drawBoatAnnotation(Boat boat, BoatDisplay displayBoat){
+
             String annotationText = boat.getNickName().toString() + ", " + boat.getSpeed() + "kn";
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
             Text annotation = new Text();
@@ -192,16 +193,15 @@ public class Display extends AnimationTimer {
             annotation.setId("annotation");
             annotation.setX(point.getX() + 10);
             annotation.setY(point.getY() + 15);
-            boat.setAnnotation(annotation);
+            displayBoat.setAnnotation(annotation);
             root.getChildren().add(annotation);
-        }
     }
 
     /**
      * Draws initial boat wake which is a V shaped polyline. Which is then coloured and attached to the boat.
      * @param boat to attach the wake to.
      */
-    private void drawBoatWake(Boat boat){
+    private void drawBoatWake(BoatDisplay boat){
 
         Polyline wake = new Polyline();
         wake.getPoints().addAll(new Double[]{
@@ -219,9 +219,8 @@ public class Display extends AnimationTimer {
      * Move's the annotation to where the boat is now.
      * @param boat
      */
-    private void moveBoatAnnotations(Boat boat){
+    private void moveBoatAnnotation(BoatDisplay boat, CartesianPoint point){
         double adjustX = 10;
-        CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
         boat.getAnnotation().relocate((point.getX() + 10), point.getY() + 15);
         if(DisplayUtils.checkBounds(boat.getAnnotation())){
             adjustX -= boat.getAnnotation().getBoundsInParent().getWidth();
@@ -229,13 +228,13 @@ public class Display extends AnimationTimer {
         }
     }
 
-    private void moveWake(Boat boat, CartesianPoint point){
+    private void moveWake(BoatDisplay boat, CartesianPoint point){
         boat.getWake().getTransforms().clear();
-        double scale = boat.getSpeed() / WAKE_SCALE_FACTOR;
+        double scale = boat.getBoat().getSpeed() / WAKE_SCALE_FACTOR;
         boat.getWake().getTransforms().add(new Scale(scale, scale,5, 0));
         boat.getWake().setTranslateY(point.getY());
         boat.getWake().setTranslateX(point.getX());
-        boat.getWake().getTransforms().add(new Rotate(boat.getHeading(), 5, 0));
+        boat.getWake().getTransforms().add(new Rotate(boat.getBoat().getHeading(), 5, 0));
     }
 
     public void redrawCourse(){
@@ -295,12 +294,14 @@ public class Display extends AnimationTimer {
     public void changeAnnotations(double level) {
 
         if (level == 0) {
-            for (Boat boat : race.getCompetitors()) {
-                root.getChildren().remove(boat.getAnnotation());
+            for (BoatDisplay displayBoat :displayBoats) {
+                root.getChildren().remove(displayBoat.getAnnotation());
             }
             annotationsLevel = 0;
         } else if (level == 1 && annotationsLevel != 1){
-            drawBoatAnnotations();
+            for (BoatDisplay displayBoat :displayBoats) {
+                drawBoatAnnotation(displayBoat.getBoat(), displayBoat);
+            }
             annotationsLevel = 1.0;
         }
     }
