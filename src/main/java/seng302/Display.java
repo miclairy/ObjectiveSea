@@ -260,6 +260,7 @@ public class Display extends AnimationTimer {
         boat.getWake().setTranslateY(point.getY());
         boat.getWake().setTranslateX(point.getX());
         boat.getWake().getTransforms().add(new Rotate(boat.getHeading(), 5, 0));
+
     }
 
     public void redrawCourse(){
@@ -309,9 +310,9 @@ public class Display extends AnimationTimer {
         for(Boat boat : race.getCompetitors()){
             Path path = new Path();
             boat.setPath(path);
-            boat.getPath().getStrokeDashArray().addAll(3.0,7.0,3.0,7.0);
+            boat.getPath().getStrokeDashArray().addAll(5.0,7.0,5.0,7.0);
             boat.getPath().setId("boatPath");
-            boat.getPath().setOpacity(0.8);
+            boat.getPath().setOpacity(1);
             boat.getPath().setStroke(boat.getIcon().getFill());
             root.getChildren().add(path);
         }
@@ -326,6 +327,7 @@ public class Display extends AnimationTimer {
             CartesianPoint currPoint = DisplayUtils.convertFromLatLon(points.get(0), points.get(1));
             boat.getPath().getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
         }
+        boat.getPath().toBack();
     }
 }
 
