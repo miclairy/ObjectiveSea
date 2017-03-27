@@ -80,44 +80,58 @@ public class Display extends AnimationTimer {
     /**
      * Draws all of the marks from the course
      */
-    public void drawMarks(){
-        DropShadow ds = new DropShadow();
-        ds.setOffsetY(0.0f);
-        ds.setOffsetX(0.0f);
-        ds.setColor(Color.web("#6db1b7"));
-        for(CompoundMark mark : race.getCourse().getMarks().values()){
-            if(mark instanceof Gate){
-                Gate gate  = (Gate) mark;
+    public void drawMarks() {
+        for (CompoundMark mark : race.getCourse().getMarks().values()) {
+            if (mark instanceof Gate || mark instanceof RaceLine) {
                 ArrayList<CartesianPoint> points = new ArrayList<>();
-                points.add(DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon()));
-                points.add(DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon()));
-                if(gate.isStart() || gate.isFinish()){
-                    Line line = new Line(points.get(0).getX(),points.get(0).getY(), points.get(1).getX(), points.get(1).getY());
+                if(mark instanceof Gate){
+                    Gate gate = (Gate) mark;
+                    points.add(DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon()));
+                    points.add(DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon()));
+                } else {
+                    RaceLine raceLine = (RaceLine) mark;
+                    points.add(DisplayUtils.convertFromLatLon(raceLine.getEnd1Lat(), raceLine.getEnd1Lon()));
+                    points.add(DisplayUtils.convertFromLatLon(raceLine.getEnd2Lat(), raceLine.getEnd2Lon()));
+
+                    Line line = new Line(points.get(0).getX(), points.get(0).getY(), points.get(1).getX(), points.get(1).getY());
                     line.setStroke(Color.web("#70aaa2"));
                     root.getChildren().add(line);
-                    gate.setLine(line);
+                    raceLine.setLine(line);
                 }
-                for(CartesianPoint point : points){
-                    Circle circle = new Circle(point.getX(), point.getY(), 4f);
-                    circle.setFill(Color.WHITE);
-                    circle.setStroke(Color.web("#cdfaf4"));
-                    circle.strokeWidthProperty().set(2.0);
-                    circle.setEffect(ds);
+                for (CartesianPoint point : points) {
+                    Circle circle = makeMarkCircle(point);
                     root.getChildren().add(circle);
-                    gate.addIcon(circle);
+                    mark.addIcon(circle);
                 }
-            }else{
+            } else {
                 CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
-                Circle circle = new Circle(point.getX(), point.getY(), 4f);
-                circle.setFill(Color.WHITE);
-                circle.setStroke(Color.web("#cdfaf4"));
-                circle.strokeWidthProperty().set(2.0);
-                circle.setEffect(ds);
+                Circle circle = makeMarkCircle(point);
                 root.getChildren().add(circle);
                 mark.addIcon(circle);
             }
         }
         drawWindArrow();
+    }
+
+    /**
+     * Creates a circle centering on the position given by point
+     * @param point X and Y values for the center of the circle
+     * @return a Circle object which represents a mark
+     */
+    public Circle makeMarkCircle(CartesianPoint point){
+        DropShadow ds = new DropShadow();
+        ds.setOffsetY(0.0f);
+        ds.setOffsetX(0.0f);
+        ds.setColor(Color.web("#6db1b7"));
+
+        Circle circle = new Circle(point.getX(), point.getY(), 4f);
+
+        circle.setFill(Color.WHITE);
+        circle.setStroke(Color.web("#cdfaf4"));
+        circle.strokeWidthProperty().set(2.0);
+        circle.setEffect(ds);
+
+        return circle;
     }
 
     /**
@@ -267,17 +281,22 @@ public class Display extends AnimationTimer {
         for (CompoundMark mark : race.getCourse().getMarks().values()){
             CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
 
-            if (mark instanceof Gate){
-                Gate gate = (Gate) mark;
+            if (mark instanceof Gate || mark instanceof RaceLine){
                 ArrayList<CartesianPoint> points = new ArrayList<>();
-                points.add(DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon()));
-                points.add(DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon()));
-                if (gate.getLine() != null) {
-                    root.getChildren().remove(gate.getLine());
+                if(mark instanceof Gate){
+                    Gate gate = (Gate) mark;
+                    points.add(DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon()));
+                    points.add(DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon()));
+                } else{
+                    RaceLine raceLine = (RaceLine) mark;
+                    root.getChildren().remove(raceLine.getLine());
+                    points.add(DisplayUtils.convertFromLatLon(raceLine.getEnd1Lat(), raceLine.getEnd1Lon()));
+                    points.add(DisplayUtils.convertFromLatLon(raceLine.getEnd2Lat(), raceLine.getEnd2Lon()));
+
                     Line line = new Line(points.get(0).getX(), points.get(0).getY(), points.get(1).getX(), points.get(1).getY());
                     line.setStroke(Color.web("#70aaa2"));
                     root.getChildren().add(line);
-                    gate.setLine(line);
+                    raceLine.setLine(line);
                 }
                 for (int i = 0; i < mark.getIcons().size(); i++) {
                     mark.getIcons().get(i).toFront();

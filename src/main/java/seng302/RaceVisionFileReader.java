@@ -154,7 +154,7 @@ public class RaceVisionFileReader {
      * <mark start="start">
      *
      * To define a mark as the finish mark use the finish attribute, e.g.
-     * <mark start="finish">
+     * <mark finish="finish">
      *
      * @param markElement - an XML <mark> element
      * @return a CompoundMark (potentially Gate) object
@@ -175,21 +175,23 @@ public class RaceVisionFileReader {
         double lat1 = extractLatitude((Element) latlons.item(0));
         double lon1 = extractLongitude((Element) latlons.item(0));
 
-        if (latlons.getLength() > 1) { //it is a gate (or start or finish)
+        if (latlons.getLength() > 1) { //it is a gate or start or finish
             double lat2 = extractLatitude((Element) latlons.item(1));
             double lon2 = extractLongitude((Element) latlons.item(1));
-            mark = new Gate(name, lat1, lon1, lat2, lon2);
+
+            //Check whether the mark has a start or finish attribute
+            NamedNodeMap attr = markElement.getAttributes();
+            if (attr.getNamedItem(XMLTags.Course.START) != null) {
+                mark = new RaceLine(name, lat1, lon1, lat2, lon2);
+                mark.setMarkAsStart();
+            } else if (attr.getNamedItem(XMLTags.Course.FINISH) != null){
+                mark = new RaceLine(name, lat1, lon1, lat2, lon2);
+                mark.setMarkAsFinish();
+            } else{
+                mark = new Gate(name, lat1, lon1, lat2, lon2);
+            }
         } else { //it is just a single-point mark
             mark = new CompoundMark(name, lat1, lon1);
-        }
-
-        //Check whether the mark has a start or finish attribute
-        NamedNodeMap attr = markElement.getAttributes();
-        if (attr.getNamedItem(XMLTags.Course.START) != null){
-            mark.setMarkAsStart();
-        }
-        if (attr.getNamedItem(XMLTags.Course.FINISH) != null){
-            mark.setMarkAsFinish();
         }
 
         return mark;
