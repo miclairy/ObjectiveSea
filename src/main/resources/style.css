@@ -6,6 +6,18 @@
     -fx-focus-color: transparent;
 }
 
+#startersList{
+    -fx-control-inner-background: #1a1a1a;
+    -fx-font-family: 'helvetica';
+    -fx-font-size: 17px;
+    -fx-text-fill: White;
+    -fx-focus-color: transparent;
+}
+
+.titleLabel {
+    -fx-background-color: #305190;
+}
+
 .split-pane {
     -fx-background-insets: 0, 0;
     -fx-padding: 0;

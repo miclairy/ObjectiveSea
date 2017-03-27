@@ -37,6 +37,8 @@ public class Controller implements Initializable {
     private Label fpsLabel;
     @FXML
     private CheckBox fpsToggle;
+    @FXML
+    private ListView<String> startersList;
 
     public static SimpleStringProperty fpsString = new SimpleStringProperty();
     private static final long[] frameTimes = new long[100];
@@ -59,6 +61,7 @@ public class Controller implements Initializable {
         Display display = new Display(root, Main.getRace());
         fpsString.set("60.0");
         fpsLabel.textProperty().bind(fpsString);
+        displayStarters();
         display.start();
 
     }
@@ -78,6 +81,14 @@ public class Controller implements Initializable {
             formattedDisplayOrder.add(displayString);
         }
 
+    }
+
+    public void displayStarters(){
+        ObservableList<String> starters = observableArrayList();
+        for (Boat boat : Main.getRace().getCompetitors()){
+            starters.add(String.format("%s - %s", boat.getNickName(), boat.getName()));
+        }
+        startersList.setItems(starters);
     }
 
     /**
