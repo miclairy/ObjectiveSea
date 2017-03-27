@@ -32,6 +32,9 @@ public class Display extends AnimationTimer {
     private double annotationsLevel;
     private final double WAKE_SCALE_FACTOR = 50;
     private ArrayList<BoatDisplay> displayBoats = new ArrayList<>();
+    private final double NO_ANNOTATION = 0.0;
+    private final double ALL_ANNOTATIONS = 2.0;
+    private final double NAME_ANNOTATIONS = 1.0;
 
     public Display(Group root, Race race) {
         this.root = root;
@@ -291,25 +294,25 @@ public class Display extends AnimationTimer {
      */
     public void changeAnnotations(double level) {
 
-        if (level == 0) {
+        if (level == NO_ANNOTATION) {
             for (BoatDisplay displayBoat :displayBoats) {
                 root.getChildren().remove(displayBoat.getAnnotation());
             }
-            annotationsLevel = 0;
-        } else if (level == 1 && annotationsLevel != 1){
+            annotationsLevel = NO_ANNOTATION;
+        } else if (level == NAME_ANNOTATIONS && annotationsLevel != NAME_ANNOTATIONS){
             for (BoatDisplay displayBoat :displayBoats) {
                 root.getChildren().remove(displayBoat.getAnnotation());
                 String annotationText = displayBoat.getBoat().getNickName().toString();
                 drawBoatAnnotation(displayBoat.getBoat(), displayBoat, annotationText);
             }
-            annotationsLevel = 1.0;
-        } else if (level == 2 && annotationsLevel != 2) {
+            annotationsLevel = NAME_ANNOTATIONS;
+        } else if (level == ALL_ANNOTATIONS && annotationsLevel != ALL_ANNOTATIONS) {
             for (BoatDisplay displayBoat : displayBoats) {
                 String annotationText = displayBoat.getBoat().getNickName().toString() + ", " + displayBoat.getBoat().getSpeed() + "kn";
                 root.getChildren().remove(displayBoat.getAnnotation());
                 drawBoatAnnotation(displayBoat.getBoat(), displayBoat, annotationText);
             }
-            annotationsLevel = 2.0;
+            annotationsLevel = ALL_ANNOTATIONS;
         }
     }
 }
