@@ -62,7 +62,7 @@
                         <Label graphicTextGap="1.0" text="All" textAlignment="RIGHT" textFill="WHITE" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
-                   <CheckBox fx:id="fpsToggle" layoutX="19.0" layoutY="17.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#fpsToggle" selected="true" text="Display FPS" textFill="WHITE" />
+                   <CheckBox fx:id="fpsToggle" layoutX="19.0" layoutY="17.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#fpsToggle" selected="true" text="Display FPS" textFill="WHITE" >
                      <padding>
                         <Insets top="8.0" />
                      </padding></CheckBox>

@@ -25,8 +25,8 @@ public class Boat implements Comparable<Boat>{
     private int lastPassedMark;
     private boolean finished;
     private double heading;
-    private Path path;
-    private ArrayList<ArrayList<Double>> pathCoords;
+
+    private ArrayList<Coordinate> pathCoords;
 
     public Boat(String name, String nickName, double speed) {
         this.name = name;
@@ -87,17 +87,11 @@ public class Boat implements Comparable<Boat>{
             double percentGained = (distanceGained / distanceLeftInLeg);
             currentLat = currentLat + percentGained * (nextMark.getLat() - currentLat);
             currentLon = currentLon + percentGained * (nextMark.getLon() - currentLon);
+
+            pathCoords.add(new Coordinate(currentLat, currentLon));
         }
     }
 
-    public ArrayList<ArrayList<Double>> getPathCoords() {return pathCoords;}
-
-    public void setPathCoords(Double lat, Double lon){
-        ArrayList<Double> newPoint= new ArrayList<>();
-        newPoint.add(lat);
-        newPoint.add(lon);
-        this.pathCoords.add(newPoint);
-    }
 
     public int compareTo(Boat otherBoat){
         return otherBoat.getLastPassedMark() - lastPassedMark;
@@ -137,16 +131,17 @@ public class Boat implements Comparable<Boat>{
         return finished;
     }
 
-    public void setPath(Path path) {this.path = path;}
-
-    public Path getPath() {return path;}
-
-
     public double getHeading() {
         return heading;
     }
 
     public void setHeading(double heading) {
         this.heading = heading;
+    }
+
+    public ArrayList<Coordinate> getPathCoords() {return pathCoords;}
+
+    public void addPathCoord(Coordinate newCoord){
+        pathCoords.add(newCoord);
     }
 }

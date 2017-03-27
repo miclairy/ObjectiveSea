@@ -41,8 +41,8 @@ public class Race {
         double curLon = startingLine.getEnd1Lon() + dLon;
         for (Boat boat : competitors){
             boat.setPosition(curLat, curLon);
-            boat.setPathCoords(curLat, curLon);
             boat.setHeading(course.headingsBetweenMarks(0, 1));
+            boat.getPathCoords().add(new Coordinate(curLat, curLon));
             curLat += dLat;
             curLon += dLon;
         }

@@ -50,7 +50,7 @@ public class Display extends AnimationTimer {
             i++;
         }
         drawCourse();
-        drawBoatPath();
+        initBoatPath();
     }
 
     @Override
@@ -70,16 +70,16 @@ public class Display extends AnimationTimer {
      * @param timeIncrement
      */
     private void run(double timeIncrement){
-            for (Boat boat : race.getCompetitors()){
-                boat.updateLocation(timeIncrement, race.getCourse());
-            }
-            for (BoatDisplay boat: displayBoats) {
-                CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
-                moveBoat(boat, point);
-                moveWake(boat, point);
-                moveBoatAnnotation(boat, point);
-            }
-            Controller.updatePlacings();
+        for (Boat boat : race.getCompetitors()){
+            boat.updateLocation(timeIncrement, race.getCourse());
+        }
+        for (BoatDisplay boat: displayBoats) {
+            CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
+            moveBoat(boat, point);
+            moveWake(boat, point);
+            moveBoatAnnotation(boat, point);
+        }
+        Controller.updatePlacings();
     }
 
 
@@ -111,14 +111,14 @@ public class Display extends AnimationTimer {
                     raceLine.setLine(line);
                 }
                 for (CartesianPoint point : points) {
-                    Circle circle = makeMarkCircle(point);
+                    Circle circle = new Circle(point.getX(), point.getY(), 4f);
                     circle.setId("mark");
                     root.getChildren().add(circle);
                     mark.addIcon(circle);
                 }
             } else {
                 CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
-                Circle circle = makeMarkCircle(point);
+                Circle circle = new Circle(point.getX(), point.getY(), 4f);
                 circle.setId("mark");
                 root.getChildren().add(circle);
                 mark.addIcon(circle);
@@ -188,7 +188,7 @@ public class Display extends AnimationTimer {
         boat.getIcon().setTranslateX(point.getX());
         boat.getIcon().getTransforms().clear();
         boat.getIcon().getTransforms().add(new Rotate(boat.getBoat().getHeading(), 5.0, 0.0));
-        redrawBoatPath(boat);
+        drawBoatPath(boat, point);
         boat.getIcon().toFront();
     }
 
@@ -300,28 +300,52 @@ public class Display extends AnimationTimer {
         currentWindArrow.setX(Controller.getCanvasSize().getX() - 60);
     }
 
-    public void drawBoatPath(){
-        for(Boat boat : race.getCompetitors()){
+    /**
+     * Initalises the boat path for each boat
+     */
+    public void initBoatPath(){
+        for(BoatDisplay boatDisplay : displayBoats){
             Path path = new Path();
-            boat.setPath(path);
-            boat.getPath().getStrokeDashArray().addAll(5.0,7.0,5.0,7.0);
-            boat.getPath().setId("boatPath");
-            boat.getPath().setOpacity(1);
-            boat.getPath().setStroke(boat.getIcon().getFill());
+            path.getStrokeDashArray().addAll(5.0,7.0,5.0,7.0);
+            path.setId("boatPath");
+            path.setOpacity(1);
+            path.setStroke(boatDisplay.getIcon().getFill());
+
+            Boat boat = boatDisplay.getBoat();
+            CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
+            path.getElements().add(new MoveTo(point.getX(), point.getY()));
+
+            boatDisplay.setPath(path);
             root.getChildren().add(path);
         }
     }
 
-    public void redrawBoatPath(Boat boat){
-        boat.setPathCoords(boat.getCurrentLat(), boat.getCurrentLon());
-        CartesianPoint pathStart = DisplayUtils.convertFromLatLon(boat.getPathCoords().get(0).get(0), boat.getPathCoords().get(0).get(1));
-        boat.getPath().getElements().clear();
-        boat.getPath().getElements().add(new MoveTo(pathStart.getX(), pathStart.getY()));
-        for(ArrayList<Double> points : boat.getPathCoords()){
-            CartesianPoint currPoint = DisplayUtils.convertFromLatLon(points.get(0), points.get(1));
-            boat.getPath().getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
+    /**
+     * Adds a point to the boat path
+     * @param boatDisplay The display component of the boat
+     * @param point The position of the boat on screen
+     */
+    public void drawBoatPath(BoatDisplay boatDisplay, CartesianPoint point){
+        boatDisplay.getPath().getElements().add(new LineTo(point.getX(), point.getY()));
+    }
+
+    /**
+     * Redraws all the boat paths by reconverting all the coordinates a boat has been to and recreates the
+     * elements (points) of the path of the boat.
+     */
+    public void redrawBoatPaths(){
+        for(BoatDisplay boatDisplay : displayBoats){
+            Boat boat = boatDisplay.getBoat();
+            Coordinate firstCoordinate = boat.getPathCoords().get(0);
+            CartesianPoint pathStart = DisplayUtils.convertFromLatLon(firstCoordinate.getLat(), firstCoordinate.getLon());
+            boatDisplay.getPath().getElements().clear();
+            boatDisplay.getPath().getElements().add(new MoveTo(pathStart.getX(), pathStart.getY()));
+            for(Coordinate coord : boat.getPathCoords()){
+                CartesianPoint currPoint = DisplayUtils.convertFromLatLon(coord.getLat(), coord.getLon());
+                boatDisplay.getPath().getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
+            }
+            boatDisplay.getPath().toBack();
         }
-        boat.getPath().toBack();
     }
 
     /**
