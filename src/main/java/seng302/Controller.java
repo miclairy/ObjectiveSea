@@ -84,7 +84,7 @@ public class Controller implements Initializable {
         annotationsSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                display.changeAnnotations((double) newValue);
+                display.changeAnnotations(newValue.intValue());
             }
         });
         annotationsSlider.adjustValue(annotationsSlider.getMax());
