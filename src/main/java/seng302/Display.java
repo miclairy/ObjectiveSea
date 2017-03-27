@@ -302,13 +302,13 @@ public class Display extends AnimationTimer {
         } else if (level == NAME_ANNOTATIONS && annotationsLevel != NAME_ANNOTATIONS){
             for (BoatDisplay displayBoat :displayBoats) {
                 root.getChildren().remove(displayBoat.getAnnotation());
-                String annotationText = displayBoat.getBoat().getNickName().toString();
+                String annotationText = displayBoat.getBoat().getNickName();
                 drawBoatAnnotation(displayBoat.getBoat(), displayBoat, annotationText);
             }
             annotationsLevel = NAME_ANNOTATIONS;
         } else if (level == ALL_ANNOTATIONS && annotationsLevel != ALL_ANNOTATIONS) {
             for (BoatDisplay displayBoat : displayBoats) {
-                String annotationText = displayBoat.getBoat().getNickName().toString() + ", " + displayBoat.getBoat().getSpeed() + "kn";
+                String annotationText = displayBoat.getBoat().getNickName() + ", " + displayBoat.getBoat().getSpeed() + "kn";
                 root.getChildren().remove(displayBoat.getAnnotation());
                 drawBoatAnnotation(displayBoat.getBoat(), displayBoat, annotationText);
             }
