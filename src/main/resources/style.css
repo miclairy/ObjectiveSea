@@ -1,7 +1,8 @@
 #placings {
     -fx-control-inner-background: #2a2a2a;
+    -fx-background-color: #2a2a2a;
     -fx-font-family: 'helvetica';
-    -fx-font-size: 18px;
+    -fx-font-size: 16px;
     -fx-text-fill: White;
     -fx-focus-color: transparent;
 }
@@ -30,6 +31,10 @@
 }
 
 #settingsPane {
+    -fx-background-color: #2b2b2b;
+}
+
+#raceClockHBox {
     -fx-background-color: #2a2a2a;
 }
 
@@ -38,6 +43,54 @@
 }
 
 #boundary{
--fx-opacity: 0.2;
+    -fx-fill: rgb(136, 230, 239);
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 10, 0.4, 0, 0);
+    -fx-stroke: rgb(64, 122, 151);
+    -fx-opacity: 0.2;
 }
 
+#wake{
+    -fx-stroke: #eaf2ff;
+    -fx-fill: rgb(132, 218, 255);
+}
+
+#mark{
+    -fx-fill: white;
+    -fx-effect: dropshadow(gaussian, #6db1b7, 10, 0.2, 0, 0);
+    -fx-stroke: #cdfaf4;
+    -fx-stroke-width: 2.0;
+}
+
+.slider .thumb {
+    -fx-background-color: #3b3b3b;
+}
+
+.slider .track{
+    -fx-background-color: #1b1b1b;
+    -fx-padding: 2.5;
+}
+
+.slider .axis .axis-tick-mark, .slider .axis .axis-minor-tick-mark {
+    -fx-fill: null;
+    -fx-stroke: #8e8e8e;
+}
+
+#lblAnnotation{
+    -fx-font-family: 'helvetica';
+    -fx-font-size: 14px;
+    -fx-padding: 10 0 5 0 ;
+}
+
+#annotationsSlider{
+    -fx-padding: 0 20 0 20;
+}
+
+#sliderLbl{
+    -fx-font-family: 'helvetica';
+    -fx-padding: 0 20 0 20;
+}
+
+#fpsToggle{
+    -fx-font-family: 'helvetica';
+    -fx-padding: 20 20 20 20;
+}
