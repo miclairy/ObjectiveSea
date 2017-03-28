@@ -19,13 +19,10 @@ public class Boat implements Comparable<Boat>{
     private String nickName;
     private double speed;
     private int finishingPlace;
-    private Shape icon;
-    private Text annotation;
     private double currentLat;
     private double currentLon;
     private int lastPassedMark;
     private boolean finished;
-    private Polyline wake;
     private double heading;
 
     public Boat(String name, String nickName, double speed) {
@@ -59,7 +56,7 @@ public class Boat implements Comparable<Boat>{
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
         CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
 
-        double distanceGained = timePassed * speed / 360; // 3600 for accurate speed
+        double distanceGained = timePassed * speed;
         double distanceLeftInLeg = Course.greaterCircleDistance(currentLat, nextMark.getLat(), currentLon, nextMark.getLon());
 
         //If boat moves more than the remaining distance in the leg
@@ -111,19 +108,9 @@ public class Boat implements Comparable<Boat>{
         this.finishingPlace = place;
     }
 
-    public Shape getIcon() {
-        return icon;
-    }
-
     public int getLastPassedMark() {
         return lastPassedMark;
     }
-
-    public void setIcon(Shape icon) {
-        this.icon = icon;
-    }
-
-    public void setAnnotation(Text annotation) {this.annotation = annotation;}
 
     public double getCurrentLat() {
         return currentLat;
@@ -135,16 +122,6 @@ public class Boat implements Comparable<Boat>{
 
     public boolean isFinished() {
         return finished;
-    }
-
-    public Text getAnnotation() {return annotation;}
-
-    public void setWake(Polyline wake) {
-        this.wake = wake;
-    }
-
-    public Polyline getWake() {
-        return wake;
     }
 
     public double getHeading() {

@@ -1,8 +1,5 @@
 package seng302;
 
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
-
 import java.util.*;
 
 import static javafx.collections.FXCollections.observableArrayList;
@@ -18,8 +15,10 @@ public class Race {
     private Course course;
     private ArrayList<Boat> competitors;
     private PriorityQueue<Event> events;
-    private int totalEventTime;
     private ArrayList<Boat> raceOrder = new ArrayList<>();
+
+    private double totalRaceTime;
+    private double secondsBeforeRace = 240; //extra time in seconds to allow the race to begin and end smoothly
 
     public Race(String name, Course course, ArrayList<Boat> competitors) {
         this.name = name;
@@ -47,57 +46,6 @@ public class Race {
         }
     }
 
-    /**
-     * Generates the events that occur in the race using as simple methodology as possible
-     * The queue will have a 'Race Start' event at it's head, and a 'Race Finish' event at it's tail
-     * Between them will be a series of PassMarkEvents for every boat passing every mark in the course, calculated
-     * using a constant speed for each boat (as defined in the Boat object).
-     * @param boats - each boat in the race
-     * @param course - the course with the definition of marks for the race
-     * @return a priority queue of race events
-     */
-    private PriorityQueue<Event> generateEvents(ArrayList<Boat> boats, Course course){
-        PriorityQueue<Event> eventQueue = new PriorityQueue<>();
-        PriorityQueue<PassMarkEvent> finishingOrder = new PriorityQueue<>();
-        ArrayList<CompoundMark> marks = course.getCourseOrder();
-
-        eventQueue.add(new GenericRaceEvent(0, "Race Start"));
-        for (Boat boat : boats) {
-            double speed = boat.getSpeed();
-            double timePassed = 0;
-            for (int i = 0; i < marks.size(); i++) {
-                CompoundMark mark = marks.get(i);
-                if (!mark.isStart()) {
-                    double distance = course.distanceBetweenMarks(i-1 , i);
-                    double travelTime = distance / (speed / 3600);
-                    timePassed += travelTime;
-                    if (mark.isFinish()) {
-                        eventQueue.add(new PassMarkEvent((int)timePassed, mark, boat, null));
-                        finishingOrder.add(new PassMarkEvent((int)timePassed, mark, boat, null));
-                    } else {
-                        double heading = course.headingsBetweenMarks(i, i + 1);
-                        eventQueue.add(new PassMarkEvent((int)timePassed, mark, boat, heading));
-                    }
-                }
-            }
-        }
-
-        int place = 1;
-        PassMarkEvent finishEvent;
-        do  {
-            finishEvent = finishingOrder.poll();
-            finishEvent.getInvolvedBoat().setFinishingPlace(place);
-            place++;
-        } while (finishingOrder.size() > 0);
-
-        /** Set the total event time as 1 second longer than the last boat takes to finish to ensure events are
-         * are displayed in a sensible order, i.e. 'Race Ended' event is always displayed last*/
-        this.totalEventTime = finishEvent.getTime() + 1;
-        eventQueue.add(new RaceEndEvent(totalEventTime, boats,"Race Ended"));
-
-        return eventQueue;
-    }
-
     public ArrayList<Boat> getCompetitors() {
         return this.competitors;
     }
@@ -106,17 +54,10 @@ public class Race {
         return name;
     }
 
-    public PriorityQueue<Event> getEvents(){
-        return this.events;
-    }
-
-    public int getTotalEventTime() {
-        return this.totalEventTime;
-    }
-
     public Course getCourse() {
         return course;
     }
+
 
     public ArrayList<Boat> getRaceOrder() {
         return raceOrder;
@@ -126,9 +67,37 @@ public class Race {
         this.name = name;
     }
 
-    public void setEvents() {
-        events = generateEvents(competitors, course);
+    public double getTotalRaceTime() {
+        return totalRaceTime;
     }
 
+    /**
+     * Calculates the total time it will take for the race to complete using the total course distance and the
+     * slowest boat's speed.
+     */
+    public void setTotalRaceTime(){
+
+        double slowestBoatSpeed = Double.MAX_VALUE;
+        for (Boat competitor : competitors) {
+            slowestBoatSpeed = Math.min(slowestBoatSpeed, competitor.getSpeed());
+        }
+        double courseDistance = 0;
+        ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
+        for (int i = 1; i < courseOrder.size(); i++){
+            courseDistance += course.distanceBetweenMarks(i - 1, i);
+        }
+
+        double totalRaceTimeInSeconds = TimeUtils.convertHoursToSeconds(courseDistance / slowestBoatSpeed);
+        this.totalRaceTime = totalRaceTimeInSeconds;
+    }
+
+    public void setSecondsBeforeRace(double bufferTime) {
+        secondsBeforeRace = bufferTime;
+    }
+
+    public double getSecondsBeforeRace() {
+        return secondsBeforeRace;
+    }
 
 }
+

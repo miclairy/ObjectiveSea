@@ -21,7 +21,6 @@ import java.util.Random;
 public class Main extends Application {
 
     private static Race race;
-    private static Course course;
 
     @Override
     public void init(){
@@ -30,7 +29,7 @@ public class Main extends Application {
         String courseFile = getParameters().getNamed().get("course");
         String boatsFile = getParameters().getNamed().get("boats");
         ArrayList<Boat> boatsInRace = RaceVisionFileReader.importStarters(boatsFile);
-        course = RaceVisionFileReader.importCourse(courseFile);
+        Course course = RaceVisionFileReader.importCourse(courseFile);
         //for now if we fail to read in a course or boats, then exit the program immediately
         if (boatsInRace.isEmpty() || course == null) {
             Platform.exit();
@@ -50,7 +49,6 @@ public class Main extends Application {
         primaryStage.setMinWidth(1000);
         primaryStage.show();
     }
-
 
     public static void main( String[] args )
     {
