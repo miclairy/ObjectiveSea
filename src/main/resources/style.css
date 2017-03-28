@@ -12,10 +12,17 @@
     -fx-font-size: 17px;
     -fx-text-fill: White;
     -fx-focus-color: transparent;
+    -fx-background-insets: 0, 0;
 }
 
 .titleLabel {
-    -fx-background-color: #305190;
+    -fx-background-color: #6db1b7;
+    -fx-text-fill: White;
+    -fx-font-family: 'helvetica';
+}
+
+.startersOverlay{
+    -fx-opacity: 0.8;
 }
 
 .split-pane {
@@ -38,6 +45,6 @@
 }
 
 #boundary{
--fx-opacity: 0.2;
+    -fx-opacity: 0.2;
 }
 
