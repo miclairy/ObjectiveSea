@@ -63,10 +63,8 @@ public class RaceVisionFileReader {
             } else {
                 dom = db.parse(filePath);
             }
-        } catch(ParserConfigurationException pce) {
+        } catch(ParserConfigurationException | SAXException pce) {
             pce.printStackTrace();
-        } catch(SAXException se) {
-            se.printStackTrace();
         }
     }
 
@@ -210,7 +208,7 @@ public class RaceVisionFileReader {
 
     /**
      * Pulls the latitude from an XML <lat> element and parses it as a double
-     * @param latlon
+     * @param latlon the element to pull the lat from
      * @return a double representing a latitude
      * @throws XMLParseException if no <lat> tag exists
      */
@@ -225,7 +223,7 @@ public class RaceVisionFileReader {
 
     /**
      * Pulls the longitude from an XML <lon> element and parses it as a double
-     * @param latlon
+     * @param latlon the element to pull the lon from
      * @return a double representing a longitude
      * @throws XMLParseException if no <lon> tag exists
      */
@@ -284,5 +282,38 @@ public class RaceVisionFileReader {
         }
 
         return starters;
+    }
+
+    /**
+     * Takes a file from resources and puts it outside the jar to make it accessible to users
+     * @param resourceName path to the resource
+     * @param outputName path and name of where the file should be generated
+     * @throws IOException when fails to read resource
+     */
+    static public void exportResource(String resourceName, String outputName) throws IOException {
+        InputStream inStream = null;
+        OutputStream outStream = null;
+        try {
+            inStream = RaceVisionFileReader.class.getResourceAsStream(resourceName);//note that each / is a directory down in the "jar tree" been the jar the root of the tree
+            if(inStream == null) {
+                throw new IOException("Cannot get resource \"" + resourceName + "\" from Jar file.");
+            }
+
+            int readBytes;
+            byte[] buffer = new byte[4096];
+            outStream = new FileOutputStream(outputName);
+            while ((readBytes = inStream.read(buffer)) > 0) {
+                outStream.write(buffer, 0, readBytes);
+            }
+        } catch (IOException ex) {
+            throw ex;
+        } finally {
+            if (inStream != null) {
+                inStream.close();
+            }
+            if (outStream != null) {
+                outStream.close();
+            }
+        }
     }
 }
