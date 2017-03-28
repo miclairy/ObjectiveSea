@@ -40,16 +40,12 @@
         </columnConstraints>
         <rowConstraints>
           <RowConstraints />
-          <RowConstraints maxHeight="316.0" minHeight="308.0" percentHeight="70.0" prefHeight="308.0" vgrow="ALWAYS" />
+          <RowConstraints maxHeight="316.0" minHeight="308.0" percentHeight="80.0" prefHeight="308.0" vgrow="ALWAYS" />
             <RowConstraints vgrow="NEVER" />
-            <RowConstraints percentHeight="30.0" vgrow="NEVER" />
-            <RowConstraints maxHeight="369.0" minHeight="10.0" percentHeight="10.0" prefHeight="369.0" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="369.0" minHeight="10.0" percentHeight="80.0" prefHeight="369.0" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="188.0" minHeight="10.0" percentHeight="10.0" prefHeight="31.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
             <ListView fx:id="placings" prefHeight="272.0" prefWidth="128.0" GridPane.rowIndex="1" />
-            <VBox fx:id="settingsPane" prefHeight="136.0" prefWidth="128.0" styleClass="settingsPane" stylesheets="@style.css" GridPane.rowIndex="3">
+            <VBox fx:id="settingsPane" prefHeight="136.0" prefWidth="128.0" styleClass="settingsPane" stylesheets="@style.css" GridPane.rowIndex="2">
                <children>
                   <AnchorPane>
                      <children>

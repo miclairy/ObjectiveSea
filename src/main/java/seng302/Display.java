@@ -90,17 +90,6 @@ public class Display extends AnimationTimer {
     }
 
 
-    public void run(double secondsElapsed){
-        for (Boat boat : race.getCompetitors()){
-            boat.updateLocation(TimeUtils.convertSecondsToHours(secondsElapsed), race.getCourse());
-        }
-        redrawBoats();
-        Controller.updatePlacings();
-        redrawCourse();
-        redrawWindArrow();
-    }
-
-
     private void drawCourse(){
         drawBoundary();
         drawMarks();
