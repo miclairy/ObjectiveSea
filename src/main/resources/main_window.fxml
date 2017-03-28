@@ -63,7 +63,7 @@
             </VBox>
             <HBox fx:id="raceClockHBox" alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Label fx:id="raceClockLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" textFill="WHITE">
+                  <Label fx:id="raceTimerLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" textFill="WHITE">
                      <font>
                         <Font size="36.0" />
                      </font>

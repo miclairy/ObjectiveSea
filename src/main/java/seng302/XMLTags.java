@@ -30,5 +30,8 @@ public class XMLTags {
         //boundary
         public static final String BOUNDARY = "boundary";
 
+        //timezone
+        public static final String TIMEZONE = "timezone";
+
     }
 }

@@ -15,6 +15,7 @@ public class Course {
     private double minLat, minLon, maxLat, maxLon;
     private HashMap<String, CompoundMark> marks;
     private double windDirection;
+    private String timeZone;
 
     private static final double EARTH_RADIUS_IN_NAUTICAL_MILES = 3437.74677;
 
@@ -155,6 +156,14 @@ public class Course {
 
     public void setWindDirection(double windDirection) {
         this.windDirection = (windDirection + 360) % 360;
+    }
+
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    public String getTimeZone() {
+        return timeZone;
     }
 
     public double getMinLat() {

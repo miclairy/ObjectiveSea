@@ -63,6 +63,7 @@ public class Display extends AnimationTimer {
 
         Controller.updateFPSCounter(currentTime);
         Controller.updateRaceClock(scaledSecondsElapsed); //updates race clock using scaledSecondsElapsed
+        Controller.setTimeZone();
 
         currentTimeInSeconds += scaledSecondsElapsed;
         if (currentTimeInSeconds < race.getSecondsBeforeRace()) {
@@ -75,7 +76,7 @@ public class Display extends AnimationTimer {
 
     /**
      * Body of main loop of animation
-     * @param timeIncrement
+     * @param secondsElapsed
      */
     private void run(double secondsElapsed){
         for (Boat boat : race.getCompetitors()){

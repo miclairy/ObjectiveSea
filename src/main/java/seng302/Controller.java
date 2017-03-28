@@ -1,8 +1,6 @@
 package seng302;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.property.adapter.JavaBeanStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -16,9 +14,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.ResourceBundle;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 import static javafx.collections.FXCollections.observableArrayList;
 
@@ -41,11 +40,14 @@ public class Controller implements Initializable {
     @FXML
     private Pane raceClockPane;
     @FXML
-    private Label raceClockLabel;
+    private Label raceTimerLabel;
     @FXML
     private Slider annotationsSlider;
+    @FXML
+    private Label clockLabel;
 
     public static SimpleStringProperty fpsString = new SimpleStringProperty();
+    public static SimpleStringProperty raceTimerString = new SimpleStringProperty();
     public static SimpleStringProperty clockString = new SimpleStringProperty();
     private static final long[] frameTimes = new long[100];
     private static int frameTimeIndex = 0 ;
@@ -57,13 +59,15 @@ public class Controller implements Initializable {
     private static ObservableList<String> formattedDisplayOrder = observableArrayList();
     private static CartesianPoint canvasSize;
     private Display display;
+    private static Race race;
+    private static String timeZone = race.getCourse().getTimeZone();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         placings.setItems(formattedDisplayOrder);
         canvasSize = new CartesianPoint(canvas.getWidth(), canvas.getHeight());
 
-        Race race = Main.getRace();
+        race = Main.getRace();
         Course course = race.getCourse();
         course.initCourseLatLon();
         race.setTotalRaceTime();
@@ -89,7 +93,7 @@ public class Controller implements Initializable {
         totalRaceTime = race.getTotalRaceTime();
         secondsBeforeRace = race.getSecondsBeforeRace();
         secondsElapsed -= secondsBeforeRace;
-        raceClockLabel.textProperty().bind(clockString);
+        raceTimerLabel.textProperty().bind(raceTimerString);
 
         display.start();
     }
@@ -148,11 +152,43 @@ public class Controller implements Initializable {
         int minutes = ((int) secondsElapsed % 3600) / 60;
         int seconds = (int) secondsElapsed % 60;
         if(secondsElapsed < 0) {
-            clockString.set(String.format("-%02d:%02d:%02d", Math.abs(hours), Math.abs(minutes), Math.abs(seconds)));
+            raceTimerString.set(String.format("-%02d:%02d:%02d", Math.abs(hours), Math.abs(minutes), Math.abs(seconds)));
         } else {
+            raceTimerString.set(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+        }
+    }
+
+    public static void setTimeZone() {
+        boolean incorrectTimeZone = true;
+        String defaultTimeZone = TimeZone.getDefault().getID();
+        String foundId = new String();
+
+        try {
+            for (String id : TimeZone.getAvailableIDs()) {
+
+                if (id.matches("(?i).*?" + timeZone + ".*")) {
+                    foundId = id;
+                    incorrectTimeZone = false;
+                    break;
+                }
+            }
+            if (incorrectTimeZone) {
+                throw new Exception("Incorrect TimeZone in XML file. TimeZone reset to default.");
+            }
+        } catch (Exception e) {
+            foundId = defaultTimeZone;
+            System.out.println(e.getMessage());
+        } finally {
+            Instant instant = Instant.now();
+            ZoneId zone = ZoneId.of(foundId);
+            ZonedDateTime zonedDateTime = instant.atZone(zone);
+            int hours = zonedDateTime.getHour();
+            int minutes = zonedDateTime.getMinute();
+            int seconds = zonedDateTime.getSecond();
             clockString.set(String.format("%02d:%02d:%02d", hours, minutes, seconds));
         }
     }
+
 
     @FXML
     /**
