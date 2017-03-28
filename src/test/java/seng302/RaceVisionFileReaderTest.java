@@ -22,8 +22,8 @@ public class RaceVisionFileReaderTest {
             assertMarksAreEqual(expected.getMarks().get(key), course.getMarks().get(key));
         }
         Assert.assertEquals(expected.getWindDirection(), course.getWindDirection(), 0);
-        Assert.assertTrue(course.getMarks().get("Start").isStart());
-        Assert.assertTrue(course.getMarks().get("Finish").isFinish());
+        Assert.assertTrue(course.getMarks().get("Start").isStartLine());
+        Assert.assertTrue(course.getMarks().get("Finish").isFinishLine());
         Assert.assertTrue(course.getMarks().get("Start") instanceof RaceLine);
         Assert.assertTrue(course.getMarks().get("Finish") instanceof RaceLine);
         Assert.assertTrue(course.getMarks().get("Gate") instanceof Gate);

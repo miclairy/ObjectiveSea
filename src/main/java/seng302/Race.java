@@ -1,5 +1,6 @@
 package seng302;
 
+import javax.swing.plaf.ComponentUI;
 import java.util.*;
 
 import static javafx.collections.FXCollections.observableArrayList;
@@ -32,8 +33,8 @@ public class Race {
      * Spreads the starting positions of the boats over the start line
      */
     public void setStartingPositions(){
-        RaceLine startingLine = (RaceLine) course.getCourseOrder().get(0);
-        int spaces = competitors.size(); //Num boats
+        RaceLine startingLine = course.getStartingLine();
+        int spaces = competitors.size();
         double dLat = (startingLine.getEnd2Lat() - startingLine.getEnd1Lat()) / spaces;
         double dLon = (startingLine.getEnd2Lon() - startingLine.getEnd1Lon()) / spaces;
         double curLat = startingLine.getEnd1Lat() + dLat;

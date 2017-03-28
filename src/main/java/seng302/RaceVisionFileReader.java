@@ -8,6 +8,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.StringTokenizer;
 
@@ -105,7 +106,11 @@ public class RaceVisionFileReader {
                         case XMLTags.Course.MARKS:
                             NodeList marks = element.getElementsByTagName(XMLTags.Course.MARK);
                             for (int j = 0; j < marks.getLength(); j++) {
-                                course.addNewMark(parseMark((Element) marks.item(j)));
+                                CompoundMark mark = parseMark((Element) marks.item(j));
+                                if(mark.isStartLine() && mark instanceof RaceLine){
+                                    course.setStartingLine((RaceLine) mark);
+                                }
+                                course.addNewMark(mark);
                             }
                             break;
                         case XMLTags.Course.LEGS:
@@ -129,6 +134,19 @@ public class RaceVisionFileReader {
         } catch (XMLParseException e) {
             System.err.printf("Error reading course file around tag <%s>.\n", e.getTag());
             e.printStackTrace();
+        }
+
+        if(course.getCourseOrder().size() < 2){
+            throw new InputMismatchException("There must be at least one leg in the course.");
+        }
+
+        if(!course.getCourseOrder().get(0).isStartLine()){
+            throw new InputMismatchException("The first leg of the course must start at the start line.");
+        }
+
+        int lastMarkIndex = course.getCourseOrder().size() - 1;
+        if(!course.getCourseOrder().get(lastMarkIndex).isFinishLine()){
+            throw new InputMismatchException("The last leg of the course must end at the finish line.");
         }
 
         return course;

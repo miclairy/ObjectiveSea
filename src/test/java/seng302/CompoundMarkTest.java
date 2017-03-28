@@ -18,14 +18,14 @@ public class CompoundMarkTest {
         start.setMarkAsStart();
         finish.setMarkAsFinish();
 
-        assertTrue(start.isStart());
-        assertFalse(start.isFinish());
+        assertTrue(start.isStartLine());
+        assertFalse(start.isFinishLine());
 
-        assertTrue(finish.isFinish());
-        assertFalse(finish.isStart());
+        assertTrue(finish.isFinishLine());
+        assertFalse(finish.isStartLine());
 
-        assertFalse(mark.isFinish());
-        assertFalse(mark.isStart());
+        assertFalse(mark.isFinishLine());
+        assertFalse(mark.isStartLine());
     }
 
 }

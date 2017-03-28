@@ -13,10 +13,21 @@ public class RaceTest {
     @Test
     public void setStartingPositionsTest(){
         Course course = new Course();
-        Gate startLine = new Gate("StartLine", 20, 10, 40, 30);
+
+        RaceLine startLine = new RaceLine("StartLine", 20, 10, 40, 30);
+        startLine.setMarkAsStart();
+        course.setStartingLine(startLine);
+
+        RaceLine finish = new RaceLine("Finish", 51.56, 30.12, 51.61, 30.18);
+        finish.setMarkAsFinish();
+
         course.addNewMark(startLine);
+        course.addNewMark(finish);
+
         course.addMarkInOrder("StartLine");
-        ArrayList<Boat> boats = new ArrayList<Boat>();
+        course.addMarkInOrder("Finish");
+
+        ArrayList<Boat> boats = new ArrayList<>();
 
         Boat testBoat1 = new Boat("Boat 1", "1", 10);
         Boat testBoat2 = new Boat("Boat 2", "2",15);
@@ -37,10 +48,17 @@ public class RaceTest {
     @Test
     public void checkFinishPlacings(){
         Course course = new Course();
-        Gate start = new Gate("Start", 51.55, 30.11, 51.60, 30.16);
-        Gate finish = new Gate("Finish", 51.56, 30.12, 51.61, 30.18);
+
+        RaceLine start = new RaceLine("Start", 51.55, 30.11, 51.60, 30.16);
+        start.setMarkAsStart();
+        course.setStartingLine(start);
+
+        RaceLine finish = new RaceLine("Finish", 51.56, 30.12, 51.61, 30.18);
+        finish.setMarkAsFinish();
+
         course.addNewMark(start);
         course.addNewMark(finish);
+
         course.addMarkInOrder("Start");
         course.addMarkInOrder("Finish");
         ArrayList<Boat> boats = new ArrayList<>();
@@ -64,16 +82,22 @@ public class RaceTest {
     @Test
     public void totalRaceTimeTest(){
         Course course = new Course();
-        CompoundMark mark1 = new Gate("TestMark1", 1, 1, 1, 1);
-        CompoundMark mark2 = new CompoundMark("TestMark2", 2, 2);
-        course.addNewMark(mark1);
-        course.addNewMark(mark2);
-        course.addMarkInOrder("TestMark1");
-        course.addMarkInOrder("TestMark2");
+
+        RaceLine startingLine = new RaceLine("Starting Line", 1, 1, 1, 1);
+        startingLine.setMarkAsStart();
+        course.addNewMark(startingLine);
+        course.setStartingLine(startingLine);
+
+        RaceLine finishLine = new RaceLine("Finish Line", 2, 2, 2, 2);
+        finishLine.setMarkAsFinish();
+        course.addNewMark(finishLine);
+
+        course.addMarkInOrder("Starting Line");
+        course.addMarkInOrder("Finish Line");
+
         ArrayList<Boat> boats = new ArrayList<>();
 
         Boat testBoat1 = new Boat("Boat 1","1", 10);
-
         boats.add(testBoat1);
 
         Race race = new Race("Test Race", course, boats);

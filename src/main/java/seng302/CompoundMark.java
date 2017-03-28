@@ -50,10 +50,10 @@ public class CompoundMark {
         this.type = MarkType.FINISH;
     }
 
-    public boolean isStart(){
+    public boolean isStartLine(){
         return this.type == MarkType.START;
     }
-    public boolean isFinish(){
+    public boolean isFinishLine(){
         return this.type == MarkType.FINISH;
     }
 

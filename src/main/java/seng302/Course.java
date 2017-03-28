@@ -15,6 +15,7 @@ public class Course {
     private double minLat, minLon, maxLat, maxLon;
     private HashMap<String, CompoundMark> marks;
     private double windDirection;
+    private RaceLine startingLine;
 
     public Course() {
         this.marks = new HashMap<>();
@@ -147,5 +148,13 @@ public class Course {
 
     public ArrayList<Coordinate> getBoundary() {
         return boundary;
+    }
+
+    public RaceLine getStartingLine() {
+        return startingLine;
+    }
+
+    public void setStartingLine(RaceLine startingLine) {
+        this.startingLine = startingLine;
     }
 }
