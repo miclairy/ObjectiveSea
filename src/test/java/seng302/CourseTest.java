@@ -11,7 +11,9 @@ public class CourseTest {
 
     @Test
     public void gcDistanceTest(){
-        assertEquals(1179, (int)Math.round(Course.greaterCircleDistance(50, 60, 30, 60)));
+        Coordinate coord1 = new Coordinate(50, 30);
+        Coordinate coord2 = new Coordinate(60, 60);
+        assertEquals(1179, (int)Math.round(coord1.greaterCircleDistance(coord2)));
     }
 
     @Test

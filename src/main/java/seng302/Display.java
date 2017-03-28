@@ -166,13 +166,12 @@ public class Display extends AnimationTimer {
     private void drawBoat(BoatDisplay boat, Color color){
         Polyline boatImage = new Polyline();
         boatImage.getPoints().addAll(new Double[]{
-                5.0, 0.0,
-                10.0, 20.0,
-                0.0 , 20.0,
-                5.0, 0.0,
-                5.0, 20.0
-                }
-        );
+                0.0, -10.0,
+                5.0, 10.0,
+                -5.0, 10.0,
+                0.0, -10.0,
+                0.0, 10.0
+        });
         boatImage.setFill(color);
         boatImage.setStroke(Color.WHITE);
         root.getChildren().add(boatImage);
@@ -187,7 +186,7 @@ public class Display extends AnimationTimer {
         boat.getIcon().setTranslateY(point.getY());
         boat.getIcon().setTranslateX(point.getX());
         boat.getIcon().getTransforms().clear();
-        boat.getIcon().getTransforms().add(new Rotate(boat.getBoat().getHeading(), 5.0, 0.0));
+        boat.getIcon().getTransforms().add(new Rotate(boat.getBoat().getHeading(), 0.0, 0.0));
         drawBoatPath(boat, point);
         boat.getIcon().toFront();
     }
@@ -214,10 +213,10 @@ public class Display extends AnimationTimer {
 
         Polyline wake = new Polyline();
         wake.getPoints().addAll(new Double[]{
-                0.0 , 50.0,
-                5.0, 0.0,
-                10.0, 50.0
-                });
+                -5.0 , 40.0,
+                0.0, -10.0,
+                5.0, 40.0
+        });
 
         root.getChildren().add(wake);
         boat.setWake(wake);
@@ -240,10 +239,10 @@ public class Display extends AnimationTimer {
     private void moveWake(BoatDisplay boat, CartesianPoint point){
         boat.getWake().getTransforms().clear();
         double scale = boat.getBoat().getSpeed() / WAKE_SCALE_FACTOR;
-        boat.getWake().getTransforms().add(new Scale(scale, scale,5, 0));
+        boat.getWake().getTransforms().add(new Scale(scale, scale,0, 0));
         boat.getWake().setTranslateY(point.getY());
         boat.getWake().setTranslateX(point.getX());
-        boat.getWake().getTransforms().add(new Rotate(boat.getBoat().getHeading(), 5, 0));
+        boat.getWake().getTransforms().add(new Rotate(boat.getBoat().getHeading(), 0, 0));
     }
 
     public void redrawCourse(){
