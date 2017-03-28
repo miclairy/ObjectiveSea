@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import javafx.embed.swing.*?>
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.canvas.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.canvas.Canvas?>
@@ -22,8 +14,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<SplitPane dividerPositions="0.7842809364548495" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.Controller">
+<SplitPane dividerPositions="0.7842809364548495" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.Controller">
   <items>
     <AnchorPane fx:id="canvasAnchor" minHeight="200.0" minWidth="200.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: #aae7df;">
          <children>
@@ -34,18 +27,18 @@
                </children>
             </Group>
          </children></AnchorPane>
-      <GridPane fx:id="sidePane" prefHeight="394.0" prefWidth="128.0">
+      <GridPane fx:id="sidePane">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
         <rowConstraints>
-          <RowConstraints />
-          <RowConstraints maxHeight="316.0" minHeight="308.0" percentHeight="80.0" prefHeight="308.0" vgrow="ALWAYS" />
-            <RowConstraints vgrow="NEVER" />
+          <RowConstraints maxHeight="418.0" minHeight="9.0" percentHeight="10.0" prefHeight="9.0" />
+          <RowConstraints maxHeight="1204.0" minHeight="273.0" percentHeight="70.0" prefHeight="273.0" vgrow="ALWAYS" />
+            <RowConstraints maxHeight="363.0" minHeight="2.0" percentHeight="20.0" prefHeight="325.0" vgrow="NEVER" />
         </rowConstraints>
          <children>
-            <ListView fx:id="placings" prefHeight="272.0" prefWidth="128.0" GridPane.rowIndex="1" />
-            <VBox fx:id="settingsPane" prefHeight="136.0" prefWidth="128.0" styleClass="settingsPane" stylesheets="@style.css" GridPane.rowIndex="2">
+            <ListView fx:id="placings" prefHeight="241.0" prefWidth="131.0" GridPane.rowIndex="1" />
+            <VBox fx:id="settingsPane" styleClass="settingsPane" stylesheets="@style.css" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
                <children>
                   <AnchorPane>
                      <children>
@@ -56,13 +49,13 @@
                      <padding>
                         <Insets top="4.0" />
                      </padding></Slider>
-                  <HBox fx:id="sliderLbl" layoutY="5.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="18.0" prefWidth="128.0">
+                  <HBox fx:id="sliderLbl" layoutY="5.0">
                      <children>
                         <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="41.0" prefWidth="114.0" text="None" textFill="WHITE" HBox.hgrow="ALWAYS" />
                         <Label graphicTextGap="1.0" text="All" textAlignment="RIGHT" textFill="WHITE" HBox.hgrow="ALWAYS" />
                      </children>
                   </HBox>
-                  <CheckBox fx:id="fpsToggle" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#fpsToggle" selected="true" text="Toggle FPS" textFill="WHITE">
+                  <CheckBox fx:id="fpsToggle" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#fpsToggle" prefHeight="90.0" prefWidth="120.0" selected="true" text="Toggle FPS" textFill="WHITE">
                      <padding>
                         <Insets top="8.0" />
                      </padding></CheckBox>
