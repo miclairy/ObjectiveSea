@@ -18,6 +18,7 @@ public class Race {
     private ArrayList<Boat> raceOrder = new ArrayList<>();
 
     private double totalRaceTime;
+    private double secondsBeforeRace = 240; //extra time in seconds to allow the race to begin and end smoothly
 
     public Race(String name, Course course, ArrayList<Boat> competitors) {
         this.name = name;
@@ -71,11 +72,9 @@ public class Race {
 
     /**
      * Calculates the total time it will take for the race to complete using the total course distance and the
-     * slowest boat's speed. Adds a small buffer time for the start/end of race and variation in boat movements.
+     * slowest boat's speed.
      */
     public void setTotalRaceTime(){
-        double bufferTimeInSeconds = 0; //extra time in seconds to allow the race to begin and end smoothly
-        //currently set to 0 as we have no wait time
 
         double slowestBoatSpeed = Double.MAX_VALUE;
         for (Boat competitor : competitors) {
@@ -88,7 +87,16 @@ public class Race {
         }
 
         double totalRaceTimeInSeconds = TimeUtils.convertHoursToSeconds(courseDistance / slowestBoatSpeed);
-        totalRaceTimeInSeconds += bufferTimeInSeconds;
         this.totalRaceTime = totalRaceTimeInSeconds;
     }
+
+    public void setSecondsBeforeRace(double bufferTime) {
+        secondsBeforeRace = bufferTime;
+    }
+
+    public double getSecondsBeforeRace() {
+        return secondsBeforeRace;
+    }
+
 }
+

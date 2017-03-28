@@ -28,6 +28,7 @@ public class Display extends AnimationTimer {
     private final ArrayList<Color> COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#A0D468"), Color.web("#FC6E51"),
             Color.web("#FFCE54"), Color.web("#48CFAD"), Color.web("#4FC1E9"), Color.web("#656D78"))));
     private Polygon boundary;
+    private double currentTimeInSeconds;
 
     public Display(Group root, Race race) {
         this.root = root;
@@ -46,10 +47,15 @@ public class Display extends AnimationTimer {
         double secondsElapsed = TimeUtils.convertNanosecondsToSeconds(currentTime - previousTime);
         //scale time based on the input config value
         double scaledSecondsElapsed = secondsElapsed * race.getTotalRaceTime() / (Config.TIME_SCALE_IN_SECONDS);
-        run(scaledSecondsElapsed); //using scaled time
 
         Controller.updateFPSCounter(currentTime);
-        //update clock here using scaledSecondsElapsed
+        Controller.updateRaceClock(scaledSecondsElapsed); //updates race clock using scaledSecondsElapsed
+
+        currentTimeInSeconds+=scaledSecondsElapsed;
+        if(currentTimeInSeconds < race.getSecondsBeforeRace()) {
+            scaledSecondsElapsed = 0;
+        }
+        run(scaledSecondsElapsed); //using scaled time
 
         previousTime = currentTime;
     }

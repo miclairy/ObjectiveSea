@@ -9,6 +9,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -33,11 +34,19 @@ public class Controller implements Initializable {
     private Label fpsLabel;
     @FXML
     private CheckBox fpsToggle;
+    @FXML
+    private Pane raceClockPane;
+    @FXML
+    private Label raceClockLabel;
 
     public static SimpleStringProperty fpsString = new SimpleStringProperty();
+    public static SimpleStringProperty clockString = new SimpleStringProperty();
     private static final long[] frameTimes = new long[100];
     private static int frameTimeIndex = 0 ;
     private static boolean arrayFilled = false ;
+    private static double secondsElapsed = 0;
+    private static double totalRaceTime;
+    private static double secondsBeforeRace;
 
     private static ObservableList<String> formattedDisplayOrder = observableArrayList();
     private static CartesianPoint canvasSize;
@@ -58,6 +67,10 @@ public class Controller implements Initializable {
         Display display = new Display(root, race);
         fpsString.set("60.0");
         fpsLabel.textProperty().bind(fpsString);
+        totalRaceTime = race.getTotalRaceTime();
+        secondsBeforeRace = race.getSecondsBeforeRace();
+        secondsElapsed -= secondsBeforeRace;
+        raceClockLabel.textProperty().bind(clockString);
 
         display.start();
     }
@@ -94,6 +107,21 @@ public class Controller implements Initializable {
             long elapsedNanosPerFrame = elapsedNanos / frameTimes.length;
             double frameRate = 1_000_000_000.0 / elapsedNanosPerFrame;
             fpsString.set(String.format("%.1f", frameRate));
+        }
+    }
+
+    public static void updateRaceClock(double now) {
+        secondsElapsed += now;
+        if(totalRaceTime <= secondsElapsed) {
+            secondsElapsed = totalRaceTime;
+        }
+        int hours = (int) secondsElapsed / 3600;
+        int minutes = ((int) secondsElapsed % 3600) / 60;
+        int seconds = (int) secondsElapsed % 60;
+        if(secondsElapsed < 0) {
+            clockString.set(String.format("-%02d:%02d:%02d", Math.abs(hours), Math.abs(minutes), Math.abs(seconds)));
+        } else {
+            clockString.set(String.format("%02d:%02d:%02d", hours, minutes, seconds));
         }
     }
 
