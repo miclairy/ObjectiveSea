@@ -78,19 +78,19 @@ public class Display extends AnimationTimer {
 
     /**
      * Body of main loop of animation
-     * @param timeIncrement
+     * @param secondsElapsed Seconds since the last call to run
      */
     private void run(double secondsElapsed){
-            for (Boat boat : race.getCompetitors()){
-                boat.updateLocation(TimeUtils.convertSecondsToHours(secondsElapsed), race.getCourse());
-            }
-            for (BoatDisplay boat: displayBoats) {
-                CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
-                moveBoat(boat, point);
-                moveWake(boat, point);
-                moveBoatAnnotation(boat, point);
-            }
-            Controller.updatePlacings();
+        for (Boat boat : race.getCompetitors()){
+            boat.updateLocation(TimeUtils.convertSecondsToHours(secondsElapsed), race.getCourse());
+        }
+        for (BoatDisplay boat: displayBoats) {
+            CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
+            moveBoat(boat, point);
+            moveWake(boat, point);
+            moveBoatAnnotation(boat, point);
+        }
+        Controller.updatePlacings();
     }
 
 

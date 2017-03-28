@@ -54,7 +54,7 @@ public class Coordinate {
      * @param other the other Coordinate to calculate heading to
      * @return the heading from this to other
      */
-    public double headingBetweenCoordinates(Coordinate other){
+    public double headingToCoordinate(Coordinate other){
         double Ldelta = Math.toRadians(other.getLon()) - Math.toRadians(getLon());
         double X = Math.cos(Math.toRadians(other.getLat())) * Math.sin(Ldelta);
         double Y = Math.cos(Math.toRadians(getLat())) * Math.sin(Math.toRadians(other.getLat()))
@@ -63,5 +63,6 @@ public class Coordinate {
         if(heading < 0){
             heading += 360;
         }
-        return heading;}
+        return heading;
+    }
 }

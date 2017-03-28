@@ -67,7 +67,7 @@ public class Course {
     public double headingsBetweenMarks(int markIndex1, int markIndex2){
         CompoundMark mark1 = this.courseOrder.get(markIndex1);
         CompoundMark mark2 = this.courseOrder.get(markIndex2);
-        return mark1.getPosition().headingBetweenCoordinates(mark2.getPosition());
+        return mark1.getPosition().headingToCoordinate(mark2.getPosition());
     }
 
     /**
