@@ -9,9 +9,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.image.Image;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.RowConstraints;
 
 import java.net.URL;
@@ -39,6 +42,8 @@ public class Controller implements Initializable {
     private CheckBox fpsToggle;
     @FXML
     private ListView<String> startersList;
+    @FXML
+    private ImageView imvCourseOverlay;
 
     public static SimpleStringProperty fpsString = new SimpleStringProperty();
     private static final long[] frameTimes = new long[100];
@@ -63,7 +68,6 @@ public class Controller implements Initializable {
         fpsLabel.textProperty().bind(fpsString);
         displayStarters();
         display.start();
-
     }
 
     public static void updatePlacings(){
@@ -89,7 +93,15 @@ public class Controller implements Initializable {
             starters.add(String.format("%s - %s", boat.getNickName(), boat.getName()));
         }
         startersList.setItems(starters);
+        //generateFrostedCourse();
     }
+
+//    public void generateFrostedCourse(){
+//        Image courseSnapshot = root.snapshot(null, null);
+//        imvCourseOverlay.setImage(courseSnapshot);
+//        imvCourseOverlay.setEffect(new GaussianBlur(40));
+//        imvCourseOverlay.toBack();
+//    }
 
     /**
      * Updates the fps counter to the current fps of the average of the last 100 frames of the Application.

@@ -19,10 +19,12 @@
     -fx-background-color: #6db1b7;
     -fx-text-fill: White;
     -fx-font-family: 'helvetica';
+    -fx-border-radius: 15 15 0 0;
+    -fx-background-radius: 15 15 0 0;
 }
 
 .startersOverlay{
-    -fx-opacity: 0.8;
+    -fx-opacity: 0.75;
 }
 
 .split-pane {
