@@ -14,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -46,6 +47,8 @@ public class Controller implements Initializable {
     private Label raceClockLabel;
     @FXML
     private Slider annotationsSlider;
+    @FXML
+    private VBox startersOverlay;
 
     public static SimpleStringProperty fpsString = new SimpleStringProperty();
     public static SimpleStringProperty clockString = new SimpleStringProperty();
@@ -60,18 +63,22 @@ public class Controller implements Initializable {
     private static CartesianPoint canvasSize;
     private Display display;
 
+    private boolean raceBegun;
+    private final int PREP_SIGNAL_SECONDS_BEFORE_START = 120; //2 minutes
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         placings.setItems(formattedDisplayOrder);
         canvasSize = new CartesianPoint(canvas.getWidth(), canvas.getHeight());
 
         Race race = Main.getRace();
+        raceBegun = false;
         Course course = race.getCourse();
         course.initCourseLatLon();
         race.setTotalRaceTime();
 
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
-        display = new Display(root, race);
+        display = new Display(root, race, this);
 
         canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
             canvasSize.setX((double) newValue);
@@ -107,7 +114,7 @@ public class Controller implements Initializable {
         annotationsSlider.adjustValue(annotationsSlider.getMax());
     }
 
-    public static void updatePlacings(){
+    public void updatePlacings(){
         ArrayList<Boat> raceOrder = Main.getRace().getRaceOrder();
         Collections.sort(raceOrder);
         formattedDisplayOrder.clear();
@@ -135,7 +142,7 @@ public class Controller implements Initializable {
      * Updates the fps counter to the current fps of the average of the last 100 frames of the Application.
      * @param now Is the current time
      */
-    public static void updateFPSCounter(long now) {
+    public void updateFPSCounter(long now) {
         long oldFrameTime = frameTimes[frameTimeIndex];
         frameTimes[frameTimeIndex] = now;
         frameTimeIndex = (frameTimeIndex + 1) % frameTimes.length;
@@ -150,7 +157,7 @@ public class Controller implements Initializable {
         }
     }
 
-    public static void updateRaceClock(double now) {
+    public void updateRaceClock(double now) {
         secondsElapsed += now;
         if(totalRaceTime <= secondsElapsed) {
             secondsElapsed = totalRaceTime;
@@ -177,5 +184,22 @@ public class Controller implements Initializable {
         return canvasSize;
     }
 
+    public void hideStarterOverlay(){
+        startersOverlay.setVisible(false);
+    }
 
+    public void handlePrerace(double currentTime, double raceStartTime){
+        double overlayFadeTime = (raceStartTime - PREP_SIGNAL_SECONDS_BEFORE_START);
+        if (currentTime > overlayFadeTime && startersOverlay.isVisible()) {
+            hideStarterOverlay();
+            display.initializeBoats();
+        }
+        if (currentTime >= raceStartTime) {
+            raceBegun = true;
+        }
+    }
+
+    public boolean hasRaceBegun() {
+        return raceBegun;
+    }
 }

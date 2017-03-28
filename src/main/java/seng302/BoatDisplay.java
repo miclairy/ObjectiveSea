@@ -16,6 +16,7 @@ public class BoatDisplay {
 
     public BoatDisplay(Boat boat) {
         this.boat = boat;
+        this.annotation = new Text();
     }
 
     public Text getAnnotation() {return annotation;}

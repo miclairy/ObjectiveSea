@@ -16,7 +16,12 @@
 }
 
 .titleLabel {
-    -fx-background-color: #305190;
+    -fx-background-color: #3c619b;
+    -fx-font-family: 'helvetica';
+    -fx-font-size: 27px;
+    -fx-text-fill: White;
+    -fx-border-radius: 10 10 0 0;
+    -fx-background-radius: 10 10 0 0;
 }
 
 .split-pane {
