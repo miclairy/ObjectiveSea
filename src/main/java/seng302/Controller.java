@@ -75,12 +75,14 @@ public class Controller implements Initializable {
             canvasSize.setX((double) newValue);
             display.redrawCourse();
             display.redrawWindArrow();
+            display.redrawBoatPaths();
         });
 
         canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> {
             canvasSize.setY((double) newValue);
             display.redrawCourse();
             display.redrawWindArrow();
+            display.redrawBoatPaths();
         });
 
         setAnnotations();

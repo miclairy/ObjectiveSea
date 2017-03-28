@@ -32,7 +32,7 @@ public class Race {
      * Spreads the starting positions of the boats over the start line
      */
     public void setStartingPositions(){
-        Gate startingLine = (Gate)course.getCourseOrder().get(0);
+        RaceLine startingLine = (RaceLine) course.getCourseOrder().get(0);
         int spaces = competitors.size(); //Num boats
         double dLat = (startingLine.getEnd2Lat() - startingLine.getEnd1Lat()) / spaces;
         double dLon = (startingLine.getEnd2Lon() - startingLine.getEnd1Lon()) / spaces;
@@ -41,6 +41,7 @@ public class Race {
         for (Boat boat : competitors){
             boat.setPosition(curLat, curLon);
             boat.setHeading(course.headingsBetweenMarks(0, 1));
+            boat.getPathCoords().add(new Coordinate(curLat, curLon));
             curLat += dLat;
             curLon += dLon;
         }

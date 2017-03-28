@@ -16,15 +16,13 @@ public class CompoundMark {
     }
 	
 	private String name;
-    private double lat;
-    private double lon;
+    private Coordinate position;
     private MarkType type;
     private ArrayList<Circle> icons = new ArrayList<>();
 
     public CompoundMark(String name, double lat, double lon){
         this.name = name;
-        this.lat = lat;
-        this.lon = lon;
+        this.position = new Coordinate(lat, lon);
         this.type = MarkType.NORMAL;
     }
 	
@@ -33,11 +31,15 @@ public class CompoundMark {
     }
 
     public double getLon() {
-        return lon;
+        return position.getLon();
     }
 
     public double getLat() {
-        return lat;
+        return position.getLat();
+    }
+
+    public Coordinate getPosition() {
+        return this.position;
     }
 
     public void setMarkAsStart(){

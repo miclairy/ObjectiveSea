@@ -1,7 +1,5 @@
 package seng302;
 
-import javafx.scene.shape.Line;
-
 /**
  * Created on 16/03/17.
  * A Gate has a marked point at either end
@@ -13,10 +11,10 @@ public class Gate extends CompoundMark {
     private double end1Lon;
     private double end2Lat;
     private double end2Lon;
-    private Line line;
 
     public Gate(String name, double lat1, double lon1, double lat2, double lon2){
-        super(name, (lat1 + lat2) / 2, (lon1 + lon2) / 2);
+        super(name, lat1, lon1);
+
         this.end1Lat = lat1;
         this.end1Lon = lon1;
         this.end2Lat = lat2;
@@ -31,11 +29,4 @@ public class Gate extends CompoundMark {
 
     public double getEnd2Lon() {return end2Lon;}
 
-    public Line getLine() {
-        return line;
-    }
-
-    public void setLine(Line line) {
-        this.line = line;
-    }
 }

@@ -1,8 +1,11 @@
 package seng302;
 
+import javafx.scene.shape.Path;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
+
+import java.util.ArrayList;
 
 /**
  *
@@ -13,6 +16,7 @@ public class BoatDisplay {
     private Shape icon;
     private Polyline wake;
     private Text annotation;
+    private Path path;
 
     public BoatDisplay(Boat boat) {
         this.boat = boat;
@@ -41,5 +45,9 @@ public class BoatDisplay {
     public Boat getBoat() {
         return boat;
     }
+
+    public void setPath(Path path) {this.path = path;}
+
+    public Path getPath() {return path;}
 }
 
