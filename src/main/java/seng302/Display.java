@@ -29,6 +29,7 @@ public class Display extends AnimationTimer {
     private final ArrayList<Color> COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#A0D468"), Color.web("#FC6E51"),
             Color.web("#FFCE54"), Color.web("#48CFAD"), Color.web("#4FC1E9"), Color.web("#656D78"))));
     private Polygon boundary;
+    private double currentTimeInSeconds;
     private double annotationsLevel;
     private final double WAKE_SCALE_FACTOR = 50;
     private ArrayList<BoatDisplay> displayBoats = new ArrayList<>();
@@ -56,27 +57,36 @@ public class Display extends AnimationTimer {
             previousTime = currentTime;
             return;
         }
-        double secondsElapsed = (currentTime - previousTime) / 1e9f;
-        previousTime = currentTime;
-        run(secondsElapsed);
+        double secondsElapsed = TimeUtils.convertNanosecondsToSeconds(currentTime - previousTime);
+        //scale time based on the input config value
+        double scaledSecondsElapsed = secondsElapsed * race.getTotalRaceTime() / (Config.TIME_SCALE_IN_SECONDS);
+
         Controller.updateFPSCounter(currentTime);
+        Controller.updateRaceClock(scaledSecondsElapsed); //updates race clock using scaledSecondsElapsed
+
+        currentTimeInSeconds += scaledSecondsElapsed;
+        if (currentTimeInSeconds < race.getSecondsBeforeRace()) {
+            scaledSecondsElapsed = 0;
+        }
+        run(scaledSecondsElapsed); //using scaled time
+
+        previousTime = currentTime;
     }
 
     /**
      * Body of main loop of animation
      * @param timeIncrement
      */
-    private void run(double timeIncrement){
-            for (Boat boat : race.getCompetitors()){
-                boat.updateLocation(timeIncrement, race.getCourse());
-            }
-            for (BoatDisplay boat: displayBoats) {
-                CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
-                moveBoat(boat, point);
-                moveWake(boat, point);
-                moveBoatAnnotation(boat, point);
-            }
-            Controller.updatePlacings();
+    private void run(double secondsElapsed){
+        for (Boat boat : race.getCompetitors()){
+            boat.updateLocation(TimeUtils.convertSecondsToHours(secondsElapsed), race.getCourse());            }
+        for (BoatDisplay boat: displayBoats) {
+            CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
+            moveBoat(boat, point);
+            moveWake(boat, point);
+            moveBoatAnnotation(boat, point);
+        }
+        Controller.updatePlacings();
     }
 
 
@@ -150,7 +160,6 @@ public class Display extends AnimationTimer {
         root.getChildren().add(imv);
         currentWindArrow = imv;
     }
-
 
     /**
      * Draws the boat icons (triangles with lines in the middle) and fills them with colour

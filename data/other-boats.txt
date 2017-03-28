@@ -1,6 +1,6 @@
-Oracle Team USA, 60.3
-Ben Ainslie Racing, 64.5
-SoftBank Team Japan, 62.5
-Team France, 62.4
-Artemis Racing, 64.2
-Emirates Team New Zealand, 70.0
+Oracle Team USA, USA, 60.3
+Ben Ainslie Racing, GBR, 64.5
+SoftBank Team Japan, JPN, 62.5
+Team France, FRA, 62.4
+Artemis Racing, SWE, 64.2
+Emirates Team New Zealand, NZL, 70.0

@@ -44,7 +44,14 @@ public class RaceVisionFileReaderTest {
 
     @Test
     public void nonExistentCourseFileTest(){
+        //this code hides the expected printed stacktrace for the duration of the test, to prevent a successful
+        //test appearing like an error. If this test fails, these lines should be taken out to see the real stacktrace.
+        java.io.PrintStream realErrorStream = System.err;
+        System.setErr(new java.io.PrintStream(new java.io.OutputStream(){public void write(int i){}}));
+
         Course course = RaceVisionFileReader.importCourse("I am a fake file");
+
+        System.setErr(realErrorStream);
         Assert.assertNull(course);
     }
 
