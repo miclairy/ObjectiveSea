@@ -20,8 +20,7 @@ public class Boat implements Comparable<Boat>{
     private String nickName;
     private double speed;
     private int finishingPlace;
-    private double currentLat;
-    private double currentLon;
+    private Coordinate currentPosition;
     private int lastPassedMark;
     private boolean finished;
     private double heading;
@@ -35,6 +34,7 @@ public class Boat implements Comparable<Boat>{
         this.finished = false;
         this.lastPassedMark = 0;
         this.pathCoords = new ArrayList<>();
+        this.currentPosition = new Coordinate(0,0);
     }
 
     /**
@@ -43,8 +43,8 @@ public class Boat implements Comparable<Boat>{
      * @param lon the longitude of the boat
      */
     public void setPosition(double lat, double lon){
-        currentLat = lat;
-        currentLon = lon;
+        currentPosition.setLat(lat);
+        currentPosition.setLon(lon);
     }
 
     /**
@@ -61,20 +61,20 @@ public class Boat implements Comparable<Boat>{
         CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
 
         double distanceGained = timePassed * speed / 360; // 3600 for accurate speed
-        double distanceLeftInLeg = Course.greaterCircleDistance(currentLat, nextMark.getLat(), currentLon, nextMark.getLon());
+        double distanceLeftInLeg = currentPosition.greaterCircleDistance(nextMark.getPosition());
 
         //If boat moves more than the remaining distance in the leg
         while(distanceGained > distanceLeftInLeg && lastPassedMark < courseOrder.size()-1){
             distanceGained -= distanceLeftInLeg;
             //Set boat position to next mark
-            currentLat = nextMark.getLat();
-            currentLon = nextMark.getLon();
+            currentPosition.setLat(nextMark.getLat());
+            currentPosition.setLon(nextMark.getLon());
             lastPassedMark++;
 
             if(lastPassedMark < courseOrder.size()-1){
-                heading = course.headingsBetweenMarks(lastPassedMark, lastPassedMark + 1);
+                setHeading(course.headingsBetweenMarks(lastPassedMark, lastPassedMark + 1));
                 nextMark = courseOrder.get(lastPassedMark+1);
-                distanceLeftInLeg = Course.greaterCircleDistance(currentLat, nextMark.getLat(), currentLon, nextMark.getLon());
+                distanceLeftInLeg = currentPosition.greaterCircleDistance(nextMark.getPosition());
             }
         }
 
@@ -85,10 +85,9 @@ public class Boat implements Comparable<Boat>{
         } else{
             //Move the remaining distance in leg
             double percentGained = (distanceGained / distanceLeftInLeg);
-            currentLat = currentLat + percentGained * (nextMark.getLat() - currentLat);
-            currentLon = currentLon + percentGained * (nextMark.getLon() - currentLon);
-
-            pathCoords.add(new Coordinate(currentLat, currentLon));
+            double newLat = getCurrentLat() + percentGained * (nextMark.getLat() - getCurrentLat());
+            double newLon = getCurrentLon() + percentGained * (nextMark.getLon() - getCurrentLon());
+            currentPosition.update(newLat, newLon);
         }
     }
 
@@ -120,11 +119,11 @@ public class Boat implements Comparable<Boat>{
     }
 
     public double getCurrentLat() {
-        return currentLat;
+        return currentPosition.getLat();
     }
 
     public double getCurrentLon() {
-        return currentLon;
+        return currentPosition.getLon();
     }
 
     public boolean isFinished() {
@@ -135,13 +134,21 @@ public class Boat implements Comparable<Boat>{
         return heading;
     }
 
+    /**
+     * Sets the boats heading to the current value. If the heading has changed,
+     * a new record is added the pathCoords list
+     * @param heading the new heading
+     * */
     public void setHeading(double heading) {
-        this.heading = heading;
+        if (this.heading != heading) {
+            this.heading = heading;
+            addPathCoord(new Coordinate(getCurrentLat(), getCurrentLon()));
+        }
     }
 
     public ArrayList<Coordinate> getPathCoords() {return pathCoords;}
 
     public void addPathCoord(Coordinate newCoord){
-        pathCoords.add(newCoord);
+        this.pathCoords.add(newCoord);
     }
 }
