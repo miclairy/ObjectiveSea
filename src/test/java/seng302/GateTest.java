@@ -15,8 +15,8 @@ public class GateTest {
         double midpointLat = gate.getLat();
         double midpointLon = gate.getLon();
 
-        assertEquals(midpointLat, 15.3, 0);
-        assertEquals(midpointLon, 15, 0);
+        assertEquals(midpointLat, 10.3, 0);
+        assertEquals(midpointLon, 10, 0);
     }
 
 

@@ -50,9 +50,9 @@ public class BoatTest
     @Test
     public void passedMarkTest() {
         Course course = new Course();
-        Gate start = new Gate("Start", 50, 30, 50.02, 30.02);
+        RaceLine start = new RaceLine("Start", 50, 30, 50.02, 30.02);
         CompoundMark mark = new CompoundMark("Mark", 50, 30.5);
-        Gate finish = new Gate("Finish", 50.5, 30.5, 50.52, 30.52);
+        RaceLine finish = new RaceLine("Finish", 50.5, 30.5, 50.52, 30.52);
         course.addNewMark(start);
         course.addNewMark(mark);
         course.addNewMark(finish);
@@ -74,8 +74,8 @@ public class BoatTest
     @Test
     public void finishedRaceTest() {
         Course course = new Course();
-        Gate start = new Gate("Start", 51.55, 30.11, 51.60, 30.16);
-        Gate finish = new Gate("Finish", 51.56, 30.12, 51.61, 30.18);
+        RaceLine start = new RaceLine("Start", 51.55, 30.11, 51.60, 30.16);
+        RaceLine finish = new RaceLine("Finish", 51.56, 30.12, 51.61, 30.18);
         course.addNewMark(start);
         course.addNewMark(finish);
         course.addMarkInOrder("Start");
