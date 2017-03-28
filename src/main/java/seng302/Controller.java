@@ -1,6 +1,10 @@
 package seng302;
 
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.property.adapter.JavaBeanStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -38,6 +42,8 @@ public class Controller implements Initializable {
     private Pane raceClockPane;
     @FXML
     private Label raceClockLabel;
+    @FXML
+    private Slider annotationsSlider;
 
     public static SimpleStringProperty fpsString = new SimpleStringProperty();
     public static SimpleStringProperty clockString = new SimpleStringProperty();
@@ -50,12 +56,11 @@ public class Controller implements Initializable {
 
     private static ObservableList<String> formattedDisplayOrder = observableArrayList();
     private static CartesianPoint canvasSize;
+    private Display display;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         placings.setItems(formattedDisplayOrder);
-        canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> canvasSize.setX((double) newValue));
-        canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> canvasSize.setY((double) newValue));
         canvasSize = new CartesianPoint(canvas.getWidth(), canvas.getHeight());
 
         Race race = Main.getRace();
@@ -64,7 +69,21 @@ public class Controller implements Initializable {
         race.setTotalRaceTime();
 
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
-        Display display = new Display(root, race);
+        display = new Display(root, race);
+
+        canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
+            canvasSize.setX((double) newValue);
+            display.redrawCourse();
+            display.redrawWindArrow();
+        });
+
+        canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> {
+            canvasSize.setY((double) newValue);
+            display.redrawCourse();
+            display.redrawWindArrow();
+        });
+
+        setAnnotations();
         fpsString.set("60.0");
         fpsLabel.textProperty().bind(fpsString);
         totalRaceTime = race.getTotalRaceTime();
@@ -73,6 +92,16 @@ public class Controller implements Initializable {
         raceClockLabel.textProperty().bind(clockString);
 
         display.start();
+    }
+
+    private void setAnnotations() {
+        annotationsSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                display.changeAnnotations(newValue.intValue());
+            }
+        });
+        annotationsSlider.adjustValue(annotationsSlider.getMax());
     }
 
     public static void updatePlacings(){
@@ -136,4 +165,6 @@ public class Controller implements Initializable {
     public static CartesianPoint getCanvasSize() {
         return canvasSize;
     }
+
+
 }

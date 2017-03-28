@@ -1,5 +1,8 @@
 package seng302;
 
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
+import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 
@@ -16,12 +19,11 @@ public class Boat implements Comparable<Boat>{
     private String nickName;
     private double speed;
     private int finishingPlace;
-    private Shape icon;
-    private Text annotation;
     private double currentLat;
     private double currentLon;
     private int lastPassedMark;
     private boolean finished;
+    private double heading;
 
     public Boat(String name, String nickName, double speed) {
         this.name = name;
@@ -66,6 +68,7 @@ public class Boat implements Comparable<Boat>{
             lastPassedMark++;
 
             if(lastPassedMark < courseOrder.size()-1){
+                heading = course.headingsBetweenMarks(lastPassedMark, lastPassedMark + 1);
                 nextMark = courseOrder.get(lastPassedMark+1);
                 distanceLeftInLeg = Course.greaterCircleDistance(currentLat, nextMark.getLat(), currentLon, nextMark.getLon());
             }
@@ -74,6 +77,7 @@ public class Boat implements Comparable<Boat>{
         //Check if boat has finished
         if(lastPassedMark == courseOrder.size()-1){
             finished = true;
+            speed = 0;
         } else{
             //Move the remaining distance in leg
             double percentGained = (distanceGained / distanceLeftInLeg);
@@ -104,19 +108,9 @@ public class Boat implements Comparable<Boat>{
         this.finishingPlace = place;
     }
 
-    public Shape getIcon() {
-        return icon;
-    }
-
     public int getLastPassedMark() {
         return lastPassedMark;
     }
-
-    public void setIcon(Shape icon) {
-        this.icon = icon;
-    }
-
-    public void setAnnotation(Text annotation) {this.annotation = annotation;}
 
     public double getCurrentLat() {
         return currentLat;
@@ -130,5 +124,11 @@ public class Boat implements Comparable<Boat>{
         return finished;
     }
 
-    public Text getAnnotation() {return annotation;}
+    public double getHeading() {
+        return heading;
+    }
+
+    public void setHeading(double heading) {
+        this.heading = heading;
+    }
 }
