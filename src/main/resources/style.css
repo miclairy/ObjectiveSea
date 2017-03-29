@@ -17,6 +17,10 @@
     -fx-background-insets: 0, 0;
 }
 
+#startersOverlay{
+    -fx-effect: dropshadow(gaussian, rgb(21, 54, 50), 25, 0.1, 1, 1);
+}
+
 .titleLabel {
     -fx-background-color: #3c619b;
     -fx-font-family: 'helvetica';
