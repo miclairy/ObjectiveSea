@@ -27,6 +27,7 @@ public class Display extends AnimationTimer {
 
     private Race race;
     private Group root;
+    private Controller controller;
     private double previousTime = 0;
     private ImageView currentWindArrow;
     private final ArrayList<Color> COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#A0D468"), Color.web("#FC6E51"),
@@ -40,9 +41,15 @@ public class Display extends AnimationTimer {
     private final int NAME_ANNOTATIONS = 1;
     private final int ALL_ANNOTATIONS = 2;
 
-    public Display(Group root, Race race) {
+    public Display(Group root, Race race, Controller controller) {
         this.root = root;
         this.race = race;
+        this.controller = controller;
+        drawCourse();
+
+    }
+
+    public void initializeBoats() {
         int i = 1;
         for (Boat boat : race.getCompetitors()){
             BoatDisplay displayBoat = new BoatDisplay(boat);
@@ -50,8 +57,8 @@ public class Display extends AnimationTimer {
             drawBoat(displayBoat, COLORS.get(i));
             i++;
         }
-        drawCourse();
         initBoatPath();
+        changeAnnotations((int)annotationsLevel, true);
     }
 
     @Override
@@ -64,17 +71,19 @@ public class Display extends AnimationTimer {
         //scale time based on the input config value
         double scaledSecondsElapsed = secondsElapsed * race.getTotalRaceTime() / (Config.TIME_SCALE_IN_SECONDS);
 
-        Controller.updateFPSCounter(currentTime);
-        Controller.updateRaceClock(scaledSecondsElapsed); //updates race clock using scaledSecondsElapsed
+        controller.updateFPSCounter(currentTime);
+        controller.updateRaceClock(scaledSecondsElapsed); //updates race clock using scaledSecondsElapsed
 
         currentTimeInSeconds += scaledSecondsElapsed;
-        if (currentTimeInSeconds < race.getSecondsBeforeRace()) {
-            scaledSecondsElapsed = 0;
-        }
-        run(scaledSecondsElapsed); //using scaled time
 
+        if (!controller.hasRaceBegun()) {
+            scaledSecondsElapsed = 0;
+            controller.handlePrerace(currentTimeInSeconds, race.getSecondsBeforeRace());
+        }
+
+        run(scaledSecondsElapsed);
         previousTime = currentTime;
-    }
+   }
 
     /**
      * Body of main loop of animation
@@ -90,7 +99,7 @@ public class Display extends AnimationTimer {
             moveWake(boat, point);
             moveBoatAnnotation(boat, point);
         }
-        Controller.updatePlacings();
+        controller.updatePlacings();
     }
 
 
@@ -361,11 +370,15 @@ public class Display extends AnimationTimer {
      * When the slider gets to either 0, 1 or 2 change the annotations to Off, Name Only and Full respectively.
      * Don't make more annotations if there are already annotations.
      * @param level
+     * @param forceRedisplay forces the annotations to be redisplayed even if the level hasn't changed
      */
-    public void changeAnnotations(int level) {
-        if(level != annotationsLevel) {
+    public void changeAnnotations(int level, boolean forceRedisplay) {
+        if(forceRedisplay || level != annotationsLevel) {
             for (BoatDisplay displayBoat : displayBoats) {
-                root.getChildren().remove(displayBoat.getAnnotation());
+                Text oldAnnotation = displayBoat.getAnnotation();
+                if (oldAnnotation != null) {
+                    root.getChildren().remove(oldAnnotation);
+                }
                 String boatName = displayBoat.getBoat().getNickName();
                 if (level == NAME_ANNOTATIONS) {
                     String annotationText = boatName;
@@ -378,5 +391,14 @@ public class Display extends AnimationTimer {
             annotationsLevel = level;
         }
     }
+
+    /** Overload for changeAnnotations(level, forceRedisplay) to allow ignoring the forceRedisplay parameter
+     * Defaults forceRedisplay to false
+     */
+    public void changeAnnotations(int level) {
+        changeAnnotations(level, false);
+    }
+
+
 }
 
