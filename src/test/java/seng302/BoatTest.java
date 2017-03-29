@@ -20,13 +20,15 @@ public class BoatTest
     @Before
     public void before(){
         boat = new Boat("TestBoat", "testNickname", 10);
+        boat.setSpeed(10);
     }
 
     @Test
     public void updateLocationTest() {
         Course course = new Course();
-        Gate start = new Gate("Start", 50, 30, 50.02, 30.02);
+        RaceLine start = new RaceLine("Start", 50, 30, 51, 30);
         CompoundMark mark = new CompoundMark("Mark", 60, 60);
+
         course.addNewMark(start);
         course.addNewMark(mark);
         course.addMarkInOrder("Start");
@@ -35,9 +37,9 @@ public class BoatTest
         boat.setPosition(start.getLat(), start.getLon());
         ArrayList<Boat> competitors = new ArrayList<>();
         competitors.add(boat);
-        boat.updateLocation(58.95, course);
-        assertEquals(55, (int) Math.round(boat.getCurrentLat()));
-        assertEquals(45, (int) Math.round(boat.getCurrentLon()));
+        boat.updateLocation(58.98, course);
+        assertEquals(55.33319865, boat.getCurrentLat(), DELTA);
+        assertEquals(45.26273259, boat.getCurrentLon(), DELTA);
     }
 
     @Test

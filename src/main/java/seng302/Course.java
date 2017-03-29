@@ -77,7 +77,7 @@ public class Course {
      * @param newLat the new latitude
      * @param newLon the new longitude
      */
-    public void updateMinMaxLatLon(double newLat, double newLon){
+    private void updateMinMaxLatLon(double newLat, double newLon){
         if(newLat > maxLat) {
             maxLat = newLat;
         } else if(newLat < minLat) {
