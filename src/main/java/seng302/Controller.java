@@ -233,4 +233,12 @@ public class Controller implements Initializable {
     public boolean hasRaceBegun() {
         return raceBegun;
     }
+
+    public static void setCanvasHeight(double canvasHeight) {
+        Controller.canvasHeight = canvasHeight;
+    }
+
+    public static void setCanvasWidth(double canvasWidth) {
+        Controller.canvasWidth = canvasWidth;
+    }
 }

@@ -55,7 +55,6 @@ public class Boat implements Comparable<Boat>{
         if(finished){
             return;
         }
-
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
         CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
 
@@ -160,5 +159,9 @@ public class Boat implements Comparable<Boat>{
 
     public double getMaxSpeed() {
         return maxSpeed;
+    }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
     }
 }
