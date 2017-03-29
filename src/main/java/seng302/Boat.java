@@ -24,13 +24,14 @@ public class Boat implements Comparable<Boat>{
     private int lastPassedMark;
     private boolean finished;
     private double heading;
+    private double maxSpeed;
 
     private ArrayList<Coordinate> pathCoords;
 
     public Boat(String name, String nickName, double speed) {
         this.name = name;
         this.nickName = nickName;
-        this.speed = speed;
+        this.maxSpeed = speed;
         this.finished = false;
         this.lastPassedMark = 0;
         this.pathCoords = new ArrayList<>();
@@ -150,5 +151,13 @@ public class Boat implements Comparable<Boat>{
 
     public void addPathCoord(Coordinate newCoord){
         this.pathCoords.add(newCoord);
+    }
+
+    public void maximiseSpeed(){
+        this.speed = maxSpeed;
+    }
+
+    public double getMaxSpeed() {
+        return maxSpeed;
     }
 }

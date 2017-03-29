@@ -72,12 +72,14 @@ public class Controller implements Initializable {
     private boolean raceBegun;
     private final int PREP_SIGNAL_SECONDS_BEFORE_START = 120; //2 minutes
 
+    private Race race;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         placings.setItems(formattedDisplayOrder);
         canvasSize = new CartesianPoint(canvas.getWidth(), canvas.getHeight());
 
-        Race race = Main.getRace();
+        race = Main.getRace();
         raceBegun = false;
         Course course = race.getCourse();
         course.initCourseLatLon();
@@ -212,6 +214,10 @@ public class Controller implements Initializable {
         }
         if (currentTime >= raceStartTime) {
             raceBegun = true;
+            for (Boat boat : race.getCompetitors()){
+                boat.maximiseSpeed();
+            }
+            display.changeAnnotations((int) annotationsSlider.getValue(), true);
         }
     }
 
