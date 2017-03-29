@@ -24,8 +24,8 @@ public class RaceVisionFileReaderTest {
         Assert.assertEquals(expected.getWindDirection(), course.getWindDirection(), 0);
         Assert.assertTrue(course.getMarks().get("Start").isStart());
         Assert.assertTrue(course.getMarks().get("Finish").isFinish());
-        Assert.assertTrue(course.getMarks().get("Start") instanceof Gate);
-        Assert.assertTrue(course.getMarks().get("Finish") instanceof Gate);
+        Assert.assertTrue(course.getMarks().get("Start") instanceof RaceLine);
+        Assert.assertTrue(course.getMarks().get("Finish") instanceof RaceLine);
         Assert.assertTrue(course.getMarks().get("Gate") instanceof Gate);
         Assert.assertFalse(course.getMarks().get("Mark") instanceof Gate);
 
@@ -58,9 +58,9 @@ public class RaceVisionFileReaderTest {
     /** This is a clone of the course that testCourse.xml is expected to create */
     private Course createExpectedCourse() {
         Course expected = new Course();
-        Gate start = new Gate("Start", 0, 0, 0, 1);
+        RaceLine start = new RaceLine("Start", 0, 0, 0, 1);
         start.setMarkAsStart();
-        Gate finish = new Gate("Finish", 0, 5, 0, 6);
+        RaceLine finish = new RaceLine("Finish", 0, 5, 0, 6);
         finish.setMarkAsFinish();
         expected.addNewMark(start);
         expected.addNewMark(finish);
@@ -79,12 +79,18 @@ public class RaceVisionFileReaderTest {
         Assert.assertEquals(mark1.getName(), mark2.getName());
         Assert.assertEquals(mark1.getLat(), mark2.getLat(), 0);
         Assert.assertEquals(mark1.getLon(), mark2.getLon(), 0);
-        if (mark1 instanceof Gate){
-            Assert.assertTrue(mark2 instanceof  Gate);
+        if (mark1 instanceof Gate) {
+            Assert.assertTrue(mark2 instanceof Gate);
             Gate gate1 = (Gate) mark1;
             Gate gate2 = (Gate) mark2;
             Assert.assertEquals(gate1.getEnd1Lat(), gate2.getEnd1Lat(), 0);
             Assert.assertEquals(gate1.getEnd1Lon(), gate2.getEnd1Lon(), 0);
+            Assert.assertEquals(gate1.getEnd2Lat(), gate2.getEnd2Lat(), 0);
+            Assert.assertEquals(gate1.getEnd2Lon(), gate2.getEnd2Lon(), 0);
+        } else if (mark1 instanceof RaceLine) {
+            Assert.assertTrue(mark2 instanceof RaceLine);
+            RaceLine gate1 = (RaceLine) mark1;
+            RaceLine gate2 = (RaceLine) mark2;
             Assert.assertEquals(gate1.getEnd2Lat(), gate2.getEnd2Lat(), 0);
             Assert.assertEquals(gate1.getEnd2Lon(), gate2.getEnd2Lon(), 0);
         }

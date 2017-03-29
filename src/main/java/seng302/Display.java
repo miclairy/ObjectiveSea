@@ -2,6 +2,7 @@ package seng302;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
@@ -10,6 +11,8 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
 import javafx.scene.text.Text;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 
@@ -24,6 +27,7 @@ public class Display extends AnimationTimer {
 
     private Race race;
     private Group root;
+    private Controller controller;
     private double previousTime = 0;
     private ImageView currentWindArrow;
     private final ArrayList<Color> COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#A0D468"), Color.web("#FC6E51"),
@@ -37,9 +41,15 @@ public class Display extends AnimationTimer {
     private final int NAME_ANNOTATIONS = 1;
     private final int ALL_ANNOTATIONS = 2;
 
-    public Display(Group root, Race race) {
+    public Display(Group root, Race race, Controller controller) {
         this.root = root;
         this.race = race;
+        this.controller = controller;
+        drawCourse();
+
+    }
+
+    public void initializeBoats() {
         int i = 1;
         for (Boat boat : race.getCompetitors()){
             BoatDisplay displayBoat = new BoatDisplay(boat);
@@ -47,8 +57,8 @@ public class Display extends AnimationTimer {
             drawBoat(displayBoat, COLORS.get(i));
             i++;
         }
-        drawCourse();
-
+        initBoatPath();
+        changeAnnotations((int)annotationsLevel, true);
     }
 
     @Override
@@ -61,33 +71,36 @@ public class Display extends AnimationTimer {
         //scale time based on the input config value
         double scaledSecondsElapsed = secondsElapsed * race.getTotalRaceTime() / (Config.TIME_SCALE_IN_SECONDS);
 
-        Controller.updateFPSCounter(currentTime);
-        Controller.updateRaceClock(scaledSecondsElapsed); //updates race clock using scaledSecondsElapsed
+        controller.updateFPSCounter(currentTime);
+        controller.updateRaceClock(scaledSecondsElapsed); //updates race clock using scaledSecondsElapsed
         Controller.setTimeZone();
 
         currentTimeInSeconds += scaledSecondsElapsed;
-        if (currentTimeInSeconds < race.getSecondsBeforeRace()) {
-            scaledSecondsElapsed = 0;
-        }
-        run(scaledSecondsElapsed); //using scaled time
 
+        if (!controller.hasRaceBegun()) {
+            scaledSecondsElapsed = 0;
+            controller.handlePrerace(currentTimeInSeconds, race.getSecondsBeforeRace());
+        }
+
+        run(scaledSecondsElapsed);
         previousTime = currentTime;
-    }
+   }
 
     /**
      * Body of main loop of animation
-     * @param secondsElapsed
+     * @param secondsElapsed Seconds since the last call to run
      */
     private void run(double secondsElapsed){
         for (Boat boat : race.getCompetitors()){
-            boat.updateLocation(TimeUtils.convertSecondsToHours(secondsElapsed), race.getCourse());            }
+            boat.updateLocation(TimeUtils.convertSecondsToHours(secondsElapsed), race.getCourse());
+        }
         for (BoatDisplay boat: displayBoats) {
             CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
             moveBoat(boat, point);
             moveWake(boat, point);
             moveBoatAnnotation(boat, point);
         }
-        Controller.updatePlacings();
+        controller.updatePlacings();
     }
 
 
@@ -100,26 +113,31 @@ public class Display extends AnimationTimer {
     /**
      * Draws all of the marks from the course
      */
-    private void drawMarks(){
-        for(CompoundMark mark : race.getCourse().getMarks().values()){
-            if(mark instanceof Gate){
-                Gate gate  = (Gate) mark;
+    public void drawMarks() {
+        for (CompoundMark mark : race.getCourse().getMarks().values()) {
+            if (mark instanceof Gate || mark instanceof RaceLine) {
                 ArrayList<CartesianPoint> points = new ArrayList<>();
-                points.add(DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon()));
-                points.add(DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon()));
-                if(gate.isStart() || gate.isFinish()){
-                    Line line = new Line(points.get(0).getX(),points.get(0).getY(), points.get(1).getX(), points.get(1).getY());
+                if(mark instanceof Gate){
+                    Gate gate = (Gate) mark;
+                    points.add(DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon()));
+                    points.add(DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon()));
+                } else {
+                    RaceLine raceLine = (RaceLine) mark;
+                    points.add(DisplayUtils.convertFromLatLon(raceLine.getEnd1Lat(), raceLine.getEnd1Lon()));
+                    points.add(DisplayUtils.convertFromLatLon(raceLine.getEnd2Lat(), raceLine.getEnd2Lon()));
+
+                    Line line = new Line(points.get(0).getX(), points.get(0).getY(), points.get(1).getX(), points.get(1).getY());
                     line.setStroke(Color.web("#70aaa2"));
                     root.getChildren().add(line);
-                    gate.setLine(line);
+                    raceLine.setLine(line);
                 }
-                for(CartesianPoint point : points){
+                for (CartesianPoint point : points) {
                     Circle circle = new Circle(point.getX(), point.getY(), 4f);
                     circle.setId("mark");
                     root.getChildren().add(circle);
-                    gate.addIcon(circle);
+                    mark.addIcon(circle);
                 }
-            }else{
+            } else {
                 CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
                 Circle circle = new Circle(point.getX(), point.getY(), 4f);
                 circle.setId("mark");
@@ -168,30 +186,29 @@ public class Display extends AnimationTimer {
     private void drawBoat(BoatDisplay boat, Color color){
         Polyline boatImage = new Polyline();
         boatImage.getPoints().addAll(new Double[]{
-                5.0, 0.0,
-                10.0, 20.0,
-                0.0 , 20.0,
-                5.0, 0.0,
-                5.0, 20.0
-                }
-        );
+                0.0, -10.0,
+                5.0, 10.0,
+                -5.0, 10.0,
+                0.0, -10.0,
+                0.0, 10.0
+        });
         boatImage.setFill(color);
         boatImage.setStroke(Color.WHITE);
         root.getChildren().add(boatImage);
         boat.setIcon(boatImage);
         drawBoatWake(boat);
-
     }
 
     /**
      * Update a boat icon's position on screen, translating from the boat's latlon to cartesian coordinates
      */
     private void moveBoat(BoatDisplay boat, CartesianPoint point){
-            boat.getIcon().setTranslateY(point.getY());
-            boat.getIcon().setTranslateX(point.getX());
-            boat.getIcon().getTransforms().clear();
-            boat.getIcon().getTransforms().add(new Rotate(boat.getBoat().getHeading(), 5.0, 0.0));
-            boat.getIcon().toFront();
+        boat.getIcon().setTranslateY(point.getY());
+        boat.getIcon().setTranslateX(point.getX());
+        boat.getIcon().getTransforms().clear();
+        boat.getIcon().getTransforms().add(new Rotate(boat.getBoat().getHeading(), 0.0, 0.0));
+        drawBoatPath(boat, point);
+        boat.getIcon().toFront();
     }
 
     /**
@@ -216,10 +233,10 @@ public class Display extends AnimationTimer {
 
         Polyline wake = new Polyline();
         wake.getPoints().addAll(new Double[]{
-                0.0 , 50.0,
-                5.0, 0.0,
-                10.0, 50.0
-                });
+                -5.0 , 40.0,
+                0.0, -10.0,
+                5.0, 40.0
+        });
 
         root.getChildren().add(wake);
         boat.setWake(wake);
@@ -242,10 +259,10 @@ public class Display extends AnimationTimer {
     private void moveWake(BoatDisplay boat, CartesianPoint point){
         boat.getWake().getTransforms().clear();
         double scale = boat.getBoat().getSpeed() / WAKE_SCALE_FACTOR;
-        boat.getWake().getTransforms().add(new Scale(scale, scale,5, 0));
+        boat.getWake().getTransforms().add(new Scale(scale, scale,0, 0));
         boat.getWake().setTranslateY(point.getY());
         boat.getWake().setTranslateX(point.getX());
-        boat.getWake().getTransforms().add(new Rotate(boat.getBoat().getHeading(), 5, 0));
+        boat.getWake().getTransforms().add(new Rotate(boat.getBoat().getHeading(), 0, 0));
     }
 
     public void redrawCourse(){
@@ -253,17 +270,22 @@ public class Display extends AnimationTimer {
         for (CompoundMark mark : race.getCourse().getMarks().values()){
             CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
 
-            if (mark instanceof Gate){
-                Gate gate = (Gate) mark;
+            if (mark instanceof Gate || mark instanceof RaceLine){
                 ArrayList<CartesianPoint> points = new ArrayList<>();
-                points.add(DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon()));
-                points.add(DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon()));
-                if (gate.getLine() != null) {
-                    root.getChildren().remove(gate.getLine());
+                if(mark instanceof Gate){
+                    Gate gate = (Gate) mark;
+                    points.add(DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon()));
+                    points.add(DisplayUtils.convertFromLatLon(gate.getEnd2Lat(), gate.getEnd2Lon()));
+                } else{
+                    RaceLine raceLine = (RaceLine) mark;
+                    root.getChildren().remove(raceLine.getLine());
+                    points.add(DisplayUtils.convertFromLatLon(raceLine.getEnd1Lat(), raceLine.getEnd1Lon()));
+                    points.add(DisplayUtils.convertFromLatLon(raceLine.getEnd2Lat(), raceLine.getEnd2Lon()));
+
                     Line line = new Line(points.get(0).getX(), points.get(0).getY(), points.get(1).getX(), points.get(1).getY());
                     line.setStroke(Color.web("#70aaa2"));
                     root.getChildren().add(line);
-                    gate.setLine(line);
+                    raceLine.setLine(line);
                 }
                 for (int i = 0; i < mark.getIcons().size(); i++) {
                     mark.getIcons().get(i).toFront();
@@ -298,14 +320,66 @@ public class Display extends AnimationTimer {
     }
 
     /**
+     * Initalises the boat path for each boat
+     */
+    public void initBoatPath(){
+        for(BoatDisplay boatDisplay : displayBoats){
+            Path path = new Path();
+            path.getStrokeDashArray().addAll(5.0,7.0,5.0,7.0);
+            path.setId("boatPath");
+            path.setOpacity(1);
+            path.setStroke(boatDisplay.getIcon().getFill());
+
+            Boat boat = boatDisplay.getBoat();
+            CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
+            path.getElements().add(new MoveTo(point.getX(), point.getY()));
+
+            boatDisplay.setPath(path);
+            root.getChildren().add(path);
+        }
+    }
+
+    /**
+     * Adds a point to the boat path
+     * @param boatDisplay The display component of the boat
+     * @param point The position of the boat on screen
+     */
+    public void drawBoatPath(BoatDisplay boatDisplay, CartesianPoint point){
+        boatDisplay.getPath().getElements().add(new LineTo(point.getX(), point.getY()));
+    }
+
+    /**
+     * Redraws all the boat paths by reconverting all the coordinates a boat has been to and recreates the
+     * elements (points) of the path of the boat.
+     */
+    public void redrawBoatPaths(){
+        for(BoatDisplay boatDisplay : displayBoats){
+            Boat boat = boatDisplay.getBoat();
+            Coordinate firstCoordinate = boat.getPathCoords().get(0);
+            CartesianPoint pathStart = DisplayUtils.convertFromLatLon(firstCoordinate.getLat(), firstCoordinate.getLon());
+            boatDisplay.getPath().getElements().clear();
+            boatDisplay.getPath().getElements().add(new MoveTo(pathStart.getX(), pathStart.getY()));
+            for(Coordinate coord : boat.getPathCoords()){
+                CartesianPoint currPoint = DisplayUtils.convertFromLatLon(coord.getLat(), coord.getLon());
+                boatDisplay.getPath().getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
+            }
+            boatDisplay.getPath().toBack();
+        }
+    }
+
+    /**
      * When the slider gets to either 0, 1 or 2 change the annotations to Off, Name Only and Full respectively.
      * Don't make more annotations if there are already annotations.
      * @param level
+     * @param forceRedisplay forces the annotations to be redisplayed even if the level hasn't changed
      */
-    public void changeAnnotations(int level) {
-        if(level != annotationsLevel) {
+    public void changeAnnotations(int level, boolean forceRedisplay) {
+        if(forceRedisplay || level != annotationsLevel) {
             for (BoatDisplay displayBoat : displayBoats) {
-                root.getChildren().remove(displayBoat.getAnnotation());
+                Text oldAnnotation = displayBoat.getAnnotation();
+                if (oldAnnotation != null) {
+                    root.getChildren().remove(oldAnnotation);
+                }
                 String boatName = displayBoat.getBoat().getNickName();
                 if (level == NAME_ANNOTATIONS) {
                     String annotationText = boatName;
@@ -318,5 +392,14 @@ public class Display extends AnimationTimer {
             annotationsLevel = level;
         }
     }
+
+    /** Overload for changeAnnotations(level, forceRedisplay) to allow ignoring the forceRedisplay parameter
+     * Defaults forceRedisplay to false
+     */
+    public void changeAnnotations(int level) {
+        changeAnnotations(level, false);
+    }
+
+
 }
 
