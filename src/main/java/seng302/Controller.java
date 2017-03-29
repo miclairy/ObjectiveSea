@@ -55,20 +55,22 @@ public class Controller implements Initializable {
     private static double secondsElapsed = 0;
     private static double totalRaceTime;
     private static double secondsBeforeRace;
+    private static boolean incorrectTimeZone = true;
+    private static String foundId = new String();
 
     private static ObservableList<String> formattedDisplayOrder = observableArrayList();
     private static CartesianPoint canvasSize;
     private Display display;
-    private static Race race;
-    private static String timeZone = race.getCourse().getTimeZone();
+    private static String timeZone;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         placings.setItems(formattedDisplayOrder);
         canvasSize = new CartesianPoint(canvas.getWidth(), canvas.getHeight());
 
-        race = Main.getRace();
+        Race race = Main.getRace();
         Course course = race.getCourse();
+        timeZone = race.getCourse().getTimeZone();
         course.initCourseLatLon();
         race.setTotalRaceTime();
 
@@ -159,9 +161,7 @@ public class Controller implements Initializable {
     }
 
     public static void setTimeZone() {
-        boolean incorrectTimeZone = true;
         String defaultTimeZone = TimeZone.getDefault().getID();
-        String foundId = new String();
 
         try {
             for (String id : TimeZone.getAvailableIDs()) {
@@ -177,6 +177,7 @@ public class Controller implements Initializable {
             }
         } catch (Exception e) {
             foundId = defaultTimeZone;
+            incorrectTimeZone = false;
             System.out.println(e.getMessage());
         } finally {
             Instant instant = Instant.now();
