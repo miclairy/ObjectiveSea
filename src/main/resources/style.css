@@ -5,6 +5,7 @@
     -fx-font-size: 16px;
     -fx-text-fill: White;
     -fx-focus-color: transparent;
+    -fx-border-color: #1a1a1a;
 }
 
 #startersList{
@@ -99,4 +100,84 @@
 #fpsToggle{
     -fx-font-family: 'helvetica';
     -fx-padding: 20 20 20 20;
+}
+#fpsLabel{
+    -fx-content-display: center;
+    -fx-padding: 10 10 10 18;
+    -fx-opacity: 0.8;
+    -fx-font-family: 'helvetica';
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: White;
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 20px;
+}
+
+#fpsToggle{
+    -fx-font-family: 'helvetica';
+}
+
+#fpsToggle *.box{
+    -fx-background-color: #1a1a1a;
+}
+
+.scroll-bar{
+ -fx-background-color: transparent;
+ -fx-background-radius: 2em;
+}
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track {
+ -fx-background-color: transparent;
+ -fx-border-color:transparent;
+ -fx-background-radius: 2em;
+}
+.scroll-bar:vertical .track-background,
+.scroll-bar:horizontal .track-background {
+ -fx-background-color: transparent;
+ -fx-background-insets: 0;
+ -fx-background-radius: 2em;
+}
+.scroll-bar:horizontal .thumb {
+ -fx-background-color: #1a1a1a;
+ -fx-background-insets: 6 0 6 0;
+ -fx-background-radius: 2em;
+}
+.scroll-bar:vertical .thumb {
+ -fx-background-color: #1a1a1a;
+ -fx-background-insets: 0 6 0 6;
+ -fx-background-radius: 2em;
+}
+.scroll-bar:horizontal .thumb:hover,
+.scroll-bar:vertical .thumb:hover {
+ -fx-background-color: #1f1f1f;
+}
+.scroll-bar:horizontal .thumb:pressed,
+.scroll-bar:vertical .thumb:pressed {
+ -fx-background-color: #191919;
+}
+.scroll-bar:vertical .increment-button, .scroll-bar:vertical .decrement-button {
+ -fx-background-color:transparent;
+ -fx-background-radius: 2em;
+ -fx-padding: 5;
+}
+.scroll-bar:horizontal .increment-button, .scroll-bar:horizontal .decrement-button {
+ -fx-background-color:transparent;
+ -fx-background-radius: 2em;
+ -fx-padding: 5;
+}
+.scroll-bar:horizontal .increment-arrow {
+ -fx-background-color: transparent;
+}
+.scroll-bar:vertical .increment-arrow {
+ -fx-background-color: transparent;
+}
+.scroll-bar:horizontal .decrement-arrow {
+ -fx-background-color: transparent;
+}
+.scroll-bar:vertical .decrement-arrow {
+ -fx-background-color: transparent;
+}
+.scroll-bar:vertical:focused,
+.scroll-bar:horizontal:focused {
+ -fx-background-color: transparent,rgb(96,96,96),rgb(96,96,96);
 }
