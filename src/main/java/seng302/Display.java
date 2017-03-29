@@ -2,7 +2,6 @@ package seng302;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
@@ -25,6 +24,10 @@ import java.util.*;
 
 public class Display extends AnimationTimer {
 
+    private enum AnnotationLevel {
+        NO_ANNOTATION, NAME_ANNOTATIONS, ALL_ANNOTATIONS
+    }
+
     private Race race;
     private Group root;
     private Controller controller;
@@ -34,12 +37,13 @@ public class Display extends AnimationTimer {
             Color.web("#FFCE54"), Color.web("#48CFAD"), Color.web("#4FC1E9"), Color.web("#656D78"))));
     private Polygon boundary;
     private double currentTimeInSeconds;
-    private double annotationsLevel;
+    private AnnotationLevel currentAnnotationsLevel;
     private final double WAKE_SCALE_FACTOR = 50;
     private ArrayList<BoatDisplay> displayBoats = new ArrayList<>();
-    private final int NO_ANNOTATION = 0;
-    private final int NAME_ANNOTATIONS = 1;
-    private final int ALL_ANNOTATIONS = 2;
+
+
+    //number of from right edge of canvas that the wind arrow will be drawn
+    private final int WIND_ARROW_OFFSET = 60;
 
     public Display(Group root, Race race, Controller controller) {
         this.root = root;
@@ -58,7 +62,7 @@ public class Display extends AnimationTimer {
             i++;
         }
         initBoatPath();
-        changeAnnotations((int)annotationsLevel, true);
+        changeAnnotations(currentAnnotationsLevel.ordinal(), true);
     }
 
     @Override
@@ -94,7 +98,7 @@ public class Display extends AnimationTimer {
             boat.updateLocation(TimeUtils.convertSecondsToHours(secondsElapsed), race.getCourse());
         }
         for (BoatDisplay boat: displayBoats) {
-            CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
+            CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
             moveBoat(boat, point);
             moveWake(boat, point);
             moveBoatAnnotation(boat, point);
@@ -115,7 +119,7 @@ public class Display extends AnimationTimer {
     public void drawMarks() {
         for (CompoundMark mark : race.getCourse().getMarks().values()) {
             if (mark instanceof Gate || mark instanceof RaceLine) {
-                ArrayList<CartesianPoint> points = new ArrayList<>();
+                ArrayList<CanvasCoordinate> points = new ArrayList<>();
                 if(mark instanceof Gate){
                     Gate gate = (Gate) mark;
                     points.add(DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon()));
@@ -130,14 +134,14 @@ public class Display extends AnimationTimer {
                     root.getChildren().add(line);
                     raceLine.setLine(line);
                 }
-                for (CartesianPoint point : points) {
+                for (CanvasCoordinate point : points) {
                     Circle circle = new Circle(point.getX(), point.getY(), 4f);
                     circle.setId("mark");
                     root.getChildren().add(circle);
                     mark.addIcon(circle);
                 }
             } else {
-                CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
+                CanvasCoordinate point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
                 Circle circle = new Circle(point.getX(), point.getY(), 4f);
                 circle.setId("mark");
                 root.getChildren().add(circle);
@@ -154,7 +158,7 @@ public class Display extends AnimationTimer {
         boundary = new Polygon();
         boundary.setId("boundary");
         for(Coordinate coord : race.getCourse().getBoundary()){
-            CartesianPoint point = DisplayUtils.convertFromLatLon(coord.getLat(), coord.getLon());
+            CanvasCoordinate point = DisplayUtils.convertFromLatLon(coord.getLat(), coord.getLon());
             boundary.getPoints().add(point.getX());
             boundary.getPoints().add(point.getY());
         }
@@ -172,7 +176,7 @@ public class Display extends AnimationTimer {
         imv.setImage(windArrow);
         imv.setFitHeight(40);
         imv.setFitWidth(40);
-        imv.setX(Controller.getCanvasSize().getX() - 60);
+        imv.setX(Controller.getCanvasWidth() - WIND_ARROW_OFFSET);
         imv.setY(15);
         imv.setRotate(windDirection);
         root.getChildren().add(imv);
@@ -201,7 +205,7 @@ public class Display extends AnimationTimer {
     /**
      * Update a boat icon's position on screen, translating from the boat's latlon to cartesian coordinates
      */
-    private void moveBoat(BoatDisplay boat, CartesianPoint point){
+    private void moveBoat(BoatDisplay boat, CanvasCoordinate point){
         boat.getIcon().setTranslateY(point.getY());
         boat.getIcon().setTranslateX(point.getX());
         boat.getIcon().getTransforms().clear();
@@ -214,7 +218,7 @@ public class Display extends AnimationTimer {
      * Adds an text annotation to a boat offset by 10, 15.
      */
     private void drawBoatAnnotation(Boat boat, BoatDisplay displayBoat, String annotationText){
-            CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
+            CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
             Text annotation = new Text();
             annotation.setText(annotationText);
             annotation.setId("annotation");
@@ -246,7 +250,7 @@ public class Display extends AnimationTimer {
      * Move's the annotation to where the boat is now.
      * @param boat
      */
-    private void moveBoatAnnotation(BoatDisplay boat, CartesianPoint point){
+    private void moveBoatAnnotation(BoatDisplay boat, CanvasCoordinate point){
         double adjustX = 10;
         boat.getAnnotation().relocate((point.getX() + 10), point.getY() + 15);
         if(DisplayUtils.checkBounds(boat.getAnnotation())){
@@ -255,7 +259,7 @@ public class Display extends AnimationTimer {
         }
     }
 
-    private void moveWake(BoatDisplay boat, CartesianPoint point){
+    private void moveWake(BoatDisplay boat, CanvasCoordinate point){
         boat.getWake().getTransforms().clear();
         double scale = boat.getBoat().getSpeed() / WAKE_SCALE_FACTOR;
         boat.getWake().getTransforms().add(new Scale(scale, scale,0, 0));
@@ -267,10 +271,10 @@ public class Display extends AnimationTimer {
     public void redrawCourse(){
         redrawBoundary();
         for (CompoundMark mark : race.getCourse().getMarks().values()){
-            CartesianPoint point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
+            CanvasCoordinate point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
 
             if (mark instanceof Gate || mark instanceof RaceLine){
-                ArrayList<CartesianPoint> points = new ArrayList<>();
+                ArrayList<CanvasCoordinate> points = new ArrayList<>();
                 if(mark instanceof Gate){
                     Gate gate = (Gate) mark;
                     points.add(DisplayUtils.convertFromLatLon(gate.getEnd1Lat(), gate.getEnd1Lon()));
@@ -304,7 +308,7 @@ public class Display extends AnimationTimer {
     private void redrawBoundary(){
         boundary.getPoints().clear();
         for(Coordinate coord : race.getCourse().getBoundary()){
-            CartesianPoint point = DisplayUtils.convertFromLatLon(coord.getLat(), coord.getLon());
+            CanvasCoordinate point = DisplayUtils.convertFromLatLon(coord.getLat(), coord.getLon());
             boundary.getPoints().add(point.getX());
             boundary.getPoints().add(point.getY());
         }
@@ -315,7 +319,7 @@ public class Display extends AnimationTimer {
      * Moves compass arrow to correct position when canvas is resized.
      */
     public void redrawWindArrow() {
-        currentWindArrow.setX(Controller.getCanvasSize().getX() - 60);
+        currentWindArrow.setX(Controller.getCanvasWidth() - WIND_ARROW_OFFSET);
     }
 
     /**
@@ -330,7 +334,7 @@ public class Display extends AnimationTimer {
             path.setStroke(boatDisplay.getIcon().getFill());
 
             Boat boat = boatDisplay.getBoat();
-            CartesianPoint point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
+            CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
             path.getElements().add(new MoveTo(point.getX(), point.getY()));
 
             boatDisplay.setPath(path);
@@ -343,7 +347,7 @@ public class Display extends AnimationTimer {
      * @param boatDisplay The display component of the boat
      * @param point The position of the boat on screen
      */
-    public void drawBoatPath(BoatDisplay boatDisplay, CartesianPoint point){
+    public void drawBoatPath(BoatDisplay boatDisplay, CanvasCoordinate point){
         boatDisplay.getPath().getElements().add(new LineTo(point.getX(), point.getY()));
     }
 
@@ -355,11 +359,11 @@ public class Display extends AnimationTimer {
         for(BoatDisplay boatDisplay : displayBoats){
             Boat boat = boatDisplay.getBoat();
             Coordinate firstCoordinate = boat.getPathCoords().get(0);
-            CartesianPoint pathStart = DisplayUtils.convertFromLatLon(firstCoordinate.getLat(), firstCoordinate.getLon());
+            CanvasCoordinate pathStart = DisplayUtils.convertFromLatLon(firstCoordinate.getLat(), firstCoordinate.getLon());
             boatDisplay.getPath().getElements().clear();
             boatDisplay.getPath().getElements().add(new MoveTo(pathStart.getX(), pathStart.getY()));
             for(Coordinate coord : boat.getPathCoords()){
-                CartesianPoint currPoint = DisplayUtils.convertFromLatLon(coord.getLat(), coord.getLon());
+                CanvasCoordinate currPoint = DisplayUtils.convertFromLatLon(coord.getLat(), coord.getLon());
                 boatDisplay.getPath().getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
             }
             boatDisplay.getPath().toBack();
@@ -369,34 +373,33 @@ public class Display extends AnimationTimer {
     /**
      * When the slider gets to either 0, 1 or 2 change the annotations to Off, Name Only and Full respectively.
      * Don't make more annotations if there are already annotations.
-     * @param level
+     * @param level the annotation level
      * @param forceRedisplay forces the annotations to be redisplayed even if the level hasn't changed
      */
-    public void changeAnnotations(int level, boolean forceRedisplay) {
-        if(forceRedisplay || level != annotationsLevel) {
+    public void changeAnnotations(AnnotationLevel level, boolean forceRedisplay) {
+        if(forceRedisplay || level != currentAnnotationsLevel) {
             for (BoatDisplay displayBoat : displayBoats) {
                 Text oldAnnotation = displayBoat.getAnnotation();
                 if (oldAnnotation != null) {
                     root.getChildren().remove(oldAnnotation);
                 }
                 String boatName = displayBoat.getBoat().getNickName();
-                if (level == NAME_ANNOTATIONS) {
+                if (level == AnnotationLevel.NAME_ANNOTATIONS) {
                     String annotationText = boatName;
                     drawBoatAnnotation(displayBoat.getBoat(), displayBoat, annotationText);
-                } else if (level == ALL_ANNOTATIONS) {
+                } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
                     String annotationText = boatName + ", " + displayBoat.getBoat().getSpeed() + "kn";
                     drawBoatAnnotation(displayBoat.getBoat(), displayBoat, annotationText);
                 }
             }
-            annotationsLevel = level;
+            currentAnnotationsLevel = level;
         }
     }
 
-    /** Overload for changeAnnotations(level, forceRedisplay) to allow ignoring the forceRedisplay parameter
-     * Defaults forceRedisplay to false
+    /** Overload for changeAnnotations() which converts a raw level value into an AnnotationLevel
      */
-    public void changeAnnotations(int level) {
-        changeAnnotations(level, false);
+    public void changeAnnotations(int level, boolean forceRedisplay) {
+        changeAnnotations(AnnotationLevel.values()[level], forceRedisplay);
     }
 
 

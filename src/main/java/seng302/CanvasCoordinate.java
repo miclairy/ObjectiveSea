@@ -3,10 +3,10 @@ package seng302;
 /**
  * Reprsents a point on the Cartesian coordinate system
  */
-public class CartesianPoint {
+public class CanvasCoordinate {
     private double x, y;
 
-    CartesianPoint(double x, double y){
+    CanvasCoordinate(double x, double y){
         this.x = x;
         this.y = y;
     }

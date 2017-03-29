@@ -1,8 +1,6 @@
 package seng302;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.property.adapter.JavaBeanStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -14,9 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.image.Image;
-import javafx.scene.effect.GaussianBlur;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
@@ -66,7 +61,8 @@ public class Controller implements Initializable {
     private static double secondsBeforeRace;
 
     private static ObservableList<String> formattedDisplayOrder = observableArrayList();
-    private static CartesianPoint canvasSize;
+    private static double canvasHeight;
+    private static double canvasWidth;
     private Display display;
 
     private boolean raceBegun;
@@ -75,7 +71,8 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         placings.setItems(formattedDisplayOrder);
-        canvasSize = new CartesianPoint(canvas.getWidth(), canvas.getHeight());
+        canvasWidth = canvas.getWidth();
+        canvasHeight = canvas.getHeight();
 
         Race race = Main.getRace();
         raceBegun = false;
@@ -87,14 +84,14 @@ public class Controller implements Initializable {
         display = new Display(root, race, this);
 
         canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
-            canvasSize.setX((double) newValue);
+            canvasWidth = (double) newValue;
             display.redrawCourse();
             display.redrawWindArrow();
             display.redrawBoatPaths();
         });
 
         canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> {
-            canvasSize.setY((double) newValue);
+            canvasHeight = (double) newValue;
             display.redrawCourse();
             display.redrawWindArrow();
             display.redrawBoatPaths();
@@ -116,7 +113,7 @@ public class Controller implements Initializable {
         annotationsSlider.valueProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                display.changeAnnotations(newValue.intValue());
+                display.changeAnnotations(newValue.intValue(), false);
             }
         });
         annotationsSlider.adjustValue(annotationsSlider.getMax());
@@ -196,8 +193,12 @@ public class Controller implements Initializable {
         fpsLabel.setVisible(fpsToggle.isSelected());
     }
 
-    public static CartesianPoint getCanvasSize() {
-        return canvasSize;
+    public static double getCanvasHeight() {
+        return canvasHeight;
+    }
+
+    public static double getCanvasWidth() {
+        return canvasWidth;
     }
 
     public void hideStarterOverlay(){
