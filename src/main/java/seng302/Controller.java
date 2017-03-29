@@ -124,7 +124,7 @@ public class Controller implements Initializable {
         double windDirection = race.getCourse().getWindDirection();
         windDirectionImage.setX(canvasWidth - WIND_ARROW_OFFSET);
         windDirectionImage.setRotate(windDirection);
-        display.setCurrentWindArrow(windDirectionImage);
+        raceViewController.setCurrentWindArrow(windDirectionImage);
     }
 
     private void setAnnotations() {
