@@ -81,7 +81,7 @@ public class Race {
 
         double slowestBoatSpeed = Double.MAX_VALUE;
         for (Boat competitor : competitors) {
-            slowestBoatSpeed = Math.min(slowestBoatSpeed, competitor.getSpeed());
+            slowestBoatSpeed = Math.min(slowestBoatSpeed, competitor.getMaxSpeed());
         }
         double courseDistance = 0;
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();

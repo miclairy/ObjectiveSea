@@ -59,10 +59,11 @@ public class Display extends AnimationTimer {
             BoatDisplay displayBoat = new BoatDisplay(boat);
             displayBoats.add(displayBoat);
             drawBoat(displayBoat, COLORS.get(i));
+            initBoatPath(displayBoat);
             i++;
         }
-        initBoatPath();
-        changeAnnotations(currentAnnotationsLevel.ordinal(), true);
+
+        changeAnnotations((int) currentAnnotationsLevel.ordinal(), true);
     }
 
     @Override
@@ -99,8 +100,9 @@ public class Display extends AnimationTimer {
         }
         for (BoatDisplay boat: displayBoats) {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
-            moveBoat(boat, point);
+            addToBoatPath(boat, point);
             moveWake(boat, point);
+            moveBoat(boat, point);
             moveBoatAnnotation(boat, point);
         }
         controller.updatePlacings();
@@ -210,7 +212,6 @@ public class Display extends AnimationTimer {
         boat.getIcon().setTranslateX(point.getX());
         boat.getIcon().getTransforms().clear();
         boat.getIcon().getTransforms().add(new Rotate(boat.getBoat().getHeading(), 0.0, 0.0));
-        drawBoatPath(boat, point);
         boat.getIcon().toFront();
     }
 
@@ -266,6 +267,7 @@ public class Display extends AnimationTimer {
         boat.getWake().setTranslateY(point.getY());
         boat.getWake().setTranslateX(point.getX());
         boat.getWake().getTransforms().add(new Rotate(boat.getBoat().getHeading(), 0, 0));
+        boat.getWake().toFront();
     }
 
     public void redrawCourse(){
@@ -325,21 +327,21 @@ public class Display extends AnimationTimer {
     /**
      * Initalises the boat path for each boat
      */
-    public void initBoatPath(){
-        for(BoatDisplay boatDisplay : displayBoats){
-            Path path = new Path();
-            path.getStrokeDashArray().addAll(5.0,7.0,5.0,7.0);
-            path.setId("boatPath");
-            path.setOpacity(1);
-            path.setStroke(boatDisplay.getIcon().getFill());
+    public void initBoatPath(BoatDisplay boatDisplay){
+
+        Path path = new Path();
+        path.getStrokeDashArray().addAll(5.0,7.0,5.0,7.0);
+        path.setId("boatPath");
+        path.setOpacity(1);
+        path.setStroke(boatDisplay.getIcon().getFill());
 
             Boat boat = boatDisplay.getBoat();
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
             path.getElements().add(new MoveTo(point.getX(), point.getY()));
 
-            boatDisplay.setPath(path);
-            root.getChildren().add(path);
-        }
+        boatDisplay.setPath(path);
+        root.getChildren().add(path);
+
     }
 
     /**
@@ -347,7 +349,7 @@ public class Display extends AnimationTimer {
      * @param boatDisplay The display component of the boat
      * @param point The position of the boat on screen
      */
-    public void drawBoatPath(BoatDisplay boatDisplay, CanvasCoordinate point){
+    public void addToBoatPath(BoatDisplay boatDisplay, CanvasCoordinate point){
         boatDisplay.getPath().getElements().add(new LineTo(point.getX(), point.getY()));
     }
 
