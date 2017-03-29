@@ -11,17 +11,17 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 
-import javafx.scene.*;
-
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Random;
+
 
 
 public class Main extends Application {
 
     private static Race race;
 
+    /**
+     * Loads in the course and config files and creates the race to run.
+     */
     @Override
     public void init(){
         Config.initializeConfig();

@@ -15,7 +15,6 @@ import java.util.StringTokenizer;
 /**
  * Created on 6/03/17.
  * Collection of methods for reading in data from files. Files must be located in the DEFAULT_FILE_PATH folder
- * TODO: exit program or use some default values on failed read, rather than catching exceptions and failing later
  */
 
 public class RaceVisionFileReader {
@@ -30,7 +29,8 @@ public class RaceVisionFileReader {
      * Manages importing the course from the correct place
      * If a file path is specified, this will be used, otherwise a default is packaged with the jar.
      * Currently this an XML file at DEFAULT_FILE_PATH/DEFAULT_COURSE_FILE
-     * @return a Course object
+     * @param filePath String of the file path of the file to read in.
+     * @return a Course object.
      */
     public static Course importCourse(String filePath) {
         try {
@@ -214,8 +214,9 @@ public class RaceVisionFileReader {
     }
 
     /**
+     * Makes a bew coordinate by extracting the latitude and longitude from the node.
      * @param latlons A node with lat and lons tags
-     * @return a Coordainte object indicating a point on the boundary
+     * @return a Coordinate object indicating a point on the boundary
      * @throws XMLParseException XMLParseException if no <lat> or <lon> tag exists
      */
     private static Coordinate parseBoundaryCoord(Node latlons) throws XMLParseException{
@@ -261,6 +262,7 @@ public class RaceVisionFileReader {
      *      BoatName, Speed
      *
      * Speed is expected in knots
+     * @param filePath string of the file path were the starters are imported.
      * @return starters - ArrayList of Boat objects defined in file
      */
     public static ArrayList<Boat> importStarters(String filePath){

@@ -3,7 +3,8 @@ package seng302;
 import javafx.scene.shape.Line;
 
 /**
- * Used to determine a stort or finish point of a race. A line is drawn between the 2 lat lon.
+ * Inheriting from compound mark it is used to determine a start or finish point of a race.
+ * A line is drawn between the 2 lat lon.
  */
 public class RaceLine extends CompoundMark{
     private Coordinate end1;
