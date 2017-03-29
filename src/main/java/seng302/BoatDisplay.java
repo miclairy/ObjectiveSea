@@ -1,5 +1,6 @@
 package seng302;
 
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
@@ -16,6 +17,8 @@ public class BoatDisplay {
     private Polyline wake;
     private Text annotation;
     private Path path;
+
+    private Color color;
 
     public BoatDisplay(Boat boat) {
         this.boat = boat;
@@ -49,5 +52,13 @@ public class BoatDisplay {
     public void setPath(Path path) {this.path = path;}
 
     public Path getPath() {return path;}
+
+    public Color getColor() {
+        return color;
+    }
+
+    public void setColor(Color color) {
+        this.color = color;
+    }
 }
 
