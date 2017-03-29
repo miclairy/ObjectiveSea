@@ -212,7 +212,11 @@ public class Controller implements Initializable {
             int minutes = zonedDateTime.getMinute();
             int seconds = zonedDateTime.getSecond();
             int utc = zonedDateTime.getOffset().getTotalSeconds()/3600;
-            clockString.set(String.format("%02d:%02d:%02d UTC%d", hours, minutes, seconds, utc));
+            String isPositive = "";
+            if(utc >= 0){
+                isPositive = "+";
+            }
+            clockString.set(String.format("%02d:%02d:%02d UTC%s%d", hours, minutes, seconds, isPositive, utc));
         }
     }
 
