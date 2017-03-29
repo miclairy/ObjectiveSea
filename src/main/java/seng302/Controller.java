@@ -12,9 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.image.Image;
-import javafx.scene.effect.GaussianBlur;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
@@ -80,7 +77,6 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         placings.setItems(formattedDisplayOrder);
-        canvasSize = new CartesianPoint(canvas.getWidth(), canvas.getHeight());
 
         Race race = Main.getRace();
         raceBegun = false;
@@ -88,22 +84,16 @@ public class Controller implements Initializable {
         timeZone = race.getCourse().getTimeZone();
         course.initCourseLatLon();
         race.setTotalRaceTime();
+        canvasSize = new CartesianPoint(canvas.getWidth(), canvas.getHeight());
 
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
         display = new Display(root, race, this);
 
         canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
-            canvasSize.setX((double) newValue);
-            display.redrawCourse();
-            display.redrawWindArrow();
-            display.redrawBoatPaths();
+                    canvasSize.setX((double) newValue);
         });
-
         canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> {
-            canvasSize.setY((double) newValue);
-            display.redrawCourse();
-            display.redrawWindArrow();
-            display.redrawBoatPaths();
+                    canvasSize.setY((double) newValue);
         });
 
         setAnnotations();
@@ -113,6 +103,7 @@ public class Controller implements Initializable {
         secondsBeforeRace = race.getSecondsBeforeRace();
         secondsElapsed -= secondsBeforeRace;
         raceTimerLabel.textProperty().bind(raceTimerString);
+        clockLabel.textProperty().bind(clockString);
 
         displayStarters();
         display.start();
@@ -220,7 +211,8 @@ public class Controller implements Initializable {
             int hours = zonedDateTime.getHour();
             int minutes = zonedDateTime.getMinute();
             int seconds = zonedDateTime.getSecond();
-            clockString.set(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+            int utc = zonedDateTime.getOffset().getTotalSeconds()/3600;
+            clockString.set(String.format("%02d:%02d:%02d UTC%d", hours, minutes, seconds, utc));
         }
     }
 
@@ -245,11 +237,30 @@ public class Controller implements Initializable {
         double overlayFadeTime = (raceStartTime - PREP_SIGNAL_SECONDS_BEFORE_START);
         if (currentTime > overlayFadeTime && startersOverlay.isVisible()) {
             hideStarterOverlay();
+            resizeCourse();
+            display.drawCourse();
             display.initializeBoats();
         }
         if (currentTime >= raceStartTime) {
             raceBegun = true;
         }
+    }
+
+    private void resizeCourse() {
+
+        canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
+            canvasSize.setX((double) newValue);
+            display.redrawCourse();
+            display.redrawWindArrow();
+            display.redrawBoatPaths();
+        });
+
+        canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> {
+            canvasSize.setY((double) newValue);
+            display.redrawCourse();
+            display.redrawWindArrow();
+            display.redrawBoatPaths();
+        });
     }
 
     public boolean hasRaceBegun() {

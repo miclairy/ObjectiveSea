@@ -26,6 +26,10 @@
     -fx-background-radius: 10 10 0 0;
 }
 
+.clockLabel {
+    -fx-background-color: #3c619b;
+}
+
 .split-pane {
     -fx-background-insets: 0, 0;
     -fx-padding: 0;
