@@ -241,6 +241,7 @@ public class Controller implements Initializable {
 
     public void handlePrerace(double currentTime, double raceStartTime){
         double overlayFadeTime = (raceStartTime - PREP_SIGNAL_SECONDS_BEFORE_START);
+        startersOverlay.toFront();
         if (currentTime > overlayFadeTime && startersOverlay.isVisible()) {
             hideStarterOverlay();
             resizeCourse();
