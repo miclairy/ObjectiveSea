@@ -103,7 +103,7 @@
 }
 #fpsLabel{
     -fx-content-display: center;
-    -fx-padding: 10 10 10 18;
+    -fx-padding: 10 10 10 10;
     -fx-opacity: 0.8;
     -fx-font-family: 'helvetica';
     -fx-font-size: 14px;
