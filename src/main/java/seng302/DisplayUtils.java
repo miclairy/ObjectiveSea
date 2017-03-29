@@ -1,8 +1,9 @@
 package seng302;
 import javafx.scene.Node;
 
+
 /**
- * Created by cjd137 on 17/03/2017.
+ * utils class used to calculated x y from lat lon and chack bounds of the canvas.
  */
 
 public class DisplayUtils {

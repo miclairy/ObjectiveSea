@@ -1,7 +1,7 @@
 package seng302;
 
 /**
- * Created by cba62 on 15/03/17.
+ * Main class. Loads data and starts GUI.
  */
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -53,18 +53,6 @@ public class Main extends Application {
     public static void main( String[] args )
     {
         launch(args);
-    }
-
-    private static void randomizeOrder(ArrayList<Boat> boats){
-        int numBoats = boats.size();
-        ArrayList<Integer> places = new ArrayList<>();
-        for (int i = 1; i <= numBoats; i++){
-            places.add(i);
-        }
-        Collections.shuffle(places, new Random());
-        for (int j = 0; j < numBoats; j++) {
-            boats.get(j).setFinishingPlace(places.get(j));
-        }
     }
 
     public static Race getRace() {

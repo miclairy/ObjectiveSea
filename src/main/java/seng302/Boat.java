@@ -1,16 +1,9 @@
 package seng302;
 
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Polyline;
-import javafx.scene.shape.Shape;
-import javafx.scene.text.Text;
-import javafx.scene.shape.Path;
 
 import java.util.ArrayList;
 
 /**
- * Created by mjt169 on 6/03/17.
  * Class to encapsulate properties associated with a boat.
  */
 

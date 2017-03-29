@@ -1,7 +1,6 @@
 package seng302;
 
 /**
- * Created by Michael Trotter on 3/25/2017.
  * A utility class for converting between various time units to aid in clean and readable code in other places.
  */
 public class TimeUtils {

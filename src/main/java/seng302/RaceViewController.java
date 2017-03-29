@@ -42,8 +42,7 @@ public class RaceViewController extends AnimationTimer {
     private double currentTimeInSeconds;
     private AnnotationLevel currentAnnotationsLevel;
 
-
-    //number of pixels from right edge of canvas that the wind arrow will be drawn
+    //number of pixelsfrom right edge of canvas that the wind arrow will be drawn
     private final int WIND_ARROW_OFFSET = 60;
 
     public RaceViewController(Group root, Race race, Controller controller) {
@@ -166,7 +165,6 @@ public class RaceViewController extends AnimationTimer {
                 mark.addIcon(circle);
             }
         }
-        drawWindArrow();
     }
 
     /**
@@ -178,22 +176,6 @@ public class RaceViewController extends AnimationTimer {
         boundary.toBack();
     }
 
-    /**
-     * Draws the wind direction arrow from the course on the canvas.
-     */
-    private void drawWindArrow(){
-        double windDirection = race.getCourse().getWindDirection();
-        ImageView imv = new ImageView();
-        Image windArrow = new Image("graphics/arrow.png");
-        imv.setImage(windArrow);
-        imv.setFitHeight(40);
-        imv.setFitWidth(40);
-        imv.setX(Controller.getCanvasWidth() - WIND_ARROW_OFFSET);
-        imv.setY(15);
-        imv.setRotate(windDirection);
-        root.getChildren().add(imv);
-        currentWindArrow = imv;
-    }
 
     /**
      * Update a boat icon's position on screen, translating from the boat's latlon to cartesian coordinates
@@ -381,5 +363,8 @@ public class RaceViewController extends AnimationTimer {
     }
 
 
+    public void setCurrentWindArrow(ImageView currentWindArrow) {
+        this.currentWindArrow = currentWindArrow;
+    }
 }
 
