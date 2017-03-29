@@ -8,6 +8,24 @@
     -fx-border-color: #1a1a1a;
 }
 
+#startersList{
+    -fx-control-inner-background: #1a1a1a;
+    -fx-font-family: 'helvetica';
+    -fx-font-size: 17px;
+    -fx-text-fill: White;
+    -fx-focus-color: transparent;
+    -fx-background-insets: 0, 0;
+}
+
+.titleLabel {
+    -fx-background-color: #3c619b;
+    -fx-font-family: 'helvetica';
+    -fx-font-size: 27px;
+    -fx-text-fill: White;
+    -fx-border-radius: 10 10 0 0;
+    -fx-background-radius: 10 10 0 0;
+}
+
 .split-pane {
     -fx-background-insets: 0, 0;
     -fx-padding: 0;
@@ -85,7 +103,7 @@
 }
 #fpsLabel{
     -fx-content-display: center;
-    -fx-padding: 10 10 10 18;
+    -fx-padding: 10 10 10 10;
     -fx-opacity: 0.8;
     -fx-font-family: 'helvetica';
     -fx-font-size: 14px;
