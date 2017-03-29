@@ -5,8 +5,7 @@ import java.util.*;
 
 /**
  * Created on 7/03/17.
- * A Race encompasses a course and some competitors, and the events that occur throughout the race.
- * For now, events are randomly pre-computed and stored in a queue ready to be read by other classes such as Display
+ * A Race encompasses the course and the competitors.
  */
 public class Race {
 

@@ -3,7 +3,7 @@ import javafx.scene.Node;
 
 
 /**
- * utils class used to calculated x y from lat lon and chack bounds of the canvas.
+ * Utils class used to calculated x y from lat lon and check bounds of the canvas.
  */
 
 public class DisplayUtils {
@@ -11,7 +11,7 @@ public class DisplayUtils {
     public static Coordinate max, min;
 
     /**
-     * This function takes the given lat and lon and returns a x,y coordinate scaled to the canvas size
+     * Takes the given lat and lon and returns a x,y coordinate scaled to the canvas size
      * and the change in multiplier to the screen size.
      * @param lat This is the required Latitude to find the Y coordinate.
      * @param lon This is the required Longitude to find the X coordinate.
@@ -52,6 +52,11 @@ public class DisplayUtils {
         DisplayUtils.min = new Coordinate(minLat, minLon);
     }
 
+    /**
+     * Checks whether the node is within the bounds of the canvas.
+     * @param node Node to check if inside canvas.
+     * @return Boolean of whether it is outside the bounds.
+     */
     public static boolean checkBounds(Node node){
         boolean outsideBound = false;
         if(node.getBoundsInParent().getMaxX() > Controller.getCanvasWidth()){

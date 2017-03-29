@@ -146,6 +146,9 @@ public class Boat implements Comparable<Boat>{
         this.pathCoords.add(newCoord);
     }
 
+    /**
+     * Make speed be the max speed.
+     */
     public void maximiseSpeed(){
         this.speed = maxSpeed;
     }

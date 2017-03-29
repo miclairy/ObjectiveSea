@@ -1,5 +1,8 @@
 package seng302;
 
+/**
+ * Coordinate class to encapsulates the latitude longitude coordinates.
+ */
 public class Coordinate {
     protected double lat, lon;
 
