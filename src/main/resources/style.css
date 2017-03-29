@@ -1,30 +1,8 @@
-#placings {
-    -fx-control-inner-background: #2a2a2a;
-    -fx-background-color: #2a2a2a;
-    -fx-font-family: 'helvetica';
-    -fx-font-size: 16px;
+.root{
+    -fx-font-family: "helvetica";
     -fx-text-fill: White;
-    -fx-focus-color: transparent;
-    -fx-border-color: #1a1a1a;
 }
 
-#startersList{
-    -fx-control-inner-background: #1a1a1a;
-    -fx-font-family: 'helvetica';
-    -fx-font-size: 17px;
-    -fx-text-fill: White;
-    -fx-focus-color: transparent;
-    -fx-background-insets: 0, 0;
-}
-
-.titleLabel {
-    -fx-background-color: #3c619b;
-    -fx-font-family: 'helvetica';
-    -fx-font-size: 27px;
-    -fx-text-fill: White;
-    -fx-border-radius: 10 10 0 0;
-    -fx-background-radius: 10 10 0 0;
-}
 
 .split-pane {
     -fx-background-insets: 0, 0;
@@ -37,36 +15,6 @@
     -fx-box-border: transparent;
 }
 
-#settingsPane {
-    -fx-background-color: #2b2b2b;
-}
-
-#raceClockHBox {
-    -fx-background-color: #2a2a2a;
-}
-
-#annotation{
-    -fx-font-family: 'helvetica';
-}
-
-#boundary{
-    -fx-fill: rgb(136, 230, 239);
-    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 10, 0.4, 0, 0);
-    -fx-stroke: rgb(64, 122, 151);
-    -fx-opacity: 0.2;
-}
-
-#wake{
-    -fx-stroke: #eaf2ff;
-    -fx-fill: rgb(132, 218, 255);
-}
-
-#mark{
-    -fx-fill: white;
-    -fx-effect: dropshadow(gaussian, #6db1b7, 10, 0.2, 0, 0);
-    -fx-stroke: #cdfaf4;
-    -fx-stroke-width: 2.0;
-}
 
 .slider .thumb {
     -fx-background-color: #3b3b3b;
@@ -82,44 +30,6 @@
     -fx-stroke: #8e8e8e;
 }
 
-#lblAnnotation{
-    -fx-font-family: 'helvetica';
-    -fx-font-size: 14px;
-    -fx-padding: 10 0 5 0 ;
-}
-
-#annotationsSlider{
-    -fx-padding: 0 20 0 20;
-}
-
-#sliderLbl{
-    -fx-font-family: 'helvetica';
-    -fx-padding: 0 20 0 20;
-}
-
-#fpsToggle{
-    -fx-font-family: 'helvetica';
-    -fx-padding: 20 20 20 20;
-}
-#fpsLabel{
-    -fx-content-display: center;
-    -fx-padding: 10 10 10 10;
-    -fx-opacity: 0.8;
-    -fx-font-family: 'helvetica';
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-text-fill: White;
-    -fx-background-color: #2a2a2a;
-    -fx-background-radius: 20px;
-}
-
-#fpsToggle{
-    -fx-font-family: 'helvetica';
-}
-
-#fpsToggle *.box{
-    -fx-background-color: #1a1a1a;
-}
 
 .scroll-bar{
  -fx-background-color: transparent;
@@ -180,4 +90,86 @@
 .scroll-bar:vertical:focused,
 .scroll-bar:horizontal:focused {
  -fx-background-color: transparent,rgb(96,96,96),rgb(96,96,96);
+}
+
+
+#placings {
+    -fx-control-inner-background: #2a2a2a;
+    -fx-background-color: #2a2a2a;
+    -fx-font-size: 16px;
+    -fx-focus-color: transparent;
+    -fx-border-color: #1a1a1a;
+}
+
+#startersList{
+    -fx-control-inner-background: #1a1a1a;
+    -fx-font-size: 17px;
+    -fx-focus-color: transparent;
+    -fx-background-insets: 0, 0;
+}
+
+#startersOverlayTitle {
+    -fx-background-color: #3c619b;
+    -fx-font-size: 27px;
+    -fx-text-fill: White;
+    -fx-border-radius: 10 10 0 0;
+    -fx-background-radius: 10 10 0 0;
+}
+
+#lblAnnotation{
+    -fx-font-size: 14px;
+    -fx-padding: 10 0 5 0 ;
+}
+
+#annotationsSlider{
+    -fx-padding: 0 20 0 20;
+}
+
+#sliderLbl{
+    -fx-padding: 0 20 0 20;
+}
+
+#fpsToggle{
+    -fx-padding: 20 20 20 20;
+}
+#fpsLabel{
+    -fx-content-display: center;
+    -fx-padding: 10 10 10 10;
+    -fx-opacity: 0.8;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: White;
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 20px;
+}
+
+#fpsToggle *.box{
+    -fx-background-color: #1a1a1a;
+}
+
+#boundary{
+    -fx-fill: rgb(136, 230, 239);
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 10, 0.4, 0, 0);
+    -fx-stroke: rgb(64, 122, 151);
+    -fx-opacity: 0.2;
+}
+
+#wake{
+    -fx-stroke: #eaf2ff;
+    -fx-fill: rgb(132, 218, 255);
+}
+
+#mark{
+    -fx-fill: white;
+    -fx-effect: dropshadow(gaussian, #6db1b7, 10, 0.2, 0, 0);
+    -fx-stroke: #cdfaf4;
+    -fx-stroke-width: 2.0;
+}
+
+#settingsPane {
+    -fx-background-color: #2b2b2b;
+}
+
+#raceClockHBox {
+    -fx-background-color: #2a2a2a;
 }
