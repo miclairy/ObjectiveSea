@@ -40,10 +40,9 @@ public class Display extends AnimationTimer {
     private AnnotationLevel currentAnnotationsLevel;
     private final double WAKE_SCALE_FACTOR = 50;
     private ArrayList<BoatDisplay> displayBoats = new ArrayList<>();
-
-
     //number of from right edge of canvas that the wind arrow will be drawn
     private final int WIND_ARROW_OFFSET = 60;
+
 
     public Display(Group root, Race race, Controller controller) {
         this.root = root;
@@ -150,7 +149,6 @@ public class Display extends AnimationTimer {
                 mark.addIcon(circle);
             }
         }
-        drawWindArrow();
     }
 
     /**
@@ -168,22 +166,6 @@ public class Display extends AnimationTimer {
         boundary.toBack();
     }
 
-    /**
-     * Draws the wind direction arrow from the course on the canvas.
-     */
-    private void drawWindArrow(){
-        double windDirection = race.getCourse().getWindDirection();
-        ImageView imv = new ImageView();
-        Image windArrow = new Image("graphics/arrow.png");
-        imv.setImage(windArrow);
-        imv.setFitHeight(40);
-        imv.setFitWidth(40);
-        imv.setX(Controller.getCanvasWidth() - WIND_ARROW_OFFSET);
-        imv.setY(15);
-        imv.setRotate(windDirection);
-        root.getChildren().add(imv);
-        currentWindArrow = imv;
-    }
 
     /**
      * Draws the boat icons (triangles with lines in the middle) and fills them with colour
@@ -405,5 +387,8 @@ public class Display extends AnimationTimer {
     }
 
 
+    public void setCurrentWindArrow(ImageView currentWindArrow) {
+        this.currentWindArrow = currentWindArrow;
+    }
 }
 

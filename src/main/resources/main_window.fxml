@@ -58,11 +58,15 @@
             </VBox>
             <Group fx:id="root" layoutY="-1.0">
                <children>
+                  <ImageView fx:id="windDirectionImage" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" x="410.0" y="15.0">
+                     <image>
+                        <Image url="@graphics/arrow.png" />
+                     </image>
+                  </ImageView>
                   <Canvas fx:id="canvas" height="400.0" width="466.0" />
                   <Label fx:id="fpsLabel" alignment="CENTER" centerShape="false" contentDisplay="BOTTOM" layoutX="4.0" layoutY="4.0" prefHeight="36.0" prefWidth="64.0" textAlignment="CENTER" />
                </children>
             </Group>
-            <Pane blendMode="RED" prefHeight="400.0" prefWidth="470.0" />
          </children></AnchorPane>
       <GridPane fx:id="sidePane">
         <columnConstraints>

@@ -50,6 +50,8 @@ public class Controller implements Initializable {
     private Slider annotationsSlider;
     @FXML
     private VBox startersOverlay;
+    @FXML
+    private ImageView windDirectionImage;
 
     public static SimpleStringProperty fpsString = new SimpleStringProperty();
     public static SimpleStringProperty clockString = new SimpleStringProperty();
@@ -67,6 +69,8 @@ public class Controller implements Initializable {
 
     private boolean raceBegun;
     private final int PREP_SIGNAL_SECONDS_BEFORE_START = 120; //2 minutes
+    //number of from right edge of canvas that the wind arrow will be drawn
+    private final int WIND_ARROW_OFFSET = 60;
 
     private Race race;
 
@@ -107,8 +111,17 @@ public class Controller implements Initializable {
         secondsElapsed -= secondsBeforeRace;
         raceClockLabel.textProperty().bind(clockString);
 
+        setWindDirection();
+
         displayStarters();
         display.start();
+    }
+
+    private void setWindDirection(){
+        double windDirection = race.getCourse().getWindDirection();
+        windDirectionImage.setX(canvasWidth - WIND_ARROW_OFFSET);
+        windDirectionImage.setRotate(windDirection);
+        display.setCurrentWindArrow(windDirectionImage);
     }
 
     private void setAnnotations() {
