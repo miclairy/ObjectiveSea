@@ -1,10 +1,7 @@
 package seng302;
 
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Polyline;
+import javafx.scene.shape.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,13 +26,11 @@ public class RaceView {
      */
     public Polyline createBoatImage(Color color){
         Polyline boatImage = new Polyline();
-        boatImage.getPoints().addAll(new Double[]{
-                0.0, -10.0,
+        boatImage.getPoints().addAll(0.0, -10.0,
                 5.0, 10.0,
                 -5.0, 10.0,
                 0.0, -10.0,
-                0.0, 10.0
-        });
+                0.0, 10.0);
         boatImage.setFill(color);
         boatImage.setStroke(Color.WHITE);
         return boatImage;
@@ -47,11 +42,9 @@ public class RaceView {
      */
     public Polyline createBoatWake() {
         Polyline wake = new Polyline();
-        wake.getPoints().addAll(new Double[]{
-                -5.0 , 40.0,
+        wake.getPoints().addAll(-5.0, 40.0,
                 0.0, -10.0,
-                5.0, 40.0
-        });
+                5.0, 40.0);
         wake.setId("wake");
         return wake;
     }
@@ -86,10 +79,27 @@ public class RaceView {
         return boundary;
     }
 
-    public Circle createMark(CanvasCoordinate point) {
+    /**
+     * Creates a Circle representing a mark
+     * @param coordinate where the mark is located
+     * @return a Circle object representing the mark image
+     */
+    public Circle createMark(Coordinate coordinate) {
+        CanvasCoordinate point = DisplayUtils.convertFromLatLon(coordinate);
         Circle circle = new Circle(point.getX(), point.getY(), 4f);
         circle.setId("mark");
         return circle;
+    }
+
+    public Line createRaceLine(Coordinate end1, Coordinate end2) {
+        CanvasCoordinate convertedEnd1 = DisplayUtils.convertFromLatLon(end1);
+        CanvasCoordinate convertedEnd2 = DisplayUtils.convertFromLatLon(end2);
+        Line line = new Line(
+                convertedEnd1.getX(), convertedEnd1.getY(),
+                convertedEnd2.getX(), convertedEnd2.getY()
+        );
+        line.setStroke(Color.web("#70aaa2"));
+        return line;
     }
 
     /**
