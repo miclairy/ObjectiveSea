@@ -20,12 +20,13 @@ public class Boat implements Comparable<Boat>{
     private String nickName;
     private double speed;
     private int finishingPlace;
+
     private Coordinate currentPosition;
+
     private int lastPassedMark;
     private boolean finished;
     private double heading;
     private double maxSpeed;
-
     private ArrayList<Coordinate> pathCoords;
 
     public Boat(String name, String nickName, double speed) {
@@ -46,6 +47,10 @@ public class Boat implements Comparable<Boat>{
     public void setPosition(double lat, double lon){
         currentPosition.setLat(lat);
         currentPosition.setLon(lon);
+    }
+
+    public Coordinate getCurrentPosition() {
+        return currentPosition;
     }
 
     /**

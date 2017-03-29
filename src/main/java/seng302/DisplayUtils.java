@@ -14,7 +14,7 @@ public class DisplayUtils {
      * and the change in multiplier to the screen size.
      * @param lat This is the required Latitude to find the Y coordinate.
      * @param lon This is the required Longitude to find the X coordinate.
-     * @return Returns CartesianPoint with an x and a y coordinate for use in placement of boats and/or marks/gates.
+     * @return Returns CanvasCoordinate with an x and a y coordinate for use in placement of boats and/or marks/gates.
      */
     public static CanvasCoordinate convertFromLatLon(double lat, double lon) {
         double canvasY = Controller.getCanvasHeight();
@@ -37,6 +37,15 @@ public class DisplayUtils {
 
         CanvasCoordinate point = new CanvasCoordinate(xCoord, yCoord);
         return point;
+    }
+
+    /**
+     * Overload for convertFromLatLon which takes a Coordinate as a param
+     * @param coordinate a Coordinate with defined lat and lon
+     * @return Returns CanvasCoordinate with an x and a y coordinate for use in placement of boats and/or marks/gates.
+     */
+    public static CanvasCoordinate convertFromLatLon(Coordinate coordinate) {
+        return convertFromLatLon(coordinate.getLat(), coordinate.getLon());
     }
 
     /**
