@@ -8,7 +8,7 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 
 /**
- *
+ * Encapsulates the display properties of the boat.
  */
 public class BoatDisplay {
 

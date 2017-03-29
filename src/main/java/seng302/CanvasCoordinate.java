@@ -1,7 +1,7 @@
 package seng302;
 
 /**
- * Reprsents a point on the Cartesian coordinate system
+ * Represents a point on the Cartesian coordinate system
  */
 public class CanvasCoordinate {
     private double x, y;

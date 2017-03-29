@@ -110,9 +110,6 @@ public class Course {
         minLat -= 0.004; minLon -= 0.004; maxLat += 0.004; maxLon += 0.004;
     }
 
-    /**
-     * Getter for the course order
-     */
     public ArrayList<CompoundMark> getCourseOrder(){
         return this.courseOrder;
     }
@@ -120,7 +117,6 @@ public class Course {
     public HashMap<String, CompoundMark> getMarks() {
         return marks;
     }
-
 
     public double getWindDirection() {
         return windDirection;

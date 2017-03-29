@@ -1,9 +1,7 @@
 package seng302;
 
-import javax.swing.plaf.ComponentUI;
 import java.util.*;
 
-import static javafx.collections.FXCollections.observableArrayList;
 
 /**
  * Created on 7/03/17.
@@ -15,7 +13,6 @@ public class Race {
     private String name;
     private Course course;
     private ArrayList<Boat> competitors;
-    private PriorityQueue<Event> events;
     private ArrayList<Boat> raceOrder = new ArrayList<>();
 
     private double totalRaceTime;
