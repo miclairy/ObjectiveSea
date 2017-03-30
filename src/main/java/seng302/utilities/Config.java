@@ -1,4 +1,6 @@
-package seng302;
+package seng302.utilities;
+
+import seng302.data.RaceVisionFileReader;
 
 import java.io.*;
 import java.util.StringTokenizer;

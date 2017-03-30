@@ -1,12 +1,13 @@
-package seng302;
+package seng302.models;
 
 import javafx.scene.shape.Line;
+import seng302.models.CompoundMark;
 
 /**
  * Inheriting from compound mark it is used to determine a start or finish point of a race.
  * A line is drawn between the 2 lat lon.
  */
-public class RaceLine extends CompoundMark{
+public class RaceLine extends CompoundMark {
     private Coordinate end1;
     private Coordinate end2;
     private Line line;

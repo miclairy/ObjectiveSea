@@ -1,4 +1,4 @@
-package seng302;
+package seng302.models;
 
 import java.util.ArrayList;
 import java.util.HashMap;

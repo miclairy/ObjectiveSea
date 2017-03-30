@@ -1,10 +1,11 @@
-package seng302;
+package seng302.views;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
+import seng302.models.Boat;
 
 
 /**

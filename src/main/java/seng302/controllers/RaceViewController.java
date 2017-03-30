@@ -1,8 +1,7 @@
-package seng302;
+package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -14,6 +13,12 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
+import seng302.utilities.Config;
+import seng302.utilities.DisplayUtils;
+import seng302.utilities.TimeUtils;
+import seng302.models.*;
+import seng302.views.BoatDisplay;
+import seng302.views.RaceView;
 
 import java.util.*;
 

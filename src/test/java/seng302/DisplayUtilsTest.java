@@ -2,8 +2,10 @@ package seng302;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
+import seng302.controllers.Controller;
+import seng302.models.CanvasCoordinate;
+import seng302.models.Coordinate;
+import seng302.utilities.DisplayUtils;
 
 import static org.junit.Assert.assertEquals;
 

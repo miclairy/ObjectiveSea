@@ -1,4 +1,4 @@
-package seng302;
+package seng302.utilities;
 
 /**
  * A utility class for converting between various time units to aid in clean and readable code in other places.

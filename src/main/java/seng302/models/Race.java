@@ -1,4 +1,6 @@
-package seng302;
+package seng302.models;
+
+import seng302.utilities.TimeUtils;
 
 import java.util.*;
 

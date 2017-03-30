@@ -1,5 +1,8 @@
-package seng302;
+package seng302.utilities;
 import javafx.scene.Node;
+import seng302.controllers.Controller;
+import seng302.models.CanvasCoordinate;
+import seng302.models.Coordinate;
 
 
 /**

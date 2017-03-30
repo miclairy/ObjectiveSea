@@ -1,4 +1,4 @@
-package seng302;
+package seng302.models;
 
 /**
  * Represents a point in the Cartesian coordinate system within the bounds of the canvas
@@ -6,7 +6,7 @@ package seng302;
 public class CanvasCoordinate {
     private double x, y;
 
-    CanvasCoordinate(double x, double y){
+    public CanvasCoordinate(double x, double y){
         this.x = x;
         this.y = y;
     }

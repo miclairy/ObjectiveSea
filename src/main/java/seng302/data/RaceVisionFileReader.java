@@ -1,7 +1,9 @@
-package seng302;
+package seng302.data;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
+import seng302.utilities.Config;
+import seng302.models.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
