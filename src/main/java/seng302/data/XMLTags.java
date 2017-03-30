@@ -1,4 +1,4 @@
-package seng302;
+package seng302.data;
 
 /**
  * Created on 16/03/17.

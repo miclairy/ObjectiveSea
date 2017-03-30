@@ -1,20 +1,22 @@
-package seng302;
+package seng302.data;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
+import seng302.utilities.Config;
+import seng302.models.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.StringTokenizer;
 
 /**
  * Created on 6/03/17.
  * Collection of methods for reading in data from files. Files must be located in the DEFAULT_FILE_PATH folder
- * TODO: exit program or use some default values on failed read, rather than catching exceptions and failing later
  */
 
 public class RaceVisionFileReader {
@@ -29,7 +31,8 @@ public class RaceVisionFileReader {
      * Manages importing the course from the correct place
      * If a file path is specified, this will be used, otherwise a default is packaged with the jar.
      * Currently this an XML file at DEFAULT_FILE_PATH/DEFAULT_COURSE_FILE
-     * @return a Course object
+     * @param filePath String of the file path of the file to read in.
+     * @return a Course object.
      */
     public static Course importCourse(String filePath) {
         try {
@@ -105,7 +108,11 @@ public class RaceVisionFileReader {
                         case XMLTags.Course.MARKS:
                             NodeList marks = element.getElementsByTagName(XMLTags.Course.MARK);
                             for (int j = 0; j < marks.getLength(); j++) {
-                                course.addNewMark(parseMark((Element) marks.item(j)));
+                                CompoundMark mark = parseMark((Element) marks.item(j));
+                                if(mark.isStartLine() && mark instanceof RaceLine){
+                                    course.setStartingLine((RaceLine) mark);
+                                }
+                                course.addNewMark(mark);
                             }
                             break;
                         case XMLTags.Course.LEGS:
@@ -132,6 +139,19 @@ public class RaceVisionFileReader {
         } catch (XMLParseException e) {
             System.err.printf("Error reading course file around tag <%s>.\n", e.getTag());
             e.printStackTrace();
+        }
+
+        if(course.getCourseOrder().size() < 2){
+            throw new InputMismatchException("There must be at least one leg in the course.");
+        }
+
+        if(!course.getCourseOrder().get(0).isStartLine()){
+            throw new InputMismatchException("The first leg of the course must start at the start line.");
+        }
+
+        int lastMarkIndex = course.getCourseOrder().size() - 1;
+        if(!course.getCourseOrder().get(lastMarkIndex).isFinishLine()){
+            throw new InputMismatchException("The last leg of the course must end at the finish line.");
         }
 
         return course;
@@ -199,8 +219,9 @@ public class RaceVisionFileReader {
     }
 
     /**
+     * Makes a bew coordinate by extracting the latitude and longitude from the node.
      * @param latlons A node with lat and lons tags
-     * @return a Coordainte object indicating a point on the boundary
+     * @return a Coordinate object indicating a point on the boundary
      * @throws XMLParseException XMLParseException if no <lat> or <lon> tag exists
      */
     private static Coordinate parseBoundaryCoord(Node latlons) throws XMLParseException{
@@ -246,6 +267,7 @@ public class RaceVisionFileReader {
      *      BoatName, Speed
      *
      * Speed is expected in knots
+     * @param filePath string of the file path were the starters are imported.
      * @return starters - ArrayList of Boat objects defined in file
      */
     public static ArrayList<Boat> importStarters(String filePath){

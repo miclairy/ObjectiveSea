@@ -1,20 +1,19 @@
-package seng302;
+package seng302.models;
+
+import seng302.utilities.TimeUtils;
 
 import java.util.*;
 
-import static javafx.collections.FXCollections.observableArrayList;
 
 /**
  * Created on 7/03/17.
- * A Race encompasses a course and some competitors, and the events that occur throughout the race.
- * For now, events are randomly pre-computed and stored in a queue ready to be read by other classes such as Display
+ * A Race encompasses the course and the competitors.
  */
 public class Race {
 
     private String name;
     private Course course;
     private ArrayList<Boat> competitors;
-    private PriorityQueue<Event> events;
     private ArrayList<Boat> raceOrder = new ArrayList<>();
 
     private double totalRaceTime;
@@ -32,8 +31,8 @@ public class Race {
      * Spreads the starting positions of the boats over the start line
      */
     public void setStartingPositions(){
-        RaceLine startingLine = (RaceLine) course.getCourseOrder().get(0);
-        int spaces = competitors.size(); //Num boats
+        RaceLine startingLine = course.getStartingLine();
+        int spaces = competitors.size();
         double dLat = (startingLine.getEnd2Lat() - startingLine.getEnd1Lat()) / spaces;
         double dLon = (startingLine.getEnd2Lon() - startingLine.getEnd1Lon()) / spaces;
         double curLat = startingLine.getEnd1Lat() + dLat;

@@ -1,16 +1,9 @@
-package seng302;
+package seng302.models;
 
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Polygon;
-import javafx.scene.shape.Polyline;
-import javafx.scene.shape.Shape;
-import javafx.scene.text.Text;
-import javafx.scene.shape.Path;
 
 import java.util.ArrayList;
 
 /**
- * Created by mjt169 on 6/03/17.
  * Class to encapsulate properties associated with a boat.
  */
 
@@ -20,12 +13,13 @@ public class Boat implements Comparable<Boat>{
     private String nickName;
     private double speed;
     private int finishingPlace;
+
     private Coordinate currentPosition;
+
     private int lastPassedMark;
     private boolean finished;
     private double heading;
     private double maxSpeed;
-
     private ArrayList<Coordinate> pathCoords;
 
     public Boat(String name, String nickName, double speed) {
@@ -48,6 +42,10 @@ public class Boat implements Comparable<Boat>{
         currentPosition.setLon(lon);
     }
 
+    public Coordinate getCurrentPosition() {
+        return currentPosition;
+    }
+
     /**
      * Updates the boat's coordinates by how much it moved in timePassed hours on the course
      * @param timePassed the amount of race hours since the last update
@@ -57,7 +55,6 @@ public class Boat implements Comparable<Boat>{
         if(finished){
             return;
         }
-
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
         CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
 
@@ -153,11 +150,18 @@ public class Boat implements Comparable<Boat>{
         this.pathCoords.add(newCoord);
     }
 
+    /**
+     * Make speed be the max speed.
+     */
     public void maximiseSpeed(){
         this.speed = maxSpeed;
     }
 
     public double getMaxSpeed() {
         return maxSpeed;
+    }
+
+    public void setSpeed(double speed) {
+        this.speed = speed;
     }
 }

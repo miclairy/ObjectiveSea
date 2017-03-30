@@ -1,6 +1,7 @@
 package seng302;
 
 import org.junit.Test;
+import seng302.utilities.TimeUtils;
 
 import static org.junit.Assert.*;
 

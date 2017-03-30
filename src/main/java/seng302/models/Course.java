@@ -1,4 +1,4 @@
-package seng302;
+package seng302.models;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +15,7 @@ public class Course {
     private double minLat, minLon, maxLat, maxLon;
     private HashMap<String, CompoundMark> marks;
     private double windDirection;
+    private RaceLine startingLine;
     private String timeZone;
 
     public Course() {
@@ -77,7 +78,7 @@ public class Course {
      * @param newLat the new latitude
      * @param newLon the new longitude
      */
-    public void updateMinMaxLatLon(double newLat, double newLon){
+    private void updateMinMaxLatLon(double newLat, double newLon){
         if(newLat > maxLat) {
             maxLat = newLat;
         } else if(newLat < minLat) {
@@ -110,9 +111,6 @@ public class Course {
         minLat -= 0.004; minLon -= 0.004; maxLat += 0.004; maxLon += 0.004;
     }
 
-    /**
-     * Getter for the course order
-     */
     public ArrayList<CompoundMark> getCourseOrder(){
         return this.courseOrder;
     }
@@ -120,7 +118,6 @@ public class Course {
     public HashMap<String, CompoundMark> getMarks() {
         return marks;
     }
-
 
     public double getWindDirection() {
         return windDirection;
@@ -156,5 +153,13 @@ public class Course {
 
     public ArrayList<Coordinate> getBoundary() {
         return boundary;
+    }
+
+    public RaceLine getStartingLine() {
+        return startingLine;
+    }
+
+    public void setStartingLine(RaceLine startingLine) {
+        this.startingLine = startingLine;
     }
 }

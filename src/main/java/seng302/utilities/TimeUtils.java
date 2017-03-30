@@ -1,4 +1,4 @@
-package seng302;
+package seng302.utilities;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -6,7 +6,6 @@ import java.time.ZonedDateTime;
 import java.util.TimeZone;
 
 /**
- * Created by Michael Trotter on 3/25/2017.
  * A utility class for converting between various time units to aid in clean and readable code in other places.
  */
 public class TimeUtils {

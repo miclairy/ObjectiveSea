@@ -2,6 +2,7 @@ package seng302;
 
 import org.junit.Assert;
 import org.junit.Test;
+import seng302.utilities.Config;
 
 /**
  * Created on 23/03/17.

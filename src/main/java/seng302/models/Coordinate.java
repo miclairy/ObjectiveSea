@@ -1,11 +1,14 @@
-package seng302;
+package seng302.models;
 
+/**
+ * Coordinate class to encapsulates the latitude longitude coordinates.
+ */
 public class Coordinate {
-    private double lat, lon;
+    protected double lat, lon;
 
     private static final double EARTH_RADIUS_IN_NAUTICAL_MILES = 3437.74677;
 
-    Coordinate(double lat, double lon){
+    public Coordinate(double lat, double lon){
         this.lat = lat;
         this.lon = lon;
     }

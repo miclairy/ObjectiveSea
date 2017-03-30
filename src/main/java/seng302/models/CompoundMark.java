@@ -1,6 +1,7 @@
-package seng302;
+package seng302.models;
 
 import javafx.scene.shape.Circle;
+import seng302.models.Coordinate;
 
 import java.util.ArrayList;
 
@@ -50,10 +51,10 @@ public class CompoundMark {
         this.type = MarkType.FINISH;
     }
 
-    public boolean isStart(){
+    public boolean isStartLine(){
         return this.type == MarkType.START;
     }
-    public boolean isFinish(){
+    public boolean isFinishLine(){
         return this.type == MarkType.FINISH;
     }
 
