@@ -76,6 +76,7 @@ public class RaceViewController extends AnimationTimer {
 
         controller.updateFPSCounter(currentTime);
         controller.updateRaceClock(scaledSecondsElapsed); //updates race clock using scaledSecondsElapsed
+        Controller.setTimeZone();
 
         currentTimeInSeconds += scaledSecondsElapsed;
 

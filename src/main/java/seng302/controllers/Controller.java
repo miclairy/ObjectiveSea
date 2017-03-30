@@ -20,9 +20,10 @@ import seng302.models.Course;
 import seng302.models.Race;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.ResourceBundle;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 import static javafx.collections.FXCollections.observableArrayList;
 
@@ -49,9 +50,11 @@ public class Controller implements Initializable {
     @FXML
     private Pane raceClockPane;
     @FXML
-    private Label raceClockLabel;
+    private Label raceTimerLabel;
     @FXML
     private Slider annotationsSlider;
+    @FXML
+    private Label clockLabel;
     @FXML
     private VBox startersOverlay;
     @FXML
@@ -68,6 +71,7 @@ public class Controller implements Initializable {
     private static boolean arrayFilled = false ;
 
     //Race Clock
+    public static SimpleStringProperty raceTimerString = new SimpleStringProperty();
     public static SimpleStringProperty clockString = new SimpleStringProperty();
     private static double totalRaceTime;
     private static double secondsBeforeRace;
@@ -75,6 +79,7 @@ public class Controller implements Initializable {
     private static ObservableList<String> formattedDisplayOrder = observableArrayList();
     private static double canvasHeight;
     private static double canvasWidth;
+    private static String timeZone;
 
     private RaceViewController raceViewController;
     private boolean raceBegun;
@@ -90,8 +95,10 @@ public class Controller implements Initializable {
         race = Main.getRace();
         raceBegun = false;
         Course course = race.getCourse();
+        timeZone = race.getCourse().getTimeZone();
         course.initCourseLatLon();
         race.setTotalRaceTime();
+        canvasSize = new CartesianPoint(canvas.getWidth(), canvas.getHeight());
 
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
         raceViewController = new RaceViewController(root, race, this);
@@ -102,7 +109,6 @@ public class Controller implements Initializable {
             raceViewController.moveWindArrow();
             raceViewController.redrawBoatPaths();
         });
-
         canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> {
             canvasHeight = (double) newValue;
             raceViewController.redrawCourse();
@@ -116,10 +122,12 @@ public class Controller implements Initializable {
         totalRaceTime = race.getTotalRaceTime();
         secondsBeforeRace = race.getSecondsBeforeRace();
         secondsElapsed -= secondsBeforeRace;
-        raceClockLabel.textProperty().bind(clockString);
+        raceTimerLabel.textProperty().bind(raceTimerString);
+        clockLabel.textProperty().bind(clockString);
+
 
         setWindDirection();
-
+        startersOverlay.toFront();
         displayStarters();
         raceViewController.start();
     }
@@ -199,6 +207,14 @@ public class Controller implements Initializable {
         }
     }
 
+    public void displayStarters(){
+        ObservableList<String> starters = observableArrayList();
+        for (Boat boat : Main.getRace().getCompetitors()){
+            starters.add(String.format("%s - %s", boat.getNickName(), boat.getName()));
+        }
+        startersList.setItems(starters);
+    }
+
     /**
      * Updates the fps counter to the current fps of the average of the last 100 frames of the Application.
      * @param now Is the current time
@@ -231,11 +247,19 @@ public class Controller implements Initializable {
         int minutes = ((int) secondsElapsed % 3600) / 60;
         int seconds = (int) secondsElapsed % 60;
         if(secondsElapsed < 0) {
-            clockString.set(String.format("-%02d:%02d:%02d", Math.abs(hours), Math.abs(minutes), Math.abs(seconds)));
+            raceTimerString.set(String.format("-%02d:%02d:%02d", Math.abs(hours), Math.abs(minutes), Math.abs(seconds)));
         } else {
-            clockString.set(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+            raceTimerString.set(String.format("%02d:%02d:%02d", hours, minutes, seconds));
         }
     }
+
+    /**
+     * displays the current tie zone in the GUI on the overlay
+     */
+    public static void setTimeZone() {
+        clockString.set(TimeUtils.setTimeZone(timeZone));
+    }
+
 
     @FXML
     /**
