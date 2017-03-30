@@ -3,6 +3,11 @@ package seng302;
 
 import org.junit.Assert;
 import org.junit.Test;
+import seng302.data.RaceVisionFileReader;
+import seng302.models.CompoundMark;
+import seng302.models.Course;
+import seng302.models.Gate;
+import seng302.models.RaceLine;
 
 /**
  * Created by Michael Trotter on 3/21/2017.

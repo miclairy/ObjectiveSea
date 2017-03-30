@@ -1,4 +1,4 @@
-package seng302;
+package seng302.controllers;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
@@ -14,6 +14,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import seng302.utilities.DisplayUtils;
+import seng302.models.Boat;
+import seng302.models.Course;
+import seng302.models.Race;
 
 import java.net.URL;
 import java.util.ArrayList;

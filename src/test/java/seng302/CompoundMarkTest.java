@@ -1,6 +1,7 @@
 package seng302;
 
 import org.junit.Test;
+import seng302.models.CompoundMark;
 
 import static org.junit.Assert.*;
 

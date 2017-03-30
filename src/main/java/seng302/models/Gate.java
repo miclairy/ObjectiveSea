@@ -1,4 +1,6 @@
-package seng302;
+package seng302.models;
+
+import seng302.models.CompoundMark;
 
 /**
  * Created on 16/03/17.

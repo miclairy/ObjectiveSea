@@ -1,8 +1,11 @@
 package seng302;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import seng302.models.Boat;
+import seng302.models.CompoundMark;
+import seng302.models.Course;
+import seng302.models.RaceLine;
 
 import java.util.ArrayList;
 

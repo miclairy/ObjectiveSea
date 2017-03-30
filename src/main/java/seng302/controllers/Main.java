@@ -1,4 +1,4 @@
-package seng302;
+package seng302.controllers;
 
 /**
  * Main class. Loads data and starts GUI.
@@ -10,6 +10,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
+import seng302.utilities.Config;
+import seng302.data.RaceVisionFileReader;
+import seng302.models.Boat;
+import seng302.models.Course;
+import seng302.models.Race;
 
 import java.util.ArrayList;
 

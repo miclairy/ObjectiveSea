@@ -1,6 +1,7 @@
 package seng302;
 
 import org.junit.Test;
+import seng302.models.Coordinate;
 
 import static org.junit.Assert.assertEquals;
 

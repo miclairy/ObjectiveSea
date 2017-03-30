@@ -1,10 +1,13 @@
-package seng302;
+package seng302.views;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
+import seng302.utilities.DisplayUtils;
+import seng302.models.CanvasCoordinate;
+import seng302.models.Coordinate;
 
 import java.util.ArrayList;
 import java.util.Arrays;

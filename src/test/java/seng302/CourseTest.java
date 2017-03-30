@@ -2,6 +2,7 @@ package seng302;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import seng302.models.*;
 
 import static org.junit.Assert.assertEquals;
 

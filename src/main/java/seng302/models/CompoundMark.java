@@ -1,6 +1,7 @@
-package seng302;
+package seng302.models;
 
 import javafx.scene.shape.Circle;
+import seng302.models.Coordinate;
 
 import java.util.ArrayList;
 
