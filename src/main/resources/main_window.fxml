@@ -56,7 +56,7 @@
                         <Insets bottom="10.0" top="10.0" />
                      </padding>
                   </Label>
-                  <Label fx:id="clockLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="400.0" minWidth="100.0" prefWidth="300.0" styleClass="clockLabel" textAlignment="CENTER" textFill="WHITE">
+                  <Label fx:id="clockLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="400.0" minWidth="100.0" prefWidth="300.0" textAlignment="CENTER" textFill="WHITE">
                      <font>
                         <Font size="22.0" />
                      </font>

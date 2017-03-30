@@ -15,16 +15,16 @@
     -fx-effect: dropshadow(three-pass-box, rgb(21, 54, 50), 50, 0, 0, 0);
 }
 
-.titleLabel {
-    -fx-background-color: #a9cfd1;
+#startersOverlayTitle {
+    -fx-background-color: #3c619b;
     -fx-font-size: 27px;
     -fx-text-fill: White;
     -fx-border-radius: 10 10 0 0;
     -fx-background-radius: 10 10 0 0;
 }
 
-.clockLabel {
-    -fx-background-color: #a9cfd1;
+#clockLabel {
+    -fx-background-color: #3c619b;
 }
 
 .split-pane {
@@ -129,14 +129,6 @@
     -fx-font-size: 17px;
     -fx-focus-color: transparent;
     -fx-background-insets: 0, 0;
-}
-
-#startersOverlayTitle {
-    -fx-background-color: #3c619b;
-    -fx-font-size: 27px;
-    -fx-text-fill: White;
-    -fx-border-radius: 10 10 0 0;
-    -fx-background-radius: 10 10 0 0;
 }
 
 #lblAnnotation{

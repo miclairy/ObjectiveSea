@@ -272,7 +272,6 @@ public class RaceViewController extends AnimationTimer {
         boat.getWake().setTranslateY(point.getY());
         boat.getWake().setTranslateX(point.getX());
         boat.getWake().getTransforms().add(new Rotate(boat.getBoat().getHeading(), 0, 0));
-        boat.getWake().toFront();
     }
 
     /**

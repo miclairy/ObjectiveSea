@@ -18,6 +18,7 @@ import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.Race;
+import seng302.utilities.TimeUtils;
 
 import java.net.URL;
 import java.time.Instant;
@@ -98,7 +99,6 @@ public class Controller implements Initializable {
         timeZone = race.getCourse().getTimeZone();
         course.initCourseLatLon();
         race.setTotalRaceTime();
-        canvasSize = new CartesianPoint(canvas.getWidth(), canvas.getHeight());
 
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
         raceViewController = new RaceViewController(root, race, this);
@@ -205,14 +205,6 @@ public class Controller implements Initializable {
             }
             formattedDisplayOrder.add(displayString);
         }
-    }
-
-    public void displayStarters(){
-        ObservableList<String> starters = observableArrayList();
-        for (Boat boat : Main.getRace().getCompetitors()){
-            starters.add(String.format("%s - %s", boat.getNickName(), boat.getName()));
-        }
-        startersList.setItems(starters);
     }
 
     /**
