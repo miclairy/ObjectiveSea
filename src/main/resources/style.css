@@ -9,7 +9,7 @@
 }
 
 #startersList{
-    -fx-control-inner-background: #1a1a1a;
+    -fx-control-inner-background: #2a2a2a;
     -fx-font-family: 'helvetica';
     -fx-font-size: 17px;
     -fx-text-fill: White;
@@ -18,11 +18,11 @@
 }
 
 #startersOverlay{
-    -fx-effect: dropshadow(gaussian, rgb(21, 54, 50), 25, 0.1, 1, 1);
+    -fx-effect: dropshadow(three-pass-box, rgb(21, 54, 50), 50, 0, 0, 0);
 }
 
 .titleLabel {
-    -fx-background-color: #3c619b;
+    -fx-background-color: #a9cfd1;
     -fx-font-family: 'helvetica';
     -fx-font-size: 27px;
     -fx-text-fill: White;
@@ -31,7 +31,7 @@
 }
 
 .clockLabel {
-    -fx-background-color: #3c619b;
+    -fx-background-color: #a9cfd1;
 }
 
 .split-pane {

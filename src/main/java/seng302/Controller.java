@@ -107,6 +107,9 @@ public class Controller implements Initializable {
         raceTimerLabel.textProperty().bind(raceTimerString);
         clockLabel.textProperty().bind(clockString);
 
+        resizeCourse();
+        display.drawCourse();
+        startersOverlay.toFront();
         displayStarters();
         display.start();
     }
@@ -143,15 +146,7 @@ public class Controller implements Initializable {
             starters.add(String.format("%s - %s", boat.getNickName(), boat.getName()));
         }
         startersList.setItems(starters);
-        //generateFrostedCourse();
     }
-
-//    public void generateFrostedCourse(){
-//        Image courseSnapshot = root.snapshot(null, null);
-//        imvCourseOverlay.setImage(courseSnapshot);
-//        imvCourseOverlay.setEffect(new GaussianBlur(40));
-//        imvCourseOverlay.toBack();
-//    }
 
     /**
      * Updates the fps counter to the current fps of the average of the last 100 frames of the Application.
@@ -241,11 +236,8 @@ public class Controller implements Initializable {
 
     public void handlePrerace(double currentTime, double raceStartTime){
         double overlayFadeTime = (raceStartTime - PREP_SIGNAL_SECONDS_BEFORE_START);
-        startersOverlay.toFront();
         if (currentTime > overlayFadeTime && startersOverlay.isVisible()) {
             hideStarterOverlay();
-            resizeCourse();
-            display.drawCourse();
             display.initializeBoats();
         }
         if (currentTime >= raceStartTime) {
