@@ -44,8 +44,6 @@ public class Display extends AnimationTimer {
         this.root = root;
         this.race = race;
         this.controller = controller;
-        drawCourse();
-
     }
 
     public void initializeBoats() {
@@ -73,6 +71,7 @@ public class Display extends AnimationTimer {
 
         controller.updateFPSCounter(currentTime);
         controller.updateRaceClock(scaledSecondsElapsed); //updates race clock using scaledSecondsElapsed
+        Controller.setTimeZone();
 
         currentTimeInSeconds += scaledSecondsElapsed;
 
@@ -104,7 +103,7 @@ public class Display extends AnimationTimer {
     }
 
 
-    private void drawCourse(){
+    public void drawCourse(){
         drawBoundary();
         drawMarks();
     }

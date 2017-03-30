@@ -1,8 +1,6 @@
 package seng302;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.property.adapter.JavaBeanStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -14,16 +12,14 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.image.Image;
-import javafx.scene.effect.GaussianBlur;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.ResourceBundle;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 import static javafx.collections.FXCollections.observableArrayList;
 
@@ -50,13 +46,16 @@ public class Controller implements Initializable {
     @FXML
     private Pane raceClockPane;
     @FXML
-    private Label raceClockLabel;
+    private Label raceTimerLabel;
     @FXML
     private Slider annotationsSlider;
+    @FXML
+    private Label clockLabel;
     @FXML
     private VBox startersOverlay;
 
     public static SimpleStringProperty fpsString = new SimpleStringProperty();
+    public static SimpleStringProperty raceTimerString = new SimpleStringProperty();
     public static SimpleStringProperty clockString = new SimpleStringProperty();
     private static final long[] frameTimes = new long[100];
     private static int frameTimeIndex = 0 ;
@@ -68,6 +67,7 @@ public class Controller implements Initializable {
     private static ObservableList<String> formattedDisplayOrder = observableArrayList();
     private static CartesianPoint canvasSize;
     private Display display;
+    private static String timeZone;
 
     private boolean raceBegun;
     private final int PREP_SIGNAL_SECONDS_BEFORE_START = 120; //2 minutes
@@ -77,29 +77,23 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         placings.setItems(formattedDisplayOrder);
-        canvasSize = new CartesianPoint(canvas.getWidth(), canvas.getHeight());
 
         race = Main.getRace();
         raceBegun = false;
         Course course = race.getCourse();
+        timeZone = race.getCourse().getTimeZone();
         course.initCourseLatLon();
         race.setTotalRaceTime();
+        canvasSize = new CartesianPoint(canvas.getWidth(), canvas.getHeight());
 
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
         display = new Display(root, race, this);
 
         canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
             canvasSize.setX((double) newValue);
-            display.redrawCourse();
-            display.redrawWindArrow();
-            display.redrawBoatPaths();
         });
-
         canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> {
             canvasSize.setY((double) newValue);
-            display.redrawCourse();
-            display.redrawWindArrow();
-            display.redrawBoatPaths();
         });
 
         setAnnotations();
@@ -108,8 +102,12 @@ public class Controller implements Initializable {
         totalRaceTime = race.getTotalRaceTime();
         secondsBeforeRace = race.getSecondsBeforeRace();
         secondsElapsed -= secondsBeforeRace;
-        raceClockLabel.textProperty().bind(clockString);
+        raceTimerLabel.textProperty().bind(raceTimerString);
+        clockLabel.textProperty().bind(clockString);
 
+        resizeCourse();
+        display.drawCourse();
+        startersOverlay.toFront();
         displayStarters();
         display.start();
     }
@@ -146,15 +144,7 @@ public class Controller implements Initializable {
             starters.add(String.format("%s - %s", boat.getNickName(), boat.getName()));
         }
         startersList.setItems(starters);
-        //generateFrostedCourse();
     }
-
-//    public void generateFrostedCourse(){
-//        Image courseSnapshot = root.snapshot(null, null);
-//        imvCourseOverlay.setImage(courseSnapshot);
-//        imvCourseOverlay.setEffect(new GaussianBlur(40));
-//        imvCourseOverlay.toBack();
-//    }
 
     /**
      * Updates the fps counter to the current fps of the average of the last 100 frames of the Application.
@@ -184,11 +174,19 @@ public class Controller implements Initializable {
         int minutes = ((int) secondsElapsed % 3600) / 60;
         int seconds = (int) secondsElapsed % 60;
         if(secondsElapsed < 0) {
-            clockString.set(String.format("-%02d:%02d:%02d", Math.abs(hours), Math.abs(minutes), Math.abs(seconds)));
+            raceTimerString.set(String.format("-%02d:%02d:%02d", Math.abs(hours), Math.abs(minutes), Math.abs(seconds)));
         } else {
-            clockString.set(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+            raceTimerString.set(String.format("%02d:%02d:%02d", hours, minutes, seconds));
         }
     }
+
+    /**
+     * displays the current tie zone in the GUI on the overlay
+     */
+    public static void setTimeZone() {
+        clockString.set(TimeUtils.setTimeZone(timeZone));
+    }
+
 
     @FXML
     /**
@@ -219,6 +217,23 @@ public class Controller implements Initializable {
             }
             display.changeAnnotations((int) annotationsSlider.getValue(), true);
         }
+    }
+
+    private void resizeCourse() {
+
+        canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
+            canvasSize.setX((double) newValue);
+            display.redrawCourse();
+            display.redrawWindArrow();
+            display.redrawBoatPaths();
+        });
+
+        canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> {
+            canvasSize.setY((double) newValue);
+            display.redrawCourse();
+            display.redrawWindArrow();
+            display.redrawBoatPaths();
+        });
     }
 
     public boolean hasRaceBegun() {

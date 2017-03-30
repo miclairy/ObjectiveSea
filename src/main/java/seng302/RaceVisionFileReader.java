@@ -123,6 +123,9 @@ public class RaceVisionFileReader {
                                 course.addToBoundary(parseBoundaryCoord(boundaryCoords.item(k)));
                             }
                             break;
+                        case XMLTags.Course.TIMEZONE:
+                            course.setTimeZone(String.valueOf(element.getTextContent()));
+                            break;
                     }
                 }
             }

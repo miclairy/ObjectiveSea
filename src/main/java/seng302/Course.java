@@ -15,6 +15,7 @@ public class Course {
     private double minLat, minLon, maxLat, maxLon;
     private HashMap<String, CompoundMark> marks;
     private double windDirection;
+    private String timeZone;
 
     public Course() {
         this.marks = new HashMap<>();
@@ -127,6 +128,14 @@ public class Course {
 
     public void setWindDirection(double windDirection) {
         this.windDirection = (windDirection + 360) % 360;
+    }
+
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    public String getTimeZone() {
+        return timeZone;
     }
 
     public double getMinLat() {
