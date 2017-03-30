@@ -90,10 +90,10 @@ public class Controller implements Initializable {
         display = new Display(root, race, this);
 
         canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
-                    canvasSize.setX((double) newValue);
+            canvasSize.setX((double) newValue);
         });
         canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> {
-                    canvasSize.setY((double) newValue);
+            canvasSize.setY((double) newValue);
         });
 
         setAnnotations();
