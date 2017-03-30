@@ -63,8 +63,6 @@ public class Controller implements Initializable {
     private static double secondsElapsed = 0;
     private static double totalRaceTime;
     private static double secondsBeforeRace;
-    private static boolean incorrectTimeZone = true;
-    private static String foundId = new String();
 
     private static ObservableList<String> formattedDisplayOrder = observableArrayList();
     private static CartesianPoint canvasSize;
@@ -182,39 +180,11 @@ public class Controller implements Initializable {
         }
     }
 
+    /**
+     * displays the current tie zone in the GUI on the overlay
+     */
     public static void setTimeZone() {
-        String defaultTimeZone = TimeZone.getDefault().getID();
-
-        try {
-            for (String id : TimeZone.getAvailableIDs()) {
-
-                if (id.matches("(?i).*?" + timeZone + ".*")) {
-                    foundId = id;
-                    incorrectTimeZone = false;
-                    break;
-                }
-            }
-            if (incorrectTimeZone) {
-                throw new Exception("Incorrect TimeZone in XML file. TimeZone reset to default.");
-            }
-        } catch (Exception e) {
-            foundId = defaultTimeZone;
-            incorrectTimeZone = false;
-            System.out.println(e.getMessage());
-        } finally {
-            Instant instant = Instant.now();
-            ZoneId zone = ZoneId.of(foundId);
-            ZonedDateTime zonedDateTime = instant.atZone(zone);
-            int hours = zonedDateTime.getHour();
-            int minutes = zonedDateTime.getMinute();
-            int seconds = zonedDateTime.getSecond();
-            int utc = zonedDateTime.getOffset().getTotalSeconds()/3600;
-            String isPositive = "";
-            if(utc >= 0){
-                isPositive = "+";
-            }
-            clockString.set(String.format("%02d:%02d:%02d UTC%s%d", hours, minutes, seconds, isPositive, utc));
-        }
+        clockString.set(TimeUtils.setTimeZone(timeZone));
     }
 
 
