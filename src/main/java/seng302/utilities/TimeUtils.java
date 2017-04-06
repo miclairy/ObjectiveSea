@@ -24,7 +24,7 @@ public class TimeUtils {
 
     /**
      *
-     * @param timeZone
+     * @param timeZone The local time zone
      * @return String contaning the correct time for the given time zone
      */
     public static String setTimeZone(String timeZone) {
