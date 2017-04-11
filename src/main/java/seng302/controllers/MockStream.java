@@ -8,25 +8,21 @@ import java.net.*;
 
 public class MockStream implements Runnable {
 
+    private DatagramSocket clientSocket = null;
+
 
     @Override
     public void run() {
-        BufferedReader inFromUser =
-                new BufferedReader(new InputStreamReader(System.in));
-        DatagramSocket clientSocket = null;
+
+
         try {
             clientSocket = new DatagramSocket();
             InetAddress IPAddress = InetAddress.getByName("localhost");
             byte[] sendData = new byte[1024];
-            byte[] receiveData = new byte[1024];
             String sentence = "Heeelllloooo";
             sendData = sentence.getBytes();
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 9876);
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 5462);
             clientSocket.send(sendPacket);
-            DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
-            clientSocket.receive(receivePacket);
-            String modifiedSentence = new String(receivePacket.getData());
-            System.out.println("FROM SERVER:" + modifiedSentence);
             clientSocket.close();
         } catch (SocketException e) {
             e.printStackTrace();
@@ -36,6 +32,7 @@ public class MockStream implements Runnable {
             e.printStackTrace();
         }
 
-
     }
+
+
 }
