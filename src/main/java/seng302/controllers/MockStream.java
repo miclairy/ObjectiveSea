@@ -1,29 +1,25 @@
 package seng302.controllers;
 
 
-import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.*;
 
 public class MockStream implements Runnable {
-
-    private DatagramSocket clientSocket = null;
 
 
     @Override
     public void run() {
 
-
         try {
-            clientSocket = new DatagramSocket();
-            InetAddress IPAddress = InetAddress.getByName("localhost");
-            byte[] sendData = new byte[1024];
-            String sentence = "Heeelllloooo";
-            sendData = sentence.getBytes();
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, IPAddress, 5462);
-            clientSocket.send(sendPacket);
-            clientSocket.close();
+            int i = 0;
+                Socket clientSocket = new Socket("localhost", 2828);
+                DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+                while(i < 10000) {
+                    outToServer.writeBytes("Heeelllloooo" + i + '\n');
+                    i++;
+                }
+            //clientSocket.close();
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (UnknownHostException e) {
