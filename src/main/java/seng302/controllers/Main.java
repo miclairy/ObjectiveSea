@@ -19,7 +19,6 @@ import seng302.models.Race;
 import java.util.ArrayList;
 
 
-
 public class Main extends Application {
 
     private static Race race;
@@ -57,11 +56,16 @@ public class Main extends Application {
 
     public static void main( String[] args )
     {
+
+        MockStream mockStream = new MockStream();
+        Thread upStreamThread = new Thread(mockStream);
+        upStreamThread.start();
         launch(args);
     }
 
     public static Race getRace() {
         return Main.race;
     }
+
 }
 
