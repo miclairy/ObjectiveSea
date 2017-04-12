@@ -16,6 +16,9 @@ import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.Race;
 
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
 
 
@@ -56,10 +59,20 @@ public class Main extends Application {
 
     public static void main( String[] args )
     {
+        try {
+            ServerSocket recieveSocket = new ServerSocket(2828);
+            MockStream mockStream = null;
+            mockStream = new MockStream();
+            Thread upStream = new Thread(mockStream);
+            upStream.start();
+            Socket connectionSocket = recieveSocket.accept();
+            while(true) {
+                System.out.println(connectionSocket.getInputStream().read());
+            }
 
-        MockStream mockStream = new MockStream();
-        Thread upStreamThread = new Thread(mockStream);
-        upStreamThread.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         launch(args);
     }
 

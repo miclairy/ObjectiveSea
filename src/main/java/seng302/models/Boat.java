@@ -13,6 +13,7 @@ public class Boat implements Comparable<Boat>{
     private String nickName;
     private double speed;
     private int finishingPlace;
+    private int id;
 
     private Coordinate currentPosition;
 
@@ -22,7 +23,8 @@ public class Boat implements Comparable<Boat>{
     private double maxSpeed;
     private ArrayList<Coordinate> pathCoords;
 
-    public Boat(String name, String nickName, double speed) {
+    public Boat(int id, String name, String nickName, double speed) { //TODO make id unique
+        this.id = id;
         this.name = name;
         this.nickName = nickName;
         this.maxSpeed = speed;
@@ -163,5 +165,9 @@ public class Boat implements Comparable<Boat>{
 
     public void setSpeed(double speed) {
         this.speed = speed;
+    }
+
+    public int getId() {
+        return id;
     }
 }
