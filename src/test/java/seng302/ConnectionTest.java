@@ -10,9 +10,7 @@ import sun.nio.ch.IOUtil;
 
 import java.io.*;
 import java.net.Socket;
-import java.nio.Buffer;
 import java.util.Arrays;
-import java.util.Base64;
 
 /**
  * Created by lga50 on 12/04/17.
@@ -121,7 +119,6 @@ public class ConnectionTest {
             System.out.println(Arrays.toString(header));
             System.out.println("Message Length: " + messageLength);
             System.out.println("Message Type: " + messageType);
-            System.out.println();
 
             byte[] body = new byte[messageLength];
             dataInputStream.readFully(body);
@@ -129,8 +126,42 @@ public class ConnectionTest {
             dataInputStream.readFully(crc);
 
             if(messageType == 26){
+                //XML
                 System.out.println(new String(body));
+            } else if(messageType == 37){
+                //Boat Location
+                parseBoatLocationMessage(body);
+            } else if(messageType == 12){
+                System.out.println("Race Status: " + byteArrayToInt(Arrays.copyOfRange(body, 11, 12)));
             }
+
+            System.out.println();
         }
+    }
+
+    private int byteArrayToInt(byte[] array){
+        int total = 0;
+        for(int i = array.length - 1; i >= 0; i--){
+            total = (total << 8) + (array[i] & 0xFF);
+        }
+        return total;
+    }
+
+    private double intToLatLon(int value){
+        return (double)value * 180 / Math.pow(2, 31);
+    }
+
+    private void parseBoatLocationMessage(byte[] body) {
+        int sourceID = byteArrayToInt(Arrays.copyOfRange(body, 7, 11));
+        int lat = byteArrayToInt(Arrays.copyOfRange(body, 16, 20));
+        int lon = byteArrayToInt(Arrays.copyOfRange(body, 20, 24));
+        int boatSpeed = byteArrayToInt(Arrays.copyOfRange(body, 20, 24));
+        int heading = byteArrayToInt(Arrays.copyOfRange(body, 28, 30));
+
+        System.out.println("Source ID: " + sourceID);
+        System.out.println("Latitude: " + intToLatLon(lat));
+        System.out.println("Longitude: " + intToLatLon(lon));
+        System.out.println("Speed: " + boatSpeed + " mm/sec");
+        System.out.println("Heading: " + heading * 360 / Math.pow(2, 16));
     }
 }
