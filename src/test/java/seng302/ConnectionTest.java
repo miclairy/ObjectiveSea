@@ -102,13 +102,35 @@ public class ConnectionTest {
             }
             previous = current;
         }
-
-
-
-
-
-
         //clientSocket.close();
     }
 
+    @Test
+    public void connectionTest2() throws IOException{
+        setUp();
+        int HEADER_LENGTH = 15;
+        int CRC_LENGTH = 4;
+        DataInputStream dataInputStream = new DataInputStream(newStream);
+
+        while(true){
+            byte[] header = new byte[HEADER_LENGTH];
+            dataInputStream.readFully(header);
+            int messageLength = ((header[14] & 0xFF) << 8) + (header[13] & 0xFF);
+            int messageType = header[2];
+
+            System.out.println(Arrays.toString(header));
+            System.out.println("Message Length: " + messageLength);
+            System.out.println("Message Type: " + messageType);
+            System.out.println();
+
+            byte[] body = new byte[messageLength];
+            dataInputStream.readFully(body);
+            byte[] crc = new byte[CRC_LENGTH];
+            dataInputStream.readFully(crc);
+
+            if(messageType == 26){
+                System.out.println(new String(body));
+            }
+        }
+    }
 }
