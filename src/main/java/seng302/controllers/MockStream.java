@@ -42,20 +42,27 @@ public class MockStream implements Runnable {
                     Coordinate location = updateLocation(boat, secTimePassed, course);
                     if (location != null) {
                         notFinished = true;
-                        outToServer.writeByte(1);
-                        outToServer.writeByte((int) Instant.now().toEpochMilli());
-                        outToServer.writeByte(boat.getId());
-                        outToServer.writeByte(1);
-                        outToServer.writeByte((int) location.getLat());
+                        byte[] body = new byte[56];
+                        body[0] = (byte) 1;
+                        //body[1] = (byte) Instant.now().toEpochMilli();
+                        body[7] = (byte) boat.getId();
+                        body[11] = (byte) 1;
+                        body[15] = (byte) 1;
+                        body[16] = (byte) ((byte) location.getLat() & 0xFF);
+                        body[17] = (byte) ((byte) location.getLat() >> 8 & 0xFF);
+                        body[18] = (byte) ((byte) location.getLat() >> 16);
+                        body[19] = (byte) ((byte) location.getLat() >> 24);
                         outToServer.writeByte((int) location.getLon());
-                        outToServer.writeByte(0);
-                        outToServer.writeByte((int) heading);
-                        outToServer.writeByte(0);
-                        outToServer.writeByte(0);
-                        outToServer.writeByte((int) speed);
-                        for (int i = 0; i < 10; i++) {
-                            outToServer.writeByte(0);
-                        }
+                        body[20] = (byte) location.getLon();
+                        body[21] = (byte) ((byte) location.getLon() >> 8);
+                        body[22] = (byte) ((byte) location.getLon() >> 16);
+                        body[23] = (byte) ((byte) location.getLon() >> 24);
+                        body[24] = (byte) 0;
+                        body[28] = (byte) heading;
+                        body[29] = (byte) ((byte) heading >> 8);
+                        body[33] = (byte) speed;
+                        body[34] = (byte) ((byte) speed >> 8);
+                        outToServer.write(body);
                     }
                 }
                 try {
