@@ -1,6 +1,8 @@
 package seng302.models;
 
 
+import javafx.util.Pair;
+
 import java.util.ArrayList;
 
 /**
@@ -93,6 +95,13 @@ public class Boat implements Comparable<Boat>{
         double VMG = boatSpeed * Math.cos(Math.toRadians(TWA));
         return VMG;
     }
+
+    public double lagrangeInterpolation(Pair<Double, Double> A, Pair<Double, Double> B, Pair<Double, Double> C, double x) {
+        double answer = (((x - B.getKey()) * (x - C.getKey())) / ((A.getKey() - B.getKey()) * (A.getKey() - C.getKey()))) * A.getValue() + (((x - A.getKey()) * (x - C.getKey())) / ((B.getKey() - A.getKey()) * (B.getKey() - C.getKey()))) * B.getValue() + (((x - A.getKey()) * (x - B.getKey())) / ((C.getKey() - A.getKey()) * (C.getKey() - B.getKey()))) * C.getValue();
+        return answer;
+    }
+
+
 
 
     public int compareTo(Boat otherBoat){
