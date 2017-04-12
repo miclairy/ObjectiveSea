@@ -12,7 +12,6 @@ import java.net.Socket;
 public class ConnectionController {
     private Socket clientSocket;
     private BufferedReader inFromServer;
-
     public void setUp(){
         try {
             clientSocket = new Socket(Config.SOURCE_ADDRESS, Config.SOURCE_PORT);
@@ -32,6 +31,7 @@ public class ConnectionController {
         boolean readingRace = false;
         boolean finishedReading = false;
         while((sentence = inFromServer.readLine()) != null && !finishedReading) {
+            System.out.println(sentence);
             if (sentence.contains("<Race>")) {
                 readingRace = true;
                 bufferedWriter = new BufferedWriter(raceFileWriter);
