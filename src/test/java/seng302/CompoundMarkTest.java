@@ -12,9 +12,9 @@ public class CompoundMarkTest {
 
     @Test
     public void initializeMarkTest(){
-        CompoundMark mark = new CompoundMark("Normal Mark", 20, 30);
-        CompoundMark start = new CompoundMark("Start Mark", 30, 30);
-        CompoundMark finish = new CompoundMark("Finish Mark", 40, 50);
+        CompoundMark mark = new CompoundMark("Normal Mark", 1,20, 30);
+        CompoundMark start = new CompoundMark("Start Mark", 2,30, 30);
+        CompoundMark finish = new CompoundMark("Finish Mark", 2,40, 50);
 
         start.setMarkAsStart();
         finish.setMarkAsFinish();

@@ -7,11 +7,13 @@ package seng302.data;
 public class XMLTags {
 
     public class Course {
-        public static final String COURSE = "course";
+        public static final String RACE = "Race";
+        public static final String COURSE = "Course";
 
         //marks
+        public static final String COMPOUNDMARK = "CompoundMark";
         public static final String MARKS = "marks";
-        public static final String MARK = "mark";
+        public static final String MARK = "Mark";
         public static final String NAME = "name";
         public static final String LATLON = "latlon";
         public static final String LAT = "lat";
@@ -20,15 +22,16 @@ public class XMLTags {
         public static final String START = "start";
         public static final String FINISH = "finish";
 
-        //legs
-        public static final String LEGS = "legs";
-        public static final String LEG = "leg";
+        //sequence
+        public static final String COMPOUNDMARKSEQUENCE = "CompoundMarkSequence";
+        public static final String CORNER = "Corner";
 
         //wind
         public static final String WIND = "wind";
 
-        //boundary
-        public static final String BOUNDARY = "boundary";
+        //course limit
+        public static final String COURSELIMIT = "CourseLimit";
+        public static final String LIMIT = "limit";
 
         //timezone
         public static final String TIMEZONE = "timezone";

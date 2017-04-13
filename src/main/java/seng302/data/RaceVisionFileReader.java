@@ -24,6 +24,7 @@ public class RaceVisionFileReader {
     private static final String DEFAULT_FILE_PATH = "/defaultFiles/";
     private static final String DEFAULT_STARTERS_FILE = "starters.txt";
     private static final String DEFAULT_COURSE_FILE = "AC35-course.xml";
+    private static final String COURSE_FILE = "Race.xml";
 
     private static Document dom;
 
@@ -39,7 +40,7 @@ public class RaceVisionFileReader {
             if (filePath != null && !filePath.isEmpty()) {
                 parseXMLFile(filePath, false);
             } else {
-                String resourcePath = DEFAULT_FILE_PATH + DEFAULT_COURSE_FILE;
+                String resourcePath = DEFAULT_FILE_PATH + COURSE_FILE;
                 parseXMLFile(resourcePath, true);
             }
             return importCourseFromXML();
@@ -80,9 +81,9 @@ public class RaceVisionFileReader {
 
         try {
             Element root = dom.getDocumentElement();
-            if (root.getTagName() != XMLTags.Course.COURSE) {
-                String message = String.format("The root tag must be <%s>.", XMLTags.Course.COURSE);
-                throw new XMLParseException(XMLTags.Course.COURSE, message);
+            if (root.getTagName() != XMLTags.Course.RACE) {
+                String message = String.format("The root tag must be <%s>.", XMLTags.Course.RACE);
+                throw new XMLParseException(XMLTags.Course.RACE, message);
             }
 
             NodeList nodes = root.getChildNodes();
@@ -91,26 +92,24 @@ public class RaceVisionFileReader {
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) node;
                     switch (element.getTagName()) {
-                        case XMLTags.Course.MARKS:
-                            NodeList marks = element.getElementsByTagName(XMLTags.Course.MARK);
-                            for (int j = 0; j < marks.getLength(); j++) {
-                                CompoundMark mark = parseMark((Element) marks.item(j));
-                                if(mark.isStartLine() && mark instanceof RaceLine){
-                                    course.setStartingLine((RaceLine) mark);
-                                }
+                        case XMLTags.Course.COURSE:
+                            NodeList compoundMarks = element.getElementsByTagName(XMLTags.Course.COMPOUNDMARK);
+                            for (int j = 0; j < compoundMarks.getLength(); j++){
+                                CompoundMark mark = parseCompoundMark((Element) compoundMarks.item(j));
                                 course.addNewMark(mark);
                             }
                             break;
-                        case XMLTags.Course.LEGS:
-                            NodeList legs = element.getElementsByTagName(XMLTags.Course.LEG);
+                        case XMLTags.Course.COMPOUNDMARKSEQUENCE:
+                            NodeList legs = element.getElementsByTagName(XMLTags.Course.CORNER);
                             for (int k = 0; k < legs.getLength(); k++) {
-                                course.addMarkInOrder(legs.item(k).getTextContent());
+                                Element corner = (Element) legs.item(k);
+                                course.addMarkInOrder(Integer.parseInt(corner.getAttribute("CompoundMarkID")));
                             }
                             break;
                         case XMLTags.Course.WIND:
                             course.setWindDirection(Double.parseDouble(element.getTextContent()));
                             break;
-                        case XMLTags.Course.BOUNDARY:
+                        case XMLTags.Course.COURSELIMIT:
                             NodeList boundaryCoords = element.getElementsByTagName(XMLTags.Course.LATLON);
                             for (int k = 0; k < boundaryCoords.getLength(); k++) {
                                 course.addToBoundary(parseBoundaryCoord(boundaryCoords.item(k)));
@@ -143,49 +142,93 @@ public class RaceVisionFileReader {
         return course;
     }
 
-    /**
-     * Decodes a mark element into a CompoundMark object
-     *
-     * @param markElement - an XML <mark> element
-     * @return a CompoundMark (potentially Gate) object
-     * @throws XMLParseException when an expected tag is missing or unexpectedly formatted
-     */
-    private static CompoundMark parseMark(Element markElement) throws XMLParseException {
+
+    private static CompoundMark parseCompoundMark(Element compoundMarkElement) throws  XMLParseException{
         CompoundMark mark;
+        Integer markID = Integer.parseInt(compoundMarkElement.getAttribute("CompoundMarkID"));
 
-        NodeList nameNodes = markElement.getElementsByTagName(XMLTags.Course.NAME);
-        if (nameNodes.getLength() < 1) {
-            throw new XMLParseException(XMLTags.Course.NAME, "Required tag was not defined.");
+        NodeList markNodes = compoundMarkElement.getElementsByTagName(XMLTags.Course.MARK);
+        if (markNodes.getLength() < 1) {
+            throw new XMLParseException(XMLTags.Course.MARK, "Required tag was not defined.");
         }
-        String name = nameNodes.item(0).getTextContent();
-        NodeList latlons = markElement.getElementsByTagName(XMLTags.Course.LATLON);
-        if (latlons.getLength() < 1) {
-            throw new XMLParseException(XMLTags.Course.LATLON, "Required tag was not defined.");
-        }
-        double lat1 = extractLatitude((Element) latlons.item(0));
-        double lon1 = extractLongitude((Element) latlons.item(0));
+        int numMarks = markNodes.getLength();
+        if(numMarks == 2){
+            Element mark1 = (Element) markNodes.item(0);
+            Element mark2 = (Element) markNodes.item(1);
 
-        if (latlons.getLength() > 1) { //it is a gate or start or finish
-            double lat2 = extractLatitude((Element) latlons.item(1));
-            double lon2 = extractLongitude((Element) latlons.item(1));
+            String markName1 = mark1.getAttribute("Name");
+            double lat1 = Double.parseDouble(mark1.getAttribute("TargetLat"));
+            double lon1 = Double.parseDouble(mark1.getAttribute("TargetLng"));
+            double lat2 = Double.parseDouble(mark2.getAttribute("TargetLat"));
+            double lon2 = Double.parseDouble(mark2.getAttribute("TargetLng"));
 
-            //Check whether the mark has a start or finish attribute
-            NamedNodeMap attr = markElement.getAttributes();
-            if (attr.getNamedItem(XMLTags.Course.START) != null) {
-                mark = new RaceLine(name, lat1, lon1, lat2, lon2);
+            mark = new Gate(markName1, markID, lat1, lon1, lat2, lon2);
+
+            if(markName1.toLowerCase().contains("start")){
                 mark.setMarkAsStart();
-            } else if (attr.getNamedItem(XMLTags.Course.FINISH) != null){
-                mark = new RaceLine(name, lat1, lon1, lat2, lon2);
+            }else if(markName1.toLowerCase().contains("finish")){
                 mark.setMarkAsFinish();
-            } else{
-                mark = new Gate(name, lat1, lon1, lat2, lon2);
             }
-        } else { //it is just a single-point mark
-            mark = new CompoundMark(name, lat1, lon1);
-        }
 
+        }else{
+            Element currMark = (Element) markNodes.item(0);
+            Integer seqID = Integer.parseInt(currMark.getAttribute("SeqID"));
+            String markName = currMark.getAttribute("Name");
+            double lat = Double.parseDouble(currMark.getAttribute("TargetLat"));
+            double lon = Double.parseDouble(currMark.getAttribute("TargetLng"));
+            mark = new CompoundMark(markName, markID, lat, lon);
+        }
         return mark;
     }
+
+//    /**
+//     * Decodes a mark element into a CompoundMark object
+//     *
+//     * @param markElement - an XML <mark> element
+//     * @return a CompoundMark (potentially Gate) object
+//     * @throws XMLParseException when an expected tag is missing or unexpectedly formatted
+//     */
+//    private static CompoundMark parseMark(Element markElement) throws XMLParseException {
+//        CompoundMark mark;
+//        Integer markID = Integer.parseInt(markElement.getAttribute("CompoundMarkID"));
+//        String name = markElement.getAttribute("Name");
+//
+//        NodeList markNodes = markElement.getElementsByTagName(XMLTags.Course.MARK);
+//        if (markNodes.getLength() < 1) {
+//            throw new XMLParseException(XMLTags.Course.MARK, "Required tag was not defined.");
+//        }
+//        Element currMark = (Element) markNodes;
+//        currMark.getAttribute("SeqID");
+//        currMark.getAttribute("Name");
+//
+//        NodeList latlons = markElement.getElementsByTagName(XMLTags.Course.LATLON);
+//        if (latlons.getLength() < 1) {
+//            throw new XMLParseException(XMLTags.Course.LATLON, "Required tag was not defined.");
+//        }
+//        double lat1 = extractLatitude((Element) latlons.item(0));
+//        double lon1 = extractLongitude((Element) latlons.item(0));
+//
+//        if (latlons.getLength() > 1) { //it is a gate or start or finish
+//            double lat2 = extractLatitude((Element) latlons.item(1));
+//            double lon2 = extractLongitude((Element) latlons.item(1));
+//
+//            //Check whether the mark has a start or finish attribute
+//            NamedNodeMap attr = markElement.getAttributes();
+//            if (attr.getNamedItem(XMLTags.Course.START) != null) {
+//                mark = new RaceLine(name, lat1, lon1, lat2, lon2);
+//                mark.setMarkAsStart();
+//            } else if (attr.getNamedItem(XMLTags.Course.FINISH) != null){
+//                mark = new RaceLine(name, lat1, lon1, lat2, lon2);
+//                mark.setMarkAsFinish();
+//            } else{
+//                mark = new Gate(name, lat1, lon1, lat2, lon2);
+//            }
+//        } else { //it is just a single-point mark
+//            mark = new CompoundMark(name, lat1, lon1);
+//        }
+//
+//        return mark;
+//    }
 
     /**
      * Makes a bew coordinate by extracting the latitude and longitude from the node.

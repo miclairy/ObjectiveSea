@@ -29,13 +29,13 @@ public class BoatTest
     @Test
     public void updateLocationTest() {
         Course course = new Course();
-        RaceLine start = new RaceLine("Start", 50, 30, 51, 30);
-        CompoundMark mark = new CompoundMark("Mark", 60, 60);
+        RaceLine start = new RaceLine("Start", 1,50, 30, 51, 30);
+        CompoundMark mark = new CompoundMark("Mark", 2,60, 60);
 
         course.addNewMark(start);
         course.addNewMark(mark);
-        course.addMarkInOrder("Start");
-        course.addMarkInOrder("Mark");
+        course.addMarkInOrder(1);
+        course.addMarkInOrder(2);
 
         boat.setPosition(start.getLat(), start.getLon());
         ArrayList<Boat> competitors = new ArrayList<>();
@@ -55,15 +55,15 @@ public class BoatTest
     @Test
     public void passedMarkTest() {
         Course course = new Course();
-        RaceLine start = new RaceLine("Start", 50, 30, 50.02, 30.02);
-        CompoundMark mark = new CompoundMark("Mark", 50, 30.5);
-        RaceLine finish = new RaceLine("Finish", 50.5, 30.5, 50.52, 30.52);
+        RaceLine start = new RaceLine("Start", 1,50, 30, 50.02, 30.02);
+        CompoundMark mark = new CompoundMark("Mark", 2,50, 30.5);
+        RaceLine finish = new RaceLine("Finish", 3,50.5, 30.5, 50.52, 30.52);
         course.addNewMark(start);
         course.addNewMark(mark);
         course.addNewMark(finish);
-        course.addMarkInOrder("Start");
-        course.addMarkInOrder("Mark");
-        course.addMarkInOrder("Finish");
+        course.addMarkInOrder(1);
+        course.addMarkInOrder(2);
+        course.addMarkInOrder(3);
 
         boat.setPosition(50, 30);
         ArrayList<Boat> competitors = new ArrayList<>();
@@ -79,12 +79,12 @@ public class BoatTest
     @Test
     public void finishedRaceTest() {
         Course course = new Course();
-        RaceLine start = new RaceLine("Start", 51.55, 30.11, 51.60, 30.16);
-        RaceLine finish = new RaceLine("Finish", 51.56, 30.12, 51.61, 30.18);
+        RaceLine start = new RaceLine("Start", 1,51.55, 30.11, 51.60, 30.16);
+        RaceLine finish = new RaceLine("Finish", 2,51.56, 30.12, 51.61, 30.18);
         course.addNewMark(start);
         course.addNewMark(finish);
-        course.addMarkInOrder("Start");
-        course.addMarkInOrder("Finish");
+        course.addMarkInOrder(1);
+        course.addMarkInOrder(2);
 
         boat.setPosition(51.55, 30.11);
         ArrayList<Boat> competitors = new ArrayList<>();

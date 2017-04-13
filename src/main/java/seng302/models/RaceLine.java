@@ -12,8 +12,8 @@ public class RaceLine extends CompoundMark {
     private Coordinate end2;
     private Line line;
 
-    public RaceLine(String name, double lat1, double lon1, double lat2, double lon2){
-        super(name, (lat1 + lat2) / 2, (lon1 + lon2) / 2);
+    public RaceLine(String name, Integer markID, double lat1, double lon1, double lat2, double lon2){
+        super(name, markID, (lat1 + lat2) / 2, (lon1 + lon2) / 2);
         this.end1 = new Coordinate(lat1, lon1);
         this.end2 = new Coordinate(lat2, lon2);
     }

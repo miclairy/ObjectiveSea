@@ -23,7 +23,7 @@ public class RaceVisionFileReaderTest {
         for (int i = 0; i < expected.getCourseOrder().size(); i++) {
             assertMarksAreEqual(expected.getCourseOrder().get(i), course.getCourseOrder().get(i));
         }
-        for (String key : expected.getMarks().keySet()) {
+        for (Integer key : expected.getMarks().keySet()) {
             assertMarksAreEqual(expected.getMarks().get(key), course.getMarks().get(key));
         }
         Assert.assertEquals(expected.getWindDirection(), course.getWindDirection(), 0);
@@ -63,18 +63,18 @@ public class RaceVisionFileReaderTest {
     /** This is a clone of the course that testCourse.xml is expected to create */
     private Course createExpectedCourse() {
         Course expected = new Course();
-        RaceLine start = new RaceLine("Start", 0, 0, 0, 1);
+        RaceLine start = new RaceLine("Start", 1,0, 0, 0, 1);
         start.setMarkAsStart();
-        RaceLine finish = new RaceLine("Finish", 0, 5, 0, 6);
+        RaceLine finish = new RaceLine("Finish", 2,0, 5, 0, 6);
         finish.setMarkAsFinish();
         expected.addNewMark(start);
         expected.addNewMark(finish);
-        expected.addNewMark(new CompoundMark("Mark", 2, 2));
-        expected.addNewMark(new Gate("Gate", 3, 3, 4, 4));
-        expected.addMarkInOrder("Start");
-        expected.addMarkInOrder("Mark");
-        expected.addMarkInOrder("Gate");
-        expected.addMarkInOrder("Finish");
+        expected.addNewMark(new CompoundMark("Mark", 3,2, 2));
+        expected.addNewMark(new Gate("Gate", 4,3, 3, 4, 4));
+        expected.addMarkInOrder(1);
+        expected.addMarkInOrder(2);
+        expected.addMarkInOrder(3);
+        expected.addMarkInOrder(4);
         expected.setWindDirection(200);
         return expected;
     }

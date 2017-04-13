@@ -12,7 +12,7 @@ public class GateTest {
 
     @Test
     public void testGateCreate(){
-        Gate gate = new Gate("Gate",10.3,10,20.3,20);
+        Gate gate = new Gate("Gate", 1,10.3,10,20.3,20);
         double midpointLat = gate.getLat();
         double midpointLon = gate.getLon();
 

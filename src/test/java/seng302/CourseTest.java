@@ -19,20 +19,20 @@ public class CourseTest {
         //Initialise a default course for testing.
 
         defaultCourse = new Course();
-        RaceLine start = new RaceLine("Start", 32.296577, -64.854304, 32.293771, -64.855242);
-        CompoundMark mark = new CompoundMark("Mark", 32.293039, -64.843983);
-        Gate gate = new Gate("Gate", 32.284680, -64.850045, 32.280164, -64.847591);
-        RaceLine finish = new RaceLine("Finish", 32.317379, -64.839291, 32.317257, -64.836260);
+        RaceLine start = new RaceLine("Start", 1, 32.296577, -64.854304, 32.293771, -64.855242);
+        CompoundMark mark = new CompoundMark("Mark", 2, 32.293039, -64.843983);
+        Gate gate = new Gate("Gate", 3, 32.284680, -64.850045, 32.280164, -64.847591);
+        RaceLine finish = new RaceLine("Finish", 4,32.317379, -64.839291, 32.317257, -64.836260);
 
         defaultCourse.addNewMark(start);
         defaultCourse.addNewMark(mark);
         defaultCourse.addNewMark(gate);
         defaultCourse.addNewMark(finish);
 
-        defaultCourse.addMarkInOrder("Start");
-        defaultCourse.addMarkInOrder("Mark");
-        defaultCourse.addMarkInOrder("Gate");
-        defaultCourse.addMarkInOrder("Finish");
+        defaultCourse.addMarkInOrder(1);
+        defaultCourse.addMarkInOrder(2);
+        defaultCourse.addMarkInOrder(3);
+        defaultCourse.addMarkInOrder(4);
 
         defaultCourse.addToBoundary(new Coordinate(32.318879, -64.840291));
         defaultCourse.addToBoundary(new Coordinate(32.328879, -64.840291));

@@ -42,14 +42,13 @@ public class RaceViewController extends AnimationTimer {
     private Controller controller;
     private RaceView raceView;
     private ArrayList<BoatDisplay> displayBoats = new ArrayList<>();
-
     private double previousTime = 0;
     private ImageView currentWindArrow;
     private Polygon boundary;
     private double currentTimeInSeconds;
     private AnnotationLevel currentAnnotationsLevel;
 
-    //number of pixelsfrom right edge of canvas that the wind arrow will be drawn
+    //number of pixels from right edge of canvas that the wind arrow will be drawn
     private final int WIND_ARROW_OFFSET = 60;
 
     public RaceViewController(Group root, Race race, Controller controller) {

@@ -17,16 +17,22 @@ public class CompoundMark {
     }
 	
 	private String name;
+    private Integer markID;
     private Coordinate position;
     private MarkType type;
     private ArrayList<Circle> icons = new ArrayList<>();
 
-    public CompoundMark(String name, double lat, double lon){
+    public CompoundMark(String name, Integer markID, double lat, double lon){
         this.name = name;
+        this.markID = markID;
         this.position = new Coordinate(lat, lon);
         this.type = MarkType.NORMAL;
     }
-	
+
+
+    public Integer getMarkID(){
+        return markID;
+    }
     public String getName(){
         return this.name;
     }

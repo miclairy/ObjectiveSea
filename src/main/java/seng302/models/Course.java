@@ -13,7 +13,7 @@ public class Course {
     private ArrayList<CompoundMark> courseOrder;
     private ArrayList<Coordinate> boundary;
     private double minLat, minLon, maxLat, maxLon;
-    private HashMap<String, CompoundMark> marks;
+    private HashMap<Integer, CompoundMark> marks;
     private double windDirection;
     private RaceLine startingLine;
     private String timeZone;
@@ -29,15 +29,15 @@ public class Course {
      * @param mark - a defined Mark object
      */
     public void addNewMark(CompoundMark mark){
-        marks.put(mark.getName(), mark);
+        marks.put(mark.getMarkID(), mark);
     }
 
     /**
      * Appends a mark to the course order ArrayList. The mark must already exist in the marks HashMap
-     * @param markName - the name of the mark to look up in the marks HashMap
+     * @param markID - the name of the mark to look up in the marks HashMap
      */
-    public void addMarkInOrder(String markName){
-        courseOrder.add(marks.get(markName));
+    public void addMarkInOrder(Integer markID){
+        courseOrder.add(marks.get(markID));
     }
 
     /**
@@ -115,7 +115,7 @@ public class Course {
         return this.courseOrder;
     }
 
-    public HashMap<String, CompoundMark> getMarks() {
+    public HashMap<Integer, CompoundMark> getMarks() {
         return marks;
     }
 
