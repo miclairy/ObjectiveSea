@@ -1,12 +1,7 @@
 package seng302;
 
-import com.sun.xml.internal.ws.commons.xmlutil.Converter;
-import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-import seng302.data.DataStreamReader;
-import seng302.utilities.Config;
-import sun.misc.IOUtils;
-import sun.nio.ch.IOUtil;
 
 import java.io.*;
 import java.net.Socket;
@@ -51,6 +46,7 @@ public class ConnectionTest {
         bufferedWriter.close();
     }
 
+    @Ignore
     @Test
     public void readData() throws IOException{
         setUp();
@@ -130,6 +126,7 @@ public class ConnectionTest {
 
     }
 
+    @Ignore
     @Test
     public void intToLatLonTest(){
         byte[] test = new byte[4];
@@ -140,6 +137,5 @@ public class ConnectionTest {
 
         int n = byteArrayToInt(test, 0, 3);
         System.out.println(n + " " + intToLatLon(n));
-
     }
 }
