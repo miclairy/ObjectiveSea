@@ -1,11 +1,9 @@
 package seng302.controllers;
 
 
-import javafx.animation.AnimationTimer;
 import seng302.data.RaceVisionFileReader;
 import seng302.models.*;
 import seng302.utilities.Config;
-import seng302.utilities.TimeUtils;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -27,46 +25,41 @@ public class MockStream implements Runnable {
         clientSocket = new Socket("127.0.0.1", 2828);
         boatsInRace = RaceVisionFileReader.importStarters(null);
         course = RaceVisionFileReader.importCourse(null);
-
+        setStartingPositions();
     }
 
     @Override
     public void run() {
-        double secTimePassed = TimeUtils.convertNanosecondsToSeconds(20258);
+        double secTimePassed = 0;
         try {
             Boolean notFinished = true;
+            byte[] body = initialiseLocationPacket();
             while (notFinished) {
                 DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+
                 for (Boat boat : boatsInRace) {
                     notFinished = false;
                     Coordinate location = updateLocation(boat, secTimePassed, course);
+                    int lat = (int) Math.round(location.getLat() * Math.pow(2, 31) / 180);
+                    int lon = (int) Math.round(location.getLon() * Math.pow(2, 31) / 180);
                     if (location != null) {
                         notFinished = true;
-                        byte[] body = new byte[56];
-                        body[0] = (byte) 1;
-                        //body[1] = (byte) Instant.now().toEpochMilli();
-                        body[7] = (byte) boat.getId();
-                        body[11] = (byte) 1;
-                        body[15] = (byte) 1;
-                        body[16] = (byte) ((byte) location.getLat() & 0xFF);
-                        body[17] = (byte) ((byte) location.getLat() >> 8 & 0xFF);
-                        body[18] = (byte) ((byte) location.getLat() >> 16);
-                        body[19] = (byte) ((byte) location.getLat() >> 24);
-                        outToServer.writeByte((int) location.getLon());
-                        body[20] = (byte) location.getLon();
-                        body[21] = (byte) ((byte) location.getLon() >> 8);
-                        body[22] = (byte) ((byte) location.getLon() >> 16);
-                        body[23] = (byte) ((byte) location.getLon() >> 24);
-                        body[24] = (byte) 0;
-                        body[28] = (byte) heading;
-                        body[29] = (byte) ((byte) heading >> 8);
-                        body[33] = (byte) speed;
-                        body[34] = (byte) ((byte) speed >> 8);
+                        byte[] header = createHeader();
+                        outToServer.write(header);
+
+                        body = addIntIntoByteArray(body, 1, (int) Instant.now().toEpochMilli(),6);
+                        body = addIntIntoByteArray(body, 7, boat.getId(), 4);
+                        body = addIntIntoByteArray(body, 16, lat, 4);
+                        body = addIntIntoByteArray(body, 20, lon, 4);
+                        body = addIntIntoByteArray(body, 28, (int) heading, 2);
+                        body = addIntIntoByteArray(body, 33, (int) speed, 2);
+
                         outToServer.write(body);
                     }
                 }
                 try {
                     Thread.sleep(16);
+                    secTimePassed = secTimePassed + 16 / 1000;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -82,6 +75,34 @@ public class MockStream implements Runnable {
 
     }
 
+    private byte[] createHeader() {
+        byte[] header = new byte[15];
+        header[0] = 0x47;
+        header[1] = (byte) 0x83;
+        header[2] = 37;
+        header = addIntIntoByteArray(header, 3, (int) Instant.now().toEpochMilli(),6);
+        header = addIntIntoByteArray(header, 9, 28,4);
+        header = addIntIntoByteArray(header, 13, 56, 2);
+        return header;
+    }
+
+
+    private byte[] initialiseLocationPacket() {
+        byte[] body = new byte[56];
+        body[0] = (byte) 1;
+        body[11] = (byte) 1;
+        body[15] = (byte) 1;
+        body[24] = (byte) 0;
+        return body;
+    }
+
+    private byte[] addIntIntoByteArray(byte[] array, int start, int item, int numBytes){
+        for (int i = 0; i < numBytes; i ++) {
+            array[start + i] = (byte) (item >> i * 8);
+        }
+
+        return array;
+    }
 
 
     /**
@@ -95,12 +116,12 @@ public class MockStream implements Runnable {
         }
         boolean finished = false;
         int lastPassedMark = boat.getLastPassedMark();
-        speed = boat.getSpeed();
+        speed = boat.getMaxSpeed();
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
         CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
 
         Coordinate currentPosition = boat.getCurrentPosition();
-        double distanceGained = timePassed * boat.getSpeed();
+        double distanceGained = timePassed * speed;
         double distanceLeftInLeg = currentPosition.greaterCircleDistance(nextMark.getPosition());
 
         //If boat moves more than the remaining distance in the leg
@@ -136,6 +157,24 @@ public class MockStream implements Runnable {
         return currentPosition;
     }
 
+    /**
+     * Spreads the starting positions of the boats over the start line
+     */
+    public void setStartingPositions(){
+        RaceLine startingLine = course.getStartingLine();
+        int spaces = boatsInRace.size();
+        double dLat = (startingLine.getEnd2Lat() - startingLine.getEnd1Lat()) / spaces;
+        double dLon = (startingLine.getEnd2Lon() - startingLine.getEnd1Lon()) / spaces;
+        double curLat = startingLine.getEnd1Lat() + dLat;
+        double curLon = startingLine.getEnd1Lon() + dLon;
+        for (Boat boat : boatsInRace){
+            boat.setPosition(curLat, curLon);
+            boat.setHeading(course.headingsBetweenMarks(0, 1));
+            boat.getPathCoords().add(new Coordinate(curLat, curLon));
+            curLat += dLat;
+            curLon += dLon;
+        }
+    }
 
 
 }
