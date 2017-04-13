@@ -3,7 +3,7 @@ package seng302;
 import com.sun.xml.internal.ws.commons.xmlutil.Converter;
 import org.junit.Before;
 import org.junit.Test;
-import seng302.controllers.ConnectionController;
+import seng302.data.DataStreamReader;
 import seng302.utilities.Config;
 import sun.misc.IOUtils;
 import sun.nio.ch.IOUtil;
@@ -29,82 +29,30 @@ public class ConnectionTest {
         }
     }
 
-    @Test
-    public void connectionTest() throws IOException {
-        setUp();
-        boolean decoding = false;
+    private void parseXML(byte[] body) throws IOException {
+        int xmlSubType = (body[9] & 0xFF);
+        String xmlMessage = new String(Arrays.copyOfRange(body, 14, body.length));
+        xmlMessage.replaceAll("\\p{C}", "?");
 
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        FileWriter outputFileWriter = null;
+        System.out.println(xmlSubType);
 
-
-        String sentence;
-        FileWriter boatFileWriter = new FileWriter("src/main/resources/defaultFiles/Boat.xml");
-        FileWriter raceFileWriter = new FileWriter("src/main/resources/defaultFiles/Race.xml");
-        BufferedWriter bufferedWriter = null;
-        boolean readingBoat = false;
-        boolean readingRace = false;
-        boolean finishedReading = false;
-        int previous = -1;
-        int current  = -1;
-        while (true){
-            current = newStream.read();
-            System.out.println(current);
-            if (previous == 71 && current == 131) {
-                int type = newStream.read();
-                System.out.println("type " + type);
-                int time = 0;
-                for (int j = 0; j < 6; j++) {
-                    time += newStream.read();
-                    System.out.println("time " + time);
-                }
-
-                int sourceId = 0;
-                for (int k = 0; k < 4; k++) {
-                    sourceId += newStream.read();
-                    System.out.println("id " + sourceId);
-                }
-
-                int messageLength = newStream.read();
-                System.out.println("len 1 " + messageLength);
-                messageLength += newStream.read();
-                System.out.println("len 2 " + messageLength);
-                if (type == 26 || type == 20){
-                    int read = 0;
-                    BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                    while((sentence = inFromServer.readLine()) != null) { //need to combine 2 bytes to get one int
-                        System.out.println(sentence);
-                        read += sentence.getBytes().length;
-                        if (sentence.contains("<Race>")) {
-                            readingRace = true;
-                            bufferedWriter = new BufferedWriter(raceFileWriter);
-                        } else if (sentence.contains("<BoatConfig>")) {
-                            readingBoat = true;
-                            bufferedWriter = new BufferedWriter(boatFileWriter);
-                        }
-
-                        if (readingBoat || readingRace) {
-                            bufferedWriter.write(sentence + "\n");
-                        }
-
-                        if (sentence.contains("</Race>")) {
-                            readingRace = false;
-                            bufferedWriter.close();
-                        } else if (sentence.contains("</BoatConfig>")) {
-                            readingBoat = false;
-                            bufferedWriter.close();
-                            finishedReading = true;
-                        }
-
-                    }
-                }
-            }
-            previous = current;
+        if(xmlSubType == 5) {
+            outputFileWriter = new FileWriter("src/main/resources/defaultFiles/Regatta.xml");
+        } else if(xmlSubType == 6){
+            outputFileWriter = new FileWriter("src/main/resources/defaultFiles/Race.xml");
+        } else if(xmlSubType == 7){
+            outputFileWriter = new FileWriter("src/main/resources/defaultFiles/Boat.xml");
         }
-        //clientSocket.close();
+
+        BufferedWriter bufferedWriter = new BufferedWriter(outputFileWriter);
+        bufferedWriter.write(xmlMessage);
+
+        bufferedWriter.close();
     }
 
     @Test
-    public void connectionTest2() throws IOException{
+    public void readData() throws IOException{
         setUp();
         int HEADER_LENGTH = 15;
         int CRC_LENGTH = 4;
@@ -113,12 +61,8 @@ public class ConnectionTest {
         while(true){
             byte[] header = new byte[HEADER_LENGTH];
             dataInputStream.readFully(header);
-            int messageLength = ((header[14] & 0xFF) << 8) + (header[13] & 0xFF);
+            int messageLength = byteArrayToInt(header, 13, 14);
             int messageType = header[2];
-
-            System.out.println(Arrays.toString(header));
-            System.out.println("Message Length: " + messageLength);
-            System.out.println("Message Type: " + messageType);
 
             byte[] body = new byte[messageLength];
             dataInputStream.readFully(body);
@@ -127,21 +71,19 @@ public class ConnectionTest {
 
             if(messageType == 26){
                 //XML
-                System.out.println(new String(body));
+                parseXML(body);
             } else if(messageType == 37){
                 //Boat Location
                 parseBoatLocationMessage(body);
             } else if(messageType == 12){
-                System.out.println("Race Status: " + byteArrayToInt(Arrays.copyOfRange(body, 11, 12)));
+                System.out.println("Race Status: " + byteArrayToInt(body, 11, 11));
             }
-
-            System.out.println();
         }
     }
 
-    private int byteArrayToInt(byte[] array){
+    private int byteArrayToInt(byte[] array, int start, int end){
         int total = 0;
-        for(int i = array.length - 1; i >= 0; i--){
+        for(int i = end; i >= start; i--){
             total = (total << 8) + (array[i] & 0xFF);
         }
         return total;
@@ -151,17 +93,53 @@ public class ConnectionTest {
         return (double)value * 180 / Math.pow(2, 31);
     }
 
-    private void parseBoatLocationMessage(byte[] body) {
-        int sourceID = byteArrayToInt(Arrays.copyOfRange(body, 7, 11));
-        int lat = byteArrayToInt(Arrays.copyOfRange(body, 16, 20));
-        int lon = byteArrayToInt(Arrays.copyOfRange(body, 20, 24));
-        int boatSpeed = byteArrayToInt(Arrays.copyOfRange(body, 20, 24));
-        int heading = byteArrayToInt(Arrays.copyOfRange(body, 28, 30));
+    private double intToHeading(int value){
+        return value * 360 / Math.pow(2, 16);
+    }
 
-        System.out.println("Source ID: " + sourceID);
-        System.out.println("Latitude: " + intToLatLon(lat));
-        System.out.println("Longitude: " + intToLatLon(lon));
-        System.out.println("Speed: " + boatSpeed + " mm/sec");
-        System.out.println("Heading: " + heading * 360 / Math.pow(2, 16));
+    private void parseBoatLocationMessage(byte[] body) {
+        System.out.println(Arrays.toString(body));
+        System.out.println(body[33]);
+        System.out.println(body[34]);
+        System.out.println(body[35]);
+        System.out.println(body[36]);
+        int sourceID = byteArrayToInt(body, 7, 10);
+        int latScaled = byteArrayToInt(body, 16, 19);
+        int lonScaled = byteArrayToInt(body, 20, 23);
+        int headingScaled = byteArrayToInt(body, 28, 29);
+        int boatSpeed = byteArrayToInt(body, 34, 35);
+        int speedOverGround = byteArrayToInt(body, 38, 39);
+
+        int deviceType = byteArrayToInt(body, 15, 15);
+
+
+        double lat = intToLatLon(latScaled);
+        double lon = intToLatLon(lonScaled);
+        double heading = intToHeading(headingScaled);
+
+        System.out.println("Device Type: " + deviceType);
+        System.out.println("Latitude: " + lat);
+        System.out.println("Longitude: " + lon);
+        System.out.println("Heading: " + heading);
+        System.out.println("Speed: " + (double)boatSpeed * 3600 / 1000);
+        System.out.println("SpeedOverGround: " + (double)speedOverGround * 3600 / 1000);
+
+
+        System.out.println();
+        System.out.println();
+
+    }
+
+    @Test
+    public void intToLatLonTest(){
+        byte[] test = new byte[4];
+        test[0] = (byte) 201;
+        test[1] = (byte) 83;
+        test[2] = (byte) 247;
+        test[3] = (byte) 22;
+
+        int n = byteArrayToInt(test, 0, 3);
+        System.out.println(n + " " + intToLatLon(n));
+
     }
 }
