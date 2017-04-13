@@ -58,8 +58,8 @@ public class MockStream implements Runnable {
                     }
                 }
                 try {
-                    Thread.sleep(16);
-                    secTimePassed = secTimePassed + 16 / 1000;
+                    Thread.sleep((long) 0.2 * 1000);
+                    secTimePassed = secTimePassed + 0.2 / 1000;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
