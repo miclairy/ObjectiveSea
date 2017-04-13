@@ -386,6 +386,8 @@ public class RaceViewController extends AnimationTimer {
 
     /**
      * Overload for changeAnnotations() which converts a raw level value into an AnnotationLevel
+     * @param level the annotation level
+     * @param forceRedisplay forces the annotations to be redisplayed even if the level hasn't changed
      */
     public void changeAnnotations(int level, boolean forceRedisplay) {
         changeAnnotations(AnnotationLevel.values()[level], forceRedisplay);
