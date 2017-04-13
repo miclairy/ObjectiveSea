@@ -23,23 +23,12 @@ public class MockStreamTest {
         try {
             ServerSocket recieveSocket = new ServerSocket(2828);
             MockStream mockStream = null;
-            try {
-                mockStream = new MockStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            //mockStream.start();
-
-
+            mockStream = new MockStream();
+            Thread upStream = new Thread(mockStream);
+            upStream.start();
             Socket connectionSocket = recieveSocket.accept();
-            //BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 
-            //assertEquals("Heeelllloooo" + 0,  inFromClient.readLine());
-            int i = 0;
-            while (i < 10000){
-                i++;
-                System.out.println(connectionSocket.getInputStream().read());
-            }
+            assertEquals(71, connectionSocket.getInputStream().read());
 
         } catch (SocketException e) {
             e.printStackTrace();
@@ -49,19 +38,19 @@ public class MockStreamTest {
 
     }
 
-    @Test
-    public void printOutRaceData() throws UnknownHostException {
-
-        try {
-            Socket recieveSocket = new Socket("livedata.americascup.com", 4941);
-            while(true){
-
-                System.out.println(recieveSocket.getInputStream().read());
-            }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    @Test
+//    public void printOutRaceData() throws UnknownHostException {
+//
+//        try {
+//            Socket recieveSocket = new Socket("livedata.americascup.com", 4941);
+//            while(true){
+//
+//                System.out.println(recieveSocket.getInputStream().read());
+//            }
+//        } catch (SocketException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
