@@ -278,55 +278,56 @@ public class RaceVisionFileReader {
 
 
 
-//      Old way of parsing boat file when it was in txt format
-//    /**
-//     * Imports file found at DEFAULT_STARTERS_FILE in DEFAULT_FILE_PATH in resources folder
-//     *
-//     * Boats defined as:
-//     *      BoatName, Speed
-//     *
-//     * Speed is expected in knots
-//     * @param filePath string of the file path were the starters are imported.
-//     * @return starters - ArrayList of Boat objects defined in file
-//     */
-//    public static ArrayList<Boat> importStarters(String filePath){
-//        ArrayList<Boat> starters = new ArrayList<>();
-//
-//        try {
-//            BufferedReader br;
-//            if (filePath != null && !filePath.isEmpty()) {
-//                br = new BufferedReader(new FileReader(filePath));
-//            } else {
-//                filePath = DEFAULT_FILE_PATH + DEFAULT_STARTERS_FILE;
-//                br = new BufferedReader(
-//                        new InputStreamReader(RaceVisionFileReader.class.getResourceAsStream(filePath)));
-//            }
-//            ArrayList<Boat> allBoats = new ArrayList<>();
-//
-//            String line = br.readLine();
-//            while (line != null){
-//                StringTokenizer st = new StringTokenizer((line));
-//                String name = st.nextToken(",");
-//                String nickName = st.nextToken().trim();
-//                double speed = Double.parseDouble(st.nextToken());
-//                allBoats.add(new Boat(name, nickName, speed));
-//                line = br.readLine();
-//            }
-//
-//            Random ran = new Random();
-//            for (int i = 0; i < Config.NUM_BOATS_IN_RACE; i++){
-//                starters.add(allBoats.remove(ran.nextInt(allBoats.size())));
-//            }
-//            br.close();
-//
-//        } catch (FileNotFoundException e) {
-//            System.err.printf("Starters file could not be found at %s\n", filePath);
-//        } catch (IOException e) {
-//            System.err.printf("Error reading starters file. Check it is in the correct format.");
-//        }
-//
-//        return starters;
-//    }
+      //Old way of parsing boat file when it was in txt format
+    /*
+     * Imports file found at DEFAULT_STARTERS_FILE in DEFAULT_FILE_PATH in resources folder
+     *
+     * Boats defined as:
+     *      BoatName, Speed
+     *
+     * Speed is expected in knots
+     * @param filePath string of the file path were the starters are imported.
+     * @return starters - ArrayList of Boat objects defined in file
+    */
+
+    public static ArrayList<Boat> importStarters(String filePath){
+        ArrayList<Boat> starters = new ArrayList<>();
+
+        try {
+            BufferedReader br;
+            if (filePath != null && !filePath.isEmpty()) {
+                br = new BufferedReader(new FileReader(filePath));
+            } else {
+                filePath = DEFAULT_FILE_PATH + DEFAULT_STARTERS_FILE;
+                br = new BufferedReader(
+                        new InputStreamReader(RaceVisionFileReader.class.getResourceAsStream(filePath)));
+            }
+            ArrayList<Boat> allBoats = new ArrayList<>();
+
+            String line = br.readLine();
+            while (line != null){
+                StringTokenizer st = new StringTokenizer((line));
+                String name = st.nextToken(",");
+                String nickName = st.nextToken().trim();
+                double speed = Double.parseDouble(st.nextToken());
+                allBoats.add(new Boat(name, nickName, speed));
+                line = br.readLine();
+            }
+
+            Random ran = new Random();
+            for (int i = 0; i < Config.NUM_BOATS_IN_RACE; i++){
+                starters.add(allBoats.remove(ran.nextInt(allBoats.size())));
+            }
+            br.close();
+
+        } catch (FileNotFoundException e) {
+            System.err.printf("Starters file could not be found at %s\n", filePath);
+        } catch (IOException e) {
+            System.err.printf("Error reading starters file. Check it is in the correct format.");
+        }
+
+        return starters;
+    }
 
 
 
@@ -338,7 +339,7 @@ public class RaceVisionFileReader {
      * @param filePath String of the file path of the file to read in.
      * @return an ArrayList of Boats.
      */
-    public static ArrayList<Boat> importStarters(String filePath) {
+    public static ArrayList<Boat> importStarters2(String filePath) {
         try {
             if (filePath != null && !filePath.isEmpty()) {
                 parseXMLFile(filePath, false);
