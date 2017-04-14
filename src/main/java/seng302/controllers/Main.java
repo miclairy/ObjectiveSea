@@ -15,11 +15,13 @@ import seng302.data.RaceVisionFileReader;
 import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.Race;
+import sun.misc.IOUtils;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 
 public class Main extends Application {
@@ -66,10 +68,12 @@ public class Main extends Application {
             Thread upStream = new Thread(mockStream);
             upStream.start();
             Socket connectionSocket = recieveSocket.accept();
-            while(true) {
-                System.out.println(connectionSocket.getInputStream().read());
-            }
 
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+            while(true) {
+                //System.out.println(connectionSocket.getInputStream().read());
+                System.out.println(reader.readLine());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
