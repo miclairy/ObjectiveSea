@@ -6,6 +6,17 @@ package seng302.data;
  */
 public class XMLTags {
 
+    public class Boats {
+        public static final String BOATCONFIG = "BoatConfig";
+        public static final String BOATS = "Boats";
+
+        //Boats
+        public static final String BOAT = "Boat";
+        public static final String TYPE = "Type";
+        public static final String BOATNAME = "BoatName";
+        public static final String NICKNAME = "ShorterName";
+    }
+
     public class Course {
         public static final String RACE = "Race";
         public static final String COURSE = "Course";

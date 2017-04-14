@@ -25,13 +25,14 @@ public class RaceVisionFileReader {
     private static final String DEFAULT_STARTERS_FILE = "starters.txt";
     private static final String DEFAULT_COURSE_FILE = "AC35-course.xml";
     private static final String COURSE_FILE = "Race.xml";
+    private static final String BOAT_FILE = "Boat.xml";
 
     private static Document dom;
 
     /**
      * Manages importing the course from the correct place
      * If a file path is specified, this will be used, otherwise a default is packaged with the jar.
-     * Currently this an XML file at DEFAULT_FILE_PATH/DEFAULT_COURSE_FILE
+     * Currently this an XML file at DEFAULT_FILE_PATH/COURSE_FILE
      * @param filePath String of the file path of the file to read in.
      * @return a Course object.
      */
@@ -51,6 +52,7 @@ public class RaceVisionFileReader {
             return null;
         }
     }
+
 
     /**
      * Attempts to read the desired XML file into the Document parser
@@ -231,7 +233,7 @@ public class RaceVisionFileReader {
 //    }
 
     /**
-     * Makes a bew coordinate by extracting the latitude and longitude from the node.
+     * Makes a new coordinate by extracting the latitude and longitude from the node.
      * @param latlons A node with lat and lons tags
      * @return a Coordinate object indicating a point on the boundary
      * @throws XMLParseException XMLParseException if no <lat> or <lon> tag exists
@@ -272,54 +274,157 @@ public class RaceVisionFileReader {
         return Double.parseDouble(lonElement.getTextContent());
     }
 
+
+
+
+
+//      Old way of parsing boat file when it was in txt format
+//    /**
+//     * Imports file found at DEFAULT_STARTERS_FILE in DEFAULT_FILE_PATH in resources folder
+//     *
+//     * Boats defined as:
+//     *      BoatName, Speed
+//     *
+//     * Speed is expected in knots
+//     * @param filePath string of the file path were the starters are imported.
+//     * @return starters - ArrayList of Boat objects defined in file
+//     */
+//    public static ArrayList<Boat> importStarters(String filePath){
+//        ArrayList<Boat> starters = new ArrayList<>();
+//
+//        try {
+//            BufferedReader br;
+//            if (filePath != null && !filePath.isEmpty()) {
+//                br = new BufferedReader(new FileReader(filePath));
+//            } else {
+//                filePath = DEFAULT_FILE_PATH + DEFAULT_STARTERS_FILE;
+//                br = new BufferedReader(
+//                        new InputStreamReader(RaceVisionFileReader.class.getResourceAsStream(filePath)));
+//            }
+//            ArrayList<Boat> allBoats = new ArrayList<>();
+//
+//            String line = br.readLine();
+//            while (line != null){
+//                StringTokenizer st = new StringTokenizer((line));
+//                String name = st.nextToken(",");
+//                String nickName = st.nextToken().trim();
+//                double speed = Double.parseDouble(st.nextToken());
+//                allBoats.add(new Boat(name, nickName, speed));
+//                line = br.readLine();
+//            }
+//
+//            Random ran = new Random();
+//            for (int i = 0; i < Config.NUM_BOATS_IN_RACE; i++){
+//                starters.add(allBoats.remove(ran.nextInt(allBoats.size())));
+//            }
+//            br.close();
+//
+//        } catch (FileNotFoundException e) {
+//            System.err.printf("Starters file could not be found at %s\n", filePath);
+//        } catch (IOException e) {
+//            System.err.printf("Error reading starters file. Check it is in the correct format.");
+//        }
+//
+//        return starters;
+//    }
+
+
+
+
     /**
-     * Imports file found at DEFAULT_STARTERS_FILE in DEFAULT_FILE_PATH in resources folder
+     * Manages importing the boats in the race from the correct place
+     * If a file path is specified, this will be used, otherwise a default is packaged with the jar.
+     * Currently this an XML file at DEFAULT_FILE_PATH/BOAT_FILE
+     * @param filePath String of the file path of the file to read in.
+     * @return an ArrayList of Boats.
+     */
+    public static ArrayList<Boat> importStarters(String filePath) {
+        try {
+            if (filePath != null && !filePath.isEmpty()) {
+                parseXMLFile(filePath, false);
+            } else {
+                String resourcePath = DEFAULT_FILE_PATH + BOAT_FILE;
+                parseXMLFile(resourcePath, true);
+            }
+            return importStartersFromXML();
+        }  catch (IOException ioe) {
+            System.err.printf("Unable to read %s as a boat definition file. " +
+                    "Ensure it is correctly formatted.\n", filePath);
+            ioe.printStackTrace();
+            return null;
+        }
+    }
+
+
+    /**
+     * Imports file found at BOAT_FILE in DEFAULT_FILE_PATH in resources folder
      *
      * Boats defined as:
-     *      BoatName, Speed
+     *     BoatName, NickName and location
      *
-     * Speed is expected in knots
-     * @param filePath string of the file path were the starters are imported.
      * @return starters - ArrayList of Boat objects defined in file
      */
-    public static ArrayList<Boat> importStarters(String filePath){
+    public static ArrayList<Boat> importStartersFromXML(){
         ArrayList<Boat> starters = new ArrayList<>();
 
         try {
-            BufferedReader br;
-            if (filePath != null && !filePath.isEmpty()) {
-                br = new BufferedReader(new FileReader(filePath));
-            } else {
-                filePath = DEFAULT_FILE_PATH + DEFAULT_STARTERS_FILE;
-                br = new BufferedReader(
-                        new InputStreamReader(RaceVisionFileReader.class.getResourceAsStream(filePath)));
-            }
-            ArrayList<Boat> allBoats = new ArrayList<>();
-
-            String line = br.readLine();
-            while (line != null){
-                StringTokenizer st = new StringTokenizer((line));
-                String name = st.nextToken(",");
-                String nickName = st.nextToken().trim();
-                double speed = Double.parseDouble(st.nextToken());
-                allBoats.add(new Boat(name, nickName, speed));
-                line = br.readLine();
+            Element root = dom.getDocumentElement();
+            if (root.getTagName() != XMLTags.Boats.BOATCONFIG) {
+                String message = String.format("The root tag must be <%s>.", XMLTags.Boats.BOATCONFIG);
+                throw new XMLParseException(XMLTags.Boats.BOATCONFIG, message);
             }
 
-            Random ran = new Random();
-            for (int i = 0; i < Config.NUM_BOATS_IN_RACE; i++){
-                starters.add(allBoats.remove(ran.nextInt(allBoats.size())));
+            NodeList nodes = root.getChildNodes();
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Node node = nodes.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) node;
+                    switch (element.getTagName()) {
+                        case XMLTags.Boats.BOATS:
+                            NodeList boats = element.getElementsByTagName(XMLTags.Boats.BOAT);
+                            for (int j = 0; j < boats.getLength(); j++){
+                                Boat boat = parseBoat((Element) boats.item(j));
+                                starters.add(boat);
+                            }
+                            break;
+                    }
+                }
             }
-            br.close();
+        } catch (XMLParseException e) {
+            System.err.printf("Error reading course file around tag <%s>.\n", e.getTag());
+            e.printStackTrace();
+        }
 
-        } catch (FileNotFoundException e) {
-            System.err.printf("Starters file could not be found at %s\n", filePath);
-        } catch (IOException e) {
-            System.err.printf("Error reading starters file. Check it is in the correct format.");
+        if(starters.size() < 2){
+            throw new InputMismatchException("There must be at least two boats in the race.");
         }
 
         return starters;
     }
+
+    /**
+     * Takes BoatXML tag and returns it as a Boat object.
+     *
+     *  @return boat
+     */
+    private static Boat parseBoat(Element boatXML) throws  XMLParseException{
+        Boat boat;
+        String type = (boatXML.getAttribute(XMLTags.Boats.TYPE));
+
+        if(type != "Yacht") {
+            throw new XMLParseException(XMLTags.Course.MARK, "Boat is not a yacht.");
+        }
+        else {
+            String name = (boatXML.getAttribute(XMLTags.Boats.BOATNAME));
+            String nickname = (boatXML.getAttribute(XMLTags.Boats.NICKNAME));
+            //get lat long
+            boat = new Boat(name, nickname, 0);
+        }
+        return boat;
+    }
+
+
+
 
     /**
      * Takes a file from resources and puts it outside the jar to make it accessible to users
