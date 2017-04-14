@@ -11,14 +11,16 @@ import java.net.*;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.CRC32;
+import java.util.zip.Checksum;
 
 public class MockStream implements Runnable {
 
-    List<Boat> boatsInRace;
-    double heading = 0;
-    double speed;
-    Course course;
-    Socket clientSocket;
+    private List<Boat> boatsInRace;
+    private double heading = 0;
+    private double speed;
+    private Course course;
+    private Socket clientSocket;
 
     public MockStream() throws IOException {
         Config.initializeConfig();
@@ -52,9 +54,20 @@ public class MockStream implements Runnable {
                         body = addIntIntoByteArray(body, 16, lat, 4);
                         body = addIntIntoByteArray(body, 20, lon, 4);
                         body = addIntIntoByteArray(body, 28, (int) heading, 2);
-                        body = addIntIntoByteArray(body, 33, (int) speed, 2);
-
+                        body = addIntIntoByteArray(body, 33, (int) speed, 2); //change to 37 instead to move to SOG place?
                         outToServer.write(body);
+
+                        Checksum crc = new CRC32();
+                        byte[] toCRC = new byte[71];
+                        for (int i = 0; i < toCRC.length; i ++){
+                            if (i < 15) {
+                                toCRC[i] = header[i];
+                            } else {
+                                toCRC[i] = body[i - 15];
+                            }
+                        }
+                        crc.update(toCRC, 0, toCRC.length);
+                        outToServer.write(addIntIntoByteArray(new byte[4], 0, (int) crc.getValue(), 4));
                     }
                 }
                 try {
