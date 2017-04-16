@@ -22,8 +22,8 @@ public class MockStreamTest {
     public void checkUpstreamIsSending(){
 
         try {
-            ServerSocket recieveSocket = new ServerSocket(2828);
-            MockStream mockStream = new MockStream(2828);
+            ServerSocket recieveSocket = new ServerSocket(2827);
+            MockStream mockStream = new MockStream(2827);
             Thread upStream = new Thread(mockStream);
             upStream.start();
             Socket connectionSocket = recieveSocket.accept();
@@ -49,7 +49,8 @@ public class MockStreamTest {
             DataInputStream dataInputStream = new DataInputStream(stream);
             byte[] header = new byte[15];
             dataInputStream.readFully(header);
-            byte[] body = new byte[5035];
+            int length = ((header[14] & 0xFF) << 8) + (header[13] & 0xFF);
+            byte[] body = new byte[length];
             dataInputStream.readFully(body);
             FileWriter outputFileWriter = new FileWriter("testRace.xml");
 
@@ -76,25 +77,4 @@ public class MockStreamTest {
 
     }
 
-    @Test
-    public void testMessageLengthXML(){
-        try {
-            ServerSocket recieveSocket = new ServerSocket(2827);
-            MockStream mockStream = new MockStream(2827);
-            Thread upStream = new Thread(mockStream);
-            upStream.start();
-            Socket connectionSocket = recieveSocket.accept();
-            InputStream stream = connectionSocket.getInputStream();
-            DataInputStream dataInputStream = new DataInputStream(stream);
-            byte[] header = new byte[15];
-            dataInputStream.readFully(header);
-            int length = ((header[14] & 0xFF) << 8) + (header[13] & 0xFF);
-            assertEquals(5035, length);
-
-        } catch (SocketException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
