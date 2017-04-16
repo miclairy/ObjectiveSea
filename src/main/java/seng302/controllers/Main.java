@@ -64,7 +64,7 @@ public class Main extends Application {
         try {
             ServerSocket recieveSocket = new ServerSocket(2828);
             MockStream mockStream = null;
-            mockStream = new MockStream();
+            mockStream = new MockStream(2828);
             Thread upStream = new Thread(mockStream);
             upStream.start();
             Socket connectionSocket = recieveSocket.accept();

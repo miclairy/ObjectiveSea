@@ -24,9 +24,9 @@ public class MockStream implements Runnable {
     private Socket clientSocket;
     private DataOutputStream outToServer;
 
-    public MockStream() throws IOException {
+    public MockStream(int port) throws IOException {
         Config.initializeConfig();
-        clientSocket = new Socket("127.0.0.1", 2828);
+        clientSocket = new Socket("127.0.0.1", port);
         boatsInRace = RaceVisionFileReader.importStarters(null);
         course = RaceVisionFileReader.importCourse(null);
         setStartingPositions();
@@ -75,7 +75,7 @@ public class MockStream implements Runnable {
                     e.printStackTrace();
                 }
             }
-            //clientSocket.close();
+            clientSocket.close();
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (UnknownHostException e) {
