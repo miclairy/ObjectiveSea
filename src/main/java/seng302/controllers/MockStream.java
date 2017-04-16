@@ -39,6 +39,7 @@ public class MockStream implements Runnable {
             outToServer = new DataOutputStream(clientSocket.getOutputStream());
             byte[] raceHeader = createHeader(26);
             byte[] raceXMLBody = generateRaceBody();
+            raceHeader = addIntIntoByteArray(raceHeader, 13, raceXMLBody.length,2);
             outToServer.write(raceHeader);
             outToServer.write(raceXMLBody);
             sendCRC(raceHeader, raceXMLBody);
@@ -86,7 +87,8 @@ public class MockStream implements Runnable {
     }
 
     private byte[] generateRaceBody() {
-        Path racePath = Paths.get("/defaultFiles/race.xml"); // can;t find file ??
+        String raceStrPath = new File("src/main/resources/defaultFiles/race.xml").getAbsolutePath();
+        Path racePath = Paths.get(raceStrPath);
 
         try {
             byte[] raceBodyContent = Files.readAllBytes(racePath);
@@ -113,8 +115,10 @@ public class MockStream implements Runnable {
         header[1] = (byte) 0x83;
         header[2] = (byte) type;
         header = addIntIntoByteArray(header, 3, (int) Instant.now().toEpochMilli(),6);
-        header = addIntIntoByteArray(header, 9, 28,4);
-        header = addIntIntoByteArray(header, 13, 56, 2);
+        header = addIntIntoByteArray(header, 9, 28,4); //source id
+        if (type == 37) {
+            header = addIntIntoByteArray(header, 13, 56, 2); //message length
+        }
         return header;
     }
 
