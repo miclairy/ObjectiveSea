@@ -59,13 +59,14 @@ public class MockStreamTest {
 
             String receivedStrPath = new File("testRace.xml").getAbsolutePath();
             Path receivedPath = Paths.get(receivedStrPath);
-            List<String> receivedContent = Files.readAllLines(receivedPath);
+            byte[] receivedContent = Files.readAllBytes(receivedPath);
 
             String raceStrPath = new File("src/main/resources/defaultFiles/race.xml").getAbsolutePath();
             Path racePath = Paths.get(raceStrPath);
-            List<String> raceBodyContent = Files.readAllLines(racePath);
-
-            assertEquals(raceBodyContent, receivedContent);
+            byte[] raceBodyContent = Files.readAllBytes(racePath);
+            for (int i = 0; i < receivedContent.length; i++){
+                assertEquals(receivedContent[i], raceBodyContent[i]);
+            }
 
         } catch (SocketException e) {
             e.printStackTrace();
