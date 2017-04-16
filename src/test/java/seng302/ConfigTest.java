@@ -15,4 +15,10 @@ public class ConfigTest {
         Assert.assertEquals(6, Config.NUM_BOATS_IN_RACE);
     }
 
+    @Test
+    public void sourceAddressTest(){
+        Config.initializeConfig();
+        Assert.assertEquals("livedata.americascup.com", Config.SOURCE_ADDRESS);
+    }
+
 }
