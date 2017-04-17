@@ -5,6 +5,8 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.zip.CRC32;
 
+import static seng302.data.AC35StreamField.*;
+
 /**
  * Created on 13/04/17.
  */
@@ -23,6 +25,11 @@ public class DataStreamReader implements Runnable{
     private final int REGATTA_XML_SUBTYPE = 5;
     private final int RACE_XML_SUBTYPE = 6;
     private final int BOAT_XML_SUBTYPE = 7;
+
+    private final String DEFAULT_FILE_PATH = "src/main/resources/defaultFiles/";
+    private final String REGATTA_FILE_NAME = "Regatta.xml";
+    private final String RACE_FILE_NAME = "Race.xml";
+    private final String BOAT_FILE_NAME = "Boat.xml";
 
     public DataStreamReader(String sourceAddress, int sourcePort){
         this.sourceAddress = sourceAddress;
@@ -96,36 +103,38 @@ public class DataStreamReader implements Runnable{
      * @param body The byte array containing the XML Message (header + payload)
      */
     private void convertXMLMessage(byte[] body) throws IOException {
-        int xmlSubtype = byteArrayRangeToInt(body, 9, 10);
-        int xmlLength = byteArrayRangeToInt(body, 12, 14);
+        int xmlSubtype = byteArrayRangeToInt(body, XML_SUBTYPE.getStartIndex(), XML_SUBTYPE.getEndIndex());
+        int xmlLength = byteArrayRangeToInt(body, XML_LENGTH.getStartIndex(), XML_LENGTH.getEndIndex());
 
-        String xmlMessage = new String(Arrays.copyOfRange(body, 14, 14+xmlLength));
-        xmlMessage = xmlMessage.trim();
+        String xmlBody = new String(Arrays.copyOfRange(body, XML_BODY.getStartIndex(), XML_BODY.getStartIndex()+xmlLength));
+        xmlBody = xmlBody.trim();
 
-        FileWriter outputFileWriter = null;
+        String outputFilePath = DEFAULT_FILE_PATH;
+
         if(xmlSubtype == REGATTA_XML_SUBTYPE) {
-            outputFileWriter = new FileWriter("src/main/resources/defaultFiles/Regatta.xml");
+            outputFilePath += REGATTA_FILE_NAME;
         } else if(xmlSubtype == RACE_XML_SUBTYPE){
-            outputFileWriter = new FileWriter("src/main/resources/defaultFiles/Race.xml");
+            outputFilePath += RACE_FILE_NAME;
         } else if(xmlSubtype == BOAT_XML_SUBTYPE){
-            outputFileWriter = new FileWriter("src/main/resources/defaultFiles/Boat.xml");
+            outputFilePath += BOAT_FILE_NAME;
         }
 
+        FileWriter outputFileWriter = new FileWriter(outputFilePath);
         BufferedWriter bufferedWriter = new BufferedWriter(outputFileWriter);
-        bufferedWriter.write(xmlMessage);
+        bufferedWriter.write(xmlBody);
         bufferedWriter.close();
     }
 
     /**
-     * Parses portions of the boat location message byte array to their corresponding values
+     * Parses portions of the boat location message byte array to their corresponding values.
      * @param body the byte array containing the boat location message
      */
     private void parseBoatLocationMessage(byte[] body) {
-        int sourceID = byteArrayRangeToInt(body, 7, 11);
-        int latScaled = byteArrayRangeToInt(body, 16, 20);
-        int lonScaled = byteArrayRangeToInt(body, 20, 24);
-        int headingScaled = byteArrayRangeToInt(body, 28, 30);
-        int boatSpeed = byteArrayRangeToInt(body, 34, 36);
+        int sourceID = byteArrayRangeToInt(body, SOURCE_ID.getStartIndex(), SOURCE_ID.getEndIndex());
+        int latScaled = byteArrayRangeToInt(body, LATITUDE.getStartIndex(), LATITUDE.getEndIndex());
+        int lonScaled = byteArrayRangeToInt(body, LONGITUDE.getStartIndex(), LONGITUDE.getEndIndex());
+        int headingScaled = byteArrayRangeToInt(body, HEADING.getStartIndex(), HEADING.getEndIndex());
+        int boatSpeed = byteArrayRangeToInt(body, BOAT_SPEED.getStartIndex(), BOAT_SPEED.getEndIndex());
 
         double lat = intToLatLon(latScaled);
         double lon = intToLatLon(lonScaled);
@@ -158,8 +167,8 @@ public class DataStreamReader implements Runnable{
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
 
-                int messageLength = byteArrayRangeToInt(header, 13, 15);
-                int messageType = header[2];
+                int messageLength = byteArrayRangeToInt(header, MESSAGE_LENGTH.getStartIndex(), MESSAGE_LENGTH.getEndIndex());
+                int messageType = byteArrayRangeToInt(header, MESSAGE_TYPE.getStartIndex(), MESSAGE_TYPE.getEndIndex());
 
                 byte[] body = new byte[messageLength];
                 dataInput.readFully(body);
@@ -175,7 +184,8 @@ public class DataStreamReader implements Runnable{
                             parseBoatLocationMessage(body);
                             break;
                         case RACE_STATUS_MESSAGE:
-                            System.out.println("Race Status: " + byteArrayRangeToInt(body, 11, 12));
+                            int raceStatus = byteArrayRangeToInt(body, RACE_STATUS.getStartIndex(), RACE_STATUS.getEndIndex());
+                            System.out.println("Race Status: " + raceStatus);
                             break;
                     }
                 } else{
