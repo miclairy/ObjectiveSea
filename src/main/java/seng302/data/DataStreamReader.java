@@ -30,9 +30,18 @@ public class DataStreamReader implements Runnable{
     }
 
     /**
+     * Runs the reader by setting up the connection and start reading in data
+     */
+    @Override
+    public void run(){
+        setUpConnection();
+        readData();
+    }
+
+    /**
      * Sets up the connection to the data source by creating a socket and creates a InputStream from the socket
      */
-    private void setUpConnection() {
+    void setUpConnection() {
         try {
             clientSocket = new Socket(sourceAddress, sourcePort);
             dataStream = clientSocket.getInputStream();
@@ -104,7 +113,7 @@ public class DataStreamReader implements Runnable{
      * @return the actual angle of the heading
      */
     private double intToHeading(int value){
-        return value * 360 / Math.pow(2, 16);
+        return (double)value * 360 / Math.pow(2, 16);
     }
 
     /**
@@ -179,13 +188,7 @@ public class DataStreamReader implements Runnable{
         }
     }
 
-
-    /**
-     * Runs the reader by setting up the connection and start reading in data
-     */
-    @Override
-    public void run(){
-        setUpConnection();
-        readData();
+    public Socket getClientSocket() {
+        return clientSocket;
     }
 }

@@ -1,4 +1,4 @@
-package seng302;
+package seng302.utilities;
 
 import org.junit.Test;
 import seng302.utilities.TimeUtils;

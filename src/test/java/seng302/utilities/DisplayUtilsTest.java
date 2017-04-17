@@ -1,4 +1,4 @@
-package seng302;
+package seng302.utilities;
 
 import org.junit.Before;
 import org.junit.Test;
