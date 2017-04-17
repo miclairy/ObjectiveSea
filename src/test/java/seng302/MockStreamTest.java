@@ -135,11 +135,12 @@ public class MockStreamTest {
             InputStream stream = null;
             stream = connectionSocket.getInputStream();
             int readByte = stream.read();
-            byte[] read = new byte[18641]; //clear xml messages
+            while (readByte != 37){
+                readByte = stream.read();
+            }
             DataInputStream dataInputStream = new DataInputStream(stream);
-            dataInputStream.readFully(read);
 
-            byte[] headerRest = new byte[15];
+            byte[] headerRest = new byte[12];
             dataInputStream.readFully(headerRest);
             byte[] body = new byte[56];
             dataInputStream.readFully(body);
