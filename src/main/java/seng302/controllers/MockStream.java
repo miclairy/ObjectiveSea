@@ -30,7 +30,8 @@ public class MockStream implements Runnable {
     private final int BOAT_LOCATION_LENGTH = 56;
     private Map<String, Integer> messageTypes = new HashMap<>();
     private Map<String, Integer> xmlMessageTypes = new HashMap<>();
-    private int sequenceNumber = 0;
+    private Map<Integer, Integer> xmlSequenceNumber = new HashMap<>();
+    private Map<Boat, Integer> boatSequenceNumbers = new HashMap<>();
 
     public MockStream(int port) throws IOException {
         Config.initializeConfig();
@@ -42,27 +43,21 @@ public class MockStream implements Runnable {
         messageTypes.put("BoatLocation", 37);
         xmlMessageTypes.put("Race", 6);
         xmlMessageTypes.put("Boat", 7);
+        xmlSequenceNumber.put(6, 0);
+        xmlSequenceNumber.put(7, 0);
 
+        for (Boat boat: boatsInRace){
+            boatSequenceNumbers.put(boat, boat.getId());
+        }
     }
 
     @Override
-    public void run() { //TODO remember to go back and change sequence numbers appropriately
+    public void run() {
         double secTimePassed = 0;
         try {
             outToServer = new DataOutputStream(clientSocket.getOutputStream());
-            byte[] raceHeader = createHeader(messageTypes.get("XmlMessage"));
-            byte[] raceXMLBody = generateXmlBody(xmlMessageTypes.get("Race"), "race.xml");
-            raceHeader = addIntIntoByteArray(raceHeader, 13, raceXMLBody.length,2);
-            outToServer.write(raceHeader);
-            outToServer.write(raceXMLBody);
-            sendCRC(raceHeader, raceXMLBody);
-
-            byte[] boatHeader = createHeader(messageTypes.get("XmlMessage"));
-            byte[] boatXMLBody = generateXmlBody(xmlMessageTypes.get("Race"), "boat.xml");
-            boatHeader = addIntIntoByteArray(boatHeader, 13, boatXMLBody.length,2);
-            outToServer.write(boatHeader);
-            outToServer.write(boatXMLBody);
-            sendCRC(raceHeader, boatXMLBody);
+            sendXmlMessage("Race", "race.xml");
+            sendXmlMessage("Boat", "boat.xml");
 
             Boolean notFinished = true;
             byte[] body = initialiseLocationPacket();
@@ -80,10 +75,12 @@ public class MockStream implements Runnable {
 
                         body = addIntIntoByteArray(body, 1, (int) Instant.now().toEpochMilli(),6);
                         body = addIntIntoByteArray(body, 7, boat.getId(), 4);
+                        body = addIntIntoByteArray(body, 10, boatSequenceNumbers.get(boat),4);
+                        boatSequenceNumbers.put(boat, boatSequenceNumbers.get(boat) + 1);
                         body = addIntIntoByteArray(body, 16, lat, 4);
                         body = addIntIntoByteArray(body, 20, lon, 4);
                         body = addIntIntoByteArray(body, 28, (int) heading, 2);
-                        body = addIntIntoByteArray(body, 33, (int) speed, 2); //change to 37 instead to move to SOG place?
+                        body = addIntIntoByteArray(body, 33, (int) speed, 2); //change start to 37 instead to move to SOG place?
                         outToServer.write(body);
                         sendCRC(header, body);
                     }
@@ -106,6 +103,19 @@ public class MockStream implements Runnable {
 
     }
 
+    private void sendXmlMessage(String type, String fileName){
+        byte[] header = createHeader(messageTypes.get("XmlMessage"));
+        byte[] xmlBody = generateXmlBody(xmlMessageTypes.get(type), fileName);
+        header = addIntIntoByteArray(header, 13, xmlBody.length,2);
+        try {
+            outToServer.write(header);
+            outToServer.write(xmlBody);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        sendCRC(header, xmlBody);
+    }
+
     private byte[] generateXmlBody(int subType, String fileName) {
         String raceStrPath = new File("src/main/resources/defaultFiles/" + fileName).getAbsolutePath();
         Path racePath = Paths.get(raceStrPath);
@@ -117,7 +127,8 @@ public class MockStream implements Runnable {
             body = addIntIntoByteArray(body, 1, 1, 2);
             body = addIntIntoByteArray(body, 3, (int) Instant.now().toEpochMilli(), 6);
             body[10] = (byte) subType;
-            body[11] = 1;
+            xmlSequenceNumber.put(subType, xmlSequenceNumber.get(subType) + 1);
+            body = addIntIntoByteArray(body, 11, xmlSequenceNumber.get(subType), 2);
             body = addIntIntoByteArray(body, 12, bodyContent.length, 2);
             for (int i = 0; i < body.length - 14; i++){
                 body[i + 14] = bodyContent[i];
