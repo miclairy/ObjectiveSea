@@ -1,6 +1,7 @@
 package seng302;
 
-import org.junit.*;
+
+import org.junit.Test;
 import seng302.controllers.MockStream;
 
 import java.io.*;
@@ -11,7 +12,6 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static junit.framework.TestCase.assertEquals;
-
 
 
 public class MockStreamTest {
