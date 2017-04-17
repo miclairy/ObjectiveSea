@@ -11,7 +11,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
@@ -23,6 +25,12 @@ public class MockStream implements Runnable {
     private Course course;
     private Socket clientSocket;
     private DataOutputStream outToServer;
+    private final int SOURCE_ID = 28;
+    private final int HEADER_LENGTH = 15;
+    private final int BOAT_LOCATION_LENGTH = 56;
+    private Map<String, Integer> messageTypes = new HashMap<>();
+    private Map<String, Integer> xmlMessageTypes = new HashMap<>();
+    private int sequenceNumber = 0;
 
     public MockStream(int port) throws IOException {
         Config.initializeConfig();
@@ -30,6 +38,11 @@ public class MockStream implements Runnable {
         boatsInRace = RaceVisionFileReader.importStarters(null);
         course = RaceVisionFileReader.importCourse(null);
         setStartingPositions();
+        messageTypes.put("XmlMessage", 26);
+        messageTypes.put("BoatLocation", 37);
+        xmlMessageTypes.put("Race", 6);
+        xmlMessageTypes.put("Boat", 7);
+
     }
 
     @Override
@@ -37,12 +50,19 @@ public class MockStream implements Runnable {
         double secTimePassed = 0;
         try {
             outToServer = new DataOutputStream(clientSocket.getOutputStream());
-            byte[] raceHeader = createHeader(26);
-            byte[] raceXMLBody = generateRaceBody();
+            byte[] raceHeader = createHeader(messageTypes.get("XmlMessage"));
+            byte[] raceXMLBody = generateXmlBody(xmlMessageTypes.get("Race"), "race.xml");
             raceHeader = addIntIntoByteArray(raceHeader, 13, raceXMLBody.length,2);
             outToServer.write(raceHeader);
             outToServer.write(raceXMLBody);
             sendCRC(raceHeader, raceXMLBody);
+
+            byte[] boatHeader = createHeader(messageTypes.get("XmlMessage"));
+            byte[] boatXMLBody = generateXmlBody(xmlMessageTypes.get("Race"), "boat.xml");
+            boatHeader = addIntIntoByteArray(boatHeader, 13, boatXMLBody.length,2);
+            outToServer.write(boatHeader);
+            outToServer.write(boatXMLBody);
+            sendCRC(raceHeader, boatXMLBody);
 
             Boolean notFinished = true;
             byte[] body = initialiseLocationPacket();
@@ -55,7 +75,7 @@ public class MockStream implements Runnable {
                     int lon = (int) Math.round(location.getLon() * Math.pow(2, 31) / 180);
                     if (location != null) {
                         notFinished = true;
-                        byte[] header = createHeader(37);
+                        byte[] header = createHeader(messageTypes.get("BoatLocation"));
                         outToServer.write(header);
 
                         body = addIntIntoByteArray(body, 1, (int) Instant.now().toEpochMilli(),6);
@@ -86,62 +106,66 @@ public class MockStream implements Runnable {
 
     }
 
-    private byte[] generateRaceBody() {
-        String raceStrPath = new File("src/main/resources/defaultFiles/race.xml").getAbsolutePath();
+    private byte[] generateXmlBody(int subType, String fileName) {
+        String raceStrPath = new File("src/main/resources/defaultFiles/" + fileName).getAbsolutePath();
         Path racePath = Paths.get(raceStrPath);
 
         try {
-            byte[] raceBodyContent = Files.readAllBytes(racePath);
-            byte[] raceBody = new byte[14 + raceBodyContent.length];
-            raceBody[0] = 1;
-            raceBody = addIntIntoByteArray(raceBody, 1, 1, 2);
-            raceBody = addIntIntoByteArray(raceBody, 3, (int) Instant.now().toEpochMilli(), 6);
-            raceBody[10] = 6;
-            raceBody[11] = 1;
-            raceBody = addIntIntoByteArray(raceBody, 12, raceBodyContent.length, 2);
-            for (int i = 0; i < raceBody.length - 14; i++){
-                raceBody[i + 14] = raceBodyContent[i];
+            byte[] bodyContent = Files.readAllBytes(racePath);
+            byte[] body = new byte[14 + bodyContent.length];
+            body[0] = 1;
+            body = addIntIntoByteArray(body, 1, 1, 2);
+            body = addIntIntoByteArray(body, 3, (int) Instant.now().toEpochMilli(), 6);
+            body[10] = (byte) subType;
+            body[11] = 1;
+            body = addIntIntoByteArray(body, 12, bodyContent.length, 2);
+            for (int i = 0; i < body.length - 14; i++){
+                body[i + 14] = bodyContent[i];
             }
-            return raceBody;
+            return body;
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
 
+
     private byte[] createHeader(int type) {
-        byte[] header = new byte[15];
+
+        byte[] header = new byte[HEADER_LENGTH];
         header[0] = 0x47;
-        header[1] = (byte) 0x83;
+        header[1] = (byte) 0x83; //comes out as -125 as java has signed bytes of the range -127 to 127 todo: change so it is within the range
         header[2] = (byte) type;
         header = addIntIntoByteArray(header, 3, (int) Instant.now().toEpochMilli(),6);
-        header = addIntIntoByteArray(header, 9, 28,4); //source id
-        if (type == 37) {
-            header = addIntIntoByteArray(header, 13, 56, 2); //message length
+        header = addIntIntoByteArray(header, 9, SOURCE_ID,4); //source id
+        if (type == messageTypes.get("BoatLocation")) {
+            header = addIntIntoByteArray(header, 13, BOAT_LOCATION_LENGTH, 2); //message length
         }
         return header;
     }
 
     private void sendCRC(byte[] header, byte[] body){
+        final int CRC_LENGTH = 4;
         Checksum crc = new CRC32();
         byte[] toCRC = new byte[header.length + body.length];
         for (int i = 0; i < toCRC.length; i ++){
-            if (i < 15) {
+            if (i < HEADER_LENGTH) {
                 toCRC[i] = header[i];
             } else {
-                toCRC[i] = body[i - 15];
+                toCRC[i] = body[i - HEADER_LENGTH];
             }
         }
         crc.update(toCRC, 0, toCRC.length);
         try {
-            outToServer.write(addIntIntoByteArray(new byte[4], 0, (int) crc.getValue(), 4));
+            outToServer.write(addIntIntoByteArray(new byte[CRC_LENGTH], 0, (int) crc.getValue(), CRC_LENGTH));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private byte[] initialiseLocationPacket() {
-        byte[] body = new byte[56];
+
+        byte[] body = new byte[BOAT_LOCATION_LENGTH];
         body[0] = (byte) 1;
         body[11] = (byte) 1;
         body[15] = (byte) 1;

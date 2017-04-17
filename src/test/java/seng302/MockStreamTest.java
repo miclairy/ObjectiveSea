@@ -77,4 +77,51 @@ public class MockStreamTest {
 
     }
 
+    @Test
+    public void sendBodyXmlTest(){
+        try {
+            ServerSocket recieveSocket = new ServerSocket(2825);
+            MockStream mockStream = new MockStream(2825);
+            Thread upStream = new Thread(mockStream);
+            upStream.start();
+            Socket connectionSocket = recieveSocket.accept();
+            InputStream stream = connectionSocket.getInputStream();
+            DataInputStream dataInputStream = new DataInputStream(stream);
+
+            byte[] header = new byte[15];
+            dataInputStream.readFully(header);
+            int length = ((header[14] & 0xFF) << 8) + (header[13] & 0xFF);
+            dataInputStream.readFully(new byte[length]);
+            dataInputStream.readFully(new byte[4]); //read crc
+
+            byte[] boatHeader = new byte[15];
+            dataInputStream.readFully(boatHeader);
+            int boatLength = ((boatHeader[14] & 0xFF) << 8) + (boatHeader[13] & 0xFF);
+            byte[] body = new byte[boatLength];
+            dataInputStream.readFully(body);
+            FileWriter outputFileWriter = new FileWriter("testBoat.xml");
+
+            BufferedWriter bufferedWriter = new BufferedWriter(outputFileWriter);
+            bufferedWriter.write(new String(Arrays.copyOfRange(body, 14, body.length)));
+            bufferedWriter.close();
+
+            String receivedStrPath = new File("testBoat.xml").getAbsolutePath();
+            Path receivedPath = Paths.get(receivedStrPath);
+            List<String> receivedContent = Files.readAllLines(receivedPath);
+
+            String boatStrPath = new File("src/main/resources/defaultFiles/boat.xml").getAbsolutePath();
+            Path boatPath = Paths.get(boatStrPath);
+            List<String> boatBodyContent = Files.readAllLines(boatPath);
+            for (int i = 0; i < receivedContent.size(); i++){
+                assertEquals(boatBodyContent.get(i).trim(), receivedContent.get(i).trim());
+            }
+
+        } catch (SocketException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }
