@@ -3,6 +3,7 @@ package seng302.data;
 import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.zip.CRC32;
 
 /**
  * Created on 13/04/17.
@@ -123,33 +124,53 @@ public class DataStreamReader implements Runnable{
     }
 
     /**
+     * Calculates the CRC from header + body and checks if it is equal to the value from the expected CRC byte array
+     * @param header The header of the message
+     * @param body The body of the message
+     * @param crc The expected CRC of the header and body combined
+     * @return True if the calculated CRC is equal to the expected CRC, False otherwise
+     */
+    private boolean checkCRC(byte[] header, byte[] body, byte[] crc) {
+        CRC32 actualCRC = new CRC32();
+        actualCRC.update(header);
+        actualCRC.update(body);
+        long expectedCRCValue = Integer.toUnsignedLong(byteArrayRangeToInt(crc, 0, 4));
+        return expectedCRCValue == actualCRC.getValue();
+    }
+
+    /**
      * Keeps reading in from the data stream and parses each message header and hands off the payload to the
      * corresponding method. Ignores the message if the message type is not needed.
      */
     private void readData(){
-        DataInputStream dataInputStream = new DataInputStream(dataStream);
+        DataInput dataInput = new DataInputStream(dataStream);
         try{
             while(true){
                 byte[] header = new byte[HEADER_LENGTH];
-                dataInputStream.readFully(header);
+                dataInput.readFully(header);
 
                 int messageLength = byteArrayRangeToInt(header, 13, 15);
                 int messageType = header[2];
 
                 byte[] body = new byte[messageLength];
-                dataInputStream.readFully(body);
+                dataInput.readFully(body);
                 byte[] crc = new byte[CRC_LENGTH];
-                dataInputStream.readFully(crc);
+                dataInput.readFully(crc);
 
-                switch(messageType){
-                    case XML_MESSAGE:
-                        convertXMLMessage(body);
-                        break;
-                    case BOAT_LOCATION_MESSAGE:
-                        parseBoatLocationMessage(body);
-                        break;
-                    case RACE_STATUS_MESSAGE:
-                        System.out.println("Race Status: " + byteArrayRangeToInt(body, 11, 12));
+                if(checkCRC(header, body, crc)){
+                    switch(messageType){
+                        case XML_MESSAGE:
+                            convertXMLMessage(body);
+                            break;
+                        case BOAT_LOCATION_MESSAGE:
+                            parseBoatLocationMessage(body);
+                            break;
+                        case RACE_STATUS_MESSAGE:
+                            System.out.println("Race Status: " + byteArrayRangeToInt(body, 11, 12));
+                            break;
+                    }
+                } else{
+                    System.err.println("Incorrect CRC. Message Ignored.");
                 }
             }
         } catch (IOException e){
@@ -157,6 +178,7 @@ public class DataStreamReader implements Runnable{
             System.err.println(e);
         }
     }
+
 
     /**
      * Runs the reader by setting up the connection and start reading in data
