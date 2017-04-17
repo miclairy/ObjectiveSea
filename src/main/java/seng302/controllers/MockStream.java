@@ -10,10 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
@@ -61,7 +58,6 @@ public class MockStream implements Runnable {
 
             Boolean notFinished = true;
             byte[] body = initialiseLocationPacket();
-
             while (notFinished) {
                 for (Boat boat : boatsInRace) {
                     notFinished = false;
@@ -80,7 +76,8 @@ public class MockStream implements Runnable {
                         body = addIntIntoByteArray(body, 16, lat, 4);
                         body = addIntIntoByteArray(body, 20, lon, 4);
                         body = addIntIntoByteArray(body, 28, (int) heading, 2);
-                        body = addIntIntoByteArray(body, 33, (int) speed, 2); //change start to 37 instead to move to SOG place?
+                        // multiplied by 514.444 to convert knots to mm/s
+                        body = addIntIntoByteArray(body, 33, (int) (speed * 514.444), 2); //change start to 37 instead to move to SOG place?
                         outToServer.write(body);
                         sendCRC(header, body);
                     }

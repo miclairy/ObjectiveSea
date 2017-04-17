@@ -8,8 +8,7 @@ import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -118,6 +117,40 @@ public class MockStreamTest {
 
         } catch (SocketException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    public void sendBoatLocationTest(){
+
+        try {
+            ServerSocket recieveSocket = new ServerSocket(2825);
+            MockStream mockStream = new MockStream(2825);
+            Thread upStream = new Thread(mockStream);
+            upStream.start();
+            Socket connectionSocket = recieveSocket.accept();
+            InputStream stream = null;
+            stream = connectionSocket.getInputStream();
+            int readByte = stream.read();
+            byte[] read = new byte[18641]; //clear xml messages
+            DataInputStream dataInputStream = new DataInputStream(stream);
+            dataInputStream.readFully(read);
+
+            byte[] headerRest = new byte[15];
+            dataInputStream.readFully(headerRest);
+            byte[] body = new byte[56];
+            dataInputStream.readFully(body);
+
+            assertEquals(1, body[0]);
+            assertEquals(1, body[15]);
+            assertEquals(1, body[7]);
+            assertEquals(0, body[24]);
+            assertEquals(0, body[28]);
+            assertEquals((int) (33.0 * 514.444), ((body[34] & 0xFF) << 8) + (body[33] & 0xFF));
+
         } catch (IOException e) {
             e.printStackTrace();
         }

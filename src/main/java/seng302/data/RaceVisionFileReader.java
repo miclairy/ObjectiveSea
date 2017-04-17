@@ -240,7 +240,7 @@ public class RaceVisionFileReader {
      */
     public static ArrayList<Boat> importStarters(String filePath){
         ArrayList<Boat> starters = new ArrayList<>();
-
+        ArrayList<Boat> allBoats = new ArrayList<>();
         try {
             BufferedReader br;
             if (filePath != null && !filePath.isEmpty()) {
@@ -250,7 +250,7 @@ public class RaceVisionFileReader {
                 br = new BufferedReader(
                         new InputStreamReader(RaceVisionFileReader.class.getResourceAsStream(filePath)));
             }
-            ArrayList<Boat> allBoats = new ArrayList<>();
+
 
             String line = br.readLine();
             int j = 1;
@@ -264,10 +264,10 @@ public class RaceVisionFileReader {
                 j ++;
             }
 
-            Random ran = new Random();
-            for (int i = 0; i < Config.NUM_BOATS_IN_RACE; i++){
-                starters.add(allBoats.remove(ran.nextInt(allBoats.size())));
-            }
+//            Random ran = new Random();
+//            for (int i = 0; i < Config.NUM_BOATS_IN_RACE; i++){
+//                starters.add(allBoats.remove(ran.nextInt(allBoats.size())));
+//            }
             br.close();
 
         } catch (FileNotFoundException e) {
@@ -276,7 +276,7 @@ public class RaceVisionFileReader {
             System.err.printf("Error reading starters file. Check it is in the correct format.");
         }
 
-        return starters;
+        return allBoats;
     }
 
     /**
