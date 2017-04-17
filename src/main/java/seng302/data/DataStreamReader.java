@@ -59,7 +59,7 @@ public class DataStreamReader implements Runnable{
      * @param endIndex The ending index (exclusive) of the range of bytes to be converted
      * @return The integer converted from the range of bytes in little endian order
      */
-    private int byteArrayRangeToInt(byte[] array, int beginIndex, int endIndex){
+    static int byteArrayRangeToInt(byte[] array, int beginIndex, int endIndex){
         int length = endIndex - beginIndex;
         if(length <= 0 || length > 4){
             throw new IllegalArgumentException("The length of the range must be between 1 and 4 inclusive");
@@ -70,6 +70,25 @@ public class DataStreamReader implements Runnable{
             total = (total << 8) + (array[i] & 0xFF);
         }
         return total;
+    }
+
+    /**
+     * Converts an integer to a latitude/longitude angle as per specification.
+     * (-2^31 = -180 deg, 2^31 = 180 deg)
+     * @param value the latitude/longitude as a scaled integer
+     * @return the actual latitude/longitude angle
+     */
+    static double intToLatLon(int value){
+        return (double)value * 180 / Math.pow(2, 31);
+    }
+
+    /**
+     * Converts an integer to a heading angle as per specification.
+     * @param value the heading as a scaled integer
+     * @return the actual angle of the heading
+     */
+    static double intToHeading(int value){
+        return (double)value * 360 / Math.pow(2, 16);
     }
 
     /**
@@ -95,25 +114,6 @@ public class DataStreamReader implements Runnable{
         BufferedWriter bufferedWriter = new BufferedWriter(outputFileWriter);
         bufferedWriter.write(xmlMessage);
         bufferedWriter.close();
-    }
-
-    /**
-     * Converts an integer to a latitude/longitude angle as per specification.
-     * (-2^31 = -180 deg, 2^31 = 180 deg)
-     * @param value the latitude/longitude as a scaled integer
-     * @return the actual latitude/longitude angle
-     */
-    private double intToLatLon(int value){
-        return (double)value * 180 / Math.pow(2, 31);
-    }
-
-    /**
-     * Converts an integer to a heading angle as per specification.
-     * @param value the heading as a scaled integer
-     * @return the actual angle of the heading
-     */
-    private double intToHeading(int value){
-        return (double)value * 360 / Math.pow(2, 16);
     }
 
     /**
