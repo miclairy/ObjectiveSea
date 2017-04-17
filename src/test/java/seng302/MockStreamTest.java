@@ -127,8 +127,8 @@ public class MockStreamTest {
     public void sendBoatLocationTest(){
 
         try {
-            ServerSocket recieveSocket = new ServerSocket(2825);
-            MockStream mockStream = new MockStream(2825);
+            ServerSocket recieveSocket = new ServerSocket(2824);
+            MockStream mockStream = new MockStream(2824);
             Thread upStream = new Thread(mockStream);
             upStream.start();
             Socket connectionSocket = recieveSocket.accept();
