@@ -49,7 +49,7 @@ public class MockStream implements Runnable {
     }
 
     @Override
-    public void run() {
+    public void run() { //Should we also send mark rounding
         double secTimePassed = 0;
         try {
             outToServer = new DataOutputStream(clientSocket.getOutputStream());
@@ -75,7 +75,7 @@ public class MockStream implements Runnable {
                         boatSequenceNumbers.put(boat, boatSequenceNumbers.get(boat) + 1);
                         body = addIntIntoByteArray(body, 16, lat, 4);
                         body = addIntIntoByteArray(body, 20, lon, 4);
-                        body = addIntIntoByteArray(body, 28, (int) heading, 2);
+                        body = addIntIntoByteArray(body, 28, (int) (heading * Math.pow(2, 16) / 360), 2);
                         // multiplied by 514.444 to convert knots to mm/s
                         body = addIntIntoByteArray(body, 33, (int) (speed * 514.444), 2); //change start to 37 instead to move to SOG place?
                         outToServer.write(body);

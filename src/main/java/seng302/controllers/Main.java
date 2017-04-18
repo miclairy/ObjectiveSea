@@ -67,13 +67,7 @@ public class Main extends Application {
             mockStream = new MockStream(2828);
             Thread upStream = new Thread(mockStream);
             upStream.start();
-            Socket connectionSocket = recieveSocket.accept();
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
-            while(true) {
-                //System.out.println(connectionSocket.getInputStream().read());
-                System.out.println(reader.readLine());
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
