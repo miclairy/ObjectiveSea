@@ -253,15 +253,15 @@ public class RaceVisionFileReader {
 
 
             String line = br.readLine();
-            int j = 1;
+            int id = 1;
             while (line != null){
                 StringTokenizer st = new StringTokenizer((line));
                 String name = st.nextToken(",");
                 String nickName = st.nextToken().trim();
                 double speed = Double.parseDouble(st.nextToken());
-                allBoats.add(new Boat(j, name, nickName, speed));
+                allBoats.add(new Boat(id, name, nickName, speed));
                 line = br.readLine();
-                j ++;
+                id ++;
             }
 
 //            Random ran = new Random();

@@ -163,7 +163,7 @@ public class MockStream implements Runnable {
 
         byte[] header = new byte[HEADER_LENGTH];
         header[0] = 0x47;
-        header[1] = (byte) 0x83; //comes out as -125 as java has signed bytes of the range -127 to 127 todo: change so it is within the range
+        header[1] = (byte) 0x83; 
         header[2] = (byte) type;
         header = addIntIntoByteArray(header, 3, (int) Instant.now().toEpochMilli(),6);
         header = addIntIntoByteArray(header, 9, SOURCE_ID,4); //source id
