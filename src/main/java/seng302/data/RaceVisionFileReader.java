@@ -9,10 +9,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.Random;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * Created on 6/03/17.
@@ -95,13 +92,13 @@ public class RaceVisionFileReader {
                     Element element = (Element) node;
                     switch (element.getTagName()) {
                         case XMLTags.Course.COURSE:
-                            NodeList compoundMarks = element.getElementsByTagName(XMLTags.Course.COMPOUNDMARK);
+                            NodeList compoundMarks = element.getElementsByTagName(XMLTags.Course.COMPOUND_MARK);
                             for (int j = 0; j < compoundMarks.getLength(); j++){
                                 CompoundMark mark = parseCompoundMark((Element) compoundMarks.item(j));
                                 course.addNewMark(mark);
                             }
                             break;
-                        case XMLTags.Course.COMPOUNDMARKSEQUENCE:
+                        case XMLTags.Course.COMPOUND_MARK_SEQUENCE:
                             NodeList legs = element.getElementsByTagName(XMLTags.Course.CORNER);
                             for (int k = 0; k < legs.getLength(); k++) {
                                 Element corner = (Element) legs.item(k);
@@ -111,7 +108,7 @@ public class RaceVisionFileReader {
                         case XMLTags.Course.WIND:
                             course.setWindDirection(Double.parseDouble(element.getTextContent()));
                             break;
-                        case XMLTags.Course.COURSELIMIT:
+                        case XMLTags.Course.COURSE_LIMIT:
                             NodeList boundaryCoords = element.getElementsByTagName(XMLTags.Course.LATLON);
                             for (int k = 0; k < boundaryCoords.getLength(); k++) {
                                 course.addToBoundary(parseBoundaryCoord(boundaryCoords.item(k)));
@@ -290,44 +287,44 @@ public class RaceVisionFileReader {
      * @return starters - ArrayList of Boat objects defined in file
     */
 
-    public static ArrayList<Boat> importStarters(String filePath){
-        ArrayList<Boat> starters = new ArrayList<>();
-
-        try {
-            BufferedReader br;
-            if (filePath != null && !filePath.isEmpty()) {
-                br = new BufferedReader(new FileReader(filePath));
-            } else {
-                filePath = DEFAULT_FILE_PATH + DEFAULT_STARTERS_FILE;
-                br = new BufferedReader(
-                        new InputStreamReader(RaceVisionFileReader.class.getResourceAsStream(filePath)));
-            }
-            ArrayList<Boat> allBoats = new ArrayList<>();
-
-            String line = br.readLine();
-            while (line != null){
-                StringTokenizer st = new StringTokenizer((line));
-                String name = st.nextToken(",");
-                String nickName = st.nextToken().trim();
-                double speed = Double.parseDouble(st.nextToken());
-                allBoats.add(new Boat(name, nickName, speed));
-                line = br.readLine();
-            }
-
-            Random ran = new Random();
-            for (int i = 0; i < Config.NUM_BOATS_IN_RACE; i++){
-                starters.add(allBoats.remove(ran.nextInt(allBoats.size())));
-            }
-            br.close();
-
-        } catch (FileNotFoundException e) {
-            System.err.printf("Starters file could not be found at %s\n", filePath);
-        } catch (IOException e) {
-            System.err.printf("Error reading starters file. Check it is in the correct format.");
-        }
-
-        return starters;
-    }
+//    public static ArrayList<Boat> importStarters(String filePath){
+//        ArrayList<Boat> starters = new ArrayList<>();
+//
+//        try {
+//            BufferedReader br;
+//            if (filePath != null && !filePath.isEmpty()) {
+//                br = new BufferedReader(new FileReader(filePath));
+//            } else {
+//                filePath = DEFAULT_FILE_PATH + DEFAULT_STARTERS_FILE;
+//                br = new BufferedReader(
+//                        new InputStreamReader(RaceVisionFileReader.class.getResourceAsStream(filePath)));
+//            }
+//            ArrayList<Boat> allBoats = new ArrayList<>();
+//
+//            String line = br.readLine();
+//            while (line != null){
+//                StringTokenizer st = new StringTokenizer((line));
+//                String name = st.nextToken(",");
+//                String nickName = st.nextToken().trim();
+//                double speed = Double.parseDouble(st.nextToken());
+//                allBoats.add(new Boat(name, nickName, speed));
+//                line = br.readLine();
+//            }
+//
+//            Random ran = new Random();
+//            for (int i = 0; i < Config.NUM_BOATS_IN_RACE; i++){
+//                starters.add(allBoats.remove(ran.nextInt(allBoats.size())));
+//            }
+//            br.close();
+//
+//        } catch (FileNotFoundException e) {
+//            System.err.printf("Starters file could not be found at %s\n", filePath);
+//        } catch (IOException e) {
+//            System.err.printf("Error reading starters file. Check it is in the correct format.");
+//        }
+//
+//        return starters;
+//    }
 
 
 
@@ -339,7 +336,7 @@ public class RaceVisionFileReader {
      * @param filePath String of the file path of the file to read in.
      * @return an ArrayList of Boats.
      */
-    public static ArrayList<Boat> importStarters2(String filePath) {
+    public static List<Boat> importStarters(String filePath) {
         try {
             if (filePath != null && !filePath.isEmpty()) {
                 parseXMLFile(filePath, false);
@@ -365,8 +362,8 @@ public class RaceVisionFileReader {
      *
      * @return starters - ArrayList of Boat objects defined in file
      */
-    public static ArrayList<Boat> importStartersFromXML(){
-        ArrayList<Boat> starters = new ArrayList<>();
+    public static List<Boat> importStartersFromXML(){
+        List<Boat> starters = new ArrayList<>();
 
         try {
             Element root = dom.getDocumentElement();
@@ -385,7 +382,9 @@ public class RaceVisionFileReader {
                             NodeList boats = element.getElementsByTagName(XMLTags.Boats.BOAT);
                             for (int j = 0; j < boats.getLength(); j++){
                                 Boat boat = parseBoat((Element) boats.item(j));
-                                starters.add(boat);
+                                if(boat != null){
+                                    starters.add(boat);
+                                }
                             }
                             break;
                     }
@@ -408,18 +407,15 @@ public class RaceVisionFileReader {
      *
      *  @return boat
      */
-    private static Boat parseBoat(Element boatXML) throws  XMLParseException{
-        Boat boat;
-        String type = (boatXML.getAttribute(XMLTags.Boats.TYPE));
-
-        if(type != "Yacht") {
-            throw new XMLParseException(XMLTags.Course.MARK, "Boat is not a yacht.");
-        }
-        else {
-            String name = (boatXML.getAttribute(XMLTags.Boats.BOATNAME));
-            String nickname = (boatXML.getAttribute(XMLTags.Boats.NICKNAME));
+    private static Boat parseBoat(Element boatXML) throws XMLParseException{
+        Boat boat = null;
+        String type = boatXML.getAttribute(XMLTags.Boats.TYPE);
+        if(type.equals("Yacht")){
+            String name = boatXML.getAttribute(XMLTags.Boats.BOATNAME);
+            String nickname = boatXML.getAttribute(XMLTags.Boats.NICKNAME);
+            Integer id = Integer.parseInt(boatXML.getAttribute(XMLTags.Boats.SOURCE_ID));
             //get lat long
-            boat = new Boat(name, nickname, 0);
+            boat = new Boat(id, name, nickname, 0);
         }
         return boat;
     }

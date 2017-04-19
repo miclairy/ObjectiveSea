@@ -13,18 +13,22 @@ public class Race {
 
     private String name;
     private Course course;
-    private ArrayList<Boat> competitors;
-    private ArrayList<Boat> raceOrder = new ArrayList<>();
+    private List<Boat> competitors;
+    private List<Boat> raceOrder = new ArrayList<>();
+    private Map<Integer, Boat> boatIdMap;
 
     private double totalRaceTime;
-    private double secondsBeforeRace = 240; //extra time in seconds to allow the race to begin and end smoothly
+    private double secondsBeforeRace = 0; //extra time in seconds to allow the race to begin and end smoothly
 
-    public Race(String name, Course course, ArrayList<Boat> competitors) {
+    public Race(String name, Course course, List<Boat> competitors) {
         this.name = name;
         this.course = course;
         this.competitors = competitors;
-        setStartingPositions();
         raceOrder.addAll(competitors);
+        boatIdMap = new HashMap<>();
+        for(Boat competitor : competitors){
+            boatIdMap.put(competitor.getId(), competitor);
+        }
     }
 
     /**
@@ -46,8 +50,20 @@ public class Race {
         }
     }
 
-    public ArrayList<Boat> getCompetitors() {
-        return this.competitors;
+    public void updateBoat(Integer sourceID, Double lat, Double lon, Double heading, Double speed){
+        if(boatIdMap.containsKey(sourceID)){
+            System.err.println("Boat found");
+            Boat boat = boatIdMap.get(sourceID);
+            boat.setPosition(lat, lon);
+            boat.setHeading(heading);
+            boat.setSpeed(speed);
+        } else{
+            System.err.println("Boat source ID not found");
+        }
+    }
+
+    public List<Boat> getCompetitors() {
+        return competitors;
     }
 
     public String getName() {
@@ -59,7 +75,7 @@ public class Race {
     }
 
 
-    public ArrayList<Boat> getRaceOrder() {
+    public List<Boat> getRaceOrder() {
         return raceOrder;
     }
 

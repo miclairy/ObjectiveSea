@@ -33,8 +33,8 @@ public class RaceTest {
 
         ArrayList<Boat> boats = new ArrayList<>();
 
-        Boat testBoat1 = new Boat("Boat 1", "1", 10);
-        Boat testBoat2 = new Boat("Boat 2", "2",15);
+        Boat testBoat1 = new Boat(0, "Boat 1", "1", 10);
+        Boat testBoat2 = new Boat(1, "Boat 2", "2",15);
 
         boats.add(testBoat1);
         boats.add(testBoat2);
@@ -67,8 +67,8 @@ public class RaceTest {
         course.addMarkInOrder(2);
         ArrayList<Boat> boats = new ArrayList<>();
 
-        Boat testBoat1 = new Boat("Boat 1","1", 10);
-        Boat testBoat2 = new Boat("Boat 2", "2",15);
+        Boat testBoat1 = new Boat(0, "Boat 1","1", 10);
+        Boat testBoat2 = new Boat(1, "Boat 2", "2",15);
 
         boats.add(testBoat1);
         boats.add(testBoat2);
@@ -101,7 +101,7 @@ public class RaceTest {
 
         ArrayList<Boat> boats = new ArrayList<>();
 
-        Boat testBoat1 = new Boat("Boat 1","1", 10);
+        Boat testBoat1 = new Boat(0, "Boat 1","1", 10);
         boats.add(testBoat1);
 
         Race race = new Race("Test Race", course, boats);

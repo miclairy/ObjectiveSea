@@ -1,5 +1,7 @@
 package seng302.data;
 
+import seng302.models.Race;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
@@ -16,6 +18,7 @@ public class DataStreamReader implements Runnable{
     private InputStream dataStream;
     private String sourceAddress;
     private int sourcePort;
+    private Race race;
 
     private final int HEADER_LENGTH = 15;
     private final int CRC_LENGTH = 4;
@@ -139,6 +142,9 @@ public class DataStreamReader implements Runnable{
         double lat = intToLatLon(latScaled);
         double lon = intToLatLon(lonScaled);
         double heading = intToHeading(headingScaled);
+        race.updateBoat(sourceID, lat, lon, heading, (double)boatSpeed);
+
+        System.out.println(sourceID + " " + lat + " " + lon + " " + heading + " " + boatSpeed);
     }
 
     /**
@@ -185,7 +191,7 @@ public class DataStreamReader implements Runnable{
                             break;
                         case RACE_STATUS_MESSAGE:
                             int raceStatus = byteArrayRangeToInt(body, RACE_STATUS.getStartIndex(), RACE_STATUS.getEndIndex());
-                            System.out.println("Race Status: " + raceStatus);
+                            System.out.println(raceStatus);
                             break;
                     }
                 } else{
@@ -200,5 +206,9 @@ public class DataStreamReader implements Runnable{
 
     public Socket getClientSocket() {
         return clientSocket;
+    }
+
+    public void setRace(Race race) {
+        this.race = race;
     }
 }

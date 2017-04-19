@@ -71,11 +71,11 @@ public class RaceViewController extends AnimationTimer {
         }
         double secondsElapsed = TimeUtils.convertNanosecondsToSeconds(currentTime - previousTime);
         //scale time based on the input config value
-        double scaledSecondsElapsed = secondsElapsed * race.getTotalRaceTime() / (Config.TIME_SCALE_IN_SECONDS);
+//        double scaledSecondsElapsed = secondsElapsed * race.getTotalRaceTime() / (Config.TIME_SCALE_IN_SECONDS);
+        double scaledSecondsElapsed = secondsElapsed;
 
         controller.updateFPSCounter(currentTime);
         controller.updateRaceClock(scaledSecondsElapsed); //updates race clock using scaledSecondsElapsed
-        Controller.setTimeZone();
 
         currentTimeInSeconds += scaledSecondsElapsed;
 

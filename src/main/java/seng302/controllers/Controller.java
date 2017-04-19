@@ -192,7 +192,7 @@ public class Controller implements Initializable {
      * Keep the placings list up to date based on last past marked of boats
      */
     public void updatePlacings(){
-        ArrayList<Boat> raceOrder = Main.getRace().getRaceOrder();
+        List<Boat> raceOrder = Main.getRace().getRaceOrder();
         Collections.sort(raceOrder);
         formattedDisplayOrder.clear();
         for (int i = 0; i < raceOrder.size(); i++){

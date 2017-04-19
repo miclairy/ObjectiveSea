@@ -21,8 +21,10 @@ public class Boat implements Comparable<Boat>{
     private double heading;
     private double maxSpeed;
     private ArrayList<Coordinate> pathCoords;
+    private Integer id;
 
-    public Boat(String name, String nickName, double speed) {
+    public Boat(Integer id, String name, String nickName, double speed) {
+        this.id = id;
         this.name = name;
         this.nickName = nickName;
         this.maxSpeed = speed;
@@ -97,6 +99,10 @@ public class Boat implements Comparable<Boat>{
 
     public int compareTo(Boat otherBoat){
         return otherBoat.getLastPassedMark() - lastPassedMark;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public String getName() {

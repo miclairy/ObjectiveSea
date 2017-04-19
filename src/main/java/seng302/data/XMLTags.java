@@ -15,6 +15,7 @@ public class XMLTags {
         public static final String TYPE = "Type";
         public static final String BOATNAME = "BoatName";
         public static final String NICKNAME = "ShorterName";
+        public static final String SOURCE_ID = "SourceID";
     }
 
     public class Course {
@@ -22,7 +23,7 @@ public class XMLTags {
         public static final String COURSE = "Course";
 
         //marks
-        public static final String COMPOUNDMARK = "CompoundMark";
+        public static final String COMPOUND_MARK = "CompoundMark";
         public static final String MARKS = "marks";
         public static final String MARK = "Mark";
         public static final String NAME = "name";
@@ -34,14 +35,14 @@ public class XMLTags {
         public static final String FINISH = "finish";
 
         //sequence
-        public static final String COMPOUNDMARKSEQUENCE = "CompoundMarkSequence";
+        public static final String COMPOUND_MARK_SEQUENCE = "CompoundMarkSequence";
         public static final String CORNER = "Corner";
 
         //wind
         public static final String WIND = "wind";
 
         //course limit
-        public static final String COURSELIMIT = "CourseLimit";
+        public static final String COURSE_LIMIT = "CourseLimit";
         public static final String LIMIT = "limit";
 
         //timezone
