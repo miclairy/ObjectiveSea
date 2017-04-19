@@ -48,8 +48,11 @@ public class MockStream implements Runnable {
         }
     }
 
+    /**
+     * Sends all the data to the socket while the boats have not all finished.
+     */
     @Override
-    public void run() { //Should we also send mark rounding
+    public void run() { //Should we also send mark rounding?
         double secTimePassed = 0;
         try {
             outToServer = new DataOutputStream(clientSocket.getOutputStream());
@@ -100,6 +103,11 @@ public class MockStream implements Runnable {
 
     }
 
+    /**
+     * Sends an xml message type to the socket including the header, body and CRC
+     * @param type subtype of the xml message
+     * @param fileName name of the file to send
+     */
     private void sendXmlMessage(String type, String fileName){
         byte[] header = createHeader(messageTypes.get("XmlMessage"));
         byte[] xmlBody = generateXmlBody(xmlMessageTypes.get(type), fileName);
@@ -113,6 +121,13 @@ public class MockStream implements Runnable {
         sendCRC(header, xmlBody);
     }
 
+    /**
+     * Reads a file as bytes and adds the information about the version, sequence number set to 1, subtype, timestamp,
+     * xml sequence number and length then
+     * @param subType the integer number of the subtype of the xml message
+     * @param fileName the file which to read the bytes from
+     * @return a byte array which is the body of the xml message
+     */
     private byte[] generateXmlBody(int subType, String fileName) {
         String raceStrPath = new File("src/main/resources/defaultFiles/" + fileName).getAbsolutePath();
         Path racePath = Paths.get(raceStrPath);
@@ -138,6 +153,12 @@ public class MockStream implements Runnable {
     }
 
 
+    /**
+     * creates a header byte array which has 2 snyc bytes, a type, timestamp, source id which is 28 at the moment and the
+     * message length if it is not variable.
+     * @param type the integer type of the message
+     * @return a byte array of the header
+     */
     private byte[] createHeader(int type) {
 
         byte[] header = new byte[HEADER_LENGTH];
@@ -152,6 +173,11 @@ public class MockStream implements Runnable {
         return header;
     }
 
+    /**
+     * Computes and sends the CRC checksum to the socket
+     * @param header The header byte array used to compute the CRC
+     * @param body the body byte array used to compute the CRC
+     */
     private void sendCRC(byte[] header, byte[] body){
         final int CRC_LENGTH = 4;
         Checksum crc = new CRC32();
@@ -171,16 +197,27 @@ public class MockStream implements Runnable {
         }
     }
 
+    /**
+     * Initialises the static contents of the location packet body
+     * @return a byte array of the version number, device type, altitude
+     */
     private byte[] initialiseLocationPacket() {
 
         byte[] body = new byte[BOAT_LOCATION_LENGTH];
         body[0] = (byte) 1;
-        body[11] = (byte) 1;
         body[15] = (byte) 1;
         body[24] = (byte) 0;
         return body;
     }
 
+    /**
+     * Splits an integer into a few bytes and adds it to a byte array
+     * @param array array which to add the int
+     * @param start index it start adding
+     * @param item item to add
+     * @param numBytes number of bytes to split the int into
+     * @return the byte array with the item added.
+     */
     private byte[] addIntIntoByteArray(byte[] array, int start, int item, int numBytes){
         for (int i = 0; i < numBytes; i ++) {
             array[start + i] = (byte) (item >> i * 8);
