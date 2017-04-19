@@ -108,9 +108,10 @@ public class RaceVisionFileReader {
                             course.setWindDirection(Double.parseDouble(element.getTextContent()));
                             break;
                         case XMLTags.Course.COURSE_LIMIT:
-                            NodeList boundaryCoords = element.getElementsByTagName(XMLTags.Course.LATLON);
-                            for (int k = 0; k < boundaryCoords.getLength(); k++) {
-                                course.addToBoundary(parseBoundaryCoord(boundaryCoords.item(k)));
+                            NodeList courseLimits = element.getElementsByTagName(XMLTags.Course.LIMIT);
+                            for (int k = 0; k < courseLimits.getLength(); k++) {
+                                Coordinate coord = parseCourseLimitCoord((Element) courseLimits.item(k));
+                                course.addToBoundary(coord);
                             }
                             break;
                         case XMLTags.Course.TIMEZONE:
@@ -232,15 +233,16 @@ public class RaceVisionFileReader {
 //    }
 
     /**
-     * Makes a new coordinate by extracting the latitude and longitude from the node.
-     * @param latlons A node with lat and lons tags
-     * @return a Coordinate object indicating a point on the boundary
-     * @throws XMLParseException XMLParseException if no <lat> or <lon> tag exists
+     *
+     * @param limit
+     * @return
+     * @throws XMLParseException
      */
-    private static Coordinate parseBoundaryCoord(Node latlons) throws XMLParseException{
-        double lat = extractLatitude((Element) latlons);
-        double lon = extractLongitude((Element) latlons);
-        return new Coordinate(lat, lon);
+    private static Coordinate parseCourseLimitCoord(Element limit) throws XMLParseException{
+        Double lat = Double.parseDouble(limit.getAttribute("Lat"));
+        Double lon = Double.parseDouble(limit.getAttribute("Lon"));
+        Coordinate coord = new Coordinate(lat, lon);
+        return coord;
     }
 
     /**
@@ -421,9 +423,6 @@ public class RaceVisionFileReader {
         }
         return boat;
     }
-
-
-
 
     /**
      * Takes a file from resources and puts it outside the jar to make it accessible to users
