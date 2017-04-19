@@ -1,8 +1,10 @@
 package seng302.utilities;
 import javafx.util.Pair;
+import seng302.data.RaceVisionFileReader;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 
@@ -25,9 +27,17 @@ public class PolarReader {
         String thisLine = null;
 
         try {
-            File file = new File("src\\main\\resources\\defaultFiles\\boatPolars.txt"); //C:\Users\gemma\Desktop\team-28\src\main\resources\defaultFiles\boatPolars.txt
-            String fileName = file.getAbsolutePath();
-            BufferedReader br = new BufferedReader(new FileReader(fileName));
+            BufferedReader br;
+            try {
+                br = new BufferedReader(new FileReader("boatPolars.txt"));
+            } catch (FileNotFoundException e){
+                RaceVisionFileReader.exportResource("/defaultFiles/boatPolars.txt", "boatPolars.txt");
+                br = new BufferedReader(new FileReader("boatPolars.txt"));
+            }
+//            String fileName1 = "/defaultFiles/boatPolars.txt";
+//            File file = new File("src\\main\\resources\\defaultFiles\\boatPolars.txt"); //C:\Users\gemma\Desktop\team-28\src\main\resources\defaultFiles\boatPolars.txt
+//            String fileName = file.getAbsolutePath();
+//            BufferedReader br = new BufferedReader(new FileReader(fileName1));
             thisLine = br.readLine();
             while ((thisLine = br.readLine()) != null) {
                 String[] line = thisLine.split(",");

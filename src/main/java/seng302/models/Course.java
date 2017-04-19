@@ -18,6 +18,9 @@ public class Course {
     private RaceLine startingLine;
     private String timeZone;
 
+
+    private double trueWindSpeed;
+
     public Course() {
         this.marks = new HashMap<>();
         this.courseOrder = new ArrayList<>();
@@ -150,6 +153,10 @@ public class Course {
     public double getMaxLon() {
         return maxLon;
     }
+
+    public double getTrueWindSpeed() {return trueWindSpeed;}
+
+    public void setTrueWindSpeed(double trueWindSpeed) {this.trueWindSpeed = trueWindSpeed;}
 
     public ArrayList<Coordinate> getBoundary() {
         return boundary;

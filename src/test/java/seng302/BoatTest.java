@@ -7,6 +7,7 @@ import seng302.models.Boat;
 import seng302.models.CompoundMark;
 import seng302.models.Course;
 import seng302.models.RaceLine;
+import seng302.utilities.PolarReader;
 
 import java.util.ArrayList;
 
@@ -115,5 +116,25 @@ public class BoatTest
         double x = 50.0;
         assertEquals(8.564421885974385, boat.lagrangeInterpolation(A,B,C,x), DELTA);
         assertEquals(3, boat.lagrangeInterpolation(D,E,F,4.0), DELTA);
+    }
+
+    @Test
+    public void tackingTest(){
+        try {
+            PolarReader.polars();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        ArrayList<Integer> TWSList = PolarReader.getTWS();
+        ArrayList<ArrayList<Pair<Double, Double>>> polars = PolarReader.getPolars();
+        Course course = new Course();
+        course.setTrueWindSpeed(20);
+        Pair<Double,Double> test = boat.tacking(course,TWSList,polars);
+        //Check VMG
+        assertEquals(8.384899644236858, test.getKey(), DELTA);
+        //Check TWA
+        assertEquals(38.0, test.getValue(), DELTA);
+        //Check BSp
+        assertEquals(10.64059038, (test.getKey()/Math.cos(Math.toRadians(test.getValue()))), DELTA);
     }
 }
