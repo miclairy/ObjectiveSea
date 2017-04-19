@@ -1,4 +1,4 @@
-package seng302;
+package seng302.models;
 
 import org.junit.Test;
 import seng302.models.Gate;

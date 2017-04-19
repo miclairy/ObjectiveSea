@@ -31,6 +31,8 @@ public class Coordinate {
 
     /**
      * Simplifier for setting lat and lon in one call
+     * @param lat the latitude to be set
+     * @param lon the longitude to be set
      */
     public void update(double lat, double lon) {
         setLat(lat);
