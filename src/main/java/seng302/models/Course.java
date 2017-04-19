@@ -1,7 +1,6 @@
 package seng302.models;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Created on 7/03/17.
@@ -13,31 +12,44 @@ public class Course {
     private ArrayList<CompoundMark> courseOrder;
     private ArrayList<Coordinate> boundary;
     private double minLat, minLon, maxLat, maxLon;
-    private HashMap<Integer, CompoundMark> marks;
+    private Map<Integer, CompoundMark> compoundMarks;
     private double windDirection;
     private RaceLine startingLine;
     private String timeZone;
+    private Map<Integer, Mark> allMarks;
 
     public Course() {
-        this.marks = new HashMap<>();
+        this.compoundMarks = new HashMap<>();
         this.courseOrder = new ArrayList<>();
         this.boundary = new ArrayList<>();
+        allMarks = new HashMap<>();
     }
 
     /**
-     * Puts mark into the marks HashMap, with the name of the mark as the Key
-     * @param mark - a defined Mark object
+     * Puts mark into the compoundMarks HashMap, with the name of the mark as the Key
+     * @param compoundMark - a defined CompoundMark object
      */
-    public void addNewMark(CompoundMark mark){
-        marks.put(mark.getMarkID(), mark);
+    public void addNewCompoundMark(CompoundMark compoundMark){
+        //TODO: Find out why there's repeated compound marks with different compound mark ids
+        if(allMarks.containsKey(compoundMark.getMark1().getSourceID())) return;
+
+        compoundMarks.put(compoundMark.getCompoundMarkID(), compoundMark);
+        Mark mark1 = compoundMark.getMark1();
+        allMarks.put(mark1.getSourceID(), mark1);
+        if(compoundMark.hasTwoMarks()){
+            Mark mark2 = compoundMark.getMark2();
+            allMarks.put(mark2.getSourceID(), mark2);
+        }
     }
 
     /**
-     * Appends a mark to the course order ArrayList. The mark must already exist in the marks HashMap
-     * @param markID - the name of the mark to look up in the marks HashMap
+     * Appends a mark to the course order ArrayList. The mark must already exist in the compoundMarks HashMap
+     * @param compoundMarkID - the name of the mark to look up in the compoundMarks HashMap
      */
-    public void addMarkInOrder(Integer markID){
-        courseOrder.add(marks.get(markID));
+    public void addMarkInOrder(Integer compoundMarkID){
+        if(compoundMarks.containsKey(compoundMarkID)){
+            courseOrder.add(compoundMarks.get(compoundMarkID));
+        }
     }
 
     /**
@@ -61,7 +73,7 @@ public class Course {
     }
 
     /**
-     * This function uses heading calculations to find the headings between two marks.
+     * This function uses heading calculations to find the headings between two compoundMarks.
      * @param markIndex1 - the index in the courseOrder array of the source mark
      * @param markIndex2 - the index in the courseOrder array of the destination mark
      * @return heading - in degrees, from source mark to destination mark
@@ -98,11 +110,11 @@ public class Course {
      * This is then added to an ArrayList for future use.
      */
     public void initCourseLatLon() {
-        maxLat = minLat = this.courseOrder.get(0).getLat();
-        maxLon = minLon = this.courseOrder.get(0).getLon();
-
-        for(CompoundMark mark : courseOrder){
-            updateMinMaxLatLon(mark.getLat(), mark.getLon());
+        maxLat = maxLon = -Double.MAX_VALUE;
+        minLat = minLon = Double.MAX_VALUE;
+        for(Integer markId : allMarks.keySet()){
+            Mark mark = allMarks.get(markId);
+            updateMinMaxLatLon(mark.getPosition().getLat(), mark.getPosition().getLon());
         }
         for(Coordinate coord : boundary){
             updateMinMaxLatLon(coord.getLat(), coord.getLon());
@@ -111,12 +123,22 @@ public class Course {
         minLat -= 0.004; minLon -= 0.004; maxLat += 0.004; maxLon += 0.004;
     }
 
+    public void updateMark(int sourceID, double lat, double lon) {
+        if(allMarks.containsKey(sourceID)){
+            Coordinate markCoordinate = allMarks.get(sourceID).getPosition();
+            markCoordinate.setLat(lat);
+            markCoordinate.setLon(lon);
+        } else{
+            System.err.println("Mark source ID not found");
+        }
+    }
+
     public ArrayList<CompoundMark> getCourseOrder(){
         return this.courseOrder;
     }
 
-    public HashMap<Integer, CompoundMark> getMarks() {
-        return marks;
+    public Map<Integer, CompoundMark> getCompoundMarks() {
+        return compoundMarks;
     }
 
     public double getWindDirection() {
@@ -162,4 +184,5 @@ public class Course {
     public void setStartingLine(RaceLine startingLine) {
         this.startingLine = startingLine;
     }
+
 }

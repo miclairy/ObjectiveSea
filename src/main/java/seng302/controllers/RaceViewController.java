@@ -3,7 +3,6 @@ package seng302.controllers;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
@@ -13,7 +12,6 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
-import seng302.utilities.Config;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.TimeUtils;
 import seng302.models.*;
@@ -156,32 +154,23 @@ public class RaceViewController extends AnimationTimer {
      * Handles drawing of all of the marks from the course
      */
     public void drawMarks() {
-        for (CompoundMark mark : race.getCourse().getMarks().values()) {
-            if (mark instanceof Gate || mark instanceof RaceLine) {
-                ArrayList<Coordinate> points = new ArrayList<>();
-                if(mark instanceof Gate){
-                    Gate gate = (Gate) mark;
-                    points.add(gate.getEnd1());
-                    points.add(gate.getEnd2());
-                } else {
-                    RaceLine raceLine = (RaceLine) mark;
-                    points.add(raceLine.getEnd1());
-                    points.add(raceLine.getEnd2());
-
-                    Line line = raceView.createRaceLine(points.get(0), points.get(1));
+        for (CompoundMark compoundMark : race.getCourse().getCompoundMarks().values()) {
+            drawCircleForMark(compoundMark.getMark1());
+            if (compoundMark.hasTwoMarks()) {
+                drawCircleForMark(compoundMark.getMark2());
+                if(compoundMark instanceof RaceLine){
+                    RaceLine raceLine = (RaceLine) compoundMark;
+                    Line line = raceView.createRaceLine(compoundMark.getMark1().getPosition(), compoundMark.getMark2().getPosition());
                     raceLine.setLine(line);
                 }
-                for (Coordinate point : points) {
-                    Circle circle = raceView.createMark(point);
-                    root.getChildren().add(circle);
-                    mark.addIcon(circle);
-                }
-            } else {
-                Circle circle = raceView.createMark(mark.getPosition());
-                root.getChildren().add(circle);
-                mark.addIcon(circle);
             }
         }
+    }
+
+    private void drawCircleForMark(Mark mark) {
+        Circle circle = raceView.createMark(mark.getPosition());
+        root.getChildren().add(circle);
+        mark.setIcon(circle);
     }
 
     /**
@@ -285,37 +274,26 @@ public class RaceViewController extends AnimationTimer {
      * Handles moving of all marks, including redrawing race lines
      */
     private void redrawMarks(){
-        for (CompoundMark mark : race.getCourse().getMarks().values()){
-            if (mark instanceof Gate || mark instanceof RaceLine){
-                ArrayList<Coordinate> points = new ArrayList<>();
-                if(mark instanceof Gate){
-                    Gate gate = (Gate) mark;
-                    points.add(gate.getEnd1());
-                    points.add(gate.getEnd2());
-                } else{
-                    RaceLine raceLine = (RaceLine) mark;
-                    points.add(raceLine.getEnd1());
-                    points.add(raceLine.getEnd2());
-
+        for (CompoundMark compoundMark : race.getCourse().getCompoundMarks().values()){
+            redrawMark(compoundMark.getMark1());
+            if (compoundMark.hasTwoMarks()){
+                redrawMark(compoundMark.getMark2());
+                if(compoundMark instanceof RaceLine){
+                    RaceLine raceLine = (RaceLine) compoundMark;
                     root.getChildren().remove(raceLine.getLine());
-                    Line line = raceView.createRaceLine(points.get(0), points.get(1));
+                    Line line = raceView.createRaceLine(raceLine.getMark1().getPosition(), raceLine.getMark2().getPosition());
                     root.getChildren().add(line);
                     raceLine.setLine(line);
                 }
-                for (int i = 0; i < mark.getIcons().size(); i++) {
-                    CanvasCoordinate convertedPoint = DisplayUtils.convertFromLatLon(points.get(i));
-                    mark.getIcons().get(i).toFront();
-                    mark.getIcons().get(i).setCenterX(convertedPoint.getX());
-                    mark.getIcons().get(i).setCenterY(convertedPoint.getY());
-                }
-            } else {
-                CanvasCoordinate point = DisplayUtils.convertFromLatLon(mark.getLat(), mark.getLon());
-                for (Circle icon : mark.getIcons()) {
-                    icon.setCenterX(point.getX());
-                    icon.setCenterY(point.getY());
-                }
             }
         }
+    }
+
+    private void redrawMark(Mark mark) {
+        CanvasCoordinate convertedPoint = DisplayUtils.convertFromLatLon(mark.getPosition());
+        mark.getIcon().toFront();
+        mark.getIcon().setCenterX(convertedPoint.getX());
+        mark.getIcon().setCenterY(convertedPoint.getY());
     }
 
     /**
@@ -337,14 +315,16 @@ public class RaceViewController extends AnimationTimer {
     public void redrawBoatPaths(){
         for(BoatDisplay boatDisplay : displayBoats){
             Boat boat = boatDisplay.getBoat();
-            CanvasCoordinate pathStart = DisplayUtils.convertFromLatLon(boat.getPathCoords().get(0));
-            boatDisplay.getPath().getElements().clear();
-            boatDisplay.getPath().getElements().add(new MoveTo(pathStart.getX(), pathStart.getY()));
-            for(Coordinate coord : boat.getPathCoords()){
-                CanvasCoordinate currPoint = DisplayUtils.convertFromLatLon(coord);
-                boatDisplay.getPath().getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
+            if(boat.getPathCoords().size() > 0){
+                CanvasCoordinate pathStart = DisplayUtils.convertFromLatLon(boat.getPathCoords().get(0));
+                boatDisplay.getPath().getElements().clear();
+                boatDisplay.getPath().getElements().add(new MoveTo(pathStart.getX(), pathStart.getY()));
+                for(Coordinate coord : boat.getPathCoords()){
+                    CanvasCoordinate currPoint = DisplayUtils.convertFromLatLon(coord);
+                    boatDisplay.getPath().getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
+                }
+                boatDisplay.getPath().toBack();
             }
-            boatDisplay.getPath().toBack();
         }
     }
 

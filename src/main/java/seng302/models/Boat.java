@@ -2,6 +2,7 @@ package seng302.models;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class to encapsulate properties associated with a boat.
@@ -57,7 +58,7 @@ public class Boat implements Comparable<Boat>{
         if(finished){
             return;
         }
-        ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
+        List<CompoundMark> courseOrder = course.getCourseOrder();
         CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
 
         double distanceGained = timePassed * speed;
@@ -67,8 +68,8 @@ public class Boat implements Comparable<Boat>{
         while(distanceGained > distanceLeftInLeg && lastPassedMark < courseOrder.size()-1){
             distanceGained -= distanceLeftInLeg;
             //Set boat position to next mark
-            currentPosition.setLat(nextMark.getLat());
-            currentPosition.setLon(nextMark.getLon());
+            currentPosition.setLat(nextMark.getPosition().getLat());
+            currentPosition.setLon(nextMark.getPosition().getLon());
             lastPassedMark++;
 
             if(lastPassedMark < courseOrder.size()-1){
@@ -85,8 +86,8 @@ public class Boat implements Comparable<Boat>{
         } else{
             //Move the remaining distance in leg
             double percentGained = (distanceGained / distanceLeftInLeg);
-            double newLat = getCurrentLat() + percentGained * (nextMark.getLat() - getCurrentLat());
-            double newLon = getCurrentLon() + percentGained * (nextMark.getLon() - getCurrentLon());
+            double newLat = getCurrentLat() + percentGained * (nextMark.getPosition().getLat() - getCurrentLat());
+            double newLon = getCurrentLon() + percentGained * (nextMark.getPosition().getLon() - getCurrentLon());
             currentPosition.update(newLat, newLon);
         }
     }

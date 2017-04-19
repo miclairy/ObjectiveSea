@@ -137,14 +137,21 @@ public class DataStreamReader implements Runnable{
         int latScaled = byteArrayRangeToInt(body, LATITUDE.getStartIndex(), LATITUDE.getEndIndex());
         int lonScaled = byteArrayRangeToInt(body, LONGITUDE.getStartIndex(), LONGITUDE.getEndIndex());
         int headingScaled = byteArrayRangeToInt(body, HEADING.getStartIndex(), HEADING.getEndIndex());
-        int boatSpeed = byteArrayRangeToInt(body, BOAT_SPEED.getStartIndex(), BOAT_SPEED.getEndIndex());
+        int boatSpeed = byteArrayRangeToInt(body, SPEED_OVER_GROUND.getStartIndex(), SPEED_OVER_GROUND.getEndIndex());
+
+        int deviceType = byteArrayRangeToInt(body, DEVICE_TYPE.getStartIndex(), DEVICE_TYPE.getEndIndex());
 
         double lat = intToLatLon(latScaled);
         double lon = intToLatLon(lonScaled);
         double heading = intToHeading(headingScaled);
-        race.updateBoat(sourceID, lat, lon, heading, (double)boatSpeed);
 
-        System.out.println(sourceID + " " + lat + " " + lon + " " + heading + " " + boatSpeed);
+        if(deviceType == 1){
+            race.updateBoat(sourceID, lat, lon, heading, (double)boatSpeed);
+//            System.out.println(Arrays.toString(body));
+//            System.out.println(boatSpeed);
+        } else if(deviceType == 3){
+            race.updateMark(sourceID, lat, lon);
+        }
     }
 
     /**
@@ -191,7 +198,7 @@ public class DataStreamReader implements Runnable{
                             break;
                         case RACE_STATUS_MESSAGE:
                             int raceStatus = byteArrayRangeToInt(body, RACE_STATUS.getStartIndex(), RACE_STATUS.getEndIndex());
-                            System.out.println(raceStatus);
+                            System.out.println("Race Status: " + raceStatus);
                             break;
                     }
                 } else{

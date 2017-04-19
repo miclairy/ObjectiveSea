@@ -36,11 +36,14 @@ public class Race {
      */
     public void setStartingPositions(){
         RaceLine startingLine = course.getStartingLine();
-        int spaces = competitors.size();
-        double dLat = (startingLine.getEnd2Lat() - startingLine.getEnd1Lat()) / spaces;
-        double dLon = (startingLine.getEnd2Lon() - startingLine.getEnd1Lon()) / spaces;
-        double curLat = startingLine.getEnd1Lat() + dLat;
-        double curLon = startingLine.getEnd1Lon() + dLon;
+        Coordinate startingEnd1 = startingLine.getMark1().getPosition();
+        Coordinate startingEnd2 = startingLine.getMark2().getPosition();
+        Integer spaces = competitors.size();
+        Double dLat = (startingEnd2.getLat() - startingEnd1.getLat()) / spaces;
+        Double dLon = (startingEnd2.getLon() - startingEnd1.getLon()) / spaces;
+
+        Double curLat = startingEnd1.getLat() + dLat;
+        Double curLon = startingEnd1.getLon() + dLon;
         for (Boat boat : competitors){
             boat.setPosition(curLat, curLon);
             boat.setHeading(course.headingsBetweenMarks(0, 1));
@@ -52,7 +55,6 @@ public class Race {
 
     public void updateBoat(Integer sourceID, Double lat, Double lon, Double heading, Double speed){
         if(boatIdMap.containsKey(sourceID)){
-            System.err.println("Boat found");
             Boat boat = boatIdMap.get(sourceID);
             boat.setPosition(lat, lon);
             boat.setHeading(heading);
@@ -60,6 +62,10 @@ public class Race {
         } else{
             System.err.println("Boat source ID not found");
         }
+    }
+
+    public void updateMark(int sourceID, double lat, double lon) {
+        course.updateMark(sourceID, lat, lon);
     }
 
     public List<Boat> getCompetitors() {
@@ -114,6 +120,5 @@ public class Race {
     public double getSecondsBeforeRace() {
         return secondsBeforeRace;
     }
-
 }
 

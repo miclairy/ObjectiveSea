@@ -3,10 +3,6 @@ package seng302.models;
 
 import org.junit.Assert;
 import org.junit.Test;
-import seng302.models.Boat;
-import seng302.models.Course;
-import seng302.models.Race;
-import seng302.models.RaceLine;
 
 import java.util.ArrayList;
 
@@ -18,15 +14,21 @@ public class RaceTest {
     public void setStartingPositionsTest(){
         Course course = new Course();
 
-        RaceLine startLine = new RaceLine("StartLine", 1,20, 10, 40, 30);
+        Mark startLine1 = new Mark(0, "Start Line 1", new Coordinate(20, 10));
+        Mark startLine2 = new Mark(1, "Start Line 2", new Coordinate(40, 30));
+        RaceLine startLine = new RaceLine(1, "Start Line", startLine1, startLine2);
+
         startLine.setMarkAsStart();
         course.setStartingLine(startLine);
 
-        RaceLine finish = new RaceLine("Finish", 2,51.56, 30.12, 51.61, 30.18);
+        Mark finishLine1 = new Mark(2, "Finish Line 1", new Coordinate(51.56, -30.12));
+        Mark finishLine2 = new Mark(3, "Finish Line 2", new Coordinate(51.61, -30.18));
+        RaceLine finish = new RaceLine(2, "Finish", finishLine1, finishLine2);
+
         finish.setMarkAsFinish();
 
-        course.addNewMark(startLine);
-        course.addNewMark(finish);
+        course.addNewCompoundMark(startLine);
+        course.addNewCompoundMark(finish);
 
         course.addMarkInOrder(1);
         course.addMarkInOrder(2);
@@ -53,15 +55,20 @@ public class RaceTest {
     public void checkFinishPlacings(){
         Course course = new Course();
 
-        RaceLine start = new RaceLine("Start", 1,51.55, 30.11, 51.60, 30.16);
+        Mark startLine1 = new Mark(0, "Start Line 1", new Coordinate(51.55, 30.11));
+        Mark startLine2 = new Mark(1, "Start Line 2", new Coordinate(51.60, 30.16));
+        RaceLine start = new RaceLine(1, "Start Line", startLine1, startLine2);
+
         start.setMarkAsStart();
         course.setStartingLine(start);
 
-        RaceLine finish = new RaceLine("Finish", 2,51.56, 30.12, 51.61, 30.18);
+        Mark finishLine1 = new Mark(2, "Finish Line 1", new Coordinate(51.56, 30.12));
+        Mark finishLine2 = new Mark(3, "Finish Line 2", new Coordinate(51.61, 30.18));
+        RaceLine finish = new RaceLine(2, "Finish", finishLine1, finishLine2);
         finish.setMarkAsFinish();
 
-        course.addNewMark(start);
-        course.addNewMark(finish);
+        course.addNewCompoundMark(start);
+        course.addNewCompoundMark(finish);
 
         course.addMarkInOrder(1);
         course.addMarkInOrder(2);
@@ -87,14 +94,18 @@ public class RaceTest {
     public void totalRaceTimeTest(){
         Course course = new Course();
 
-        RaceLine startingLine = new RaceLine("Starting Line", 1,1, 1, 1, 1);
+        Mark startLine1 = new Mark(0, "Start Line 1", new Coordinate(1, 1));
+        Mark startLine2 = new Mark(1, "Start Line 2", new Coordinate(1, 1));
+        RaceLine startingLine = new RaceLine(1, "Start Line", startLine1, startLine2);
         startingLine.setMarkAsStart();
-        course.addNewMark(startingLine);
+        course.addNewCompoundMark(startingLine);
         course.setStartingLine(startingLine);
 
-        RaceLine finishLine = new RaceLine("Finish Line", 2,2, 2, 2, 2);
+        Mark finishLine1 = new Mark(2, "Finish Line 1", new Coordinate(2, 2));
+        Mark finishLine2 = new Mark(3, "Finish Line 2", new Coordinate(2, 2));
+        RaceLine finishLine = new RaceLine(2, "Finish", finishLine1, finishLine2);
         finishLine.setMarkAsFinish();
-        course.addNewMark(finishLine);
+        course.addNewCompoundMark(finishLine);
 
         course.addMarkInOrder(1);
         course.addMarkInOrder(2);

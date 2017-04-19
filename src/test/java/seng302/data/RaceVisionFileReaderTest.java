@@ -4,11 +4,7 @@ package seng302.data;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import seng302.data.RaceVisionFileReader;
-import seng302.models.CompoundMark;
-import seng302.models.Course;
-import seng302.models.Gate;
-import seng302.models.RaceLine;
+import seng302.models.*;
 
 /**
  * Created by Michael Trotter on 3/21/2017.
@@ -23,18 +19,18 @@ public class RaceVisionFileReaderTest {
 
         Assert.assertNotNull(course);
         for (int i = 0; i < expected.getCourseOrder().size(); i++) {
-            assertMarksAreEqual(expected.getCourseOrder().get(i), course.getCourseOrder().get(i));
+            assertCompoundMarksAreEqual(expected.getCourseOrder().get(i), course.getCourseOrder().get(i));
         }
-        for (Integer key : expected.getMarks().keySet()) {
-            assertMarksAreEqual(expected.getMarks().get(key), course.getMarks().get(key));
+        for (Integer key : expected.getCompoundMarks().keySet()) {
+            assertCompoundMarksAreEqual(expected.getCompoundMarks().get(key), course.getCompoundMarks().get(key));
         }
         Assert.assertEquals(expected.getWindDirection(), course.getWindDirection(), 0);
-        Assert.assertTrue(course.getMarks().get("Start").isStartLine());
-        Assert.assertTrue(course.getMarks().get("Finish").isFinishLine());
-        Assert.assertTrue(course.getMarks().get("Start") instanceof RaceLine);
-        Assert.assertTrue(course.getMarks().get("Finish") instanceof RaceLine);
-        Assert.assertTrue(course.getMarks().get("Gate") instanceof Gate);
-        Assert.assertFalse(course.getMarks().get("Mark") instanceof Gate);
+        Assert.assertTrue(course.getCompoundMarks().get("Start").isStartLine());
+        Assert.assertTrue(course.getCompoundMarks().get("Finish").isFinishLine());
+        Assert.assertTrue(course.getCompoundMarks().get("Start") instanceof RaceLine);
+        Assert.assertTrue(course.getCompoundMarks().get("Finish") instanceof RaceLine);
+        Assert.assertTrue(course.getCompoundMarks().get("Gate") != null);
+        Assert.assertFalse(course.getCompoundMarks().get("Mark") != null);
 
         //Boundary
         Assert.assertEquals(course.getBoundary().size(), 3);
@@ -65,14 +61,28 @@ public class RaceVisionFileReaderTest {
     /** This is a clone of the course that testCourse.xml is expected to create */
     private Course createExpectedCourse() {
         Course expected = new Course();
-        RaceLine start = new RaceLine("Start", 1,0, 0, 0, 1);
+
+        Mark startLine1 = new Mark(0, "Start Line 1", new Coordinate(0, 0));
+        Mark startLine2 = new Mark(1, "Start Line 2", new Coordinate(0, 1));
+        RaceLine start = new RaceLine(0, "Start", startLine1, startLine2);
         start.setMarkAsStart();
-        RaceLine finish = new RaceLine("Finish", 2,0, 5, 0, 6);
+
+        Mark finishLine1 = new Mark(2, "Finish Line 1", new Coordinate(0, 5));
+        Mark finishLine2 = new Mark(3, "Finish Line 2", new Coordinate(0, 6));
+        RaceLine finish = new RaceLine(1, "Finish", finishLine1, finishLine2);
         finish.setMarkAsFinish();
-        expected.addNewMark(start);
-        expected.addNewMark(finish);
-        expected.addNewMark(new CompoundMark("Mark", 3,2, 2));
-        expected.addNewMark(new Gate("Gate", 4,3, 3, 4, 4));
+
+        Mark mark1 = new Mark(4, "Mark 1", new Coordinate(2, 2));
+        CompoundMark mark = new CompoundMark(2, "Mark", mark1);
+
+        Mark gate1 = new Mark(3, "Gate 1", new Coordinate(3, 3));
+        Mark gate2 = new Mark(4, "Gate 2", new Coordinate(4, 4));
+        CompoundMark gate = new CompoundMark(3, "Gate", gate1, gate2);
+
+        expected.addNewCompoundMark(start);
+        expected.addNewCompoundMark(finish);
+        expected.addNewCompoundMark(mark);
+        expected.addNewCompoundMark(gate);
         expected.addMarkInOrder(1);
         expected.addMarkInOrder(2);
         expected.addMarkInOrder(3);
@@ -81,25 +91,22 @@ public class RaceVisionFileReaderTest {
         return expected;
     }
 
+    private void assertMarksAreEqual(Mark mark1, Mark mark2){
+        Assert.assertEquals(mark1.getPosition().getLat(), mark2.getPosition().getLat(), 0);
+        Assert.assertEquals(mark1.getPosition().getLon(), mark2.getPosition().getLon(), 0);
+    }
+
     /** Compares two marks for equality */
-    private void assertMarksAreEqual(CompoundMark mark1, CompoundMark mark2){
-        Assert.assertEquals(mark1.getName(), mark2.getName());
-        Assert.assertEquals(mark1.getLat(), mark2.getLat(), 0);
-        Assert.assertEquals(mark1.getLon(), mark2.getLon(), 0);
-        if (mark1 instanceof Gate) {
-            Assert.assertTrue(mark2 instanceof Gate);
-            Gate gate1 = (Gate) mark1;
-            Gate gate2 = (Gate) mark2;
-            Assert.assertEquals(gate1.getEnd1Lat(), gate2.getEnd1Lat(), 0);
-            Assert.assertEquals(gate1.getEnd1Lon(), gate2.getEnd1Lon(), 0);
-            Assert.assertEquals(gate1.getEnd2Lat(), gate2.getEnd2Lat(), 0);
-            Assert.assertEquals(gate1.getEnd2Lon(), gate2.getEnd2Lon(), 0);
-        } else if (mark1 instanceof RaceLine) {
-            Assert.assertTrue(mark2 instanceof RaceLine);
-            RaceLine gate1 = (RaceLine) mark1;
-            RaceLine gate2 = (RaceLine) mark2;
-            Assert.assertEquals(gate1.getEnd2Lat(), gate2.getEnd2Lat(), 0);
-            Assert.assertEquals(gate1.getEnd2Lon(), gate2.getEnd2Lon(), 0);
+    private void assertCompoundMarksAreEqual(CompoundMark compoundMark1, CompoundMark compoundMark2){
+        Assert.assertEquals(compoundMark1.getCompoundMarkID(), compoundMark2.getCompoundMarkID());
+        Assert.assertEquals(compoundMark1.getName(), compoundMark2.getName());
+        assertMarksAreEqual(compoundMark1.getMark1(), compoundMark2.getMark1());
+        Assert.assertEquals(compoundMark1.hasTwoMarks(), compoundMark2.hasTwoMarks());
+        if (compoundMark1.hasTwoMarks()) {
+            assertMarksAreEqual(compoundMark1.getMark2(), compoundMark2.getMark2());
+            if (compoundMark1 instanceof RaceLine) {
+                Assert.assertTrue(compoundMark2 instanceof RaceLine);
+            }
         }
     }
 

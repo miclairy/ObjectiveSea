@@ -43,7 +43,7 @@ public class XMLTags {
 
         //course limit
         public static final String COURSE_LIMIT = "CourseLimit";
-        public static final String LIMIT = "limit";
+        public static final String LIMIT = "Limit";
 
         //timezone
         public static final String TIMEZONE = "timezone";

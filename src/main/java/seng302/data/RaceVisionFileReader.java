@@ -2,7 +2,6 @@ package seng302.data;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
-import seng302.utilities.Config;
 import seng302.models.*;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -95,7 +94,7 @@ public class RaceVisionFileReader {
                             NodeList compoundMarks = element.getElementsByTagName(XMLTags.Course.COMPOUND_MARK);
                             for (int j = 0; j < compoundMarks.getLength(); j++){
                                 CompoundMark mark = parseCompoundMark((Element) compoundMarks.item(j));
-                                course.addNewMark(mark);
+                                course.addNewCompoundMark(mark);
                             }
                             break;
                         case XMLTags.Course.COMPOUND_MARK_SEQUENCE:
@@ -141,43 +140,46 @@ public class RaceVisionFileReader {
         return course;
     }
 
+    private static Mark parseMark(Element markElement){
+        String markName = markElement.getAttribute("Name");
+        Double lat1 = Double.parseDouble(markElement.getAttribute("TargetLat"));
+        Double lon1 = Double.parseDouble(markElement.getAttribute("TargetLng"));
+        Integer sourceId = Integer.parseInt(markElement.getAttribute("SourceID"));
+        Mark mark = new Mark(sourceId, markName, new Coordinate(lat1, lon1));
+        return mark;
+    }
 
     private static CompoundMark parseCompoundMark(Element compoundMarkElement) throws  XMLParseException{
-        CompoundMark mark;
-        Integer markID = Integer.parseInt(compoundMarkElement.getAttribute("CompoundMarkID"));
-
+        CompoundMark compoundMark;
+        Integer compoundMarkID = Integer.parseInt(compoundMarkElement.getAttribute("CompoundMarkID"));
+        String compoundMarkName = compoundMarkElement.getAttribute("Name");
         NodeList markNodes = compoundMarkElement.getElementsByTagName(XMLTags.Course.MARK);
         if (markNodes.getLength() < 1) {
             throw new XMLParseException(XMLTags.Course.MARK, "Required tag was not defined.");
         }
         int numMarks = markNodes.getLength();
         if(numMarks == 2){
-            Element mark1 = (Element) markNodes.item(0);
-            Element mark2 = (Element) markNodes.item(1);
+            Element mark1Element = (Element) markNodes.item(0);
+            Element mark2Element = (Element) markNodes.item(1);
 
-            String markName1 = mark1.getAttribute("Name");
-            double lat1 = Double.parseDouble(mark1.getAttribute("TargetLat"));
-            double lon1 = Double.parseDouble(mark1.getAttribute("TargetLng"));
-            double lat2 = Double.parseDouble(mark2.getAttribute("TargetLat"));
-            double lon2 = Double.parseDouble(mark2.getAttribute("TargetLng"));
+            Mark mark1 = parseMark(mark1Element);
+            Mark mark2 = parseMark(mark2Element);
 
-            mark = new Gate(markName1, markID, lat1, lon1, lat2, lon2);
-
-            if(markName1.toLowerCase().contains("start")){
-                mark.setMarkAsStart();
-            }else if(markName1.toLowerCase().contains("finish")){
-                mark.setMarkAsFinish();
+            if(mark1.getName().toLowerCase().contains("start")){
+                compoundMark = new RaceLine(compoundMarkID, compoundMarkName, mark1, mark2);
+                compoundMark.setMarkAsStart();
+            }else if(mark1.getName().toLowerCase().contains("finish")){
+                compoundMark = new RaceLine(compoundMarkID, compoundMarkName, mark1, mark2);
+                compoundMark.setMarkAsFinish();
+            } else{
+                compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark1, mark2);
             }
-
         }else{
-            Element currMark = (Element) markNodes.item(0);
-            Integer seqID = Integer.parseInt(currMark.getAttribute("SeqID"));
-            String markName = currMark.getAttribute("Name");
-            double lat = Double.parseDouble(currMark.getAttribute("TargetLat"));
-            double lon = Double.parseDouble(currMark.getAttribute("TargetLng"));
-            mark = new CompoundMark(markName, markID, lat, lon);
+            Element markElement = (Element) markNodes.item(0);
+            Mark mark = parseMark(markElement);
+            compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark);
         }
-        return mark;
+        return compoundMark;
     }
 
 //    /**
