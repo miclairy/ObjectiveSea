@@ -142,18 +142,18 @@ public class RaceVisionFileReader {
     }
 
     private static Mark parseMark(Element markElement){
-        String markName = markElement.getAttribute("Name");
-        Double lat1 = Double.parseDouble(markElement.getAttribute("TargetLat"));
-        Double lon1 = Double.parseDouble(markElement.getAttribute("TargetLng"));
-        Integer sourceId = Integer.parseInt(markElement.getAttribute("SourceID"));
+        String markName = markElement.getAttribute(XMLTags.Course.NAME);
+        Double lat1 = Double.parseDouble(markElement.getAttribute(XMLTags.Course.TARGETLAT));
+        Double lon1 = Double.parseDouble(markElement.getAttribute(XMLTags.Course.TARGETLON));
+        Integer sourceId = Integer.parseInt(markElement.getAttribute(XMLTags.Course.SOURCEID));
         Mark mark = new Mark(sourceId, markName, new Coordinate(lat1, lon1));
         return mark;
     }
 
     private static CompoundMark parseCompoundMark(Element compoundMarkElement) throws  XMLParseException{
         CompoundMark compoundMark;
-        Integer compoundMarkID = Integer.parseInt(compoundMarkElement.getAttribute("CompoundMarkID"));
-        String compoundMarkName = compoundMarkElement.getAttribute("Name");
+        Integer compoundMarkID = Integer.parseInt(compoundMarkElement.getAttribute(XMLTags.Course.COMPOUNDMARKID));
+        String compoundMarkName = compoundMarkElement.getAttribute(XMLTags.Course.NAME);
         NodeList markNodes = compoundMarkElement.getElementsByTagName(XMLTags.Course.MARK);
         if (markNodes.getLength() < 1) {
             throw new XMLParseException(XMLTags.Course.MARK, "Required tag was not defined.");
@@ -166,10 +166,10 @@ public class RaceVisionFileReader {
             Mark mark1 = parseMark(mark1Element);
             Mark mark2 = parseMark(mark2Element);
 
-            if(mark1.getName().toLowerCase().contains("start")){
+            if(mark1.getName().toLowerCase().contains(XMLTags.Course.START)){
                 compoundMark = new RaceLine(compoundMarkID, compoundMarkName, mark1, mark2);
                 compoundMark.setMarkAsStart();
-            }else if(mark1.getName().toLowerCase().contains("finish")){
+            }else if(mark1.getName().toLowerCase().contains(XMLTags.Course.FINISH)){
                 compoundMark = new RaceLine(compoundMarkID, compoundMarkName, mark1, mark2);
                 compoundMark.setMarkAsFinish();
             } else{
@@ -329,9 +329,6 @@ public class RaceVisionFileReader {
 //
 //        return starters;
 //    }
-
-
-
 
     /**
      * Manages importing the boats in the race from the correct place

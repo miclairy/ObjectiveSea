@@ -22,14 +22,17 @@ public class XMLTags {
         public static final String RACE = "Race";
         public static final String COURSE = "Course";
 
-        //marks
+        //compound marks
         public static final String COMPOUND_MARK = "CompoundMark";
-        public static final String MARKS = "marks";
         public static final String MARK = "Mark";
-        public static final String NAME = "name";
-        public static final String LATLON = "latlon";
+        public static final String NAME = "Name";
         public static final String LAT = "lat";
         public static final String LON = "lon";
+        public static final String TARGETLAT = "TargetLat";
+        public static final String TARGETLON = "TargetLng";
+        public static final String SOURCEID = "SourceID";
+        public static final String COMPOUNDMARKID = "CompoundMarkID";
+
         //mark attributes
         public static final String START = "start";
         public static final String FINISH = "finish";
