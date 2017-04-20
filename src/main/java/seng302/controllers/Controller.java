@@ -5,8 +5,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -20,6 +22,7 @@ import seng302.models.Course;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -33,35 +36,20 @@ public class Controller implements Initializable {
     @FXML
     public Canvas canvas;
     @FXML
-    private ListView<String> placings;
-    @FXML
-    private GridPane sidePane;
-    @FXML
     private Group root;
     @FXML
     private AnchorPane canvasAnchor;
     @FXML
     private Label fpsLabel;
     @FXML
-    private CheckBox fpsToggle;
-    @FXML
     private ListView<String> startersList;
-    @FXML
-    private ImageView imvCourseOverlay;
-    @FXML
-    private Pane raceClockPane;
-    @FXML
-    private Label raceTimerLabel;
-    @FXML
-    private Slider annotationsSlider;
     @FXML
     private Label clockLabel;
     @FXML
-    private VBox startersOverlay;
+    public VBox startersOverlay;
     @FXML
     private ImageView windDirectionImage;
 
-    private final int PREP_SIGNAL_SECONDS_BEFORE_START = 120; //2 minutes
     //number of from right edge of canvas that the wind arrow will be drawn
     private final int WIND_ARROW_OFFSET = 60;
 
@@ -82,14 +70,19 @@ public class Controller implements Initializable {
     private static double canvasWidth;
     private static String timeZone;
 
+    // Controllers
+    @FXML
     private RaceViewController raceViewController;
-    private boolean raceBegun;
+    @FXML
+    private ScoreBoardController scoreBoardController = new ScoreBoardController();
+
+    public boolean raceBegun;
     private double secondsElapsed = 0;
     private Race race;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        placings.setItems(formattedDisplayOrder);
+
         canvasWidth = canvas.getWidth();
         canvasHeight = canvas.getHeight();
 
@@ -101,7 +94,7 @@ public class Controller implements Initializable {
         race.setTotalRaceTime();
 
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
-        raceViewController = new RaceViewController(root, race, this);
+        raceViewController = new RaceViewController(root, race, this, scoreBoardController);
 
         canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
             canvasWidth = (double) newValue;
@@ -116,41 +109,21 @@ public class Controller implements Initializable {
             raceViewController.redrawBoatPaths();
         });
 
-        setupAnnotationControl();
+
+        scoreBoardController.setControllers(this, raceViewController, race);
+        scoreBoardController.setUp();
+
         fpsString.set("..."); //set to "..." while fps count loads
         fpsLabel.textProperty().bind(fpsString);
         totalRaceTime = race.getTotalRaceTime();
         secondsBeforeRace = race.getSecondsBeforeRace();
         secondsElapsed -= secondsBeforeRace;
-        raceTimerLabel.textProperty().bind(raceTimerString);
         clockLabel.textProperty().bind(clockString);
-
 
         setWindDirection();
         startersOverlay.toFront();
         displayStarters();
         raceViewController.start();
-    }
-
-    /**
-     * Called from the RaceViewController handle if the race has not yet begun (the boats are not moving)
-     * Handles the starters Overlay and timing for the boats to line up on the start line
-     * @param currentTime the current time
-     * @param raceStartTime the time at which the race will begin and pre-race ends
-     */
-    public void handlePrerace(double currentTime, double raceStartTime){
-        double overlayFadeTime = (raceStartTime - PREP_SIGNAL_SECONDS_BEFORE_START);
-        if (currentTime > overlayFadeTime && startersOverlay.isVisible()) {
-            hideStarterOverlay();
-            raceViewController.initializeBoats();
-        }
-        if (currentTime >= raceStartTime) {
-            raceBegun = true;
-            for (Boat boat : race.getCompetitors()){
-                boat.maximiseSpeed();
-            }
-            raceViewController.changeAnnotations((int) annotationsSlider.getValue(), true);
-        }
     }
 
     /**
@@ -161,20 +134,6 @@ public class Controller implements Initializable {
         windDirectionImage.setX(canvasWidth - WIND_ARROW_OFFSET);
         windDirectionImage.setRotate(windDirection);
         raceViewController.setCurrentWindArrow(windDirectionImage);
-    }
-
-    /**
-     * Set up a listener for the annotation slider so that we can keep the annotations on the boats up to date with
-     * the user's selection
-     */
-    private void setupAnnotationControl() {
-        annotationsSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                raceViewController.changeAnnotations(newValue.intValue(), false);
-            }
-        });
-        annotationsSlider.adjustValue(annotationsSlider.getMax());
     }
 
     /**
@@ -253,12 +212,8 @@ public class Controller implements Initializable {
     }
 
 
-    @FXML
-    /**
-     * Called from the GUI when the fpsToggle checkbox is clicked. Updates visibility of fpsLabel.
-     */
-    private void fpsToggle(){
-        fpsLabel.setVisible(fpsToggle.isSelected());
+    public void fpsLabel(Boolean visible){
+        fpsLabel.setVisible(visible);
     }
 
     /**
@@ -286,5 +241,9 @@ public class Controller implements Initializable {
 
     public static double getCanvasWidth() {
         return canvasWidth;
+    }
+
+    public ObservableList<String> getFormattedDisplayOrder(){
+        return formattedDisplayOrder;
     }
 }

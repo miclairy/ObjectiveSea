@@ -41,6 +41,7 @@ public class RaceViewController extends AnimationTimer {
     private Group root;
     private Controller controller;
     private RaceView raceView;
+    private ScoreBoardController scoreBoardController;
     private ArrayList<BoatDisplay> displayBoats = new ArrayList<>();
 
     private double previousTime = 0;
@@ -52,11 +53,12 @@ public class RaceViewController extends AnimationTimer {
     //number of pixelsfrom right edge of canvas that the wind arrow will be drawn
     private final int WIND_ARROW_OFFSET = 60;
 
-    public RaceViewController(Group root, Race race, Controller controller) {
+    public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
         this.root = root;
         this.race = race;
         this.controller = controller;
         this.raceView = new RaceView();
+        this.scoreBoardController = scoreBoardController;
         drawCourse();
     }
 
@@ -82,7 +84,7 @@ public class RaceViewController extends AnimationTimer {
 
         if (!controller.hasRaceBegun()) {
             scaledSecondsElapsed = 0;
-            controller.handlePrerace(currentTimeInSeconds, race.getSecondsBeforeRace());
+            scoreBoardController.handlePrerace(currentTimeInSeconds, race.getSecondsBeforeRace());
         }
 
         run(scaledSecondsElapsed);
