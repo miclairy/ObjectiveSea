@@ -196,6 +196,7 @@ public class RaceViewController extends AnimationTimer {
             annotation.setY(point.getY() + ANNOTATION_OFFSET_Y);
             displayBoat.setAnnotation(annotation);
             root.getChildren().add(annotation);
+            displayBoat.getAnnotation().toFront();
     }
 
     /**
@@ -284,6 +285,7 @@ public class RaceViewController extends AnimationTimer {
                     Line line = raceView.createRaceLine(raceLine.getMark1().getPosition(), raceLine.getMark2().getPosition());
                     root.getChildren().add(line);
                     raceLine.setLine(line);
+                    raceLine.getLine().toBack();
                 }
             }
         }
@@ -294,6 +296,7 @@ public class RaceViewController extends AnimationTimer {
         mark.getIcon().toFront();
         mark.getIcon().setCenterX(convertedPoint.getX());
         mark.getIcon().setCenterY(convertedPoint.getY());
+        mark.getIcon().toBack();
     }
 
     /**
@@ -306,6 +309,7 @@ public class RaceViewController extends AnimationTimer {
             boundary.getPoints().add(point.getX());
             boundary.getPoints().add(point.getY());
         }
+        boundary.toBack();
     }
 
     /**
