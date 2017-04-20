@@ -201,7 +201,7 @@ public class Controller implements Initializable {
             if(raceOrder.get(i).isFinished()){
                 displayString += "Finished!";
             } else{
-                displayString += boat.getSpeed() + " knots";
+                displayString += String.format("%.3f knots", boat.getSpeed());
             }
             formattedDisplayOrder.add(displayString);
         }

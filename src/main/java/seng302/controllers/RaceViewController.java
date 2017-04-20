@@ -31,7 +31,7 @@ public class RaceViewController extends AnimationTimer {
         NO_ANNOTATION, NAME_ANNOTATIONS, ALL_ANNOTATIONS
     }
 
-    private final double WAKE_SCALE_FACTOR = 50;
+    private final double WAKE_SCALE_FACTOR = 17;
     private final double ANNOTATION_OFFSET_X = 10;
     private final double ANNOTATION_OFFSET_Y = 15;
 
@@ -82,18 +82,14 @@ public class RaceViewController extends AnimationTimer {
             controller.handlePrerace(currentTimeInSeconds, race.getSecondsBeforeRace());
         }
 
-        run(scaledSecondsElapsed);
+        run();
         previousTime = currentTime;
    }
 
     /**
      * Body of main loop of animation
-     * @param secondsElapsed Seconds since the last call to run
      */
-    private void run(double secondsElapsed){
-        for (Boat boat : race.getCompetitors()){
-            boat.updateLocation(TimeUtils.convertSecondsToHours(secondsElapsed), race.getCourse());
-        }
+    private void run(){
         for (BoatDisplay boat: displayBoats) {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
             addToBoatPath(boat, point);
@@ -101,6 +97,7 @@ public class RaceViewController extends AnimationTimer {
             moveBoat(boat, point);
             moveBoatAnnotation(boat.getAnnotation(), point);
         }
+        changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
     }
 
@@ -188,15 +185,15 @@ public class RaceViewController extends AnimationTimer {
      * @param annotationText the text to put in the annotation
      */
     private void drawBoatAnnotation(BoatDisplay displayBoat, String annotationText){
-            CanvasCoordinate point = DisplayUtils.convertFromLatLon(displayBoat.getBoat().getCurrentPosition());
-            Text annotation = new Text();
-            annotation.setText(annotationText);
-            annotation.setId("annotation");
-            annotation.setX(point.getX() + ANNOTATION_OFFSET_X);
-            annotation.setY(point.getY() + ANNOTATION_OFFSET_Y);
-            displayBoat.setAnnotation(annotation);
-            root.getChildren().add(annotation);
-            displayBoat.getAnnotation().toFront();
+        CanvasCoordinate point = DisplayUtils.convertFromLatLon(displayBoat.getBoat().getCurrentPosition());
+        Text annotation = new Text();
+        annotation.setText(annotationText);
+        annotation.setId("annotation");
+        annotation.setX(point.getX() + ANNOTATION_OFFSET_X);
+        annotation.setY(point.getY() + ANNOTATION_OFFSET_Y);
+        displayBoat.setAnnotation(annotation);
+        root.getChildren().add(annotation);
+        displayBoat.getAnnotation().toFront();
     }
 
     /**
@@ -359,7 +356,7 @@ public class RaceViewController extends AnimationTimer {
                     String annotationText = boatName;
                     drawBoatAnnotation(displayBoat, annotationText);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
-                    String annotationText = boatName + ", " + displayBoat.getBoat().getSpeed() + "kn";
+                    String annotationText = String.format("%s, %.1fkn", boatName, displayBoat.getBoat().getSpeed());
                     drawBoatAnnotation(displayBoat, annotationText);
                 }
             }

@@ -144,14 +144,17 @@ public class DataStreamReader implements Runnable{
         double lat = intToLatLon(latScaled);
         double lon = intToLatLon(lonScaled);
         double heading = intToHeading(headingScaled);
+        double speedInKnots = convertToKnots(boatSpeed);
 
         if(deviceType == 1){
-            race.updateBoat(sourceID, lat, lon, heading, (double)boatSpeed);
-//            System.out.println(Arrays.toString(body));
-//            System.out.println(boatSpeed);
+            race.updateBoat(sourceID, lat, lon, heading, speedInKnots);
         } else if(deviceType == 3){
             race.updateMark(sourceID, lat, lon);
         }
+    }
+
+    private double convertToKnots(int boatSpeed) {
+        return ((boatSpeed / 1e6) * 3600) / 1.852;
     }
 
     /**
