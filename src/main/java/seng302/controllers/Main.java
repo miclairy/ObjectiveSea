@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
+import seng302.data.DataStreamReader;
 import seng302.utilities.Config;
 import seng302.data.RaceVisionFileReader;
 import seng302.models.Boat;
@@ -17,8 +18,6 @@ import seng302.models.Course;
 import seng302.models.Race;
 
 import java.util.ArrayList;
-
-
 
 public class Main extends Application {
 
@@ -30,6 +29,10 @@ public class Main extends Application {
     @Override
     public void init(){
         Config.initializeConfig();
+
+        DataStreamReader dataStreamReader = new DataStreamReader(Config.SOURCE_ADDRESS, Config.SOURCE_PORT);
+        Thread dataStreamReaderThread = new Thread(dataStreamReader);
+        dataStreamReaderThread.start();
 
         String courseFile = getParameters().getNamed().get("course");
         String boatsFile = getParameters().getNamed().get("boats");

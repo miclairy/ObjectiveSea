@@ -89,7 +89,6 @@ public class Boat implements Comparable<Boat>{
         }
     }
 
-
     public int compareTo(Boat otherBoat){
         return otherBoat.getLastPassedMark() - lastPassedMark;
     }
