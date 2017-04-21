@@ -92,12 +92,6 @@ public class Boat implements Comparable<Boat>{
         }
     }
 
-    public double VMG(double boatSpeed, double TWA){
-        double VMG = boatSpeed * Math.cos(Math.toRadians(TWA));
-        return VMG;
-    }
-
-
     public int compareTo(Boat otherBoat){
         return otherBoat.getLastPassedMark() - lastPassedMark;
     }

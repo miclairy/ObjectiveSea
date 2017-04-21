@@ -1,8 +1,5 @@
 package seng302.data;
 
-/**
- * Created by raych on 17/04/2017.
- */
 enum AC35StreamField {
     MESSAGE_LENGTH(13, 15), MESSAGE_TYPE(2, 3), RACE_STATUS(11, 12),
     XML_SUBTYPE(9, 10), XML_LENGTH(12, 14), XML_BODY(14, 14),

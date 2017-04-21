@@ -8,9 +8,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 
-/**
- * Created by raych on 17/04/2017.
- */
 public class DataStreamReaderTest {
     private static ServerSocket testFeedSocket;
 
@@ -36,6 +33,11 @@ public class DataStreamReaderTest {
 
         Assert.assertEquals(TEST_FEED_PORT, testReader.getClientSocket().getPort());
         Assert.assertEquals(TEST_FEED_ADDRESS, address.getHostAddress());
+    }
+
+    @Test
+    public void readXMLTest() throws IOException{
+        //Test when integrating data generation
     }
 
     @Test
