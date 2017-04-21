@@ -40,6 +40,8 @@ public class Controller implements Initializable {
     @FXML
     private AnchorPane canvasAnchor;
     @FXML
+    private AnchorPane rightHandSide;
+    @FXML
     private Label fpsLabel;
     @FXML
     private ListView<String> startersList;
@@ -82,6 +84,8 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+
 
         canvasWidth = canvas.getWidth();
         canvasHeight = canvas.getHeight();
