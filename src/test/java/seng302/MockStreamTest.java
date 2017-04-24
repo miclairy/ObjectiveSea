@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static junit.framework.TestCase.assertEquals;
+import static seng302.data.AC35StreamField.BOAT_SPEED;
 
 
 public class MockStreamTest {
@@ -21,11 +22,10 @@ public class MockStreamTest {
     public void checkUpstreamIsSending(){
 
         try {
-            ServerSocket recieveSocket = new ServerSocket(2827);
             MockStream mockStream = new MockStream(2827);
             Thread upStream = new Thread(mockStream);
             upStream.start();
-            Socket connectionSocket = recieveSocket.accept();
+            Socket connectionSocket = new Socket("localhost", 2827);
             assertEquals(71, connectionSocket.getInputStream().read());
 
         } catch (SocketException e) {
@@ -39,11 +39,10 @@ public class MockStreamTest {
     @Test
     public void sendRaceXmlTest(){
         try {
-            ServerSocket recieveSocket = new ServerSocket(2829);
             MockStream mockStream = new MockStream(2829);
             Thread upStream = new Thread(mockStream);
             upStream.start();
-            Socket connectionSocket = recieveSocket.accept();
+            Socket connectionSocket = new Socket("localhost", 2829);
             InputStream stream = connectionSocket.getInputStream();
             DataInputStream dataInputStream = new DataInputStream(stream);
             byte[] header = new byte[15];
@@ -79,11 +78,10 @@ public class MockStreamTest {
     @Test
     public void sendBodyXmlTest(){
         try {
-            ServerSocket recieveSocket = new ServerSocket(2825);
             MockStream mockStream = new MockStream(2825);
             Thread upStream = new Thread(mockStream);
             upStream.start();
-            Socket connectionSocket = recieveSocket.accept();
+            Socket connectionSocket = new Socket("localhost", 2825);
             InputStream stream = connectionSocket.getInputStream();
             DataInputStream dataInputStream = new DataInputStream(stream);
 
@@ -127,11 +125,10 @@ public class MockStreamTest {
     public void sendBoatLocationTest(){
 
         try {
-            ServerSocket recieveSocket = new ServerSocket(2824);
             MockStream mockStream = new MockStream(2824);
             Thread upStream = new Thread(mockStream);
             upStream.start();
-            Socket connectionSocket = recieveSocket.accept();
+            Socket connectionSocket = new Socket("localhost", 2824);
             InputStream stream = null;
             stream = connectionSocket.getInputStream();
             int readByte = stream.read();
@@ -150,7 +147,7 @@ public class MockStreamTest {
             assertEquals(1, body[7]);
             assertEquals(0, body[24]);
             assertEquals(0, body[28]);
-            assertEquals((int) (33.0 * 514.444), ((body[34] & 0xFF) << 8) + (body[33] & 0xFF));
+            assertEquals((int) (33.0 * 514.444), ((body[BOAT_SPEED.getEndIndex()-1] & 0xFF) << 8) + (body[BOAT_SPEED.getStartIndex()] & 0xFF));
 
         } catch (IOException e) {
             e.printStackTrace();

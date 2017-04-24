@@ -119,7 +119,8 @@ public class DataStreamReader implements Runnable{
         } else if(xmlSubtype == BOAT_XML_SUBTYPE){
             outputFilePath += BOAT_FILE_NAME;
         } else {
-            throw new IOException("Unrecognised XML subtype");
+            //throw new IOException("Unrecognised XML subtype");
+            outputFilePath += "dump.xml";
         }
 
         FileWriter outputFileWriter = new FileWriter(outputFilePath);
@@ -133,7 +134,7 @@ public class DataStreamReader implements Runnable{
      * @param body the byte array containing the boat location message
      */
     private void parseBoatLocationMessage(byte[] body) {
-        int sourceID = byteArrayRangeToInt(body, SOURCE_ID.getStartIndex(), SOURCE_ID.getEndIndex());
+        int sourceID = byteArrayRangeToInt(body, BOAT_SOURCE_ID.getStartIndex(), BOAT_SOURCE_ID.getEndIndex());
         int latScaled = byteArrayRangeToInt(body, LATITUDE.getStartIndex(), LATITUDE.getEndIndex());
         int lonScaled = byteArrayRangeToInt(body, LONGITUDE.getStartIndex(), LONGITUDE.getEndIndex());
         int headingScaled = byteArrayRangeToInt(body, HEADING.getStartIndex(), HEADING.getEndIndex());

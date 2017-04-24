@@ -1,6 +1,6 @@
 package seng302.controllers;
 
-
+import seng302.data.AC35StreamField;
 import seng302.data.RaceVisionFileReader;
 import seng302.models.*;
 import java.io.*;
@@ -13,27 +13,37 @@ import java.util.*;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
+import static seng302.data.AC35StreamField.*;
+
 public class MockStream implements Runnable {
 
-    private List<Boat> boatsInRace;
-    private double heading = 0;
-    private double speed;
-    private Course course;
-    private int port;
-    private Socket clientSocket;
-    private DataOutputStream outToServer;
     private final int SOURCE_ID = 28;
     private final int HEADER_LENGTH = 15;
     private final int BOAT_LOCATION_LENGTH = 56;
+
+    private final double KNOTS_TO_MMS_MULTIPLIER = 514.444;
+
+    private DataOutputStream outToServer;
+    private int port;
+    private Socket clientSocket;
+
     private Map<String, Integer> messageTypes = new HashMap<>();
     private Map<String, Integer> xmlMessageTypes = new HashMap<>();
     private Map<Integer, Integer> xmlSequenceNumber = new HashMap<>();
     private Map<Boat, Integer> boatSequenceNumbers = new HashMap<>();
+    private List<Boat> boatsInRace;
+    private double heading = 0;
+    private double speed;
+    private Course course;
 
     public MockStream(int port){
         this.port = port;
     }
 
+    /**
+     * Creates the server socket, sets up message maps and blocks until a client has connected
+     * @throws IOException
+     */
     public void initialize() throws IOException  {
         ServerSocket server = new ServerSocket(port);
         boatsInRace = RaceVisionFileReader.importStarters(null);
@@ -71,27 +81,15 @@ public class MockStream implements Runnable {
             sendXmlMessage("Boat", "Boat.xml");
 
             Boolean notFinished = true;
-            byte[] body = initialiseLocationPacket();
             while (notFinished) {
                 for (Boat boat : boatsInRace) {
                     notFinished = false;
                     Coordinate location = updateLocation(boat, secTimePassed, course);
-                    int lat = (int) Math.round(location.getLat() * Math.pow(2, 31) / 180);
-                    int lon = (int) Math.round(location.getLon() * Math.pow(2, 31) / 180);
                     if (location != null) {
                         notFinished = true;
                         byte[] header = createHeader(messageTypes.get("BoatLocation"));
                         outToServer.write(header);
-
-                        body = addIntIntoByteArray(body, 1, (int) Instant.now().toEpochMilli(),6);
-                        body = addIntIntoByteArray(body, 7, boat.getId(), 4);
-                        body = addIntIntoByteArray(body, 10, boatSequenceNumbers.get(boat),4);
-                        boatSequenceNumbers.put(boat, boatSequenceNumbers.get(boat) + 1);
-                        body = addIntIntoByteArray(body, 16, lat, 4);
-                        body = addIntIntoByteArray(body, 20, lon, 4);
-                        body = addIntIntoByteArray(body, 28, (int) (heading * Math.pow(2, 16) / 360), 2);
-                        // multiplied by 514.444 to convert knots to mm/s
-                        body = addIntIntoByteArray(body, 33, (int) (speed * 514.444), 2); //change start to 37 instead to move to SOG place?
+                        byte[] body = createBoatLocationMessage(boat, location);
                         outToServer.write(body);
                         sendCRC(header, body);
                     }
@@ -115,6 +113,30 @@ public class MockStream implements Runnable {
     }
 
     /**
+     * Builds a byte array representing a boat location message
+     * @param boat the boat that is the subject of the message
+     * @param location the boats current location
+     * @return a byte array representing the boat location message
+     */
+    private byte[] createBoatLocationMessage(Boat boat, Coordinate location) {
+        byte[] body = initialiseLocationPacket();
+
+        int currentSequenceNumber = boatSequenceNumbers.get(boat);
+        boatSequenceNumbers.put(boat, currentSequenceNumber + 1); //increment sequence number
+
+        int lat = (int) Math.round(location.getLat() * Math.pow(2, 31) / 180);
+        int lon = (int) Math.round(location.getLon() * Math.pow(2, 31) / 180);
+        addFieldToByteArray(body, BOAT_TIMESTAMP,(int) Instant.now().toEpochMilli());
+        addFieldToByteArray(body, BOAT_SOURCE_ID, boat.getId());
+        addFieldToByteArray(body, BOAT_SEQUENCE_NUM, currentSequenceNumber);
+        addFieldToByteArray(body, LATITUDE, lat);
+        addFieldToByteArray(body, LONGITUDE, lon);
+        addFieldToByteArray(body, HEADING, (int) (heading * Math.pow(2, 16) / 360));
+        addFieldToByteArray(body, BOAT_SPEED, (int) (speed * KNOTS_TO_MMS_MULTIPLIER)); //BOAT_SPEED may need to be changed to use SOG
+        return body;
+    }
+
+    /**
      * Sends an xml message type to the socket including the header, body and CRC
      * @param type subtype of the xml message
      * @param fileName name of the file to send
@@ -122,7 +144,7 @@ public class MockStream implements Runnable {
     private void sendXmlMessage(String type, String fileName){
         byte[] header = createHeader(messageTypes.get("XmlMessage"));
         byte[] xmlBody = generateXmlBody(xmlMessageTypes.get(type), fileName);
-        header = addIntIntoByteArray(header, 13, xmlBody.length,2);
+        addIntIntoByteArray(header, 13, xmlBody.length,2);
         try {
             outToServer.write(header);
             outToServer.write(xmlBody);
@@ -144,17 +166,21 @@ public class MockStream implements Runnable {
         Path racePath = Paths.get(raceStrPath);
 
         try {
+            int sequenceNumber = xmlSequenceNumber.get(subType) + 1; //increment sequence number
+            xmlSequenceNumber.put(subType, sequenceNumber);
+
             byte[] bodyContent = Files.readAllBytes(racePath);
-            byte[] body = new byte[14 + bodyContent.length];
-            body[0] = 1;
-            body = addIntIntoByteArray(body, 1, 1, 2);
-            body = addIntIntoByteArray(body, 3, (int) Instant.now().toEpochMilli(), 6);
-            body[10] = (byte) subType;
-            xmlSequenceNumber.put(subType, xmlSequenceNumber.get(subType) + 1);
-            body = addIntIntoByteArray(body, 11, xmlSequenceNumber.get(subType), 2);
-            body = addIntIntoByteArray(body, 12, bodyContent.length, 2);
-            for (int i = 0; i < body.length - 14; i++){
-                body[i + 14] = bodyContent[i];
+            byte[] body = new byte[XML_BODY.getStartIndex() + bodyContent.length];
+
+            addFieldToByteArray(body, XML_VERSION, 1);
+            addFieldToByteArray(body, XML_ACK, 1);
+            addFieldToByteArray(body, XML_TIMESTAMP, (int) Instant.now().toEpochMilli());
+            addFieldToByteArray(body, XML_SUBTYPE, subType);
+            addFieldToByteArray(body, XML_SEQUENCE, sequenceNumber);
+            addFieldToByteArray(body, XML_LENGTH, bodyContent.length);
+
+            for (int i = 0; i < bodyContent.length; i++){
+                body[i + XML_BODY.getStartIndex()] = bodyContent[i];
             }
             return body;
         } catch (IOException e) {
@@ -171,15 +197,15 @@ public class MockStream implements Runnable {
      * @return a byte array of the header
      */
     private byte[] createHeader(int type) {
-
         byte[] header = new byte[HEADER_LENGTH];
-        header[0] = 0x47;
-        header[1] = (byte) 0x83; 
-        header[2] = (byte) type;
-        header = addIntIntoByteArray(header, 3, (int) Instant.now().toEpochMilli(),6);
-        header = addIntIntoByteArray(header, 9, SOURCE_ID,4); //source id
+
+        header[0] = (byte) 0x47; //first sync byte
+        header[1] = (byte) 0x83; //second sync byte
+        addFieldToByteArray(header, MESSAGE_TYPE, type);
+        addFieldToByteArray(header, HEADER_TIMESTAMP, (int) Instant.now().toEpochMilli());
+        addFieldToByteArray(header, HEADER_SOURCE_ID, SOURCE_ID);
         if (type == messageTypes.get("BoatLocation")) {
-            header = addIntIntoByteArray(header, 13, BOAT_LOCATION_LENGTH, 2); //message length
+            addFieldToByteArray(header, MESSAGE_LENGTH, BOAT_LOCATION_LENGTH);
         }
         return header;
     }
@@ -202,7 +228,9 @@ public class MockStream implements Runnable {
         }
         crc.update(toCRC, 0, toCRC.length);
         try {
-            outToServer.write(addIntIntoByteArray(new byte[CRC_LENGTH], 0, (int) crc.getValue(), CRC_LENGTH));
+            byte[] crcArray = new byte[CRC_LENGTH];
+            addIntIntoByteArray(crcArray, 0, (int) crc.getValue(), CRC_LENGTH);
+            outToServer.write(crcArray);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -222,21 +250,27 @@ public class MockStream implements Runnable {
     }
 
     /**
+     * Simplifier function for adding stream field to byte array
+     * @param array array which to add the int
+     * @param field the AC35StreamField field to add
+     * @param item the item to add
+     */
+    private void addFieldToByteArray(byte[] array, AC35StreamField field, int item){
+        addIntIntoByteArray(array, field.getStartIndex(), item, field.getLength());
+    }
+
+    /**
      * Splits an integer into a few bytes and adds it to a byte array
      * @param array array which to add the int
      * @param start index it start adding
      * @param item item to add
      * @param numBytes number of bytes to split the int into
-     * @return the byte array with the item added.
      */
-    private byte[] addIntIntoByteArray(byte[] array, int start, int item, int numBytes){
+    private void addIntIntoByteArray(byte[] array, int start, int item, int numBytes){
         for (int i = 0; i < numBytes; i ++) {
             array[start + i] = (byte) (item >> i * 8);
         }
-
-        return array;
     }
-
 
     /**
      * Updates the boat's coordinates by how much it moved in timePassed hours on the course
