@@ -84,7 +84,7 @@ public class BoatTest
 
         assertEquals(50.01193918885366, boat.getCurrentLat(), DELTA);
         assertEquals(30.50023410174223, boat.getCurrentLon(), DELTA);
-        assertEquals( 1, boat.getLastPassedMark());
+        assertEquals( 1, boat.getLastRoundedMarkIndex());
     }
 
 

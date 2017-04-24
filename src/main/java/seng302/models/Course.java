@@ -14,7 +14,7 @@ public class Course {
     private double minLat, minLon, maxLat, maxLon;
     private Map<Integer, CompoundMark> compoundMarks;
     private double windDirection;
-    private RaceLine startingLine;
+    private RaceLine startLine, finishLine;
     private String timeZone;
     private Map<Integer, Mark> allMarks;
 
@@ -30,9 +30,6 @@ public class Course {
      * @param compoundMark - a defined CompoundMark object
      */
     public void addNewCompoundMark(CompoundMark compoundMark){
-        //TODO: Find out why there's repeated compound marks with different compound mark ids
-        if(allMarks.containsKey(compoundMark.getMark1().getSourceID())) return;
-
         compoundMarks.put(compoundMark.getCompoundMarkID(), compoundMark);
         Mark mark1 = compoundMark.getMark1();
         allMarks.put(mark1.getSourceID(), mark1);
@@ -128,8 +125,6 @@ public class Course {
             Coordinate markCoordinate = allMarks.get(sourceID).getPosition();
             markCoordinate.setLat(lat);
             markCoordinate.setLon(lon);
-        } else{
-            System.err.println("Mark source ID not found");
         }
     }
 
@@ -177,12 +172,23 @@ public class Course {
         return boundary;
     }
 
-    public RaceLine getStartingLine() {
-        return startingLine;
+    public RaceLine getStartLine() {
+        return startLine;
     }
 
-    public void setStartingLine(RaceLine startingLine) {
-        this.startingLine = startingLine;
+    public void setStartLine(RaceLine startLine) {
+        this.startLine = startLine;
     }
 
+    public Map<Integer, Mark> getAllMarks() {
+        return Collections.unmodifiableMap(allMarks);
+    }
+
+    public void setFinishLine(RaceLine finishLine) {
+        this.finishLine = finishLine;
+    }
+
+    public RaceLine getFinishLine() {
+        return finishLine;
+    }
 }

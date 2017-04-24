@@ -99,9 +99,15 @@ public class RaceVisionFileReader {
                             break;
                         case XMLTags.Course.COMPOUND_MARK_SEQUENCE:
                             NodeList legs = element.getElementsByTagName(XMLTags.Course.CORNER);
+                            Map<Integer, Integer> markOrder = new TreeMap<>();
                             for (int k = 0; k < legs.getLength(); k++) {
                                 Element corner = (Element) legs.item(k);
-                                course.addMarkInOrder(Integer.parseInt(corner.getAttribute("CompoundMarkID")));
+                                Integer seqNumber = Integer.parseInt(corner.getAttribute("SeqID"));
+                                Integer compoundMarkID = Integer.parseInt(corner.getAttribute("CompoundMarkID"));
+                                markOrder.put(seqNumber, compoundMarkID);
+                            }
+                            for(Integer seqNumber : markOrder.keySet()){
+                                course.addMarkInOrder(markOrder.get(seqNumber));
                             }
                             break;
                         case XMLTags.Course.WIND:
@@ -129,12 +135,16 @@ public class RaceVisionFileReader {
             throw new InputMismatchException("There must be at least one leg in the course.");
         }
 
-        if(!course.getCourseOrder().get(0).isStartLine()){
+        if(course.getCourseOrder().get(0).isStartLine()){
+            course.setStartLine((RaceLine) course.getCourseOrder().get(0));
+        } else{
             throw new InputMismatchException("The first leg of the course must start at the start line.");
         }
 
         int lastMarkIndex = course.getCourseOrder().size() - 1;
-        if(!course.getCourseOrder().get(lastMarkIndex).isFinishLine()){
+        if(course.getCourseOrder().get(lastMarkIndex).isFinishLine()){
+            course.setFinishLine((RaceLine) course.getCourseOrder().get(lastMarkIndex));
+        } else{
             throw new InputMismatchException("The last leg of the course must end at the finish line.");
         }
 

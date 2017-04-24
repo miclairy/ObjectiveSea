@@ -19,7 +19,7 @@ public class RaceTest {
         RaceLine startLine = new RaceLine(1, "Start Line", startLine1, startLine2);
 
         startLine.setMarkAsStart();
-        course.setStartingLine(startLine);
+        course.setStartLine(startLine);
 
         Mark finishLine1 = new Mark(2, "Finish Line 1", new Coordinate(51.56, -30.12));
         Mark finishLine2 = new Mark(3, "Finish Line 2", new Coordinate(51.61, -30.18));
@@ -60,7 +60,7 @@ public class RaceTest {
         RaceLine start = new RaceLine(1, "Start Line", startLine1, startLine2);
 
         start.setMarkAsStart();
-        course.setStartingLine(start);
+        course.setStartLine(start);
 
         Mark finishLine1 = new Mark(2, "Finish Line 1", new Coordinate(51.56, 30.12));
         Mark finishLine2 = new Mark(3, "Finish Line 2", new Coordinate(51.61, 30.18));
@@ -99,7 +99,7 @@ public class RaceTest {
         RaceLine startingLine = new RaceLine(1, "Start Line", startLine1, startLine2);
         startingLine.setMarkAsStart();
         course.addNewCompoundMark(startingLine);
-        course.setStartingLine(startingLine);
+        course.setStartLine(startingLine);
 
         Mark finishLine1 = new Mark(2, "Finish Line 1", new Coordinate(2, 2));
         Mark finishLine2 = new Mark(3, "Finish Line 2", new Coordinate(2, 2));

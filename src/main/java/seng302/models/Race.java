@@ -19,6 +19,7 @@ public class Race {
 
     private double totalRaceTime;
     private double secondsBeforeRace = 0; //extra time in seconds to allow the race to begin and end smoothly
+    private int raceStatus;
 
     public Race(String name, Course course, List<Boat> competitors) {
         this.name = name;
@@ -29,13 +30,14 @@ public class Race {
         for(Boat competitor : competitors){
             boatIdMap.put(competitor.getId(), competitor);
         }
+        raceStatus = -1;
     }
 
     /**
      * Spreads the starting positions of the boats over the start line
      */
     public void setStartingPositions(){
-        RaceLine startingLine = course.getStartingLine();
+        RaceLine startingLine = course.getStartLine();
         Coordinate startingEnd1 = startingLine.getMark1().getPosition();
         Coordinate startingEnd2 = startingLine.getMark2().getPosition();
         Integer spaces = competitors.size();
@@ -119,6 +121,32 @@ public class Race {
 
     public double getSecondsBeforeRace() {
         return secondsBeforeRace;
+    }
+
+    public void updateRaceStatus(int newRaceStatus) {
+        if(raceStatus != newRaceStatus){
+            raceStatus = newRaceStatus;
+            System.out.println("Race Status: " + raceStatus);
+        }
+    }
+
+    public void updateMarkRounded(int sourceID, int roundedMarkID, long time) {
+        Boat boat = boatIdMap.get(sourceID);
+        List<CompoundMark> courseOrder = course.getCourseOrder();
+        for(int markIndex = boat.getLastRoundedMarkIndex()+1; markIndex < courseOrder.size(); markIndex++){
+            CompoundMark mark = course.getCompoundMarks().get(markIndex);
+            if(mark.getCompoundMarkID() == roundedMarkID){
+                boat.setLastRoundedMarkIndex(markIndex);
+                boat.setLastRoundedMarkTime(time);
+                updateRaceOrder();
+                System.out.println(boat.getName() + " rounded " + course.getCompoundMarks().get(roundedMarkID).getName() + " at " + time);
+                return;
+            }
+        }
+    }
+
+    private void updateRaceOrder() {
+        Collections.sort(raceOrder);
     }
 }
 

@@ -193,7 +193,6 @@ public class Controller implements Initializable {
      */
     public void updatePlacings(){
         List<Boat> raceOrder = Main.getRace().getRaceOrder();
-        Collections.sort(raceOrder);
         formattedDisplayOrder.clear();
         for (int i = 0; i < raceOrder.size(); i++){
             Boat boat = raceOrder.get(i);

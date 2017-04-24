@@ -145,29 +145,29 @@ public class RaceViewController extends AnimationTimer {
     private void drawCourse(){
         drawBoundary();
         drawMarks();
+        drawRaceLines();
+    }
+
+    private void drawRaceLines() {
+        drawRaceLine(race.getCourse().getStartLine());
+        drawRaceLine(race.getCourse().getFinishLine());
     }
 
     /**
      * Handles drawing of all of the marks from the course
      */
     public void drawMarks() {
-        for (CompoundMark compoundMark : race.getCourse().getCompoundMarks().values()) {
-            drawCircleForMark(compoundMark.getMark1());
-            if (compoundMark.hasTwoMarks()) {
-                drawCircleForMark(compoundMark.getMark2());
-                if(compoundMark instanceof RaceLine){
-                    RaceLine raceLine = (RaceLine) compoundMark;
-                    Line line = raceView.createRaceLine(compoundMark.getMark1().getPosition(), compoundMark.getMark2().getPosition());
-                    raceLine.setLine(line);
-                }
-            }
+        for (Mark mark : race.getCourse().getAllMarks().values()) {
+            Circle circle = raceView.createMark(mark.getPosition());
+            root.getChildren().add(circle);
+            mark.setIcon(circle);
+
         }
     }
 
-    private void drawCircleForMark(Mark mark) {
-        Circle circle = raceView.createMark(mark.getPosition());
-        root.getChildren().add(circle);
-        mark.setIcon(circle);
+    public void drawRaceLine(RaceLine raceLine){
+        Line line = raceView.createRaceLine(raceLine.getMark1().getPosition(), raceLine.getMark2().getPosition());
+        raceLine.setLine(line);
     }
 
     /**
@@ -266,34 +266,33 @@ public class RaceViewController extends AnimationTimer {
     public void redrawCourse(){
         redrawMarks();
         redrawBoundary();
+        redrawRaceLines();
+    }
+
+    private void redrawRaceLines() {
+        redrawRaceLine(race.getCourse().getStartLine());
+        redrawRaceLine(race.getCourse().getFinishLine());
+    }
+
+    private void redrawRaceLine(RaceLine raceLine) {
+        root.getChildren().remove(raceLine.getLine());
+        Line line = raceView.createRaceLine(raceLine.getMark1().getPosition(), raceLine.getMark2().getPosition());
+        root.getChildren().add(line);
+        raceLine.setLine(line);
+        raceLine.getLine().toBack();
     }
 
     /**
      * Handles moving of all marks, including redrawing race lines
      */
     private void redrawMarks(){
-        for (CompoundMark compoundMark : race.getCourse().getCompoundMarks().values()){
-            redrawMark(compoundMark.getMark1());
-            if (compoundMark.hasTwoMarks()){
-                redrawMark(compoundMark.getMark2());
-                if(compoundMark instanceof RaceLine){
-                    RaceLine raceLine = (RaceLine) compoundMark;
-                    root.getChildren().remove(raceLine.getLine());
-                    Line line = raceView.createRaceLine(raceLine.getMark1().getPosition(), raceLine.getMark2().getPosition());
-                    root.getChildren().add(line);
-                    raceLine.setLine(line);
-                    raceLine.getLine().toBack();
-                }
-            }
+        for (Mark mark : race.getCourse().getAllMarks().values()){
+            CanvasCoordinate convertedPoint = DisplayUtils.convertFromLatLon(mark.getPosition());
+            mark.getIcon().toFront();
+            mark.getIcon().setCenterX(convertedPoint.getX());
+            mark.getIcon().setCenterY(convertedPoint.getY());
+            mark.getIcon().toBack();
         }
-    }
-
-    private void redrawMark(Mark mark) {
-        CanvasCoordinate convertedPoint = DisplayUtils.convertFromLatLon(mark.getPosition());
-        mark.getIcon().toFront();
-        mark.getIcon().setCenterX(convertedPoint.getX());
-        mark.getIcon().setCenterY(convertedPoint.getY());
-        mark.getIcon().toBack();
     }
 
     /**

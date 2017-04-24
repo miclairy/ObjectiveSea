@@ -25,6 +25,7 @@ public class DataStreamReader implements Runnable{
     private final int XML_MESSAGE = 26;
     private final int BOAT_LOCATION_MESSAGE = 37;
     private final int RACE_STATUS_MESSAGE = 12;
+    private final int MARK_ROUNDING_MESSAGE = 38;
     private final int REGATTA_XML_SUBTYPE = 5;
     private final int RACE_XML_SUBTYPE = 6;
     private final int BOAT_XML_SUBTYPE = 7;
@@ -81,6 +82,17 @@ public class DataStreamReader implements Runnable{
         }
         return total;
     }
+
+    static long byteArrayRangeToLong(byte[] array, int beginIndex, int endIndex){
+        int length = endIndex - beginIndex;
+
+        long total = 0;
+        for(int i = endIndex - 1; i >= beginIndex; i--){
+            total = (total << 8) + (array[i] & 0xFF);
+        }
+        return total;
+    }
+
 
     /**
      * Converts an integer to a latitude/longitude angle as per specification.
@@ -201,8 +213,10 @@ public class DataStreamReader implements Runnable{
                             break;
                         case RACE_STATUS_MESSAGE:
                             int raceStatus = byteArrayRangeToInt(body, RACE_STATUS.getStartIndex(), RACE_STATUS.getEndIndex());
-                            System.out.println("Race Status: " + raceStatus);
+                            race.updateRaceStatus(raceStatus);
                             break;
+                        case MARK_ROUNDING_MESSAGE:
+                            parseMarkRoundingMessage(body);
                     }
                 } else{
                     System.err.println("Incorrect CRC. Message Ignored.");
@@ -212,6 +226,13 @@ public class DataStreamReader implements Runnable{
             System.err.println("Error occurred when reading data from stream:");
             System.err.println(e);
         }
+    }
+
+    private void parseMarkRoundingMessage(byte[] body) {
+        long time = byteArrayRangeToLong(body, 1, 7);
+        int sourceID = byteArrayRangeToInt(body, 13, 17);
+        int markID = byteArrayRangeToInt(body, 20, 21);
+        race.updateMarkRounded(sourceID, markID, time);
     }
 
     public Socket getClientSocket() {
