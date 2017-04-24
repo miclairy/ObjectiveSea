@@ -1,4 +1,4 @@
-package seng302;
+package seng302.data;
 
 
 import org.junit.Assert;
