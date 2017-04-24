@@ -16,25 +16,18 @@ import seng302.data.RaceVisionFileReader;
 import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.Race;
-import sun.misc.IOUtils;
-
-import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.ArrayList;
 
 
-import java.util.Arrays;
 public class Main extends Application {
 
     private static Race race;
 
     /**
-     * Loads in the course and config files and creates the race to run.
+     * Loads in the course and creates the race to run.
      */
     @Override
     public void init(){
-        Config.initializeConfig();
 
         DataStreamReader dataStreamReader = new DataStreamReader(Config.SOURCE_ADDRESS, Config.SOURCE_PORT);
         Thread dataStreamReaderThread = new Thread(dataStreamReader);
@@ -66,17 +59,19 @@ public class Main extends Application {
 
     public static void main( String[] args )
     {
-        try {
-            ServerSocket recieveSocket = new ServerSocket(2828);
-            MockStream mockStream = null;
-            mockStream = new MockStream(2828);
-            Thread upStream = new Thread(mockStream);
-            upStream.start();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Config.initializeConfig();
+        setupMockStream();
         launch(args);
+    }
+
+    /**
+     * Creates a MockStream object, puts it in it's own thread and starts the thread
+     */
+    private static void setupMockStream(){
+        MockStream mockStream;
+        mockStream = new MockStream(2828);
+        Thread upStream = new Thread(mockStream);
+        upStream.start();
     }
 
     public static Race getRace() {

@@ -61,7 +61,7 @@ public class MockStreamTest {
             Path receivedPath = Paths.get(receivedStrPath);
             List<String> receivedContent = Files.readAllLines(receivedPath);
 
-            String raceStrPath = new File("src/main/resources/defaultFiles/race.xml").getAbsolutePath();
+            String raceStrPath = new File("src/main/resources/defaultFiles/Race.xml").getAbsolutePath();
             Path racePath = Paths.get(raceStrPath);
             List<String> raceBodyContent = Files.readAllLines(racePath);
             for (int i = 0; i < receivedContent.size(); i++){
@@ -108,7 +108,7 @@ public class MockStreamTest {
             Path receivedPath = Paths.get(receivedStrPath);
             List<String> receivedContent = Files.readAllLines(receivedPath);
 
-            String boatStrPath = new File("src/main/resources/defaultFiles/boat.xml").getAbsolutePath();
+            String boatStrPath = new File("src/main/resources/defaultFiles/Boat.xml").getAbsolutePath();
             Path boatPath = Paths.get(boatStrPath);
             List<String> boatBodyContent = Files.readAllLines(boatPath);
             for (int i = 0; i < receivedContent.size(); i++){

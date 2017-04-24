@@ -3,7 +3,6 @@ package seng302.controllers;
 
 import seng302.data.RaceVisionFileReader;
 import seng302.models.*;
-import seng302.utilities.Config;
 import java.io.*;
 import java.net.*;
 import java.nio.file.Files;
@@ -20,6 +19,7 @@ public class MockStream implements Runnable {
     private double heading = 0;
     private double speed;
     private Course course;
+    private int port;
     private Socket clientSocket;
     private DataOutputStream outToServer;
     private final int SOURCE_ID = 28;
@@ -30,9 +30,12 @@ public class MockStream implements Runnable {
     private Map<Integer, Integer> xmlSequenceNumber = new HashMap<>();
     private Map<Boat, Integer> boatSequenceNumbers = new HashMap<>();
 
-    public MockStream(int port) throws IOException {
-        Config.initializeConfig();
-        clientSocket = new Socket("127.0.0.1", port);
+    public MockStream(int port){
+        this.port = port;
+    }
+
+    public void initialize() throws IOException  {
+        ServerSocket server = new ServerSocket(port);
         boatsInRace = RaceVisionFileReader.importStarters(null);
         course = RaceVisionFileReader.importCourse(null);
         setStartingPositions();
@@ -46,6 +49,9 @@ public class MockStream implements Runnable {
         for (Boat boat: boatsInRace){
             boatSequenceNumbers.put(boat, boat.getId());
         }
+
+        clientSocket = server.accept();
+        System.out.println("Client accepted");
     }
 
     /**
@@ -53,11 +59,16 @@ public class MockStream implements Runnable {
      */
     @Override
     public void run() { //Should we also send mark rounding?
+        try {
+            initialize();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
         double secTimePassed = 0;
         try {
             outToServer = new DataOutputStream(clientSocket.getOutputStream());
-            sendXmlMessage("Race", "race.xml");
-            sendXmlMessage("Boat", "boat.xml");
+            sendXmlMessage("Race", "Race.xml");
+            sendXmlMessage("Boat", "Boat.xml");
 
             Boolean notFinished = true;
             byte[] body = initialiseLocationPacket();

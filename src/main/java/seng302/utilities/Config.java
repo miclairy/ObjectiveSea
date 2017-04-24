@@ -76,6 +76,6 @@ public class Config {
         return IP.matches(IP_REGEX);
     }
     public static Boolean URLMatcher(String URL){
-        return URL.contains(".");
+        return URL.contains(".") || URL.equals("localhost");
     }
 }

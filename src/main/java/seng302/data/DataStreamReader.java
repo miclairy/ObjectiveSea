@@ -26,7 +26,7 @@ public class DataStreamReader implements Runnable{
     private final int RACE_XML_SUBTYPE = 6;
     private final int BOAT_XML_SUBTYPE = 7;
 
-    private final String DEFAULT_FILE_PATH = "src/main/resources/defaultFiles/";
+    private final String DEFAULT_FILE_PATH = "src/main/resources/outputFiles/";
     private final String REGATTA_FILE_NAME = "Regatta.xml";
     private final String RACE_FILE_NAME = "Race.xml";
     private final String BOAT_FILE_NAME = "Boat.xml";
@@ -51,6 +51,7 @@ public class DataStreamReader implements Runnable{
     void setUpConnection() {
         try {
             clientSocket = new Socket(sourceAddress, sourcePort);
+            System.out.println("Connecting to server");
             dataStream = clientSocket.getInputStream();
         } catch (IOException e) {
             e.printStackTrace();
@@ -117,6 +118,8 @@ public class DataStreamReader implements Runnable{
             outputFilePath += RACE_FILE_NAME;
         } else if(xmlSubtype == BOAT_XML_SUBTYPE){
             outputFilePath += BOAT_FILE_NAME;
+        } else {
+            throw new IOException("Unrecognised XML subtype");
         }
 
         FileWriter outputFileWriter = new FileWriter(outputFilePath);
@@ -185,7 +188,6 @@ public class DataStreamReader implements Runnable{
                             break;
                         case RACE_STATUS_MESSAGE:
                             int raceStatus = byteArrayRangeToInt(body, RACE_STATUS.getStartIndex(), RACE_STATUS.getEndIndex());
-                            System.out.println("Race Status: " + raceStatus);
                             break;
                     }
                 } else{
