@@ -82,7 +82,6 @@ public class Race {
         return course;
     }
 
-
     public List<Boat> getRaceOrder() {
         return raceOrder;
     }

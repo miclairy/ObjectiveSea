@@ -1,5 +1,7 @@
 package seng302.models;
 
+import sun.reflect.generics.factory.CoreReflectionFactory;
+
 import java.util.*;
 
 /**
@@ -7,7 +9,7 @@ import java.util.*;
  * Class to figure out the mark locations and degrees.
  */
 
-public class Course {
+public class Course extends Observable {
 
     private ArrayList<CompoundMark> courseOrder;
     private ArrayList<Coordinate> boundary;
@@ -17,7 +19,6 @@ public class Course {
     private RaceLine startLine, finishLine;
     private String timeZone;
     private Map<Integer, Mark> allMarks;
-
     public Course() {
         this.compoundMarks = new HashMap<>();
         this.courseOrder = new ArrayList<>();
@@ -56,6 +57,7 @@ public class Course {
     public void addToBoundary(Coordinate coord){
         boundary.add(coord);
     }
+
     /**
      * This function finds the distance between each mark on the course
      * @param markIndex1 - the index in the courseOrder array of the source mark
@@ -68,7 +70,6 @@ public class Course {
         double distance = mark1.getPosition().greaterCircleDistance(mark2.getPosition());
         return distance;
     }
-
     /**
      * This function uses heading calculations to find the headings between two compoundMarks.
      * @param markIndex1 - the index in the courseOrder array of the source mark
@@ -190,5 +191,19 @@ public class Course {
 
     public RaceLine getFinishLine() {
         return finishLine;
+    }
+
+    /**
+     * This method takes another Course and attempts to merge the differences in it into this one.
+     * Assumes that the other course has the desired changes, and overwrites it's self with these changes.
+     * The other course is not changed.
+     * For now, all it does is merge the boundary (as this is currently the only changing thing in the race XML file
+     * that we care about). In future we may look at merging changed marks as well.
+     * @param otherCourse the course to merge into this one
+     */
+    public void mergeWithOtherCourse(Course otherCourse) {
+        this.boundary = new ArrayList<>(otherCourse.getBoundary());
+        setChanged();
+        notifyObservers();
     }
 }
