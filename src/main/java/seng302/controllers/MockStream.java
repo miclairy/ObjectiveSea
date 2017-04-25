@@ -19,7 +19,7 @@ public class MockStream implements Runnable {
 
     private final int SOURCE_ID = 28;
     private final int HEADER_LENGTH = 15;
-    private final int BOAT_LOCATION_LENGTH = 56;
+    private Map<Integer, Integer> messageLengths = new HashMap<>();
 
     private final double KNOTS_TO_MMS_MULTIPLIER = 514.444;
 
@@ -35,6 +35,8 @@ public class MockStream implements Runnable {
     private double heading = 0;
     private double speed;
     private Course course;
+    private Boolean sendPassMark;
+    private int raceId;
 
     public MockStream(int port){
         this.port = port;
@@ -51,14 +53,20 @@ public class MockStream implements Runnable {
         setStartingPositions();
         messageTypes.put("XmlMessage", 26);
         messageTypes.put("BoatLocation", 37);
+        messageTypes.put("markRounding", 38);
         xmlMessageTypes.put("Race", 6);
         xmlMessageTypes.put("Boat", 7);
         xmlSequenceNumber.put(6, 0);
         xmlSequenceNumber.put(7, 0);
+        messageLengths.put(38, 21);
+        messageLengths.put(37, 56);
 
         for (Boat boat: boatsInRace){
             boatSequenceNumbers.put(boat, boat.getId());
         }
+
+        Random random = new Random();
+        raceId = random.nextInt();
 
         clientSocket = server.accept();
         System.out.println("Client accepted");
@@ -68,7 +76,7 @@ public class MockStream implements Runnable {
      * Sends all the data to the socket while the boats have not all finished.
      */
     @Override
-    public void run() { //Should we also send mark rounding?
+    public void run() {
         try {
             initialize();
         } catch (IOException ioe) {
@@ -84,12 +92,20 @@ public class MockStream implements Runnable {
             while (notFinished) {
                 for (Boat boat : boatsInRace) {
                     notFinished = false;
+                    sendPassMark = false;
                     Coordinate location = updateLocation(boat, secTimePassed, course);
                     if (location != null) {
                         notFinished = true;
                         byte[] header = createHeader(messageTypes.get("BoatLocation"));
                         outToServer.write(header);
                         byte[] body = createBoatLocationMessage(boat, location);
+                        outToServer.write(body);
+                        sendCRC(header, body);
+                    }
+                    if (sendPassMark){
+                        byte[] header = createHeader(messageTypes.get("markRounding"));
+                        byte[] body = createMarkRoundingMessage(boat);
+                        outToServer.write(header);
                         outToServer.write(body);
                         sendCRC(header, body);
                     }
@@ -110,6 +126,25 @@ public class MockStream implements Runnable {
             e.printStackTrace();
         }
 
+    }
+
+    private byte[] createMarkRoundingMessage(Boat boat) {
+        byte[] body = new byte[messageLengths.get(messageTypes.get("markRounding"))];
+        body[0] = 1;
+        addFieldToByteArray(body, BOAT_TIMESTAMP,(int) Instant.now().toEpochMilli());
+        addFieldToByteArray(body, MARK_ACK, 0); //todo make proper ack
+        addFieldToByteArray(body, MARK_RACE_ID, raceId);
+        addFieldToByteArray(body, MARK_SOURCE, boat.getId());
+        addFieldToByteArray(body, MARK_BOAT_STATUS, boat.getStatus());
+        addFieldToByteArray(body, ROUNDING_SIDE, 0); //todo present correct side
+        if (course.getCourseOrder().get(boat.getLastPassedMark()).getClass() == Gate.class) {
+            addFieldToByteArray(body, MARK_TYPE, 2);
+        } else {
+            addFieldToByteArray(body, MARK_TYPE, 1);
+        }
+        addFieldToByteArray(body, MARK_ID, boat.getLastPassedMark()); //todo give marks ids correctly
+
+        return body;
     }
 
     /**
@@ -204,8 +239,8 @@ public class MockStream implements Runnable {
         addFieldToByteArray(header, MESSAGE_TYPE, type);
         addFieldToByteArray(header, HEADER_TIMESTAMP, (int) Instant.now().toEpochMilli());
         addFieldToByteArray(header, HEADER_SOURCE_ID, SOURCE_ID);
-        if (type == messageTypes.get("BoatLocation")) {
-            addFieldToByteArray(header, MESSAGE_LENGTH, BOAT_LOCATION_LENGTH);
+        if (type != messageTypes.get("XmlMessage")) {
+            addFieldToByteArray(header, MESSAGE_LENGTH, messageLengths.get(type));
         }
         return header;
     }
@@ -242,7 +277,7 @@ public class MockStream implements Runnable {
      */
     private byte[] initialiseLocationPacket() {
 
-        byte[] body = new byte[BOAT_LOCATION_LENGTH];
+        byte[] body = new byte[messageLengths.get(messageTypes.get("BoatLocation"))];
         body[0] = (byte) 1;
         body[15] = (byte) 1;
         body[24] = (byte) 0;
@@ -298,6 +333,7 @@ public class MockStream implements Runnable {
             currentPosition.setLat(nextMark.getLat());
             currentPosition.setLon(nextMark.getLon());
             lastPassedMark++;
+            sendPassMark = true;
 
             if(lastPassedMark < courseOrder.size()-1){
                 heading = course.headingsBetweenMarks(lastPassedMark, lastPassedMark + 1);

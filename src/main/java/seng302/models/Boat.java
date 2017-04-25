@@ -21,6 +21,7 @@ public class Boat implements Comparable<Boat>{
     private boolean finished;
     private double heading;
     private double maxSpeed;
+    private int status = 1;
     private ArrayList<Coordinate> pathCoords;
 
     public Boat(int id, String name, String nickName, double speed) {
@@ -168,5 +169,9 @@ public class Boat implements Comparable<Boat>{
 
     public int getId() {
         return id;
+    }
+
+    public int getStatus() {
+        return status;
     }
 }
