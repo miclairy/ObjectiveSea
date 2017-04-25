@@ -1,7 +1,9 @@
 package seng302.views;
 
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
@@ -16,17 +18,22 @@ public class BoatDisplay {
     private Boat boat;
     private Shape icon;
     private Polyline wake;
-    private Text annotation;
+    private VBox annotation;
     private Path path;
+    private Line annotationLine;
 
     private Color color;
 
     public BoatDisplay(Boat boat) {
         this.boat = boat;
-        this.annotation = new Text();
+        this.annotation = new VBox();
     }
 
-    public Text getAnnotation() {return annotation;}
+    public Line getAnnotationLine() {return annotationLine;}
+
+    public void setAnnotationLine(Line line) {this.annotationLine = line;}
+
+    public VBox getAnnotation() {return annotation;}
 
     public void setWake(Polyline wake) {
         this.wake = wake;
@@ -40,7 +47,7 @@ public class BoatDisplay {
         this.icon = icon;
     }
 
-    public void setAnnotation(Text annotation) {this.annotation = annotation;}
+    public void setAnnotation(VBox annotation) {this.annotation = annotation;}
 
     public Shape getIcon() {
         return icon;

@@ -27,6 +27,14 @@
     -fx-background-color: #3c619b;
 }
 
+#annotationLine {
+    -fx-stroke: White;
+}
+
+#annotationLabel {
+    -fx-text-fill: #2b2b2b;
+}
+
 .split-pane {
     -fx-background-insets: 0, 0;
     -fx-padding: 0;
@@ -172,6 +180,7 @@
 #wake{
     -fx-stroke: #eaf2ff;
     -fx-fill: rgb(132, 218, 255);
+    -fx-opacity: 0.5;
 }
 
 #mark{
