@@ -31,7 +31,7 @@ public class Boat implements Comparable<Boat>{
         this.nickName = nickName;
         this.maxSpeed = speed;
         this.finished = false;
-        this.lastRoundedMarkIndex = 0;
+        this.lastRoundedMarkIndex = -1;
         this.pathCoords = new ArrayList<>();
         this.currentPosition = new Coordinate(0,0);
     }

@@ -11,6 +11,10 @@ import java.util.*;
  */
 public class Race {
 
+    public static final int WARNING_STATUS = 1;
+    public static final int PREPARATORY_STATUS = 2;
+    public static final int STARTED_STATUS = 3;
+
     private String name;
     private Course course;
     private List<Boat> competitors;
@@ -20,6 +24,7 @@ public class Race {
     private double totalRaceTime;
     private double secondsBeforeRace = 0; //extra time in seconds to allow the race to begin and end smoothly
     private int raceStatus;
+    private long startTimeInEpochMs, currentTimeInEpochMs;
 
     public Race(String name, Course course, List<Boat> competitors) {
         this.name = name;
@@ -82,7 +87,6 @@ public class Race {
         return course;
     }
 
-
     public List<Boat> getRaceOrder() {
         return raceOrder;
     }
@@ -134,7 +138,7 @@ public class Race {
         Boat boat = boatIdMap.get(sourceID);
         List<CompoundMark> courseOrder = course.getCourseOrder();
         for(int markIndex = boat.getLastRoundedMarkIndex()+1; markIndex < courseOrder.size(); markIndex++){
-            CompoundMark mark = course.getCompoundMarks().get(markIndex);
+            CompoundMark mark = courseOrder.get(markIndex);
             if(mark.getCompoundMarkID() == roundedMarkID){
                 boat.setLastRoundedMarkIndex(markIndex);
                 boat.setLastRoundedMarkTime(time);
@@ -145,8 +149,29 @@ public class Race {
         }
     }
 
+    public long getStartTimeInEpochMs() {
+        return startTimeInEpochMs;
+    }
+
+    public void setStartTimeInEpochMs(long startTimeInEpochMs) {
+        this.startTimeInEpochMs = startTimeInEpochMs;
+    }
+
+    public long getCurrentTimeInEpochMs() {
+        return currentTimeInEpochMs;
+    }
+
+    public void setCurrentTimeInEpochMs(long currentTimeInEpoch) {
+        this.currentTimeInEpochMs = currentTimeInEpoch;
+    }
+
     private void updateRaceOrder() {
         Collections.sort(raceOrder);
     }
+
+    public int getRaceStatus() {
+        return raceStatus;
+    }
+
 }
 
