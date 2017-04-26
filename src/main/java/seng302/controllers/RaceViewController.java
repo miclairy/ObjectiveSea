@@ -72,16 +72,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
 //        double scaledSecondsElapsed = secondsElapsed * race.getTotalRaceTime() / (Config.TIME_SCALE_IN_SECONDS);
         double scaledSecondsElapsed = secondsElapsed;
 
-        controller.updateFPSCounter(currentTime);
         controller.updateRaceClock(scaledSecondsElapsed); //updates race clock using scaledSecondsElapsed
-
         currentTimeInSeconds += scaledSecondsElapsed;
 
-        if (!controller.hasRaceBegun()) {
-            scaledSecondsElapsed = 0;
-            controller.handlePrerace(currentTimeInSeconds, race.getSecondsBeforeRace());
-        }
-
+        controller.handlePrerace();
+        controller.updateFPSCounter(currentTime);
         run();
         previousTime = currentTime;
    }

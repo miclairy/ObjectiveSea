@@ -1,7 +1,5 @@
 package seng302.data;
 
-import com.sun.org.apache.xpath.internal.SourceTree;
-import seng302.controllers.RaceViewController;
 import seng302.models.Race;
 
 import java.io.*;
@@ -240,8 +238,7 @@ public class DataStreamReader implements Runnable{
                             parseBoatLocationMessage(body);
                             break;
                         case RACE_STATUS_MESSAGE:
-                            int raceStatus = byteArrayRangeToInt(body, RACE_STATUS.getStartIndex(), RACE_STATUS.getEndIndex());
-                            race.updateRaceStatus(raceStatus);
+                            parseRaceStatusMessage(body);
                             break;
                         case MARK_ROUNDING_MESSAGE:
                             parseMarkRoundingMessage(body);
@@ -254,6 +251,16 @@ public class DataStreamReader implements Runnable{
             System.err.println("Error occurred when reading data from stream:");
             System.err.println(e);
         }
+    }
+
+    private void parseRaceStatusMessage(byte[] body) {
+        int raceStatus = byteArrayRangeToInt(body, RACE_STATUS.getStartIndex(), RACE_STATUS.getEndIndex());
+        long currentTime = byteArrayRangeToLong(body, 1, 7);
+        long expectedStartTime = byteArrayRangeToLong(body, 12, 18);
+
+        race.updateRaceStatus(raceStatus);
+        race.setStartTimeInEpochMs(expectedStartTime);
+        race.setCurrentTimeInEpochMs(currentTime);
     }
 
     private void parseMarkRoundingMessage(byte[] body) {

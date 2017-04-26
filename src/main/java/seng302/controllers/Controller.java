@@ -21,9 +21,6 @@ import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 
 import java.net.URL;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.*;
 
 import static javafx.collections.FXCollections.observableArrayList;
@@ -61,7 +58,6 @@ public class Controller implements Initializable {
     @FXML
     private ImageView windDirectionImage;
 
-    private final int PREP_SIGNAL_SECONDS_BEFORE_START = 120; //2 minutes
     //number of from right edge of canvas that the wind arrow will be drawn
     private final int WIND_ARROW_OFFSET = 60;
 
@@ -75,7 +71,6 @@ public class Controller implements Initializable {
     public static SimpleStringProperty raceTimerString = new SimpleStringProperty();
     public static SimpleStringProperty clockString = new SimpleStringProperty();
     private static double totalRaceTime;
-    private static double secondsBeforeRace;
 
     private static ObservableList<String> formattedDisplayOrder = observableArrayList();
     private static double canvasHeight;
@@ -83,7 +78,8 @@ public class Controller implements Initializable {
     private static String timeZone;
 
     private RaceViewController raceViewController;
-    private boolean raceBegun;
+    private boolean isRaceClockInitialised;
+    private int prevRaceStatus = -1;
     private double secondsElapsed = 0;
     private Race race;
 
@@ -94,7 +90,7 @@ public class Controller implements Initializable {
         canvasHeight = canvas.getHeight();
 
         race = Main.getRace();
-        raceBegun = false;
+        isRaceClockInitialised = false;
         Course course = race.getCourse();
         timeZone = race.getCourse().getTimeZone();
         course.initCourseLatLon();
@@ -102,8 +98,26 @@ public class Controller implements Initializable {
 
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
         raceViewController = new RaceViewController(root, race, this);
+
         course.addObserver(raceViewController);
 
+        createCanvasAnchorListeners();
+
+        setupAnnotationControl();
+        fpsString.set("..."); //set to "..." while fps count loads
+        fpsLabel.textProperty().bind(fpsString);
+        totalRaceTime = race.getTotalRaceTime();
+
+        secondsElapsed = race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs();
+        raceTimerLabel.textProperty().bind(raceTimerString);
+        clockLabel.textProperty().bind(clockString);
+        hideStarterOverlay();
+        setWindDirection();
+        displayStarters();
+        raceViewController.start();
+    }
+
+    public void createCanvasAnchorListeners(){
         canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
             canvasWidth = (double) newValue;
             raceViewController.redrawCourse();
@@ -116,41 +130,30 @@ public class Controller implements Initializable {
             raceViewController.moveWindArrow();
             raceViewController.redrawBoatPaths();
         });
-
-        setupAnnotationControl();
-        fpsString.set("..."); //set to "..." while fps count loads
-        fpsLabel.textProperty().bind(fpsString);
-        totalRaceTime = race.getTotalRaceTime();
-        secondsBeforeRace = race.getSecondsBeforeRace();
-        secondsElapsed -= secondsBeforeRace;
-        raceTimerLabel.textProperty().bind(raceTimerString);
-        clockLabel.textProperty().bind(clockString);
-
-
-        setWindDirection();
-        startersOverlay.toFront();
-        displayStarters();
-        raceViewController.start();
     }
 
     /**
      * Called from the RaceViewController handle if the race has not yet begun (the boats are not moving)
      * Handles the starters Overlay and timing for the boats to line up on the start line
-     * @param currentTime the current time
-     * @param raceStartTime the time at which the race will begin and pre-race ends
      */
-    public void handlePrerace(double currentTime, double raceStartTime){
-        double overlayFadeTime = (raceStartTime - PREP_SIGNAL_SECONDS_BEFORE_START);
-        if (currentTime > overlayFadeTime && startersOverlay.isVisible()) {
-            hideStarterOverlay();
-            raceViewController.initializeBoats();
-        }
-        if (currentTime >= raceStartTime) {
-            raceBegun = true;
-            for (Boat boat : race.getCompetitors()){
-                boat.maximiseSpeed();
+    public void handlePrerace(){
+        if(prevRaceStatus != race.getRaceStatus()){
+            switch(race.getRaceStatus()){
+                case Race.WARNING_STATUS:
+                    showStarterOverlay();
+                    break;
+                case Race.PREPARATORY_STATUS:
+                    hideStarterOverlay();
+                    raceViewController.initializeBoats();
+                    break;
+                case Race.STARTED_STATUS:
+                    if(prevRaceStatus != Race.PREPARATORY_STATUS){
+                        raceViewController.initializeBoats();
+                    }
+                    raceViewController.changeAnnotations((int) annotationsSlider.getValue(), true);
+                    break;
             }
-            raceViewController.changeAnnotations((int) annotationsSlider.getValue(), true);
+            prevRaceStatus = race.getRaceStatus();
         }
     }
 
@@ -231,6 +234,15 @@ public class Controller implements Initializable {
      * @param timePassed the number of seconds passed since the last update call
      */
     public void updateRaceClock(double timePassed) {
+        if(!isRaceClockInitialised){
+            //Initalise Seconds Elapsed
+            if(race.getStartTimeInEpochMs() != 0){
+                //If we had received race time information
+                secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000;
+                isRaceClockInitialised = true;
+            }
+        }
+
         secondsElapsed += timePassed;
         if(totalRaceTime <= secondsElapsed) {
             secondsElapsed = totalRaceTime;
@@ -264,12 +276,13 @@ public class Controller implements Initializable {
     /**
      * Causes the starters overlay to hide itself, enabling a proper view of the course and boats beneath
      */
-    public void hideStarterOverlay(){
+    private void hideStarterOverlay(){
         startersOverlay.setVisible(false);
     }
 
-    public boolean hasRaceBegun() {
-        return raceBegun;
+    private void showStarterOverlay(){
+        startersOverlay.toFront();
+        startersOverlay.setVisible(true);
     }
 
     public static void setCanvasHeight(double canvasHeight) {
