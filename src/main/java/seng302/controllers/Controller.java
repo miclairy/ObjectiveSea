@@ -30,36 +30,26 @@ import static javafx.collections.FXCollections.observableArrayList;
 
 public class Controller implements Initializable {
 
-    @FXML
-    public Canvas canvas;
-    @FXML
-    private ListView<String> placings;
-    @FXML
-    private GridPane sidePane;
-    @FXML
-    private Group root;
-    @FXML
-    private AnchorPane canvasAnchor;
-    @FXML
-    private Label fpsLabel;
-    @FXML
-    private CheckBox fpsToggle;
-    @FXML
-    private ListView<String> startersList;
-    @FXML
-    private ImageView imvCourseOverlay;
-    @FXML
-    private Pane raceClockPane;
-    @FXML
-    private Label raceTimerLabel;
-    @FXML
-    private Slider annotationsSlider;
-    @FXML
-    private Label clockLabel;
-    @FXML
-    private VBox startersOverlay;
-    @FXML
-    private ImageView windDirectionImage;
+    @FXML public Canvas canvas;
+    @FXML private ListView<String> placings;
+    @FXML private GridPane sidePane;
+    @FXML private Group root;
+    @FXML private AnchorPane canvasAnchor;
+    @FXML private Label fpsLabel;
+    @FXML private CheckBox fpsToggle;
+    @FXML private ListView<String> startersList;
+    @FXML private ImageView imvCourseOverlay;
+    @FXML private Pane raceClockPane;
+    @FXML private Label raceTimerLabel;
+    @FXML private Slider annotationsSlider;
+    @FXML private Label clockLabel;
+    @FXML private VBox startersOverlay;
+    @FXML private ImageView windDirectionImage;
+    @FXML private CheckBox chkName;
+    @FXML private CheckBox chkSpeed;
+    @FXML private CheckBox chkPassMarkTime;
+    @FXML private CheckBox chkEst;
+
 
     private final int PREP_SIGNAL_SECONDS_BEFORE_START = 120; //2 minutes
     //number of from right edge of canvas that the wind arrow will be drawn
@@ -286,4 +276,12 @@ public class Controller implements Initializable {
     public static double getCanvasWidth() {
         return canvasWidth;
     }
+
+    public boolean isSpeedSelected(){return chkSpeed.isSelected();}
+
+    public boolean isNameSelected(){return  chkName.isSelected();}
+
+    public boolean isEstSelected(){return chkEst.isSelected();}
+
+    public boolean isTimePassedSelected(){return  chkPassMarkTime.isSelected();}
 }

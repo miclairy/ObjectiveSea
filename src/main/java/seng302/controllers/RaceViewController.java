@@ -5,11 +5,9 @@ import javafx.scene.Group;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
-import javafx.geometry.Bounds;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
-import javafx.scene.text.Font;
 import javafx.scene.shape.Path;
 import javafx.scene.control.Label;
 import javafx.scene.shape.*;
@@ -21,7 +19,6 @@ import seng302.models.*;
 import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
-import java.awt.*;
 import java.util.*;
 
 /**
@@ -32,7 +29,7 @@ import java.util.*;
 public class RaceViewController extends AnimationTimer {
 
     private enum AnnotationLevel {
-        NO_ANNOTATION, NAME_ANNOTATIONS, ALL_ANNOTATIONS
+        NO_ANNOTATION, IMPORTANT_ANNOTATIONS, ALL_ANNOTATIONS
     }
 
     private final double WAKE_SCALE_FACTOR = 17;
@@ -261,9 +258,14 @@ public class RaceViewController extends AnimationTimer {
                     root.getChildren().remove(oldAnnotation);
                     root.getChildren().remove(displayBoat.getAnnotationLine());
                 }
-                if (level == AnnotationLevel.NAME_ANNOTATIONS) {
+                if (level == AnnotationLevel.IMPORTANT_ANNOTATIONS) {
                     annotations.clear();
-                    annotations.add(boatName);
+                    if(controller.isNameSelected()){
+                        annotations.add(boatName);
+                    }
+                    if(controller.isSpeedSelected()){
+                        annotations.add(String.format("%.1fkn", displayBoat.getBoat().getSpeed()));
+                    }
                     drawBoatAnnotation(displayBoat, annotations);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
                     annotations.clear();
