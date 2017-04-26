@@ -35,6 +35,7 @@ public class Main extends Application {
         String boatsFile = getParameters().getNamed().get("boats");
         ArrayList<Boat> boatsInRace = RaceVisionFileReader.importStarters(boatsFile);
         Course course = RaceVisionFileReader.importCourse(courseFile);
+        course.setTrueWindSpeed(20);
         //for now if we fail to read in a course or boats, then exit the program immediately
         if (boatsInRace.isEmpty() || course == null) {
             Platform.exit();

@@ -68,4 +68,39 @@ public class Coordinate {
         }
         return heading;
     }
+
+    /**
+     * Calculates the longitude given a staright distance from one longitude to another
+     * @param distance the distance between the two longitudes
+     * @return the new longitude
+     */
+    public double longBasedOnDist(double distance){
+        double lat1 = Math.toRadians(lat);
+        double lat2 = Math.toRadians(lat);
+        double lon1 = Math.toRadians(lon);
+        double lon2 = (Math.acos((Math.cos(distance/EARTH_RADIUS_IN_NAUTICAL_MILES)-(Math.sin(lat1)*Math.sin(lat2)))/(Math.cos(lat1)*Math.cos(lat2)))) + lon1;
+        return Math.toDegrees(lon2);
+    }
+
+    /**
+     * Calculates the lat and long based on given distance and bearing from current lat,long
+     * @param distance the distance between the two coordinates
+     * @param bearing the bearing between the two coordinates
+     * @return the new coordinate
+     */
+    public Coordinate CoordFrom(double distance, double bearing){
+        bearing = Math.toRadians(bearing);
+        double lat1 = Math.toRadians(lat);
+        double long1 = Math.toRadians(lon);
+
+        double lat2 = Math.asin( Math.sin(lat1)*Math.cos(distance/EARTH_RADIUS_IN_NAUTICAL_MILES) + Math.cos(lat1)*Math.sin(distance/EARTH_RADIUS_IN_NAUTICAL_MILES)*Math.cos(bearing));
+
+        double long2 = long1 + Math.atan2(Math.sin(bearing)*Math.sin(distance/EARTH_RADIUS_IN_NAUTICAL_MILES)*Math.cos(lat1), Math.cos(distance/EARTH_RADIUS_IN_NAUTICAL_MILES)-Math.sin(lat1)*Math.sin(lat2));
+
+        lat2 = Math.toDegrees(lat2);
+        long2 = Math.toDegrees(long2);
+        Coordinate temp = new Coordinate(lat2,long2);
+        return temp;
+
+    }
 }

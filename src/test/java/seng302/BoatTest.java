@@ -129,7 +129,7 @@ public class BoatTest
         ArrayList<ArrayList<Pair<Double, Double>>> polars = PolarReader.getPolars();
         Course course = new Course();
         course.setTrueWindSpeed(20);
-        Pair<Double,Double> test = boat.tacking(course,TWSList,polars);
+        Pair<Double,Double> test = boat.tacking(20,TWSList,polars);
         //Check VMG
         assertEquals(8.384899644236858, test.getKey(), DELTA);
         //Check TWA

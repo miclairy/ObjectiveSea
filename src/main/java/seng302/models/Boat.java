@@ -2,6 +2,8 @@ package seng302.models;
 
 
 import javafx.util.Pair;
+import seng302.controllers.RaceViewController;
+import seng302.utilities.PolarReader;
 
 import java.util.ArrayList;
 
@@ -19,10 +21,15 @@ public class Boat implements Comparable<Boat>{
     private Coordinate currentPosition;
 
     private int lastPassedMark;
+    private int lastTackMarkPassed;
     private boolean finished;
     private double heading;
     private double maxSpeed;
     private ArrayList<Coordinate> pathCoords;
+    private double totalSpeed = 0;
+    private double speedCounter = 0;
+    private double VMGofBoat;
+    private double TWAofBoat;
 
     public Boat(String name, String nickName, double speed) {
         this.name = name;
@@ -32,6 +39,16 @@ public class Boat implements Comparable<Boat>{
         this.lastPassedMark = 0;
         this.pathCoords = new ArrayList<>();
         this.currentPosition = new Coordinate(0,0);
+        try {
+            PolarReader.polars();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        ArrayList<Integer> TWSList = PolarReader.getTWS();
+        ArrayList<ArrayList<Pair<Double, Double>>> polars = PolarReader.getPolars();
+        Pair<Double,Double> tackingInfo = tacking(20,TWSList,polars);
+        VMGofBoat = tackingInfo.getKey();
+        TWAofBoat = tackingInfo.getValue();
     }
 
     /**
@@ -48,6 +65,13 @@ public class Boat implements Comparable<Boat>{
         return currentPosition;
     }
 
+    public double averageSpeed(double currentSpeed){
+        totalSpeed += currentSpeed;
+        speedCounter++;
+        //System.out.println("my speed " + (totalSpeed/speedCounter));
+        return totalSpeed/speedCounter;
+    }
+
     /**
      * Updates the boat's coordinates by how much it moved in timePassed hours on the course
      * @param timePassed the amount of race hours since the last update
@@ -59,9 +83,14 @@ public class Boat implements Comparable<Boat>{
         }
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
         CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
-
-        double distanceGained = timePassed * speed;
+        double currentSpeed = speed;
+        if(nextMark.getName().equals("Windward Gate")){
+            currentSpeed = VMGofBoat;
+        }
+        System.out.println(currentSpeed);
+        double distanceGained = timePassed * averageSpeed(currentSpeed);
         double distanceLeftInLeg = currentPosition.greaterCircleDistance(nextMark.getPosition());
+
 
         //If boat moves more than the remaining distance in the leg
         while(distanceGained > distanceLeftInLeg && lastPassedMark < courseOrder.size()-1){
@@ -82,7 +111,12 @@ public class Boat implements Comparable<Boat>{
         if(lastPassedMark == courseOrder.size()-1){
             finished = true;
             speed = 0;
+        } if(nextMark.getName().equals("Windward Gate")){
+                Coordinate tackingPosition = tackingUpdateLocation(distanceGained, courseOrder, course);
+                //Move the remaining distance in leg
+                currentPosition.update(tackingPosition.getLat(), tackingPosition.getLon());
         } else{
+            lastTackMarkPassed = 0;
             //Move the remaining distance in leg
             double percentGained = (distanceGained / distanceLeftInLeg);
             double newLat = getCurrentLat() + percentGained * (nextMark.getLat() - getCurrentLat());
@@ -91,39 +125,70 @@ public class Boat implements Comparable<Boat>{
         }
     }
 
-    public void tackingUpdateLocation(double timePassed, Course course, double VMG, double TWA){
-
-        ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
+    public Coordinate tackingUpdateLocation(double distanceGained, ArrayList<CompoundMark> courseOrder, Course course){
         CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
-        double distanceGained = timePassed * VMG; //Linear distance taken by tacking boat
-        double distanceLeftInLeg = currentPosition.greaterCircleDistance(nextMark.getPosition());
-        //If boat moves more than the remaining distance in the leg
-        while(distanceGained > distanceLeftInLeg && lastPassedMark < courseOrder.size()-1){
-            distanceGained -= distanceLeftInLeg;
-            //Set boat position to next mark
-            currentPosition.setLat(nextMark.getLat());
-            currentPosition.setLon(nextMark.getLon());
-            lastPassedMark++;
+        double lengthOfLeg = courseOrder.get(lastPassedMark).getPosition().greaterCircleDistance(nextMark.getPosition());
+        double lengthOfTack = ((lengthOfLeg*10) / Math.floor((lengthOfLeg*10)))/10;
+        int numOfTacks = (int)(lengthOfLeg / lengthOfTack);
+        ArrayList<CompoundMark> tackingMarks = new ArrayList<>();
+        tackingMarks.add(courseOrder.get(lastPassedMark));
+        CompoundMark currentMark = courseOrder.get(lastPassedMark);
+        String previousTackLat = "Right";
+        for(int i = 0; i < numOfTacks; i++){
+            double distance = (lengthOfTack/Math.cos(Math.toRadians(TWAofBoat)));
+            Coordinate temp1 = tackingMarks.get(i).getPosition();
+            double bearing = currentMark.getPosition().headingToCoordinate(nextMark.getPosition());
+            if(previousTackLat == "Right"){
+                bearing -= TWAofBoat;
+                previousTackLat = "Left";
+            } else {
+                bearing += TWAofBoat;
+                previousTackLat = "Right";
+            }
 
-            if(lastPassedMark < courseOrder.size()-1){
-                setHeading(course.headingsBetweenMarks(lastPassedMark, lastPassedMark + 1));
-                nextMark = courseOrder.get(lastPassedMark+1);
-                distanceLeftInLeg = currentPosition.greaterCircleDistance(nextMark.getPosition());
+            Coordinate answer = temp1.CoordFrom(distance,bearing);
+            double newLat = answer.getLat();
+            double newLong = answer.getLon();
+            String name = "tack" + (i+1);
+            CompoundMark temp = new CompoundMark(name, newLat, newLong);
+            tackingMarks.add(temp);
+        }
+        tackingMarks.add(nextMark);
+        double lengthOfTackingLeg = 0;
+//        for(CompoundMark mark: tackingMarks){
+//            System.out.println(mark.getLat());
+//            System.out.println(mark.getLon());
+//        }
+        for(int j = 1; j < tackingMarks.size(); j++){
+            lengthOfTackingLeg += tackingMarks.get(j-1).getPosition().greaterCircleDistance(tackingMarks.get(j).getPosition());
+        }
+        CompoundMark nextTackMark = tackingMarks.get(lastTackMarkPassed+1);
+        double distanceLeftinTack = currentPosition.greaterCircleDistance(nextTackMark.getPosition());
+
+        //If boat moves more than the remaining distance in the leg
+        while(distanceGained > distanceLeftinTack && lastTackMarkPassed < tackingMarks.size()-1){
+            distanceGained -= distanceLeftinTack;
+            //Set boat position to next mark
+            currentPosition.setLat(nextTackMark.getLat());
+            currentPosition.setLon(nextTackMark.getLon());
+            lastTackMarkPassed++;
+
+            if(lastTackMarkPassed < tackingMarks.size()-1){
+                double newHeading = tackingMarks.get(lastTackMarkPassed).getPosition().headingToCoordinate(tackingMarks.get(lastTackMarkPassed + 1).getPosition());;
+                setHeading(newHeading);
+                nextTackMark = tackingMarks.get(lastTackMarkPassed+1);
+                distanceLeftinTack = currentPosition.greaterCircleDistance(nextTackMark.getPosition());
             }
         }
-        //Check if boat has finished
-        if(lastPassedMark == courseOrder.size()-1){
-            finished = true;
-            speed = 0;
-        } else{
-            //Move the remaining distance in leg
-            double percentGained = (distanceGained / distanceLeftInLeg);
-            double newLat = getCurrentLat() + percentGained * (nextMark.getLat() - getCurrentLat());
-            double newLon = getCurrentLon() + percentGained * (nextMark.getLon() - getCurrentLon());
-            currentPosition.update(newLat, newLon);
-        }
 
+        double percentGained = (distanceGained / distanceLeftinTack);
+        double newLat = getCurrentLat() + percentGained * (nextTackMark.getLat() - getCurrentLat());
+        double newLon = getCurrentLon() + percentGained * (nextTackMark.getLon() - getCurrentLon());
+        Coordinate tackPosition = new Coordinate(newLat, newLon);
+        return tackPosition;
     }
+
+
 
     public double VMG(double boatSpeed, double TWA){
         double VMG = boatSpeed * Math.cos(Math.toRadians(TWA));
@@ -135,8 +200,8 @@ public class Boat implements Comparable<Boat>{
         return answer;
     }
 
-    public Pair<Double,Double> tacking(Course course, ArrayList<Integer> trueWindSpeeds, ArrayList<ArrayList<Pair<Double, Double>>> polars){
-        double TWS = course.getTrueWindSpeed();
+    public Pair<Double,Double> tacking(int TWS, ArrayList<Integer> trueWindSpeeds, ArrayList<ArrayList<Pair<Double, Double>>> polars){
+//        double TWS = course.getTrueWindSpeed();
         Pair<Double,Double> boatsTack;
         int index = 0;
         double TWSDiff = 1000000000;
@@ -250,6 +315,7 @@ public class Boat implements Comparable<Boat>{
      */
     public void maximiseSpeed(){
         this.speed = maxSpeed;
+        speedCounter = 0;
     }
 
     public double getMaxSpeed() {
