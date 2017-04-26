@@ -1,4 +1,4 @@
 NUMBOATS=6
 TIMESCALE=1
-SOURCE=livedata.americascup.com
-SOURCEPORT=4941
+SOURCE=localhost
+SOURCEPORT=2828

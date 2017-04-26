@@ -66,7 +66,7 @@ public class MockStream implements Runnable {
         }
 
         Random random = new Random();
-        raceId = random.nextInt();
+        raceId = random.nextInt(Integer.MAX_VALUE);
 
         clientSocket = server.accept();
         System.out.println("Client accepted");
@@ -77,6 +77,7 @@ public class MockStream implements Runnable {
      */
     @Override
     public void run() {
+
         try {
             initialize();
         } catch (IOException ioe) {
@@ -143,7 +144,6 @@ public class MockStream implements Runnable {
             addFieldToByteArray(body, MARK_TYPE, 1);
         }
         addFieldToByteArray(body, MARK_ID, boat.getLastPassedMark()); //todo give marks ids correctly
-
         return body;
     }
 
