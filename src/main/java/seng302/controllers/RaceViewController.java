@@ -253,6 +253,7 @@ public class RaceViewController extends AnimationTimer {
         if(forceRedisplay || level != currentAnnotationsLevel) {
             for (BoatDisplay displayBoat : displayBoats) {
                 String boatName = displayBoat.getBoat().getNickName();
+                String boatSpeed = String.format("%.1fkn", displayBoat.getBoat().getSpeed());
                 VBox oldAnnotation = displayBoat.getAnnotation();
                 if (oldAnnotation != null) {
                     root.getChildren().remove(oldAnnotation);
@@ -264,13 +265,13 @@ public class RaceViewController extends AnimationTimer {
                         annotations.add(boatName);
                     }
                     if(controller.isSpeedSelected()){
-                        annotations.add(String.format("%.1fkn", displayBoat.getBoat().getSpeed()));
+                        annotations.add(boatSpeed);
                     }
                     drawBoatAnnotation(displayBoat, annotations);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
                     annotations.clear();
                     annotations.add(boatName);
-                    annotations.add(String.format("%.1fkn", displayBoat.getBoat().getSpeed()));
+                    annotations.add(boatSpeed);
                     drawBoatAnnotation(displayBoat, annotations);
                 }
             }
