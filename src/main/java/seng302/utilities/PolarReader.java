@@ -34,11 +34,9 @@ public class PolarReader {
                 RaceVisionFileReader.exportResource("/defaultFiles/boatPolars.txt", "boatPolars.txt");
                 br = new BufferedReader(new FileReader("boatPolars.txt"));
             }
-//            String fileName1 = "/defaultFiles/boatPolars.txt";
-//            File file = new File("src\\main\\resources\\defaultFiles\\boatPolars.txt"); //C:\Users\gemma\Desktop\team-28\src\main\resources\defaultFiles\boatPolars.txt
-//            String fileName = file.getAbsolutePath();
-//            BufferedReader br = new BufferedReader(new FileReader(fileName1));
             thisLine = br.readLine();
+            polars.clear();
+            TWS.clear();
             while ((thisLine = br.readLine()) != null) {
                 String[] line = thisLine.split(",");
                 ArrayList<Pair<Double, Double>> temp = new ArrayList<>();

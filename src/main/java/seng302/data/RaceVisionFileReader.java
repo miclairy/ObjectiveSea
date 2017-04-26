@@ -73,20 +73,6 @@ public class RaceVisionFileReader {
 
     /**
      * Decodes an XML file into a Course object
-     *
-     * Expected file structure:
-     * <course>
-     *     <marks>
-     *         //definitions of each mark (see parseMark)
-     *     </marks>
-     *     <legs>
-     *          <leg>[Start Mark]</leg>
-     *          <leg>[A Mark]</leg>
-     *          ...
-     *          <leg>[Finish Mark]</leg>
-     *     </legs>
-     * </course>
-     *
      * @return a Course object
      */
     public static Course importCourseFromXML() {
@@ -159,23 +145,6 @@ public class RaceVisionFileReader {
 
     /**
      * Decodes a mark element into a CompoundMark object
-     *
-     * Expected structure of a mark:
-     * <mark>
-     *     <name>Name is required</name>
-     *     <latlon>
-     *         <lat>...</lat>
-     *         <lon>...</lon>
-     *     </latlon>
-     * </mark>
-     *
-     * If multiple <latlon> tags exist, the Mark will be interpreted as a Gate object
-     *
-     * To define a mark as the start mark use the start attribute, e.g.
-     * <mark start="start">
-     *
-     * To define a mark as the finish mark use the finish attribute, e.g.
-     * <mark finish="finish">
      *
      * @param markElement - an XML <mark> element
      * @return a CompoundMark (potentially Gate) object

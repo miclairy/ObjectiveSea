@@ -1,4 +1,4 @@
-package seng302;
+package seng302.models;
 
 import javafx.util.Pair;
 import org.junit.Before;
