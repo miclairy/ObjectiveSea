@@ -145,6 +145,7 @@ public class RaceVisionFileReader {
 
     /**
      * Decodes a mark element into a CompoundMark object
+     *
      * @param markElement - an XML <mark> element
      * @return a CompoundMark (potentially Gate) object
      * @throws XMLParseException when an expected tag is missing or unexpectedly formatted
