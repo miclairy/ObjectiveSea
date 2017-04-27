@@ -160,9 +160,9 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, BOAT_TIMESTAMP,(int) Instant.now().toEpochMilli());
         addFieldToByteArray(body, STATUS_RACE_ID, raceId);
         addFieldToByteArray(body, RACE_STATUS, 3); // TODO determine status value
-        addFieldToByteArray(body, EXPECTED_START_TIME, 0); //todo import time from race.xml
-        addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, 0x6000); //todo generate wind direction
-        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, 0); //todo generate wind speed
+        addFieldToByteArray(body, EXPECTED_START_TIME, 0); //todo import time from race.xm
+        addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, 0x6000); // left for now
+        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, 10); //left at 10knots for now
         addFieldToByteArray(body, NUMBER_OF_BOATS_IN_RACE, boatsInRace.size());
         addFieldToByteArray(body, RACE_TYPE, 2); //fleet race
 
