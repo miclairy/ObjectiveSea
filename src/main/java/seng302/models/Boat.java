@@ -21,6 +21,11 @@ public class Boat implements Comparable<Boat>{
     private boolean finished;
     private double heading;
     private double maxSpeed;
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     private int status = 1;
     private ArrayList<Coordinate> pathCoords;
 
@@ -82,6 +87,7 @@ public class Boat implements Comparable<Boat>{
         //Check if boat has finished
         if(lastPassedMark == courseOrder.size()-1){
             finished = true;
+            status = 3; //   finished
             speed = 0;
         } else{
             //Move the remaining distance in leg

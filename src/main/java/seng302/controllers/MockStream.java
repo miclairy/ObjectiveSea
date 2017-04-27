@@ -88,6 +88,8 @@ public class MockStream implements Runnable {
 
         startTime = Instant.now().toEpochMilli() + 5000; //5 seconds from now
         raceStatus = raceStatus.PRESTART;
+        boatsInRace.forEach(b -> b.setStatus(1)); //set status to prerace
+
 
     }
 
@@ -143,6 +145,8 @@ public class MockStream implements Runnable {
                             raceStatus = RaceStatus.PREPARATORY;
                         }else if (millisBeforeStart < 0){
                             raceStatus = RaceStatus.STARTED;
+                            boatsInRace.forEach(b -> b.setStatus(2)); //set status to Racing
+
                         }
                     }
 
@@ -410,6 +414,7 @@ public class MockStream implements Runnable {
         //Check if boat has finished
         if(lastPassedMark == courseOrder.size()-1){
             finished = true;
+            boat.setStatus(3); //   finished
             speed = 0;
         } else{
             //Move the remaining distance in leg
