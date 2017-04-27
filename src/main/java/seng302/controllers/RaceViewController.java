@@ -265,6 +265,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     annotations.clear();
                     annotations.add(boatName);
                     annotations.add(String.format("%.1fkn", displayBoat.getBoat().getSpeed()));
+                    annotations.add(displayBoat.getTimeSinceLastMark(race));
                     drawBoatAnnotation(displayBoat, annotations);
                 }
             }

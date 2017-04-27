@@ -6,8 +6,12 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
-import javafx.scene.text.Text;
-import seng302.models.Boat;
+import seng302.models.*;
+
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.ZoneOffset;
 
 
 /**
@@ -67,6 +71,20 @@ public class BoatDisplay {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public String getTimeSinceLastMark(Race race){
+        String timeSincePassed;
+        if(boat.getLastRoundedMarkTime() == 0){
+            timeSincePassed = "-";
+        }else{
+            long timeElapsed = race.getCurrentTimeInEpochMs() - boat.getLastRoundedMarkTime();
+            Instant instant = Instant.ofEpochMilli(timeElapsed);
+            ZonedDateTime zdt = ZonedDateTime.ofInstant (instant , ZoneOffset.UTC );
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern ("mm:ss");
+            timeSincePassed = formatter.format(zdt);
+        }
+        return timeSincePassed;
     }
 }
 
