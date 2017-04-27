@@ -1,5 +1,6 @@
 package seng302.data;
 
+import seng302.models.Course;
 import seng302.models.Race;
 
 import java.io.*;
@@ -212,6 +213,7 @@ public class DataStreamReader implements Runnable{
                             parseBoatLocationMessage(body);
                             break;
                         case RACE_STATUS_MESSAGE:
+                            parseRaceStatusMessage(body);
                             int raceStatus = byteArrayRangeToInt(body, RACE_STATUS.getStartIndex(), RACE_STATUS.getEndIndex());
                             race.updateRaceStatus(raceStatus);
                             break;
@@ -235,6 +237,12 @@ public class DataStreamReader implements Runnable{
         race.updateMarkRounded(sourceID, markID, time);
     }
 
+    private void parseRaceStatusMessage(byte[] body) {
+        int raceCourseWindDirection = byteArrayRangeToInt(body, 18, 20);
+        int raceCourseWindSpeed = byteArrayRangeToInt(body, 20, 22);
+        race.getCourse().updateCourseWindValues(raceCourseWindDirection, raceCourseWindSpeed);
+    }
+
     public Socket getClientSocket() {
         return clientSocket;
     }
@@ -242,4 +250,5 @@ public class DataStreamReader implements Runnable{
     public void setRace(Race race) {
         this.race = race;
     }
+
 }

@@ -287,9 +287,6 @@ public class RaceVisionFileReader {
 
 
 
-
-
-      //Old way of parsing boat file when it was in txt format
     /*
      * Imports file found at DEFAULT_STARTERS_FILE in DEFAULT_FILE_PATH in resources folder
      *

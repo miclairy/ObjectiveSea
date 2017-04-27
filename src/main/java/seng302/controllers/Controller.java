@@ -14,6 +14,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -60,6 +61,8 @@ public class Controller implements Initializable {
     private VBox startersOverlay;
     @FXML
     private ImageView windDirectionImage;
+    @FXML
+    private Text windSpeed;
 
     private final int PREP_SIGNAL_SECONDS_BEFORE_START = 120; //2 minutes
     //number of from right edge of canvas that the wind arrow will be drawn
@@ -155,12 +158,21 @@ public class Controller implements Initializable {
 
     /**
      * Sets the wind direction image to the correct rotation and position
+     * Scales rotation value to be in degrees (a value between 0 and 360)
      */
-    private void setWindDirection(){
-        double windDirection = race.getCourse().getWindDirection();
+    public void setWindDirection(){
+        double windDirection = (float)race.getCourse().getWindDirection();
+        double scaleFactor = ((double)360/(double)159999);
+        double rotate = (windDirection * scaleFactor);
         windDirectionImage.setX(canvasWidth - WIND_ARROW_OFFSET);
-        windDirectionImage.setRotate(windDirection);
+        windDirectionImage.setRotate(rotate);
         raceViewController.setCurrentWindArrow(windDirectionImage);
+    }
+
+
+    public void updateWindSpeed() {
+        double speed = race.getCourse().getWindSpeed();
+        windSpeed.setText(Double.toString(speed) + " mm/sec");
     }
 
     /**

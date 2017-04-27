@@ -99,6 +99,8 @@ public class RaceViewController extends AnimationTimer {
         }
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
+        controller.updateWindSpeed();
+        controller.setWindDirection();
     }
 
     /**

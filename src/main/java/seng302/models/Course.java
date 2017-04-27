@@ -14,6 +14,7 @@ public class Course {
     private double minLat, minLon, maxLat, maxLon;
     private Map<Integer, CompoundMark> compoundMarks;
     private double windDirection;
+    private double windSpeed;
     private RaceLine startLine, finishLine;
     private String timeZone;
     private Map<Integer, Mark> allMarks;
@@ -128,6 +129,11 @@ public class Course {
         }
     }
 
+    public void updateCourseWindValues(int raceCourseWindDirection, int raceCourseWindSpeed) {
+        windDirection = raceCourseWindDirection;
+        windSpeed = raceCourseWindSpeed;
+    }
+
     public ArrayList<CompoundMark> getCourseOrder(){
         return this.courseOrder;
     }
@@ -136,13 +142,15 @@ public class Course {
         return compoundMarks;
     }
 
-    public double getWindDirection() {
-        return windDirection;
-    }
+    public double getWindDirection() { return windDirection; }
 
     public void setWindDirection(double windDirection) {
         this.windDirection = (windDirection + 360) % 360;
     }
+
+    public double getWindSpeed() { return windSpeed; }
+
+    public void setWindSpeed(double windSpeed) { this.windSpeed = windSpeed; }
 
     public void setTimeZone(String timeZone) {
         this.timeZone = timeZone;
