@@ -49,6 +49,14 @@ public class RaceVisionFileReader {
         }
     }
 
+    /**
+     * Overload of importCourse to simplify reading in the default course file.
+     * @return a Course object
+     */
+    public static Course importCourse(){
+        return importCourse(null);
+    }
+
 
     /**
      * Attempts to read the desired XML file into the Document parser

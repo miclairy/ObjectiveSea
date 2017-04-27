@@ -3,7 +3,11 @@ package seng302.models;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by atc60 on 16/03/17.
@@ -93,6 +97,34 @@ public class CourseTest {
         course2.setWindDirection(450);
         assertEquals(315.0, course.getWindDirection(), 0);
         assertEquals(90.0, course2.getWindDirection(), 0);
+    }
+
+    @Test
+    public void mergeWithOtherCourseTest() throws Exception{
+        class TestObserver implements Observer {
+           public boolean updated = false;
+            @Override
+            public void update(Observable o, Object arg) {
+                updated = true;
+            }
+        }
+        TestObserver observer = new TestObserver();
+
+        Course startCourse = new Course();
+        startCourse.addToBoundary(new Coordinate(1, 1));
+        startCourse.addObserver(observer);
+
+        Course otherCourse = new Course();
+        otherCourse.addToBoundary(new Coordinate(2,2));
+
+        assertEquals(1, startCourse.getBoundary().get(0).getLat(), 0);
+        assertEquals(1, startCourse.getBoundary().get(0).getLon(),0);
+
+        startCourse.mergeWithOtherCourse(otherCourse);
+
+        assertEquals(2, startCourse.getBoundary().get(0).getLat(), 0);
+        assertEquals(2, startCourse.getBoundary().get(0).getLon(), 0);
+        assertTrue(observer.updated);
     }
 
 }

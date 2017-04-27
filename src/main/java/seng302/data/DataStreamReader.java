@@ -6,6 +6,8 @@ import seng302.models.Race;
 import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.CRC32;
 
 import static seng302.data.AC35StreamField.*;
@@ -20,6 +22,7 @@ public class DataStreamReader implements Runnable{
     private String sourceAddress;
     private int sourcePort;
     private Race race;
+    private Map<Integer, Integer> xmlSequenceNumbers = new HashMap<>();
 
     private final int HEADER_LENGTH = 15;
     private final int CRC_LENGTH = 4;
@@ -30,8 +33,10 @@ public class DataStreamReader implements Runnable{
     private final int REGATTA_XML_SUBTYPE = 5;
     private final int RACE_XML_SUBTYPE = 6;
     private final int BOAT_XML_SUBTYPE = 7;
+    private final int BOAT_DEVICE_TYPE = 1;
+    private final int MARK_DEVICE_TYPE = 3;
 
-    private final String DEFAULT_FILE_PATH = "src/main/resources/defaultFiles/";
+    private final String DEFAULT_FILE_PATH = "/defaultFiles/";
     private final String REGATTA_FILE_NAME = "Regatta.xml";
     private final String RACE_FILE_NAME = "Race.xml";
     private final String BOAT_FILE_NAME = "Boat.xml";
@@ -39,6 +44,11 @@ public class DataStreamReader implements Runnable{
     public DataStreamReader(String sourceAddress, int sourcePort){
         this.sourceAddress = sourceAddress;
         this.sourcePort = sourcePort;
+
+        //initialize "current" xml sequence numbers to -1 to say we have not yet received any
+        xmlSequenceNumbers.put(REGATTA_XML_SUBTYPE, -1);
+        xmlSequenceNumbers.put(RACE_XML_SUBTYPE, -1);
+        xmlSequenceNumbers.put(BOAT_XML_SUBTYPE, -1);
     }
 
     /**
@@ -120,25 +130,41 @@ public class DataStreamReader implements Runnable{
      */
     private void convertXMLMessage(byte[] body) throws IOException {
         int xmlSubtype = byteArrayRangeToInt(body, XML_SUBTYPE.getStartIndex(), XML_SUBTYPE.getEndIndex());
+        int xmlSequenceNumber = byteArrayRangeToInt(body, XML_SEQUENCE.getStartIndex(), XML_SEQUENCE.getEndIndex());
         int xmlLength = byteArrayRangeToInt(body, XML_LENGTH.getStartIndex(), XML_LENGTH.getEndIndex());
 
         String xmlBody = new String(Arrays.copyOfRange(body, XML_BODY.getStartIndex(), XML_BODY.getStartIndex()+xmlLength));
         xmlBody = xmlBody.trim();
 
-        String outputFilePath = DEFAULT_FILE_PATH;
-
-        if(xmlSubtype == REGATTA_XML_SUBTYPE) {
-            outputFilePath += REGATTA_FILE_NAME;
-        } else if(xmlSubtype == RACE_XML_SUBTYPE){
-            outputFilePath += RACE_FILE_NAME;
-        } else if(xmlSubtype == BOAT_XML_SUBTYPE){
-            outputFilePath += BOAT_FILE_NAME;
+        if (xmlSequenceNumbers.get(xmlSubtype) < xmlSequenceNumber) {
+            xmlSequenceNumbers.put(xmlSubtype, xmlSequenceNumber);
+            if (xmlSubtype == REGATTA_XML_SUBTYPE) {
+                System.out.printf("New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
+                writeXMLToFile(xmlBody, REGATTA_FILE_NAME);
+            } else if (xmlSubtype == RACE_XML_SUBTYPE) {
+                System.out.printf("New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
+                writeXMLToFile(xmlBody, RACE_FILE_NAME);
+                race.getCourse().mergeWithOtherCourse(RaceVisionFileReader.importCourse());
+            } else if (xmlSubtype == BOAT_XML_SUBTYPE) {
+                System.out.printf("New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
+                writeXMLToFile(xmlBody, BOAT_FILE_NAME);
+            }
         }
+    }
 
-        FileWriter outputFileWriter = new FileWriter(outputFilePath);
+    /**
+     * Saves xmlBody to file
+     * @param xmlBody the content to save to the file
+     * @param fileName the file to save to
+     * @throws IOException
+     */
+    private void writeXMLToFile(String xmlBody, String fileName) throws IOException {
+        String outputFilePath = DEFAULT_FILE_PATH + fileName;
+        FileWriter outputFileWriter = new FileWriter(this.getClass().getResource(outputFilePath).getPath());
         BufferedWriter bufferedWriter = new BufferedWriter(outputFileWriter);
         bufferedWriter.write(xmlBody);
         bufferedWriter.close();
+        outputFileWriter.close();
     }
 
     /**
@@ -159,9 +185,9 @@ public class DataStreamReader implements Runnable{
         double heading = intToHeading(headingScaled);
         double speedInKnots = convertToKnots(boatSpeed);
 
-        if(deviceType == 1){
+        if(deviceType == BOAT_DEVICE_TYPE){
             race.updateBoat(sourceID, lat, lon, heading, speedInKnots);
-        } else if(deviceType == 3){
+        } else if(deviceType == MARK_DEVICE_TYPE){
             race.updateMark(sourceID, lat, lon);
         }
     }
@@ -214,8 +240,6 @@ public class DataStreamReader implements Runnable{
                             break;
                         case RACE_STATUS_MESSAGE:
                             parseRaceStatusMessage(body);
-                            int raceStatus = byteArrayRangeToInt(body, RACE_STATUS.getStartIndex(), RACE_STATUS.getEndIndex());
-                            race.updateRaceStatus(raceStatus);
                             break;
                         case MARK_ROUNDING_MESSAGE:
                             parseMarkRoundingMessage(body);
@@ -230,17 +254,24 @@ public class DataStreamReader implements Runnable{
         }
     }
 
+    private void parseRaceStatusMessage(byte[] body) {
+        int raceCourseWindDirection = byteArrayRangeToInt(body, 18, 20);
+        int raceCourseWindSpeed = byteArrayRangeToInt(body, 20, 22);
+        int raceStatus = byteArrayRangeToInt(body, RACE_STATUS.getStartIndex(), RACE_STATUS.getEndIndex());
+        long currentTime = byteArrayRangeToLong(body, 1, 7);
+        long expectedStartTime = byteArrayRangeToLong(body, 12, 18);
+
+        race.getCourse().updateCourseWindValues(raceCourseWindDirection, raceCourseWindSpeed);
+        race.updateRaceStatus(raceStatus);
+        race.setStartTimeInEpochMs(expectedStartTime);
+        race.setCurrentTimeInEpochMs(currentTime);
+    }
+
     private void parseMarkRoundingMessage(byte[] body) {
         long time = byteArrayRangeToLong(body, 1, 7);
         int sourceID = byteArrayRangeToInt(body, 13, 17);
         int markID = byteArrayRangeToInt(body, 20, 21);
         race.updateMarkRounded(sourceID, markID, time);
-    }
-
-    private void parseRaceStatusMessage(byte[] body) {
-        int raceCourseWindDirection = byteArrayRangeToInt(body, 18, 20);
-        int raceCourseWindSpeed = byteArrayRangeToInt(body, 20, 22);
-        race.getCourse().updateCourseWindValues(raceCourseWindDirection, raceCourseWindSpeed);
     }
 
     public Socket getClientSocket() {
