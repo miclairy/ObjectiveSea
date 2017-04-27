@@ -54,12 +54,14 @@ public class MockStream implements Runnable {
         messageTypes.put("XmlMessage", 26);
         messageTypes.put("BoatLocation", 37);
         messageTypes.put("markRounding", 38);
+        messageTypes.put("raceStatus", 12);
         xmlMessageTypes.put("Race", 6);
         xmlMessageTypes.put("Boat", 7);
         xmlSequenceNumber.put(6, 0);
         xmlSequenceNumber.put(7, 0);
         messageLengths.put(38, 21);
         messageLengths.put(37, 56);
+        messageLengths.put(12, 24+(26*boatsInRace.size()));
 
         for (Boat boat: boatsInRace){
             boatSequenceNumbers.put(boat, boat.getId());
@@ -91,9 +93,14 @@ public class MockStream implements Runnable {
 
             Boolean notFinished = true;
             while (notFinished) {
+                byte[] raceStatusBody = initiliseRaceStatusMessage();
                 for (Boat boat : boatsInRace) {
+
+                    raceStatusBody = addBoatToRaceStatusMessage(boat, raceStatusBody);
+
                     notFinished = false;
                     sendPassMark = false;
+
                     Coordinate location = updateLocation(boat, secTimePassed, course);
                     if (location != null) {
                         notFinished = true;
@@ -111,6 +118,9 @@ public class MockStream implements Runnable {
                         sendCRC(header, body);
                     }
                 }
+                byte[] header = createHeader(messageTypes.get("raceStatus"));
+                outToServer.write(header);
+                outToServer.write(raceStatusBody);
                 try {
                     Thread.sleep((long) 0.2 * 1000);
                     secTimePassed = secTimePassed + 0.2 / 1000;
@@ -144,6 +154,35 @@ public class MockStream implements Runnable {
             addFieldToByteArray(body, MARK_TYPE, 1);
         }
         addFieldToByteArray(body, MARK_ID, boat.getLastPassedMark()); //todo give marks ids correctly
+        return body;
+    }
+
+    private byte[] initiliseRaceStatusMessage() {
+        byte[] body = new byte[messageLengths.get(messageTypes.get("raceStatus"))];
+        addFieldToByteArray(body, STATUS_MESSAGE_VERSION_NUMBER, 2);
+        addFieldToByteArray(body, BOAT_TIMESTAMP,(int) Instant.now().toEpochMilli());
+        addFieldToByteArray(body, STATUS_RACE_ID, raceId);
+        addFieldToByteArray(body, RACE_STATUS, 3); // TODO determine status value
+        addFieldToByteArray(body, EXPECTED_START_TIME, 0); //todo import time from race.xml
+        addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, 0x6000); //todo generate wind direction
+        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, 0); //todo generate wind speed
+        addFieldToByteArray(body, NUMBER_OF_BOATS_IN_RACE, boatsInRace.size());
+        addFieldToByteArray(body, RACE_TYPE, 2); //fleet race
+
+        return body;
+
+
+    }
+
+    private byte[] addBoatToRaceStatusMessage(Boat boat, byte[] body){
+        addFieldToByteArray(body, STATUS_SOURCE_ID, boat.getId());
+        addFieldToByteArray(body, BOAT_STATUS, boat.getStatus());
+        addFieldToByteArray(body, LEG_NUMBER, boat.getLastPassedMark() + 1);
+        addFieldToByteArray(body, NUMBER_PENALTIES_AWARDED, 0); //todo make penalties a thing
+        addFieldToByteArray(body, NUMBER_PENALTIES_SERVED, 0);
+        addFieldToByteArray(body, ESTIMATED_TIME_AT_NEXT_MARK, 0); //todo time estimation til next mark/ end of race
+        addFieldToByteArray(body, ESTIMATED_TIME_AT_FINISH, 0);
+
         return body;
     }
 

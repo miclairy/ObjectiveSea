@@ -164,9 +164,6 @@ public class MockStreamTest {
             Socket connectionSocket = new Socket("localhost", 2823);
             InputStream stream = null;
             stream = connectionSocket.getInputStream();
-            int readByte = stream.read();
-            int previous = -1;
-            int previousePrevious = -1;
 
             DataInputStream dataInputStream = new DataInputStream(stream);
             boolean passMarkType = false;
@@ -183,14 +180,50 @@ public class MockStreamTest {
                 }
             }
 
-            //byte[] headerRest = new byte[12];
-            //dataInputStream.readFully(headerRest);
             byte[] body = new byte[21];
             dataInputStream.readFully(body);
 
             assertEquals(1, body[0]);
             assertEquals(6, body[13]);
             assertEquals(1, body[17]);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void sendRaceStatusTest(){
+        try {
+            MockStream mockStream = new MockStream(2822);
+            Thread upStream = new Thread(mockStream);
+            upStream.start();
+            Socket connectionSocket = new Socket("localhost", 2822);
+            InputStream stream = null;
+            stream = connectionSocket.getInputStream();
+
+            DataInputStream dataInputStream = new DataInputStream(stream);
+            boolean passMarkType = false;
+            byte[] header = new byte[15];
+            while (!passMarkType){
+
+                dataInputStream.readFully(header);
+                if (header[2] == 12){
+                    passMarkType = true;
+                } else {
+                    int length = ((header[14] & 0xFF) << 8) + (header[13] & 0xFF);
+                    dataInputStream.readFully(new byte[length]);
+                    dataInputStream.readFully(new byte[4]);
+                }
+            }
+
+            byte[] body = new byte[24+(26*6)];
+            dataInputStream.readFully(body);
+
+            assertEquals(2, body[0]);
+            assertEquals(2, body[23]);
+            assertEquals(0, body[30]); //leg number
+
 
         } catch (IOException e) {
             e.printStackTrace();
