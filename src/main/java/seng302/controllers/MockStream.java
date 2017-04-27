@@ -38,6 +38,18 @@ public class MockStream implements Runnable {
     private Boolean sendPassMark;
     private int raceId;
 
+    private long startTime;
+
+    RaceStatus raceStatus = RaceStatus.NOT_ACTIVE;
+    private enum RaceStatus {
+        NOT_ACTIVE(0), WARNING(1), PREPARATORY(2), STARTED(3), FINISHED(4), RETIRED(5),
+        ABANDONED(6), TERMINATED(8), RACE_START_TIME_NOT_SET(9), PRESTART(10);
+        private final int value;
+        RaceStatus(int value){ this.value = value; }
+        public int getValue() {return value;}
+    }
+
+
     public MockStream(int port){
         this.port = port;
     }
@@ -72,6 +84,11 @@ public class MockStream implements Runnable {
 
         clientSocket = server.accept();
         System.out.println("Client accepted");
+
+
+        startTime = Instant.now().toEpochMilli() + 5000; //5 seconds from now
+        raceStatus = raceStatus.PRESTART;
+
     }
 
     /**
@@ -101,22 +118,34 @@ public class MockStream implements Runnable {
                     notFinished = false;
                     sendPassMark = false;
 
-                    Coordinate location = updateLocation(boat, secTimePassed, course);
-                    if (location != null) {
-                        notFinished = true;
-                        byte[] header = createHeader(messageTypes.get("BoatLocation"));
-                        outToServer.write(header);
-                        byte[] body = createBoatLocationMessage(boat, location);
-                        outToServer.write(body);
-                        sendCRC(header, body);
+                    if(!raceStatus.equals(RaceStatus.STARTED)){
+                        Coordinate location = updateLocation(boat, secTimePassed, course);
+                        if (location != null) {
+                            notFinished = true;
+                            byte[] header = createHeader(messageTypes.get("BoatLocation"));
+                            outToServer.write(header);
+                            byte[] body = createBoatLocationMessage(boat, location);
+                            outToServer.write(body);
+                            sendCRC(header, body);
+                        }
+                        if (sendPassMark){
+                            byte[] header = createHeader(messageTypes.get("markRounding"));
+                            byte[] body = createMarkRoundingMessage(boat);
+                            outToServer.write(header);
+                            outToServer.write(body);
+                            sendCRC(header, body);
+                        }
+                    }else{
+                        long millisBeforeStart = startTime - Instant.now().toEpochMilli();
+                        if(millisBeforeStart < 3000 && millisBeforeStart > 1000){
+                            raceStatus = RaceStatus.WARNING;
+                        }else if(millisBeforeStart < 1000  && millisBeforeStart >0){
+                            raceStatus = RaceStatus.PREPARATORY;
+                        }else if (millisBeforeStart < 0){
+                            raceStatus = RaceStatus.STARTED;
+                        }
                     }
-                    if (sendPassMark){
-                        byte[] header = createHeader(messageTypes.get("markRounding"));
-                        byte[] body = createMarkRoundingMessage(boat);
-                        outToServer.write(header);
-                        outToServer.write(body);
-                        sendCRC(header, body);
-                    }
+
                 }
                 byte[] header = createHeader(messageTypes.get("raceStatus"));
                 outToServer.write(header);
@@ -159,8 +188,8 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, STATUS_MESSAGE_VERSION_NUMBER, 2);
         addFieldToByteArray(body, BOAT_TIMESTAMP,(int) Instant.now().toEpochMilli());
         addFieldToByteArray(body, STATUS_RACE_ID, raceId);
-        addFieldToByteArray(body, RACE_STATUS, 3); // TODO determine status value
-        addFieldToByteArray(body, EXPECTED_START_TIME, 0); //todo import time from race.xm
+        addFieldToByteArray(body, RACE_STATUS, raceStatus.getValue());
+        addFieldToByteArray(body, EXPECTED_START_TIME, (int)startTime); //todo, import from race xml
         addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, 0x6000); // left for now
         addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, 10); //left at 10knots for now
         addFieldToByteArray(body, NUMBER_OF_BOATS_IN_RACE, boatsInRace.size());
