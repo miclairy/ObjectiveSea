@@ -46,7 +46,7 @@ public class MockStream implements Runnable {
      * Creates the server socket, sets up message maps and blocks until a client has connected
      * @throws IOException
      */
-    public void initialize() throws IOException  {
+    private void initialize() throws IOException  {
         ServerSocket server = new ServerSocket(port);
         boatsInRace = RaceVisionFileReader.importStarters(null);
         course = RaceVisionFileReader.importCourse(null);
@@ -121,6 +121,7 @@ public class MockStream implements Runnable {
                 byte[] header = createHeader(messageTypes.get("raceStatus"));
                 outToServer.write(header);
                 outToServer.write(raceStatusBody);
+                sendCRC(header, raceStatusBody);
                 try {
                     Thread.sleep((long) 0.2 * 1000);
                     secTimePassed = secTimePassed + 0.2 / 1000;
@@ -129,10 +130,6 @@ public class MockStream implements Runnable {
                 }
             }
             clientSocket.close();
-        } catch (SocketException e) {
-            e.printStackTrace();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -351,7 +348,7 @@ public class MockStream implements Runnable {
      * @param timePassed the amount of race hours since the last update
      * @param course the course the boat is racing on
      */
-    public Coordinate updateLocation(Boat boat, double timePassed, Course course) {
+    private Coordinate updateLocation(Boat boat, double timePassed, Course course) {
         if(boat.isFinished()){
             return null;
         }
@@ -402,7 +399,7 @@ public class MockStream implements Runnable {
     /**
      * Spreads the starting positions of the boats over the start line
      */
-    public void setStartingPositions(){
+    private void setStartingPositions(){
         RaceLine startingLine = course.getStartingLine();
         int spaces = boatsInRace.size();
         double dLat = (startingLine.getEnd2Lat() - startingLine.getEnd1Lat()) / spaces;
