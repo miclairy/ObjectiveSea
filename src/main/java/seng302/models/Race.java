@@ -62,6 +62,14 @@ public class Race {
         }
     }
 
+    /**
+     * Updates the position, speed and heading of the a boat with a given source id
+     * @param sourceID the source id of the boat
+     * @param lat the new latitude of the boat
+     * @param lon the new longitude of the boat
+     * @param heading the new heading of the boat
+     * @param speed the new speed of the boat
+     */
     public void updateBoat(Integer sourceID, Double lat, Double lon, Double heading, Double speed){
         if(boatIdMap.containsKey(sourceID)){
             Boat boat = boatIdMap.get(sourceID);
@@ -131,6 +139,10 @@ public class Race {
         return secondsBeforeRace;
     }
 
+    /**
+     * Updates the race status and prints it if it is different than before (for debugging purposes)
+     * @param newRaceStatus The new race status read in
+     */
     public void updateRaceStatus(int newRaceStatus) {
         if(raceStatus != newRaceStatus){
             raceStatus = newRaceStatus;
@@ -138,6 +150,15 @@ public class Race {
         }
     }
 
+    /**
+     * Updates a boat's last rounded mark based on the ids of boat and the rounded mark's id, and update the race
+     * order accordingly.
+     * If a mark occurs multiple times in the race order, the rounded mark index will be the one next occurrence
+     * of the mark that the boat has not rounded yet.
+     * @param sourceID the boat's id
+     * @param roundedMarkID the mark's id
+     * @param time the time that the boat rounded the mark
+     */
     public void updateMarkRounded(int sourceID, int roundedMarkID, long time) {
         Boat boat = boatIdMap.get(sourceID);
         List<CompoundMark> courseOrder = course.getCourseOrder();

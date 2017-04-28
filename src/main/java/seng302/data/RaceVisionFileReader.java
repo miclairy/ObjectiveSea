@@ -18,8 +18,6 @@ import java.util.*;
 public class RaceVisionFileReader {
 
     private static final String DEFAULT_FILE_PATH = "/defaultFiles/";
-    private static final String DEFAULT_STARTERS_FILE = "starters.txt";
-    private static final String DEFAULT_COURSE_FILE = "AC35-course.xml";
     private static final String COURSE_FILE = "Race.xml";
     private static final String BOAT_FILE = "Boat.xml";
     private static final String REGATTA_FILE = "Regatta.xml";
@@ -160,6 +158,11 @@ public class RaceVisionFileReader {
         return course;
     }
 
+    /**
+     * Parses a single Mark in a CompoundMark element
+     * @param markElement A <Mark> element
+     * @return a Mark representing the data given in the Mark element of the XML
+     */
     private static Mark parseMark(Element markElement){
         String markName = markElement.getAttribute(XMLTags.Course.NAME);
         Double lat1 = Double.parseDouble(markElement.getAttribute(XMLTags.Course.TARGETLAT));
@@ -169,13 +172,20 @@ public class RaceVisionFileReader {
         return mark;
     }
 
+    /**
+     * Decodes a CompoundMark element into a CompoundMark object
+     *
+     * @param compoundMarkElement - an XML <CompoundMark> element
+     * @return a CompoundMark (potentially RaceLine) object
+     * @throws XMLParseException when an expected tag is missing or unexpectedly formatted
+     */
     private static CompoundMark parseCompoundMark(Element compoundMarkElement) throws  XMLParseException{
         CompoundMark compoundMark;
-        Integer compoundMarkID = Integer.parseInt(compoundMarkElement.getAttribute(XMLTags.Course.COMPOUNDMARKID));
+        Integer compoundMarkID = Integer.parseInt(compoundMarkElement.getAttribute(XMLTags.Course.COMPOUND_MARK_ID));
         String compoundMarkName = compoundMarkElement.getAttribute(XMLTags.Course.NAME);
         NodeList markNodes = compoundMarkElement.getElementsByTagName(XMLTags.Course.MARK);
         if (markNodes.getLength() < 1) {
-            throw new XMLParseException(XMLTags.Course.MARK, "Required tag was not defined.");
+            throw new XMLParseException(XMLTags.Course.COMPOUND_MARK, "Required tag was not defined.");
         }
         int numMarks = markNodes.getLength();
         if(numMarks == 2){
@@ -202,149 +212,17 @@ public class RaceVisionFileReader {
         return compoundMark;
     }
 
-//    /**
-//     * Decodes a mark element into a CompoundMark object
-//     *
-//     * @param markElement - an XML <mark> element
-//     * @return a CompoundMark (potentially Gate) object
-//     * @throws XMLParseException when an expected tag is missing or unexpectedly formatted
-//     */
-//    private static CompoundMark parseMark(Element markElement) throws XMLParseException {
-//        CompoundMark mark;
-//        Integer markID = Integer.parseInt(markElement.getAttribute("CompoundMarkID"));
-//        String name = markElement.getAttribute("Name");
-//
-//        NodeList markNodes = markElement.getElementsByTagName(XMLTags.Course.MARK);
-//        if (markNodes.getLength() < 1) {
-//            throw new XMLParseException(XMLTags.Course.MARK, "Required tag was not defined.");
-//        }
-//        Element currMark = (Element) markNodes;
-//        currMark.getAttribute("SeqID");
-//        currMark.getAttribute("Name");
-//
-//        NodeList latlons = markElement.getElementsByTagName(XMLTags.Course.LATLON);
-//        if (latlons.getLength() < 1) {
-//            throw new XMLParseException(XMLTags.Course.LATLON, "Required tag was not defined.");
-//        }
-//        double lat1 = extractLatitude((Element) latlons.item(0));
-//        double lon1 = extractLongitude((Element) latlons.item(0));
-//
-//        if (latlons.getLength() > 1) { //it is a gate or start or finish
-//            double lat2 = extractLatitude((Element) latlons.item(1));
-//            double lon2 = extractLongitude((Element) latlons.item(1));
-//
-//            //Check whether the mark has a start or finish attribute
-//            NamedNodeMap attr = markElement.getAttributes();
-//            if (attr.getNamedItem(XMLTags.Course.START) != null) {
-//                mark = new RaceLine(name, lat1, lon1, lat2, lon2);
-//                mark.setMarkAsStart();
-//            } else if (attr.getNamedItem(XMLTags.Course.FINISH) != null){
-//                mark = new RaceLine(name, lat1, lon1, lat2, lon2);
-//                mark.setMarkAsFinish();
-//            } else{
-//                mark = new Gate(name, lat1, lon1, lat2, lon2);
-//            }
-//        } else { //it is just a single-point mark
-//            mark = new CompoundMark(name, lat1, lon1);
-//        }
-//
-//        return mark;
-//    }
-
     /**
-     *
-     * @param limit
-     * @return
-     * @throws XMLParseException
+     * Parses a boundary limit element from Race xml to determine a single point of the boundary
+     * @param limit - an XML <Limit> element
+     * @return a Coordinate denoting where a point on boundary limit is.
      */
-    private static Coordinate parseCourseLimitCoord(Element limit) throws XMLParseException{
-        Double lat = Double.parseDouble(limit.getAttribute("Lat"));
-        Double lon = Double.parseDouble(limit.getAttribute("Lon"));
+    private static Coordinate parseCourseLimitCoord(Element limit){
+        Double lat = Double.parseDouble(limit.getAttribute(XMLTags.Course.LAT));
+        Double lon = Double.parseDouble(limit.getAttribute(XMLTags.Course.LON));
         Coordinate coord = new Coordinate(lat, lon);
         return coord;
     }
-
-    /**
-     * Pulls the latitude from an XML <lat> element and parses it as a double
-     * @param latlon the element to pull the lat from
-     * @return a double representing a latitude
-     * @throws XMLParseException if no <lat> tag exists
-     */
-    private static double extractLatitude(Element latlon) throws XMLParseException {
-        NodeList anyLats = latlon.getElementsByTagName(XMLTags.Course.LAT);
-        if (anyLats.getLength() < 1) {
-            throw new XMLParseException(XMLTags.Course.LAT, "Required tag was not defined.");
-        }
-        Node latElement = anyLats.item(0);
-        return Double.parseDouble(latElement.getTextContent());
-    }
-
-    /**
-     * Pulls the longitude from an XML <lon> element and parses it as a double
-     * @param latlon the element to pull the lon from
-     * @return a double representing a longitude
-     * @throws XMLParseException if no <lon> tag exists
-     */
-    private static double extractLongitude(Element latlon) throws XMLParseException {
-        NodeList anyLons = latlon.getElementsByTagName(XMLTags.Course.LON);
-        if (anyLons.getLength() < 1) {
-            throw new XMLParseException(XMLTags.Course.LON, "Required tag was not defined.");
-        }
-        Node lonElement = anyLons.item(0);
-        return Double.parseDouble(lonElement.getTextContent());
-    }
-
-
-
-    /*
-     * Imports file found at DEFAULT_STARTERS_FILE in DEFAULT_FILE_PATH in resources folder
-     *
-     * Boats defined as:
-     *      BoatName, Speed
-     *
-     * Speed is expected in knots
-     * @param filePath string of the file path were the starters are imported.
-     * @return starters - ArrayList of Boat objects defined in file
-    */
-
-//    public static ArrayList<Boat> importStarters(String filePath){
-//        ArrayList<Boat> starters = new ArrayList<>();
-//
-//        try {
-//            BufferedReader br;
-//            if (filePath != null && !filePath.isEmpty()) {
-//                br = new BufferedReader(new FileReader(filePath));
-//            } else {
-//                filePath = DEFAULT_FILE_PATH + DEFAULT_STARTERS_FILE;
-//                br = new BufferedReader(
-//                        new InputStreamReader(RaceVisionFileReader.class.getResourceAsStream(filePath)));
-//            }
-//            ArrayList<Boat> allBoats = new ArrayList<>();
-//
-//            String line = br.readLine();
-//            while (line != null){
-//                StringTokenizer st = new StringTokenizer((line));
-//                String name = st.nextToken(",");
-//                String nickName = st.nextToken().trim();
-//                double speed = Double.parseDouble(st.nextToken());
-//                allBoats.add(new Boat(name, nickName, speed));
-//                line = br.readLine();
-//            }
-//
-//            Random ran = new Random();
-//            for (int i = 0; i < Config.NUM_BOATS_IN_RACE; i++){
-//                starters.add(allBoats.remove(ran.nextInt(allBoats.size())));
-//            }
-//            br.close();
-//
-//        } catch (FileNotFoundException e) {
-//            System.err.printf("Starters file could not be found at %s\n", filePath);
-//        } catch (IOException e) {
-//            System.err.printf("Error reading starters file. Check it is in the correct format.");
-//        }
-//
-//        return starters;
-//    }
 
     /**
      * Manages importing the boats in the race from the correct place

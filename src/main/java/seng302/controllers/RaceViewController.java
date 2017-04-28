@@ -268,11 +268,18 @@ public class RaceViewController extends AnimationTimer implements Observer {
         redrawRaceLines();
     }
 
+    /**
+     * Updates the positions of both the start and finish lines
+     */
     private void redrawRaceLines() {
         redrawRaceLine(race.getCourse().getStartLine());
         redrawRaceLine(race.getCourse().getFinishLine());
     }
 
+    /**
+     * Redraws a raceline on the visuial
+     * @param raceLine
+     */
     private void redrawRaceLine(RaceLine raceLine) {
         root.getChildren().remove(raceLine.getLine());
         Line line = raceView.createRaceLine(raceLine.getMark1().getPosition(), raceLine.getMark2().getPosition());
