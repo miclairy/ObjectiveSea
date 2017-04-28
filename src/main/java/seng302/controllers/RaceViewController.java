@@ -48,6 +48,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     //number of pixels from right edge of canvas that the wind arrow will be drawn
     private final int WIND_ARROW_OFFSET = 60;
     private boolean courseNeedsRedraw = false;
+    private boolean initializedBoats = false;
 
     public RaceViewController(Group root, Race race, Controller controller) {
         this.root = root;
@@ -68,14 +69,20 @@ public class RaceViewController extends AnimationTimer implements Observer {
             return;
         }
         double secondsElapsed = TimeUtils.convertNanosecondsToSeconds(currentTime - previousTime);
-        //scale time based on the input config value
-//        double scaledSecondsElapsed = secondsElapsed * race.getTotalRaceTime() / (Config.TIME_SCALE_IN_SECONDS);
-        double scaledSecondsElapsed = secondsElapsed;
 
-        controller.updateRaceClock(scaledSecondsElapsed); //updates race clock using scaledSecondsElapsed
-        currentTimeInSeconds += scaledSecondsElapsed;
+        if(!race.isTerminated()){
+            controller.updateRaceClock(secondsElapsed);
+        }
+        if(controller.hasRaceStatusChanged()){
+            controller.updatePreRaceScreen();
+            controller.setRaceStatusChanged(false);
+        }
+        if(controller.hasRaceStartTimeChanged()){
+            controller.rebaseRaceClock();
+            controller.setRaceStartTimeChanged(false);
+        }
+        currentTimeInSeconds += secondsElapsed;
 
-        controller.handlePrerace();
         controller.updateFPSCounter(currentTime);
         run();
         previousTime = currentTime;
@@ -110,6 +117,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             drawBoat(displayBoat);
             initBoatPath(displayBoat);
         }
+        initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);
     }
 
@@ -391,6 +399,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if (course == race.getCourse()){
             courseNeedsRedraw = true;
         }
+    }
+
+    public boolean hasInitializedBoats() {
+        return initializedBoats;
     }
 }
 

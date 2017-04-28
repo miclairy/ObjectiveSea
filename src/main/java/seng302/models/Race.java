@@ -9,11 +9,15 @@ import java.util.*;
  * Created on 7/03/17.
  * A Race encompasses the course and the competitors.
  */
-public class Race {
+public class Race extends Observable{
 
     public static final int WARNING_STATUS = 1;
     public static final int PREPARATORY_STATUS = 2;
     public static final int STARTED_STATUS = 3;
+    public static final int TERMINATED_STATUS = 8;
+
+    public static final int UPDATED_STATUS_SIGNAL = 1;
+    public static final int UPDATED_START_TIME_SIGNAL = 2;
 
     private String regattaName;
     private String courseName;
@@ -146,6 +150,8 @@ public class Race {
     public void updateRaceStatus(int newRaceStatus) {
         if(raceStatus != newRaceStatus){
             raceStatus = newRaceStatus;
+            setChanged();
+            notifyObservers(UPDATED_STATUS_SIGNAL);
             System.out.println("Race Status: " + raceStatus);
         }
     }
@@ -174,12 +180,24 @@ public class Race {
         }
     }
 
+    /**
+     * Checks if race is terminated or not
+     * @return true is race has terminated status, false otherwise
+     */
+    public boolean isTerminated(){
+        return raceStatus == TERMINATED_STATUS;
+    }
+
     public long getStartTimeInEpochMs() {
         return startTimeInEpochMs;
     }
 
     public void setStartTimeInEpochMs(long startTimeInEpochMs) {
-        this.startTimeInEpochMs = startTimeInEpochMs;
+        if(this.startTimeInEpochMs != startTimeInEpochMs){
+            this.startTimeInEpochMs = startTimeInEpochMs;
+            setChanged();
+            notifyObservers(UPDATED_START_TIME_SIGNAL);
+        }
     }
 
     public long getCurrentTimeInEpochMs() {

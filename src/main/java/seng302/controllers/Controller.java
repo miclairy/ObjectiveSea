@@ -26,7 +26,7 @@ import java.util.*;
 
 import static javafx.collections.FXCollections.observableArrayList;
 
-public class Controller implements Initializable {
+public class Controller implements Initializable, Observer {
 
     @FXML
     public Canvas canvas;
@@ -81,8 +81,8 @@ public class Controller implements Initializable {
     private static String timeZone;
 
     private RaceViewController raceViewController;
-    private boolean isRaceClockInitialised;
-    private int prevRaceStatus = -1;
+    private boolean raceStartTimeChanged = true;
+    private boolean raceStatusChanged = false;
     private double secondsElapsed = 0;
     private Race race;
 
@@ -93,7 +93,8 @@ public class Controller implements Initializable {
         canvasHeight = canvas.getHeight();
 
         race = Main.getRace();
-        isRaceClockInitialised = false;
+        race.addObserver(this);
+
         Course course = race.getCourse();
         timeZone = race.getCourse().getTimeZone();
         course.initCourseLatLon();
@@ -139,24 +140,21 @@ public class Controller implements Initializable {
      * Called from the RaceViewController handle if the race has not yet begun (the boats are not moving)
      * Handles the starters Overlay and timing for the boats to line up on the start line
      */
-    public void handlePrerace(){
-        if(prevRaceStatus != race.getRaceStatus()){
-            switch(race.getRaceStatus()){
-                case Race.WARNING_STATUS:
-                    showStarterOverlay();
-                    break;
-                case Race.PREPARATORY_STATUS:
-                    hideStarterOverlay();
+    public void updatePreRaceScreen(){
+        switch(race.getRaceStatus()){
+            case Race.WARNING_STATUS:
+                showStarterOverlay();
+                break;
+            case Race.PREPARATORY_STATUS:
+                hideStarterOverlay();
+                raceViewController.initializeBoats();
+                break;
+            case Race.STARTED_STATUS:
+                if(!raceViewController.hasInitializedBoats()){
                     raceViewController.initializeBoats();
-                    break;
-                case Race.STARTED_STATUS:
-                    if(prevRaceStatus != Race.PREPARATORY_STATUS){
-                        raceViewController.initializeBoats();
-                    }
-                    raceViewController.changeAnnotations((int) annotationsSlider.getValue(), true);
-                    break;
-            }
-            prevRaceStatus = race.getRaceStatus();
+                }
+                raceViewController.changeAnnotations((int) annotationsSlider.getValue(), true);
+                break;
         }
     }
 
@@ -246,15 +244,6 @@ public class Controller implements Initializable {
      * @param timePassed the number of seconds passed since the last update call
      */
     public void updateRaceClock(double timePassed) {
-        if(!isRaceClockInitialised){
-            //Initalise Seconds Elapsed
-            if(race.getStartTimeInEpochMs() != 0){
-                //If we had received race time information
-                secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000;
-                isRaceClockInitialised = true;
-            }
-        }
-
         secondsElapsed += timePassed;
         if(totalRaceTime <= secondsElapsed) {
             secondsElapsed = totalRaceTime;
@@ -266,6 +255,16 @@ public class Controller implements Initializable {
             raceTimerString.set(String.format("-%02d:%02d:%02d", Math.abs(hours), Math.abs(minutes), Math.abs(seconds)));
         } else {
             raceTimerString.set(String.format("%02d:%02d:%02d", hours, minutes, seconds));
+        }
+    }
+
+    /**
+     * Recalculates the base time (time when visualiser starts), needed when the expected start time of the race
+     * changes
+     */
+    public void rebaseRaceClock(){
+        if(raceStartTimeChanged){
+            secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000;
         }
     }
 
@@ -311,5 +310,43 @@ public class Controller implements Initializable {
 
     public static double getCanvasWidth() {
         return canvasWidth;
+    }
+
+    public boolean hasRaceStatusChanged() {
+        return raceStatusChanged;
+    }
+
+    public void setRaceStatusChanged(boolean raceStatusChanged) {
+        this.raceStatusChanged = raceStatusChanged;
+    }
+
+    public boolean hasRaceStartTimeChanged() {
+        return raceStartTimeChanged;
+    }
+
+    public void setRaceStartTimeChanged(boolean raceStartTimeChanged) {
+        this.raceStartTimeChanged = raceStartTimeChanged;
+    }
+
+    /**
+     * Changes aspects of the race visualizer based on changes in the race object it observes
+     * Updates the pre-race overlay when its informed race status has changed
+     * Updates the race clock when the expected start time changes
+     * @param updatedRace the race that its race status changed
+     * @param signal determines which part of the race has changed
+     */
+    @Override
+    public void update(Observable updatedRace, Object signal) {
+        if(this.race == updatedRace && signal instanceof Integer){
+            Integer sig = (Integer) signal;
+            switch(sig){
+                case Race.UPDATED_STATUS_SIGNAL:
+                    raceStatusChanged = true;
+                    break;
+                case Race.UPDATED_START_TIME_SIGNAL:
+                    raceStartTimeChanged = true;
+                    break;
+            }
+        }
     }
 }

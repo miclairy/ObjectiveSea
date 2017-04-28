@@ -122,6 +122,12 @@ public class Course extends Observable {
         minLat -= 0.004; minLon -= 0.004; maxLat += 0.004; maxLon += 0.004;
     }
 
+    /**
+     * Updates a position of a mark
+     * @param sourceID the source id of a mark
+     * @param lat the new latitude of a mark
+     * @param lon the new longitude of a mark
+     */
     public void updateMark(int sourceID, double lat, double lon) {
         if(allMarks.containsKey(sourceID)){
             Coordinate markCoordinate = allMarks.get(sourceID).getPosition();
