@@ -20,6 +20,7 @@ import seng302.models.*;
 import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -96,6 +97,7 @@ public class RaceViewController extends AnimationTimer {
     private void run(double secondsElapsed){
         for (Boat boat : race.getCompetitors()){
             boat.updateLocation(TimeUtils.convertSecondsToHours(secondsElapsed), race.getCourse());
+            updateBoatTime(boat);
         }
         for (BoatDisplay boat: displayBoats) {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
@@ -106,6 +108,31 @@ public class RaceViewController extends AnimationTimer {
         }
         controller.updatePlacings();
     }
+
+    /**
+     * Updates the boats time to the next mark
+     * @param boat the current boat that is being updated.
+     */
+    private void updateBoatTime(Boat boat){
+        // get next mark
+        // calc time to next mark
+        // set boats timeTillMark
+        ArrayList<CompoundMark> order = race.getCourse().getCourseOrder();
+        if (boat.getLastPassedMark() + 1 < order.size()) {
+            CompoundMark nextMark = order.get(boat.getLastPassedMark() + 1);
+            Coordinate boatLocation = boat.getCurrentPosition();
+            Coordinate markLocation = nextMark.getPosition();
+            double dist = TimeUtils.calcDistance(boatLocation.getLat(), markLocation.getLat(), boatLocation.getLon(), markLocation.getLon());
+            double time = TimeUtils.convertHoursToSeconds(dist / boat.getSpeed()); //time to next mark in seconds
+            DecimalFormat df = new DecimalFormat("#");
+            try {
+                double newTime = Double.parseDouble(df.format(time));
+                boat.setTimeTillMark(newTime);
+            } catch (NumberFormatException ignored){ // Throws error at start when trying to convert ∞ to a double
+            }
+        }
+    }
+
 
     /**
      * Draws and sets up BoatDisplay objects onscreen
@@ -365,7 +392,7 @@ public class RaceViewController extends AnimationTimer {
      * @param forceRedisplay forces the annotations to be redisplayed even if the level hasn't changed
      */
     public void changeAnnotations(AnnotationLevel level, boolean forceRedisplay) {
-        if(forceRedisplay || level != currentAnnotationsLevel) {
+        if(forceRedisplay || level != currentAnnotationsLevel || true) {
             for (BoatDisplay displayBoat : displayBoats) {
                 Text oldAnnotation = displayBoat.getAnnotation();
                 if (oldAnnotation != null) {
@@ -376,7 +403,7 @@ public class RaceViewController extends AnimationTimer {
                     String annotationText = boatName;
                     drawBoatAnnotation(displayBoat, annotationText);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
-                    String annotationText = boatName + ", " + displayBoat.getBoat().getSpeed() + "kn";
+                    String annotationText = boatName + ", " + displayBoat.getBoat().getSpeed() + "kn, " + displayBoat.getBoat().getTimeTillMark() + "s";
                     drawBoatAnnotation(displayBoat, annotationText);
                 }
             }

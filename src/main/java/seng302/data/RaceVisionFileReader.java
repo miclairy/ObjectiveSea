@@ -241,7 +241,6 @@ public class RaceVisionFileReader {
      */
     public static ArrayList<Boat> importStarters(String filePath){
         ArrayList<Boat> starters = new ArrayList<>();
-
         try {
             BufferedReader br;
             if (filePath != null && !filePath.isEmpty()) {

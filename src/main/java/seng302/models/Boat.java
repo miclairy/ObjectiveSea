@@ -21,6 +21,7 @@ public class Boat implements Comparable<Boat>{
     private double heading;
     private double maxSpeed;
     private ArrayList<Coordinate> pathCoords;
+    private double timeTillMark;
 
     public Boat(String name, String nickName, double speed) {
         this.name = name;
@@ -162,5 +163,13 @@ public class Boat implements Comparable<Boat>{
 
     public void setSpeed(double speed) {
         this.speed = speed;
+    }
+
+    public double getTimeTillMark() {
+        return timeTillMark;
+    }
+
+    public void setTimeTillMark(double timeTillMark) {
+        this.timeTillMark = timeTillMark;
     }
 }
