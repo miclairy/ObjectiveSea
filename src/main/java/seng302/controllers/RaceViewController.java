@@ -2,6 +2,8 @@ package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -99,7 +101,7 @@ public class RaceViewController extends AnimationTimer {
         }
         for (BoatDisplay boat: displayBoats) {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
-            addToBoatPath(boat, point);
+            //addToBoatPath(boat, point);
             moveWake(boat, point);
             moveBoat(boat, point);
             moveBoatAnnotation(boat.getAnnotation(), point);
@@ -151,6 +153,7 @@ public class RaceViewController extends AnimationTimer {
     private void drawCourse(){
         drawBoundary();
         drawMarks();
+        drawMap();
     }
 
     /**
@@ -194,6 +197,25 @@ public class RaceViewController extends AnimationTimer {
         boundary.toBack();
     }
 
+    private void drawMap(){
+        String mapURL = DisplayUtils.getGoogleMapsURL();
+        System.out.println(mapURL);
+        Image image = new Image(mapURL);
+        controller.mapImageView.setImage(image);
+        controller.mapImageView.setX(0);
+        controller.mapImageView.setY(0);
+        double height = Controller.getCanvasHeight();
+        double width = Controller.getCanvasWidth();
+        controller.mapImageView.setFitWidth(width);
+        controller.mapImageView.setFitHeight(height);
+        System.out.println(width +" and "+ height);
+        controller.mapImageView.toBack();
+
+
+
+
+    }
+
     /**
      * Adds a text annotation to a boat
      * @param displayBoat the boat to draw the annotation to
@@ -201,11 +223,11 @@ public class RaceViewController extends AnimationTimer {
      */
     private void drawBoatAnnotation(BoatDisplay displayBoat, String annotationText){
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(displayBoat.getBoat().getCurrentPosition());
-            Text annotation = new Text();
+            Label annotation = new Label();
             annotation.setText(annotationText);
             annotation.setId("annotation");
-            annotation.setX(point.getX() + ANNOTATION_OFFSET_X);
-            annotation.setY(point.getY() + ANNOTATION_OFFSET_Y);
+            annotation.setLayoutX(point.getX() + ANNOTATION_OFFSET_X);
+            annotation.setLayoutY(point.getY() + ANNOTATION_OFFSET_Y);
             displayBoat.setAnnotation(annotation);
             root.getChildren().add(annotation);
     }
@@ -238,12 +260,11 @@ public class RaceViewController extends AnimationTimer {
      * @param annotation the annotation to be moved
      * @param point where the boat has moved to
      */
-    private void moveBoatAnnotation(Text annotation, CanvasCoordinate point){
+    private void moveBoatAnnotation(Label annotation, CanvasCoordinate point){
         double adjustX = 10;
-        annotation.relocate(
-                (point.getX() + ANNOTATION_OFFSET_X),
-                (point.getY() + ANNOTATION_OFFSET_Y)
-        );
+        annotation.setLayoutX(point.getX() + ANNOTATION_OFFSET_X);
+        annotation.setLayoutY(point.getY() + ANNOTATION_OFFSET_Y);
+
         if(DisplayUtils.checkBounds(annotation)){
             adjustX -= annotation.getBoundsInParent().getWidth();
             annotation.relocate(
@@ -280,6 +301,7 @@ public class RaceViewController extends AnimationTimer {
     public void redrawCourse(){
         redrawMarks();
         redrawBoundary();
+        drawMap();
     }
 
     /**
@@ -367,7 +389,7 @@ public class RaceViewController extends AnimationTimer {
     public void changeAnnotations(AnnotationLevel level, boolean forceRedisplay) {
         if(forceRedisplay || level != currentAnnotationsLevel) {
             for (BoatDisplay displayBoat : displayBoats) {
-                Text oldAnnotation = displayBoat.getAnnotation();
+                Label oldAnnotation = displayBoat.getAnnotation();
                 if (oldAnnotation != null) {
                     root.getChildren().remove(oldAnnotation);
                 }

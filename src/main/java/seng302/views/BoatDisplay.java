@@ -1,5 +1,7 @@
 package seng302.views;
 
+import javafx.scene.CacheHint;
+import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Polyline;
@@ -16,17 +18,19 @@ public class BoatDisplay {
     private Boat boat;
     private Shape icon;
     private Polyline wake;
-    private Text annotation;
+    private Label annotation;
     private Path path;
 
     private Color color;
 
     public BoatDisplay(Boat boat) {
         this.boat = boat;
-        this.annotation = new Text();
+        this.annotation = new Label();
+        this.annotation.setCache(true);
+        this.annotation.setCacheHint(CacheHint.SPEED);
     }
 
-    public Text getAnnotation() {return annotation;}
+    public Label getAnnotation() {return annotation;}
 
     public void setWake(Polyline wake) {
         this.wake = wake;
@@ -40,7 +44,7 @@ public class BoatDisplay {
         this.icon = icon;
     }
 
-    public void setAnnotation(Text annotation) {this.annotation = annotation;}
+    public void setAnnotation(Label annotation) {this.annotation = annotation;}
 
     public Shape getIcon() {
         return icon;

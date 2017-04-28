@@ -60,6 +60,8 @@ public class Controller implements Initializable {
     private VBox startersOverlay;
     @FXML
     private ImageView windDirectionImage;
+    @FXML
+    public ImageView mapImageView;
 
     private final int PREP_SIGNAL_SECONDS_BEFORE_START = 120; //2 minutes
     //number of from right edge of canvas that the wind arrow will be drawn
