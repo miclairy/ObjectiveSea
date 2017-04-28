@@ -117,6 +117,35 @@ public class Controller implements Initializable {
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
         raceViewController = new RaceViewController(root, race, this);
 
+        final ChangeListener<Number> listener = new ChangeListener<Number>()
+        {
+            final Timer timer = new Timer(); // uses a timer to call your resize method
+            TimerTask task = null; // task to execute after defined delay
+            final long delayTime = 300; // delay that has to pass in order to consider an operation done
+
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue)
+            {
+                if (task != null)
+                { // there was already a task scheduled from the previous operation ...
+                    task.cancel(); // cancel it, we have a new size to consider
+                }
+
+                task = new TimerTask() // create new task that calls your resize operation
+                {
+                    @Override
+                    public void run()
+                    {
+                        // here you can place your resize code
+                        raceViewController.drawMap();
+                    }
+                };
+                // schedule new task
+                timer.schedule(task, delayTime);
+            }
+        };
+
+        canvasAnchor.widthProperty().addListener(listener);
         canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
             canvasWidth = (double) newValue;
             anchorWidth = canvasAnchor.getWidth();
@@ -124,6 +153,7 @@ public class Controller implements Initializable {
             raceViewController.moveWindArrow();
             raceViewController.redrawBoatPaths();
         });
+        canvasAnchor.heightProperty().addListener(listener);
         canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> {
             canvasHeight = (double) newValue;
             anchorHeight = canvasAnchor.getHeight();

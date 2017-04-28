@@ -198,7 +198,7 @@ public class RaceViewController extends AnimationTimer {
         boundary.toBack();
     }
 
-    private void drawMap(){
+    public void drawMap(){
         String mapURL = DisplayUtils.getGoogleMapsURL();
         System.out.println(mapURL);
         Image image = new Image(mapURL);
@@ -299,7 +299,7 @@ public class RaceViewController extends AnimationTimer {
     public void redrawCourse(){
         redrawMarks();
         redrawBoundary();
-        drawMap();
+
     }
 
     /**
