@@ -2,6 +2,7 @@ package seng302.data;
 
 import seng302.models.Course;
 import seng302.models.Race;
+import seng302.utilities.TimeUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -194,17 +195,13 @@ public class DataStreamReader implements Runnable{
         double lat = intToLatLon(latScaled);
         double lon = intToLatLon(lonScaled);
         double heading = intToHeading(headingScaled);
-        double speedInKnots = convertToKnots(boatSpeed);
+        double speedInKnots = TimeUtils.convertMmPerSecondToKnots(boatSpeed);
 
         if(deviceType == BOAT_DEVICE_TYPE){
             race.updateBoat(sourceID, lat, lon, heading, speedInKnots);
         } else if(deviceType == MARK_DEVICE_TYPE){
-            race.updateMark(sourceID, lat, lon);
+            race.getCourse().updateMark(sourceID, lat, lon);
         }
-    }
-
-    private double convertToKnots(int boatSpeed) {
-        return ((boatSpeed / 1e6) * 3600) / 1.852;
     }
 
     /**

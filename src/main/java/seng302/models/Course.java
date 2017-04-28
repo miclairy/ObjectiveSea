@@ -128,7 +128,7 @@ public class Course extends Observable {
      * @param lat the new latitude of a mark
      * @param lon the new longitude of a mark
      */
-    public void updateMark(int sourceID, double lat, double lon) {
+    public void updateMark(Integer sourceID, Double lat, Double lon) {
         if(allMarks.containsKey(sourceID)){
             Coordinate markCoordinate = allMarks.get(sourceID).getPosition();
             markCoordinate.setLat(lat);

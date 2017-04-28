@@ -154,6 +154,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawRaceLines();
     }
 
+    /**
+     * Draws both the start end and the finish line
+     */
     private void drawRaceLines() {
         drawRaceLine(race.getCourse().getStartLine());
         drawRaceLine(race.getCourse().getFinishLine());
@@ -171,6 +174,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
+    /**
+     * Creates a Line object based on two ends of a RaceLine
+     * @param raceLine The RaceLine object for the line to be drawn for
+     */
     public void drawRaceLine(RaceLine raceLine){
         Line line = raceView.createRaceLine(raceLine.getMark1().getPosition(), raceLine.getMark2().getPosition());
         raceLine.setLine(line);

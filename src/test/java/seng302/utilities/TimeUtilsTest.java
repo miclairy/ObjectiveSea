@@ -30,4 +30,9 @@ public class TimeUtilsTest {
         assertEquals(5400, TimeUtils.convertHoursToSeconds(1.5), 0);
     }
 
+    @Test
+    public void convertMmPerSecondToKnotsTest(){
+        assertEquals(0, TimeUtils.convertMmPerSecondToKnots(0), 0);
+        assertEquals(233.261339093, TimeUtils.convertMmPerSecondToKnots(120000), 1e-9);
+    }
 }

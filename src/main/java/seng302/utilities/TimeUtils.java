@@ -73,4 +73,12 @@ public class TimeUtils {
     public static double convertMinutesToSeconds(double seconds){
         return seconds * SECONDS_IN_MINUTE;
     }
+
+    public static Double convertMmPerSecondToKnots(Integer mmPerSecond){
+        Double kilometersInNauticalMile = 1.852;
+        Double kilometersPerSecond = mmPerSecond / 1e6;
+        Double kilometersPerHour = kilometersPerSecond * SECONDS_IN_MINUTE * MINUTES_IN_HOUR;
+        Double knots = kilometersPerHour / kilometersInNauticalMile;
+        return knots;
+    }
 }

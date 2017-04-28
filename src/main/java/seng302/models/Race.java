@@ -85,10 +85,6 @@ public class Race extends Observable{
         }
     }
 
-    public void updateMark(int sourceID, double lat, double lon) {
-        course.updateMark(sourceID, lat, lon);
-    }
-
     public List<Boat> getCompetitors() {
         return competitors;
     }
@@ -197,6 +193,7 @@ public class Race extends Observable{
             this.startTimeInEpochMs = startTimeInEpochMs;
             setChanged();
             notifyObservers(UPDATED_START_TIME_SIGNAL);
+
         }
     }
 
@@ -220,5 +217,12 @@ public class Race extends Observable{
 
     public void setUTCOffset(double UTCOffset) { this.UTCOffset = UTCOffset; }
 
+    public Boat getBoatById(Integer id){
+        if(boatIdMap.containsKey(id)){
+            return boatIdMap.get(id);
+        } else{
+            return null;
+        }
+    }
 }
 

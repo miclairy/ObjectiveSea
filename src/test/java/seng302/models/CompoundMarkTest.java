@@ -23,7 +23,7 @@ public class CompoundMarkTest {
         finish.setMarkAsFinish();
 
         Mark mark1 = new Mark(4, "Mark 1", new Coordinate(2, 2));
-        CompoundMark mark = new CompoundMark(2, "Mark", mark1);
+        CompoundMark compoundMark = new CompoundMark(2, "Mark", mark1);
 
         start.setMarkAsStart();
         finish.setMarkAsFinish();
@@ -34,11 +34,19 @@ public class CompoundMarkTest {
         assertTrue(finish.isFinishLine());
         assertFalse(finish.isStartLine());
 
-        assertFalse(mark.isFinishLine());
-        assertFalse(mark.isStartLine());
+        assertFalse(compoundMark.isFinishLine());
+        assertFalse(compoundMark.isStartLine());
     }
 
+    @Test
     public void hasTwoMarksTest(){
+        Mark mark1 = new Mark(4, "Mark 1", new Coordinate(2, 2));
+        CompoundMark compoundMark1 = new CompoundMark(2, "Mark 1", mark1);
 
+        assertFalse(compoundMark1.hasTwoMarks());
+
+        Mark mark2 = new Mark(5, "Mark 2", new Coordinate(3, 3));
+        CompoundMark compoundMark2 = new CompoundMark(3, "Mark 2", mark1, mark2);
+        assertTrue(compoundMark2.hasTwoMarks());
     }
 }

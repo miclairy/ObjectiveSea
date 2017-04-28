@@ -1,5 +1,6 @@
 package seng302.models;
 
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -125,6 +126,22 @@ public class CourseTest {
         assertEquals(2, startCourse.getBoundary().get(0).getLat(), 0);
         assertEquals(2, startCourse.getBoundary().get(0).getLon(), 0);
         assertTrue(observer.updated);
+    }
+
+    @Test
+    public void updateMarkTest(){
+        Course course = new Course();
+
+        Mark startLine1 = new Mark(0, "Start Line 1", new Coordinate(32.296577, -64.854304));
+        Mark startLine2 = new Mark(1, "Start Line 2", new Coordinate(32.293771, -64.855242));
+        RaceLine start = new RaceLine(1, "Start Line", startLine1, startLine2);
+        course.addNewCompoundMark(start);
+
+        assertEquals(startLine1.getPosition().getLat(), 32.296577, 0);
+        assertEquals(startLine1.getPosition().getLon(), -64.854304, 0);
+        course.updateMark(0, 12.0, 128.0);
+        assertEquals(startLine1.getPosition().getLat(), 12.0, 0);
+        assertEquals(startLine1.getPosition().getLon(), 128.0, 0);
     }
 
 }

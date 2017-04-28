@@ -121,7 +121,10 @@ public class Controller implements Initializable, Observer {
         raceViewController.start();
     }
 
-    public void createCanvasAnchorListeners(){
+    /**
+     * Creates the change in width and height listeners to redraw course objects
+     */
+    private void createCanvasAnchorListeners(){
         canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
             canvasWidth = (double) newValue;
             raceViewController.redrawCourse();
@@ -137,8 +140,8 @@ public class Controller implements Initializable, Observer {
     }
 
     /**
-     * Called from the RaceViewController handle if the race has not yet begun (the boats are not moving)
-     * Handles the starters Overlay and timing for the boats to line up on the start line
+     * Called from the RaceViewController handle if there is a change in race status
+     * Handles the starters Overlay and timing for the boats objects to be created
      */
     public void updatePreRaceScreen(){
         switch(race.getRaceStatus()){
@@ -150,10 +153,10 @@ public class Controller implements Initializable, Observer {
                 raceViewController.initializeBoats();
                 break;
             case Race.STARTED_STATUS:
+
                 if(!raceViewController.hasInitializedBoats()){
                     raceViewController.initializeBoats();
                 }
-                raceViewController.changeAnnotations((int) annotationsSlider.getValue(), true);
                 break;
         }
     }
@@ -341,6 +344,7 @@ public class Controller implements Initializable, Observer {
             Integer sig = (Integer) signal;
             switch(sig){
                 case Race.UPDATED_STATUS_SIGNAL:
+
                     raceStatusChanged = true;
                     break;
                 case Race.UPDATED_START_TIME_SIGNAL:
