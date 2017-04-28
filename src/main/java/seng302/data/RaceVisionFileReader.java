@@ -22,6 +22,7 @@ public class RaceVisionFileReader {
     private static final String DEFAULT_COURSE_FILE = "AC35-course.xml";
     private static final String COURSE_FILE = "Race.xml";
     private static final String BOAT_FILE = "Boat.xml";
+    private static final String REGATTA_FILE = "Regatta.xml";
 
     private static Document dom;
 
@@ -383,9 +384,9 @@ public class RaceVisionFileReader {
 
         try {
             Element root = dom.getDocumentElement();
-            if (root.getTagName() != XMLTags.Boats.BOATCONFIG) {
-                String message = String.format("The root tag must be <%s>.", XMLTags.Boats.BOATCONFIG);
-                throw new XMLParseException(XMLTags.Boats.BOATCONFIG, message);
+            if (!Objects.equals(root.getTagName(), XMLTags.Boats.BOAT_CONFIG)) {
+                String message = String.format("The root tag must be <%s>.", XMLTags.Boats.BOAT_CONFIG);
+                throw new XMLParseException(XMLTags.Boats.BOAT_CONFIG, message);
             }
 
             NodeList nodes = root.getChildNodes();
@@ -396,9 +397,9 @@ public class RaceVisionFileReader {
                     switch (element.getTagName()) {
                         case XMLTags.Boats.BOATS:
                             NodeList boats = element.getElementsByTagName(XMLTags.Boats.BOAT);
-                            for (int j = 0; j < boats.getLength(); j++){
+                            for (int j = 0; j < boats.getLength(); j++) {
                                 Boat boat = parseBoat((Element) boats.item(j));
-                                if(boat != null){
+                                if (boat != null) {
                                     starters.add(boat);
                                 }
                             }
@@ -410,7 +411,6 @@ public class RaceVisionFileReader {
             System.err.printf("Error reading course file around tag <%s>.\n", e.getTag());
             e.printStackTrace();
         }
-
         if(starters.size() < 2){
             throw new InputMismatchException("There must be at least two boats in the race.");
         }
@@ -434,6 +434,69 @@ public class RaceVisionFileReader {
             boat = new Boat(id, name, nickname, 0);
         }
         return boat;
+    }
+
+    /**
+     * Manages extracting information from the regatta xml
+     * If a file path is specified, this will be used, otherwise a default is packaged with the jar.
+     * Currently this an XML file at DEFAULT_FILE_PATH/REGATTA_FILE
+     * @param filePath String of the file path of the file to read in.
+     *                 race Race object as initialized in the main method
+     */
+    public static void importRegatta(String filePath, Race race) {
+        try {
+            if (filePath != null && !filePath.isEmpty()) {
+                parseXMLFile(filePath, false);
+            } else {
+                String resourcePath = DEFAULT_FILE_PATH + REGATTA_FILE;
+                parseXMLFile(resourcePath, true);
+            }
+            importRegattaFromXML(race);
+        }  catch (IOException ioe) {
+            System.err.printf("Unable to read %s as a regatta definition file. " +
+                    "Ensure it is correctly formatted.\n", filePath);
+            ioe.printStackTrace();
+        }
+    }
+
+    /**
+     * Imports file found at DEFAULT_FILE_PATH/REGATTA_FILE and updates attributes in race
+     */
+    public static void importRegattaFromXML(Race race) {
+        try {
+            Element root = dom.getDocumentElement();
+            if (!Objects.equals(root.getTagName(), XMLTags.Regatta.REGATTA_CONFIG)) {
+                String message = String.format("The root tag must be <%s>.", XMLTags.Regatta.REGATTA_CONFIG);
+                throw new XMLParseException(XMLTags.Regatta.REGATTA_CONFIG, message);
+            }
+
+            NodeList nodes = root.getChildNodes();
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Node node = nodes.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) node;
+                    switch (element.getTagName()) {
+                        case XMLTags.Regatta.REGATTA_NAME:
+                            race.setRegattaName(String.valueOf(element.getTextContent()));
+                            break;
+                        case XMLTags.Regatta.COURSE_NAME:
+                            race.setCourseName(String.valueOf(element.getTextContent()));
+                            break;
+                        case XMLTags.Regatta.UTC_OFFSET:
+                            double utcOffset = Double.parseDouble(String.valueOf(element.getTextContent()));
+                            if (utcOffset <= 14.0 && utcOffset >= -12.0) {
+                                race.setUTCOffset(utcOffset);
+                            } else {
+                                throw new InputMismatchException("The UTC offset must be greater than or equal to -12 and less than or equal to 14.");
+                            }
+                            break;
+                    }
+                }
+            }
+        } catch (XMLParseException e) {
+            System.err.printf("Error reading course file around tag <%s>.\n", e.getTag());
+            e.printStackTrace();
+        }
     }
 
     /**

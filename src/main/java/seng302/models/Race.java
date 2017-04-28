@@ -15,7 +15,8 @@ public class Race {
     public static final int PREPARATORY_STATUS = 2;
     public static final int STARTED_STATUS = 3;
 
-    private String name;
+    private String regattaName;
+    private String courseName;
     private Course course;
     private List<Boat> competitors;
     private List<Boat> raceOrder = new ArrayList<>();
@@ -25,9 +26,10 @@ public class Race {
     private double secondsBeforeRace = 0; //extra time in seconds to allow the race to begin and end smoothly
     private int raceStatus;
     private long startTimeInEpochMs, currentTimeInEpochMs;
+    private double UTCOffset;
 
     public Race(String name, Course course, List<Boat> competitors) {
-        this.name = name;
+        this.regattaName = name;
         this.course = course;
         this.competitors = competitors;
         raceOrder.addAll(competitors);
@@ -79,9 +81,15 @@ public class Race {
         return competitors;
     }
 
-    public String getName() {
-        return name;
+    public String getRegattaName() {
+        return regattaName;
     }
+
+    public void setRegattaName(String name) { this.regattaName = name; }
+
+    public String getCourseName() { return courseName; }
+
+    public void setCourseName(String courseName) { this.courseName = courseName; }
 
     public Course getCourse() {
         return course;
@@ -89,10 +97,6 @@ public class Race {
 
     public List<Boat> getRaceOrder() {
         return raceOrder;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public double getTotalRaceTime() {
@@ -172,6 +176,10 @@ public class Race {
     public int getRaceStatus() {
         return raceStatus;
     }
+
+    public double getUTCOffset() { return UTCOffset; }
+
+    public void setUTCOffset(double UTCOffset) { this.UTCOffset = UTCOffset; }
 
 }
 
