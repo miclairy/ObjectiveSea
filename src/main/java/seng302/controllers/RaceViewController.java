@@ -98,6 +98,7 @@ public class RaceViewController extends AnimationTimer {
         for (Boat boat : race.getCompetitors()){
             boat.updateLocation(TimeUtils.convertSecondsToHours(secondsElapsed), race.getCourse());
             updateBoatTime(boat);
+            changeAnnotations(currentAnnotationsLevel, true);
         }
         for (BoatDisplay boat: displayBoats) {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
@@ -392,7 +393,7 @@ public class RaceViewController extends AnimationTimer {
      * @param forceRedisplay forces the annotations to be redisplayed even if the level hasn't changed
      */
     public void changeAnnotations(AnnotationLevel level, boolean forceRedisplay) {
-        if(forceRedisplay || level != currentAnnotationsLevel || true) {
+        if(forceRedisplay || level != currentAnnotationsLevel) {
             for (BoatDisplay displayBoat : displayBoats) {
                 Text oldAnnotation = displayBoat.getAnnotation();
                 if (oldAnnotation != null) {
