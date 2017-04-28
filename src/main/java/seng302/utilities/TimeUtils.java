@@ -62,6 +62,15 @@ public class TimeUtils {
         }
     }
 
+
+    /**
+     * taken from sprint 2 work, however the original code is http://www.geodatasource.com/developers/java
+     * @param lat1 latitude of the boat
+     * @param lat2 latitude of the mark
+     * @param lon1 longitude of the boat
+     * @param lon2 longitude of the mark
+     * @return a distance double in nautical
+     */
     public static double calcDistance(double lat1, double lat2, double lon1, double lon2){
         double theta = lon1 - lon2;
         double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
@@ -71,10 +80,7 @@ public class TimeUtils {
         return (dist * 0.8684);
     }
 
-    private static double deg2rad(double deg) {
-        return (deg * Math.PI / 180.0);
-    }
-
+    private static double deg2rad(double deg) {return (deg * Math.PI / 180.0); }
 
     private static double rad2deg(double rad) {
         return (rad * 180 / Math.PI);

@@ -30,4 +30,11 @@ public class TimeUtilsTest {
         assertEquals(5400, TimeUtils.convertHoursToSeconds(1.5), 0);
     }
 
+    @Test
+    public void calcDistanceTest() throws Exception {
+        assertEquals(0, TimeUtils.calcDistance(10, 10, 10, 10), 0.0005);
+        assertEquals(0, TimeUtils.calcDistance(0, 0, 0, 0), 0);
+        assertEquals(4809.027, TimeUtils.calcDistance(10, 100, 10, 100), 0.0005);
+
+    }
 }
