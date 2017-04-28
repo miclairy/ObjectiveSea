@@ -38,6 +38,11 @@ public class Controller implements Initializable {
     private GridPane sidePane;
     @FXML
     private Group root;
+
+    public  AnchorPane getCanvasAnchor() {
+        return canvasAnchor;
+    }
+
     @FXML
     private AnchorPane canvasAnchor;
     @FXML
@@ -82,6 +87,11 @@ public class Controller implements Initializable {
     private static ObservableList<String> formattedDisplayOrder = observableArrayList();
     private static double canvasHeight;
     private static double canvasWidth;
+
+
+
+    private static double anchorHeight;
+    private static double anchorWidth;
     private static String timeZone;
 
     private RaceViewController raceViewController;
@@ -94,6 +104,8 @@ public class Controller implements Initializable {
         placings.setItems(formattedDisplayOrder);
         canvasWidth = canvas.getWidth();
         canvasHeight = canvas.getHeight();
+        anchorWidth = canvasAnchor.getWidth();
+        anchorHeight = canvasAnchor.getHeight();
 
         race = Main.getRace();
         raceBegun = false;
@@ -107,12 +119,14 @@ public class Controller implements Initializable {
 
         canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
             canvasWidth = (double) newValue;
+            anchorWidth = canvasAnchor.getWidth();
             raceViewController.redrawCourse();
             raceViewController.moveWindArrow();
             raceViewController.redrawBoatPaths();
         });
         canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> {
             canvasHeight = (double) newValue;
+            anchorHeight = canvasAnchor.getHeight();
             raceViewController.redrawCourse();
             raceViewController.moveWindArrow();
             raceViewController.redrawBoatPaths();
@@ -288,5 +302,13 @@ public class Controller implements Initializable {
 
     public static double getCanvasWidth() {
         return canvasWidth;
+    }
+
+    public static double getAnchorHeight() {
+        return anchorHeight;
+    }
+
+    public static double getAnchorWidth() {
+        return anchorWidth;
     }
 }

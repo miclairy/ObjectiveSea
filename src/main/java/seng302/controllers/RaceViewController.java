@@ -5,6 +5,7 @@ import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -202,13 +203,10 @@ public class RaceViewController extends AnimationTimer {
         System.out.println(mapURL);
         Image image = new Image(mapURL);
         controller.mapImageView.setImage(image);
-        controller.mapImageView.setX(0);
-        controller.mapImageView.setY(0);
-        double height = Controller.getCanvasHeight();
-        double width = Controller.getCanvasWidth();
+        double height = Controller.getAnchorHeight();
+        double width = Controller.getAnchorWidth();
         controller.mapImageView.setFitWidth(width);
         controller.mapImageView.setFitHeight(height);
-        System.out.println(width +" and "+ height);
         controller.mapImageView.toBack();
 
 

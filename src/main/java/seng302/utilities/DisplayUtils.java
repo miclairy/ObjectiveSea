@@ -45,8 +45,9 @@ public class DisplayUtils {
     }
 
     public static String getGoogleMapsURL(){
-        double canvasY = Controller.getCanvasHeight();
-        double canvasX = Controller.getCanvasWidth();
+        double canvasY = Controller.getAnchorHeight()/2;
+        double canvasX = Controller.getAnchorWidth()/2; //halved to keep within google size guidelines
+        System.out.println("width: " + canvasX +"    height: " +canvasY);
 
         Coordinate midPoint = midPoint(max.getLat(), max.getLon(), min.getLat(), min.getLon());
 
