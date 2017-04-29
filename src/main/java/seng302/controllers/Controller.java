@@ -95,7 +95,7 @@ public class Controller implements Initializable, Observer {
         race.addObserver(this);
 
         Course course = race.getCourse();
-        setTimeZone(race.getUTCOffset());
+
         startersOverlayTitle.setText(race.getRegattaName());
         course.initCourseLatLon();
         race.setTotalRaceTime();
