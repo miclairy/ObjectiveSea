@@ -6,11 +6,13 @@ import org.junit.Ignore;
 import org.junit.Test;
 import seng302.models.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RaceVisionFileReaderTest {
 
-    @Ignore //TODO Rewrite test for new xml format
     @Test
-    public void readCourseFileTest(){
+    public void readRaceFileTest(){
         Course course = RaceVisionFileReader.importCourse("data/testFiles/testRace.xml");
         Course expected = createExpectedCourse();
 
@@ -21,25 +23,19 @@ public class RaceVisionFileReaderTest {
         for (Integer key : expected.getCompoundMarks().keySet()) {
             assertCompoundMarksAreEqual(expected.getCompoundMarks().get(key), course.getCompoundMarks().get(key));
         }
-        Assert.assertEquals(expected.getWindDirection(), course.getWindDirection(), 0);
-        Assert.assertTrue(course.getCompoundMarks().get("Start").isStartLine());
-        Assert.assertTrue(course.getCompoundMarks().get("Finish").isFinishLine());
-        Assert.assertTrue(course.getCompoundMarks().get("Start") instanceof RaceLine);
-        Assert.assertTrue(course.getCompoundMarks().get("Finish") instanceof RaceLine);
-        Assert.assertTrue(course.getCompoundMarks().get("Gate") != null);
-        Assert.assertFalse(course.getCompoundMarks().get("Mark") != null);
+
+        Assert.assertTrue(course.getCompoundMarks().get(1).isStartLine());
+        Assert.assertTrue(course.getCompoundMarks().get(11).isFinishLine());
+        Assert.assertTrue(course.getCompoundMarks().get(1) instanceof RaceLine);
+        Assert.assertTrue(course.getCompoundMarks().get(11) instanceof RaceLine);
+        Assert.assertTrue(course.getCompoundMarks().get(2) != null);
+        Assert.assertFalse(course.getCompoundMarks().get(14) != null);
 
         //Boundary
-        Assert.assertEquals(course.getBoundary().size(), 3);
-        Assert.assertEquals(course.getBoundary().get(0).getLat(), 32.5, 0);
-        Assert.assertEquals(course.getBoundary().get(0).getLon(), -60.1, 0);
-
-        Assert.assertEquals(course.getBoundary().get(1).getLat(), 32.0, 0);
-        Assert.assertEquals(course.getBoundary().get(1).getLon(), -60.1, 0);
-
-        Assert.assertEquals(course.getBoundary().get(2).getLat(), 32.0, 0);
-        Assert.assertEquals(course.getBoundary().get(2).getLon(), -60.0, 0);
-
+        Assert.assertEquals(course.getBoundary().size(), 10);
+        for(int i = 0; i < 10; i++){
+            Assert.assertEquals(course.getBoundary().get(i), expected.getBoundary().get(i));
+        }
     }
 
     @Test
@@ -59,36 +55,70 @@ public class RaceVisionFileReaderTest {
     private Course createExpectedCourse() {
         Course expected = new Course();
 
-        Mark startLine1 = new Mark(0, "Start Line 1", new Coordinate(0, 0));
-        Mark startLine2 = new Mark(1, "Start Line 2", new Coordinate(0, 1));
-        RaceLine start = new RaceLine(0, "Start", startLine1, startLine2);
+        Mark startLine1 = new Mark(122, "Start Line 1", new Coordinate(57.6703330, 11.8278330));
+        Mark startLine2 = new Mark(123, "Start Line 2", new Coordinate(57.6703330, 11.8278330));
+        RaceLine start = new RaceLine(1, "Mark0", startLine1, startLine2);
         start.setMarkAsStart();
 
-        Mark finishLine1 = new Mark(2, "Finish Line 1", new Coordinate(0, 5));
-        Mark finishLine2 = new Mark(3, "Finish Line 2", new Coordinate(0, 6));
-        RaceLine finish = new RaceLine(1, "Finish", finishLine1, finishLine2);
+        Mark mark1 = new Mark(131, "Mark1", new Coordinate(57.6675700, 11.8359880));
+        CompoundMark compoundMark2 = new CompoundMark(2, "Mark1", mark1);
+
+        Mark leeGate1 = new Mark(124, "Lee Gate 1", new Coordinate(57.6708220, 11.8433900));
+        Mark leeGate2 = new Mark(125, "Lee Gate 2", new Coordinate(57.6708220, 11.8433900));
+        CompoundMark compoundMark3 = new CompoundMark(3, "Mark2", leeGate1, leeGate2);
+
+        Mark windGate1 = new Mark(126, "Wind Gate 1", new Coordinate(57.6650170, 11.8279170));
+        Mark windGate2 = new Mark(127, "Wind Gate 2", new Coordinate(57.6650170, 11.8279170));
+        CompoundMark compoundMark4 = new CompoundMark(4, "Mark3", windGate1, windGate2);
+
+        CompoundMark compoundMark5 = new CompoundMark(5, "Mark2", leeGate1, leeGate2);
+
+        CompoundMark compoundMark6 = new CompoundMark(6, "Mark3", windGate1, windGate2);
+
+        CompoundMark compoundMark7 = new CompoundMark(7, "Mark2", leeGate1, leeGate2);
+
+        CompoundMark compoundMark8 = new CompoundMark(8, "Mark3", windGate1, windGate2);
+
+        CompoundMark compoundMark9 = new CompoundMark(9, "Mark2", leeGate1, leeGate2);
+
+        CompoundMark compoundMark10 = new CompoundMark(10, "Mark3", windGate1, windGate2);
+
+        Mark finishLine1 = new Mark(128, "Finish Line 1", new Coordinate(57.6715240, 11.8444950));
+        Mark finishLine2 = new Mark(129, "Finish Line 2", new Coordinate(57.6715240, 11.8444950));
+        RaceLine finish = new RaceLine(11, "Mark4", finishLine1, finishLine2);
         finish.setMarkAsFinish();
 
-        Mark mark1 = new Mark(4, "Mark 1", new Coordinate(2, 2));
-        CompoundMark mark = new CompoundMark(2, "Mark", mark1);
-
-        Mark gate1 = new Mark(3, "Gate 1", new Coordinate(3, 3));
-        Mark gate2 = new Mark(4, "Gate 2", new Coordinate(4, 4));
-        CompoundMark gate = new CompoundMark(3, "Gate", gate1, gate2);
-
         expected.addNewCompoundMark(start);
+        expected.addNewCompoundMark(compoundMark2);
+        expected.addNewCompoundMark(compoundMark3);
+        expected.addNewCompoundMark(compoundMark4);
+        expected.addNewCompoundMark(compoundMark5);
+        expected.addNewCompoundMark(compoundMark6);
+        expected.addNewCompoundMark(compoundMark7);
+        expected.addNewCompoundMark(compoundMark8);
+        expected.addNewCompoundMark(compoundMark9);
+        expected.addNewCompoundMark(compoundMark10);
         expected.addNewCompoundMark(finish);
-        expected.addNewCompoundMark(mark);
-        expected.addNewCompoundMark(gate);
-        expected.addMarkInOrder(1);
-        expected.addMarkInOrder(2);
-        expected.addMarkInOrder(3);
-        expected.addMarkInOrder(4);
-        expected.setWindDirection(200);
+
+        for(int i = 1; i <= 11; i++){
+            expected.addMarkInOrder(i);
+        }
+
+        expected.addToBoundary(new Coordinate(57.6739450, 11.8417100));
+        expected.addToBoundary(new Coordinate(57.6709520, 11.8485010));
+        expected.addToBoundary(new Coordinate(57.6690260, 11.8472790));
+        expected.addToBoundary(new Coordinate(57.6693140, 11.8457610));
+        expected.addToBoundary(new Coordinate(57.6665370, 11.8432910));
+        expected.addToBoundary(new Coordinate(57.6641400, 11.8385840));
+        expected.addToBoundary(new Coordinate(57.6629430, 11.8332030));
+        expected.addToBoundary(new Coordinate(57.6629480, 11.8249660));
+        expected.addToBoundary(new Coordinate(57.6686890, 11.8250920));
+        expected.addToBoundary(new Coordinate(57.6708220, 11.8321340));
         return expected;
     }
 
     private void assertMarksAreEqual(Mark mark1, Mark mark2){
+        Assert.assertEquals(mark1.getSourceID(), mark2.getSourceID());
         Assert.assertEquals(mark1.getPosition().getLat(), mark2.getPosition().getLat(), 0);
         Assert.assertEquals(mark1.getPosition().getLon(), mark2.getPosition().getLon(), 0);
     }
@@ -107,4 +137,39 @@ public class RaceVisionFileReaderTest {
         }
     }
 
+
+    @Test
+    public void importStartersTest(){
+        List<Boat> boats = RaceVisionFileReader.importStarters("data/testFiles/testBoat.xml");
+        List<Boat> expectedBoats = createExpectedBoats();
+        Assert.assertEquals(expectedBoats.size(), boats.size());
+        for(int i = 0; i < boats.size(); i++){
+            assertBoatEquals(expectedBoats.get(i), boats.get(i));
+        }
+    }
+
+    private void assertBoatEquals(Boat boat1, Boat boat2){
+        Assert.assertEquals(boat1.getId(), boat2.getId());
+        Assert.assertEquals(boat1.getName(), boat2.getName());
+        Assert.assertEquals(boat1.getNickName(), boat2.getNickName());
+    }
+
+    private List<Boat> createExpectedBoats(){
+        List<Boat> boats = new ArrayList<Boat>();
+        boats.add(new Boat(101, "ORACLE TEAM USA", "USA", 0));
+        boats.add(new Boat(102, "ARTEMIS RACING", "SWE", 0));
+        boats.add(new Boat(103, "EMIRATES TEAM NZ", "NZL", 0));
+        boats.add(new Boat(104, "SOFTBANK TEAM JAPAN", "JPN", 0));
+        boats.add(new Boat(105, "GROUPAMA TEAM FRANCE", "FRA", 0));
+        boats.add(new Boat(106, "LAND ROVER BAR", "GBR", 0));
+        return boats;
+    }
+
+    @Test
+    public void importRegattaTest(){
+        Race race = new Race("test", null, new ArrayList<>());
+        RaceVisionFileReader.importRegatta("data/testFiles/testRegatta.xml", race);
+        Assert.assertEquals(2, race.getUTCOffset());
+        Assert.assertEquals("Gothenburg World Series 2015", race.getRegattaName());
+    }
 }

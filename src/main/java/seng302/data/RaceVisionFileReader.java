@@ -305,7 +305,6 @@ public class RaceVisionFileReader {
             String name = boatXML.getAttribute(XMLTags.Boats.BOATNAME);
             String nickname = boatXML.getAttribute(XMLTags.Boats.NICKNAME);
             Integer id = Integer.parseInt(boatXML.getAttribute(XMLTags.Boats.SOURCE_ID));
-            //get lat long
             boat = new Boat(id, name, nickname, 0);
         }
         return boat;
@@ -355,7 +354,9 @@ public class RaceVisionFileReader {
                             race.setRegattaName(String.valueOf(element.getTextContent()));
                             break;
                         case XMLTags.Regatta.UTC_OFFSET:
+
                             int utcOffset = Integer.parseInt(String.valueOf(element.getTextContent()));
+
                             if (utcOffset <= 14 && utcOffset >= -12) {
                                 race.setUTCOffset(utcOffset);
                             } else {

@@ -65,14 +65,14 @@ public class Controller implements Initializable, Observer {
     private final int WIND_ARROW_OFFSET = 60;
 
     //FPS Counter
-    public static SimpleStringProperty fpsString = new SimpleStringProperty();
+    private static SimpleStringProperty fpsString = new SimpleStringProperty();
     private static final long[] frameTimes = new long[100];
     private static int frameTimeIndex = 0 ;
     private static boolean arrayFilled = false ;
 
     //Race Clock
-    public static SimpleStringProperty raceTimerString = new SimpleStringProperty();
-    public static SimpleStringProperty clockString = new SimpleStringProperty();
+    private static SimpleStringProperty raceTimerString = new SimpleStringProperty();
+    private static SimpleStringProperty clockString = new SimpleStringProperty();
     private static double totalRaceTime;
 
     private static ObservableList<String> formattedDisplayOrder = observableArrayList();
@@ -269,7 +269,7 @@ public class Controller implements Initializable, Observer {
     /**
      * displays the current time according to the UTC offset, in the GUI on the overlay
      */
-    public static void setTimeZone(int UTCOffset) {
+    public void setTimeZone(int UTCOffset) {
         clockString.set(TimeUtils.setTimeZone(UTCOffset));
     }
 
