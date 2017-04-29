@@ -1,6 +1,8 @@
 package seng302.models;
 
 
+import seng302.data.BoatStatus;
+
 import java.util.ArrayList;
 
 /**
@@ -8,6 +10,8 @@ import java.util.ArrayList;
  */
 
 public class Boat implements Comparable<Boat>{
+
+    private final double KNOTS_TO_MMS_MULTIPLIER = 514.444;
 
     private String name;
     private String nickName;
@@ -22,13 +26,9 @@ public class Boat implements Comparable<Boat>{
     private double heading;
     private double maxSpeed;
 
-    public void setStatus(int status) {
-        this.status = status;
-    }
+    private BoatStatus status = BoatStatus.UNDEFINED;
 
-    private int status = 1;
     private ArrayList<Coordinate> pathCoords;
-
     public Boat(int id, String name, String nickName, double speed) {
         this.id = id;
         this.name = name;
@@ -48,6 +48,10 @@ public class Boat implements Comparable<Boat>{
     public void setPosition(double lat, double lon){
         currentPosition.setLat(lat);
         currentPosition.setLon(lon);
+    }
+
+    public void setStatus(BoatStatus status) {
+        this.status = status;
     }
 
     public Coordinate getCurrentPosition() {
@@ -87,7 +91,7 @@ public class Boat implements Comparable<Boat>{
         //Check if boat has finished
         if(lastPassedMark == courseOrder.size()-1){
             finished = true;
-            status = 3; //   finished
+            status = BoatStatus.FINISHED; //   finished
             speed = 0;
         } else{
             //Move the remaining distance in leg
@@ -112,6 +116,10 @@ public class Boat implements Comparable<Boat>{
         return this.speed;
     }
 
+    public int getSpeedInMMS(){
+        return (int) (this.speed * KNOTS_TO_MMS_MULTIPLIER);
+    }
+
     public int getFinishingPlace() {
         return this.finishingPlace;
     }
@@ -133,7 +141,7 @@ public class Boat implements Comparable<Boat>{
     }
 
     public boolean isFinished() {
-        return finished;
+        return status.equals(BoatStatus.FINISHED);
     }
 
     public double getHeading() {
@@ -177,7 +185,11 @@ public class Boat implements Comparable<Boat>{
         return id;
     }
 
-    public int getStatus() {
+    public BoatStatus getStatus() {
         return status;
+    }
+
+    public void setLastPassedMark(int lastPassedMark) {
+        this.lastPassedMark = lastPassedMark;
     }
 }

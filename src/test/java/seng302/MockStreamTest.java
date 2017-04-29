@@ -1,8 +1,12 @@
 package seng302;
 
 
+import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-import seng302.controllers.MockStream;
+import seng302.controllers.MockRaceRunner;
+import seng302.data.AC35StreamMessage;
+import seng302.data.MockStream;
 
 import java.io.*;
 import java.net.*;
@@ -17,12 +21,21 @@ import static seng302.data.AC35StreamField.BOAT_SPEED;
 
 public class MockStreamTest {
 
+    MockRaceRunner mockRaceRunner  = new MockRaceRunner();
+
+    @Before
+    public void startMockRaceRunner(){
+        //mockRaceRunner = new MockRaceRunner();
+        //Thread runner = new Thread(mockRaceRunner);
+        //runner.start();
+    }
+
 
     @Test
     public void checkUpstreamIsSending(){
 
         try {
-            MockStream mockStream = new MockStream(2827);
+            MockStream mockStream = new MockStream(2827, mockRaceRunner);
             Thread upStream = new Thread(mockStream);
             upStream.start();
             Socket connectionSocket = new Socket("localhost", 2827);
@@ -39,7 +52,7 @@ public class MockStreamTest {
     @Test
     public void sendRaceXmlTest(){
         try {
-            MockStream mockStream = new MockStream(2829);
+            MockStream mockStream = new MockStream(2829, mockRaceRunner);
             Thread upStream = new Thread(mockStream);
             upStream.start();
             Socket connectionSocket = new Socket("localhost", 2829);
@@ -78,7 +91,7 @@ public class MockStreamTest {
     @Test
     public void sendBodyXmlTest(){
         try {
-            MockStream mockStream = new MockStream(2825);
+            MockStream mockStream = new MockStream(2825, mockRaceRunner);
             Thread upStream = new Thread(mockStream);
             upStream.start();
             Socket connectionSocket = new Socket("localhost", 2825);
@@ -121,18 +134,19 @@ public class MockStreamTest {
 
     }
 
+    @Ignore
     @Test
     public void sendBoatLocationTest(){
 
         try {
-            MockStream mockStream = new MockStream(2824);
+            MockStream mockStream = new MockStream(2824, mockRaceRunner);
             Thread upStream = new Thread(mockStream);
             upStream.start();
             Socket connectionSocket = new Socket("localhost", 2824);
             InputStream stream = null;
             stream = connectionSocket.getInputStream();
             int readByte = stream.read();
-            while (readByte != 37){
+            while (readByte != AC35StreamMessage.BOAT_LOCATION_MESSAGE.getValue()){
                 readByte = stream.read();
             }
             DataInputStream dataInputStream = new DataInputStream(stream);
@@ -155,10 +169,11 @@ public class MockStreamTest {
 
     }
 
+    @Ignore
     @Test
     public void sendMarkRoundedTest(){
         try {
-            MockStream mockStream = new MockStream(2823);
+            MockStream mockStream = new MockStream(2823, mockRaceRunner);
             Thread upStream = new Thread(mockStream);
             upStream.start();
             Socket connectionSocket = new Socket("localhost", 2823);
@@ -195,7 +210,7 @@ public class MockStreamTest {
     @Test
     public void sendRaceStatusTest(){
         try {
-            MockStream mockStream = new MockStream(2822);
+            MockStream mockStream = new MockStream(2822, mockRaceRunner);
             Thread upStream = new Thread(mockStream);
             upStream.start();
             Socket connectionSocket = new Socket("localhost", 2822);

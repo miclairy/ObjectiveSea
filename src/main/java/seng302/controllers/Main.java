@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import seng302.data.DataStreamReader;
+import seng302.data.MockStream;
 import seng302.utilities.Config;
 import seng302.data.RaceVisionFileReader;
 import seng302.models.Boat;
@@ -68,8 +69,11 @@ public class Main extends Application {
      * Creates a MockStream object, puts it in it's own thread and starts the thread
      */
     private static void setupMockStream(){
+        MockRaceRunner runner = new MockRaceRunner();
+        Thread runnerThread = new Thread(runner);
+        runnerThread.start();
         MockStream mockStream;
-        mockStream = new MockStream(2828);
+        mockStream = new MockStream(2828, runner);
         Thread upStream = new Thread(mockStream);
         upStream.start();
     }
