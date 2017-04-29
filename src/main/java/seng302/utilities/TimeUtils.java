@@ -42,7 +42,6 @@ public class TimeUtils {
             int hours = zonedDateTime.getHour();
             int minutes = zonedDateTime.getMinute();
             int seconds = zonedDateTime.getSecond();
-            System.out.println(String.format("%02d:%02d:%02d UTC%s", hours, minutes, seconds, utcFormat));
             return String.format("%02d:%02d:%02d UTC%s", hours, minutes, seconds, utcFormat);
         }
     }
