@@ -9,11 +9,15 @@ import java.util.*;
  * Created on 7/03/17.
  * A Race encompasses the course and the competitors.
  */
-public class Race {
+public class Race extends Observable{
 
     public static final int WARNING_STATUS = 1;
     public static final int PREPARATORY_STATUS = 2;
     public static final int STARTED_STATUS = 3;
+    public static final int TERMINATED_STATUS = 8;
+
+    public static final int UPDATED_STATUS_SIGNAL = 1;
+    public static final int UPDATED_START_TIME_SIGNAL = 2;
 
     private String regattaName;
     private Course course;
@@ -61,6 +65,14 @@ public class Race {
         }
     }
 
+    /**
+     * Updates the position, speed and heading of the a boat with a given source id
+     * @param sourceID the source id of the boat
+     * @param lat the new latitude of the boat
+     * @param lon the new longitude of the boat
+     * @param heading the new heading of the boat
+     * @param speed the new speed of the boat
+     */
     public void updateBoat(Integer sourceID, Double lat, Double lon, Double heading, Double speed){
         if(boatIdMap.containsKey(sourceID)){
             Boat boat = boatIdMap.get(sourceID);
@@ -70,10 +82,6 @@ public class Race {
         } else{
             System.err.println("Boat source ID not found");
         }
-    }
-
-    public void updateMark(int sourceID, double lat, double lon) {
-        course.updateMark(sourceID, lat, lon);
     }
 
     public List<Boat> getCompetitors() {
@@ -126,13 +134,28 @@ public class Race {
         return secondsBeforeRace;
     }
 
+    /**
+     * Updates the race status and prints it if it is different than before (for debugging purposes)
+     * @param newRaceStatus The new race status read in
+     */
     public void updateRaceStatus(int newRaceStatus) {
         if(raceStatus != newRaceStatus){
             raceStatus = newRaceStatus;
+            setChanged();
+            notifyObservers(UPDATED_STATUS_SIGNAL);
             System.out.println("Race Status: " + raceStatus);
         }
     }
 
+    /**
+     * Updates a boat's last rounded mark based on the ids of boat and the rounded mark's id, and update the race
+     * order accordingly.
+     * If a mark occurs multiple times in the race order, the rounded mark index will be the one next occurrence
+     * of the mark that the boat has not rounded yet.
+     * @param sourceID the boat's id
+     * @param roundedMarkID the mark's id
+     * @param time the time that the boat rounded the mark
+     */
     public void updateMarkRounded(int sourceID, int roundedMarkID, long time) {
         Boat boat = boatIdMap.get(sourceID);
         List<CompoundMark> courseOrder = course.getCourseOrder();
@@ -148,12 +171,25 @@ public class Race {
         }
     }
 
+    /**
+     * Checks if race is terminated or not
+     * @return true is race has terminated status, false otherwise
+     */
+    public boolean isTerminated(){
+        return raceStatus == TERMINATED_STATUS;
+    }
+
     public long getStartTimeInEpochMs() {
         return startTimeInEpochMs;
     }
 
     public void setStartTimeInEpochMs(long startTimeInEpochMs) {
-        this.startTimeInEpochMs = startTimeInEpochMs;
+        if(this.startTimeInEpochMs != startTimeInEpochMs){
+            this.startTimeInEpochMs = startTimeInEpochMs;
+            setChanged();
+            notifyObservers(UPDATED_START_TIME_SIGNAL);
+
+        }
     }
 
     public long getCurrentTimeInEpochMs() {
@@ -176,5 +212,12 @@ public class Race {
 
     public void setUTCOffset(int UTCOffset) { this.UTCOffset = UTCOffset; }
 
+    public Boat getBoatById(Integer id){
+        if(boatIdMap.containsKey(id)){
+            return boatIdMap.get(id);
+        } else{
+            return null;
+        }
+    }
 }
 

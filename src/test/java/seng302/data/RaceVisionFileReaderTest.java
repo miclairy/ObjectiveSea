@@ -6,15 +6,12 @@ import org.junit.Ignore;
 import org.junit.Test;
 import seng302.models.*;
 
-/**
- * Created by Michael Trotter on 3/21/2017.
- */
 public class RaceVisionFileReaderTest {
 
     @Ignore //TODO Rewrite test for new xml format
     @Test
     public void readCourseFileTest(){
-        Course course = RaceVisionFileReader.importCourse("data/testFiles/testCourse.xml");
+        Course course = RaceVisionFileReader.importCourse("data/testFiles/testRace.xml");
         Course expected = createExpectedCourse();
 
         Assert.assertNotNull(course);
@@ -58,7 +55,7 @@ public class RaceVisionFileReaderTest {
         Assert.assertNull(course);
     }
 
-    /** This is a clone of the course that testCourse.xml is expected to create */
+    /** This is a clone of the course that testRace.xml is expected to create */
     private Course createExpectedCourse() {
         Course expected = new Course();
 

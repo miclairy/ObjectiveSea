@@ -48,6 +48,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     //number of pixels from right edge of canvas that the wind arrow will be drawn
     private final int WIND_ARROW_OFFSET = 60;
     private boolean courseNeedsRedraw = false;
+    private boolean initializedBoats = false;
 
     public RaceViewController(Group root, Race race, Controller controller) {
         this.root = root;
@@ -68,14 +69,20 @@ public class RaceViewController extends AnimationTimer implements Observer {
             return;
         }
         double secondsElapsed = TimeUtils.convertNanosecondsToSeconds(currentTime - previousTime);
-        //scale time based on the input config value
-//        double scaledSecondsElapsed = secondsElapsed * race.getTotalRaceTime() / (Config.TIME_SCALE_IN_SECONDS);
-        double scaledSecondsElapsed = secondsElapsed;
 
-        controller.updateRaceClock(scaledSecondsElapsed); //updates race clock using scaledSecondsElapsed
-        currentTimeInSeconds += scaledSecondsElapsed;
+        if(!race.isTerminated()){
+            controller.updateRaceClock(secondsElapsed);
+        }
+        if(controller.hasRaceStatusChanged()){
+            controller.updatePreRaceScreen();
+            controller.setRaceStatusChanged(false);
+        }
+        if(controller.hasRaceStartTimeChanged()){
+            controller.rebaseRaceClock();
+            controller.setRaceStartTimeChanged(false);
+        }
+        currentTimeInSeconds += secondsElapsed;
 
-        controller.handlePrerace();
         controller.updateFPSCounter(currentTime);
         run();
         previousTime = currentTime;
@@ -109,6 +116,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             drawBoat(displayBoat);
             initBoatPath(displayBoat);
         }
+        initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);
     }
 
@@ -145,6 +153,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawRaceLines();
     }
 
+    /**
+     * Draws both the start end and the finish line
+     */
     private void drawRaceLines() {
         drawRaceLine(race.getCourse().getStartLine());
         drawRaceLine(race.getCourse().getFinishLine());
@@ -162,6 +173,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
+    /**
+     * Creates a Line object based on two ends of a RaceLine
+     * @param raceLine The RaceLine object for the line to be drawn for
+     */
     public void drawRaceLine(RaceLine raceLine){
         Line line = raceView.createRaceLine(raceLine.getMark1().getPosition(), raceLine.getMark2().getPosition());
         raceLine.setLine(line);
@@ -267,11 +282,18 @@ public class RaceViewController extends AnimationTimer implements Observer {
         redrawRaceLines();
     }
 
+    /**
+     * Updates the positions of both the start and finish lines
+     */
     private void redrawRaceLines() {
         redrawRaceLine(race.getCourse().getStartLine());
         redrawRaceLine(race.getCourse().getFinishLine());
     }
 
+    /**
+     * Redraws a raceline on the visuial
+     * @param raceLine
+     */
     private void redrawRaceLine(RaceLine raceLine) {
         root.getChildren().remove(raceLine.getLine());
         Line line = raceView.createRaceLine(raceLine.getMark1().getPosition(), raceLine.getMark2().getPosition());
@@ -383,6 +405,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if (course == race.getCourse()){
             courseNeedsRedraw = true;
         }
+    }
+
+    public boolean hasInitializedBoats() {
+        return initializedBoats;
     }
 }
 

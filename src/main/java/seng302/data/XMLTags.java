@@ -32,12 +32,12 @@ public class XMLTags {
         public static final String COMPOUND_MARK = "CompoundMark";
         public static final String MARK = "Mark";
         public static final String NAME = "Name";
-        public static final String LAT = "lat";
-        public static final String LON = "lon";
+        public static final String LAT = "Lat";
+        public static final String LON = "Lon";
         public static final String TARGETLAT = "TargetLat";
         public static final String TARGETLON = "TargetLng";
         public static final String SOURCEID = "SourceID";
-        public static final String COMPOUNDMARKID = "CompoundMarkID";
+        public static final String COMPOUND_MARK_ID = "CompoundMarkID";
 
         //mark attributes
         public static final String START = "start";
