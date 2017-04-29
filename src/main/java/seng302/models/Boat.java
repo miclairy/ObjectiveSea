@@ -22,6 +22,7 @@ public class Boat implements Comparable<Boat>{
 
     private int lastPassedMark;
     private int lastTackMarkPassed;
+    private int lastGybeMarkPassed;
     private boolean finished;
     private double heading;
     private double maxSpeed;
@@ -30,6 +31,9 @@ public class Boat implements Comparable<Boat>{
     private double speedCounter = 0;
     private double VMGofBoat;
     private double TWAofBoat;
+    private double gybeVMGofBoat;
+    private double gybeTWAofBoat;
+    private String lastTurnTaken = "Right";
 
     public Boat(String name, String nickName, double speed) {
         this.name = name;
@@ -46,7 +50,10 @@ public class Boat implements Comparable<Boat>{
         }
         ArrayList<Integer> TWSList = PolarReader.getTWS();
         ArrayList<ArrayList<Pair<Double, Double>>> polars = PolarReader.getPolars();
-        Pair<Double,Double> tackingInfo = tacking(20,TWSList,polars);
+        Pair<Double,Double> tackingInfo = tacking(20,TWSList,polars, true);
+        Pair<Double,Double> gybingInfo = tacking(20, TWSList,polars,false);
+        gybeVMGofBoat = gybingInfo.getKey();
+        gybeTWAofBoat = gybingInfo.getValue();
         VMGofBoat = tackingInfo.getKey();
         TWAofBoat = tackingInfo.getValue();
     }
@@ -84,9 +91,11 @@ public class Boat implements Comparable<Boat>{
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
         CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
         double currentSpeed = speed;
-        if(nextMark.getName().equals("Windward Gate")){
-            currentSpeed = VMGofBoat;
-        }
+//        if(nextMark.getName().equals("Windward Gate")){
+//            currentSpeed = VMGofBoat;
+//        } else if(nextMark.getName().equals("Leeward Gate")){
+//            currentSpeed = gybeVMGofBoat * (-1.0);
+//        }
         System.out.println(currentSpeed);
         double distanceGained = timePassed * averageSpeed(currentSpeed);
         double distanceLeftInLeg = currentPosition.greaterCircleDistance(nextMark.getPosition());
@@ -112,11 +121,18 @@ public class Boat implements Comparable<Boat>{
             finished = true;
             speed = 0;
         } if(nextMark.getName().equals("Windward Gate")){
-                Coordinate tackingPosition = tackingUpdateLocation(distanceGained, courseOrder, course);
+                lastGybeMarkPassed = 0;
+                Coordinate tackingPosition = tackingUpdateLocation(distanceGained, courseOrder, course, true);
                 //Move the remaining distance in leg
                 currentPosition.update(tackingPosition.getLat(), tackingPosition.getLon());
+        } else if(nextMark.getName().equals("Leeward Gate")){
+            lastTackMarkPassed = 0;
+            Coordinate tackingPosition = tackingUpdateLocation(distanceGained, courseOrder, course, false);
+            //Move the remaining distance in leg
+            currentPosition.update(tackingPosition.getLat(), tackingPosition.getLon());
         } else{
             lastTackMarkPassed = 0;
+            lastGybeMarkPassed = 0;
             //Move the remaining distance in leg
             double percentGained = (distanceGained / distanceLeftInLeg);
             double newLat = getCurrentLat() + percentGained * (nextMark.getLat() - getCurrentLat());
@@ -125,7 +141,14 @@ public class Boat implements Comparable<Boat>{
         }
     }
 
-    public Coordinate tackingUpdateLocation(double distanceGained, ArrayList<CompoundMark> courseOrder, Course course){
+    public Coordinate tackingUpdateLocation(double distanceGained, ArrayList<CompoundMark> courseOrder, Course course, Boolean onTack){
+        double TrueWindAngle;
+        if(onTack){
+            TrueWindAngle = TWAofBoat;
+        } else {
+            TrueWindAngle = gybeTWAofBoat;
+        }
+
         CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
         double lengthOfLeg = courseOrder.get(lastPassedMark).getPosition().greaterCircleDistance(nextMark.getPosition());
         double lengthOfTack = ((lengthOfLeg*10) / Math.floor((lengthOfLeg*10)))/10;
@@ -133,16 +156,16 @@ public class Boat implements Comparable<Boat>{
         ArrayList<CompoundMark> tackingMarks = new ArrayList<>();
         tackingMarks.add(courseOrder.get(lastPassedMark));
         CompoundMark currentMark = courseOrder.get(lastPassedMark);
-        String previousTackLat = "Right";
+        String previousTackLat = lastTurnTaken;
         for(int i = 0; i < numOfTacks; i++){
-            double distance = (lengthOfTack/Math.cos(Math.toRadians(TWAofBoat)));
+            double distance = (lengthOfTack/Math.cos(Math.toRadians(TrueWindAngle)));
             Coordinate temp1 = tackingMarks.get(i).getPosition();
             double bearing = currentMark.getPosition().headingToCoordinate(nextMark.getPosition());
             if(previousTackLat == "Right"){
-                bearing -= TWAofBoat;
+                bearing -= TrueWindAngle;
                 previousTackLat = "Left";
             } else {
-                bearing += TWAofBoat;
+                bearing += TrueWindAngle;
                 previousTackLat = "Right";
             }
 
@@ -162,21 +185,40 @@ public class Boat implements Comparable<Boat>{
         for(int j = 1; j < tackingMarks.size(); j++){
             lengthOfTackingLeg += tackingMarks.get(j-1).getPosition().greaterCircleDistance(tackingMarks.get(j).getPosition());
         }
-        CompoundMark nextTackMark = tackingMarks.get(lastTackMarkPassed+1);
+        int lastMarkPassed = 0;
+        if(onTack){
+            lastMarkPassed = lastTackMarkPassed;
+        } else {
+            lastMarkPassed = lastGybeMarkPassed;
+        }
+        CompoundMark nextTackMark = tackingMarks.get(lastMarkPassed+1);
         double distanceLeftinTack = currentPosition.greaterCircleDistance(nextTackMark.getPosition());
-
+        if(lastMarkPassed == 0){
+            double newHeading = tackingMarks.get(lastMarkPassed).getPosition().headingToCoordinate(tackingMarks.get(lastMarkPassed + 1).getPosition());;
+            setHeading(newHeading);
+            //nextTackMark = tackingMarks.get(lastMarkPassed+1);
+            //distanceLeftinTack = currentPosition.greaterCircleDistance(nextTackMark.getPosition());
+        }
         //If boat moves more than the remaining distance in the leg
-        while(distanceGained > distanceLeftinTack && lastTackMarkPassed < tackingMarks.size()-1){
+        while(distanceGained > distanceLeftinTack && lastMarkPassed < tackingMarks.size()-1){
             distanceGained -= distanceLeftinTack;
             //Set boat position to next mark
             currentPosition.setLat(nextTackMark.getLat());
             currentPosition.setLon(nextTackMark.getLon());
-            lastTackMarkPassed++;
+            if(onTack){
+                lastTackMarkPassed++;
+            } else {
+                lastGybeMarkPassed++;
+            }
+            if(lastMarkPassed == 0){
 
-            if(lastTackMarkPassed < tackingMarks.size()-1){
-                double newHeading = tackingMarks.get(lastTackMarkPassed).getPosition().headingToCoordinate(tackingMarks.get(lastTackMarkPassed + 1).getPosition());;
+            }
+            lastMarkPassed++;
+
+            if(lastMarkPassed < tackingMarks.size()-1){
+                double newHeading = tackingMarks.get(lastMarkPassed).getPosition().headingToCoordinate(tackingMarks.get(lastMarkPassed + 1).getPosition());;
                 setHeading(newHeading);
-                nextTackMark = tackingMarks.get(lastTackMarkPassed+1);
+                nextTackMark = tackingMarks.get(lastMarkPassed+1);
                 distanceLeftinTack = currentPosition.greaterCircleDistance(nextTackMark.getPosition());
             }
         }
@@ -200,7 +242,7 @@ public class Boat implements Comparable<Boat>{
         return answer;
     }
 
-    public Pair<Double,Double> tacking(int TWS, ArrayList<Integer> trueWindSpeeds, ArrayList<ArrayList<Pair<Double, Double>>> polars){
+    public Pair<Double,Double> tacking(int TWS, ArrayList<Integer> trueWindSpeeds, ArrayList<ArrayList<Pair<Double, Double>>> polars, Boolean onTack){
 //        double TWS = course.getTrueWindSpeed();
         Pair<Double,Double> boatsTack;
         int index = 0;
@@ -223,8 +265,18 @@ public class Boat implements Comparable<Boat>{
         double VMG2 = 0;
         double TWA2 = 0;
         double VMG3 = 0;
-        //Interpolate between closet TWS to get highest VMG of each
         double TWA3 = 0;
+        double gybeVMG1 = 1000000;
+        double gybeVMG2 = 1000000;
+        double gybeVMG3 = 1000000;
+
+        Pair<Double,Double> pair4;
+        Pair<Double,Double> pair5;
+        Pair<Double,Double> pair6;
+        double TrueVMG;
+        //Interpolate between closet TWS to get highest VMG of each
+        //if gybing 5,6,7 if tacking 1,3,5
+        if(onTack){
         for(double k = 0; k < 91; k++){
             double BSP1 = lagrangeInterpolation(polars.get(index - 1).get(1), polars.get(index - 1).get(3), polars.get(index - 1).get(5), k);
             if(VMG(BSP1, k) > VMG1){VMG1 = VMG(BSP1, k); TWA1 = k;}
@@ -233,15 +285,33 @@ public class Boat implements Comparable<Boat>{
             double BSP3 = lagrangeInterpolation(polars.get(index + 1).get(1), polars.get(index + 1).get(3), polars.get(index + 1).get(5), k);
             if(VMG(BSP3, k) > VMG3){VMG3 = VMG(BSP3, k);TWA3 = k;}
         }
-        //interpolate between TWS and VMG to get given VMG at the TWS
-        Pair<Double,Double> pair1 = new Pair<>(TWS1, VMG1);
-        Pair<Double,Double> pair2 = new Pair<>(TWS2, VMG2);
-        Pair<Double,Double> pair3 =  new Pair<>(TWS3, VMG3);
-        double TrueVMG = lagrangeInterpolation(pair1,pair2, pair3, TWS);
-        //interpolate back to get TWA based on found VMG
-        Pair<Double,Double> pair4 = new Pair<>(VMG1, TWA1);
-        Pair<Double,Double> pair5 = new Pair<>(VMG2, TWA2);
-        Pair<Double,Double> pair6 = new Pair<>(VMG3, TWA3);
+            Pair<Double,Double> pair1 = new Pair<>(TWS1, VMG1);
+            Pair<Double,Double> pair2 = new Pair<>(TWS2, VMG2);
+            Pair<Double,Double> pair3 =  new Pair<>(TWS3, VMG3);
+            TrueVMG = lagrangeInterpolation(pair1,pair2, pair3, TWS);
+            //interpolate back to get TWA based on found VMG
+            pair4 = new Pair<>(VMG1, TWA1);
+            pair5 = new Pair<>(VMG2, TWA2);
+            pair6 = new Pair<>(VMG3, TWA3);
+        } else {
+            for(double k = 90; k < 181; k++){
+                double BSP1 = lagrangeInterpolation(polars.get(index - 1).get(5), polars.get(index - 1).get(6), polars.get(index - 1).get(7), k);
+                if(VMG(BSP1, k) < gybeVMG1){gybeVMG1 = VMG(BSP1, k); TWA1 = k;}
+                double BSP2 = lagrangeInterpolation(polars.get(index).get(5), polars.get(index).get(6), polars.get(index).get(7), k);
+                if(VMG(BSP2, k) < gybeVMG2){gybeVMG2 = VMG(BSP2, k); TWA2 = k;}
+                double BSP3 = lagrangeInterpolation(polars.get(index + 1).get(5), polars.get(index + 1).get(6), polars.get(index + 1).get(7), k);
+                if(VMG(BSP3, k) < gybeVMG3){gybeVMG3 = VMG(BSP3, k);TWA3 = k;}
+                }
+            Pair<Double,Double> pair1 = new Pair<>(TWS1, gybeVMG1);
+            Pair<Double,Double> pair2 = new Pair<>(TWS2, gybeVMG2);
+            Pair<Double,Double> pair3 =  new Pair<>(TWS3, gybeVMG3);
+            TrueVMG = lagrangeInterpolation(pair1,pair2, pair3, TWS);
+            //interpolate back to get TWA based on found VMG
+            pair4 = new Pair<>(gybeVMG1, TWA1);
+            pair5 = new Pair<>(gybeVMG2, TWA2);
+            pair6 = new Pair<>(gybeVMG3, TWA3);
+
+        }
         double TWA = lagrangeInterpolation(pair4,pair5,pair6,TrueVMG);
         boatsTack = new Pair<>(TrueVMG, TWA);
         return boatsTack;

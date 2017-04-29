@@ -129,12 +129,20 @@ public class BoatTest
         ArrayList<ArrayList<Pair<Double, Double>>> polars = PolarReader.getPolars();
         Course course = new Course();
         course.setTrueWindSpeed(20);
-        Pair<Double,Double> test = boat.tacking(20,TWSList,polars);
+        Pair<Double,Double> test = boat.tacking(20,TWSList,polars, true);
         //Check VMG
         assertEquals(8.384899644236858, test.getKey(), DELTA);
         //Check TWA
         assertEquals(38.0, test.getValue(), DELTA);
         //Check BSp
         assertEquals(10.64059038, (test.getKey()/Math.cos(Math.toRadians(test.getValue()))), DELTA);
+        //Check gybing also works
+        Pair<Double,Double> gybeTest = boat.tacking(20,TWSList,polars, false);
+        //Check VMG
+        assertEquals(-14.300172181468454, gybeTest.getKey(), DELTA);
+        //Check TWA
+        assertEquals(155.0, gybeTest.getValue(), DELTA);
+        //Check BSp
+        assertEquals(15.778494222393979, (gybeTest.getKey()/Math.cos(Math.toRadians(gybeTest.getValue()))), DELTA);
     }
 }
