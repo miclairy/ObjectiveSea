@@ -95,7 +95,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
-        controller.updateWindSpeed();
         controller.setWindDirection();
     }
 

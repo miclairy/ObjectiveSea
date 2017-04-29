@@ -57,9 +57,9 @@ public class Controller implements Initializable {
     @FXML
     private VBox startersOverlay;
     @FXML
-    private ImageView windDirectionImage;
+    private Label startersOverlayTitle;
     @FXML
-    private Text windSpeed;
+    private ImageView windDirectionImage;
 
     //number of from right edge of canvas that the wind arrow will be drawn
     private final int WIND_ARROW_OFFSET = 60;
@@ -78,7 +78,6 @@ public class Controller implements Initializable {
     private static ObservableList<String> formattedDisplayOrder = observableArrayList();
     private static double canvasHeight;
     private static double canvasWidth;
-    private static String timeZone;
 
     private RaceViewController raceViewController;
     private boolean isRaceClockInitialised;
@@ -95,7 +94,8 @@ public class Controller implements Initializable {
         race = Main.getRace();
         isRaceClockInitialised = false;
         Course course = race.getCourse();
-        timeZone = race.getCourse().getTimeZone();
+        setTimeZone(race.getUTCOffset());
+        startersOverlayTitle.setText(race.getRegattaName());
         course.initCourseLatLon();
         race.setTotalRaceTime();
 
@@ -173,11 +173,6 @@ public class Controller implements Initializable {
         raceViewController.setCurrentWindArrow(windDirectionImage);
     }
 
-
-    public void updateWindSpeed() {
-        double speed = race.getCourse().getWindSpeed();
-        windSpeed.setText(Double.toString(speed) + " mm/sec");
-    }
 
     /**
      * Set up a listener for the annotation slider so that we can keep the annotations on the boats up to date with
@@ -270,10 +265,10 @@ public class Controller implements Initializable {
     }
 
     /**
-     * displays the current tie zone in the GUI on the overlay
+     * displays the current time according to the UTC offset, in the GUI on the overlay
      */
-    public static void setTimeZone() {
-        clockString.set(TimeUtils.setTimeZone(timeZone));
+    public static void setTimeZone(int UTCOffset) {
+        clockString.set(TimeUtils.setTimeZone(UTCOffset));
     }
 
 

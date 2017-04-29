@@ -129,9 +129,6 @@ public class RaceVisionFileReader {
                                 course.addToBoundary(coord);
                             }
                             break;
-                        case XMLTags.Course.TIMEZONE:
-                            course.setTimeZone(String.valueOf(element.getTextContent()));
-                            break;
                     }
                 }
             }
@@ -479,12 +476,9 @@ public class RaceVisionFileReader {
                         case XMLTags.Regatta.REGATTA_NAME:
                             race.setRegattaName(String.valueOf(element.getTextContent()));
                             break;
-                        case XMLTags.Regatta.COURSE_NAME:
-                            race.setCourseName(String.valueOf(element.getTextContent()));
-                            break;
                         case XMLTags.Regatta.UTC_OFFSET:
-                            double utcOffset = Double.parseDouble(String.valueOf(element.getTextContent()));
-                            if (utcOffset <= 14.0 && utcOffset >= -12.0) {
+                            int utcOffset = Integer.parseInt(String.valueOf(element.getTextContent()));
+                            if (utcOffset <= 14 && utcOffset >= -12) {
                                 race.setUTCOffset(utcOffset);
                             } else {
                                 throw new InputMismatchException("The UTC offset must be greater than or equal to -12 and less than or equal to 14.");

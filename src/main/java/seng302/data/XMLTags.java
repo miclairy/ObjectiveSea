@@ -9,7 +9,6 @@ public class XMLTags {
     public class Regatta {
         public static final String REGATTA_CONFIG = "RegattaConfig";
         public static final String REGATTA_NAME = "RegattaName";
-        public static final String COURSE_NAME = "CourseName";
         public static final String UTC_OFFSET = "UtcOffset";
     }
 

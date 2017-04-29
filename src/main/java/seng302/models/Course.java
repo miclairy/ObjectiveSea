@@ -16,9 +16,7 @@ public class Course extends Observable {
     private double minLat, minLon, maxLat, maxLon;
     private Map<Integer, CompoundMark> compoundMarks;
     private double windDirection;
-    private double windSpeed;
     private RaceLine startLine, finishLine;
-    private String timeZone;
     private Map<Integer, Mark> allMarks;
     public Course() {
         this.compoundMarks = new HashMap<>();
@@ -132,7 +130,6 @@ public class Course extends Observable {
 
     public void updateCourseWindValues(int raceCourseWindDirection, int raceCourseWindSpeed) {
         windDirection = raceCourseWindDirection;
-        windSpeed = raceCourseWindSpeed;
     }
 
     public ArrayList<CompoundMark> getCourseOrder(){
@@ -147,18 +144,6 @@ public class Course extends Observable {
 
     public void setWindDirection(double windDirection) {
         this.windDirection = (windDirection + 360) % 360;
-    }
-
-    public double getWindSpeed() { return windSpeed; }
-
-    public void setWindSpeed(double windSpeed) { this.windSpeed = windSpeed; }
-
-    public void setTimeZone(String timeZone) {
-        this.timeZone = timeZone;
-    }
-
-    public String getTimeZone() {
-        return timeZone;
     }
 
     public double getMinLat() {
