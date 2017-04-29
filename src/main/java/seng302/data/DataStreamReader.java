@@ -269,11 +269,10 @@ public class DataStreamReader implements Runnable{
     private void parseRaceStatusMessage(byte[] body) {
         int raceStatus = byteArrayRangeToInt(body, RACE_STATUS.getStartIndex(), RACE_STATUS.getEndIndex());
         int raceCourseWindDirection = byteArrayRangeToInt(body, WIND_DIRECTION.getStartIndex(), WIND_DIRECTION.getEndIndex());
-        int raceCourseWindSpeed = byteArrayRangeToInt(body, WIND_SPEED.getStartIndex(), WIND_SPEED.getEndIndex());
         long currentTime = byteArrayRangeToLong(body, CURRENT_TIME.getStartIndex(), CURRENT_TIME.getEndIndex());
         long expectedStartTime = byteArrayRangeToLong(body, START_TIME.getStartIndex(), START_TIME.getEndIndex());
 
-        race.getCourse().updateCourseWindValues(raceCourseWindDirection, raceCourseWindSpeed);
+        race.getCourse().updateCourseWindValues(raceCourseWindDirection);
         race.updateRaceStatus(raceStatus);
         race.setStartTimeInEpochMs(expectedStartTime);
         race.setCurrentTimeInEpochMs(currentTime);

@@ -26,7 +26,6 @@ public class Race extends Observable{
     private Map<Integer, Boat> boatIdMap;
 
     private double totalRaceTime;
-    private double secondsBeforeRace = 0; //extra time in seconds to allow the race to begin and end smoothly
     private int raceStatus;
     private long startTimeInEpochMs, currentTimeInEpochMs;
     private int UTCOffset;
@@ -124,14 +123,6 @@ public class Race extends Observable{
 
         double totalRaceTimeInSeconds = TimeUtils.convertHoursToSeconds(courseDistance / slowestBoatSpeed);
         this.totalRaceTime = totalRaceTimeInSeconds;
-    }
-
-    public void setSecondsBeforeRace(double bufferTime) {
-        secondsBeforeRace = bufferTime;
-    }
-
-    public double getSecondsBeforeRace() {
-        return secondsBeforeRace;
     }
 
     /**

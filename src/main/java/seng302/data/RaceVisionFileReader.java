@@ -109,8 +109,8 @@ public class RaceVisionFileReader {
                             Map<Integer, Integer> markOrder = new TreeMap<>();
                             for (int k = 0; k < legs.getLength(); k++) {
                                 Element corner = (Element) legs.item(k);
-                                Integer seqNumber = Integer.parseInt(corner.getAttribute("SeqID"));
-                                Integer compoundMarkID = Integer.parseInt(corner.getAttribute("CompoundMarkID"));
+                                Integer seqNumber = Integer.parseInt(corner.getAttribute(XMLTags.Course.SEQ_ID));
+                                Integer compoundMarkID = Integer.parseInt(corner.getAttribute(XMLTags.Course.COMPOUND_MARK_ID));
                                 markOrder.put(seqNumber, compoundMarkID);
                             }
                             for(Integer seqNumber : markOrder.keySet()){
@@ -162,9 +162,9 @@ public class RaceVisionFileReader {
      */
     private static Mark parseMark(Element markElement){
         String markName = markElement.getAttribute(XMLTags.Course.NAME);
-        Double lat1 = Double.parseDouble(markElement.getAttribute(XMLTags.Course.TARGETLAT));
-        Double lon1 = Double.parseDouble(markElement.getAttribute(XMLTags.Course.TARGETLON));
-        Integer sourceId = Integer.parseInt(markElement.getAttribute(XMLTags.Course.SOURCEID));
+        Double lat1 = Double.parseDouble(markElement.getAttribute(XMLTags.Course.TARGET_LAT));
+        Double lon1 = Double.parseDouble(markElement.getAttribute(XMLTags.Course.TARGET_LON));
+        Integer sourceId = Integer.parseInt(markElement.getAttribute(XMLTags.Course.SOURCE_ID));
         Mark mark = new Mark(sourceId, markName, new Coordinate(lat1, lon1));
         return mark;
     }
@@ -302,7 +302,7 @@ public class RaceVisionFileReader {
         Boat boat = null;
         String type = boatXML.getAttribute(XMLTags.Boats.TYPE);
         if(type.equals("Yacht")){
-            String name = boatXML.getAttribute(XMLTags.Boats.BOATNAME);
+            String name = boatXML.getAttribute(XMLTags.Boats.BOAT_NAME);
             String nickname = boatXML.getAttribute(XMLTags.Boats.NICKNAME);
             Integer id = Integer.parseInt(boatXML.getAttribute(XMLTags.Boats.SOURCE_ID));
             boat = new Boat(id, name, nickname, 0);
