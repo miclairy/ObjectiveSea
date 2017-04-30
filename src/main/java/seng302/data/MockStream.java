@@ -86,6 +86,7 @@ public class MockStream implements Runnable {
     private void sendInitialRaceMessages() {
         sendXmlMessage(RACE_XML_MESSAGE, "Race.xml");
         sendXmlMessage(BOAT_XML_MESSAGE, "Boat.xml");
+        sendXmlMessage(REGATTA_XML_MESSAGE, "Regatta.xml");
     }
 
     /**
