@@ -48,6 +48,46 @@ public class BoatTest
     }
 
     @Test
+    public void updateTackingLocationTest() {
+        Course course = new Course();
+        RaceLine start = new RaceLine("Start", 50, 30, 51, 30);
+        CompoundMark mark = new CompoundMark("Windward Gate", 60, 60);
+
+        course.addNewMark(start);
+        course.addNewMark(mark);
+        course.addMarkInOrder("Start");
+        course.addMarkInOrder("Windward Gate");
+        double distanceGained = 58.98 * boat.getVMGofBoat();
+
+        boat.setPosition(start.getLat(), start.getLon());
+        ArrayList<Boat> competitors = new ArrayList<>();
+        competitors.add(boat);
+        boat.tackingUpdateLocation(distanceGained, course.getCourseOrder(), course, true);
+        assertEquals(54.753709737220596, boat.getCurrentLat(), DELTA);
+        assertEquals(38.091850795850284, boat.getCurrentLon(), DELTA);
+    }
+
+    @Test
+    public void updateGybingLocationTest() {
+        Course course = new Course();
+        RaceLine start = new RaceLine("Start", 50, 30, 51, 30);
+        CompoundMark mark = new CompoundMark("Leeward Gate", 60, 60);
+
+        course.addNewMark(start);
+        course.addNewMark(mark);
+        course.addMarkInOrder("Start");
+        course.addMarkInOrder("Leeward Gate");
+        double distanceGained = 58.98 * boat.getGybeVMGofBoat() * - 1;
+
+        boat.setPosition(start.getLat(), start.getLon());
+        ArrayList<Boat> competitors = new ArrayList<>();
+        competitors.add(boat);
+        boat.tackingUpdateLocation(distanceGained, course.getCourseOrder(), course, false);
+        assertEquals(58.844179533934785, boat.getCurrentLat(), DELTA);
+        assertEquals(46.72103185516398, boat.getCurrentLon(), DELTA);
+    }
+
+    @Test
     public void setLocationTest(){
         boat.setPosition(25, 50.7);
         assertEquals(25, boat.getCurrentLat(), DELTA);
@@ -145,4 +185,21 @@ public class BoatTest
         //Check BSp
         assertEquals(15.778494222393979, (gybeTest.getKey()/Math.cos(Math.toRadians(gybeTest.getValue()))), DELTA);
     }
+
+    @Test
+    public void turnDeciderTest(){
+        int odd = 1;
+        int even = 0;
+        //if even and right ---> right
+        //if even and left ---> left
+        //if odd and right ---> left
+        //if odd and left ---> right
+        assertEquals("Right", boat.turnDecider(even, "Right"));
+        assertEquals("Left", boat.turnDecider(even, "Left"));
+        assertEquals("Left", boat.turnDecider(odd, "Right"));
+        assertEquals("Right", boat.turnDecider(odd, "Left"));
+    }
+
+
+
 }

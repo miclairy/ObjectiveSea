@@ -23,17 +23,19 @@ public class Boat implements Comparable<Boat>{
     private int lastPassedMark;
     private int lastTackMarkPassed;
     private int lastGybeMarkPassed;
+    private String lastGybeTurn;
+    private String lastTackTurn;
+    private int inTack = 0;
+    private int inGybe = 0;
     private boolean finished;
     private double heading;
     private double maxSpeed;
     private ArrayList<Coordinate> pathCoords;
-    private double totalSpeed = 0;
     private double speedCounter = 0;
     private double VMGofBoat;
     private double TWAofBoat;
     private double gybeVMGofBoat;
     private double gybeTWAofBoat;
-    private String lastTurnTaken = "Right";
 
     public Boat(String name, String nickName, double speed) {
         this.name = name;
@@ -72,13 +74,6 @@ public class Boat implements Comparable<Boat>{
         return currentPosition;
     }
 
-    public double averageSpeed(double currentSpeed){
-        totalSpeed += currentSpeed;
-        speedCounter++;
-        //System.out.println("my speed " + (totalSpeed/speedCounter));
-        return totalSpeed/speedCounter;
-    }
-
     /**
      * Updates the boat's coordinates by how much it moved in timePassed hours on the course
      * @param timePassed the amount of race hours since the last update
@@ -91,13 +86,15 @@ public class Boat implements Comparable<Boat>{
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
         CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
         double currentSpeed = speed;
+        //The polars currently used aren't for our fancy catamaran's so it is super slow and boring
+        // so I've commented them out for practicality of watching :)
 //        if(nextMark.getName().equals("Windward Gate")){
 //            currentSpeed = VMGofBoat;
 //        } else if(nextMark.getName().equals("Leeward Gate")){
 //            currentSpeed = gybeVMGofBoat * (-1.0);
 //        }
         System.out.println(currentSpeed);
-        double distanceGained = timePassed * averageSpeed(currentSpeed);
+        double distanceGained = timePassed * currentSpeed;
         double distanceLeftInLeg = currentPosition.greaterCircleDistance(nextMark.getPosition());
 
 
@@ -122,17 +119,21 @@ public class Boat implements Comparable<Boat>{
             speed = 0;
         } if(nextMark.getName().equals("Windward Gate")){
                 lastGybeMarkPassed = 0;
+                inGybe = 0;
                 Coordinate tackingPosition = tackingUpdateLocation(distanceGained, courseOrder, course, true);
                 //Move the remaining distance in leg
                 currentPosition.update(tackingPosition.getLat(), tackingPosition.getLon());
         } else if(nextMark.getName().equals("Leeward Gate")){
             lastTackMarkPassed = 0;
+            inTack = 0;
             Coordinate tackingPosition = tackingUpdateLocation(distanceGained, courseOrder, course, false);
             //Move the remaining distance in leg
             currentPosition.update(tackingPosition.getLat(), tackingPosition.getLon());
         } else{
             lastTackMarkPassed = 0;
             lastGybeMarkPassed = 0;
+            inTack = 0;
+            inGybe = 0;
             //Move the remaining distance in leg
             double percentGained = (distanceGained / distanceLeftInLeg);
             double newLat = getCurrentLat() + percentGained * (nextMark.getLat() - getCurrentLat());
@@ -141,13 +142,19 @@ public class Boat implements Comparable<Boat>{
         }
     }
 
+    /**
+     * Updates the boat's coordinates by how much it moved in timePassed hours on the course
+     * @param distanceGained the distance gained by the boat since last update
+     * @param courseOrder the order of the set marks
+     * @param course the course the boat is racing on
+     * @param onTack this decides whether to calculate a tack or a gybe
+     */
     public Coordinate tackingUpdateLocation(double distanceGained, ArrayList<CompoundMark> courseOrder, Course course, Boolean onTack){
         double TrueWindAngle;
         if(onTack){
             TrueWindAngle = TWAofBoat;
         } else {
-            TrueWindAngle = gybeTWAofBoat;
-        }
+            TrueWindAngle = gybeTWAofBoat;}
 
         CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
         double lengthOfLeg = courseOrder.get(lastPassedMark).getPosition().greaterCircleDistance(nextMark.getPosition());
@@ -156,8 +163,13 @@ public class Boat implements Comparable<Boat>{
         ArrayList<CompoundMark> tackingMarks = new ArrayList<>();
         tackingMarks.add(courseOrder.get(lastPassedMark));
         CompoundMark currentMark = courseOrder.get(lastPassedMark);
-        String previousTackLat = lastTurnTaken;
-        for(int i = 0; i < numOfTacks; i++){
+        String previousTackLat;
+        if(onTack){
+            previousTackLat = turnDecider(numOfTacks,lastGybeTurn);
+        } else {
+            previousTackLat = turnDecider(numOfTacks,lastTackTurn);
+        }
+        for(int i = 0; i < numOfTacks - 1; i++){
             double distance = (lengthOfTack/Math.cos(Math.toRadians(TrueWindAngle)));
             Coordinate temp1 = tackingMarks.get(i).getPosition();
             double bearing = currentMark.getPosition().headingToCoordinate(nextMark.getPosition());
@@ -176,15 +188,15 @@ public class Boat implements Comparable<Boat>{
             CompoundMark temp = new CompoundMark(name, newLat, newLong);
             tackingMarks.add(temp);
         }
-        tackingMarks.add(nextMark);
-        double lengthOfTackingLeg = 0;
-//        for(CompoundMark mark: tackingMarks){
-//            System.out.println(mark.getLat());
-//            System.out.println(mark.getLon());
-//        }
-        for(int j = 1; j < tackingMarks.size(); j++){
-            lengthOfTackingLeg += tackingMarks.get(j-1).getPosition().greaterCircleDistance(tackingMarks.get(j).getPosition());
+        if(onTack && inTack == 0){
+            lastTackTurn = previousTackLat;
+            inTack++;
+        } else if(!onTack && inGybe == 0) {
+            lastGybeTurn = previousTackLat;
+            inGybe++;
         }
+        tackingMarks.add(nextMark);
+
         int lastMarkPassed = 0;
         if(onTack){
             lastMarkPassed = lastTackMarkPassed;
@@ -196,8 +208,6 @@ public class Boat implements Comparable<Boat>{
         if(lastMarkPassed == 0){
             double newHeading = tackingMarks.get(lastMarkPassed).getPosition().headingToCoordinate(tackingMarks.get(lastMarkPassed + 1).getPosition());;
             setHeading(newHeading);
-            //nextTackMark = tackingMarks.get(lastMarkPassed+1);
-            //distanceLeftinTack = currentPosition.greaterCircleDistance(nextTackMark.getPosition());
         }
         //If boat moves more than the remaining distance in the leg
         while(distanceGained > distanceLeftinTack && lastMarkPassed < tackingMarks.size()-1){
@@ -209,9 +219,6 @@ public class Boat implements Comparable<Boat>{
                 lastTackMarkPassed++;
             } else {
                 lastGybeMarkPassed++;
-            }
-            if(lastMarkPassed == 0){
-
             }
             lastMarkPassed++;
 
@@ -226,22 +233,59 @@ public class Boat implements Comparable<Boat>{
         double percentGained = (distanceGained / distanceLeftinTack);
         double newLat = getCurrentLat() + percentGained * (nextTackMark.getLat() - getCurrentLat());
         double newLon = getCurrentLon() + percentGained * (nextTackMark.getLon() - getCurrentLon());
-        Coordinate tackPosition = new Coordinate(newLat, newLon);
-        return tackPosition;
+        return new Coordinate(newLat, newLon);
     }
 
+    /**
+     * This is a helper function for deciding which way the boat should go after hitting a mark so that it looks realistic
+     * @param numOfTacks
+     * @param previousTurn
+     * @return the realistic turning direction
+     */
+    public String turnDecider(int numOfTacks, String previousTurn){
+        String newTurn = "Right";
+        if(numOfTacks%2 == 1){
+            if(previousTurn == "Right"){
+                newTurn = "Left";
+            }
+        } if (numOfTacks%2 == 0){
+            if(previousTurn == "Left"){
+                newTurn = "Left";
+            }
+        }
+        return newTurn;
+    }
 
-
+    /**
+     * Calculates the VMG of the boat
+     * @param boatSpeed the speed of the boat
+     * @param TWA the true wind angle that the boad is heading at
+     * @return the velocity made good of the boat
+     */
     public double VMG(double boatSpeed, double TWA){
-        double VMG = boatSpeed * Math.cos(Math.toRadians(TWA));
-        return VMG;
+        return boatSpeed * Math.cos(Math.toRadians(TWA));
     }
 
+    /**
+     * A function for interpolating three values, only does three as the math is easier and this provides an accurate enough
+     * interpolation for its current uses
+     * @param A first pair
+     * @param B second pair
+     * @param C third pair
+     * @param x the value to interpolate on
+     * @return the interpolated value using x as input
+     */
     public double lagrangeInterpolation(Pair<Double, Double> A, Pair<Double, Double> B, Pair<Double, Double> C, double x) {
-        double answer = (((x - B.getKey()) * (x - C.getKey())) / ((A.getKey() - B.getKey()) * (A.getKey() - C.getKey()))) * A.getValue() + (((x - A.getKey()) * (x - C.getKey())) / ((B.getKey() - A.getKey()) * (B.getKey() - C.getKey()))) * B.getValue() + (((x - A.getKey()) * (x - B.getKey())) / ((C.getKey() - A.getKey()) * (C.getKey() - B.getKey()))) * C.getValue();
-        return answer;
-    }
+        return (((x - B.getKey()) * (x - C.getKey())) / ((A.getKey() - B.getKey()) * (A.getKey() - C.getKey()))) * A.getValue() + (((x - A.getKey()) * (x - C.getKey())) / ((B.getKey() - A.getKey()) * (B.getKey() - C.getKey()))) * B.getValue() + (((x - A.getKey()) * (x - B.getKey())) / ((C.getKey() - A.getKey()) * (C.getKey() - B.getKey()))) * C.getValue();}
 
+    /**
+     * This function calculates the optimum tacking or gybing angle and speed based on a polar table
+     * @param TWS true wind speed
+     * @param trueWindSpeeds the list of true wind speeds given from polar table
+     * @param polars the polars from the table
+     * @param onTack decides whether to calculate the TWA and VMG for tack or gybe
+     * @return the TWA and VMG optimum for given boat
+     */
     public Pair<Double,Double> tacking(int TWS, ArrayList<Integer> trueWindSpeeds, ArrayList<ArrayList<Pair<Double, Double>>> polars, Boolean onTack){
 //        double TWS = course.getTrueWindSpeed();
         Pair<Double,Double> boatsTack;
@@ -316,9 +360,6 @@ public class Boat implements Comparable<Boat>{
         boatsTack = new Pair<>(TrueVMG, TWA);
         return boatsTack;
     }
-
-
-
 
     public int compareTo(Boat otherBoat){
         return otherBoat.getLastPassedMark() - lastPassedMark;
@@ -395,4 +436,8 @@ public class Boat implements Comparable<Boat>{
     public void setSpeed(double speed) {
         this.speed = speed;
     }
+
+    public double getVMGofBoat() {return VMGofBoat;}
+
+    public double getGybeVMGofBoat() {return gybeVMGofBoat;}
 }
