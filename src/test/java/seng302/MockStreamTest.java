@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static junit.framework.TestCase.assertEquals;
-import static seng302.data.AC35StreamField.BOAT_SPEED;
+import static seng302.data.AC35StreamField.SPEED_OVER_GROUND;
 
 
 public class MockStreamTest {
@@ -161,7 +161,7 @@ public class MockStreamTest {
             assertEquals(1, body[7]);
             assertEquals(0, body[24]);
             assertEquals(0, body[28]);
-            assertEquals((int) (33.0 * 514.444), ((body[BOAT_SPEED.getEndIndex()-1] & 0xFF) << 8) + (body[BOAT_SPEED.getStartIndex()] & 0xFF));
+            assertEquals((int) (33.0 * 514.444), ((body[SPEED_OVER_GROUND.getEndIndex()-1] & 0xFF) << 8) + (body[SPEED_OVER_GROUND.getStartIndex()] & 0xFF));
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -20,6 +20,8 @@ public class MockStream implements Runnable {
 
     private final int SOURCE_ID = 28;
     private final int HEADER_LENGTH = 15;
+    private final int ROUNDING_MARK_TYPE = 1;
+    private final int GATE_TYPE = 2;
 
     private DataOutputStream outToServer;
     private int port;
@@ -127,8 +129,8 @@ public class MockStream implements Runnable {
      */
     private void sendBoatMessages(Boat boat) throws IOException {
         sendPacket(createHeader(BOAT_LOCATION_MESSAGE), createBoatLocationMessage(boat));
-        if (lastMarkRoundingSent.get(boat) != boat.getLastPassedMark()){
-            lastMarkRoundingSent.put(boat, boat.getLastPassedMark());
+        if (lastMarkRoundingSent.get(boat) != boat.getLastRoundedMarkIndex()){
+            lastMarkRoundingSent.put(boat, boat.getLastRoundedMarkIndex());
             sendPacket(createHeader(MARK_ROUNDING_MESSAGE), createMarkRoundingMessage(boat, raceRunner.getCourse()));
         }
     }
@@ -154,12 +156,12 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, MARK_SOURCE, boat.getId());
         addFieldToByteArray(body, MARK_BOAT_STATUS, boat.getStatus().getValue());
         addFieldToByteArray(body, ROUNDING_SIDE, 0); //todo present correct side
-        if (course.getCourseOrder().get(boat.getLastPassedMark()).getClass() == Gate.class) {
-            addFieldToByteArray(body, MARK_TYPE, 2);
+        if (course.getCourseOrder().get(boat.getLastRoundedMarkIndex()).hasTwoMarks()) {
+            addFieldToByteArray(body, MARK_TYPE, GATE_TYPE);
         } else {
-            addFieldToByteArray(body, MARK_TYPE, 1);
+            addFieldToByteArray(body, MARK_TYPE, ROUNDING_MARK_TYPE);
         }
-        addFieldToByteArray(body, MARK_ID, boat.getLastPassedMark()); //todo give marks ids correctly
+        addFieldToByteArray(body, MARK_ID, boat.getLastRoundedMarkIndex()); //todo give marks ids correctly
         return body;
     }
 
@@ -181,7 +183,7 @@ public class MockStream implements Runnable {
     private byte[] addBoatToRaceStatusMessage(Boat boat, byte[] body){
         addFieldToByteArray(body, STATUS_SOURCE_ID, boat.getId());
         addFieldToByteArray(body, BOAT_STATUS, boat.getStatus().getValue());
-        addFieldToByteArray(body, LEG_NUMBER, boat.getLastPassedMark() + 1);
+        addFieldToByteArray(body, LEG_NUMBER, boat.getLastRoundedMarkIndex() + 1);
         addFieldToByteArray(body, NUMBER_PENALTIES_AWARDED, 0); //todo make penalties a thing
         addFieldToByteArray(body, NUMBER_PENALTIES_SERVED, 0);
         addFieldToByteArray(body, ESTIMATED_TIME_AT_NEXT_MARK, 0); //todo time estimation til next mark/ end of race
@@ -210,7 +212,7 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, LATITUDE, lat);
         addFieldToByteArray(body, LONGITUDE, lon);
         addFieldToByteArray(body, HEADING, (int) (boat.getHeading() * Math.pow(2, 16) / 360));
-        addFieldToByteArray(body, BOAT_SPEED, boat.getSpeedInMMS()); //BOAT_SPEED may need to be changed to use SOG
+        addFieldToByteArray(body, SPEED_OVER_GROUND, boat.getSpeedInMMS());
         return body;
     }
 

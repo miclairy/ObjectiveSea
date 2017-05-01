@@ -211,15 +211,7 @@ public class Boat implements Comparable<Boat>{
         this.speed = speed;
     }
 
-    public int getId() {
-        return id;
-    }
-
     public BoatStatus getStatus() {
         return status;
-    }
-
-    public void setLastPassedMark(int lastPassedMark) {
-        this.lastPassedMark = lastPassedMark;
     }
 }

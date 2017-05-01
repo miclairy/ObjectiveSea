@@ -112,7 +112,7 @@ public class MockRaceRunner implements Runnable {
         if(boat.isFinished()){
             return null;
         }
-        int lastPassedMark = boat.getLastPassedMark();
+        int lastPassedMark = boat.getLastRoundedMarkIndex();
         boat.setSpeed(boat.getMaxSpeed());
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
         CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
@@ -126,9 +126,9 @@ public class MockRaceRunner implements Runnable {
             distanceGained -= distanceLeftInLeg;
 
             //Set boat position to next mark
-            currentPosition.setLat(nextMark.getLat());
-            currentPosition.setLon(nextMark.getLon());
-            boat.setLastPassedMark(lastPassedMark + 1);
+            currentPosition.setLat(nextMark.getPosition().getLat());
+            currentPosition.setLon(nextMark.getPosition().getLon());
+            boat.setLastRoundedMarkIndex(lastPassedMark + 1);
 
             if(lastPassedMark < courseOrder.size()-1){
                 boat.setHeading(course.headingsBetweenMarks(lastPassedMark, lastPassedMark + 1));
@@ -145,8 +145,8 @@ public class MockRaceRunner implements Runnable {
         } else{
             //Move the remaining distance in leg
             double percentGained = (distanceGained / distanceLeftInLeg);
-            double newLat = currentPosition.getLat() + percentGained * (nextMark.getLat() - currentPosition.getLat());
-            double newLon = currentPosition.getLon() + percentGained * (nextMark.getLon() - currentPosition.getLon());
+            double newLat = currentPosition.getLat() + percentGained * (nextMark.getPosition().getLat() - currentPosition.getLat());
+            double newLon = currentPosition.getLon() + percentGained * (nextMark.getPosition().getLon() - currentPosition.getLon());
             currentPosition.update(newLat, newLon);
         }
         return currentPosition;
@@ -155,13 +155,16 @@ public class MockRaceRunner implements Runnable {
     /**
      * Spreads the starting positions of the boats over the start line
      */
-    private void setStartingPositions(){
-        RaceLine startingLine = course.getStartingLine();
-        int spaces = boatsInRace.size();
-        double dLat = (startingLine.getEnd2Lat() - startingLine.getEnd1Lat()) / spaces;
-        double dLon = (startingLine.getEnd2Lon() - startingLine.getEnd1Lon()) / spaces;
-        double curLat = startingLine.getEnd1Lat() + dLat;
-        double curLon = startingLine.getEnd1Lon() + dLon;
+    public void setStartingPositions(){
+        RaceLine startingLine = course.getStartLine();
+        Coordinate startingEnd1 = startingLine.getMark1().getPosition();
+        Coordinate startingEnd2 = startingLine.getMark2().getPosition();
+        Integer spaces = boatsInRace.size();
+        Double dLat = (startingEnd2.getLat() - startingEnd1.getLat()) / spaces;
+        Double dLon = (startingEnd2.getLon() - startingEnd1.getLon()) / spaces;
+
+        Double curLat = startingEnd1.getLat() + dLat;
+        Double curLon = startingEnd1.getLon() + dLon;
         for (Boat boat : boatsInRace){
             boat.setPosition(curLat, curLon);
             boat.setHeading(course.headingsBetweenMarks(0, 1));
