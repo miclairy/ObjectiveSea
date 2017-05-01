@@ -134,7 +134,7 @@ public class Course extends Observable {
         }
     }
 
-    public void updateCourseWindValues(int raceCourseWindDirection, int raceCourseWindSpeed) {
+    public void updateCourseWindValues(int raceCourseWindDirection) {
         windDirection = raceCourseWindDirection;
     }
 

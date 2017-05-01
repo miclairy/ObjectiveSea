@@ -46,8 +46,6 @@ public class Main extends Application {
         String name = "Default name";
         race = new Race(name, course, boatsInRace);
         RaceVisionFileReader.importRegatta(regattaFile, race);
-        System.out.println(race.getUTCOffset());
-        System.out.println(race.getRegattaName());
         dataStreamReader.setRace(race);
     }
 
