@@ -156,7 +156,7 @@ public class Race extends Observable{
                 boat.setLastRoundedMarkIndex(markIndex);
                 boat.setLastRoundedMarkTime(time);
                 updateRaceOrder();
-                System.out.println(boat.getName() + " rounded " + course.getCompoundMarks().get(roundedMarkID).getName() + " at " + time);
+                //System.out.println(boat.getName() + " rounded " + course.getCompoundMarks().get(roundedMarkID).getName() + " at " + time);
                 return;
             }
         }
