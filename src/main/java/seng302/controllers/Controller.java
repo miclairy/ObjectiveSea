@@ -14,7 +14,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -47,6 +46,7 @@ public class Controller implements Initializable, Observer {
     @FXML private CheckBox chkSpeed;
     @FXML private CheckBox chkPassMarkTime;
     @FXML private CheckBox chkEst;
+    @FXML private Label startersOverlayTitle;
 
 
     //number of from right edge of canvas that the wind arrow will be drawn
