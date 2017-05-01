@@ -18,6 +18,7 @@ import seng302.models.*;
 import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
+import java.awt.geom.Line2D;
 import java.util.*;
 
 /**
@@ -349,16 +350,35 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
+
+    /**
+     * Takes all the Coordinates from a boats getPathCoords() and creates a line with the current and previous
+     * PathCoords, also makes the start line into a line of the same type, then uses the intersectsLine function
+     * to find if the boat has passed the start line.
+     * @param boat The current boat that's path is being drawn.
+     * @return returns either true or false if the boat has passed the start line or not.
+     */
     private boolean hasBoatPassedStartLine(Boat boat) {
-        double boatLat = boat.getCurrentPosition().getLat();
-        double boatLon = boat.getCurrentPosition().getLon();
-        double mark1Lat = race.getCourse().getStartLine().getMark1().getPosition().getLat();
-        double mark1Lon = race.getCourse().getStartLine().getMark1().getPosition().getLon();
-        double mark2Lat = race.getCourse().getStartLine().getMark2().getPosition().getLat();
-        double mark2Lon = race.getCourse().getStartLine().getMark2().getPosition().getLon();
+        Coordinate previousCoordinate;
+        Coordinate currentCoordinate = boat.getPathCoords().get(0);
+        Coordinate startMark1 = race.getCourse().getStartLine().getMark1().getPosition();
+        Coordinate startMark2 = race.getCourse().getStartLine().getMark2().getPosition();
+        Line2D startLine = new Line2D.Double(startMark1.getLon(), startMark1.getLat(),
+                                            startMark2.getLon(), startMark2.getLat());
 
+        boolean passedStartLine = false;
+        for( Coordinate coordinate : boat.getPathCoords()) {
+            previousCoordinate = currentCoordinate;
+            currentCoordinate = coordinate;
+            Line2D boatLine = new Line2D.Double(previousCoordinate.getLon(), previousCoordinate.getLat(),
+                                                currentCoordinate.getLon(), currentCoordinate.getLat());
 
-        return true;
+            if(boatLine.intersectsLine(startLine)) {
+                passedStartLine = true;
+            }
+        }
+
+        return passedStartLine;
     }
 
     /**
