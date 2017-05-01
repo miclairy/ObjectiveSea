@@ -82,8 +82,8 @@ public class BoatTest
         competitors.add(boat);
         boat.updateLocation(2, course);
 
-        assertEquals(50.01193918885366, boat.getCurrentLat(), DELTA);
-        assertEquals(30.50023410174223, boat.getCurrentLon(), DELTA);
+        assertEquals(50.00635415823244, boat.getCurrentLat(), DELTA);
+        assertEquals(30.50012459133789, boat.getCurrentLon(), DELTA);
         assertEquals( 1, boat.getLastRoundedMarkIndex());
     }
 

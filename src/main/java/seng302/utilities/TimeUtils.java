@@ -1,8 +1,7 @@
 package seng302.utilities;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
+import java.util.DoubleSummaryStatistics;
 import java.util.TimeZone;
 
 /**
@@ -23,43 +22,66 @@ public class TimeUtils {
 
 
     /**
-     *
-     * @param timeZone The local time zone
-     * @return String contaning the correct time for the given time zone
+     * Takes the UTC offset given by the regatta xml file and returns the local time of the race
+     * @param UTCOffset The UTC Offset from the Data Stream
+     * @return String containing the correct time for the given time zone
      */
-    public static String setTimeZone(String timeZone) {
-        String defaultTimeZone = TimeZone.getDefault().getID();
-
+    public static String setTimeZone(double UTCOffset) {
+        String utcFormat = "";
         try {
-            for (String id : TimeZone.getAvailableIDs()) {
-
-                if (id.matches("(?i).*?" + timeZone + ".*")) {
-                    foundId = id;
-                    incorrectTimeZone = false;
-                    break;
-                }
-            }
-            if (incorrectTimeZone) {
+            utcFormat = formatUTCOffset(UTCOffset);
+            if(utcFormat.equals("")) {
                 throw new Exception("Incorrect TimeZone in XML file. TimeZone reset to default.");
             }
-        } catch (Exception e) {
-            foundId = defaultTimeZone;
-            incorrectTimeZone = false;
-            System.out.println(e.getMessage());
+        } catch (Exception e){
+            utcFormat = "+00:00";
+            System.out.print(e.getMessage());
         } finally {
             Instant instant = Instant.now();
-            ZoneId zone = ZoneId.of(foundId);
+            ZoneId zone = ZoneId.of(utcFormat);
             ZonedDateTime zonedDateTime = instant.atZone(zone);
             int hours = zonedDateTime.getHour();
             int minutes = zonedDateTime.getMinute();
             int seconds = zonedDateTime.getSecond();
-            int utc = zonedDateTime.getOffset().getTotalSeconds()/3600;
-            String isPositive = "";
-            if(utc >= 0){
-                isPositive = "+";
-            }
-            return String.format("%02d:%02d:%02d UTC%s%d", hours, minutes, seconds, isPositive, utc);
+            return String.format("%02d:%02d:%02d UTC%s", hours, minutes, seconds, utcFormat);
         }
+    }
+
+    /**
+     * Takes the UTC offset and returns it in acceptable ZoneId format
+     * @param UTCOffset
+     * @return utcFormat - String of the formatted UTC offset
+     */
+    private static String formatUTCOffset(double UTCOffset) {
+        String utcFormat = "";
+        String positiveRounded = String.format("%02d", (int)UTCOffset);
+        String negativeRounded = String.format("%03d", (int)UTCOffset);
+        if ((UTCOffset >= 0) && (UTCOffset < 10)) {
+            if ((UTCOffset % 1) == 0) {
+                utcFormat = "+" + positiveRounded + ":00";
+            } else {
+                utcFormat = "+" + positiveRounded + ":30";
+            }
+        } else if ((UTCOffset > 10) && (UTCOffset <= 14)) {
+            if ((UTCOffset % 1) == 0) {
+                utcFormat = "+" + positiveRounded + ":00";
+            } else {
+                utcFormat = "+" + positiveRounded + ":30";
+            }
+        } else if ((UTCOffset < 0) && (UTCOffset > -10)) {
+            if ((UTCOffset % 1) == 0) {
+                utcFormat = negativeRounded + ":00";
+            } else {
+                utcFormat = negativeRounded + ":30";
+            }
+        } else if ((UTCOffset <= -10) && (UTCOffset >= -12)) {
+            if ((UTCOffset % 1) == 0) {
+                utcFormat = negativeRounded + ":00";
+            } else {
+                utcFormat = negativeRounded + ":30";
+            }
+        }
+        return utcFormat;
     }
 
     public static double convertNanosecondsToSeconds(double nanoseconds){
@@ -72,5 +94,17 @@ public class TimeUtils {
 
     public static double convertMinutesToSeconds(double seconds){
         return seconds * SECONDS_IN_MINUTE;
+    }
+
+    public static Double convertMmPerSecondToKnots(Integer mmPerSecond){
+        Double kilometersInNauticalMile = 1.852;
+        Double kilometersPerSecond = mmPerSecond / 1e6;
+        Double kilometersPerHour = kilometersPerSecond * SECONDS_IN_MINUTE * MINUTES_IN_HOUR;
+        Double knots = kilometersPerHour / kilometersInNauticalMile;
+        return knots;
+    }
+
+    public static String getFormatUTCOffset(double UTCOffset) {
+        return formatUTCOffset(UTCOffset);
     }
 }

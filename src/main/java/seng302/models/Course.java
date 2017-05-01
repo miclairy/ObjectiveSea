@@ -1,5 +1,7 @@
 package seng302.models;
 
+import sun.reflect.generics.factory.CoreReflectionFactory;
+
 import java.util.*;
 
 /**
@@ -7,7 +9,7 @@ import java.util.*;
  * Class to figure out the mark locations and degrees.
  */
 
-public class Course {
+public class Course extends Observable {
 
     private ArrayList<CompoundMark> courseOrder;
     private ArrayList<Coordinate> boundary;
@@ -15,9 +17,7 @@ public class Course {
     private Map<Integer, CompoundMark> compoundMarks;
     private double windDirection;
     private RaceLine startLine, finishLine;
-    private String timeZone;
     private Map<Integer, Mark> allMarks;
-
     public Course() {
         this.compoundMarks = new HashMap<>();
         this.courseOrder = new ArrayList<>();
@@ -56,6 +56,7 @@ public class Course {
     public void addToBoundary(Coordinate coord){
         boundary.add(coord);
     }
+
     /**
      * This function finds the distance between each mark on the course
      * @param markIndex1 - the index in the courseOrder array of the source mark
@@ -68,7 +69,6 @@ public class Course {
         double distance = mark1.getPosition().greaterCircleDistance(mark2.getPosition());
         return distance;
     }
-
     /**
      * This function uses heading calculations to find the headings between two compoundMarks.
      * @param markIndex1 - the index in the courseOrder array of the source mark
@@ -120,12 +120,22 @@ public class Course {
         minLat -= 0.004; minLon -= 0.004; maxLat += 0.004; maxLon += 0.004;
     }
 
-    public void updateMark(int sourceID, double lat, double lon) {
+    /**
+     * Updates a position of a mark
+     * @param sourceID the source id of a mark
+     * @param lat the new latitude of a mark
+     * @param lon the new longitude of a mark
+     */
+    public void updateMark(Integer sourceID, Double lat, Double lon) {
         if(allMarks.containsKey(sourceID)){
             Coordinate markCoordinate = allMarks.get(sourceID).getPosition();
             markCoordinate.setLat(lat);
             markCoordinate.setLon(lon);
         }
+    }
+
+    public void updateCourseWindValues(int raceCourseWindDirection) {
+        windDirection = raceCourseWindDirection;
     }
 
     public ArrayList<CompoundMark> getCourseOrder(){
@@ -136,20 +146,10 @@ public class Course {
         return compoundMarks;
     }
 
-    public double getWindDirection() {
-        return windDirection;
-    }
+    public double getWindDirection() { return windDirection; }
 
     public void setWindDirection(double windDirection) {
         this.windDirection = (windDirection + 360) % 360;
-    }
-
-    public void setTimeZone(String timeZone) {
-        this.timeZone = timeZone;
-    }
-
-    public String getTimeZone() {
-        return timeZone;
     }
 
     public double getMinLat() {
@@ -190,5 +190,19 @@ public class Course {
 
     public RaceLine getFinishLine() {
         return finishLine;
+    }
+
+    /**
+     * This method takes another Course and attempts to merge the differences in it into this one.
+     * Assumes that the other course has the desired changes, and overwrites it's self with these changes.
+     * The other course is not changed.
+     * For now, all it does is merge the boundary (as this is currently the only changing thing in the race XML file
+     * that we care about). In future we may look at merging changed marks as well.
+     * @param otherCourse the course to merge into this one
+     */
+    public void mergeWithOtherCourse(Course otherCourse) {
+        this.boundary = new ArrayList<>(otherCourse.getBoundary());
+        setChanged();
+        notifyObservers();
     }
 }

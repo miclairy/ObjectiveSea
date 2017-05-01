@@ -1,9 +1,14 @@
 package seng302.models;
 
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by atc60 on 16/03/17.
@@ -93,6 +98,50 @@ public class CourseTest {
         course2.setWindDirection(450);
         assertEquals(315.0, course.getWindDirection(), 0);
         assertEquals(90.0, course2.getWindDirection(), 0);
+    }
+
+    @Test
+    public void mergeWithOtherCourseTest() throws Exception{
+        class TestObserver implements Observer {
+           public boolean updated = false;
+            @Override
+            public void update(Observable o, Object arg) {
+                updated = true;
+            }
+        }
+        TestObserver observer = new TestObserver();
+
+        Course startCourse = new Course();
+        startCourse.addToBoundary(new Coordinate(1, 1));
+        startCourse.addObserver(observer);
+
+        Course otherCourse = new Course();
+        otherCourse.addToBoundary(new Coordinate(2,2));
+
+        assertEquals(1, startCourse.getBoundary().get(0).getLat(), 0);
+        assertEquals(1, startCourse.getBoundary().get(0).getLon(),0);
+
+        startCourse.mergeWithOtherCourse(otherCourse);
+
+        assertEquals(2, startCourse.getBoundary().get(0).getLat(), 0);
+        assertEquals(2, startCourse.getBoundary().get(0).getLon(), 0);
+        assertTrue(observer.updated);
+    }
+
+    @Test
+    public void updateMarkTest(){
+        Course course = new Course();
+
+        Mark startLine1 = new Mark(0, "Start Line 1", new Coordinate(32.296577, -64.854304));
+        Mark startLine2 = new Mark(1, "Start Line 2", new Coordinate(32.293771, -64.855242));
+        RaceLine start = new RaceLine(1, "Start Line", startLine1, startLine2);
+        course.addNewCompoundMark(start);
+
+        assertEquals(startLine1.getPosition().getLat(), 32.296577, 0);
+        assertEquals(startLine1.getPosition().getLon(), -64.854304, 0);
+        course.updateMark(0, 12.0, 128.0);
+        assertEquals(startLine1.getPosition().getLat(), 12.0, 0);
+        assertEquals(startLine1.getPosition().getLon(), 128.0, 0);
     }
 
 }

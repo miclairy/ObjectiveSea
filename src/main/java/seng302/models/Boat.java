@@ -31,7 +31,7 @@ public class Boat implements Comparable<Boat>{
         this.nickName = nickName;
         this.maxSpeed = speed;
         this.finished = false;
-        this.lastRoundedMarkIndex = 0;
+        this.lastRoundedMarkIndex = -1;
         this.pathCoords = new ArrayList<>();
         this.currentPosition = new Coordinate(0,0);
     }
@@ -93,6 +93,13 @@ public class Boat implements Comparable<Boat>{
         }
     }
 
+    /**
+     * Compares boat objects based on the index of last mark rounded in race order and if that is equals, compares
+     * based on time (lower time first).
+     * @param otherBoat The other boat that this boat is being compared to
+     * @return Negative number if this boat comes before other boat in order, 0 if equal or positive number
+     * if this boat comes after other boat in order.
+     */
     @Override
     public int compareTo(Boat otherBoat){
         if(lastRoundedMarkIndex != otherBoat.getLastRoundedMarkIndex()){
