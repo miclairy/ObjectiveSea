@@ -59,10 +59,11 @@ public class MockRaceRunner implements Runnable {
     public void run() {
         double secTimePassed = 0;
         while (!raceStatus.isRaceEndedStatus()) {
+            boolean atLeastOneBoatNotFinished = false;
             for (Boat boat : boatsInRace) {
 
                 if(raceStatus.equals(RaceStatus.STARTED)){
-                    updateLocation(boat, secTimePassed, course);
+                    updateLocation(boat, 0.2 / 1000 / 3600, course);
                 } else {
                     long millisBeforeStart = startTime - Instant.now().toEpochMilli();
                     if(millisBeforeStart < 3000 && millisBeforeStart > 1000){
@@ -73,6 +74,9 @@ public class MockRaceRunner implements Runnable {
                         raceStatus = RaceStatus.STARTED;
                         boatsInRace.forEach(b -> b.setStatus(BoatStatus.RACING)); //set status to Racing
                     }
+                }
+                if (!boat.getStatus().equals(BoatStatus.FINISHED)) {
+                    atLeastOneBoatNotFinished = true;
                 }
 
                 /*
@@ -100,6 +104,9 @@ public class MockRaceRunner implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            if (!atLeastOneBoatNotFinished) {
+                raceStatus = RaceStatus.TERMINATED;
+            }
         }
     }
 
@@ -125,10 +132,13 @@ public class MockRaceRunner implements Runnable {
         while(distanceGained > distanceLeftInLeg && lastPassedMark < courseOrder.size()-1){
             distanceGained -= distanceLeftInLeg;
 
+
+
             //Set boat position to next mark
             currentPosition.setLat(nextMark.getPosition().getLat());
             currentPosition.setLon(nextMark.getPosition().getLon());
-            boat.setLastRoundedMarkIndex(lastPassedMark + 1);
+            lastPassedMark++;
+            boat.setLastRoundedMarkIndex(lastPassedMark);
 
             if(lastPassedMark < courseOrder.size()-1){
                 boat.setHeading(course.headingsBetweenMarks(lastPassedMark, lastPassedMark + 1));
@@ -141,7 +151,6 @@ public class MockRaceRunner implements Runnable {
         if(lastPassedMark == courseOrder.size()-1){
             boat.setStatus(BoatStatus.FINISHED);
             boat.setSpeed(0);
-            return null;
         } else{
             //Move the remaining distance in leg
             double percentGained = (distanceGained / distanceLeftInLeg);
@@ -166,9 +175,12 @@ public class MockRaceRunner implements Runnable {
         Double curLat = startingEnd1.getLat() + dLat;
         Double curLon = startingEnd1.getLon() + dLon;
         for (Boat boat : boatsInRace){
+            boat.setMaxSpeed(20);
+            boat.maximiseSpeed();
             boat.setPosition(curLat, curLon);
             boat.setHeading(course.headingsBetweenMarks(0, 1));
             boat.getPathCoords().add(new Coordinate(curLat, curLon));
+            boat.setLastRoundedMarkIndex(0);
             curLat += dLat;
             curLon += dLon;
         }

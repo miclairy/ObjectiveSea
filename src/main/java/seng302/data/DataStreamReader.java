@@ -226,8 +226,8 @@ public class DataStreamReader implements Runnable{
      */
     private void readData(){
         DataInput dataInput = new DataInputStream(dataStream);
-        try{
-            while(true){
+        while(race == null || race.getRaceStatus() != 8){
+            try{
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
 
@@ -255,10 +255,10 @@ public class DataStreamReader implements Runnable{
                 } else{
                     System.err.println("Incorrect CRC. Message Ignored.");
                 }
+            } catch (IOException e){
+                System.err.println("Error occurred when reading data from stream:");
+                System.err.println(e);
             }
-        } catch (IOException e){
-            System.err.println("Error occurred when reading data from stream:");
-            System.err.println(e);
         }
     }
 

@@ -134,7 +134,6 @@ public class MockStreamTest {
 
     }
 
-    @Ignore
     @Test
     public void sendBoatLocationTest(){
 
@@ -162,7 +161,7 @@ public class MockStreamTest {
             assertEquals(0, body[24]);
             assertEquals(0, body[28]);
             assertEquals((int) (33.0 * 514.444), ((body[SPEED_OVER_GROUND.getEndIndex()-1] & 0xFF) << 8) + (body[SPEED_OVER_GROUND.getStartIndex()] & 0xFF));
-
+            connectionSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

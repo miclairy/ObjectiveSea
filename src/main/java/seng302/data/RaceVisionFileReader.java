@@ -17,7 +17,7 @@ import java.util.*;
 
 public class RaceVisionFileReader {
 
-    private static final String DEFAULT_FILE_PATH = "/defaultFiles/";
+    private static final String DEFAULT_FILE_PATH = "/outputFiles/";
     private static final String COURSE_FILE = "Race.xml";
     private static final String BOAT_FILE = "Boat.xml";
     private static final String REGATTA_FILE = "Regatta.xml";

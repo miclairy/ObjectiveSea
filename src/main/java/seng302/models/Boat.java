@@ -214,4 +214,8 @@ public class Boat implements Comparable<Boat>{
     public BoatStatus getStatus() {
         return status;
     }
+
+    public void setMaxSpeed(int maxSpeed) {
+        this.maxSpeed = maxSpeed;
+    }
 }

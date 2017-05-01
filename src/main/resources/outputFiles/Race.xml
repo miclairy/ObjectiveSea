@@ -18,7 +18,7 @@
       <Mark SeqID="2" Name="Start Line 2" TargetLat="32.293771" TargetLng="-64.855242" SourceID="123" />
     </CompoundMark>
     <CompoundMark CompoundMarkID="2" Name="Mark">
-      <Mark SeqID="1" Name="Mark1" TargetLat="32.293039" TargetLng="32.2930390" SourceID="131" />
+      <Mark SeqID="1" Name="Mark1" TargetLat="32.293039" TargetLng="-64.850045" SourceID="131" />
     </CompoundMark>
     <CompoundMark CompoundMarkID="3" Name="Leeward Gate">
       <Mark SeqID="1" Name="Lee Gate 1" TargetLat="32.284680" TargetLng="-64.850045" SourceID="124" />

@@ -76,6 +76,8 @@ public class MockStream implements Runnable {
                     e.printStackTrace();
                 }
             }
+            sendRaceUpdates(); //send one last message block with ending data
+
             clientSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -168,10 +170,11 @@ public class MockStream implements Runnable {
     private byte[] initialiseRaceStatusMessage(int numBoats) {
         byte[] body = new byte[24 + (26 * numBoats)];
         addFieldToByteArray(body, STATUS_MESSAGE_VERSION_NUMBER, 2);
-        addFieldToByteArray(body, BOAT_TIMESTAMP,(int) Instant.now().toEpochMilli());
+        addFieldToByteArray(body, BOAT_TIMESTAMP, Instant.now().toEpochMilli());
         addFieldToByteArray(body, STATUS_RACE_ID, Integer.parseInt(raceRunner.getRaceId()));
         addFieldToByteArray(body, RACE_STATUS, raceRunner.getRaceStatus().getValue());
-        addFieldToByteArray(body, EXPECTED_START_TIME, (int)raceRunner.getStartTime());
+        addFieldToByteArray(body, EXPECTED_START_TIME, raceRunner.getStartTime());
+        addFieldToByteArray(body, CURRENT_TIME, Instant.now().toEpochMilli());
         addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, 0x6000); // left for now
         addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, 10); //left at 10knots for now
         addFieldToByteArray(body, NUMBER_OF_BOATS_IN_RACE, numBoats);
@@ -213,6 +216,7 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, LONGITUDE, lon);
         addFieldToByteArray(body, HEADING, (int) (boat.getHeading() * Math.pow(2, 16) / 360));
         addFieldToByteArray(body, SPEED_OVER_GROUND, boat.getSpeedInMMS());
+
         return body;
     }
 
@@ -333,7 +337,7 @@ public class MockStream implements Runnable {
      * @param field the AC35StreamField field to add
      * @param item the item to add
      */
-    private void addFieldToByteArray(byte[] array, AC35StreamField field, int item){
+    private void addFieldToByteArray(byte[] array, AC35StreamField field, long item){
         addIntIntoByteArray(array, field.getStartIndex(), item, field.getLength());
     }
 
@@ -344,7 +348,7 @@ public class MockStream implements Runnable {
      * @param item item to add
      * @param numBytes number of bytes to split the int into
      */
-    private void addIntIntoByteArray(byte[] array, int start, int item, int numBytes){
+    private void addIntIntoByteArray(byte[] array, int start, long item, int numBytes){
         for (int i = 0; i < numBytes; i ++) {
             array[start + i] = (byte) (item >> i * 8);
         }
