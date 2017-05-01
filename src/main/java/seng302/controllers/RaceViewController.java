@@ -39,6 +39,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private Group root;
     private Controller controller;
     private RaceView raceView;
+    private ScoreBoardController scoreBoardController;
     private ArrayList<BoatDisplay> displayBoats = new ArrayList<>();
     private double previousTime = 0;
     private ImageView currentWindArrow;
@@ -50,11 +51,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean courseNeedsRedraw = false;
     private boolean initializedBoats = false;
 
-    public RaceViewController(Group root, Race race, Controller controller) {
+    public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
         this.root = root;
         this.race = race;
         this.controller = controller;
         this.raceView = new RaceView();
+        this.scoreBoardController = scoreBoardController;
         drawCourse();
     }
 
