@@ -60,10 +60,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawCourse();
     }
 
-    /**
-     * Called each frame to handle the control of the RaceView
-     * @param currentTime the time at which the function is called in nanoseconds
-     */
     @Override
     public void handle(long currentTime) {
         if (previousTime == 0) {
@@ -83,13 +79,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
             controller.rebaseRaceClock();
             controller.setRaceStartTimeChanged(false);
         }
+        redrawCourse();
         currentTimeInSeconds += secondsElapsed;
-
         controller.setTimeZone(race.getUTCOffset());
         controller.updateFPSCounter(currentTime);
         run();
         previousTime = currentTime;
-   }
+    }
 
     /**
      * Body of main loop of animation

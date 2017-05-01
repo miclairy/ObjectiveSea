@@ -62,7 +62,7 @@ public class Controller implements Initializable, Observer {
     private static boolean arrayFilled = false ;
 
     //Race Clock
-    private static SimpleStringProperty raceTimerString = new SimpleStringProperty();
+    public static SimpleStringProperty raceTimerString = new SimpleStringProperty();
     private static SimpleStringProperty clockString = new SimpleStringProperty();
     private static double totalRaceTime;
 
@@ -84,35 +84,22 @@ public class Controller implements Initializable, Observer {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-
-
         canvasWidth = canvas.getWidth();
         canvasHeight = canvas.getHeight();
-
         race = Main.getRace();
         race.addObserver(this);
-
         Course course = race.getCourse();
-
         startersOverlayTitle.setText(race.getRegattaName());
         course.initCourseLatLon();
         race.setTotalRaceTime();
-
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
         raceViewController = new RaceViewController(root, race, this, scoreBoardController);
-
         course.addObserver(raceViewController);
-
         createCanvasAnchorListeners();
-
-        setupAnnotationControl();
         fpsString.set("..."); //set to "..." while fps count loads
         fpsLabel.textProperty().bind(fpsString);
         totalRaceTime = race.getTotalRaceTime();
-
         secondsElapsed = race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs();
-        raceTimerLabel.textProperty().bind(raceTimerString);
         clockLabel.textProperty().bind(clockString);
         hideStarterOverlay();
         setWindDirection();
@@ -138,20 +125,41 @@ public class Controller implements Initializable, Observer {
         });
 
 
-        scoreBoardController.setControllers(this, raceViewController, race);
+        scoreBoardController.setControllers(this, raceViewController);
         scoreBoardController.setUp();
 
         fpsString.set("..."); //set to "..." while fps count loads
         fpsLabel.textProperty().bind(fpsString);
         totalRaceTime = race.getTotalRaceTime();
-        secondsBeforeRace = race.getSecondsBeforeRace();
-        secondsElapsed -= secondsBeforeRace;
         clockLabel.textProperty().bind(clockString);
 
         setWindDirection();
         startersOverlay.toFront();
         displayStarters();
         raceViewController.start();
+    }
+
+
+    /**
+     * Called from the RaceViewController handle if there is a change in race status
+     * Handles the starters Overlay and timing for the boats objects to be created
+     */
+    public void updatePreRaceScreen(){
+        switch(race.getRaceStatus()){
+            case Race.WARNING_STATUS:
+                showStarterOverlay();
+                break;
+            case Race.PREPARATORY_STATUS:
+                hideStarterOverlay();
+                raceViewController.initializeBoats();
+                break;
+            case Race.STARTED_STATUS:
+
+                if(!raceViewController.hasInitializedBoats()){
+                    raceViewController.initializeBoats();
+                }
+                break;
+        }
     }
 
     /**
@@ -259,7 +267,7 @@ public class Controller implements Initializable, Observer {
     /**
      * Causes the starters overlay to hide itself, enabling a proper view of the course and boats beneath
      */
-    private void hideStarterOverlay(){
+    public void hideStarterOverlay(){
         startersOverlay.setVisible(false);
     }
 
