@@ -169,7 +169,7 @@ public class RaceVisionFileReaderTest {
     public void importRegattaTest(){
         Race race = new Race("test", null, new ArrayList<>());
         RaceVisionFileReader.importRegatta("data/testFiles/testRegatta.xml", race);
-        Assert.assertEquals(2, race.getUTCOffset());
+        Assert.assertEquals(2, race.getUTCOffset(), 0);
         Assert.assertEquals("Gothenburg World Series 2015", race.getRegattaName());
     }
 }
