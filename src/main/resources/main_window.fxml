@@ -85,17 +85,11 @@
                                           <Label fx:id="lblAnnotation" alignment="CENTER" prefHeight="17.0" prefWidth="128.0" text="Annotations" textAlignment="CENTER" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                        </children>
                                     </AnchorPane>
-                                    <Slider fx:id="annotationsSlider" majorTickUnit="1.0" max="2.0" minorTickCount="0" prefHeight="10.0" prefWidth="128.0" showTickMarks="true" snapToTicks="true">
+                                    <Slider fx:id="annotationsSlider" majorTickUnit="1.0" max="2.0" minorTickCount="0" prefHeight="10.0" prefWidth="128.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
                                        <padding>
                                           <Insets top="4.0" />
                                        </padding>
                                     </Slider>
-                                    <HBox fx:id="sliderLbl" layoutY="5.0">
-                                       <children>
-                                          <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="41.0" prefWidth="114.0" text="None" textFill="WHITE" HBox.hgrow="ALWAYS" />
-                                          <Label graphicTextGap="1.0" text="All" textAlignment="RIGHT" textFill="WHITE" HBox.hgrow="ALWAYS" />
-                                       </children>
-                                    </HBox>
                                  </children>
                               </VBox>
                               <HBox fx:id="raceClockHBox" alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
@@ -138,7 +132,7 @@
                                     <RowConstraints maxHeight="64.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                    <Label fx:id="lblSettings" text="Annotation Settings" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                                    <Label fx:id="lblSettings" text="Important Annotation Settings" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                                        <GridPane.margin>
                                           <Insets top="10.0" />
                                        </GridPane.margin>
@@ -149,7 +143,7 @@
                                        </GridPane.margin>
                                     </CheckBox>
                                     <CheckBox id="chkAnno" fx:id="chkSpeed" mnemonicParsing="false" text="Speed" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                                    <CheckBox id="chkAnno" fx:id="chkPassMarkTime" mnemonicParsing="false" text="Last passed mark" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                                    <CheckBox id="chkAnno" fx:id="chkPassMarkTime" mnemonicParsing="false" text="Time since passing mark" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                                        <GridPane.margin>
                                           <Insets left="30.0" />
                                        </GridPane.margin>

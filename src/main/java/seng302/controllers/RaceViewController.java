@@ -228,7 +228,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @return a CanvasCoordinate of the best screen position
      */
     private CanvasCoordinate getAnnotationPosition(VBox currAnno){
-        //TODO: add calculation to find best screen position
         double offsetX = ANNOTATION_OFFSET_X;
         double offsetY = ANNOTATION_OFFSET_Y;
         CanvasCoordinate coord = new CanvasCoordinate(offsetX, offsetY);
@@ -266,7 +265,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if(forceRedisplay || level != currentAnnotationsLevel) {
             for (BoatDisplay displayBoat : displayBoats) {
                 String boatName = displayBoat.getBoat().getNickName();
-                String boatSpeed = String.format("%.1fkn", displayBoat.getBoat().getSpeed());
                 VBox oldAnnotation = displayBoat.getAnnotation();
                 if (oldAnnotation != null) {
                     root.getChildren().remove(oldAnnotation);
@@ -278,15 +276,18 @@ public class RaceViewController extends AnimationTimer implements Observer {
                         annotations.add(boatName);
                     }
                     if(controller.isSpeedSelected()){
-                        annotations.add(boatSpeed);
+                        annotations.add(displayBoat.getSpeed());
+                    }
+                    if(controller.isTimePassedSelected()){
+                        annotations.add(displayBoat.getTimeSinceLastMark(race));
                     }
                     drawBoatAnnotation(displayBoat, annotations);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
                     annotations.clear();
                     annotations.add(boatName);
-                    annotations.add(boatSpeed);
-                    drawBoatAnnotation(displayBoat, annotations);
+                    annotations.add(displayBoat.getSpeed());
                     annotations.add(displayBoat.getTimeSinceLastMark(race));
+                    drawBoatAnnotation(displayBoat, annotations);
                 }
             }
             currentAnnotationsLevel = level;

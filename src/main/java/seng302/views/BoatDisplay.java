@@ -65,6 +65,10 @@ public class BoatDisplay {
 
     public Path getPath() {return path;}
 
+    public String getSpeed(){
+        return String.format("%.1fkn", boat.getSpeed());
+    }
+
     public Color getColor() {
         return color;
     }

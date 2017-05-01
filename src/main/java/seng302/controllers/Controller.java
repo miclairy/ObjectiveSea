@@ -14,6 +14,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.util.StringConverter;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -94,6 +95,31 @@ public class Controller implements Initializable, Observer {
         course.addObserver(raceViewController);
 
         createCanvasAnchorListeners();
+
+        annotationsSlider.setLabelFormatter(new StringConverter<Double>() {
+            @Override
+            public String toString(Double n) {
+                if (n < 1) return "None";
+                if (n < 2) return "Important";
+                if (n < 3) return "All";
+
+                return "All";
+            }
+
+            @Override
+            public Double fromString(String s) {
+                switch (s) {
+                    case "None":
+                        return 0d;
+                    case "Important":
+                        return 1d;
+                    case "All":
+                        return 2d;
+                    default:
+                        return 2d;
+                }
+            }
+        });
 
         setupAnnotationControl();
         fpsString.set("..."); //set to "..." while fps count loads
