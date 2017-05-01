@@ -101,6 +101,7 @@ public class RaceVisionFileReader {
                             NodeList compoundMarks = element.getElementsByTagName(XMLTags.Course.COMPOUND_MARK);
                             for (int j = 0; j < compoundMarks.getLength(); j++){
                                 CompoundMark mark = parseCompoundMark((Element) compoundMarks.item(j));
+                                System.out.println(mark);
                                 course.addNewCompoundMark(mark);
                             }
                             break;
@@ -355,7 +356,7 @@ public class RaceVisionFileReader {
                             race.setRegattaName(String.valueOf(element.getTextContent()));
                             break;
                         case XMLTags.Regatta.UTC_OFFSET:
-                            int utcOffset = Integer.parseInt(String.valueOf(element.getTextContent()));
+                            double utcOffset = Double.parseDouble(String.valueOf(element.getTextContent()));
                             if (utcOffset <= 14 && utcOffset >= -12) {
                                 race.setUTCOffset(utcOffset);
                             } else {

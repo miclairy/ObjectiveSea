@@ -29,7 +29,7 @@ public class Race extends Observable{
     private double secondsBeforeRace = 0; //extra time in seconds to allow the race to begin and end smoothly
     private int raceStatus;
     private long startTimeInEpochMs, currentTimeInEpochMs;
-    private int UTCOffset;
+    private double UTCOffset;
 
     public Race(String name, Course course, List<Boat> competitors) {
         this.regattaName = name;
@@ -208,9 +208,9 @@ public class Race extends Observable{
         return raceStatus;
     }
 
-    public int getUTCOffset() { return UTCOffset; }
+    public double getUTCOffset() { return UTCOffset; }
 
-    public void setUTCOffset(int UTCOffset) { this.UTCOffset = UTCOffset; }
+    public void setUTCOffset(double UTCOffset) { this.UTCOffset = UTCOffset; }
 
     public Boat getBoatById(Integer id){
         if(boatIdMap.containsKey(id)){

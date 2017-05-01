@@ -22,19 +22,20 @@ public class TimeUtils {
 
 
     /**
+     * Takes the UTC offset given by the regatta xml file and returns the local time of the race
      * @param UTCOffset The UTC Offset from the Data Stream
      * @return String containing the correct time for the given time zone
      */
-    public static String setTimeZone(int UTCOffset) {
+    public static String setTimeZone(double UTCOffset) {
         String utcFormat = "";
         try {
             utcFormat = formatUTCOffset(UTCOffset);
-            if(utcFormat.equals(null)) {
+            if(utcFormat.equals("")) {
                 throw new Exception("Incorrect TimeZone in XML file. TimeZone reset to default.");
             }
         } catch (Exception e){
-            utcFormat = "00:00";
-            System.out.println(e.getMessage());
+            utcFormat = "+00:00";
+            System.out.print(e.getMessage());
         } finally {
             Instant instant = Instant.now();
             ZoneId zone = ZoneId.of(utcFormat);
@@ -42,36 +43,42 @@ public class TimeUtils {
             int hours = zonedDateTime.getHour();
             int minutes = zonedDateTime.getMinute();
             int seconds = zonedDateTime.getSecond();
-            System.out.println(String.format("%02d:%02d:%02d UTC%s", hours, minutes, seconds, utcFormat));
             return String.format("%02d:%02d:%02d UTC%s", hours, minutes, seconds, utcFormat);
         }
     }
 
-    private static String formatUTCOffset(int UTCOffset) {
+    /**
+     * Takes the UTC offset and returns it in acceptable ZoneId format
+     * @param UTCOffset
+     * @return utcFormat - String of the formatted UTC offset
+     */
+    private static String formatUTCOffset(double UTCOffset) {
         String utcFormat = "";
-        if ((UTCOffset > 0) && (UTCOffset < 10)) {
-            if ((UTCOffset % 0.5) == 0) {
-                utcFormat = "+0" + UTCOffset + ":00";
+        String positiveRounded = String.format("%02d", (int)UTCOffset);
+        String negativeRounded = String.format("%03d", (int)UTCOffset);
+        if ((UTCOffset >= 0) && (UTCOffset < 10)) {
+            if ((UTCOffset % 1) == 0) {
+                utcFormat = "+" + positiveRounded + ":00";
             } else {
-                utcFormat = "+0" + UTCOffset + ":30";
+                utcFormat = "+" + positiveRounded + ":30";
             }
         } else if ((UTCOffset > 10) && (UTCOffset <= 14)) {
-            if ((UTCOffset % 0.5) == 0) {
-                utcFormat = "+" + UTCOffset + ":00";
+            if ((UTCOffset % 1) == 0) {
+                utcFormat = "+" + positiveRounded + ":00";
             } else {
-                utcFormat = "+" + UTCOffset + ":30";
+                utcFormat = "+" + positiveRounded + ":30";
             }
         } else if ((UTCOffset < 0) && (UTCOffset > -10)) {
-            if ((UTCOffset % 0.5) == 0) {
-                utcFormat = "-0" + UTCOffset + ":00";
+            if ((UTCOffset % 1) == 0) {
+                utcFormat = negativeRounded + ":00";
             } else {
-                utcFormat = "-0" + UTCOffset + ":30";
+                utcFormat = negativeRounded + ":30";
             }
         } else if ((UTCOffset <= -10) && (UTCOffset >= -12)) {
-            if ((UTCOffset % 0.5) == 0) {
-                utcFormat = "+" + UTCOffset + ":00";
+            if ((UTCOffset % 1) == 0) {
+                utcFormat = negativeRounded + ":00";
             } else {
-                utcFormat = "+" + UTCOffset + ":30";
+                utcFormat = negativeRounded + ":30";
             }
         }
         return utcFormat;
@@ -95,5 +102,9 @@ public class TimeUtils {
         Double kilometersPerHour = kilometersPerSecond * SECONDS_IN_MINUTE * MINUTES_IN_HOUR;
         Double knots = kilometersPerHour / kilometersInNauticalMile;
         return knots;
+    }
+
+    public static String getFormatUTCOffset(double UTCOffset) {
+        return formatUTCOffset(UTCOffset);
     }
 }

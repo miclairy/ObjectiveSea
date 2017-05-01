@@ -269,7 +269,7 @@ public class Controller implements Initializable, Observer {
     /**
      * displays the current time according to the UTC offset, in the GUI on the overlay
      */
-    public static void setTimeZone(int UTCOffset) {
+    public static void setTimeZone(double UTCOffset) {
         clockString.set(TimeUtils.setTimeZone(UTCOffset));
     }
 
