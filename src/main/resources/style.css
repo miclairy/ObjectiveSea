@@ -3,6 +3,15 @@
     -fx-text-fill: White;
 }
 
+#lblSettings{
+    -fx-font-size: 13px;
+    -fx-text-fill: White;
+}
+
+#chkAnno{
+    -fx-text-fill: White;
+}
+
 #startersList{
     -fx-control-inner-background: #2a2a2a;
     -fx-font-size: 17px;
@@ -46,6 +55,31 @@
     -fx-box-border: transparent;
 }
 
+.tab-pane{
+    -fx-background-color: #2a2a2a
+}
+
+.tab .tab-label{
+    -fx-text-fill: White;
+}
+
+.tab {
+    -fx-background-color: #2a2a2a
+}
+
+.tab:selected {
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-background-color: #2a2a2a;
+    -fx-border-width: 0 0 3 0;
+    -fx-border-color: #2a2a2a #2a2a2a #4DC58B #2a2a2a;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #2a2a2a;
+}
 
 .slider .thumb {
     -fx-background-color: #3b3b3b;
@@ -155,6 +189,7 @@
 #fpsToggle{
     -fx-padding: 20 20 20 20;
 }
+
 #fpsLabel{
     -fx-content-display: center;
     -fx-padding: 10 10 10 10;
@@ -166,7 +201,7 @@
     -fx-background-radius: 20px;
 }
 
-#fpsToggle *.box{
+.check-box *.box{
     -fx-background-color: #1a1a1a;
 }
 

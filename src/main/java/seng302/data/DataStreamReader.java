@@ -1,6 +1,8 @@
 package seng302.data;
 
+import seng302.models.Course;
 import seng302.models.Race;
+import seng302.utilities.TimeUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -93,8 +95,20 @@ public class DataStreamReader implements Runnable{
         return total;
     }
 
+    /**
+     * Converts a range of bytes in an array from beginIndex to endIndex - 1 to an integer in little endian order.
+     * Range excludes endIndex to be consistent with similar Java methods (e.g. String.subString).
+     * Range Length must be greater than 0 and less than or equal to 8 (to fit within a 8 byte long).
+     * @param array The byte array containing the bytes to be converted
+     * @param beginIndex The starting index of range of bytes to be converted
+     * @param endIndex The ending index (exclusive) of the range of bytes to be converted
+     * @return The long converted from the range of bytes in little endian order
+     */
     static long byteArrayRangeToLong(byte[] array, int beginIndex, int endIndex){
         int length = endIndex - beginIndex;
+        if(length <= 0 || length > 8){
+            throw new IllegalArgumentException("The length of the range must be between 1 and 8 inclusive");
+        }
 
         long total = 0;
         for(int i = endIndex - 1; i >= beginIndex; i--){
@@ -102,7 +116,6 @@ public class DataStreamReader implements Runnable{
         }
         return total;
     }
-
 
     /**
      * Converts an integer to a latitude/longitude angle as per specification.
@@ -182,17 +195,13 @@ public class DataStreamReader implements Runnable{
         double lat = intToLatLon(latScaled);
         double lon = intToLatLon(lonScaled);
         double heading = intToHeading(headingScaled);
-        double speedInKnots = convertToKnots(boatSpeed);
+        double speedInKnots = TimeUtils.convertMmPerSecondToKnots(boatSpeed);
 
         if(deviceType == BOAT_DEVICE_TYPE){
             race.updateBoat(sourceID, lat, lon, heading, speedInKnots);
         } else if(deviceType == MARK_DEVICE_TYPE){
-            race.updateMark(sourceID, lat, lon);
+            race.getCourse().updateMark(sourceID, lat, lon);
         }
-    }
-
-    private double convertToKnots(int boatSpeed) {
-        return ((boatSpeed / 1e6) * 3600) / 1.852;
     }
 
     /**
@@ -228,7 +237,6 @@ public class DataStreamReader implements Runnable{
                 dataInput.readFully(body);
                 byte[] crc = new byte[CRC_LENGTH];
                 dataInput.readFully(crc);
-
                 if(checkCRC(header, body, crc)){
                     switch(messageType){
                         case XML_MESSAGE:
@@ -253,20 +261,31 @@ public class DataStreamReader implements Runnable{
         }
     }
 
+    /**
+     * Parses the body of Race Status message, and updates race status, race times and wind direction
+     * based on values received
+     * @param body the body of the race status message
+     */
     private void parseRaceStatusMessage(byte[] body) {
         int raceStatus = byteArrayRangeToInt(body, RACE_STATUS.getStartIndex(), RACE_STATUS.getEndIndex());
-        long currentTime = byteArrayRangeToLong(body, 1, 7);
-        long expectedStartTime = byteArrayRangeToLong(body, 12, 18);
+        int raceCourseWindDirection = byteArrayRangeToInt(body, WIND_DIRECTION.getStartIndex(), WIND_DIRECTION.getEndIndex());
+        long currentTime = byteArrayRangeToLong(body, CURRENT_TIME.getStartIndex(), CURRENT_TIME.getEndIndex());
+        long expectedStartTime = byteArrayRangeToLong(body, START_TIME.getStartIndex(), START_TIME.getEndIndex());
 
+        race.getCourse().updateCourseWindValues(raceCourseWindDirection);
         race.updateRaceStatus(raceStatus);
         race.setStartTimeInEpochMs(expectedStartTime);
         race.setCurrentTimeInEpochMs(currentTime);
     }
 
+    /**
+     * Parses the body of Mark Rounding message, and updates the race based on values received
+     * @param body the body of the mark rounding message
+     */
     private void parseMarkRoundingMessage(byte[] body) {
-        long time = byteArrayRangeToLong(body, 1, 7);
-        int sourceID = byteArrayRangeToInt(body, 13, 17);
-        int markID = byteArrayRangeToInt(body, 20, 21);
+        long time = byteArrayRangeToLong(body, ROUNDING_TIME.getStartIndex(), ROUNDING_TIME.getEndIndex());
+        int sourceID = byteArrayRangeToInt(body, ROUNDING_SOURCE_ID.getStartIndex(), ROUNDING_SOURCE_ID.getEndIndex());
+        int markID = byteArrayRangeToInt(body, ROUNDING_MARK_ID.getStartIndex(), ROUNDING_MARK_ID.getEndIndex());
         race.updateMarkRounded(sourceID, markID, time);
     }
 
@@ -277,4 +296,5 @@ public class DataStreamReader implements Runnable{
     public void setRace(Race race) {
         this.race = race;
     }
+
 }
