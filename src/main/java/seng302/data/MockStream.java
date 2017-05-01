@@ -55,7 +55,7 @@ public class MockStream implements Runnable {
 
         clientSocket = server.accept();
         outToServer = new DataOutputStream(clientSocket.getOutputStream());
-        System.out.println("Client accepted");
+        //System.out.println("Client accepted");
     }
 
     /**

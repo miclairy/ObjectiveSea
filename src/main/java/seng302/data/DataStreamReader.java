@@ -67,7 +67,7 @@ public class DataStreamReader implements Runnable{
     void setUpConnection() {
         try {
             clientSocket = new Socket(sourceAddress, sourcePort);
-            System.out.println("Connecting to server");
+            //System.out.println("Connecting to server");
             dataStream = clientSocket.getInputStream();
         } catch (IOException e) {
             e.printStackTrace();
