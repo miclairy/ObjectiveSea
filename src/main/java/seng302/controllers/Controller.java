@@ -237,9 +237,7 @@ public class Controller implements Initializable, Observer {
     }
 
 
-    public void fpsLabel(Boolean visible){
-        fpsLabel.setVisible(visible);
-    }
+    public void fpsLabel(Boolean visible){fpsLabel.setVisible(visible);}
 
     /**
      * Causes the starters overlay to hide itself, enabling a proper view of the course and boats beneath
@@ -261,13 +259,9 @@ public class Controller implements Initializable, Observer {
         Controller.canvasWidth = canvasWidth;
     }
 
-    public static double getCanvasHeight() {
-        return canvasHeight;
-    }
+    public static double getCanvasHeight() {return canvasHeight;}
 
-    public static double getCanvasWidth() {
-        return canvasWidth;
-    }
+    public static double getCanvasWidth() {return canvasWidth;}
 
     public ObservableList<String> getFormattedDisplayOrder(){
         return formattedDisplayOrder;
