@@ -117,7 +117,6 @@ public class Controller implements Initializable, Observer {
         raceViewController.start();
     }
 
-
     /**
      * Called from the RaceViewController handle if there is a change in race status
      * Handles the starters Overlay and timing for the boats objects to be created
