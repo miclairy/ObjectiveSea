@@ -35,7 +35,7 @@ public class MockRaceRunner implements Runnable {
         initialize();
     }
 
-    private void initialize(){
+    public void initialize(){
         boatsInRace = RaceVisionFileReader.importStarters(null);
         course = RaceVisionFileReader.importCourse(null);
         setStartingPositions();

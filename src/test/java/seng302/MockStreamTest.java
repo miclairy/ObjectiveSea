@@ -4,12 +4,16 @@ package seng302;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
 import seng302.controllers.MockRaceRunner;
 import seng302.data.AC35StreamMessage;
 import seng302.data.BoatStatus;
 import seng302.data.MockStream;
 import seng302.data.RaceStatus;
 import seng302.models.Boat;
+import seng302.models.CompoundMark;
+import seng302.models.Course;
+import seng302.models.Mark;
 
 import java.io.*;
 import java.net.Socket;
@@ -193,6 +197,17 @@ public class MockStreamTest {
     @Test
     public void sendMarkRoundedTest(){
         try {
+            MockRaceRunner mockRaceRunner = mock(MockRaceRunner.class, Mockito.RETURNS_DEEP_STUBS);
+            Course course = mock(Course.class);
+            when(mockRaceRunner.getCourse()).thenReturn(course);
+            when(mockRaceRunner.getRaceId()).thenReturn(String.valueOf(1122));
+            when(mockRaceRunner.getRaceStatus()).thenReturn(RaceStatus.STARTED);
+            Boat boat = new Boat(1, "NZ", "NZ", 20);
+            boat.setLastRoundedMarkIndex(0);
+            CompoundMark mark = mock(CompoundMark.class);
+            when(course.getCourseOrder()).thenReturn(new ArrayList<>(Arrays.asList(mark, mark, mark)));
+            when(course.getCourseOrder().get(boat.getLastRoundedMarkIndex()).hasTwoMarks()).thenReturn(false);
+            when(mockRaceRunner.getBoatsInRace()).thenReturn(new ArrayList<>(Arrays.asList(boat)));
             MockStream mockStream = new MockStream(2823, mockRaceRunner);
             Thread upStream = new Thread(mockStream);
             upStream.start();
@@ -204,10 +219,11 @@ public class MockStreamTest {
             readUtilMessageType(dataInputStream, 38);
             byte[] body = new byte[21];
             dataInputStream.readFully(body);
+            boat.setStatus(BoatStatus.FINISHED);
 
             assertEquals(1, body[0]);
-            assertEquals(6, body[13]);
-            assertEquals(1, body[17]);
+            assertEquals(1, body[13]);
+            assertEquals(0, body[18]);
 
         } catch (IOException e) {
             e.printStackTrace();
