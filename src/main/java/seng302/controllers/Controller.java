@@ -194,11 +194,14 @@ public class Controller implements Initializable, Observer {
         formattedDisplayOrder.clear();
         for (int i = 0; i < raceOrder.size(); i++){
             Boat boat = raceOrder.get(i);
-            String displayString = String.format("%d : %s (%s) - ", i+1, boat.getName(), boat.getNickName());
-            if(raceOrder.get(i).isFinished()){
-                displayString += "Finished!";
-            } else{
-                displayString += String.format("%.3f knots", boat.getSpeed());
+            String displayString = "";
+            if(boat.getLastRoundedMarkIndex() != -1) {
+                displayString = String.format("%d : %s (%s) - ", i+1, boat.getName(), boat.getNickName());
+                if (raceOrder.get(i).isFinished()) {
+                    displayString += "Finished!";
+                } else {
+                    displayString += String.format("%.3f knots", boat.getSpeed());
+                }
             }
             formattedDisplayOrder.add(displayString);
         }

@@ -334,17 +334,31 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public void redrawBoatPaths(){
         for(BoatDisplay boatDisplay : displayBoats){
             Boat boat = boatDisplay.getBoat();
-            if(boat.getPathCoords().size() > 0){
-                CanvasCoordinate pathStart = DisplayUtils.convertFromLatLon(boat.getPathCoords().get(0));
-                boatDisplay.getPath().getElements().clear();
-                boatDisplay.getPath().getElements().add(new MoveTo(pathStart.getX(), pathStart.getY()));
-                for(Coordinate coord : boat.getPathCoords()){
-                    CanvasCoordinate currPoint = DisplayUtils.convertFromLatLon(coord);
-                    boatDisplay.getPath().getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
+            if(hasBoatPassedStartLine(boat)) {
+                if (boat.getPathCoords().size() > 0) {
+                    CanvasCoordinate pathStart = DisplayUtils.convertFromLatLon(boat.getPathCoords().get(0));
+                    boatDisplay.getPath().getElements().clear();
+                    boatDisplay.getPath().getElements().add(new MoveTo(pathStart.getX(), pathStart.getY()));
+                    for (Coordinate coord : boat.getPathCoords()) {
+                        CanvasCoordinate currPoint = DisplayUtils.convertFromLatLon(coord);
+                        boatDisplay.getPath().getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
+                    }
+                    boatDisplay.getPath().toBack();
                 }
-                boatDisplay.getPath().toBack();
             }
         }
+    }
+
+    private boolean hasBoatPassedStartLine(Boat boat) {
+        double boatLat = boat.getCurrentPosition().getLat();
+        double boatLon = boat.getCurrentPosition().getLon();
+        double mark1Lat = race.getCourse().getStartLine().getMark1().getPosition().getLat();
+        double mark1Lon = race.getCourse().getStartLine().getMark1().getPosition().getLon();
+        double mark2Lat = race.getCourse().getStartLine().getMark2().getPosition().getLat();
+        double mark2Lon = race.getCourse().getStartLine().getMark2().getPosition().getLon();
+
+
+        return true;
     }
 
     /**
