@@ -14,7 +14,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -81,7 +80,7 @@ public class Controller implements Initializable, Observer {
 
     private RaceViewController raceViewController;
     private boolean raceStartTimeChanged = true;
-    private boolean raceStatusChanged = false;
+    private boolean raceStatusChanged = true;
     private double secondsElapsed = 0;
     private Race race;
 
@@ -145,15 +144,14 @@ public class Controller implements Initializable, Observer {
      */
     public void updatePreRaceScreen(){
         switch(race.getRaceStatus()){
-            case Race.WARNING_STATUS:
+            case WARNING:
                 showStarterOverlay();
                 break;
-            case Race.PREPARATORY_STATUS:
+            case PREPARATORY:
                 hideStarterOverlay();
                 raceViewController.initializeBoats();
                 break;
-            case Race.STARTED_STATUS:
-
+            case STARTED:
                 if(!raceViewController.hasInitializedBoats()){
                     raceViewController.initializeBoats();
                 }

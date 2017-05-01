@@ -1,6 +1,5 @@
 package seng302.data;
 
-import seng302.models.Course;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 
@@ -12,6 +11,7 @@ import java.util.Map;
 import java.util.zip.CRC32;
 
 import static seng302.data.AC35StreamField.*;
+import static seng302.data.AC35StreamXMLMessage.*;
 
 /**
  * Created on 13/04/17.
@@ -23,17 +23,10 @@ public class DataStreamReader implements Runnable{
     private String sourceAddress;
     private int sourcePort;
     private Race race;
-    private Map<Integer, Integer> xmlSequenceNumbers = new HashMap<>();
+    private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumbers = new HashMap<>();
 
     private final int HEADER_LENGTH = 15;
     private final int CRC_LENGTH = 4;
-    private final int XML_MESSAGE = 26;
-    private final int BOAT_LOCATION_MESSAGE = 37;
-    private final int RACE_STATUS_MESSAGE = 12;
-    private final int MARK_ROUNDING_MESSAGE = 38;
-    private final int REGATTA_XML_SUBTYPE = 5;
-    private final int RACE_XML_SUBTYPE = 6;
-    private final int BOAT_XML_SUBTYPE = 7;
     private final int BOAT_DEVICE_TYPE = 1;
     private final int MARK_DEVICE_TYPE = 3;
 
@@ -47,9 +40,9 @@ public class DataStreamReader implements Runnable{
         this.sourcePort = sourcePort;
 
         //initialize "current" xml sequence numbers to -1 to say we have not yet received any
-        xmlSequenceNumbers.put(REGATTA_XML_SUBTYPE, -1);
-        xmlSequenceNumbers.put(RACE_XML_SUBTYPE, -1);
-        xmlSequenceNumbers.put(BOAT_XML_SUBTYPE, -1);
+        xmlSequenceNumbers.put(REGATTA_XML_MESSAGE, -1);
+        xmlSequenceNumbers.put(RACE_XML_MESSAGE, -1);
+        xmlSequenceNumbers.put(BOAT_XML_MESSAGE, -1);
     }
 
     /**
@@ -142,7 +135,8 @@ public class DataStreamReader implements Runnable{
      * @param body The byte array containing the XML Message (header + payload)
      */
     private void convertXMLMessage(byte[] body) throws IOException {
-        int xmlSubtype = byteArrayRangeToInt(body, XML_SUBTYPE.getStartIndex(), XML_SUBTYPE.getEndIndex());
+        int xmlSubtypeValue = byteArrayRangeToInt(body, XML_SUBTYPE.getStartIndex(), XML_SUBTYPE.getEndIndex());
+        AC35StreamXMLMessage xmlSubtype = AC35StreamXMLMessage.fromInteger(xmlSubtypeValue);
         int xmlSequenceNumber = byteArrayRangeToInt(body, XML_SEQUENCE.getStartIndex(), XML_SEQUENCE.getEndIndex());
         int xmlLength = byteArrayRangeToInt(body, XML_LENGTH.getStartIndex(), XML_LENGTH.getEndIndex());
 
@@ -151,14 +145,14 @@ public class DataStreamReader implements Runnable{
 
         if (xmlSequenceNumbers.get(xmlSubtype) < xmlSequenceNumber) {
             xmlSequenceNumbers.put(xmlSubtype, xmlSequenceNumber);
-            if (xmlSubtype == REGATTA_XML_SUBTYPE) {
+            if (xmlSubtype == REGATTA_XML_MESSAGE) {
                 System.out.printf("New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 writeXMLToFile(xmlBody, REGATTA_FILE_NAME);
-            } else if (xmlSubtype == RACE_XML_SUBTYPE) {
+            } else if (xmlSubtype == RACE_XML_MESSAGE) {
                 System.out.printf("New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 writeXMLToFile(xmlBody, RACE_FILE_NAME);
                 race.getCourse().mergeWithOtherCourse(RaceVisionFileReader.importCourse());
-            } else if (xmlSubtype == BOAT_XML_SUBTYPE) {
+            } else if (xmlSubtype == BOAT_XML_MESSAGE) {
                 System.out.printf("New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 writeXMLToFile(xmlBody, BOAT_FILE_NAME);
             }
@@ -226,13 +220,14 @@ public class DataStreamReader implements Runnable{
      */
     private void readData(){
         DataInput dataInput = new DataInputStream(dataStream);
-        while(race == null || race.getRaceStatus() != 8){
+        while(race == null || !race.getRaceStatus().isRaceEndedStatus()){
             try{
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
 
                 int messageLength = byteArrayRangeToInt(header, MESSAGE_LENGTH.getStartIndex(), MESSAGE_LENGTH.getEndIndex());
-                int messageType = byteArrayRangeToInt(header, MESSAGE_TYPE.getStartIndex(), MESSAGE_TYPE.getEndIndex());
+                int messageTypeValue = byteArrayRangeToInt(header, MESSAGE_TYPE.getStartIndex(), MESSAGE_TYPE.getEndIndex());
+                AC35StreamMessage messageType = AC35StreamMessage.fromInteger(messageTypeValue);
 
                 byte[] body = new byte[messageLength];
                 dataInput.readFully(body);
@@ -274,7 +269,7 @@ public class DataStreamReader implements Runnable{
         long expectedStartTime = byteArrayRangeToLong(body, START_TIME.getStartIndex(), START_TIME.getEndIndex());
 
         race.getCourse().updateCourseWindValues(raceCourseWindDirection);
-        race.updateRaceStatus(raceStatus);
+        race.updateRaceStatus(RaceStatus.fromInteger(raceStatus));
         race.setStartTimeInEpochMs(expectedStartTime);
         race.setCurrentTimeInEpochMs(currentTime);
     }

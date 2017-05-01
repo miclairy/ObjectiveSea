@@ -16,4 +16,31 @@ public enum RaceStatus {
     public boolean isRaceEndedStatus(){
         return this.equals(FINISHED) || this.equals(RETIRED) || this.equals(ABANDONED) || this.equals(TERMINATED);
     }
+
+    public static RaceStatus fromInteger(int value){
+        switch(value){
+            case 0:
+                return NOT_ACTIVE;
+            case 1:
+                return WARNING;
+            case 2:
+                return PREPARATORY;
+            case 3:
+                return STARTED;
+            case 4:
+                return FINISHED;
+            case 5:
+                return RETIRED;
+            case 6:
+                return ABANDONED;
+            case 8:
+                return TERMINATED;
+            case 9:
+                return RACE_START_TIME_NOT_SET;
+            case 10:
+                return PRESTART;
+            default:
+                return null;
+        }
+    }
 }

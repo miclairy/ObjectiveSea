@@ -1,5 +1,8 @@
 package seng302.models;
 
+import static seng302.data.RaceStatus.*;
+
+import seng302.data.RaceStatus;
 import seng302.utilities.TimeUtils;
 
 import java.util.*;
@@ -11,11 +14,6 @@ import java.util.*;
  */
 public class Race extends Observable{
 
-    public static final int WARNING_STATUS = 1;
-    public static final int PREPARATORY_STATUS = 2;
-    public static final int STARTED_STATUS = 3;
-    public static final int TERMINATED_STATUS = 8;
-
     public static final int UPDATED_STATUS_SIGNAL = 1;
     public static final int UPDATED_START_TIME_SIGNAL = 2;
 
@@ -26,7 +24,7 @@ public class Race extends Observable{
     private Map<Integer, Boat> boatIdMap;
 
     private double totalRaceTime;
-    private int raceStatus;
+    private RaceStatus raceStatus;
     private long startTimeInEpochMs, currentTimeInEpochMs;
     private double UTCOffset;
 
@@ -39,7 +37,7 @@ public class Race extends Observable{
         for(Boat competitor : competitors){
             boatIdMap.put(competitor.getId(), competitor);
         }
-        raceStatus = -1;
+        raceStatus = NOT_ACTIVE;
     }
 
     /**
@@ -129,7 +127,7 @@ public class Race extends Observable{
      * Updates the race status and prints it if it is different than before (for debugging purposes)
      * @param newRaceStatus The new race status read in
      */
-    public void updateRaceStatus(int newRaceStatus) {
+    public void updateRaceStatus(RaceStatus newRaceStatus) {
         if(raceStatus != newRaceStatus){
             raceStatus = newRaceStatus;
             setChanged();
@@ -167,7 +165,7 @@ public class Race extends Observable{
      * @return true is race has terminated status, false otherwise
      */
     public boolean isTerminated(){
-        return raceStatus == TERMINATED_STATUS;
+        return raceStatus == TERMINATED;
     }
 
     public long getStartTimeInEpochMs() {
@@ -195,7 +193,7 @@ public class Race extends Observable{
         Collections.sort(raceOrder);
     }
 
-    public int getRaceStatus() {
+    public RaceStatus getRaceStatus() {
         return raceStatus;
     }
 
