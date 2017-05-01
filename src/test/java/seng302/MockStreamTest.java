@@ -6,16 +6,23 @@ import org.junit.Ignore;
 import org.junit.Test;
 import seng302.controllers.MockRaceRunner;
 import seng302.data.AC35StreamMessage;
+import seng302.data.BoatStatus;
 import seng302.data.MockStream;
+import seng302.data.RaceStatus;
+import seng302.models.Boat;
 
 import java.io.*;
-import java.net.*;
+import java.net.Socket;
+import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
+import static org.mockito.Mockito.*;
 import static seng302.data.AC35StreamField.SPEED_OVER_GROUND;
 
 
@@ -134,33 +141,48 @@ public class MockStreamTest {
 
     }
 
+    private void readUtilMessageType(DataInputStream dataInputStream, int type) throws IOException {
+        boolean passMarkType = false;
+        byte[] header = new byte[15];
+        while (!passMarkType){
+            dataInputStream.readFully(header);
+            if (header[2] == type){
+                passMarkType = true;
+            } else {
+                int length = ((header[14] & 0xFF) << 8) + (header[13] & 0xFF);
+                dataInputStream.readFully(new byte[length]);
+                dataInputStream.readFully(new byte[4]);
+            }
+        }
+    }
+
+
     @Test
     public void sendBoatLocationTest(){
 
         try {
+            MockRaceRunner mockRaceRunner = mock(MockRaceRunner.class);
+            when(mockRaceRunner.getRaceId()).thenReturn(String.valueOf(1122));
+            when(mockRaceRunner.getRaceStatus()).thenReturn(RaceStatus.STARTED);
+            Boat boat = new Boat(1, "NZ", "NZ", 20);
+            when(mockRaceRunner.getBoatsInRace()).thenReturn(new ArrayList<>(Arrays.asList(boat)));
             MockStream mockStream = new MockStream(2824, mockRaceRunner);
             Thread upStream = new Thread(mockStream);
             upStream.start();
             Socket connectionSocket = new Socket("localhost", 2824);
             InputStream stream = null;
             stream = connectionSocket.getInputStream();
-            int readByte = stream.read();
-            while (readByte != AC35StreamMessage.BOAT_LOCATION_MESSAGE.getValue()){
-                readByte = stream.read();
-            }
             DataInputStream dataInputStream = new DataInputStream(stream);
-
-            byte[] headerRest = new byte[12];
-            dataInputStream.readFully(headerRest);
+            readUtilMessageType(dataInputStream, 37);
             byte[] body = new byte[56];
             dataInputStream.readFully(body);
+            boat.setStatus(BoatStatus.FINISHED);
 
             assertEquals(1, body[0]);
             assertEquals(1, body[15]);
             assertEquals(1, body[7]);
             assertEquals(0, body[24]);
             assertEquals(0, body[28]);
-            assertEquals((int) (33.0 * 514.444), ((body[SPEED_OVER_GROUND.getEndIndex()-1] & 0xFF) << 8) + (body[SPEED_OVER_GROUND.getStartIndex()] & 0xFF));
             connectionSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -168,7 +190,6 @@ public class MockStreamTest {
 
     }
 
-    @Ignore
     @Test
     public void sendMarkRoundedTest(){
         try {
@@ -180,20 +201,7 @@ public class MockStreamTest {
             stream = connectionSocket.getInputStream();
 
             DataInputStream dataInputStream = new DataInputStream(stream);
-            boolean passMarkType = false;
-            byte[] header = new byte[15];
-            while (!passMarkType){
-
-                dataInputStream.readFully(header);
-                if (header[2] == 38){
-                    passMarkType = true;
-                } else {
-                    int length = ((header[14] & 0xFF) << 8) + (header[13] & 0xFF);
-                    dataInputStream.readFully(new byte[length]);
-                    dataInputStream.readFully(new byte[4]);
-                }
-            }
-
+            readUtilMessageType(dataInputStream, 38);
             byte[] body = new byte[21];
             dataInputStream.readFully(body);
 
