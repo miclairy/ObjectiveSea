@@ -40,6 +40,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private Group root;
     private Controller controller;
     private RaceView raceView;
+    private ScoreBoardController scoreBoardController;
     private ArrayList<BoatDisplay> displayBoats = new ArrayList<>();
     private double previousTime = 0;
     private ImageView currentWindArrow;
@@ -51,18 +52,15 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean courseNeedsRedraw = false;
     private boolean initializedBoats = false;
 
-    public RaceViewController(Group root, Race race, Controller controller) {
+    public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
         this.root = root;
         this.race = race;
         this.controller = controller;
         this.raceView = new RaceView();
+        this.scoreBoardController = scoreBoardController;
         drawCourse();
     }
 
-    /**
-     * Called each frame to handle the control of the RaceView
-     * @param currentTime the time at which the function is called in nanoseconds
-     */
     @Override
     public void handle(long currentTime) {
         if (previousTime == 0) {
@@ -82,13 +80,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
             controller.rebaseRaceClock();
             controller.setRaceStartTimeChanged(false);
         }
+        redrawCourse();
         currentTimeInSeconds += secondsElapsed;
-
         controller.setTimeZone(race.getUTCOffset());
         controller.updateFPSCounter(currentTime);
         run();
         previousTime = currentTime;
-   }
+    }
 
     /**
      * Body of main loop of animation
@@ -272,13 +270,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 }
                 if (level == AnnotationLevel.IMPORTANT_ANNOTATIONS) {
                     annotations.clear();
-                    if(controller.isNameSelected()){
+                    if(scoreBoardController.isNameSelected()){
                         annotations.add(boatName);
                     }
-                    if(controller.isSpeedSelected()){
+                    if(scoreBoardController.isSpeedSelected()){
                         annotations.add(displayBoat.getSpeed());
                     }
-                    if(controller.isTimePassedSelected()){
+                    if(scoreBoardController.isTimePassedSelected()){
                         annotations.add(displayBoat.getTimeSinceLastMark(race));
                     }
                     drawBoatAnnotation(displayBoat, annotations);
