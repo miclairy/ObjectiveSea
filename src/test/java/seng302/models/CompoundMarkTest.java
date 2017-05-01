@@ -12,9 +12,18 @@ public class CompoundMarkTest {
 
     @Test
     public void initializeMarkTest(){
-        CompoundMark mark = new CompoundMark("Normal Mark", 20, 30);
-        CompoundMark start = new CompoundMark("Start Mark", 30, 30);
-        CompoundMark finish = new CompoundMark("Finish Mark", 40, 50);
+        Mark startLine1 = new Mark(0, "Start Line 1", new Coordinate(0, 0));
+        Mark startLine2 = new Mark(1, "Start Line 2", new Coordinate(0, 1));
+        RaceLine start = new RaceLine(0, "Start", startLine1, startLine2);
+        start.setMarkAsStart();
+
+        Mark finishLine1 = new Mark(2, "Finish Line 1", new Coordinate(0, 5));
+        Mark finishLine2 = new Mark(3, "Finish Line 2", new Coordinate(0, 6));
+        RaceLine finish = new RaceLine(1, "Finish", finishLine1, finishLine2);
+        finish.setMarkAsFinish();
+
+        Mark mark1 = new Mark(4, "Mark 1", new Coordinate(2, 2));
+        CompoundMark compoundMark = new CompoundMark(2, "Mark", mark1);
 
         start.setMarkAsStart();
         finish.setMarkAsFinish();
@@ -25,8 +34,19 @@ public class CompoundMarkTest {
         assertTrue(finish.isFinishLine());
         assertFalse(finish.isStartLine());
 
-        assertFalse(mark.isFinishLine());
-        assertFalse(mark.isStartLine());
+        assertFalse(compoundMark.isFinishLine());
+        assertFalse(compoundMark.isStartLine());
     }
 
+    @Test
+    public void hasTwoMarksTest(){
+        Mark mark1 = new Mark(4, "Mark 1", new Coordinate(2, 2));
+        CompoundMark compoundMark1 = new CompoundMark(2, "Mark 1", mark1);
+
+        assertFalse(compoundMark1.hasTwoMarks());
+
+        Mark mark2 = new Mark(5, "Mark 2", new Coordinate(3, 3));
+        CompoundMark compoundMark2 = new CompoundMark(3, "Mark 2", mark1, mark2);
+        assertTrue(compoundMark2.hasTwoMarks());
+    }
 }

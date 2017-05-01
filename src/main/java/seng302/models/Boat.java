@@ -4,6 +4,7 @@ package seng302.models;
 import seng302.data.BoatStatus;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class to encapsulate properties associated with a boat.
@@ -17,11 +18,11 @@ public class Boat implements Comparable<Boat>{
     private String nickName;
     private double speed;
     private int finishingPlace;
-    private int id;
 
     private Coordinate currentPosition;
 
-    private int lastPassedMark;
+    private int lastRoundedMarkIndex;
+    private long lastRoundedMarkTime;
     private boolean finished;
     private double heading;
     private double maxSpeed;
@@ -29,13 +30,15 @@ public class Boat implements Comparable<Boat>{
     private BoatStatus status = BoatStatus.UNDEFINED;
 
     private ArrayList<Coordinate> pathCoords;
-    public Boat(int id, String name, String nickName, double speed) {
+    private Integer id;
+
+    public Boat(Integer id, String name, String nickName, double speed) {
         this.id = id;
         this.name = name;
         this.nickName = nickName;
         this.maxSpeed = speed;
         this.finished = false;
-        this.lastPassedMark = 0;
+        this.lastRoundedMarkIndex = -1;
         this.pathCoords = new ArrayList<>();
         this.currentPosition = new Coordinate(0,0);
     }
@@ -67,43 +70,58 @@ public class Boat implements Comparable<Boat>{
         if(finished){
             return;
         }
-        ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
-        CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
+        List<CompoundMark> courseOrder = course.getCourseOrder();
+        CompoundMark nextMark = courseOrder.get(lastRoundedMarkIndex +1);
 
         double distanceGained = timePassed * speed;
         double distanceLeftInLeg = currentPosition.greaterCircleDistance(nextMark.getPosition());
 
         //If boat moves more than the remaining distance in the leg
-        while(distanceGained > distanceLeftInLeg && lastPassedMark < courseOrder.size()-1){
+        while(distanceGained > distanceLeftInLeg && lastRoundedMarkIndex < courseOrder.size()-1){
             distanceGained -= distanceLeftInLeg;
             //Set boat position to next mark
-            currentPosition.setLat(nextMark.getLat());
-            currentPosition.setLon(nextMark.getLon());
-            lastPassedMark++;
+            currentPosition.setLat(nextMark.getPosition().getLat());
+            currentPosition.setLon(nextMark.getPosition().getLon());
+            lastRoundedMarkIndex++;
 
-            if(lastPassedMark < courseOrder.size()-1){
-                setHeading(course.headingsBetweenMarks(lastPassedMark, lastPassedMark + 1));
-                nextMark = courseOrder.get(lastPassedMark+1);
+            if(lastRoundedMarkIndex < courseOrder.size()-1){
+                setHeading(course.headingsBetweenMarks(lastRoundedMarkIndex, lastRoundedMarkIndex + 1));
+                nextMark = courseOrder.get(lastRoundedMarkIndex +1);
                 distanceLeftInLeg = currentPosition.greaterCircleDistance(nextMark.getPosition());
             }
         }
 
         //Check if boat has finished
-        if(lastPassedMark == courseOrder.size()-1){
+        if(lastRoundedMarkIndex == courseOrder.size()-1){
             finished = true;
             status = BoatStatus.FINISHED; //   finished
             speed = 0;
         } else{
             //Move the remaining distance in leg
             double percentGained = (distanceGained / distanceLeftInLeg);
-            double newLat = getCurrentLat() + percentGained * (nextMark.getLat() - getCurrentLat());
-            double newLon = getCurrentLon() + percentGained * (nextMark.getLon() - getCurrentLon());
+            double newLat = getCurrentLat() + percentGained * (nextMark.getPosition().getLat() - getCurrentLat());
+            double newLon = getCurrentLon() + percentGained * (nextMark.getPosition().getLon() - getCurrentLon());
             currentPosition.update(newLat, newLon);
         }
     }
 
+    /**
+     * Compares boat objects based on the index of last mark rounded in race order and if that is equals, compares
+     * based on time (lower time first).
+     * @param otherBoat The other boat that this boat is being compared to
+     * @return Negative number if this boat comes before other boat in order, 0 if equal or positive number
+     * if this boat comes after other boat in order.
+     */
+    @Override
     public int compareTo(Boat otherBoat){
-        return otherBoat.getLastPassedMark() - lastPassedMark;
+        if(lastRoundedMarkIndex != otherBoat.getLastRoundedMarkIndex()){
+            return Integer.compare(otherBoat.getLastRoundedMarkIndex(), lastRoundedMarkIndex);
+        }
+        return Long.compare(lastRoundedMarkTime, otherBoat.getLastRoundedMarkTime());
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public String getName() {
@@ -128,8 +146,20 @@ public class Boat implements Comparable<Boat>{
         this.finishingPlace = place;
     }
 
-    public int getLastPassedMark() {
-        return lastPassedMark;
+    public int getLastRoundedMarkIndex() {
+        return lastRoundedMarkIndex;
+    }
+
+    public void setLastRoundedMarkIndex(int lastRoundedMarkIndex) {
+        this.lastRoundedMarkIndex = lastRoundedMarkIndex;
+    }
+
+    public long getLastRoundedMarkTime() {
+        return lastRoundedMarkTime;
+    }
+
+    public void setLastRoundedMarkTime(long lastRoundedMarkTime) {
+        this.lastRoundedMarkTime = lastRoundedMarkTime;
     }
 
     public double getCurrentLat() {
