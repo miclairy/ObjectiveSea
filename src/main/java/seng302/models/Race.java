@@ -15,7 +15,6 @@ import java.util.*;
 public class Race extends Observable{
 
     public static final int UPDATED_STATUS_SIGNAL = 1;
-    public static final int UPDATED_START_TIME_SIGNAL = 2;
 
     private String regattaName;
     private Course course;
@@ -182,12 +181,7 @@ public class Race extends Observable{
     }
 
     public void setStartTimeInEpochMs(long startTimeInEpochMs) {
-        if(this.startTimeInEpochMs != startTimeInEpochMs){
-            this.startTimeInEpochMs = startTimeInEpochMs;
-            setChanged();
-            notifyObservers(UPDATED_START_TIME_SIGNAL);
-
-        }
+        this.startTimeInEpochMs = startTimeInEpochMs;
     }
 
     public long getCurrentTimeInEpochMs() {

@@ -70,15 +70,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
         double secondsElapsed = TimeUtils.convertNanosecondsToSeconds(currentTime - previousTime);
 
         if(!race.isTerminated()){
-            controller.updateRaceClock(secondsElapsed);
+            controller.updateRaceClock();
         }
         if(controller.hasRaceStatusChanged()){
             controller.updatePreRaceScreen();
             controller.setRaceStatusChanged(false);
-        }
-        if(controller.hasRaceStartTimeChanged()){
-            controller.rebaseRaceClock();
-            controller.setRaceStartTimeChanged(false);
         }
         currentTimeInSeconds += secondsElapsed;
         controller.setTimeZone(race.getUTCOffset());

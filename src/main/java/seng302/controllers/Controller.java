@@ -57,9 +57,7 @@ public class Controller implements Initializable, Observer {
     @FXML private ScoreBoardController scoreBoardController = new ScoreBoardController();
 
     public boolean raceBegun;
-    private boolean raceStartTimeChanged = true;
     private boolean raceStatusChanged = true;
-    private double secondsElapsed = 0;
     private Race race;
 
     @Override
@@ -81,7 +79,6 @@ public class Controller implements Initializable, Observer {
         fpsString.set("..."); //set to "..." while fps count loads
         fpsLabel.textProperty().bind(fpsString);
         totalRaceTime = race.getTotalRaceTime();
-        secondsElapsed = race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs();
         clockLabel.textProperty().bind(clockString);
         hideStarterOverlay();
         setWindDirection();
@@ -200,14 +197,10 @@ public class Controller implements Initializable, Observer {
     }
 
     /**
-     * Updates the race clock to display the current time
-     * @param timePassed the number of seconds passed since the last update call
+     * Updates the race clock to display the current time in race
      */
-    public void updateRaceClock(double timePassed) {
-        secondsElapsed += timePassed;
-        if(totalRaceTime <= secondsElapsed) {
-            secondsElapsed = totalRaceTime;
-        }
+    public void updateRaceClock() {
+        long secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000;
         int hours = (int) secondsElapsed / 3600;
         int minutes = ((int) secondsElapsed % 3600) / 60;
         int seconds = (int) secondsElapsed % 60;
@@ -215,16 +208,6 @@ public class Controller implements Initializable, Observer {
             raceTimerString.set(String.format("-%02d:%02d:%02d", Math.abs(hours), Math.abs(minutes), Math.abs(seconds)));
         } else {
             raceTimerString.set(String.format("%02d:%02d:%02d", hours, minutes, seconds));
-        }
-    }
-
-    /**
-     * Recalculates the base time (time when visualiser starts), needed when the expected start time of the race
-     * changes
-     */
-    public void rebaseRaceClock(){
-        if(raceStartTimeChanged){
-            secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000;
         }
     }
 
@@ -274,14 +257,6 @@ public class Controller implements Initializable, Observer {
         this.raceStatusChanged = raceStatusChanged;
     }
 
-    public boolean hasRaceStartTimeChanged() {
-        return raceStartTimeChanged;
-    }
-
-    public void setRaceStartTimeChanged(boolean raceStartTimeChanged) {
-        this.raceStartTimeChanged = raceStartTimeChanged;
-    }
-
     /**
      * Changes aspects of the race visualizer based on changes in the race object it observes
      * Updates the pre-race overlay when its informed race status has changed
@@ -295,11 +270,7 @@ public class Controller implements Initializable, Observer {
             Integer sig = (Integer) signal;
             switch(sig){
                 case Race.UPDATED_STATUS_SIGNAL:
-
                     raceStatusChanged = true;
-                    break;
-                case Race.UPDATED_START_TIME_SIGNAL:
-                    raceStartTimeChanged = true;
                     break;
             }
         }
