@@ -57,13 +57,13 @@ public class MockRaceRunner implements Runnable {
 
     @Override
     public void run() {
-        double secTimePassed = 0;
+        double updateFreq = 5;
         while (!raceStatus.isRaceEndedStatus()) {
             boolean atLeastOneBoatNotFinished = false;
             for (Boat boat : boatsInRace) {
 
                 if(raceStatus.equals(RaceStatus.STARTED)){
-                    updateLocation(boat, 0.2 / 1000 / 3600, course);
+                    updateLocation(boat, (1 / updateFreq)  / 3600, course);
                 } else {
                     long millisBeforeStart = startTime - Instant.now().toEpochMilli();
                     if(millisBeforeStart < 3000 && millisBeforeStart > 1000){
@@ -99,8 +99,7 @@ public class MockRaceRunner implements Runnable {
 
             }
             try {
-                Thread.sleep((long) 0.2 * 1000);
-                secTimePassed = secTimePassed + 0.2 / 1000;
+                Thread.sleep((long) (1000 / updateFreq));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

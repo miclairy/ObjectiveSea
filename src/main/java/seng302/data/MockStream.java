@@ -71,7 +71,7 @@ public class MockStream implements Runnable {
             while (!raceRunner.raceHasEnded()) {
                 sendRaceUpdates();
                 try {
-                    Thread.sleep((long) 0.2 * 1000);
+                    Thread.sleep((long) (0.2 * 1000));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
