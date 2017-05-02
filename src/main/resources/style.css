@@ -163,10 +163,11 @@
 }
 
 #boundary{
-    -fx-fill: rgb(136, 230, 239);
+    -fx-fill: #AAE7DF;
     -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 10, 0.4, 0, 0);
-    -fx-stroke: rgb(64, 122, 151);
-    -fx-opacity: 0.2;
+    -fx-stroke: #3c5652;
+    -fx-stroke-width: 2px;
+    -fx-opacity: 0.3;
 }
 
 #wake{

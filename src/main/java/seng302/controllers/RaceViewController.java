@@ -105,7 +105,7 @@ public class RaceViewController extends AnimationTimer {
         }
         for (BoatDisplay boat: displayBoats) {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
-            //addToBoatPath(boat, point);
+            addToBoatPath(boat, point);
             moveWake(boat, point);
             moveBoat(boat, point);
             moveBoatAnnotation(boat.getAnnotation(), point);
@@ -208,7 +208,7 @@ public class RaceViewController extends AnimationTimer {
         String mapURL = DisplayUtils.getGoogleMapsURL();
         Image image = new Image(mapURL);
         controller.mapImageView.setImage(image);
-
+        controller.mapImageView.toBack();
         resizeMap();
     }
 
@@ -220,7 +220,6 @@ public class RaceViewController extends AnimationTimer {
         double width = Controller.getAnchorWidth();
         controller.mapImageView.setFitWidth(width);
         controller.mapImageView.setFitHeight(height);
-        controller.mapImageView.toBack();
     }
 
     /**

@@ -101,7 +101,7 @@ public class RaceView {
                 convertedEnd1.getX(), convertedEnd1.getY(),
                 convertedEnd2.getX(), convertedEnd2.getY()
         );
-        line.setStroke(Color.web("#70aaa2"));
+        line.setStroke(Color.web("#5f7f7a"));
         return line;
     }
 

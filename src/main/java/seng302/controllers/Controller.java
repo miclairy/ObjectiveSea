@@ -121,7 +121,6 @@ public class Controller implements Initializable {
 
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
         raceViewController = new RaceViewController(root, race, this);
-
         final ChangeListener<Number> resizeListener = new ChangeListener<Number>()
         {
             final Timer timer = new Timer(); // uses a timer to call your resize method
