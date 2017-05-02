@@ -206,11 +206,11 @@
 }
 
 #boundary{
-    -fx-fill: #AAE7DF;
-    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 10, 0.4, 0, 0);
+    -fx-fill: #6299DE;
+    -fx-effect: dropshadow(gaussian, #75a4df, 10, 0.4, 0, 0);
     -fx-stroke: #3c5652;
-    -fx-stroke-width: 2px;
-    -fx-opacity: 0.3;
+    -fx-stroke-width: 0.5px;
+    -fx-opacity: 0.2;
 }
 
 #wake{
@@ -221,7 +221,7 @@
 
 #mark{
     -fx-fill: white;
-    -fx-effect: dropshadow(gaussian, #6db1b7, 10, 0.2, 0, 0);
+    -fx-effect: dropshadow(gaussian, #5985bb, 10, 0.2, 0, 0);
     -fx-stroke: #cdfaf4;
     -fx-stroke-width: 2.0;
 }
@@ -232,4 +232,8 @@
 
 #raceClockHBox {
     -fx-background-color: #2a2a2a;
+}
+
+#windDirectionImage{
+    -fx-effect: dropshadow(gaussian, #5985bb, 10, 0.1, 0, 0);
 }
