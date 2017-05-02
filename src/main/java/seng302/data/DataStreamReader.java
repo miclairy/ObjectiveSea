@@ -35,6 +35,10 @@ public class DataStreamReader implements Runnable{
     private final String RACE_FILE_NAME = "Race.xml";
     private final String BOAT_FILE_NAME = "Boat.xml";
 
+    private boolean regattaReceived = false;
+    private boolean raceReceived = false;
+    private boolean boatsReceived = false;
+
     public DataStreamReader(String sourceAddress, int sourcePort){
         this.sourceAddress = sourceAddress;
         this.sourcePort = sourcePort;
@@ -148,13 +152,18 @@ public class DataStreamReader implements Runnable{
             if (xmlSubtype == REGATTA_XML_MESSAGE) {
                 System.out.printf("New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 writeXMLToFile(xmlBody, REGATTA_FILE_NAME);
+                regattaReceived = true;
             } else if (xmlSubtype == RACE_XML_MESSAGE) {
                 System.out.printf("New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 writeXMLToFile(xmlBody, RACE_FILE_NAME);
-                race.getCourse().mergeWithOtherCourse(RaceVisionFileReader.importCourse());
+                if (race.isInitialized()) {
+                    race.getCourse().mergeWithOtherCourse(RaceVisionFileReader.importCourse());
+                }
+                raceReceived = true;
             } else if (xmlSubtype == BOAT_XML_MESSAGE) {
                 System.out.printf("New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 writeXMLToFile(xmlBody, BOAT_FILE_NAME);
+                boatsReceived = true;
             }
         }
     }
@@ -220,7 +229,7 @@ public class DataStreamReader implements Runnable{
      */
     private void readData(){
         DataInput dataInput = new DataInputStream(dataStream);
-        while(race == null || !race.getRaceStatus().isRaceEndedStatus()){
+        while(!race.isInitialized() || !race.getRaceStatus().isRaceEndedStatus()){
             try{
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
@@ -238,14 +247,19 @@ public class DataStreamReader implements Runnable{
                         case XML_MESSAGE:
                             convertXMLMessage(body);
                             break;
-                        case BOAT_LOCATION_MESSAGE:
-                            parseBoatLocationMessage(body);
-                            break;
-                        case RACE_STATUS_MESSAGE:
-                            parseRaceStatusMessage(body);
-                            break;
-                        case MARK_ROUNDING_MESSAGE:
-                            parseMarkRoundingMessage(body);
+                        default:
+                            if (race.isInitialized()) {
+                                switch (messageType) {
+                                    case BOAT_LOCATION_MESSAGE:
+                                        parseBoatLocationMessage(body);
+                                        break;
+                                    case RACE_STATUS_MESSAGE:
+                                        parseRaceStatusMessage(body);
+                                        break;
+                                    case MARK_ROUNDING_MESSAGE:
+                                        parseMarkRoundingMessage(body);
+                                }
+                            }
                     }
                 } else{
                     System.err.println("Incorrect CRC. Message Ignored.");
@@ -291,6 +305,10 @@ public class DataStreamReader implements Runnable{
 
     public void setRace(Race race) {
         this.race = race;
+    }
+
+    public boolean intialDataReceived(){
+        return raceReceived && regattaReceived && boatsReceived;
     }
 
 }

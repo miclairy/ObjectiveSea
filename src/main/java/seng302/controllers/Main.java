@@ -32,8 +32,20 @@ public class Main extends Application {
 
         DataStreamReader dataStreamReader = new DataStreamReader(Config.SOURCE_ADDRESS, Config.SOURCE_PORT);
         Thread dataStreamReaderThread = new Thread(dataStreamReader);
+        race = new Race();
+        dataStreamReader.setRace(race);
         dataStreamReaderThread.start();
 
+        //block until we have received the required XMLs from the stream
+        while(!dataStreamReader.intialDataReceived()){
+            try {
+                Thread.sleep(2);
+            } catch (InterruptedException ie){
+                ie.printStackTrace();
+            }
+        }
+
+        //read everything in
         String courseFile = getParameters().getNamed().get("course");
         String boatsFile = getParameters().getNamed().get("boats");
         String regattaFile = getParameters().getNamed().get("regatta");
@@ -44,9 +56,8 @@ public class Main extends Application {
             Platform.exit();
         }
         String name = "Default name";
-        race = new Race(name, course, boatsInRace);
+        race.initialize(name, course, boatsInRace);
         RaceVisionFileReader.importRegatta(regattaFile, race);
-        dataStreamReader.setRace(race);
     }
 
     @Override

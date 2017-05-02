@@ -28,7 +28,15 @@ public class Race extends Observable{
     private long startTimeInEpochMs, currentTimeInEpochMs;
     private double UTCOffset;
 
+    private boolean initialized = false;
+
     public Race(String name, Course course, List<Boat> competitors) {
+        initialize(name, course, competitors);
+    }
+
+    public Race(){}
+
+    public void initialize(String name, Course course, List<Boat> competitors) {
         this.regattaName = name;
         this.course = course;
         this.competitors = competitors;
@@ -38,6 +46,7 @@ public class Race extends Observable{
             boatIdMap.put(competitor.getId(), competitor);
         }
         raceStatus = NOT_ACTIVE;
+        initialized = true;
     }
 
     /**
@@ -207,6 +216,10 @@ public class Race extends Observable{
         } else{
             return null;
         }
+    }
+
+    public boolean isInitialized(){
+        return this.initialized;
     }
 }
 

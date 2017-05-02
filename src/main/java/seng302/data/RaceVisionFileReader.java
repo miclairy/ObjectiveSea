@@ -402,4 +402,16 @@ public class RaceVisionFileReader {
             }
         }
     }
+
+    public static List<Boat> importDefaultStarters() {
+        try {
+            String resourcePath = "/defaultFiles/" + BOAT_FILE;
+            parseXMLFile(resourcePath, true);
+            return importStartersFromXML();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            return null;
+        }
+    }
+
 }
