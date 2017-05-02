@@ -52,7 +52,6 @@ public class DisplayUtils {
         double canvasY = Controller.getAnchorHeight()/2;
         double canvasX = Controller.getAnchorWidth()/2; //halved to keep within google size guidelines
         System.out.println("width: " + canvasX +"    height: " +canvasY);
-
         Coordinate midPoint = midPoint(max.getLat(), max.getLon(), min.getLat(), min.getLon());
 
         return "https://maps.googleapis.com/maps/api/staticmap?center=" +

@@ -221,7 +221,7 @@
 
 #mark{
     -fx-fill: white;
-    -fx-effect: dropshadow(gaussian, #5985bb, 10, 0.2, 0, 0);
+    -fx-effect: dropshadow(gaussian, #6db1b7, 10, 0.2, 0, 0);
     -fx-stroke: #cdfaf4;
     -fx-stroke-width: 2.0;
 }
@@ -235,5 +235,5 @@
 }
 
 #windDirectionImage{
-    -fx-effect: dropshadow(gaussian, #5985bb, 10, 0.1, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 10, 0.1, 0, 0);
 }
