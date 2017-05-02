@@ -65,6 +65,7 @@ public class DisplayUtils {
                 (int)canvasX + "x" + (int)canvasY +
                 "&scale=2" +
                 "&style=feature:water|color:0xaae7df" +
+                "&style=feature:all|element:labels|visibility:off" +
                 "&key=" + GOOGLE_API_KEY;
     }
 
