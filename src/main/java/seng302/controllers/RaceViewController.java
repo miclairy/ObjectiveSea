@@ -16,6 +16,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
+import javafx.scene.web.WebEngine;
 import seng302.utilities.Config;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.TimeUtils;
@@ -23,6 +24,8 @@ import seng302.models.*;
 import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
+import javax.imageio.ImageIO;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -198,11 +201,14 @@ public class RaceViewController extends AnimationTimer {
         boundary.toBack();
     }
 
+    /**
+     * handles the drawing of the map image and makes it fullscreen
+     */
     public void drawMap(){
         String mapURL = DisplayUtils.getGoogleMapsURL();
-        System.out.println(mapURL);
         Image image = new Image(mapURL);
         controller.mapImageView.setImage(image);
+
         double height = Controller.getAnchorHeight();
         double width = Controller.getAnchorWidth();
         controller.mapImageView.setFitWidth(width);

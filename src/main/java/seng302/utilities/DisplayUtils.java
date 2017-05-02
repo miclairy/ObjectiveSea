@@ -44,6 +44,10 @@ public class DisplayUtils {
         return point;
     }
 
+    /**
+     * generates Static Google Maps image url withing the current bounds of the course on screen
+     * @return the image url as a string
+     */
     public static String getGoogleMapsURL(){
         double canvasY = Controller.getAnchorHeight()/2;
         double canvasX = Controller.getAnchorWidth()/2; //halved to keep within google size guidelines
@@ -61,11 +65,17 @@ public class DisplayUtils {
                 "&size=" +
                 (int)canvasX + "x" + (int)canvasY +
                 "&key=" + GOOGLE_API_KEY;
-
     }
 
 
-
+    /**
+     * finds the geographic midpoint between two lat/lng points
+     * @param lat1 latitude of first point
+     * @param lon1 longitude of first point
+     * @param lat2 latitude of second point
+     * @param lon2 longitude of second point
+     * @return the coordingate of the midpoint
+     */
     public static Coordinate midPoint(double lat1,double lon1,double lat2,double lon2){
 
         double dLon = Math.toRadians(lon2 - lon1);

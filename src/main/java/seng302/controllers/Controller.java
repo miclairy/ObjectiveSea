@@ -14,6 +14,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -67,6 +69,7 @@ public class Controller implements Initializable {
     private ImageView windDirectionImage;
     @FXML
     public ImageView mapImageView;
+
 
     private final int PREP_SIGNAL_SECONDS_BEFORE_START = 120; //2 minutes
     //number of from right edge of canvas that the wind arrow will be drawn
@@ -145,6 +148,7 @@ public class Controller implements Initializable {
             }
         };
 
+
         canvasAnchor.widthProperty().addListener(listener);
         canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
             canvasWidth = (double) newValue;
@@ -177,6 +181,8 @@ public class Controller implements Initializable {
         displayStarters();
         raceViewController.start();
     }
+
+
 
     /**
      * Called from the RaceViewController handle if the race has not yet begun (the boats are not moving)
