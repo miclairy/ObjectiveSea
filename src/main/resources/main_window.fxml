@@ -15,7 +15,7 @@
     <items>
         <AnchorPane fx:id="canvasAnchor" minHeight="200.0" minWidth="200.0" prefHeight="160.0" prefWidth="Infinity" style="-fx-background-color: #aae7df;">
             <children>
-                <ImageView fx:id="mapImageView" fitHeight="88.0" fitWidth="100.0" opacity="0.65" pickOnBounds="true" />
+                <ImageView fx:id="mapImageView" fitHeight="88.0" fitWidth="100.0" pickOnBounds="true" />
                 <VBox fx:id="startersOverlay" alignment="CENTER" blendMode="SRC_ATOP" prefHeight="600.0" prefWidth="400.0" styleClass="startersOverlay" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="100.0">
                     <children>
                         <Label fx:id="startersOverlayTitle" alignment="CENTER" maxWidth="400.0" minWidth="100.0" prefWidth="300.0" text="America's Cup Race">
@@ -51,10 +51,11 @@
                         <Label fx:id="fpsLabel" alignment="CENTER" centerShape="false" contentDisplay="BOTTOM" layoutX="4.0" layoutY="4.0" prefHeight="36.0" prefWidth="64.0" textAlignment="CENTER" />
                     </children>
                 </Group>
+            <ImageView fx:id="mapImageView1" fitHeight="88.0" fitWidth="100.0" layoutX="10.0" layoutY="10.0" pickOnBounds="true" />
             </children></AnchorPane>
         <AnchorPane fx:id="rightHandSide" minWidth="440">
             <children>
-                <fx:include source="scoreBoard.fxml" fx:id="scoreBoard" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"/>
+                <fx:include fx:id="scoreBoard" source="scoreBoard.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
             </children>
         </AnchorPane>
     </items>

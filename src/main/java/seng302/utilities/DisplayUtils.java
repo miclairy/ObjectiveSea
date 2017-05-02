@@ -56,7 +56,7 @@ public class DisplayUtils {
         Coordinate midPoint = midPoint(max.getLat(), max.getLon(), min.getLat(), min.getLon());
 
 
-        return "https://maps.googleapis.com/maps/api/staticmap?maptype=satellite&center=" +
+        return "https://maps.googleapis.com/maps/api/staticmap?center=" +
                 midPoint.getLat() + "," + midPoint.getLon() +                                    //dimentions of image
                 "&visible="+
                 min.getLat() + "," + min.getLon()+
