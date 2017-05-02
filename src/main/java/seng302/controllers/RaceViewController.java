@@ -3,12 +3,13 @@ package seng302.controllers;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
-import javafx.scene.text.Text;
 import javafx.scene.shape.Path;
+import javafx.scene.control.Label;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
@@ -28,7 +29,7 @@ import java.util.*;
 public class RaceViewController extends AnimationTimer implements Observer {
 
     private enum AnnotationLevel {
-        NO_ANNOTATION, NAME_ANNOTATIONS, ALL_ANNOTATIONS;
+        NO_ANNOTATION, IMPORTANT_ANNOTATIONS, ALL_ANNOTATIONS
     }
     private final double WAKE_SCALE_FACTOR = 17;
 
@@ -93,9 +94,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void run(){
         for (BoatDisplay boat: displayBoats) {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
-            addToBoatPath(boat, point);
-            moveWake(boat, point);
             moveBoat(boat, point);
+            moveWake(boat, point);
+            addToBoatPath(boat, point);
             moveBoatAnnotation(boat.getAnnotation(), point);
         }
         if (courseNeedsRedraw) redrawCourse();
@@ -195,16 +196,110 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param displayBoat the boat to draw the annotation to
      * @param annotationText the text to put in the annotation
      */
-    private void drawBoatAnnotation(BoatDisplay displayBoat, String annotationText){
+    private void drawBoatAnnotation(BoatDisplay displayBoat, ArrayList<String> annotationText){
         CanvasCoordinate point = DisplayUtils.convertFromLatLon(displayBoat.getBoat().getCurrentPosition());
-        Text annotation = new Text();
-        annotation.setText(annotationText);
-        annotation.setId("annotation");
-        annotation.setX(point.getX() + ANNOTATION_OFFSET_X);
-        annotation.setY(point.getY() + ANNOTATION_OFFSET_Y);
-        displayBoat.setAnnotation(annotation);
-        root.getChildren().add(annotation);
+        VBox annotationFrame = new VBox();
+        for(String string : annotationText){
+            Label annotationLabel = new Label(string);
+            annotationLabel.setId("annotationLabel");
+            annotationFrame.getChildren().add(annotationLabel);
+        }
+        CanvasCoordinate annoPos = getAnnotationPosition(annotationFrame);
+        annotationFrame.layoutXProperty().set(point.getX() + annoPos.getX());
+        annotationFrame.layoutYProperty().set(point.getY() + annoPos.getY());
+
+        Line annoLine = new Line(point.getX(), point.getY(), annotationFrame.getLayoutX(), annotationFrame.getLayoutY());
+        annoLine.setId("annotationLine");
+        root.getChildren().remove(displayBoat.getAnnotationLine());
+        displayBoat.setAnnotationLine(annoLine);
+
+        root.getChildren().add(annotationFrame);
+        root.getChildren().add(annoLine);
+
+        displayBoat.setAnnotation(annotationFrame);
         displayBoat.getAnnotation().toFront();
+        displayBoat.getAnnotationLine().toBack();
+    }
+
+    /** Calculates best position for annotation to be displayed based on other items on the screen
+     * @param currAnno
+     * @return a CanvasCoordinate of the best screen position
+     */
+    private CanvasCoordinate getAnnotationPosition(VBox currAnno){
+        double offsetX = ANNOTATION_OFFSET_X;
+        double offsetY = ANNOTATION_OFFSET_Y;
+        CanvasCoordinate coord = new CanvasCoordinate(offsetX, offsetY);
+        return coord;
+    }
+
+    /**
+     * Move's the annotation to where the boat is now.
+     * @param annotation the annotation to be moved
+     * @param point where the boat has moved to
+     */
+    private void moveBoatAnnotation(VBox annotation, CanvasCoordinate point){
+        double adjustX = 10;
+        annotation.relocate(
+                (point.getX() + ANNOTATION_OFFSET_X),
+                (point.getY() + ANNOTATION_OFFSET_Y)
+        );
+        if(DisplayUtils.checkBounds(annotation)){
+            adjustX -= annotation.getBoundsInParent().getWidth();
+            annotation.relocate(
+                    (point.getX() + adjustX),
+                    (point.getY() + ANNOTATION_OFFSET_Y)
+            );
+        }
+    }
+
+    /**
+     * When the slider gets to either 0, 1 or 2 change the annotations to Off, Important and Full respectively.
+     * Don't make more annotations if there are already annotations.
+     * @param level the annotation level
+     * @param forceRedisplay forces the annotations to be redisplayed even if the level hasn't changed
+     */
+    public void changeAnnotations(AnnotationLevel level, boolean forceRedisplay) {
+        long currTime = race.getCurrentTimeInEpochMs();
+        ArrayList<String> annotations = new ArrayList<>();
+        if(forceRedisplay || level != currentAnnotationsLevel) {
+            for (BoatDisplay displayBoat : displayBoats) {
+                String boatName = displayBoat.getBoat().getNickName();
+                VBox oldAnnotation = displayBoat.getAnnotation();
+                if (oldAnnotation != null) {
+                    root.getChildren().remove(oldAnnotation);
+                    root.getChildren().remove(displayBoat.getAnnotationLine());
+                }
+                if (level == AnnotationLevel.IMPORTANT_ANNOTATIONS) {
+                    annotations.clear();
+                    if(scoreBoardController.isNameSelected()){
+                        annotations.add(boatName);
+                    }
+                    if(scoreBoardController.isSpeedSelected()){
+                        annotations.add(displayBoat.getSpeed());
+                    }
+                    if(scoreBoardController.isTimePassedSelected()){
+                        annotations.add(displayBoat.getTimeSinceLastMark(currTime));
+                    }
+                    drawBoatAnnotation(displayBoat, annotations);
+                } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
+                    annotations.clear();
+                    annotations.add(boatName);
+                    annotations.add(displayBoat.getSpeed());
+                    annotations.add(displayBoat.getTimeSinceLastMark(currTime));
+                    drawBoatAnnotation(displayBoat, annotations);
+                }
+            }
+            currentAnnotationsLevel = level;
+        }
+    }
+
+    /**
+     * Overload for changeAnnotations() which converts a raw level value into an AnnotationLevel
+     * @param level the annotation level
+     * @param forceRedisplay forces the annotations to be redisplayed even if the level hasn't changed
+     */
+    public void changeAnnotations(int level, boolean forceRedisplay) {
+        changeAnnotations(AnnotationLevel.values()[level], forceRedisplay);
     }
 
     /**
@@ -228,26 +323,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         boat.getIcon().getTransforms().clear();
         boat.getIcon().getTransforms().add(new Rotate(boat.getBoat().getHeading()));
         boat.getIcon().toFront();
-    }
-
-    /**
-     * Move's the annotation to where the boat is now.
-     * @param annotation the annotation to be moved
-     * @param point where the boat has moved to
-     */
-    private void moveBoatAnnotation(Text annotation, CanvasCoordinate point){
-        double adjustX = 10;
-        annotation.relocate(
-                (point.getX() + ANNOTATION_OFFSET_X),
-                (point.getY() + ANNOTATION_OFFSET_Y)
-        );
-        if(DisplayUtils.checkBounds(annotation)){
-            adjustX -= annotation.getBoundsInParent().getWidth();
-            annotation.relocate(
-                    (point.getX() + adjustX),
-                    (point.getY() + ANNOTATION_OFFSET_Y)
-            );
-        }
     }
 
     /**
@@ -354,41 +429,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     public void addToBoatPath(BoatDisplay boatDisplay, CanvasCoordinate point){
         boatDisplay.getPath().getElements().add(new LineTo(point.getX(), point.getY()));
-    }
-
-    /**
-     * When the slider gets to either 0, 1 or 2 change the annotations to Off, Name Only and Full respectively.
-     * Don't make more annotations if there are already annotations.
-     * @param level the annotation level
-     * @param forceRedisplay forces the annotations to be redisplayed even if the level hasn't changed
-     */
-    public void changeAnnotations(AnnotationLevel level, boolean forceRedisplay) {
-        if(forceRedisplay || level != currentAnnotationsLevel) {
-            for (BoatDisplay displayBoat : displayBoats) {
-                Text oldAnnotation = displayBoat.getAnnotation();
-                if (oldAnnotation != null) {
-                    root.getChildren().remove(oldAnnotation);
-                }
-                String boatName = displayBoat.getBoat().getNickName();
-                if (level == AnnotationLevel.NAME_ANNOTATIONS) {
-                    String annotationText = boatName;
-                    drawBoatAnnotation(displayBoat, annotationText);
-                } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
-                    String annotationText = String.format("%s, %.1fkn", boatName, displayBoat.getBoat().getSpeed());
-                    drawBoatAnnotation(displayBoat, annotationText);
-                }
-            }
-            currentAnnotationsLevel = level;
-        }
-    }
-
-    /**
-     * Overload for changeAnnotations() which converts a raw level value into an AnnotationLevel
-     * @param level the annotation level
-     * @param forceRedisplay forces the annotations to be redisplayed even if the level hasn't changed
-     */
-    public void changeAnnotations(int level, boolean forceRedisplay) {
-        changeAnnotations(AnnotationLevel.values()[level], forceRedisplay);
+        boatDisplay.getPath().toBack();
     }
 
     public void setCurrentWindArrow(ImageView currentWindArrow) {
