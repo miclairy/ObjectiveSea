@@ -1,131 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.*?>
-<?import java.lang.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.canvas.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.scene.effect.*?>
-<?import javafx.scene.Group?>
-<?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.Group?>
-<?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.Slider?>
-<?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.layout.Pane?>
 
-<SplitPane dividerPositions="0.7842809364548495" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.Controller">
-  <items>
-    <AnchorPane fx:id="canvasAnchor" minHeight="200.0" minWidth="200.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: #aae7df;">
-         <children>
-            <ImageView fx:id="imvCourseOverlay" fitHeight="400.0" fitWidth="476.0" pickOnBounds="true" preserveRatio="true" AnchorPane.topAnchor="0.0" />
-            <VBox fx:id="startersOverlay" alignment="CENTER" blendMode="SRC_ATOP" prefHeight="600.0" prefWidth="400.0" styleClass="startersOverlay" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="100.0">
-               <children>
-                  <Label fx:id="startersOverlayTitle" alignment="CENTER" maxWidth="400.0" minWidth="100.0" prefWidth="300.0" text="America's Cup Race">
-                     <font>
-                        <Font size="23.0" />
-                     </font>
-                     <padding>
-                        <Insets bottom="10.0" top="10.0" />
-                     </padding>
-                  </Label>
-                  <Label fx:id="clockLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="400.0" minWidth="100.0" prefWidth="300.0" textAlignment="CENTER" textFill="WHITE">
-                     <font>
-                        <Font size="22.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
-                     <padding>
-                        <Insets bottom="10.0" />
-                     </padding>
-                  </Label>
-                  <ListView fx:id="startersList" maxHeight="500.0" maxWidth="400.0" minHeight="150.0" minWidth="100.0" mouseTransparent="true" prefHeight="300.0" prefWidth="300.0" />
-               </children>
-            </VBox>
-            <Group fx:id="root" layoutY="-1.0">
-               <children>
-                  <ImageView fx:id="windDirectionImage" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" x="410.0" y="15.0">
-                     <image>
-                        <Image url="@graphics/arrow.png" />
-                     </image>
-                  </ImageView>
-                  <Canvas fx:id="canvas" height="400.0" width="466.0" />
-                  <Label fx:id="fpsLabel" alignment="CENTER" centerShape="false" contentDisplay="BOTTOM" layoutX="4.0" layoutY="4.0" prefHeight="36.0" prefWidth="64.0" textAlignment="CENTER" />
-               </children>
-            </Group>
-         </children></AnchorPane>
-      <GridPane fx:id="sidePane">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints maxHeight="418.0" minHeight="9.0" percentHeight="10.0" prefHeight="9.0" />
-          <RowConstraints maxHeight="1204.0" minHeight="273.0" percentHeight="70.0" prefHeight="273.0" vgrow="ALWAYS" />
-            <RowConstraints maxHeight="363.0" minHeight="2.0" percentHeight="20.0" prefHeight="325.0" vgrow="NEVER" />
-        </rowConstraints>
-         <children>
-            <ListView fx:id="placings" prefHeight="241.0" prefWidth="131.0" GridPane.rowIndex="1" />
-            <VBox fx:id="settingsPane" styleClass="settingsPane" stylesheets="@style.css" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
-               <children>
-                  <AnchorPane>
-                     <children>
-                        <Label fx:id="lblAnnotation" alignment="CENTER" prefHeight="17.0" prefWidth="128.0" text="Annotations" textAlignment="CENTER" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                     </children>
-                  </AnchorPane>
-                  <Slider fx:id="annotationsSlider" majorTickUnit="1.0" max="2.0" minorTickCount="0" prefHeight="10.0" prefWidth="128.0" showTickMarks="true" snapToTicks="true">
-                     <padding>
-                        <Insets top="4.0" />
-                     </padding></Slider>
-                  <HBox fx:id="sliderLbl" layoutY="5.0">
-                     <children>
-                        <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="41.0" prefWidth="114.0" text="None" textFill="WHITE" HBox.hgrow="ALWAYS" />
-                        <Label graphicTextGap="1.0" text="All" textAlignment="RIGHT" textFill="WHITE" HBox.hgrow="ALWAYS" />
-                     </children>
-                  </HBox>
-                   <CheckBox fx:id="fpsToggle" layoutX="19.0" layoutY="17.0" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#fpsToggle" selected="true" text="Display FPS" textFill="WHITE">
-                     <padding>
-                        <Insets top="8.0" />
-                     </padding></CheckBox>
-               </children>
-            </VBox>
-            <HBox fx:id="raceClockHBox" alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-               <children>
-                  <Label fx:id="raceTimerLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" textFill="WHITE">
-                     <font>
-                        <Font size="36.0" />
-                     </font>
-                  </Label>
-               </children>
-            </HBox>
-         </children>
-      </GridPane>
-  </items>
+<SplitPane dividerPositions="0.99" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1080" prefWidth="1920" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.Controller">
+    <items>
+        <AnchorPane fx:id="canvasAnchor" minHeight="200.0" minWidth="200.0" prefHeight="160.0" prefWidth="Infinity" style="-fx-background-color: #aae7df;">
+            <children>
+                <ImageView fx:id="imvCourseOverlay" fitHeight="400.0" fitWidth="476.0" pickOnBounds="true" preserveRatio="true" AnchorPane.topAnchor="0.0" />
+                <VBox fx:id="startersOverlay" alignment="CENTER" blendMode="SRC_ATOP" prefHeight="600.0" prefWidth="400.0" styleClass="startersOverlay" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="100.0">
+                    <children>
+                        <Label fx:id="startersOverlayTitle" alignment="CENTER" maxWidth="400.0" minWidth="100.0" prefWidth="300.0" text="America's Cup Race">
+                            <font>
+                                <Font size="23.0" />
+                            </font>
+                            <padding>
+                                <Insets bottom="10.0" top="10.0" />
+                            </padding>
+                        </Label>
+                        <Label fx:id="clockLabel" alignment="CENTER" contentDisplay="CENTER" maxWidth="400.0" minWidth="100.0" prefWidth="300.0" textAlignment="CENTER" textFill="WHITE">
+                            <font>
+                                <Font size="22.0" />
+                            </font>
+                            <VBox.margin>
+                                <Insets />
+                            </VBox.margin>
+                            <padding>
+                                <Insets bottom="10.0" />
+                            </padding>
+                        </Label>
+                        <ListView fx:id="startersList" maxHeight="500.0" maxWidth="400.0" minHeight="150.0" minWidth="100.0" mouseTransparent="true" prefHeight="300.0" prefWidth="300.0" />
+                    </children>
+                </VBox>
+                <Group fx:id="root" layoutY="-1.0">
+                    <children>
+                        <ImageView fx:id="windDirectionImage" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" x="410.0" y="15.0">
+                            <image>
+                                <Image url="@graphics/arrow.png" />
+                            </image>
+                        </ImageView>
+                        <Canvas fx:id="canvas" height="400.0" width="298.0" />
+                        <Label fx:id="fpsLabel" alignment="CENTER" centerShape="false" contentDisplay="BOTTOM" layoutX="4.0" layoutY="4.0" prefHeight="36.0" prefWidth="64.0" textAlignment="CENTER" />
+                    </children>
+                </Group>
+            </children></AnchorPane>
+        <AnchorPane fx:id="rightHandSide" minWidth="440">
+            <children>
+                <fx:include source="scoreBoard.fxml" fx:id="scoreBoard" AnchorPane.topAnchor="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"/>
+            </children>
+        </AnchorPane>
+    </items>
 </SplitPane>
