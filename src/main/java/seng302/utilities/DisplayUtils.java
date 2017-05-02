@@ -49,22 +49,23 @@ public class DisplayUtils {
      * @return the image url as a string
      */
     public static String getGoogleMapsURL(){
-        double canvasY = Controller.getAnchorHeight()/2;
-        double canvasX = Controller.getAnchorWidth()/2; //halved to keep within google size guidelines
+        double canvasY = Controller.getAnchorHeight();
+        double canvasX = Controller.getAnchorWidth(); //halved to keep within google size guidelines
         System.out.println("width: " + canvasX +"    height: " +canvasY);
         Coordinate midPoint = midPoint(max.getLat(), max.getLon(), min.getLat(), min.getLon());
 
-        return "https://maps.googleapis.com/maps/api/staticmap?center=" +
-                midPoint.getLat() + "," + midPoint.getLon() +                                    //dimentions of image
+        return "https://maps.googleapis.com/maps/api/staticmap?" +
+                "center=" +
+                midPoint.getLat() + "," + midPoint.getLon() +
+                "&size=" +
+                (int)canvasX + "x" + (int)canvasY +                         //dimentions of image
+                "&style=feature:water%7Ccolor:0xaae7df" +
+                "&style=feature:all%7Celement:labels%7Cvisibility:off" +
                 "&visible="+
                 min.getLat() + "," + min.getLon()+
                 "&visible=" +
                 max.getLat() + "%2C" + max.getLon() +
-                "&size=" +
-                (int)canvasX + "x" + (int)canvasY +
                 "&scale=2" +
-                "&style=feature:water|color:0xaae7df" +
-                "&style=feature:all|element:labels|visibility:off" +
                 "&key=" + GOOGLE_API_KEY;
     }
 
