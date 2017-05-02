@@ -209,15 +209,18 @@ public class RaceViewController extends AnimationTimer {
         Image image = new Image(mapURL);
         controller.mapImageView.setImage(image);
 
+        resizeMap();
+    }
+
+    /**
+     * resizes the map to make it fit the bounds of the display
+     */
+    private void resizeMap(){
         double height = Controller.getAnchorHeight();
         double width = Controller.getAnchorWidth();
         controller.mapImageView.setFitWidth(width);
         controller.mapImageView.setFitHeight(height);
         controller.mapImageView.toBack();
-
-
-
-
     }
 
     /**
@@ -305,6 +308,7 @@ public class RaceViewController extends AnimationTimer {
     public void redrawCourse(){
         redrawMarks();
         redrawBoundary();
+        resizeMap();
 
     }
 

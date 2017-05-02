@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.canvas.Canvas?>
@@ -18,12 +26,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<SplitPane dividerPositions="0.7842809364548495" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.Controller">
+<SplitPane dividerPositions="0.7842809364548495" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.Controller">
   <items>
     <AnchorPane fx:id="canvasAnchor" minHeight="200.0" minWidth="200.0" prefHeight="160.0" prefWidth="489.0" style="-fx-background-color: aae7df;">
          <children>
-            <ImageView fx:id="mapImageView" fitHeight="88.0" fitWidth="100.0" opacity="0.65" pickOnBounds="true" preserveRatio="true" />
-            <ImageView fx:id="imvCourseOverlay" fitHeight="400.0" fitWidth="476.0" pickOnBounds="true" preserveRatio="true" AnchorPane.topAnchor="0.0" />
+            <ImageView fx:id="mapImageView" fitHeight="88.0" fitWidth="100.0" opacity="0.65" pickOnBounds="true" />
             <VBox fx:id="startersOverlay" alignment="CENTER" blendMode="SRC_ATOP" prefHeight="600.0" prefWidth="400.0" styleClass="startersOverlay" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="100.0">
                <children>
                   <Label fx:id="startersOverlayTitle" alignment="CENTER" maxWidth="400.0" minWidth="100.0" prefWidth="300.0" text="America's Cup Race">

@@ -9,6 +9,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.effect.GaussianBlur;
+import javafx.scene.effect.MotionBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -120,7 +122,7 @@ public class Controller implements Initializable {
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
         raceViewController = new RaceViewController(root, race, this);
 
-        final ChangeListener<Number> listener = new ChangeListener<Number>()
+        final ChangeListener<Number> resizeListener = new ChangeListener<Number>()
         {
             final Timer timer = new Timer(); // uses a timer to call your resize method
             TimerTask task = null; // task to execute after defined delay
@@ -130,8 +132,11 @@ public class Controller implements Initializable {
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue)
             {
                 if (task != null)
-                { // there was already a task scheduled from the previous operation ...
+                {
                     task.cancel(); // cancel it, we have a new size to consider
+                    //zoom and blur image
+
+                    mapImageView.setEffect(new GaussianBlur(300));
                 }
 
                 task = new TimerTask() // create new task that calls your resize operation
@@ -139,8 +144,9 @@ public class Controller implements Initializable {
                     @Override
                     public void run()
                     {
-                        // here you can place your resize code
+                        // resize after time is waited
                         raceViewController.drawMap();
+                        mapImageView.setEffect(null);
                     }
                 };
                 // schedule new task
@@ -149,7 +155,7 @@ public class Controller implements Initializable {
         };
 
 
-        canvasAnchor.widthProperty().addListener(listener);
+        canvasAnchor.widthProperty().addListener(resizeListener);
         canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
             canvasWidth = (double) newValue;
             anchorWidth = canvasAnchor.getWidth();
@@ -157,7 +163,7 @@ public class Controller implements Initializable {
             raceViewController.moveWindArrow();
             raceViewController.redrawBoatPaths();
         });
-        canvasAnchor.heightProperty().addListener(listener);
+        canvasAnchor.heightProperty().addListener(resizeListener);
         canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> {
             canvasHeight = (double) newValue;
             anchorHeight = canvasAnchor.getHeight();
