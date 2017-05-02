@@ -55,7 +55,6 @@ public class DisplayUtils {
 
         Coordinate midPoint = midPoint(max.getLat(), max.getLon(), min.getLat(), min.getLon());
 
-
         return "https://maps.googleapis.com/maps/api/staticmap?center=" +
                 midPoint.getLat() + "," + midPoint.getLon() +                                    //dimentions of image
                 "&visible="+
@@ -64,6 +63,8 @@ public class DisplayUtils {
                 max.getLat() + "%2C" + max.getLon() +
                 "&size=" +
                 (int)canvasX + "x" + (int)canvasY +
+                "&scale=2" +
+                "&style=feature:water|color:0xaae7df" +
                 "&key=" + GOOGLE_API_KEY;
     }
 
