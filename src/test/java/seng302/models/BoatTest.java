@@ -3,11 +3,7 @@ package seng302.models;
 import javafx.util.Pair;
 import org.junit.Before;
 import org.junit.Test;
-import seng302.models.Boat;
-import seng302.models.CompoundMark;
-import seng302.models.Course;
-import seng302.models.RaceLine;
-import seng302.utilities.PolarReader;
+import seng302.utilities.readPolars;
 
 import java.util.ArrayList;
 
@@ -58,13 +54,23 @@ public class BoatTest
         course.addMarkInOrder("Start");
         course.addMarkInOrder("Windward Gate");
         double distanceGained = 58.98 * boat.getVMGofBoat();
+        ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
+        course.setWindDirection(30);
+        double windDirection = course.getWindDirection();
+        double bearing = course.headingsBetweenMarks(0,1);
+        double alphaAngle;
+        if(bearing <= (windDirection + 90.0)){
+            alphaAngle = Math.abs(bearing - windDirection)%360;
+        } else {
+            alphaAngle = (360 + windDirection - bearing)%360;
+        }
 
         boat.setPosition(start.getLat(), start.getLon());
         ArrayList<Boat> competitors = new ArrayList<>();
         competitors.add(boat);
-        boat.tackingUpdateLocation(distanceGained, course.getCourseOrder(), course, true);
-        assertEquals(54.753709737220596, boat.getCurrentLat(), DELTA);
-        assertEquals(38.091850795850284, boat.getCurrentLon(), DELTA);
+        boat.tackingUpdateLocation(distanceGained, courseOrder, true, alphaAngle);
+        assertEquals(60.0, boat.getCurrentLat(), DELTA);
+        assertEquals(60.0, boat.getCurrentLon(), DELTA);
     }
 
     @Test
@@ -79,12 +85,22 @@ public class BoatTest
         course.addMarkInOrder("Leeward Gate");
         double distanceGained = 58.98 * boat.getGybeVMGofBoat() * - 1;
 
+        course.setWindDirection(30);
+        double windDirection = course.getWindDirection();
+        double bearing = course.headingsBetweenMarks(0,1);
+        double alphaAngle;
+        if(bearing <= (windDirection + 90.0)){
+            alphaAngle = 180 - Math.abs(bearing - windDirection)%360;
+        } else {
+            alphaAngle = 180 - (360 + windDirection - bearing)%360;
+        }
+
         boat.setPosition(start.getLat(), start.getLon());
         ArrayList<Boat> competitors = new ArrayList<>();
         competitors.add(boat);
-        boat.tackingUpdateLocation(distanceGained, course.getCourseOrder(), course, false);
-        assertEquals(58.844179533934785, boat.getCurrentLat(), DELTA);
-        assertEquals(46.72103185516398, boat.getCurrentLon(), DELTA);
+        boat.tackingUpdateLocation(distanceGained, course.getCourseOrder(), false,alphaAngle);
+        assertEquals(60.0, boat.getCurrentLat(), DELTA);
+        assertEquals(60.0, boat.getCurrentLon(), DELTA);
     }
 
     @Test
@@ -161,43 +177,29 @@ public class BoatTest
     @Test
     public void tackingTest(){
         try {
-            PolarReader.polars();
+            readPolars.polars();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        ArrayList<Integer> TWSList = PolarReader.getTWS();
-        ArrayList<ArrayList<Pair<Double, Double>>> polars = PolarReader.getPolars();
+        ArrayList<Integer> TWSList = readPolars.getTWS();
+        ArrayList<ArrayList<Pair<Double, Double>>> polars = readPolars.getPolars();
         Course course = new Course();
         course.setTrueWindSpeed(20);
         Pair<Double,Double> test = boat.tacking(20,TWSList,polars, true);
         //Check VMG
-        assertEquals(8.384899644236858, test.getKey(), DELTA);
+        assertEquals(18.2690537492209, test.getKey(), DELTA);
         //Check TWA
-        assertEquals(38.0, test.getValue(), DELTA);
+        assertEquals(36.0, test.getValue(), DELTA);
         //Check BSp
-        assertEquals(10.64059038, (test.getKey()/Math.cos(Math.toRadians(test.getValue()))), DELTA);
+        assertEquals(22.58179231863443, (test.getKey()/Math.cos(Math.toRadians(test.getValue()))), DELTA);
         //Check gybing also works
         Pair<Double,Double> gybeTest = boat.tacking(20,TWSList,polars, false);
         //Check VMG
-        assertEquals(-14.300172181468454, gybeTest.getKey(), DELTA);
+        assertEquals(-32.07623487078124, gybeTest.getKey(), DELTA);
         //Check TWA
-        assertEquals(155.0, gybeTest.getValue(), DELTA);
+        assertEquals(153.0, gybeTest.getValue(), DELTA);
         //Check BSp
-        assertEquals(15.778494222393979, (gybeTest.getKey()/Math.cos(Math.toRadians(gybeTest.getValue()))), DELTA);
-    }
-
-    @Test
-    public void turnDeciderTest(){
-        int odd = 1;
-        int even = 0;
-        //if even and right ---> right
-        //if even and left ---> left
-        //if odd and right ---> left
-        //if odd and left ---> right
-        assertEquals("Right", boat.turnDecider(even, "Right"));
-        assertEquals("Left", boat.turnDecider(even, "Left"));
-        assertEquals("Left", boat.turnDecider(odd, "Right"));
-        assertEquals("Right", boat.turnDecider(odd, "Left"));
+        assertEquals(36.0, (gybeTest.getKey()/Math.cos(Math.toRadians(gybeTest.getValue()))), DELTA);
     }
 
 

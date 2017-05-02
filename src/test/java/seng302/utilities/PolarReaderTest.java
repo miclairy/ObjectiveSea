@@ -1,10 +1,6 @@
 package seng302.utilities;
 
-import javafx.util.Pair;
-import org.junit.Before;
 import org.junit.Test;
-
-import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
@@ -15,13 +11,13 @@ public class PolarReaderTest {
 
     @Test
     public void getTWS() throws Exception {
-        PolarReader.polars();
-        assertEquals(9, PolarReader.getTWS().size());
+        readPolars.polars();
+        assertEquals(7, readPolars.getTWS().size());
     }
 
     @Test
     public void getPolars() throws Exception {
-        assertEquals(9, PolarReader.getPolars().size());
+        assertEquals(7, readPolars.getPolars().size());
     }
 
 
