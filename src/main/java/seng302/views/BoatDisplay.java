@@ -77,12 +77,12 @@ public class BoatDisplay {
         this.color = color;
     }
 
-    public String getTimeSinceLastMark(Race race){
+    public String getTimeSinceLastMark(long currTime){
         String timeSincePassed;
         if(boat.getLastRoundedMarkTime() == 0){
             timeSincePassed = "-";
         }else{
-            long timeElapsed = race.getCurrentTimeInEpochMs() - boat.getLastRoundedMarkTime();
+            long timeElapsed = currTime - boat.getLastRoundedMarkTime();
             Instant instant = Instant.ofEpochMilli(timeElapsed);
             ZonedDateTime zdt = ZonedDateTime.ofInstant (instant , ZoneOffset.UTC );
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern ("mm:ss");

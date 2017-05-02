@@ -253,12 +253,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     /**
-     * When the slider gets to either 0, 1 or 2 change the annotations to Off, Name Only and Full respectively.
+     * When the slider gets to either 0, 1 or 2 change the annotations to Off, Important and Full respectively.
      * Don't make more annotations if there are already annotations.
      * @param level the annotation level
      * @param forceRedisplay forces the annotations to be redisplayed even if the level hasn't changed
      */
     public void changeAnnotations(AnnotationLevel level, boolean forceRedisplay) {
+        long currTime = race.getCurrentTimeInEpochMs();
         ArrayList<String> annotations = new ArrayList<>();
         if(forceRedisplay || level != currentAnnotationsLevel) {
             for (BoatDisplay displayBoat : displayBoats) {
@@ -277,14 +278,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
                         annotations.add(displayBoat.getSpeed());
                     }
                     if(scoreBoardController.isTimePassedSelected()){
-                        annotations.add(displayBoat.getTimeSinceLastMark(race));
+                        annotations.add(displayBoat.getTimeSinceLastMark(currTime));
                     }
                     drawBoatAnnotation(displayBoat, annotations);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
                     annotations.clear();
                     annotations.add(boatName);
                     annotations.add(displayBoat.getSpeed());
-                    annotations.add(displayBoat.getTimeSinceLastMark(race));
+                    annotations.add(displayBoat.getTimeSinceLastMark(currTime));
                     drawBoatAnnotation(displayBoat, annotations);
                 }
             }
