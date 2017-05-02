@@ -17,7 +17,7 @@ import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.Race;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Main extends Application {
 
@@ -36,14 +36,17 @@ public class Main extends Application {
 
         String courseFile = getParameters().getNamed().get("course");
         String boatsFile = getParameters().getNamed().get("boats");
-        ArrayList<Boat> boatsInRace = RaceVisionFileReader.importStarters(boatsFile);
+        String regattaFile = getParameters().getNamed().get("regatta");
+        List<Boat> boatsInRace = RaceVisionFileReader.importStarters(boatsFile);
         Course course = RaceVisionFileReader.importCourse(courseFile);
         //for now if we fail to read in a course or boats, then exit the program immediately
         if (boatsInRace.isEmpty() || course == null) {
             Platform.exit();
         }
-        String name = "America's Cup Race";
+        String name = "Default name";
         race = new Race(name, course, boatsInRace);
+        RaceVisionFileReader.importRegatta(regattaFile, race);
+        dataStreamReader.setRace(race);
     }
 
     @Override

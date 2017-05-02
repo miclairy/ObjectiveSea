@@ -1,13 +1,17 @@
 package seng302.views;
 
-import javafx.scene.CacheHint;
-import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
-import javafx.scene.text.Text;
-import seng302.models.Boat;
+import seng302.models.*;
+
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.ZoneOffset;
 
 
 /**
@@ -18,19 +22,22 @@ public class BoatDisplay {
     private Boat boat;
     private Shape icon;
     private Polyline wake;
-    private Label annotation;
+    private VBox annotation;
     private Path path;
+    private Line annotationLine;
 
     private Color color;
 
     public BoatDisplay(Boat boat) {
         this.boat = boat;
-        this.annotation = new Label();
-        this.annotation.setCache(true);
-        this.annotation.setCacheHint(CacheHint.SPEED);
+        this.annotation = new VBox();
     }
 
-    public Label getAnnotation() {return annotation;}
+    public Line getAnnotationLine() {return annotationLine;}
+
+    public void setAnnotationLine(Line line) {this.annotationLine = line;}
+
+    public VBox getAnnotation() {return annotation;}
 
     public void setWake(Polyline wake) {
         this.wake = wake;
@@ -44,7 +51,7 @@ public class BoatDisplay {
         this.icon = icon;
     }
 
-    public void setAnnotation(Label annotation) {this.annotation = annotation;}
+    public void setAnnotation(VBox annotation) {this.annotation = annotation;}
 
     public Shape getIcon() {
         return icon;
@@ -58,12 +65,30 @@ public class BoatDisplay {
 
     public Path getPath() {return path;}
 
+    public String getSpeed(){
+        return String.format("%.1fkn", boat.getSpeed());
+    }
+
     public Color getColor() {
         return color;
     }
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public String getTimeSinceLastMark(long currTime){
+        String timeSincePassed;
+        if(boat.getLastRoundedMarkTime() == 0){
+            timeSincePassed = "-";
+        }else{
+            long timeElapsed = currTime - boat.getLastRoundedMarkTime();
+            Instant instant = Instant.ofEpochMilli(timeElapsed);
+            ZonedDateTime zdt = ZonedDateTime.ofInstant (instant , ZoneOffset.UTC );
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern ("mm:ss");
+            timeSincePassed = formatter.format(zdt);
+        }
+        return timeSincePassed;
     }
 }
 
