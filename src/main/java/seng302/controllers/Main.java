@@ -11,29 +11,41 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import seng302.data.DataStreamReader;
+import seng302.data.MockStream;
 import seng302.utilities.Config;
 import seng302.data.RaceVisionFileReader;
 import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.Race;
-
 import java.util.List;
+
 
 public class Main extends Application {
 
     private static Race race;
 
     /**
-     * Loads in the course and config files and creates the race to run.
+     * Loads in the course and creates the race to run.
      */
     @Override
     public void init(){
-        Config.initializeConfig();
 
         DataStreamReader dataStreamReader = new DataStreamReader(Config.SOURCE_ADDRESS, Config.SOURCE_PORT);
         Thread dataStreamReaderThread = new Thread(dataStreamReader);
+        race = new Race();
+        dataStreamReader.setRace(race);
         dataStreamReaderThread.start();
 
+        //block until we have received the required XMLs from the stream
+        while(!dataStreamReader.intialDataReceived()){
+            try {
+                Thread.sleep(2);
+            } catch (InterruptedException ie){
+                ie.printStackTrace();
+            }
+        }
+
+        //read everything in
         String courseFile = getParameters().getNamed().get("course");
         String boatsFile = getParameters().getNamed().get("boats");
         String regattaFile = getParameters().getNamed().get("regatta");
@@ -44,9 +56,8 @@ public class Main extends Application {
             Platform.exit();
         }
         String name = "Default name";
-        race = new Race(name, course, boatsInRace);
+        race.initialize(name, course, boatsInRace);
         RaceVisionFileReader.importRegatta(regattaFile, race);
-        dataStreamReader.setRace(race);
     }
 
     @Override
@@ -63,11 +74,27 @@ public class Main extends Application {
 
     public static void main( String[] args )
     {
+        Config.initializeConfig();
+        setupMockStream();
         launch(args);
+    }
+
+    /**
+     * Creates a MockStream object, puts it in it's own thread and starts the thread
+     */
+    private static void setupMockStream(){
+        MockRaceRunner runner = new MockRaceRunner();
+        Thread runnerThread = new Thread(runner);
+        runnerThread.start();
+        MockStream mockStream;
+        mockStream = new MockStream(2828, runner);
+        Thread upStream = new Thread(mockStream);
+        upStream.start();
     }
 
     public static Race getRace() {
         return Main.race;
     }
+
 }
 

@@ -7,6 +7,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
+import javafx.util.StringConverter;
 import seng302.models.Boat;
 import seng302.models.Race;
 
@@ -20,17 +21,17 @@ public class ScoreBoardController {
     private RaceViewController raceViewController;
 
     //FXML fields
-    @FXML
-    private CheckBox fpsToggle;
-    @FXML
-    private ListView<String> placings;
-    @FXML
-    private Slider annotationsSlider;
-    @FXML
-    private Label raceTimerLabel;
+    @FXML private CheckBox fpsToggle;
+    @FXML private ListView<String> placings;
+    @FXML private Slider annotationsSlider;
+    @FXML private Label raceTimerLabel;
+    @FXML private CheckBox chkName;
+    @FXML private CheckBox chkSpeed;
+    @FXML private CheckBox chkPassMarkTime;
+    @FXML private CheckBox chkEst;
 
-    public void setControllers(Controller parentToBe, RaceViewController raceViewController){
-        this.parent = parentToBe;
+    public void setControllers(Controller parent, RaceViewController raceViewController){
+        this.parent = parent;
         this.raceViewController = raceViewController;
     }
 
@@ -38,8 +39,31 @@ public class ScoreBoardController {
         placings.setItems(parent.getFormattedDisplayOrder());
         raceTimerLabel.textProperty().bind(parent.raceTimerString);
         setupAnnotationControl();
-    }
+        annotationsSlider.setLabelFormatter(new StringConverter<Double>() {
+            @Override
+            public String toString(Double n) {
+                if(n < 1) return "None";
+                if(n < 2) return "Important";
+                if(n < 3) return "All";
 
+                return "All";
+            }
+
+            @Override
+            public Double fromString(String s) {
+                switch(s) {
+                    case "None":
+                        return 0d;
+                    case "Important":
+                        return 1d;
+                    case "All":
+                        return 2d;
+                    default:
+                        return 2d;
+                }
+            }
+        });
+    }
 
     @FXML
     /**
@@ -57,4 +81,12 @@ public class ScoreBoardController {
         annotationsSlider.valueProperty().addListener((observable, oldValue, newValue) -> raceViewController.changeAnnotations(newValue.intValue(), false));
         annotationsSlider.adjustValue(annotationsSlider.getMax());
     }
+
+    public boolean isSpeedSelected(){return chkSpeed.isSelected();}
+
+    public boolean isNameSelected(){return chkName.isSelected();}
+
+    public boolean isEstSelected(){return chkEst.isSelected();}
+
+    public boolean isTimePassedSelected(){return chkPassMarkTime.isSelected();}
 }

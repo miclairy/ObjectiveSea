@@ -1,29 +1,21 @@
 package seng302.controllers;
 
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -31,26 +23,16 @@ import static javafx.collections.FXCollections.observableArrayList;
 
 public class Controller implements Initializable, Observer {
 
-    @FXML
-    public Canvas canvas;
-    @FXML
-    private Group root;
-    @FXML
-    private AnchorPane canvasAnchor;
-    @FXML
-    private AnchorPane rightHandSide;
-    @FXML
-    private Label fpsLabel;
-    @FXML
-    private ListView<String> startersList;
-    @FXML
-    private Label clockLabel;
-    @FXML
-    public VBox startersOverlay;
-    @FXML
-    private Label startersOverlayTitle;
-    @FXML
-    private ImageView windDirectionImage;
+    @FXML public Canvas canvas;
+    @FXML private Group root;
+    @FXML private AnchorPane canvasAnchor;
+    @FXML private AnchorPane rightHandSide;
+    @FXML private Label fpsLabel;
+    @FXML private ListView<String> startersList;
+    @FXML private Label clockLabel;
+    @FXML public VBox startersOverlay;
+    @FXML private Label startersOverlayTitle;
+    @FXML private ImageView windDirectionImage;
 
     //number of from right edge of canvas that the wind arrow will be drawn
     private final int WIND_ARROW_OFFSET = 60;
@@ -71,14 +53,12 @@ public class Controller implements Initializable, Observer {
     private static double canvasWidth;
 
     // Controllers
-    @FXML
-    private RaceViewController raceViewController;
-    @FXML
-    private ScoreBoardController scoreBoardController = new ScoreBoardController();
+    @FXML private RaceViewController raceViewController;
+    @FXML private ScoreBoardController scoreBoardController = new ScoreBoardController();
 
     public boolean raceBegun;
     private boolean raceStartTimeChanged = true;
-    private boolean raceStatusChanged = false;
+    private boolean raceStatusChanged = true;
     private double secondsElapsed = 0;
     private Race race;
 
@@ -96,6 +76,8 @@ public class Controller implements Initializable, Observer {
         raceViewController = new RaceViewController(root, race, this, scoreBoardController);
         course.addObserver(raceViewController);
         createCanvasAnchorListeners();
+        scoreBoardController.setControllers(this, raceViewController);
+        scoreBoardController.setUp();
         fpsString.set("..."); //set to "..." while fps count loads
         fpsLabel.textProperty().bind(fpsString);
         totalRaceTime = race.getTotalRaceTime();
@@ -124,10 +106,6 @@ public class Controller implements Initializable, Observer {
             raceViewController.redrawBoatPaths();
         });
 
-
-        scoreBoardController.setControllers(this, raceViewController);
-        scoreBoardController.setUp();
-
         fpsString.set("..."); //set to "..." while fps count loads
         fpsLabel.textProperty().bind(fpsString);
         totalRaceTime = race.getTotalRaceTime();
@@ -139,22 +117,20 @@ public class Controller implements Initializable, Observer {
         raceViewController.start();
     }
 
-
     /**
      * Called from the RaceViewController handle if there is a change in race status
      * Handles the starters Overlay and timing for the boats objects to be created
      */
     public void updatePreRaceScreen(){
         switch(race.getRaceStatus()){
-            case Race.WARNING_STATUS:
+            case WARNING:
                 showStarterOverlay();
                 break;
-            case Race.PREPARATORY_STATUS:
+            case PREPARATORY:
                 hideStarterOverlay();
                 raceViewController.initializeBoats();
                 break;
-            case Race.STARTED_STATUS:
-
+            case STARTED:
                 if(!raceViewController.hasInitializedBoats()){
                     raceViewController.initializeBoats();
                 }
@@ -263,9 +239,7 @@ public class Controller implements Initializable, Observer {
     }
 
 
-    public void fpsLabel(Boolean visible){
-        fpsLabel.setVisible(visible);
-    }
+    public void fpsLabel(Boolean visible){fpsLabel.setVisible(visible);}
 
     /**
      * Causes the starters overlay to hide itself, enabling a proper view of the course and boats beneath
@@ -287,14 +261,9 @@ public class Controller implements Initializable, Observer {
         Controller.canvasWidth = canvasWidth;
     }
 
-    public static double getCanvasHeight() {
-        return canvasHeight;
-    }
+    public static double getCanvasHeight() {return canvasHeight;}
 
-    public static double getCanvasWidth() {
-        return canvasWidth;
-    }
-
+    public static double getCanvasWidth() {return canvasWidth;}
 
     public ObservableList<String> getFormattedDisplayOrder(){
         return formattedDisplayOrder;
