@@ -281,6 +281,10 @@ public class DataStreamReader implements Runnable{
         int raceCourseWindDirection = byteArrayRangeToInt(body, WIND_DIRECTION.getStartIndex(), WIND_DIRECTION.getEndIndex());
         long currentTime = byteArrayRangeToLong(body, CURRENT_TIME.getStartIndex(), CURRENT_TIME.getEndIndex());
         long expectedStartTime = byteArrayRangeToLong(body, START_TIME.getStartIndex(), START_TIME.getEndIndex());
+        int boatID = byteArrayRangeToInt(body, BOAT_ID.getStartIndex(), BOAT_ID.getEndIndex());
+        long estimatedTimeToMark = byteArrayRangeToLong(body, EST_TIME_TO_MARK.getStartIndex(), EST_TIME_TO_MARK.getEndIndex());
+
+        System.out.println("BOAT ID: " + boatID + " With time to next mark being: " + estimatedTimeToMark);
 
         race.getCourse().updateCourseWindValues(raceCourseWindDirection);
         race.updateRaceStatus(RaceStatus.fromInteger(raceStatus));

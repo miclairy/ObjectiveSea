@@ -207,8 +207,8 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, LEG_NUMBER, boat.getLastRoundedMarkIndex() + 1);
         addFieldToByteArray(body, NUMBER_PENALTIES_AWARDED, 0); //todo make penalties a thing
         addFieldToByteArray(body, NUMBER_PENALTIES_SERVED, 0);
-        addFieldToByteArray(body, ESTIMATED_TIME_AT_NEXT_MARK, 0); //todo time estimation til next mark/ end of race
-        addFieldToByteArray(body, ESTIMATED_TIME_AT_FINISH, 0);
+        addFieldToByteArray(body, ESTIMATED_TIME_AT_NEXT_MARK, (long) boat.getTimeTillMark() * 1000); // Was in seconds, requires milliseconds
+        addFieldToByteArray(body, ESTIMATED_TIME_AT_FINISH, boat.getTimeTillFinish() * 1000); // as above
 
         return body;
     }
