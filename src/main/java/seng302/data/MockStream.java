@@ -2,6 +2,8 @@ package seng302.data;
 
 import seng302.controllers.MockRaceRunner;
 import seng302.models.*;
+import seng302.utilities.Config;
+
 import java.io.*;
 import java.net.*;
 import java.nio.file.Files;
@@ -22,6 +24,8 @@ public class MockStream implements Runnable {
     private final int HEADER_LENGTH = 15;
     private final int ROUNDING_MARK_TYPE = 1;
     private final int GATE_TYPE = 2;
+
+    private final int SECONDS_PER_UPDATE = 200;
 
     private DataOutputStream outToServer;
     private int port;
@@ -48,14 +52,13 @@ public class MockStream implements Runnable {
         xmlSequenceNumber.put(RACE_XML_MESSAGE, 0);
         xmlSequenceNumber.put(BOAT_XML_MESSAGE, 0);
 
-        for (Boat boat: raceRunner.getBoatsInRace()){
+        for (Boat boat: raceRunner.getRace().getCompetitors()){
             boatSequenceNumbers.put(boat, boat.getId());
             lastMarkRoundingSent.put(boat, -1);
         }
 
         clientSocket = server.accept();
         outToServer = new DataOutputStream(clientSocket.getOutputStream());
-        //System.out.println("Client accepted");
     }
 
     /**
@@ -65,13 +68,11 @@ public class MockStream implements Runnable {
     public void run() {
         try {
             initialize();
-
             sendInitialRaceMessages();
-
             while (!raceRunner.raceHasEnded()) {
                 sendRaceUpdates();
                 try {
-                    Thread.sleep((long) 0.2 * 1000);
+                    Thread.sleep(SECONDS_PER_UPDATE);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -98,8 +99,8 @@ public class MockStream implements Runnable {
      * @throws IOException
      */
     private void sendRaceUpdates() throws IOException {
-        RaceStatus raceStatus = raceRunner.getRaceStatus();
-        List<Boat> boatsInRace = raceRunner.getBoatsInRace();
+        RaceStatus raceStatus = raceRunner.getRace().getRaceStatus();
+        List<Boat> boatsInRace = raceRunner.getRace().getCompetitors();
         byte[] raceStatusBody = initialiseRaceStatusMessage(boatsInRace.size());
 
         for (Boat boat : boatsInRace) {
@@ -133,7 +134,7 @@ public class MockStream implements Runnable {
         sendPacket(createHeader(BOAT_LOCATION_MESSAGE), createBoatLocationMessage(boat));
         if (lastMarkRoundingSent.get(boat) != boat.getLastRoundedMarkIndex()){
             lastMarkRoundingSent.put(boat, boat.getLastRoundedMarkIndex());
-            sendPacket(createHeader(MARK_ROUNDING_MESSAGE), createMarkRoundingMessage(boat, raceRunner.getCourse()));
+            sendPacket(createHeader(MARK_ROUNDING_MESSAGE), createMarkRoundingMessage(boat, raceRunner.getRace().getCourse()));
         }
     }
 
@@ -149,10 +150,16 @@ public class MockStream implements Runnable {
         sendCRC(header, body);
     }
 
+    /**
+     * creates mark rounding message body
+     * @param boat the boat that rounded
+     * @param course the course which was rounded
+     * @return byte array of the body of the message
+     */
     private byte[] createMarkRoundingMessage(Boat boat, Course course) {
         byte[] body = new byte[MARK_ROUNDING_MESSAGE.getLength()];
         body[0] = 1;
-        addFieldToByteArray(body, BOAT_TIMESTAMP,(int) Instant.now().toEpochMilli());
+        addFieldToByteArray(body, BOAT_TIMESTAMP, raceRunner.getRace().getCurrentTimeInEpochMs());
         addFieldToByteArray(body, MARK_ACK, 0); //todo make proper ack
         addFieldToByteArray(body, MARK_RACE_ID, Integer.parseInt(raceRunner.getRaceId()));
         addFieldToByteArray(body, MARK_SOURCE, boat.getId());
@@ -167,14 +174,20 @@ public class MockStream implements Runnable {
         return body;
     }
 
+
+    /**
+     * initialise Race Status Message
+     * @param numBoats to send the number
+     * @return byte array of body
+     */
     private byte[] initialiseRaceStatusMessage(int numBoats) {
         byte[] body = new byte[24 + (26 * numBoats)];
         addFieldToByteArray(body, STATUS_MESSAGE_VERSION_NUMBER, 2);
-        addFieldToByteArray(body, BOAT_TIMESTAMP, Instant.now().toEpochMilli());
+        addFieldToByteArray(body, BOAT_TIMESTAMP, raceRunner.getRace().getCurrentTimeInEpochMs());
         addFieldToByteArray(body, STATUS_RACE_ID, Integer.parseInt(raceRunner.getRaceId()));
-        addFieldToByteArray(body, RACE_STATUS, raceRunner.getRaceStatus().getValue());
-        addFieldToByteArray(body, EXPECTED_START_TIME, raceRunner.getStartTime());
-        addFieldToByteArray(body, CURRENT_TIME, Instant.now().toEpochMilli());
+        addFieldToByteArray(body, RACE_STATUS, raceRunner.getRace().getRaceStatus().getValue());
+        addFieldToByteArray(body, EXPECTED_START_TIME, raceRunner.getRace().getStartTimeInEpochMs());
+        addFieldToByteArray(body, CURRENT_TIME, raceRunner.getRace().getCurrentTimeInEpochMs());
         addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, 0x6000); // left for now
         addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, 10); //left at 10knots for now
         addFieldToByteArray(body, NUMBER_OF_BOATS_IN_RACE, numBoats);
@@ -183,6 +196,12 @@ public class MockStream implements Runnable {
         return body;
     }
 
+    /**
+     * add Boat To Race Status Message
+     * @param boat boat to add
+     * @param body message to add too
+     * @return new body message
+     */
     private byte[] addBoatToRaceStatusMessage(Boat boat, byte[] body){
         addFieldToByteArray(body, STATUS_SOURCE_ID, boat.getId());
         addFieldToByteArray(body, BOAT_STATUS, boat.getStatus().getValue());
@@ -209,7 +228,7 @@ public class MockStream implements Runnable {
 
         int lat = (int) Math.round(location.getLat() * Math.pow(2, 31) / 180);
         int lon = (int) Math.round(location.getLon() * Math.pow(2, 31) / 180);
-        addFieldToByteArray(body, BOAT_TIMESTAMP,(int) Instant.now().toEpochMilli());
+        addFieldToByteArray(body, BOAT_TIMESTAMP, raceRunner.getRace().getCurrentTimeInEpochMs());
         addFieldToByteArray(body, BOAT_SOURCE_ID, boat.getId());
         addFieldToByteArray(body, BOAT_SEQUENCE_NUM, currentSequenceNumber);
         addFieldToByteArray(body, LATITUDE, lat);
@@ -256,7 +275,7 @@ public class MockStream implements Runnable {
 
             addFieldToByteArray(body, XML_VERSION, 1);
             addFieldToByteArray(body, XML_ACK, 1);
-            addFieldToByteArray(body, XML_TIMESTAMP, (int) Instant.now().toEpochMilli());
+            addFieldToByteArray(body, XML_TIMESTAMP, raceRunner.getRace().getCurrentTimeInEpochMs());
             addFieldToByteArray(body, XML_SUBTYPE, subType.getType());
             addFieldToByteArray(body, XML_SEQUENCE, sequenceNumber);
             addFieldToByteArray(body, XML_LENGTH, bodyContent.length);
@@ -284,7 +303,7 @@ public class MockStream implements Runnable {
         header[0] = (byte) 0x47; //first sync byte
         header[1] = (byte) 0x83; //second sync byte
         addFieldToByteArray(header, MESSAGE_TYPE, type.getValue());
-        addFieldToByteArray(header, HEADER_TIMESTAMP, (int) Instant.now().toEpochMilli());
+        addFieldToByteArray(header, HEADER_TIMESTAMP, raceRunner.getRace().getCurrentTimeInEpochMs());
         addFieldToByteArray(header, HEADER_SOURCE_ID, SOURCE_ID);
         if (type.getLength() != -1) {
             addFieldToByteArray(header, MESSAGE_LENGTH, type.getLength());

@@ -67,6 +67,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             previousTime = currentTime;
             return;
         }
+
         double secondsElapsed = TimeUtils.convertNanosecondsToSeconds(currentTime - previousTime);
 
         if(!race.isTerminated()){

@@ -10,10 +10,7 @@ import seng302.data.AC35StreamMessage;
 import seng302.data.BoatStatus;
 import seng302.data.MockStream;
 import seng302.data.RaceStatus;
-import seng302.models.Boat;
-import seng302.models.CompoundMark;
-import seng302.models.Course;
-import seng302.models.Mark;
+import seng302.models.*;
 
 import java.io.*;
 import java.net.Socket;
@@ -166,10 +163,16 @@ public class MockStreamTest {
 
         try {
             MockRaceRunner mockRaceRunner = mock(MockRaceRunner.class);
+
+            Race mockRace = mock(Race.class);
+
+            when(mockRaceRunner.getRace()).thenReturn(mockRace);
             when(mockRaceRunner.getRaceId()).thenReturn(String.valueOf(1122));
-            when(mockRaceRunner.getRaceStatus()).thenReturn(RaceStatus.STARTED);
+            when(mockRace.getRaceStatus()).thenReturn(RaceStatus.STARTED);
+
             Boat boat = new Boat(1, "NZ", "NZ", 20);
-            when(mockRaceRunner.getBoatsInRace()).thenReturn(new ArrayList<>(Arrays.asList(boat)));
+            when(mockRace.getCompetitors()).thenReturn(new ArrayList<>(Arrays.asList(boat)));
+
             MockStream mockStream = new MockStream(2824, mockRaceRunner);
             Thread upStream = new Thread(mockStream);
             upStream.start();
@@ -199,15 +202,15 @@ public class MockStreamTest {
         try {
             MockRaceRunner mockRaceRunner = mock(MockRaceRunner.class, Mockito.RETURNS_DEEP_STUBS);
             Course course = mock(Course.class);
-            when(mockRaceRunner.getCourse()).thenReturn(course);
+            when(mockRaceRunner.getRace().getCourse()).thenReturn(course);
             when(mockRaceRunner.getRaceId()).thenReturn(String.valueOf(1122));
-            when(mockRaceRunner.getRaceStatus()).thenReturn(RaceStatus.STARTED);
+            when(mockRaceRunner.getRace().getRaceStatus()).thenReturn(RaceStatus.STARTED);
             Boat boat = new Boat(1, "NZ", "NZ", 20);
             boat.setLastRoundedMarkIndex(0);
             CompoundMark mark = mock(CompoundMark.class);
             when(course.getCourseOrder()).thenReturn(new ArrayList<>(Arrays.asList(mark, mark, mark)));
             when(course.getCourseOrder().get(boat.getLastRoundedMarkIndex()).hasTwoMarks()).thenReturn(false);
-            when(mockRaceRunner.getBoatsInRace()).thenReturn(new ArrayList<>(Arrays.asList(boat)));
+            when(mockRaceRunner.getRace().getCompetitors()).thenReturn(new ArrayList<>(Arrays.asList(boat)));
             MockStream mockStream = new MockStream(2823, mockRaceRunner);
             Thread upStream = new Thread(mockStream);
             upStream.start();
