@@ -4,6 +4,7 @@ import seng302.data.BoatStatus;
 import seng302.data.RaceStatus;
 import seng302.data.RaceVisionFileReader;
 import seng302.models.*;
+import seng302.utilities.TimeUtils;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -28,6 +29,7 @@ public class MockRaceRunner implements Runnable {
 
     private List<Boat> boatsInRace;
     private Course course;
+    private double HOURS_PASSED_PER_FRAME = TimeUtils.convertSecondsToHours(0.2 / 1000);
 
     public MockRaceRunner(){
         this.raceId = generateRaceId();
@@ -57,13 +59,12 @@ public class MockRaceRunner implements Runnable {
 
     @Override
     public void run() {
-        double updateFreq = 5;
         while (!raceStatus.isRaceEndedStatus()) {
             boolean atLeastOneBoatNotFinished = false;
             for (Boat boat : boatsInRace) {
 
                 if(raceStatus.equals(RaceStatus.STARTED)){
-                    updateLocation(boat, (1 / updateFreq)  / 3600, course);
+                    updateLocation(boat, HOURS_PASSED_PER_FRAME, course);
                 } else {
                     long millisBeforeStart = startTime - Instant.now().toEpochMilli();
                     if(millisBeforeStart < 3000 && millisBeforeStart > 1000){
@@ -79,29 +80,6 @@ public class MockRaceRunner implements Runnable {
                     atLeastOneBoatNotFinished = true;
                 }
 
-                /*
-                long millisBeforeStart = startTime - Instant.now().toEpochMilli();
-                switch(raceStatus) {
-                    case STARTED:
-                        Coordinate location = updateLocation(boat, secTimePassed, course);
-                        break;
-                    case WARNING:
-                        if (millisBeforeStart < 1000)
-                            raceStatus = PREPARATORY;
-                        break;
-                    case PREPARATORY:
-                        if (millisBeforeStart < 0)
-                            raceStatus = STARTED;
-                    default:
-                        if (millisBeforeStart < 3000)
-                            raceStatus = WARNING;
-                }*/
-
-            }
-            try {
-                Thread.sleep((long) (1000 / updateFreq));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
             if (!atLeastOneBoatNotFinished) {
                 raceStatus = RaceStatus.TERMINATED;
