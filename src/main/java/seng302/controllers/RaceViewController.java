@@ -99,7 +99,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             moveWake(boat, point);
             addToBoatPath(boat, point);
             moveBoatAnnotation(boat.getAnnotation(), point);
-            updateBoatTime(boat);
+            updateBoatTime(boat.getBoat());
         }
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
@@ -116,12 +116,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
         // calc time to next mark
         // set boats timeTillMark
         ArrayList<CompoundMark> order = race.getCourse().getCourseOrder();
-        if (boat.getLastPassedMark() + 1 < order.size()) {
-            CompoundMark nextMark = order.get(boat.getLastPassedMark() + 1);
+        if (boat.getLastRoundedMarkIndex() + 1 < order.size()) {
+            CompoundMark nextMark = order.get(boat.getLastRoundedMarkIndex() + 1);
             Coordinate boatLocation = boat.getCurrentPosition();
             Coordinate markLocation = nextMark.getPosition();
             double dist = TimeUtils.calcDistance(boatLocation.getLat(), markLocation.getLat(), boatLocation.getLon(), markLocation.getLon());
-            double time = TimeUtils.convertHoursToSeconds(dist / boat.getSpeed()); //time to next mark in seconds
+            Double testtime = dist / 10;
+            double time = TimeUtils.convertHoursToSeconds(testtime); //time to next mark in seconds
             DecimalFormat df = new DecimalFormat("#");
             try {
                 double newTime = Double.parseDouble(df.format(time));
@@ -307,12 +308,16 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     if(scoreBoardController.isTimePassedSelected()){
                         annotations.add(displayBoat.getTimeSinceLastMark(currTime));
                     }
+                    if(scoreBoardController.isEstSelected()){
+                        annotations.add(String.valueOf(displayBoat.getBoat().getTimeTillMark()));
+                    }
                     drawBoatAnnotation(displayBoat, annotations);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
                     annotations.clear();
                     annotations.add(boatName);
                     annotations.add(displayBoat.getSpeed());
                     annotations.add(displayBoat.getTimeSinceLastMark(currTime));
+                    annotations.add(String.valueOf(displayBoat.getBoat().getTimeTillMark()));
                     drawBoatAnnotation(displayBoat, annotations);
                 }
             }
