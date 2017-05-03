@@ -17,7 +17,7 @@ import java.util.*;
 
 public class RaceVisionFileReader {
 
-    private static final String DEFAULT_FILE_PATH = "/defaultFiles/";
+    private static final String DEFAULT_FILE_PATH = "/outputFiles/";
     private static final String COURSE_FILE = "Race.xml";
     private static final String BOAT_FILE = "Boat.xml";
     private static final String REGATTA_FILE = "Regatta.xml";
@@ -256,7 +256,7 @@ public class RaceVisionFileReader {
      */
     public static List<Boat> importStartersFromXML(){
         List<Boat> starters = new ArrayList<>();
-
+        ArrayList<Boat> allBoats = new ArrayList<>();
         try {
             Element root = dom.getDocumentElement();
             if (!Objects.equals(root.getTagName(), XMLTags.Boats.BOAT_CONFIG)) {
@@ -402,4 +402,16 @@ public class RaceVisionFileReader {
             }
         }
     }
+
+    public static List<Boat> importDefaultStarters() {
+        try {
+            String resourcePath = "/defaultFiles/" + BOAT_FILE;
+            parseXMLFile(resourcePath, true);
+            return importStartersFromXML();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            return null;
+        }
+    }
+
 }

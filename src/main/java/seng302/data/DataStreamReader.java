@@ -1,6 +1,5 @@
 package seng302.data;
 
-import seng302.models.Course;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 
@@ -12,6 +11,7 @@ import java.util.Map;
 import java.util.zip.CRC32;
 
 import static seng302.data.AC35StreamField.*;
+import static seng302.data.AC35StreamXMLMessage.*;
 
 /**
  * Created on 13/04/17.
@@ -23,33 +23,30 @@ public class DataStreamReader implements Runnable{
     private String sourceAddress;
     private int sourcePort;
     private Race race;
-    private Map<Integer, Integer> xmlSequenceNumbers = new HashMap<>();
+    private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumbers = new HashMap<>();
 
     private final int HEADER_LENGTH = 15;
     private final int CRC_LENGTH = 4;
-    private final int XML_MESSAGE = 26;
-    private final int BOAT_LOCATION_MESSAGE = 37;
-    private final int RACE_STATUS_MESSAGE = 12;
-    private final int MARK_ROUNDING_MESSAGE = 38;
-    private final int REGATTA_XML_SUBTYPE = 5;
-    private final int RACE_XML_SUBTYPE = 6;
-    private final int BOAT_XML_SUBTYPE = 7;
     private final int BOAT_DEVICE_TYPE = 1;
     private final int MARK_DEVICE_TYPE = 3;
 
-    private final String DEFAULT_FILE_PATH = "/defaultFiles/";
+    private final String DEFAULT_FILE_PATH = "/outputFiles/";
     private final String REGATTA_FILE_NAME = "Regatta.xml";
     private final String RACE_FILE_NAME = "Race.xml";
     private final String BOAT_FILE_NAME = "Boat.xml";
+
+    private boolean regattaReceived = false;
+    private boolean raceReceived = false;
+    private boolean boatsReceived = false;
 
     public DataStreamReader(String sourceAddress, int sourcePort){
         this.sourceAddress = sourceAddress;
         this.sourcePort = sourcePort;
 
         //initialize "current" xml sequence numbers to -1 to say we have not yet received any
-        xmlSequenceNumbers.put(REGATTA_XML_SUBTYPE, -1);
-        xmlSequenceNumbers.put(RACE_XML_SUBTYPE, -1);
-        xmlSequenceNumbers.put(BOAT_XML_SUBTYPE, -1);
+        xmlSequenceNumbers.put(REGATTA_XML_MESSAGE, -1);
+        xmlSequenceNumbers.put(RACE_XML_MESSAGE, -1);
+        xmlSequenceNumbers.put(BOAT_XML_MESSAGE, -1);
     }
 
     /**
@@ -67,6 +64,7 @@ public class DataStreamReader implements Runnable{
     void setUpConnection() {
         try {
             clientSocket = new Socket(sourceAddress, sourcePort);
+            //System.out.println("Connecting to server");
             dataStream = clientSocket.getInputStream();
         } catch (IOException e) {
             e.printStackTrace();
@@ -141,7 +139,8 @@ public class DataStreamReader implements Runnable{
      * @param body The byte array containing the XML Message (header + payload)
      */
     private void convertXMLMessage(byte[] body) throws IOException {
-        int xmlSubtype = byteArrayRangeToInt(body, XML_SUBTYPE.getStartIndex(), XML_SUBTYPE.getEndIndex());
+        int xmlSubtypeValue = byteArrayRangeToInt(body, XML_SUBTYPE.getStartIndex(), XML_SUBTYPE.getEndIndex());
+        AC35StreamXMLMessage xmlSubtype = AC35StreamXMLMessage.fromInteger(xmlSubtypeValue);
         int xmlSequenceNumber = byteArrayRangeToInt(body, XML_SEQUENCE.getStartIndex(), XML_SEQUENCE.getEndIndex());
         int xmlLength = byteArrayRangeToInt(body, XML_LENGTH.getStartIndex(), XML_LENGTH.getEndIndex());
 
@@ -150,16 +149,21 @@ public class DataStreamReader implements Runnable{
 
         if (xmlSequenceNumbers.get(xmlSubtype) < xmlSequenceNumber) {
             xmlSequenceNumbers.put(xmlSubtype, xmlSequenceNumber);
-            if (xmlSubtype == REGATTA_XML_SUBTYPE) {
+            if (xmlSubtype == REGATTA_XML_MESSAGE) {
                 System.out.printf("New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 writeXMLToFile(xmlBody, REGATTA_FILE_NAME);
-            } else if (xmlSubtype == RACE_XML_SUBTYPE) {
+                regattaReceived = true;
+            } else if (xmlSubtype == RACE_XML_MESSAGE) {
                 System.out.printf("New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 writeXMLToFile(xmlBody, RACE_FILE_NAME);
-                race.getCourse().mergeWithOtherCourse(RaceVisionFileReader.importCourse());
-            } else if (xmlSubtype == BOAT_XML_SUBTYPE) {
+                if (race.isInitialized()) {
+                    race.getCourse().mergeWithOtherCourse(RaceVisionFileReader.importCourse());
+                }
+                raceReceived = true;
+            } else if (xmlSubtype == BOAT_XML_MESSAGE) {
                 System.out.printf("New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 writeXMLToFile(xmlBody, BOAT_FILE_NAME);
+                boatsReceived = true;
             }
         }
     }
@@ -184,7 +188,7 @@ public class DataStreamReader implements Runnable{
      * @param body the byte array containing the boat location message
      */
     private void parseBoatLocationMessage(byte[] body) {
-        int sourceID = byteArrayRangeToInt(body, SOURCE_ID.getStartIndex(), SOURCE_ID.getEndIndex());
+        int sourceID = byteArrayRangeToInt(body, BOAT_SOURCE_ID.getStartIndex(), BOAT_SOURCE_ID.getEndIndex());
         int latScaled = byteArrayRangeToInt(body, LATITUDE.getStartIndex(), LATITUDE.getEndIndex());
         int lonScaled = byteArrayRangeToInt(body, LONGITUDE.getStartIndex(), LONGITUDE.getEndIndex());
         int headingScaled = byteArrayRangeToInt(body, HEADING.getStartIndex(), HEADING.getEndIndex());
@@ -225,13 +229,14 @@ public class DataStreamReader implements Runnable{
      */
     private void readData(){
         DataInput dataInput = new DataInputStream(dataStream);
-        try{
-            while(true){
+        while(!race.isInitialized() || !race.getRaceStatus().isRaceEndedStatus()){
+            try{
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
 
                 int messageLength = byteArrayRangeToInt(header, MESSAGE_LENGTH.getStartIndex(), MESSAGE_LENGTH.getEndIndex());
-                int messageType = byteArrayRangeToInt(header, MESSAGE_TYPE.getStartIndex(), MESSAGE_TYPE.getEndIndex());
+                int messageTypeValue = byteArrayRangeToInt(header, MESSAGE_TYPE.getStartIndex(), MESSAGE_TYPE.getEndIndex());
+                AC35StreamMessage messageType = AC35StreamMessage.fromInteger(messageTypeValue);
 
                 byte[] body = new byte[messageLength];
                 dataInput.readFully(body);
@@ -242,22 +247,27 @@ public class DataStreamReader implements Runnable{
                         case XML_MESSAGE:
                             convertXMLMessage(body);
                             break;
-                        case BOAT_LOCATION_MESSAGE:
-                            parseBoatLocationMessage(body);
-                            break;
-                        case RACE_STATUS_MESSAGE:
-                            parseRaceStatusMessage(body);
-                            break;
-                        case MARK_ROUNDING_MESSAGE:
-                            parseMarkRoundingMessage(body);
+                        default:
+                            if (race.isInitialized()) {
+                                switch (messageType) {
+                                    case BOAT_LOCATION_MESSAGE:
+                                        parseBoatLocationMessage(body);
+                                        break;
+                                    case RACE_STATUS_MESSAGE:
+                                        parseRaceStatusMessage(body);
+                                        break;
+                                    case MARK_ROUNDING_MESSAGE:
+                                        parseMarkRoundingMessage(body);
+                                }
+                            }
                     }
                 } else{
                     System.err.println("Incorrect CRC. Message Ignored.");
                 }
+            } catch (IOException e){
+                System.err.println("Error occurred when reading data from stream:");
+                System.err.println(e);
             }
-        } catch (IOException e){
-            System.err.println("Error occurred when reading data from stream:");
-            System.err.println(e);
         }
     }
 
@@ -273,7 +283,7 @@ public class DataStreamReader implements Runnable{
         long expectedStartTime = byteArrayRangeToLong(body, START_TIME.getStartIndex(), START_TIME.getEndIndex());
 
         race.getCourse().updateCourseWindValues(raceCourseWindDirection);
-        race.updateRaceStatus(raceStatus);
+        race.updateRaceStatus(RaceStatus.fromInteger(raceStatus));
         race.setStartTimeInEpochMs(expectedStartTime);
         race.setCurrentTimeInEpochMs(currentTime);
     }
@@ -295,6 +305,10 @@ public class DataStreamReader implements Runnable{
 
     public void setRace(Race race) {
         this.race = race;
+    }
+
+    public boolean intialDataReceived(){
+        return raceReceived && regattaReceived && boatsReceived;
     }
 
 }

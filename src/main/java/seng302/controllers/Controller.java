@@ -71,7 +71,7 @@ public class Controller implements Initializable, Observer {
 
     public boolean raceBegun;
     private boolean raceStartTimeChanged = true;
-    private boolean raceStatusChanged = false;
+    private boolean raceStatusChanged = true;
     private double secondsElapsed = 0;
     private Race race;
 
@@ -181,15 +181,14 @@ public class Controller implements Initializable, Observer {
      */
     public void updatePreRaceScreen(){
         switch(race.getRaceStatus()){
-            case Race.WARNING_STATUS:
+            case WARNING:
                 showStarterOverlay();
                 break;
-            case Race.PREPARATORY_STATUS:
+            case PREPARATORY:
                 hideStarterOverlay();
                 raceViewController.initializeBoats();
                 break;
-            case Race.STARTED_STATUS:
-
+            case STARTED:
                 if(!raceViewController.hasInitializedBoats()){
                     raceViewController.initializeBoats();
                 }

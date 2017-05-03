@@ -29,11 +29,13 @@ public class ConfigTest {
         Assert.assertTrue(Config.URLMatcher("W3zugfE-bdu.co.nz/blah"));
     }
 
-//    @Test
-//    public void initializeTest(){
-//        Config.initializeConfig();
-//        Assert.assertEquals(6, Config.NUM_BOATS_IN_RACE);
-//        Assert.assertEquals("livedata.americascup.com", Config.SOURCE_ADDRESS);
-//        Assert.assertEquals(4941, Config.SOURCE_PORT);
-//    }
+    /** We can't test against specific values as the whole point of the config file is that it can be changed
+    @Test
+    public void initializeTest(){
+        Config.initializeConfig();
+        Assert.assertEquals(6, Config.NUM_BOATS_IN_RACE);
+        Assert.assertEquals("livedata.americascup.com", Config.SOURCE_ADDRESS);
+        Assert.assertEquals(4941, Config.SOURCE_PORT);
+    }
+    */
 }

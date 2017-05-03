@@ -86,7 +86,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             controller.rebaseRaceClock();
             controller.setRaceStartTimeChanged(false);
         }
-        redrawCourse();
         currentTimeInSeconds += secondsElapsed;
         controller.setTimeZone(race.getUTCOffset());
         controller.updateFPSCounter(currentTime);
