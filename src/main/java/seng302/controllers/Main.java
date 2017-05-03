@@ -69,9 +69,8 @@ public class Main extends Application {
         primaryStage.getIcons().add(new Image("graphics/icon.png"));
         primaryStage.setScene(new Scene(parent));
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-        primaryStage.setMinHeight(primaryScreenBounds.getHeight());
-        primaryStage.setMinWidth(primaryScreenBounds.getWidth());
-        primaryStage.setMaximized(true);
+        primaryStage.setHeight(primaryScreenBounds.getHeight());
+        primaryStage.setWidth(primaryScreenBounds.getWidth());
         primaryStage.show();
     }
 
