@@ -1,6 +1,8 @@
 package seng302.models;
 
 
+import seng302.data.BoatStatus;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +11,8 @@ import java.util.List;
  */
 
 public class Boat implements Comparable<Boat>{
+
+    private final double KNOTS_TO_MMS_MULTIPLIER = 514.444;
 
     private String name;
     private String nickName;
@@ -22,6 +26,9 @@ public class Boat implements Comparable<Boat>{
     private boolean finished;
     private double heading;
     private double maxSpeed;
+
+    private BoatStatus status = BoatStatus.UNDEFINED;
+
     private ArrayList<Coordinate> pathCoords;
     private double timeTillMark;
     private Integer id;
@@ -45,6 +52,10 @@ public class Boat implements Comparable<Boat>{
     public void setPosition(double lat, double lon){
         currentPosition.setLat(lat);
         currentPosition.setLon(lon);
+    }
+
+    public void setStatus(BoatStatus status) {
+        this.status = status;
     }
 
     public Coordinate getCurrentPosition() {
@@ -84,6 +95,7 @@ public class Boat implements Comparable<Boat>{
         //Check if boat has finished
         if(lastRoundedMarkIndex == courseOrder.size()-1){
             finished = true;
+            status = BoatStatus.FINISHED; //   finished
             speed = 0;
         } else{
             //Move the remaining distance in leg
@@ -123,6 +135,10 @@ public class Boat implements Comparable<Boat>{
         return this.speed;
     }
 
+    public int getSpeedInMMS(){
+        return (int) (this.speed * KNOTS_TO_MMS_MULTIPLIER);
+    }
+
     public int getFinishingPlace() {
         return this.finishingPlace;
     }
@@ -156,7 +172,7 @@ public class Boat implements Comparable<Boat>{
     }
 
     public boolean isFinished() {
-        return finished;
+        return status.equals(BoatStatus.FINISHED);
     }
 
     public double getHeading() {
@@ -202,5 +218,13 @@ public class Boat implements Comparable<Boat>{
 
     public void setTimeTillMark(double timeTillMark) {
         this.timeTillMark = timeTillMark;
+    }
+
+    public BoatStatus getStatus() {
+        return status;
+    }
+
+    public void setMaxSpeed(int maxSpeed) {
+        this.maxSpeed = maxSpeed;
     }
 }

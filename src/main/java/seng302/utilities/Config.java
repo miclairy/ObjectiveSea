@@ -68,6 +68,7 @@ public class Config {
             }
         } catch (IOException e) {
             System.err.printf("Error reading config file. Check it is in the correct format: %s", e);
+            e.printStackTrace();
         }
     }
 
@@ -75,6 +76,6 @@ public class Config {
         return IP.matches(IP_REGEX);
     }
     public static Boolean URLMatcher(String URL){
-        return URL.contains(".");
+        return URL.contains(".") || URL.equals("localhost");
     }
 }

@@ -1,7 +1,5 @@
 package seng302.models;
 
-import sun.reflect.generics.factory.CoreReflectionFactory;
-
 import java.util.*;
 
 /**
