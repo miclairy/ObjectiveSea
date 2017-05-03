@@ -4,7 +4,6 @@ package seng302.controllers;
  * Main class. Loads data and starts GUI.
  */
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -13,11 +12,7 @@ import javafx.scene.image.Image;
 import seng302.data.DataStreamReader;
 import seng302.data.MockStream;
 import seng302.utilities.Config;
-import seng302.data.RaceVisionFileReader;
-import seng302.models.Boat;
-import seng302.models.Course;
 import seng302.models.Race;
-import java.util.List;
 
 
 public class Main extends Application {
@@ -56,6 +51,7 @@ public class Main extends Application {
      */
     private static void setupMockStream(){
         MockRaceRunner runner = new MockRaceRunner();
+        runner.setScaleFactor(Config.MOCK_SPEED_SCALE);
         Thread runnerThread = new Thread(runner);
         runnerThread.start();
         MockStream mockStream;

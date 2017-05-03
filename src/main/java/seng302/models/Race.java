@@ -132,8 +132,7 @@ public class Race extends Observable{
             courseDistance += course.distanceBetweenMarks(i - 1, i);
         }
 
-        double totalRaceTimeInSeconds = TimeUtils.convertHoursToSeconds(courseDistance / slowestBoatSpeed);
-        this.totalRaceTime = totalRaceTimeInSeconds;
+        this.totalRaceTime = TimeUtils.convertHoursToSeconds(courseDistance / slowestBoatSpeed);
     }
 
     /**
@@ -141,13 +140,11 @@ public class Race extends Observable{
      * @param newRaceStatus The new race status read in
      */
     public void updateRaceStatus(RaceStatus newRaceStatus) {
-
         if(raceStatus != newRaceStatus){
-
             raceStatus = newRaceStatus;
+            System.out.println(regattaName + " Status: " + newRaceStatus);
             setChanged();
             notifyObservers(UPDATED_STATUS_SIGNAL);
-            System.out.println("Race Status: " + raceStatus);
         }
     }
 
@@ -220,7 +217,6 @@ public class Race extends Observable{
     }
 
     public boolean isInitialized(){
-
         return course != null && competitors != null;
     }
 
@@ -236,5 +232,7 @@ public class Race extends Observable{
             boatIdMap.put(competitor.getId(), competitor);
         }
     }
+
+
 }
 
