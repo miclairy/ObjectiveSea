@@ -156,9 +156,12 @@ public class MockStream implements Runnable {
      * @return byte array of the body of the message
      */
     private byte[] createMarkRoundingMessage(Boat boat, Course course) {
+        int passedStartLineId = 102;
+        int passedFinishLineId = 103;
+
         byte[] body = new byte[MARK_ROUNDING_MESSAGE.getLength()];
         body[0] = 1;
-        addFieldToByteArray(body, BOAT_TIMESTAMP,(int) Instant.now().toEpochMilli());
+        addFieldToByteArray(body, BOAT_TIMESTAMP, Instant.now().toEpochMilli());
         addFieldToByteArray(body, MARK_ACK, 0); //todo make proper ack
         addFieldToByteArray(body, MARK_RACE_ID, Integer.parseInt(raceRunner.getRaceId()));
         addFieldToByteArray(body, MARK_SOURCE, boat.getId());
@@ -169,7 +172,15 @@ public class MockStream implements Runnable {
         } else {
             addFieldToByteArray(body, MARK_TYPE, ROUNDING_MARK_TYPE);
         }
-        addFieldToByteArray(body, MARK_ID, boat.getLastRoundedMarkIndex()); //todo give marks ids correctly
+
+        CompoundMark lastRoundedMark = course.getCourseOrder().get(boat.getLastRoundedMarkIndex());
+        int markId = lastRoundedMark.getCompoundMarkID();
+        if(lastRoundedMark.isStartLine()){
+            markId = passedStartLineId;
+        } else if(lastRoundedMark.isFinishLine()){
+            markId = passedFinishLineId;
+        }
+        addFieldToByteArray(body, MARK_ID, markId);
         return body;
     }
 
@@ -227,7 +238,7 @@ public class MockStream implements Runnable {
 
         int lat = (int) Math.round(location.getLat() * Math.pow(2, 31) / 180);
         int lon = (int) Math.round(location.getLon() * Math.pow(2, 31) / 180);
-        addFieldToByteArray(body, BOAT_TIMESTAMP,(int) Instant.now().toEpochMilli());
+        addFieldToByteArray(body, BOAT_TIMESTAMP, Instant.now().toEpochMilli());
         addFieldToByteArray(body, BOAT_SOURCE_ID, boat.getId());
         addFieldToByteArray(body, BOAT_SEQUENCE_NUM, currentSequenceNumber);
         addFieldToByteArray(body, LATITUDE, lat);
@@ -274,7 +285,7 @@ public class MockStream implements Runnable {
 
             addFieldToByteArray(body, XML_VERSION, 1);
             addFieldToByteArray(body, XML_ACK, 1);
-            addFieldToByteArray(body, XML_TIMESTAMP, (int) Instant.now().toEpochMilli());
+            addFieldToByteArray(body, XML_TIMESTAMP, Instant.now().toEpochMilli());
             addFieldToByteArray(body, XML_SUBTYPE, subType.getType());
             addFieldToByteArray(body, XML_SEQUENCE, sequenceNumber);
             addFieldToByteArray(body, XML_LENGTH, bodyContent.length);
@@ -302,7 +313,7 @@ public class MockStream implements Runnable {
         header[0] = (byte) 0x47; //first sync byte
         header[1] = (byte) 0x83; //second sync byte
         addFieldToByteArray(header, MESSAGE_TYPE, type.getValue());
-        addFieldToByteArray(header, HEADER_TIMESTAMP, (int) Instant.now().toEpochMilli());
+        addFieldToByteArray(header, HEADER_TIMESTAMP, Instant.now().toEpochMilli());
         addFieldToByteArray(header, HEADER_SOURCE_ID, SOURCE_ID);
         if (type.getLength() != -1) {
             addFieldToByteArray(header, MESSAGE_LENGTH, type.getLength());

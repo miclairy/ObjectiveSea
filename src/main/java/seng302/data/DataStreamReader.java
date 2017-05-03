@@ -297,9 +297,17 @@ public class DataStreamReader implements Runnable{
      * @param body the body of the mark rounding message
      */
     private void parseMarkRoundingMessage(byte[] body) {
+        int passedStartLineId = 102;
+        int passedFinishLineId = 103;
         long time = byteArrayRangeToLong(body, ROUNDING_TIME.getStartIndex(), ROUNDING_TIME.getEndIndex());
         int sourceID = byteArrayRangeToInt(body, ROUNDING_SOURCE_ID.getStartIndex(), ROUNDING_SOURCE_ID.getEndIndex());
         int markID = byteArrayRangeToInt(body, ROUNDING_MARK_ID.getStartIndex(), ROUNDING_MARK_ID.getEndIndex());
+
+        if(markID == passedStartLineId){
+            markID = race.getCourse().getStartLine().getCompoundMarkID();
+        } else if(markID == passedFinishLineId){
+            markID = race.getCourse().getFinishLine().getCompoundMarkID();
+        }
         race.updateMarkRounded(sourceID, markID, time);
     }
 
