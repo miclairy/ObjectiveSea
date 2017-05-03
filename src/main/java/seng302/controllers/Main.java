@@ -66,9 +66,9 @@ public class Main extends Application {
         primaryStage.setTitle("Race Vision");
         primaryStage.getIcons().add(new Image("graphics/icon.png"));
         primaryStage.setScene(new Scene(parent));
+        primaryStage.setMinHeight(1080);
+        primaryStage.setMinWidth(1920);
         primaryStage.setMaximized(true);
-        primaryStage.setMinHeight(700);
-        primaryStage.setMinWidth(1000);
         primaryStage.show();
     }
 
