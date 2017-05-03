@@ -2,14 +2,9 @@ package seng302.data;
 
 import seng302.controllers.MockRaceRunner;
 import seng302.models.*;
-import seng302.utilities.Config;
 
 import java.io.*;
 import java.net.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.Instant;
 import java.util.*;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
@@ -24,6 +19,7 @@ public class MockStream implements Runnable {
     private final int HEADER_LENGTH = 15;
     private final int ROUNDING_MARK_TYPE = 1;
     private final int GATE_TYPE = 2;
+    private final String DEFAULT_RESOURCES_FOLDER = "/defaultFiles/";
 
     private final int SECONDS_PER_UPDATE = 200;
 
@@ -263,15 +259,12 @@ public class MockStream implements Runnable {
      * @return a byte array which is the body of the xml message
      */
     private byte[] generateXmlBody(AC35StreamXMLMessage subType, String fileName) {
-        String raceStrPath = new File("src/main/resources/defaultFiles/" + fileName).getAbsolutePath();
-        Path racePath = Paths.get(raceStrPath);
-
         try {
+            byte[] bodyContent = readXMLIntoByteArray(DEFAULT_RESOURCES_FOLDER + fileName);
+            byte[] body = new byte[XML_BODY.getStartIndex() + bodyContent.length];
+
             int sequenceNumber = xmlSequenceNumber.get(subType) + 1; //increment sequence number
             xmlSequenceNumber.put(subType, sequenceNumber);
-
-            byte[] bodyContent = Files.readAllBytes(racePath);
-            byte[] body = new byte[XML_BODY.getStartIndex() + bodyContent.length];
 
             addFieldToByteArray(body, XML_VERSION, 1);
             addFieldToByteArray(body, XML_ACK, 1);
@@ -288,6 +281,24 @@ public class MockStream implements Runnable {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Read an XML resource into a byte array
+     * @param fileName the path to the file in the resources folder
+     * @return a byte array containing the data from the file
+     * @throws IOException
+     */
+    private byte[] readXMLIntoByteArray(String fileName) throws IOException {
+        InputStream resourceStream = MockStream.class.getResourceAsStream(fileName);
+        ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
+        int read = resourceStream.read();
+        while (read != -1){
+            byteOutputStream.write(read);
+            read = resourceStream.read();
+        }
+
+        return byteOutputStream.toByteArray();
     }
 
 

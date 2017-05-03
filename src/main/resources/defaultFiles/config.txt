@@ -1,3 +1,3 @@
 MOCK_SPEED_SCALE=5
-SOURCE=localhost
-SOURCEPORT=2828
+SOURCE=livedata.americascup.com
+SOURCEPORT=4941
