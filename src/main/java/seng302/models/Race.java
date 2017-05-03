@@ -142,7 +142,7 @@ public class Race extends Observable{
     public void updateRaceStatus(RaceStatus newRaceStatus) {
         if(raceStatus != newRaceStatus){
             raceStatus = newRaceStatus;
-            System.out.println(regattaName + " Status: " + newRaceStatus);
+            //System.out.println(regattaName + " Status: " + newRaceStatus);
             setChanged();
             notifyObservers(UPDATED_STATUS_SIGNAL);
         }

@@ -276,6 +276,7 @@ public class DataStreamReader implements Runnable{
         long time = byteArrayRangeToLong(body, ROUNDING_TIME.getStartIndex(), ROUNDING_TIME.getEndIndex());
         int sourceID = byteArrayRangeToInt(body, ROUNDING_SOURCE_ID.getStartIndex(), ROUNDING_SOURCE_ID.getEndIndex());
         int markID = byteArrayRangeToInt(body, ROUNDING_MARK_ID.getStartIndex(), ROUNDING_MARK_ID.getEndIndex());
+        //System.out.println(sourceID + " " + markID);
         race.updateMarkRounded(sourceID, markID, time);
     }
 

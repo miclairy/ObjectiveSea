@@ -33,9 +33,9 @@ public class MockStreamTest {
 
     @Before
     public void startMockRaceRunner(){
-        //mockRaceRunner = new MockRaceRunner();
-        //Thread runner = new Thread(mockRaceRunner);
-        //runner.start();
+        mockRaceRunner = new MockRaceRunner();
+        Thread runner = new Thread(mockRaceRunner);
+        runner.start();
     }
 
 
