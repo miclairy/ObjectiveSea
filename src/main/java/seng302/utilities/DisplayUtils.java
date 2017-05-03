@@ -51,20 +51,22 @@ public class DisplayUtils {
     public static String getGoogleMapsURL(){
         double canvasY = Controller.getAnchorHeight();
         double canvasX = Controller.getAnchorWidth(); //halved to keep within google size guidelines
-        System.out.println("width: " + canvasX +"    height: " +canvasY);
+        //System.out.println("width: " + canvasX +"    height: " +canvasY);
         Coordinate midPoint = midPoint(max.getLat(), max.getLon(), min.getLat(), min.getLon());
+
+        double longPerPixel = (max.getLon() - min.getLon());
 
         return "https://maps.googleapis.com/maps/api/staticmap?" +
                 "center=" +
                 midPoint.getLat() + "," + midPoint.getLon() +
                 "&size=" +
-                (int)canvasX + "x" + (int)canvasY +                         //dimentions of image
+                (int)canvasX/2 + "x" + (int)canvasY/2 +                         //dimentions of image
                 "&style=feature:water%7Ccolor:0xaae7df" +
                 "&style=feature:all%7Celement:labels%7Cvisibility:off" +
-                "&visible="+
-                min.getLat() + "," + min.getLon()+
                 "&visible=" +
-                max.getLat() + "%2C" + max.getLon() +
+                (min.getLat() + (longPerPixel * 0.11)) + "%2C" + (min.getLon() + (longPerPixel * 0.11)) +
+                "&visible=" +
+                (max.getLat() - (longPerPixel * 0.11)) + "%2C" + (max.getLon() - (longPerPixel * 0.11)) +
                 "&scale=2" +
                 "&key=" + GOOGLE_API_KEY;
     }
