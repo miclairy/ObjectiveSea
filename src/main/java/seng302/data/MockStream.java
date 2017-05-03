@@ -263,14 +263,8 @@ public class MockStream implements Runnable {
      * @return a byte array which is the body of the xml message
      */
     private byte[] generateXmlBody(AC35StreamXMLMessage subType, String fileName) {
-        URL url = this.getClass().getResource("/defaultFiles/" + fileName);
-
-        Path racePath = null;
-        try {
-            racePath = Paths.get(url.toURI());
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        String raceStrPath = new File("src/main/resources/defaultFiles/" + fileName).getAbsolutePath();
+        Path racePath = Paths.get(raceStrPath);
 
         try {
             int sequenceNumber = xmlSequenceNumber.get(subType) + 1; //increment sequence number
