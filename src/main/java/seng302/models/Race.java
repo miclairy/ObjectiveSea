@@ -23,18 +23,24 @@ public class Race extends Observable{
     private Map<Integer, Boat> boatIdMap;
 
     private double totalRaceTime;
-    private RaceStatus raceStatus;
+    private RaceStatus raceStatus = NOT_ACTIVE;
     private long startTimeInEpochMs, currentTimeInEpochMs;
     private double UTCOffset;
 
-    private boolean initialized = false;
 
     public Race(String name, Course course, List<Boat> competitors) {
         initialize(name, course, competitors);
     }
 
-    public Race(){}
+    public Race(){
+    }
 
+    /**
+     * Used for tests
+     * @param name
+     * @param course
+     * @param competitors
+     */
     public void initialize(String name, Course course, List<Boat> competitors) {
         this.regattaName = name;
         this.course = course;
@@ -45,7 +51,6 @@ public class Race extends Observable{
             boatIdMap.put(competitor.getId(), competitor);
         }
         raceStatus = NOT_ACTIVE;
-        initialized = true;
     }
 
     /**
@@ -136,7 +141,9 @@ public class Race extends Observable{
      * @param newRaceStatus The new race status read in
      */
     public void updateRaceStatus(RaceStatus newRaceStatus) {
+
         if(raceStatus != newRaceStatus){
+
             raceStatus = newRaceStatus;
             setChanged();
             notifyObservers(UPDATED_STATUS_SIGNAL);
@@ -213,7 +220,21 @@ public class Race extends Observable{
     }
 
     public boolean isInitialized(){
-        return this.initialized;
+
+        return course != null && competitors != null;
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
+    }
+
+    public void setCompetitors(List<Boat> competitors) {
+        this.competitors = competitors;
+        raceOrder.addAll(competitors);
+        boatIdMap = new HashMap<>();
+        for(Boat competitor : competitors){
+            boatIdMap.put(competitor.getId(), competitor);
+        }
     }
 }
 

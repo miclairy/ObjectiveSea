@@ -35,10 +35,6 @@ public class DataStreamReader implements Runnable{
     private final String RACE_FILE_NAME = "Race.xml";
     private final String BOAT_FILE_NAME = "Boat.xml";
 
-    private boolean regattaReceived = false;
-    private boolean raceReceived = false;
-    private boolean boatsReceived = false;
-
     public DataStreamReader(String sourceAddress, int sourcePort){
         this.sourceAddress = sourceAddress;
         this.sourcePort = sourcePort;
@@ -146,41 +142,25 @@ public class DataStreamReader implements Runnable{
 
         String xmlBody = new String(Arrays.copyOfRange(body, XML_BODY.getStartIndex(), XML_BODY.getStartIndex()+xmlLength));
         xmlBody = xmlBody.trim();
+        InputStream xmlInputStream = new ByteArrayInputStream(xmlBody.getBytes());
 
         if (xmlSequenceNumbers.get(xmlSubtype) < xmlSequenceNumber) {
             xmlSequenceNumbers.put(xmlSubtype, xmlSequenceNumber);
             if (xmlSubtype == REGATTA_XML_MESSAGE) {
                 System.out.printf("New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
-                writeXMLToFile(xmlBody, REGATTA_FILE_NAME);
-                regattaReceived = true;
+                RaceVisionFileReader.importRegatta(xmlInputStream, race);
             } else if (xmlSubtype == RACE_XML_MESSAGE) {
                 System.out.printf("New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
-                writeXMLToFile(xmlBody, RACE_FILE_NAME);
-                if (race.isInitialized()) {
+                if (race.getCourse() != null) {
                     race.getCourse().mergeWithOtherCourse(RaceVisionFileReader.importCourse());
+                } else {
+                    race.setCourse(RaceVisionFileReader.importCourse(xmlInputStream));
                 }
-                raceReceived = true;
             } else if (xmlSubtype == BOAT_XML_MESSAGE) {
                 System.out.printf("New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
-                writeXMLToFile(xmlBody, BOAT_FILE_NAME);
-                boatsReceived = true;
+                 race.setCompetitors(RaceVisionFileReader.importStarters(xmlInputStream));
             }
         }
-    }
-
-    /**
-     * Saves xmlBody to file
-     * @param xmlBody the content to save to the file
-     * @param fileName the file to save to
-     * @throws IOException
-     */
-    private void writeXMLToFile(String xmlBody, String fileName) throws IOException {
-        String outputFilePath = DEFAULT_FILE_PATH + fileName;
-        FileWriter outputFileWriter = new FileWriter(this.getClass().getResource(outputFilePath).getPath());
-        BufferedWriter bufferedWriter = new BufferedWriter(outputFileWriter);
-        bufferedWriter.write(xmlBody);
-        bufferedWriter.close();
-        outputFileWriter.close();
     }
 
     /**
@@ -229,7 +209,7 @@ public class DataStreamReader implements Runnable{
      */
     private void readData(){
         DataInput dataInput = new DataInputStream(dataStream);
-        while(!race.isInitialized() || !race.getRaceStatus().isRaceEndedStatus()){
+        while(!race.getRaceStatus().isRaceEndedStatus()){
             try{
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
@@ -307,8 +287,5 @@ public class DataStreamReader implements Runnable{
         this.race = race;
     }
 
-    public boolean intialDataReceived(){
-        return raceReceived && regattaReceived && boatsReceived;
-    }
 
 }

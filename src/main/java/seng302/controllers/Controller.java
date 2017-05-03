@@ -46,7 +46,6 @@ public class Controller implements Initializable, Observer {
     //Race Clock
     public static SimpleStringProperty raceTimerString = new SimpleStringProperty();
     private static SimpleStringProperty clockString = new SimpleStringProperty();
-    private static double totalRaceTime;
 
     private static ObservableList<String> formattedDisplayOrder = observableArrayList();
     private static double canvasHeight;
@@ -69,20 +68,22 @@ public class Controller implements Initializable, Observer {
         Course course = race.getCourse();
         startersOverlayTitle.setText(race.getRegattaName());
         course.initCourseLatLon();
-        race.setTotalRaceTime();
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
+
         raceViewController = new RaceViewController(root, race, this, scoreBoardController);
         course.addObserver(raceViewController);
+
         createCanvasAnchorListeners();
         scoreBoardController.setControllers(this, raceViewController);
         scoreBoardController.setUp();
         fpsString.set("..."); //set to "..." while fps count loads
         fpsLabel.textProperty().bind(fpsString);
-        totalRaceTime = race.getTotalRaceTime();
         clockLabel.textProperty().bind(clockString);
         hideStarterOverlay();
         setWindDirection();
+
         displayStarters();
+        startersOverlay.toFront();
         raceViewController.start();
     }
 
@@ -103,15 +104,6 @@ public class Controller implements Initializable, Observer {
             raceViewController.redrawBoatPaths();
         });
 
-        fpsString.set("..."); //set to "..." while fps count loads
-        fpsLabel.textProperty().bind(fpsString);
-        totalRaceTime = race.getTotalRaceTime();
-        clockLabel.textProperty().bind(clockString);
-
-        setWindDirection();
-        startersOverlay.toFront();
-        displayStarters();
-        raceViewController.start();
     }
 
     /**

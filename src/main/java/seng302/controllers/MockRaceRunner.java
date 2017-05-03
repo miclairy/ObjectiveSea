@@ -37,7 +37,7 @@ public class MockRaceRunner implements Runnable {
 
     public void initialize(){
         boatsInRace = RaceVisionFileReader.importDefaultStarters();
-        course = RaceVisionFileReader.importCourse(null);
+        course = RaceVisionFileReader.importCourse();
         setStartingPositions();
 
         startTime = Instant.now().toEpochMilli() + 5000; //5 seconds from now
@@ -113,6 +113,7 @@ public class MockRaceRunner implements Runnable {
      * Updates the boat's coordinates by how much it moved in timePassed hours on the course
      * @param timePassed the amount of race hours since the last update
      * @param course the course the boat is racing on
+     * @param boat the boat which location is updated for
      */
     private Coordinate updateLocation(Boat boat, double timePassed, Course course) {
         if(boat.isFinished()){

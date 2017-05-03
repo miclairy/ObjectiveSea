@@ -149,6 +149,12 @@ public class MockStream implements Runnable {
         sendCRC(header, body);
     }
 
+    /**
+     * creates mark rounding message body
+     * @param boat the boat that rounded
+     * @param course the course which was rounded
+     * @return byte array of the body of the message
+     */
     private byte[] createMarkRoundingMessage(Boat boat, Course course) {
         byte[] body = new byte[MARK_ROUNDING_MESSAGE.getLength()];
         body[0] = 1;
@@ -167,6 +173,12 @@ public class MockStream implements Runnable {
         return body;
     }
 
+
+    /**
+     * initialise Race Status Message
+     * @param numBoats to send the number
+     * @return byte array of body
+     */
     private byte[] initialiseRaceStatusMessage(int numBoats) {
         byte[] body = new byte[24 + (26 * numBoats)];
         addFieldToByteArray(body, STATUS_MESSAGE_VERSION_NUMBER, 2);
@@ -183,6 +195,12 @@ public class MockStream implements Runnable {
         return body;
     }
 
+    /**
+     * add Boat To Race Status Message
+     * @param boat boat to add
+     * @param body message to add too
+     * @return new body message
+     */
     private byte[] addBoatToRaceStatusMessage(Boat boat, byte[] body){
         addFieldToByteArray(body, STATUS_SOURCE_ID, boat.getId());
         addFieldToByteArray(body, BOAT_STATUS, boat.getStatus().getValue());

@@ -24,42 +24,6 @@ public class Main extends Application {
 
     private static Race race;
 
-    /**
-     * Loads in the course and creates the race to run.
-     */
-    @Override
-    public void init(){
-
-        DataStreamReader dataStreamReader = new DataStreamReader(Config.SOURCE_ADDRESS, Config.SOURCE_PORT);
-        Thread dataStreamReaderThread = new Thread(dataStreamReader);
-        race = new Race();
-        dataStreamReader.setRace(race);
-        dataStreamReaderThread.start();
-
-        //block until we have received the required XMLs from the stream
-        while(!dataStreamReader.intialDataReceived()){
-            try {
-                Thread.sleep(2);
-            } catch (InterruptedException ie){
-                ie.printStackTrace();
-            }
-        }
-
-        //read everything in
-        String courseFile = getParameters().getNamed().get("course");
-        String boatsFile = getParameters().getNamed().get("boats");
-        String regattaFile = getParameters().getNamed().get("regatta");
-        List<Boat> boatsInRace = RaceVisionFileReader.importStarters(boatsFile);
-        Course course = RaceVisionFileReader.importCourse(courseFile);
-        //for now if we fail to read in a course or boats, then exit the program immediately
-        if (boatsInRace.isEmpty() || course == null) {
-            Platform.exit();
-        }
-        String name = "Default name";
-        race.initialize(name, course, boatsInRace);
-        RaceVisionFileReader.importRegatta(regattaFile, race);
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
@@ -76,6 +40,14 @@ public class Main extends Application {
     {
         Config.initializeConfig();
         setupMockStream();
+        setUpDataStreamReader();
+        while(race.getCourse() == null){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         launch(args);
     }
 
@@ -90,6 +62,15 @@ public class Main extends Application {
         mockStream = new MockStream(2828, runner);
         Thread upStream = new Thread(mockStream);
         upStream.start();
+    }
+
+    private static void setUpDataStreamReader(){
+        DataStreamReader dataStreamReader = new DataStreamReader(Config.SOURCE_ADDRESS, Config.SOURCE_PORT);
+        Thread dataStreamReaderThread = new Thread(dataStreamReader);
+        race = new Race();
+        dataStreamReader.setRace(race);
+        dataStreamReaderThread.start();
+
     }
 
     public static Race getRace() {
