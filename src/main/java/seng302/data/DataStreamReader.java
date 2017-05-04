@@ -6,7 +6,6 @@ import seng302.utilities.TimeUtils;
 
 import java.io.*;
 import java.net.Socket;
-import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -150,17 +149,17 @@ public class DataStreamReader implements Runnable{
             xmlSequenceNumbers.put(xmlSubtype, xmlSequenceNumber);
             if (xmlSubtype == REGATTA_XML_MESSAGE) {
                 System.out.printf("New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
-                RaceVisionFileReader.importRegatta(xmlInputStream, race);
+                RaceVisionXMLParser.importRegatta(xmlInputStream, race);
             } else if (xmlSubtype == RACE_XML_MESSAGE) {
                 System.out.printf("New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 if (race.getCourse() != null) {
-                    race.getCourse().mergeWithOtherCourse(RaceVisionFileReader.importCourse());
+                    race.getCourse().mergeWithOtherCourse(RaceVisionXMLParser.importCourse());
                 } else {
-                    race.setCourse(RaceVisionFileReader.importCourse(xmlInputStream));
+                    race.setCourse(RaceVisionXMLParser.importCourse(xmlInputStream));
                 }
             } else if (xmlSubtype == BOAT_XML_MESSAGE) {
                 System.out.printf("New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
-                 race.setCompetitors(RaceVisionFileReader.importStarters(xmlInputStream));
+                 race.setCompetitors(RaceVisionXMLParser.importStarters(xmlInputStream));
             }
         }
     }
