@@ -28,21 +28,18 @@ public class RaceVisionFileReader {
      * Manages importing the course from the correct place
      * If a file path is specified, this will be used, otherwise a default is packaged with the jar.
      * Currently this an XML file at DEFAULT_FILE_PATH/COURSE_FILE
-     * @param filePath String of the file path of the file to read in.
+     * @param resourcePath String of the file path of the file to read in.
      * @return a Course object.
      */
-    public static Course importCourse(String filePath) {
+    public static Course importCourse(InputStream resourcePath) {
         try {
-            if (filePath != null && !filePath.isEmpty()) {
-                parseXMLFile(filePath, false);
-            } else {
-                String resourcePath = DEFAULT_FILE_PATH + COURSE_FILE;
-                parseXMLFile(resourcePath, true);
-            }
+
+                parseXMLFile(resourcePath);
+
             return importCourseFromXML();
         }  catch (IOException ioe) {
             System.err.printf("Unable to read %s as a course definition file. " +
-                    "Ensure it is correctly formatted.\n", filePath);
+                    "Ensure it is correctly formatted.\n", resourcePath);
             ioe.printStackTrace();
             return null;
         }
@@ -53,25 +50,21 @@ public class RaceVisionFileReader {
      * @return a Course object
      */
     public static Course importCourse(){
-        return importCourse(null);
+        String resourcePath = "/defaultFiles/" + COURSE_FILE;
+        return importCourse(RaceVisionFileReader.class.getResourceAsStream(resourcePath));
     }
 
 
     /**
      * Attempts to read the desired XML file into the Document parser
-     * @param filePath - the location of the file to be read, must be XML
-     * @param isResource specifies whether the file is packaged in the resources folder
+     * @param inputStream - the location of the file to be read, must be XML
      * @throws IOException if the file is not found
      */
-    public static void parseXMLFile(String filePath, boolean isResource) throws IOException{
+    public static void parseXMLFile(InputStream inputStream) throws IOException{
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder db = dbf.newDocumentBuilder();
-            if (isResource){
-                dom = db.parse(RaceVisionFileReader.class.getResourceAsStream(filePath));
-            } else {
-                dom = db.parse(filePath);
-            }
+            dom = db.parse(inputStream);
         } catch(ParserConfigurationException | SAXException pce) {
             pce.printStackTrace();
         }
@@ -225,21 +218,17 @@ public class RaceVisionFileReader {
      * Manages importing the boats in the race from the correct place
      * If a file path is specified, this will be used, otherwise a default is packaged with the jar.
      * Currently this an XML file at DEFAULT_FILE_PATH/BOAT_FILE
-     * @param filePath String of the file path of the file to read in.
+     * @param inputStream String of the file path of the file to read in.
      * @return an ArrayList of Boats.
      */
-    public static List<Boat> importStarters(String filePath) {
+    public static List<Boat> importStarters(InputStream inputStream) {
         try {
-            if (filePath != null && !filePath.isEmpty()) {
-                parseXMLFile(filePath, false);
-            } else {
-                String resourcePath = DEFAULT_FILE_PATH + BOAT_FILE;
-                parseXMLFile(resourcePath, true);
-            }
+            parseXMLFile(inputStream);
             return importStartersFromXML();
+
         }  catch (IOException ioe) {
             System.err.printf("Unable to read %s as a boat definition file. " +
-                    "Ensure it is correctly formatted.\n", filePath);
+                    "Ensure it is correctly formatted.\n", inputStream);
             ioe.printStackTrace();
             return null;
         }
@@ -314,21 +303,17 @@ public class RaceVisionFileReader {
      * Manages extracting information from the regatta xml
      * If a file path is specified, this will be used, otherwise a default is packaged with the jar.
      * Currently this an XML file at DEFAULT_FILE_PATH/REGATTA_FILE
-     * @param filePath String of the file path of the file to read in.
+     * @param inputStream String of the file path of the file to read in.
      *                 race Race object as initialized in the main method
      */
-    public static void importRegatta(String filePath, Race race) {
+    public static void importRegatta(InputStream inputStream, Race race) {
         try {
-            if (filePath != null && !filePath.isEmpty()) {
-                parseXMLFile(filePath, false);
-            } else {
-                String resourcePath = DEFAULT_FILE_PATH + REGATTA_FILE;
-                parseXMLFile(resourcePath, true);
-            }
+            parseXMLFile(inputStream);
             importRegattaFromXML(race);
+
         }  catch (IOException ioe) {
             System.err.printf("Unable to read %s as a regatta definition file. " +
-                    "Ensure it is correctly formatted.\n", filePath);
+                    "Ensure it is correctly formatted.\n", inputStream);
             ioe.printStackTrace();
         }
     }
@@ -406,7 +391,7 @@ public class RaceVisionFileReader {
     public static List<Boat> importDefaultStarters() {
         try {
             String resourcePath = "/defaultFiles/" + BOAT_FILE;
-            parseXMLFile(resourcePath, true);
+            parseXMLFile(RaceVisionFileReader.class.getResourceAsStream(resourcePath));
             return importStartersFromXML();
         } catch (IOException ioe) {
             ioe.printStackTrace();
