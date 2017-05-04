@@ -7,8 +7,10 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
+import javafx.geometry.Rectangle2D;
 import seng302.data.DataStreamReader;
 import seng302.data.MockStream;
 import seng302.utilities.Config;
@@ -25,9 +27,9 @@ public class Main extends Application {
         primaryStage.setTitle("Race Vision");
         primaryStage.getIcons().add(new Image("graphics/icon.png"));
         primaryStage.setScene(new Scene(parent));
-        primaryStage.setMaximized(true);
-        primaryStage.setMinHeight(700);
-        primaryStage.setMinWidth(1000);
+        Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+        primaryStage.setHeight(primaryScreenBounds.getHeight());
+        primaryStage.setWidth(primaryScreenBounds.getWidth());
         primaryStage.show();
     }
 

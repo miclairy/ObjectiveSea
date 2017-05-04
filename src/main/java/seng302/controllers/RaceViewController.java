@@ -2,8 +2,12 @@ package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
@@ -19,6 +23,8 @@ import seng302.models.*;
 import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
+import javax.imageio.ImageIO;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -147,6 +153,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawBoundary();
         drawMarks();
         drawRaceLines();
+        drawMap();
     }
 
     /**
@@ -185,6 +192,27 @@ public class RaceViewController extends AnimationTimer implements Observer {
         boundary = raceView.createCourseBoundary(race.getCourse().getBoundary());
         root.getChildren().add(boundary);
         boundary.toBack();
+    }
+
+    /**
+     * handles the drawing of the map image and makes it fullscreen
+     */
+    public void drawMap(){
+        String mapURL = DisplayUtils.getGoogleMapsURL();
+        Image image = new Image(mapURL);
+        controller.mapImageView.setImage(image);
+        controller.mapImageView.toBack();
+        resizeMap();
+    }
+
+    /**
+     * resizes the map to make it fit the bounds of the display
+     */
+    private void resizeMap(){
+        double height = Controller.getAnchorHeight();
+        double width = Controller.getAnchorWidth();
+        controller.mapImageView.setFitWidth(width);
+        controller.mapImageView.setFitHeight(height);
     }
 
     /**
@@ -349,6 +377,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         courseNeedsRedraw = false;
         redrawMarks();
         redrawBoundary();
+        resizeMap();
         redrawRaceLines();
     }
 
