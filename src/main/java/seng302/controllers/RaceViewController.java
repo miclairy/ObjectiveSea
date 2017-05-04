@@ -2,8 +2,12 @@ package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
@@ -13,6 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
+import seng302.data.RaceStatus;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.TimeUtils;
 import seng302.models.*;
@@ -20,7 +25,11 @@ import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
 import java.awt.geom.Line2D;
+import javax.imageio.ImageIO;
+import java.net.URL;
 import java.util.*;
+
+import static seng302.data.RaceStatus.STARTED;
 
 /**
  * Created on 6/03/17.
@@ -68,18 +77,15 @@ public class RaceViewController extends AnimationTimer implements Observer {
             previousTime = currentTime;
             return;
         }
+
         double secondsElapsed = TimeUtils.convertNanosecondsToSeconds(currentTime - previousTime);
 
         if(!race.isTerminated()){
-            controller.updateRaceClock(secondsElapsed);
+            controller.updateRaceClock();
         }
         if(controller.hasRaceStatusChanged()){
             controller.updatePreRaceScreen();
             controller.setRaceStatusChanged(false);
-        }
-        if(controller.hasRaceStartTimeChanged()){
-            controller.rebaseRaceClock();
-            controller.setRaceStartTimeChanged(false);
         }
         currentTimeInSeconds += secondsElapsed;
         controller.setTimeZone(race.getUTCOffset());
@@ -96,7 +102,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
             moveBoat(boat, point);
             moveWake(boat, point);
-            addToBoatPath(boat, point);
+            if(race.getRaceStatus() == STARTED) {
+                addToBoatPath(boat, point);
+            }
             moveBoatAnnotation(boat.getAnnotation(), point);
         }
         if (courseNeedsRedraw) redrawCourse();
@@ -114,7 +122,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             raceView.assignColor(displayBoat);
             displayBoats.add(displayBoat);
             drawBoat(displayBoat);
-            initBoatPath(displayBoat);
+
         }
         initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);
@@ -129,6 +137,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
         root.getChildren().add(boatImage);
         boat.setIcon(boatImage);
         drawBoatWake(boat);
+    }
+
+    public void initBoatPaths(){
+        for (BoatDisplay boat : displayBoats){
+            initBoatPath(boat);
+        }
     }
 
     /**
@@ -151,6 +165,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawBoundary();
         drawMarks();
         drawRaceLines();
+        drawMap();
     }
 
     /**
@@ -189,6 +204,27 @@ public class RaceViewController extends AnimationTimer implements Observer {
         boundary = raceView.createCourseBoundary(race.getCourse().getBoundary());
         root.getChildren().add(boundary);
         boundary.toBack();
+    }
+
+    /**
+     * handles the drawing of the map image and makes it fullscreen
+     */
+    public void drawMap(){
+        String mapURL = DisplayUtils.getGoogleMapsURL();
+        Image image = new Image(mapURL);
+        controller.mapImageView.setImage(image);
+        controller.mapImageView.toBack();
+        resizeMap();
+    }
+
+    /**
+     * resizes the map to make it fit the bounds of the display
+     */
+    private void resizeMap(){
+        double height = Controller.getAnchorHeight();
+        double width = Controller.getAnchorWidth();
+        controller.mapImageView.setFitWidth(width);
+        controller.mapImageView.setFitHeight(height);
     }
 
     /**
@@ -353,6 +389,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         courseNeedsRedraw = false;
         redrawMarks();
         redrawBoundary();
+        resizeMap();
         redrawRaceLines();
     }
 
@@ -409,7 +446,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public void redrawBoatPaths(){
         for(BoatDisplay boatDisplay : displayBoats){
             Boat boat = boatDisplay.getBoat();
-            if(hasBoatPassedStartLine(boat)) {
+            if(race.getRaceStatus() == STARTED) {
                 if (boat.getPathCoords().size() > 0) {
                     CanvasCoordinate pathStart = DisplayUtils.convertFromLatLon(boat.getPathCoords().get(0));
                     boatDisplay.getPath().getElements().clear();
@@ -424,45 +461,16 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
-
-    /**
-     * Takes all the Coordinates from a boats getPathCoords() and creates a line with the current and previous
-     * PathCoords, also makes the start line into a line of the same type, then uses the intersectsLine function
-     * to find if the boat has passed the start line.
-     * @param boat The current boat that's path is being drawn.
-     * @return returns either true or false if the boat has passed the start line or not.
-     */
-    private boolean hasBoatPassedStartLine(Boat boat) {
-        Coordinate previousCoordinate;
-        Coordinate currentCoordinate = boat.getPathCoords().get(0);
-        Coordinate startMark1 = race.getCourse().getStartLine().getMark1().getPosition();
-        Coordinate startMark2 = race.getCourse().getStartLine().getMark2().getPosition();
-        Line2D startLine = new Line2D.Double(startMark1.getLon(), startMark1.getLat(),
-                                            startMark2.getLon(), startMark2.getLat());
-
-        boolean passedStartLine = false;
-        for( Coordinate coordinate : boat.getPathCoords()) {
-            previousCoordinate = currentCoordinate;
-            currentCoordinate = coordinate;
-            Line2D boatLine = new Line2D.Double(previousCoordinate.getLon(), previousCoordinate.getLat(),
-                                                currentCoordinate.getLon(), currentCoordinate.getLat());
-
-            if(boatLine.intersectsLine(startLine)) {
-                passedStartLine = true;
-            }
-        }
-
-        return passedStartLine;
-    }
-
     /**
      * Adds a point to the boat path
      * @param boatDisplay The display component of the boat
      * @param point The position of the boat on screen
      */
     public void addToBoatPath(BoatDisplay boatDisplay, CanvasCoordinate point){
-        boatDisplay.getPath().getElements().add(new LineTo(point.getX(), point.getY()));
-        boatDisplay.getPath().toBack();
+        if(boatDisplay.getPath() != null){
+            boatDisplay.getPath().getElements().add(new LineTo(point.getX(), point.getY()));
+            boatDisplay.getPath().toBack();
+        }
     }
 
     public void setCurrentWindArrow(ImageView currentWindArrow) {
