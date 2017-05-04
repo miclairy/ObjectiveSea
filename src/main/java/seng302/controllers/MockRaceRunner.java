@@ -26,6 +26,8 @@ public class MockRaceRunner implements Runnable {
 
     private final double SECONDS_PER_UPDATE = 0.2;
     private double scaleFactor = 1;
+    private final double WARNING_SIGNAL_TIME_IN_MS = (1000 * 60 * 3);
+    private final double PREPATORY_SIGNAL_TIME_IN_MS = (1000 * 60 * 1);
 
     private String raceId;
     private Race race;
@@ -47,7 +49,7 @@ public class MockRaceRunner implements Runnable {
         race.updateRaceStatus(RaceStatus.PRESTART);
         long currentTime = Instant.now().toEpochMilli();
         race.setCurrentTimeInEpochMs(currentTime);
-        race.setStartTimeInEpochMs(currentTime + 5000); //5 seconds from now
+        race.setStartTimeInEpochMs(currentTime + (1000 * 60 * 3)); //3 minutes from now
         boatsInRace.forEach(b -> b.setStatus(BoatStatus.PRERACE));
     }
 
@@ -74,9 +76,9 @@ public class MockRaceRunner implements Runnable {
                     calculateTimeAtNextMark(boat);
                 } else {
                     long millisBeforeStart = race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs();
-                    if(millisBeforeStart < 3000 && millisBeforeStart > 1000){
+                    if(millisBeforeStart < WARNING_SIGNAL_TIME_IN_MS && millisBeforeStart > PREPATORY_SIGNAL_TIME_IN_MS) {
                         race.updateRaceStatus(WARNING);
-                    }else if(millisBeforeStart < 1000 && millisBeforeStart > 0){
+                    }else if(millisBeforeStart < PREPATORY_SIGNAL_TIME_IN_MS && millisBeforeStart > 0){
                         race.updateRaceStatus(RaceStatus.PREPARATORY);
                     }else if (millisBeforeStart < 0){
                         race.updateRaceStatus(RaceStatus.STARTED);
