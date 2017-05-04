@@ -90,5 +90,19 @@ public class BoatDisplay {
         }
         return timeSincePassed;
     }
+
+    public String getTimeToNextMark(long timeAtMark, long currTime){
+        String timeTillMark;
+        if (timeAtMark > 0) {
+            long ConvertedTime = (timeAtMark - currTime);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("mm:ss");
+            Instant instant = Instant.ofEpochMilli(ConvertedTime);
+            ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
+            timeTillMark = formatter.format(zdt);
+        } else {
+            timeTillMark = "-";
+        }
+        return timeTillMark;
+    }
 }
 

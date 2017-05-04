@@ -40,6 +40,8 @@ public class Boat implements Comparable<Boat>{
     private double TWAofBoat;
     private double gybeVMGofBoat;
     private double gybeTWAofBoat;
+    private long timeTillMark;
+    private long timeTillFinish;
     private Integer id;
 
     public Boat(Integer id, String name, String nickName, double speed) {
@@ -468,6 +470,14 @@ public class Boat implements Comparable<Boat>{
         this.speed = speed;
     }
 
+    public long getTimeAtNextMark() {
+        return timeTillMark;
+    }
+
+    public void setTimeTillMark(long timeTillMark) {
+        this.timeTillMark = timeTillMark;
+    }
+
     public double getCurrentVMGSpeed() {
         return currentVMGSpeed;
     }
@@ -478,5 +488,13 @@ public class Boat implements Comparable<Boat>{
 
     public void setMaxSpeed(double maxSpeed) {
         this.maxSpeed = maxSpeed;
+    }
+
+    public long getTimeTillFinish() {
+        return timeTillFinish;
+    }
+
+    public void setTimeTillFinish(long timeTillFinish) {
+        this.timeTillFinish = timeTillFinish;
     }
 }

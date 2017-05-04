@@ -304,12 +304,16 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     if(scoreBoardController.isTimePassedSelected()){
                         annotations.add(displayBoat.getTimeSinceLastMark(currTime));
                     }
+                    if(scoreBoardController.isEstSelected()){
+                        annotations.add(displayBoat.getTimeToNextMark(displayBoat.getBoat().getTimeAtNextMark(), race.getCurrentTimeInEpochMs()));
+                    }
                     drawBoatAnnotation(displayBoat, annotations);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
                     annotations.clear();
                     annotations.add(boatName);
                     annotations.add(displayBoat.getSpeed());
                     annotations.add(displayBoat.getTimeSinceLastMark(currTime));
+                    annotations.add(displayBoat.getTimeToNextMark(displayBoat.getBoat().getTimeAtNextMark(), race.getCurrentTimeInEpochMs()));
                     drawBoatAnnotation(displayBoat, annotations);
                 }
             }

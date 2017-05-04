@@ -72,4 +72,12 @@ public class TimeUtilsTest {
         assertEquals("+11:30", TimeUtils.getFormatUTCOffset(11.5));
         assertEquals("+11:00", TimeUtils.getFormatUTCOffset(11.0));
     }
+
+    @Test
+    public void calcDistanceTest() throws Exception {
+        assertEquals(0, TimeUtils.calcDistance(10, 10, 10, 10), 0.0005);
+        assertEquals(0, TimeUtils.calcDistance(0, 0, 0, 0), 0);
+        assertEquals(4809.027, TimeUtils.calcDistance(10, 100, 10, 100), 0.0005);
+
+    }
 }
