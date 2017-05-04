@@ -30,6 +30,8 @@ public class Boat implements Comparable<Boat>{
     private BoatStatus status = BoatStatus.UNDEFINED;
 
     private ArrayList<Coordinate> pathCoords;
+    private long timeTillMark;
+    private long timeTillFinish;
     private Integer id;
 
     public Boat(Integer id, String name, String nickName, double speed) {
@@ -211,11 +213,27 @@ public class Boat implements Comparable<Boat>{
         this.speed = speed;
     }
 
+    public long getTimeAtNextMark() {
+        return timeTillMark;
+    }
+
+    public void setTimeTillMark(long timeTillMark) {
+        this.timeTillMark = timeTillMark;
+    }
+
     public BoatStatus getStatus() {
         return status;
     }
 
     public void setMaxSpeed(int maxSpeed) {
         this.maxSpeed = maxSpeed;
+    }
+
+    public long getTimeTillFinish() {
+        return timeTillFinish;
+    }
+
+    public void setTimeTillFinish(long timeTillFinish) {
+        this.timeTillFinish = timeTillFinish;
     }
 }
