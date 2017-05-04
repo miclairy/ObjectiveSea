@@ -13,9 +13,9 @@ public class Course extends Observable {
     private ArrayList<Coordinate> boundary;
     private double minLat, minLon, maxLat, maxLon;
     private Map<Integer, CompoundMark> compoundMarks;
+    private Map<Integer, Mark> allMarks;
     private double windDirection;
     private RaceLine startLine, finishLine;
-    private String timeZone;
 
 
     private double trueWindSpeed;

@@ -12,6 +12,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import static seng302.data.RaceStatus.*;
 
@@ -37,6 +38,8 @@ public class MockRaceRunner implements Runnable {
     public void initialize(){
         List<Boat> boatsInRace = RaceVisionFileReader.importDefaultStarters();
         Course course = RaceVisionFileReader.importCourse();
+        course.setTrueWindSpeed(20);
+        course.setWindDirection(26.561799230287797);
         race = new Race("Mock Runner Race", course, boatsInRace);
 
         setStartingPositions();
@@ -66,7 +69,7 @@ public class MockRaceRunner implements Runnable {
             race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs() + (long)(raceSecondsPassed * 1000));
             for (Boat boat : race.getCompetitors()) {
                 if(race.getRaceStatus().equals(RaceStatus.STARTED)){
-                    updateLocation(boat, raceSecondsPassed, race.getCourse());
+                    boat.updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), race.getCourse());
                 } else {
                     long millisBeforeStart = race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs();
                     if(millisBeforeStart < 3000 && millisBeforeStart > 1000){
@@ -159,7 +162,11 @@ public class MockRaceRunner implements Runnable {
         Double curLat = startingEnd1.getLat() + dLat;
         Double curLon = startingEnd1.getLon() + dLon;
         for (Boat boat : race.getCompetitors()){
-            boat.setMaxSpeed(20);
+            Random random = new Random();
+            double rangeMin = 15.0;
+            double rangeMax = 25.0;
+            double speed = rangeMin + (rangeMax - rangeMin) * random.nextDouble();
+            boat.setMaxSpeed(speed);
             boat.maximiseSpeed();
             boat.setPosition(curLat, curLon);
             boat.setHeading(race.getCourse().headingsBetweenMarks(0, 1));
