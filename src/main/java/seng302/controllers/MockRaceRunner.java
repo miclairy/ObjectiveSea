@@ -191,7 +191,7 @@ public class MockRaceRunner implements Runnable {
             Coordinate boatLocation = boat.getCurrentPosition();
             Coordinate markLocation = nextMark.getPosition();
             double dist = TimeUtils.calcDistance(boatLocation.getLat(), markLocation.getLat(), boatLocation.getLon(), markLocation.getLon());
-            double testTime = dist / boat.getSpeed(); // 10 is the VMG estimate of the boats
+            double testTime = dist / boat.getVMGofBoat(); // 10 is the VMG estimate of the boats
             double time = (TimeUtils.convertHoursToSeconds(testTime) * 1000) + race.getCurrentTimeInEpochMs(); //time at next mark in milliseconds
             try {
                 if (nextMark.isFinishLine()){
