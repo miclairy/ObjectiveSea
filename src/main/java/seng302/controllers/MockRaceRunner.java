@@ -37,8 +37,8 @@ public class MockRaceRunner implements Runnable {
     }
 
     public void initialize(){
-        List<Boat> boatsInRace = RaceVisionFileReader.importDefaultStarters();
-        Course course = RaceVisionFileReader.importCourse();
+        List<Boat> boatsInRace = RaceVisionXMLParser.importDefaultStarters();
+        Course course = RaceVisionXMLParser.importCourse();
         course.setTrueWindSpeed(20);
         course.setWindDirection(26.561799230287797);
         race = new Race("Mock Runner Race", course, boatsInRace);

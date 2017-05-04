@@ -1,6 +1,6 @@
 package seng302.utilities;
 import javafx.util.Pair;
-import seng302.data.RaceVisionFileReader;
+import seng302.data.RaceVisionXMLParser;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,7 +33,7 @@ public class readPolars {
             try {
                 br = new BufferedReader(new FileReader(polarFile));
             } catch (FileNotFoundException e){
-                RaceVisionFileReader.exportResource(PolarFileLocation, polarFile);
+                RaceVisionXMLParser.exportResource(PolarFileLocation, polarFile);
                 br = new BufferedReader(new FileReader(polarFile));
             }
             thisLine = br.readLine(); // ignores the first line
