@@ -19,7 +19,6 @@ import seng302.models.*;
 import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
-import java.text.DecimalFormat;
 import java.util.*;
 
 /**
@@ -98,39 +97,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
             moveWake(boat, point);
             addToBoatPath(boat, point);
             moveBoatAnnotation(boat.getAnnotation(), point);
-            updateBoatTime(boat.getBoat());
         }
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
         controller.setWindDirection();
     }
-
-    /**
-     * Updates the boats time to the next mark
-     * @param boat the current boat that is being updated.
-     */
-    private void updateBoatTime(Boat boat){
-        ArrayList<CompoundMark> order = race.getCourse().getCourseOrder();
-        if (boat.getLastRoundedMarkIndex() + 1 < order.size()) {
-            CompoundMark nextMark = order.get(boat.getLastRoundedMarkIndex() + 1);
-            Coordinate boatLocation = boat.getCurrentPosition();
-            Coordinate markLocation = nextMark.getPosition();
-            double dist = TimeUtils.calcDistance(boatLocation.getLat(), markLocation.getLat(), boatLocation.getLon(), markLocation.getLon());
-            Double testTime = dist / 10;
-            double time = TimeUtils.convertHoursToSeconds(testTime); //time to next mark in seconds
-            DecimalFormat df = new DecimalFormat("#");
-            try {
-                double newTime = Double.parseDouble(df.format(time));
-                if (nextMark.isFinishLine()){
-                    boat.setTimeTillFinish((long) newTime);
-                }
-                boat.setTimeTillMark(newTime);
-            } catch (NumberFormatException ignored){ // Throws error at start when trying to convert ∞ to a double
-            }
-        }
-    }
-
 
     /**
      * Draws and sets up BoatDisplay objects onscreen
@@ -308,7 +280,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                         annotations.add(displayBoat.getTimeSinceLastMark(currTime));
                     }
                     if(scoreBoardController.isEstSelected()){
-                        annotations.add(String.valueOf(displayBoat.getBoat().getTimeTillMark()));
+                        annotations.add(String.valueOf(displayBoat.getBoat().getTimeAtNextMark()));
                     }
                     drawBoatAnnotation(displayBoat, annotations);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
@@ -316,7 +288,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     annotations.add(boatName);
                     annotations.add(displayBoat.getSpeed());
                     annotations.add(displayBoat.getTimeSinceLastMark(currTime));
-                    annotations.add(String.valueOf(displayBoat.getBoat().getTimeTillMark()));
+                    annotations.add(String.valueOf(displayBoat.getBoat().getTimeAtNextMark()));
                     drawBoatAnnotation(displayBoat, annotations);
                 }
             }

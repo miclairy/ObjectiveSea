@@ -1,10 +1,12 @@
 package seng302.data;
 
+import seng302.models.Boat;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 
 import java.io.*;
 import java.net.Socket;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -281,10 +283,22 @@ public class DataStreamReader implements Runnable{
         int raceCourseWindDirection = byteArrayRangeToInt(body, WIND_DIRECTION.getStartIndex(), WIND_DIRECTION.getEndIndex());
         long currentTime = byteArrayRangeToLong(body, CURRENT_TIME.getStartIndex(), CURRENT_TIME.getEndIndex());
         long expectedStartTime = byteArrayRangeToLong(body, START_TIME.getStartIndex(), START_TIME.getEndIndex());
-        int boatID = byteArrayRangeToInt(body, BOAT_ID.getStartIndex(), BOAT_ID.getEndIndex());
-        long estimatedTimeToMark = byteArrayRangeToLong(body, EST_TIME_TO_MARK.getStartIndex(), EST_TIME_TO_MARK.getEndIndex());
 
-        System.out.println("BOAT ID: " + boatID + " With time to next mark being: " + estimatedTimeToMark);
+
+        byte[] boatSatuses = new byte[body.length - 24];
+
+        for (int i = 24; i < body.length; i++){
+            boatSatuses[i - 24] = body[i];
+        }
+
+        for  (int k = 0; k < boatSatuses.length; k += 20) {
+            int boatID = byteArrayRangeToInt(boatSatuses, 0 + k, 4 + k);
+            long estimatedTimeToMark = byteArrayRangeToLong(boatSatuses, 8 + k, 14 + k);
+            Boat boat = race.getBoatById(boatID);
+            long ConvertedTime = ((estimatedTimeToMark - currentTime) / 1000);
+            boat.setTimeTillMark(ConvertedTime);
+            // System.out.println("Boat ID: " + boatID + " Time to next mark: " + ConvertedTime);
+        }
 
         race.getCourse().updateCourseWindValues(raceCourseWindDirection);
         race.updateRaceStatus(RaceStatus.fromInteger(raceStatus));

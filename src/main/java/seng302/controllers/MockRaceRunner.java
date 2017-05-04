@@ -7,6 +7,7 @@ import seng302.models.*;
 import seng302.utilities.TimeUtils;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -65,6 +66,7 @@ public class MockRaceRunner implements Runnable {
 
                 if(raceStatus.equals(RaceStatus.STARTED)){
                     updateLocation(boat, HOURS_PASSED_PER_FRAME, course);
+                    calculateTimeAtNextMark(boat);
                 } else {
                     long millisBeforeStart = startTime - Instant.now().toEpochMilli();
                     if(millisBeforeStart < 3000 && millisBeforeStart > 1000){
@@ -160,6 +162,30 @@ public class MockRaceRunner implements Runnable {
             boat.setLastRoundedMarkIndex(0);
             curLat += dLat;
             curLon += dLon;
+        }
+    }
+
+    /**
+     * Updates the boats time to the next mark
+     * @param boat the current boat that is being updated.
+     */
+    private void calculateTimeAtNextMark(Boat boat){
+        ArrayList<CompoundMark> order = course.getCourseOrder();
+        if (boat.getLastRoundedMarkIndex() + 1 < order.size()) {
+            CompoundMark nextMark = order.get(boat.getLastRoundedMarkIndex() + 1);
+            Coordinate boatLocation = boat.getCurrentPosition();
+            Coordinate markLocation = nextMark.getPosition();
+            double dist = TimeUtils.calcDistance(boatLocation.getLat(), markLocation.getLat(), boatLocation.getLon(), markLocation.getLon());
+            double testTime = dist / 10; // 10 is the VMG estimate of the boats
+
+            double time = (TimeUtils.convertHoursToSeconds(testTime) * 1000) + Instant.now().toEpochMilli(); //time at next mark in milliseconds
+            try {
+                if (nextMark.isFinishLine()){
+                    boat.setTimeTillFinish((long) time);
+                }
+                boat.setTimeTillMark((long) time);
+            } catch (NumberFormatException ignored){ // Throws error at start when trying to convert ∞ to a double
+            }
         }
     }
 

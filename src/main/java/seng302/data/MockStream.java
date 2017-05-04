@@ -101,12 +101,17 @@ public class MockStream implements Runnable {
         RaceStatus raceStatus = raceRunner.getRaceStatus();
         List<Boat> boatsInRace = raceRunner.getBoatsInRace();
         byte[] raceStatusBody = initialiseRaceStatusMessage(boatsInRace.size());
+        int offset = 24;
 
         for (Boat boat : boatsInRace) {
-            raceStatusBody = addBoatToRaceStatusMessage(boat, raceStatusBody);
+            byte[] boatStatus = createBoatStatus(boat);
+            for (int i = 0; i < boatStatus.length; i++){
+                raceStatusBody[i + offset] = boatStatus[i];
+            }
             if(raceStatus.equals(RaceStatus.STARTED) && !boat.isFinished()) {
                 sendBoatMessages(boat);
             }
+            offset += 20;
         }
 
         byte[] header = createRaceStatusHeader(boatsInRace.size());
@@ -120,7 +125,7 @@ public class MockStream implements Runnable {
      */
     private byte[] createRaceStatusHeader(int numBoatsInRace) {
         byte[] header = createHeader(RACE_STATUS_MESSAGE);
-        addFieldToByteArray(header, MESSAGE_LENGTH, 24 + 26 * (numBoatsInRace));
+        addFieldToByteArray(header, MESSAGE_LENGTH, 24 + 20 * (numBoatsInRace));
         return header;
     }
 
@@ -191,7 +196,7 @@ public class MockStream implements Runnable {
      * @return byte array of body
      */
     private byte[] initialiseRaceStatusMessage(int numBoats) {
-        byte[] body = new byte[24 + (26 * numBoats)];
+        byte[] body = new byte[24 + (20 * numBoats)];
         addFieldToByteArray(body, STATUS_MESSAGE_VERSION_NUMBER, 2);
         addFieldToByteArray(body, BOAT_TIMESTAMP, Instant.now().toEpochMilli());
         addFieldToByteArray(body, STATUS_RACE_ID, Integer.parseInt(raceRunner.getRaceId()));
@@ -209,19 +214,19 @@ public class MockStream implements Runnable {
     /**
      * add Boat To Race Status Message
      * @param boat boat to add
-     * @param body message to add too
-     * @return new body message
+     * @return new boatStatus message
      */
-    private byte[] addBoatToRaceStatusMessage(Boat boat, byte[] body){
-        addFieldToByteArray(body, STATUS_SOURCE_ID, boat.getId());
-        addFieldToByteArray(body, BOAT_STATUS, boat.getStatus().getValue());
-        addFieldToByteArray(body, LEG_NUMBER, boat.getLastRoundedMarkIndex() + 1);
-        addFieldToByteArray(body, NUMBER_PENALTIES_AWARDED, 0); //todo make penalties a thing
-        addFieldToByteArray(body, NUMBER_PENALTIES_SERVED, 0);
-        addFieldToByteArray(body, ESTIMATED_TIME_AT_NEXT_MARK, (long) boat.getTimeTillMark() * 1000); // Was in seconds, requires milliseconds
-        addFieldToByteArray(body, ESTIMATED_TIME_AT_FINISH, boat.getTimeTillFinish() * 1000); // as above
+    private byte[] createBoatStatus(Boat boat){
+        byte[] boatStatus = new byte[20]; // make constant
+        addFieldToByteArray(boatStatus, STATUS_SOURCE_ID, boat.getId());
+        addFieldToByteArray(boatStatus, BOAT_STATUS, boat.getStatus().getValue());
+        addFieldToByteArray(boatStatus, LEG_NUMBER, boat.getLastRoundedMarkIndex() + 1);
+        addFieldToByteArray(boatStatus, NUMBER_PENALTIES_AWARDED, 0); //todo make penalties a thing
+        addFieldToByteArray(boatStatus, NUMBER_PENALTIES_SERVED, 0);
+        addFieldToByteArray(boatStatus, ESTIMATED_TIME_AT_NEXT_MARK, boat.getTimeAtNextMark());
+        addFieldToByteArray(boatStatus, ESTIMATED_TIME_AT_FINISH, boat.getTimeTillFinish());
 
-        return body;
+        return boatStatus;
     }
 
     /**
