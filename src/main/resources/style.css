@@ -209,6 +209,7 @@
     -fx-fill: rgb(136, 230, 239);
     -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 10, 0.4, 0, 0);
     -fx-stroke: rgb(64, 122, 151);
+    -fx-stroke-width: 0.5px;
     -fx-opacity: 0.2;
 }
 
@@ -231,4 +232,8 @@
 
 #raceClockHBox {
     -fx-background-color: #2a2a2a;
+}
+
+#windDirectionImage{
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 10, 0.1, 0, 0);
 }

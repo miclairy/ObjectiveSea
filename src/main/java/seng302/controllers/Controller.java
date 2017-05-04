@@ -1,15 +1,21 @@
 package seng302.controllers;
 
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.effect.GaussianBlur;
+import javafx.scene.effect.MotionBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -33,6 +39,7 @@ public class Controller implements Initializable, Observer {
     @FXML public VBox startersOverlay;
     @FXML private Label startersOverlayTitle;
     @FXML private ImageView windDirectionImage;
+    @FXML public ImageView mapImageView;
 
     //number of from right edge of canvas that the wind arrow will be drawn
     private final int WIND_ARROW_OFFSET = 60;
@@ -51,6 +58,12 @@ public class Controller implements Initializable, Observer {
     private static double canvasHeight;
     private static double canvasWidth;
 
+
+
+    private static double anchorHeight;
+    private static double anchorWidth;
+    private static String timeZone;
+
     // Controllers
     @FXML private RaceViewController raceViewController;
     @FXML private ScoreBoardController scoreBoardController = new ScoreBoardController();
@@ -63,6 +76,9 @@ public class Controller implements Initializable, Observer {
     public void initialize(URL location, ResourceBundle resources) {
         canvasWidth = canvas.getWidth();
         canvasHeight = canvas.getHeight();
+        anchorWidth = canvasAnchor.getWidth();
+        anchorHeight = canvasAnchor.getHeight();
+
         race = Main.getRace();
         race.addObserver(this);
         Course course = race.getCourse();
@@ -85,26 +101,68 @@ public class Controller implements Initializable, Observer {
         displayStarters();
         startersOverlay.toFront();
         raceViewController.start();
+
+
     }
 
     /**
      * Creates the change in width and height listeners to redraw course objects
      */
     private void createCanvasAnchorListeners(){
+
+        final ChangeListener<Number> resizeListener = new ChangeListener<Number>()
+        {
+            final Timer timer = new Timer(); // uses a timer to call your resize method
+            TimerTask task = null; // task to execute after defined delay
+            final long delayTime = 300; // delay that has to pass in order to consider an operation done
+
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue)
+            {
+                if (task != null)
+                {
+                    task.cancel(); // cancel it, we have a new size to consider
+                    //zoom and blur image
+
+                    mapImageView.setEffect(new GaussianBlur(300));
+                }
+
+                task = new TimerTask() // create new task that calls your resize operation
+                {
+                    @Override
+                    public void run()
+                    {
+                        // resize after time is waited
+                        raceViewController.drawMap();
+                        mapImageView.setEffect(null);
+                    }
+                };
+                // schedule new task
+                timer.schedule(task, delayTime);
+            }
+        };
+
+
+        canvasAnchor.widthProperty().addListener(resizeListener);
         canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
             canvasWidth = (double) newValue;
+            anchorWidth = canvasAnchor.getWidth();
             raceViewController.redrawCourse();
             raceViewController.moveWindArrow();
             raceViewController.redrawBoatPaths();
         });
+        canvasAnchor.heightProperty().addListener(resizeListener);
         canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> {
             canvasHeight = (double) newValue;
+            anchorHeight = canvasAnchor.getHeight();
             raceViewController.redrawCourse();
             raceViewController.moveWindArrow();
             raceViewController.redrawBoatPaths();
         });
 
     }
+
+
 
     /**
      * Called from the RaceViewController handle if there is a change in race status
@@ -269,5 +327,17 @@ public class Controller implements Initializable, Observer {
                     break;
             }
         }
+    }
+
+    public static double getAnchorHeight() {
+        return anchorHeight;
+    }
+
+    public static double getAnchorWidth() {
+        return anchorWidth;
+    }
+
+    public  AnchorPane getCanvasAnchor() {
+        return canvasAnchor;
     }
 }
