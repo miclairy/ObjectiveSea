@@ -17,15 +17,20 @@ import javafx.scene.control.Label;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
+import seng302.data.BoatStatus;
+import seng302.data.RaceStatus;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.TimeUtils;
 import seng302.models.*;
 import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
+import java.awt.geom.Line2D;
 import javax.imageio.ImageIO;
 import java.net.URL;
 import java.util.*;
+
+import static seng302.data.RaceStatus.STARTED;
 
 /**
  * Created on 6/03/17.
@@ -98,7 +103,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
             moveBoat(boat, point);
             moveWake(boat, point);
-            addToBoatPath(boat, point);
+            if(race.getRaceStatus() == STARTED) {
+                addToBoatPath(boat, point);
+            }
             moveBoatAnnotation(boat.getAnnotation(), point);
         }
         if (courseNeedsRedraw) redrawCourse();
@@ -116,7 +123,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             raceView.assignColor(displayBoat);
             displayBoats.add(displayBoat);
             drawBoat(displayBoat);
-            initBoatPath(displayBoat);
+
         }
         initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);
@@ -131,6 +138,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
         root.getChildren().add(boatImage);
         boat.setIcon(boatImage);
         drawBoatWake(boat);
+    }
+
+    public void initBoatPaths(){
+        for (BoatDisplay boat : displayBoats){
+            initBoatPath(boat);
+        }
     }
 
     /**
@@ -438,15 +451,17 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public void redrawBoatPaths(){
         for(BoatDisplay boatDisplay : displayBoats){
             Boat boat = boatDisplay.getBoat();
-            if(boat.getPathCoords().size() > 0){
-                CanvasCoordinate pathStart = DisplayUtils.convertFromLatLon(boat.getPathCoords().get(0));
-                boatDisplay.getPath().getElements().clear();
-                boatDisplay.getPath().getElements().add(new MoveTo(pathStart.getX(), pathStart.getY()));
-                for(Coordinate coord : boat.getPathCoords()){
-                    CanvasCoordinate currPoint = DisplayUtils.convertFromLatLon(coord);
-                    boatDisplay.getPath().getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
+            if(race.getRaceStatus() == STARTED && !boat.isFinished()) {
+                if (boat.getPathCoords().size() > 0) {
+                    CanvasCoordinate pathStart = DisplayUtils.convertFromLatLon(boat.getPathCoords().get(0));
+                    boatDisplay.getPath().getElements().clear();
+                    boatDisplay.getPath().getElements().add(new MoveTo(pathStart.getX(), pathStart.getY()));
+                    for (Coordinate coord : boat.getPathCoords()) {
+                        CanvasCoordinate currPoint = DisplayUtils.convertFromLatLon(coord);
+                        boatDisplay.getPath().getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
+                    }
+                    boatDisplay.getPath().toBack();
                 }
-                boatDisplay.getPath().toBack();
             }
         }
     }
@@ -457,8 +472,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param point The position of the boat on screen
      */
     public void addToBoatPath(BoatDisplay boatDisplay, CanvasCoordinate point){
-        boatDisplay.getPath().getElements().add(new LineTo(point.getX(), point.getY()));
-        boatDisplay.getPath().toBack();
+
+        if(boatDisplay.getPath() != null && boatDisplay.getBoat().getStatus() != BoatStatus.FINISHED){
+            boatDisplay.getPath().getElements().add(new LineTo(point.getX(), point.getY()));
+            boatDisplay.getPath().toBack();
+        }
     }
 
     public void setCurrentWindArrow(ImageView currentWindArrow) {
