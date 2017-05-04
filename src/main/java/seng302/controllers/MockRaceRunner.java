@@ -177,15 +177,16 @@ public class MockRaceRunner implements Runnable {
      * @param boat the current boat that is being updated.
      */
     private void calculateTimeAtNextMark(Boat boat){
-        ArrayList<CompoundMark> order = course.getCourseOrder();
+        ArrayList<CompoundMark> order = race.getCourse().getCourseOrder();
         if (boat.getLastRoundedMarkIndex() + 1 < order.size()) {
             CompoundMark nextMark = order.get(boat.getLastRoundedMarkIndex() + 1);
             Coordinate boatLocation = boat.getCurrentPosition();
             Coordinate markLocation = nextMark.getPosition();
             double dist = TimeUtils.calcDistance(boatLocation.getLat(), markLocation.getLat(), boatLocation.getLon(), markLocation.getLon());
-            double testTime = dist / 10; // 10 is the VMG estimate of the boats
 
-            double time = (TimeUtils.convertHoursToSeconds(testTime) * 1000) + Instant.now().toEpochMilli(); //time at next mark in milliseconds
+            double testTime = dist / boat.getSpeed(); // 10 is the VMG estimate of the boats
+
+            double time = (TimeUtils.convertHoursToSeconds(testTime) * 1000) + race.getCurrentTimeInEpochMs(); //time at next mark in milliseconds
             try {
                 if (nextMark.isFinishLine()){
                     boat.setTimeTillFinish((long) time);
