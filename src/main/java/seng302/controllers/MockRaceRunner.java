@@ -4,6 +4,7 @@ import seng302.data.BoatStatus;
 import seng302.data.RaceStatus;
 import seng302.data.RaceVisionFileReader;
 import seng302.models.*;
+import seng302.utilities.DisplayUtils;
 import seng302.utilities.TimeUtils;
 
 import java.text.DateFormat;
@@ -183,9 +184,7 @@ public class MockRaceRunner implements Runnable {
             Coordinate boatLocation = boat.getCurrentPosition();
             Coordinate markLocation = nextMark.getPosition();
             double dist = TimeUtils.calcDistance(boatLocation.getLat(), markLocation.getLat(), boatLocation.getLon(), markLocation.getLon());
-
             double testTime = dist / boat.getSpeed(); // 10 is the VMG estimate of the boats
-
             double time = (TimeUtils.convertHoursToSeconds(testTime) * 1000) + race.getCurrentTimeInEpochMs(); //time at next mark in milliseconds
             try {
                 if (nextMark.isFinishLine()){
