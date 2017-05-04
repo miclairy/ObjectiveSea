@@ -15,7 +15,7 @@ import java.util.*;
  * Collection of methods for reading in data from files. Files must be located in the DEFAULT_FILE_PATH folder
  */
 
-public class RaceVisionFileReader {
+public class RaceVisionXMLParser {
 
     private static final String DEFAULT_FILE_PATH = "/outputFiles/";
     private static final String COURSE_FILE = "Race.xml";
@@ -33,9 +33,7 @@ public class RaceVisionFileReader {
      */
     public static Course importCourse(InputStream resourcePath) {
         try {
-
-                parseXMLFile(resourcePath);
-
+            parseXMLStream(resourcePath);
             return importCourseFromXML();
         }  catch (IOException ioe) {
             System.err.printf("Unable to read %s as a course definition file. " +
@@ -51,7 +49,7 @@ public class RaceVisionFileReader {
      */
     public static Course importCourse(){
         String resourcePath = "/defaultFiles/" + COURSE_FILE;
-        return importCourse(RaceVisionFileReader.class.getResourceAsStream(resourcePath));
+        return importCourse(RaceVisionXMLParser.class.getResourceAsStream(resourcePath));
     }
 
 
@@ -60,7 +58,7 @@ public class RaceVisionFileReader {
      * @param inputStream - the location of the file to be read, must be XML
      * @throws IOException if the file is not found
      */
-    public static void parseXMLFile(InputStream inputStream) throws IOException{
+    public static void parseXMLStream(InputStream inputStream) throws IOException{
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -128,24 +126,44 @@ public class RaceVisionFileReader {
             e.printStackTrace();
         }
 
+
         if(course.getCourseOrder().size() < 2){
             throw new InputMismatchException("There must be at least one leg in the course.");
         }
 
-        if(course.getCourseOrder().get(0).isStartLine()){
-            course.setStartLine((RaceLine) course.getCourseOrder().get(0));
+        setRaceLines(course);
+
+        return course;
+    }
+
+    /**
+     * Sets the first and final marks in course order to race lines.
+     * @param course The course that the raceLines will be changed
+     */
+    private static void setRaceLines(Course course) {
+        CompoundMark startLine = course.getCourseOrder().get(0);
+        if(startLine.hasTwoMarks()){
+            course.removeCompoundMark(startLine);
+
+            RaceLine startRaceLine = CompoundMark.convertToRaceLine(startLine, CompoundMark.MarkType.START);
+            course.setStartLine(startRaceLine);
+            course.getCourseOrder().set(0, startRaceLine);
+            course.addNewCompoundMark(startRaceLine);
         } else{
-            throw new InputMismatchException("The first leg of the course must start at the start line.");
+            throw new InputMismatchException("The start line must have 2 marks.");
         }
 
         int lastMarkIndex = course.getCourseOrder().size() - 1;
-        if(course.getCourseOrder().get(lastMarkIndex).isFinishLine()){
-            course.setFinishLine((RaceLine) course.getCourseOrder().get(lastMarkIndex));
+        CompoundMark finishLine = course.getCourseOrder().get(lastMarkIndex);
+        if(finishLine.hasTwoMarks()){
+            course.removeCompoundMark(finishLine);
+            RaceLine finishRaceLine = CompoundMark.convertToRaceLine(finishLine, CompoundMark.MarkType.FINISH);
+            course.setFinishLine(finishRaceLine);
+            course.getCourseOrder().set(lastMarkIndex, finishRaceLine);
+            course.addNewCompoundMark(finishRaceLine);
         } else{
-            throw new InputMismatchException("The last leg of the course must end at the finish line.");
+            throw new InputMismatchException("The finish line must have 2 marks.");
         }
-
-        return course;
     }
 
     /**
@@ -184,16 +202,16 @@ public class RaceVisionFileReader {
 
             Mark mark1 = parseMark(mark1Element);
             Mark mark2 = parseMark(mark2Element);
-
-            if(mark1.getName().toLowerCase().contains(XMLTags.Course.START)){
-                compoundMark = new RaceLine(compoundMarkID, compoundMarkName, mark1, mark2);
-                compoundMark.setMarkAsStart();
-            }else if(mark1.getName().toLowerCase().contains(XMLTags.Course.FINISH)){
-                compoundMark = new RaceLine(compoundMarkID, compoundMarkName, mark1, mark2);
-                compoundMark.setMarkAsFinish();
-            } else{
-                compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark1, mark2);
-            }
+            compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark1, mark2);
+//            if(mark1.getName().toLowerCase().contains(XMLTags.Course.START)){
+//                compoundMark = new RaceLine(compoundMarkID, compoundMarkName, mark1, mark2);
+//                compoundMark.setMarkAsStart();
+//            }else if(mark1.getName().toLowerCase().contains(XMLTags.Course.FINISH)){
+//                compoundMark = new RaceLine(compoundMarkID, compoundMarkName, mark1, mark2);
+//                compoundMark.setMarkAsFinish();
+//            } else{
+//                compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark1, mark2);
+//            }
         }else{
             Element markElement = (Element) markNodes.item(0);
             Mark mark = parseMark(markElement);
@@ -223,7 +241,7 @@ public class RaceVisionFileReader {
      */
     public static List<Boat> importStarters(InputStream inputStream) {
         try {
-            parseXMLFile(inputStream);
+            parseXMLStream(inputStream);
             return importStartersFromXML();
 
         }  catch (IOException ioe) {
@@ -308,7 +326,7 @@ public class RaceVisionFileReader {
      */
     public static void importRegatta(InputStream inputStream, Race race) {
         try {
-            parseXMLFile(inputStream);
+            parseXMLStream(inputStream);
             importRegattaFromXML(race);
 
         }  catch (IOException ioe) {
@@ -365,7 +383,7 @@ public class RaceVisionFileReader {
         InputStream inStream = null;
         OutputStream outStream = null;
         try {
-            inStream = RaceVisionFileReader.class.getResourceAsStream(resourceName);//note that each / is a directory down in the "jar tree" been the jar the root of the tree
+            inStream = RaceVisionXMLParser.class.getResourceAsStream(resourceName);//note that each / is a directory down in the "jar tree" been the jar the root of the tree
             if(inStream == null) {
                 throw new IOException("Cannot get resource \"" + resourceName + "\" from Jar file.");
             }
@@ -391,7 +409,7 @@ public class RaceVisionFileReader {
     public static List<Boat> importDefaultStarters() {
         try {
             String resourcePath = "/defaultFiles/" + BOAT_FILE;
-            parseXMLFile(RaceVisionFileReader.class.getResourceAsStream(resourcePath));
+            parseXMLStream(RaceVisionXMLParser.class.getResourceAsStream(resourcePath));
             return importStartersFromXML();
         } catch (IOException ioe) {
             ioe.printStackTrace();

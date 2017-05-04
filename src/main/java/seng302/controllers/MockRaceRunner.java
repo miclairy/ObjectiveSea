@@ -2,13 +2,12 @@ package seng302.controllers;
 
 import seng302.data.BoatStatus;
 import seng302.data.RaceStatus;
-import seng302.data.RaceVisionFileReader;
+import seng302.data.RaceVisionXMLParser;
 import seng302.models.*;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.TimeUtils;
 
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -38,8 +37,8 @@ public class MockRaceRunner implements Runnable {
     }
 
     public void initialize(){
-        List<Boat> boatsInRace = RaceVisionFileReader.importDefaultStarters();
-        Course course = RaceVisionFileReader.importCourse();
+        List<Boat> boatsInRace = RaceVisionXMLParser.importDefaultStarters();
+        Course course = RaceVisionXMLParser.importCourse();
         course.setTrueWindSpeed(20);
         course.setWindDirection(26.561799230287797);
         race = new Race("Mock Runner Race", course, boatsInRace);

@@ -1,6 +1,6 @@
 package seng302.utilities;
 
-import seng302.data.RaceVisionFileReader;
+import seng302.data.RaceVisionXMLParser;
 
 import java.io.*;
 import java.util.StringTokenizer;
@@ -28,7 +28,7 @@ public class Config {
             try {
                 br = new BufferedReader(new FileReader(EXPECTED_CONFIG_PATH));
             } catch (FileNotFoundException e){
-                RaceVisionFileReader.exportResource(DEFAULT_CONFIG_PATH, EXPECTED_CONFIG_PATH);
+                RaceVisionXMLParser.exportResource(DEFAULT_CONFIG_PATH, EXPECTED_CONFIG_PATH);
                 br = new BufferedReader(new FileReader(EXPECTED_CONFIG_PATH));
             }
             String line = br.readLine();
