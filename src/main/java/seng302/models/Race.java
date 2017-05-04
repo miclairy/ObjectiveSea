@@ -15,7 +15,6 @@ import java.util.*;
 public class Race extends Observable{
 
     public static final int UPDATED_STATUS_SIGNAL = 1;
-    public static final int UPDATED_START_TIME_SIGNAL = 2;
 
     private String regattaName;
     private Course course;
@@ -24,18 +23,24 @@ public class Race extends Observable{
     private Map<Integer, Boat> boatIdMap;
 
     private double totalRaceTime;
-    private RaceStatus raceStatus;
+    private RaceStatus raceStatus = NOT_ACTIVE;
     private long startTimeInEpochMs, currentTimeInEpochMs;
     private double UTCOffset;
 
-    private boolean initialized = false;
 
     public Race(String name, Course course, List<Boat> competitors) {
         initialize(name, course, competitors);
     }
 
-    public Race(){}
+    public Race(){
+    }
 
+    /**
+     * Used for tests
+     * @param name
+     * @param course
+     * @param competitors
+     */
     public void initialize(String name, Course course, List<Boat> competitors) {
         this.regattaName = name;
         this.course = course;
@@ -46,7 +51,6 @@ public class Race extends Observable{
             boatIdMap.put(competitor.getId(), competitor);
         }
         raceStatus = NOT_ACTIVE;
-        initialized = true;
     }
 
     /**
@@ -128,8 +132,7 @@ public class Race extends Observable{
             courseDistance += course.distanceBetweenMarks(i - 1, i);
         }
 
-        double totalRaceTimeInSeconds = TimeUtils.convertHoursToSeconds(courseDistance / slowestBoatSpeed);
-        this.totalRaceTime = totalRaceTimeInSeconds;
+        this.totalRaceTime = TimeUtils.convertHoursToSeconds(courseDistance / slowestBoatSpeed);
     }
 
     /**
@@ -139,9 +142,9 @@ public class Race extends Observable{
     public void updateRaceStatus(RaceStatus newRaceStatus) {
         if(raceStatus != newRaceStatus){
             raceStatus = newRaceStatus;
+            //System.out.println(regattaName + " Status: " + newRaceStatus);
             setChanged();
             notifyObservers(UPDATED_STATUS_SIGNAL);
-            System.out.println("Race Status: " + raceStatus);
         }
     }
 
@@ -182,12 +185,7 @@ public class Race extends Observable{
     }
 
     public void setStartTimeInEpochMs(long startTimeInEpochMs) {
-        if(this.startTimeInEpochMs != startTimeInEpochMs){
-            this.startTimeInEpochMs = startTimeInEpochMs;
-            setChanged();
-            notifyObservers(UPDATED_START_TIME_SIGNAL);
-
-        }
+        this.startTimeInEpochMs = startTimeInEpochMs;
     }
 
     public long getCurrentTimeInEpochMs() {
@@ -219,7 +217,22 @@ public class Race extends Observable{
     }
 
     public boolean isInitialized(){
-        return this.initialized;
+        return course != null && competitors != null;
     }
+
+    public void setCourse(Course course) {
+        this.course = course;
+    }
+
+    public void setCompetitors(List<Boat> competitors) {
+        this.competitors = competitors;
+        raceOrder.addAll(competitors);
+        boatIdMap = new HashMap<>();
+        for(Boat competitor : competitors){
+            boatIdMap.put(competitor.getId(), competitor);
+        }
+    }
+
+
 }
 
