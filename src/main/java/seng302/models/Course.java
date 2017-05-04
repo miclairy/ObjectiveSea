@@ -13,9 +13,13 @@ public class Course extends Observable {
     private ArrayList<Coordinate> boundary;
     private double minLat, minLon, maxLat, maxLon;
     private Map<Integer, CompoundMark> compoundMarks;
+    private Map<Integer, Mark> allMarks;
     private double windDirection;
     private RaceLine startLine, finishLine;
-    private Map<Integer, Mark> allMarks;
+
+
+    private double trueWindSpeed;
+
     public Course() {
         this.compoundMarks = new HashMap<>();
         this.courseOrder = new ArrayList<>();
@@ -166,6 +170,10 @@ public class Course extends Observable {
         return maxLon;
     }
 
+    public double getTrueWindSpeed() {return trueWindSpeed;}
+
+    public void setTrueWindSpeed(double trueWindSpeed) {this.trueWindSpeed = trueWindSpeed;}
+
     public ArrayList<Coordinate> getBoundary() {
         return boundary;
     }
@@ -202,5 +210,11 @@ public class Course extends Observable {
         this.boundary = new ArrayList<>(otherCourse.getBoundary());
         setChanged();
         notifyObservers();
+    }
+
+    public void removeCompoundMark(CompoundMark mark) {
+        if(compoundMarks.containsKey(mark.getCompoundMarkID())){
+            compoundMarks.remove(mark.getCompoundMarkID());
+        }
     }
 }
