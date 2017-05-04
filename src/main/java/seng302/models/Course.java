@@ -203,4 +203,10 @@ public class Course extends Observable {
         setChanged();
         notifyObservers();
     }
+
+    public void removeCompoundMark(CompoundMark mark) {
+        if(compoundMarks.containsKey(mark.getCompoundMarkID())){
+            compoundMarks.remove(mark.getCompoundMarkID());
+        }
+    }
 }

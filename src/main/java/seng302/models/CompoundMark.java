@@ -1,5 +1,7 @@
 package seng302.models;
 
+import java.util.InputMismatchException;
+
 /**
  * Created on 7/03/17.
  * Class to specify the marks/gates on the course.
@@ -7,7 +9,7 @@ package seng302.models;
 
 public class CompoundMark {
 
-    private enum MarkType {
+    public enum MarkType {
         START, FINISH, NORMAL
     }
 	protected Mark mark1, mark2;
@@ -70,5 +72,22 @@ public class CompoundMark {
 
     public Mark getMark2() {
         return mark2;
+    }
+
+    /**
+     * Converts a CompoundMark object to a RaceLine object
+     * @param compoundMark the compound mark to be converted
+     * @param type the type of the raceline (either start or finish)
+     * @return the new converted raceline object
+     */
+    public static RaceLine convertToRaceLine(CompoundMark compoundMark, MarkType type){
+        RaceLine raceLine = new RaceLine(compoundMark.getCompoundMarkID(), compoundMark.getName(),
+                compoundMark.getMark1(), compoundMark.getMark2());
+        if(type == MarkType.START){
+            raceLine.setMarkAsStart();
+        } else if(type == MarkType.FINISH){
+            raceLine.setMarkAsFinish();
+        }
+        return raceLine;
     }
 }
