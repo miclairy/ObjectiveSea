@@ -1,10 +1,12 @@
 package seng302.data;
 
+import seng302.models.Boat;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 
 import java.io.*;
 import java.net.Socket;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -262,6 +264,21 @@ public class DataStreamReader implements Runnable{
         long currentTime = byteArrayRangeToLong(body, CURRENT_TIME.getStartIndex(), CURRENT_TIME.getEndIndex());
         long expectedStartTime = byteArrayRangeToLong(body, START_TIME.getStartIndex(), START_TIME.getEndIndex());
 
+
+        byte[] boatSatuses = new byte[body.length - 24];
+
+        for (int i = 24; i < body.length; i++){
+            boatSatuses[i - 24] = body[i];
+        }
+
+        for  (int k = 0; k < boatSatuses.length; k += 20) {
+            int boatID = byteArrayRangeToInt(boatSatuses, 0 + k, 4 + k);
+            long estimatedTimeAtMark = byteArrayRangeToLong(boatSatuses, 8 + k, 14 + k);
+            Boat boat = race.getBoatById(boatID);
+            boat.setTimeTillMark(estimatedTimeAtMark);
+            // System.out.println("Boat ID: " + boatID + " Time to next mark: " + ConvertedTime);
+        }
+
         race.getCourse().updateCourseWindValues(raceCourseWindDirection);
         race.updateRaceStatus(RaceStatus.fromInteger(raceStatus));
         race.setStartTimeInEpochMs(expectedStartTime);
@@ -273,10 +290,17 @@ public class DataStreamReader implements Runnable{
      * @param body the body of the mark rounding message
      */
     private void parseMarkRoundingMessage(byte[] body) {
+        int passedStartLineId = 102;
+        int passedFinishLineId = 103;
         long time = byteArrayRangeToLong(body, ROUNDING_TIME.getStartIndex(), ROUNDING_TIME.getEndIndex());
         int sourceID = byteArrayRangeToInt(body, ROUNDING_SOURCE_ID.getStartIndex(), ROUNDING_SOURCE_ID.getEndIndex());
         int markID = byteArrayRangeToInt(body, ROUNDING_MARK_ID.getStartIndex(), ROUNDING_MARK_ID.getEndIndex());
-        //System.out.println(sourceID + " " + markID);
+
+        if(markID == passedStartLineId){
+            markID = race.getCourse().getStartLine().getCompoundMarkID();
+        } else if(markID == passedFinishLineId){
+            markID = race.getCourse().getFinishLine().getCompoundMarkID();
+        }
         race.updateMarkRounded(sourceID, markID, time);
     }
 
