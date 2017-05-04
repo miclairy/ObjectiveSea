@@ -183,8 +183,8 @@ public class Controller implements Initializable, Observer {
                 }
                 if(!raceViewController.hasInitializedBoats()){
                     raceViewController.initializeBoats();
-                    raceViewController.initBoatPaths();
                 }
+                raceViewController.initBoatPaths();
                 break;
         }
     }
