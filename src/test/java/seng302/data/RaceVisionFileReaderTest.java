@@ -2,103 +2,171 @@ package seng302.data;
 
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
-import seng302.data.RaceVisionFileReader;
-import seng302.models.CompoundMark;
-import seng302.models.Course;
-import seng302.models.Gate;
-import seng302.models.RaceLine;
+import seng302.models.*;
 
-/**
- * Created by Michael Trotter on 3/21/2017.
- */
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 public class RaceVisionFileReaderTest {
 
     @Test
-    public void readCourseFileTest(){
-        Course course = RaceVisionFileReader.importCourse("data/testFiles/testCourse.xml");
+    public void readRaceFileTest(){
+        Course course = RaceVisionFileReader.importCourse(RaceVisionFileReaderTest.class.getResourceAsStream("/data/testFiles/testRace.xml"));
         Course expected = createExpectedCourse();
 
         Assert.assertNotNull(course);
         for (int i = 0; i < expected.getCourseOrder().size(); i++) {
-            assertMarksAreEqual(expected.getCourseOrder().get(i), course.getCourseOrder().get(i));
+            assertCompoundMarksAreEqual(expected.getCourseOrder().get(i), course.getCourseOrder().get(i));
         }
-        for (String key : expected.getMarks().keySet()) {
-            assertMarksAreEqual(expected.getMarks().get(key), course.getMarks().get(key));
+        for (Integer key : expected.getCompoundMarks().keySet()) {
+            assertCompoundMarksAreEqual(expected.getCompoundMarks().get(key), course.getCompoundMarks().get(key));
         }
-        Assert.assertEquals(expected.getWindDirection(), course.getWindDirection(), 0);
-        Assert.assertTrue(course.getMarks().get("Start").isStartLine());
-        Assert.assertTrue(course.getMarks().get("Finish").isFinishLine());
-        Assert.assertTrue(course.getMarks().get("Start") instanceof RaceLine);
-        Assert.assertTrue(course.getMarks().get("Finish") instanceof RaceLine);
-        Assert.assertTrue(course.getMarks().get("Gate") instanceof Gate);
-        Assert.assertFalse(course.getMarks().get("Mark") instanceof Gate);
+
+        Assert.assertTrue(course.getCompoundMarks().get(1).isStartLine());
+        Assert.assertTrue(course.getCompoundMarks().get(11).isFinishLine());
+        Assert.assertTrue(course.getCompoundMarks().get(1) instanceof RaceLine);
+        Assert.assertTrue(course.getCompoundMarks().get(11) instanceof RaceLine);
+        Assert.assertTrue(course.getCompoundMarks().get(2) != null);
+        Assert.assertFalse(course.getCompoundMarks().get(14) != null);
 
         //Boundary
-        Assert.assertEquals(course.getBoundary().size(), 3);
-        Assert.assertEquals(course.getBoundary().get(0).getLat(), 32.5, 0);
-        Assert.assertEquals(course.getBoundary().get(0).getLon(), -60.1, 0);
-
-        Assert.assertEquals(course.getBoundary().get(1).getLat(), 32.0, 0);
-        Assert.assertEquals(course.getBoundary().get(1).getLon(), -60.1, 0);
-
-        Assert.assertEquals(course.getBoundary().get(2).getLat(), 32.0, 0);
-        Assert.assertEquals(course.getBoundary().get(2).getLon(), -60.0, 0);
-
+        Assert.assertEquals(course.getBoundary().size(), 10);
+        for(int i = 0; i < 10; i++){
+            Assert.assertEquals(course.getBoundary().get(i), expected.getBoundary().get(i));
+        }
     }
 
-    @Test
+    @Test(expected=IllegalArgumentException.class)
     public void nonExistentCourseFileTest(){
-        //this code hides the expected printed stacktrace for the duration of the test, to prevent a successful
-        //test appearing like an error. If this test fails, these lines should be taken out to see the real stacktrace.
-        java.io.PrintStream realErrorStream = System.err;
-        System.setErr(new java.io.PrintStream(new java.io.OutputStream(){public void write(int i){}}));
-
-        Course course = RaceVisionFileReader.importCourse("I am a fake file");
-
-        System.setErr(realErrorStream);
+        InputStream fakeFileInputStream = RaceVisionFileReaderTest.class.getResourceAsStream("I am a fake file");
+        Course course = RaceVisionFileReader.importCourse(fakeFileInputStream);
         Assert.assertNull(course);
     }
 
-    /** This is a clone of the course that testCourse.xml is expected to create */
+    /** This is a clone of the course that testRace.xml is expected to create */
     private Course createExpectedCourse() {
         Course expected = new Course();
-        RaceLine start = new RaceLine("Start", 0, 0, 0, 1);
+
+        Mark startLine1 = new Mark(122, "Start Line 1", new Coordinate(57.6703330, 11.8278330));
+        Mark startLine2 = new Mark(123, "Start Line 2", new Coordinate(57.6703330, 11.8278330));
+        RaceLine start = new RaceLine(1, "Mark0", startLine1, startLine2);
         start.setMarkAsStart();
-        RaceLine finish = new RaceLine("Finish", 0, 5, 0, 6);
+
+        Mark mark1 = new Mark(131, "Mark1", new Coordinate(57.6675700, 11.8359880));
+        CompoundMark compoundMark2 = new CompoundMark(2, "Mark1", mark1);
+
+        Mark leeGate1 = new Mark(124, "Lee Gate 1", new Coordinate(57.6708220, 11.8433900));
+        Mark leeGate2 = new Mark(125, "Lee Gate 2", new Coordinate(57.6708220, 11.8433900));
+        CompoundMark compoundMark3 = new CompoundMark(3, "Mark2", leeGate1, leeGate2);
+
+        Mark windGate1 = new Mark(126, "Wind Gate 1", new Coordinate(57.6650170, 11.8279170));
+        Mark windGate2 = new Mark(127, "Wind Gate 2", new Coordinate(57.6650170, 11.8279170));
+        CompoundMark compoundMark4 = new CompoundMark(4, "Mark3", windGate1, windGate2);
+
+        CompoundMark compoundMark5 = new CompoundMark(5, "Mark2", leeGate1, leeGate2);
+
+        CompoundMark compoundMark6 = new CompoundMark(6, "Mark3", windGate1, windGate2);
+
+        CompoundMark compoundMark7 = new CompoundMark(7, "Mark2", leeGate1, leeGate2);
+
+        CompoundMark compoundMark8 = new CompoundMark(8, "Mark3", windGate1, windGate2);
+
+        CompoundMark compoundMark9 = new CompoundMark(9, "Mark2", leeGate1, leeGate2);
+
+        CompoundMark compoundMark10 = new CompoundMark(10, "Mark3", windGate1, windGate2);
+
+        Mark finishLine1 = new Mark(128, "Finish Line 1", new Coordinate(57.6715240, 11.8444950));
+        Mark finishLine2 = new Mark(129, "Finish Line 2", new Coordinate(57.6715240, 11.8444950));
+        RaceLine finish = new RaceLine(11, "Mark4", finishLine1, finishLine2);
         finish.setMarkAsFinish();
-        expected.addNewMark(start);
-        expected.addNewMark(finish);
-        expected.addNewMark(new CompoundMark("Mark", 2, 2));
-        expected.addNewMark(new Gate("Gate", 3, 3, 4, 4));
-        expected.addMarkInOrder("Start");
-        expected.addMarkInOrder("Mark");
-        expected.addMarkInOrder("Gate");
-        expected.addMarkInOrder("Finish");
-        expected.setWindDirection(200);
+
+        expected.addNewCompoundMark(start);
+        expected.addNewCompoundMark(compoundMark2);
+        expected.addNewCompoundMark(compoundMark3);
+        expected.addNewCompoundMark(compoundMark4);
+        expected.addNewCompoundMark(compoundMark5);
+        expected.addNewCompoundMark(compoundMark6);
+        expected.addNewCompoundMark(compoundMark7);
+        expected.addNewCompoundMark(compoundMark8);
+        expected.addNewCompoundMark(compoundMark9);
+        expected.addNewCompoundMark(compoundMark10);
+        expected.addNewCompoundMark(finish);
+
+        for(int i = 1; i <= 11; i++){
+            expected.addMarkInOrder(i);
+        }
+
+        expected.addToBoundary(new Coordinate(57.6739450, 11.8417100));
+        expected.addToBoundary(new Coordinate(57.6709520, 11.8485010));
+        expected.addToBoundary(new Coordinate(57.6690260, 11.8472790));
+        expected.addToBoundary(new Coordinate(57.6693140, 11.8457610));
+        expected.addToBoundary(new Coordinate(57.6665370, 11.8432910));
+        expected.addToBoundary(new Coordinate(57.6641400, 11.8385840));
+        expected.addToBoundary(new Coordinate(57.6629430, 11.8332030));
+        expected.addToBoundary(new Coordinate(57.6629480, 11.8249660));
+        expected.addToBoundary(new Coordinate(57.6686890, 11.8250920));
+        expected.addToBoundary(new Coordinate(57.6708220, 11.8321340));
         return expected;
     }
 
+    private void assertMarksAreEqual(Mark mark1, Mark mark2){
+        Assert.assertEquals(mark1.getSourceID(), mark2.getSourceID());
+        Assert.assertEquals(mark1.getPosition().getLat(), mark2.getPosition().getLat(), 0);
+        Assert.assertEquals(mark1.getPosition().getLon(), mark2.getPosition().getLon(), 0);
+    }
+
     /** Compares two marks for equality */
-    private void assertMarksAreEqual(CompoundMark mark1, CompoundMark mark2){
-        Assert.assertEquals(mark1.getName(), mark2.getName());
-        Assert.assertEquals(mark1.getLat(), mark2.getLat(), 0);
-        Assert.assertEquals(mark1.getLon(), mark2.getLon(), 0);
-        if (mark1 instanceof Gate) {
-            Assert.assertTrue(mark2 instanceof Gate);
-            Gate gate1 = (Gate) mark1;
-            Gate gate2 = (Gate) mark2;
-            Assert.assertEquals(gate1.getEnd1Lat(), gate2.getEnd1Lat(), 0);
-            Assert.assertEquals(gate1.getEnd1Lon(), gate2.getEnd1Lon(), 0);
-            Assert.assertEquals(gate1.getEnd2Lat(), gate2.getEnd2Lat(), 0);
-            Assert.assertEquals(gate1.getEnd2Lon(), gate2.getEnd2Lon(), 0);
-        } else if (mark1 instanceof RaceLine) {
-            Assert.assertTrue(mark2 instanceof RaceLine);
-            RaceLine gate1 = (RaceLine) mark1;
-            RaceLine gate2 = (RaceLine) mark2;
-            Assert.assertEquals(gate1.getEnd2Lat(), gate2.getEnd2Lat(), 0);
-            Assert.assertEquals(gate1.getEnd2Lon(), gate2.getEnd2Lon(), 0);
+    private void assertCompoundMarksAreEqual(CompoundMark compoundMark1, CompoundMark compoundMark2){
+        Assert.assertEquals(compoundMark1.getCompoundMarkID(), compoundMark2.getCompoundMarkID());
+        Assert.assertEquals(compoundMark1.getName(), compoundMark2.getName());
+        assertMarksAreEqual(compoundMark1.getMark1(), compoundMark2.getMark1());
+        Assert.assertEquals(compoundMark1.hasTwoMarks(), compoundMark2.hasTwoMarks());
+        if (compoundMark1.hasTwoMarks()) {
+            assertMarksAreEqual(compoundMark1.getMark2(), compoundMark2.getMark2());
+            if (compoundMark1 instanceof RaceLine) {
+                Assert.assertTrue(compoundMark2 instanceof RaceLine);
+            }
         }
     }
 
+
+    @Test
+    public void importStartersTest(){
+
+        List<Boat> boats = RaceVisionFileReader.importStarters(RaceVisionFileReaderTest.class.getResourceAsStream("/data/testFiles/testBoat.xml"));
+        List<Boat> expectedBoats = createExpectedBoats();
+        Assert.assertEquals(expectedBoats.size(), boats.size());
+        for(int i = 0; i < boats.size(); i++){
+            assertBoatEquals(expectedBoats.get(i), boats.get(i));
+        }
+    }
+
+    private void assertBoatEquals(Boat boat1, Boat boat2){
+        Assert.assertEquals(boat1.getId(), boat2.getId());
+        Assert.assertEquals(boat1.getName(), boat2.getName());
+        Assert.assertEquals(boat1.getNickName(), boat2.getNickName());
+    }
+
+    private List<Boat> createExpectedBoats(){
+        List<Boat> boats = new ArrayList<Boat>();
+        boats.add(new Boat(101, "ORACLE TEAM USA", "USA", 0));
+        boats.add(new Boat(102, "ARTEMIS RACING", "SWE", 0));
+        boats.add(new Boat(103, "EMIRATES TEAM NZ", "NZL", 0));
+        boats.add(new Boat(104, "SOFTBANK TEAM JAPAN", "JPN", 0));
+        boats.add(new Boat(105, "GROUPAMA TEAM FRANCE", "FRA", 0));
+        boats.add(new Boat(106, "LAND ROVER BAR", "GBR", 0));
+        return boats;
+    }
+
+    @Test
+    public void importRegattaTest(){
+        Race race = new Race("test", null, new ArrayList<>());
+        InputStream regattaInputStream = RaceVisionFileReaderTest.class.getResourceAsStream("/data/testFiles/testRegatta.xml");
+        RaceVisionFileReader.importRegatta(regattaInputStream, race);
+        Assert.assertEquals(2, race.getUTCOffset(), 0);
+        Assert.assertEquals("Gothenburg World Series 2015", race.getRegattaName());
+    }
 }

@@ -13,8 +13,7 @@ public class Config {
 
     private static final String DEFAULT_CONFIG_PATH = "/defaultFiles/config.txt";
     private static final String EXPECTED_CONFIG_PATH = "config.txt";
-    public static int NUM_BOATS_IN_RACE;
-    public static int TIME_SCALE_IN_SECONDS;
+    public static double MOCK_SPEED_SCALE;
     public static String SOURCE_ADDRESS;
     public static int SOURCE_PORT;
     private static final String IP_REGEX = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
@@ -38,11 +37,8 @@ public class Config {
 
                 String token = st.nextToken("=");
                 switch(token) {
-                    case "NUMBOATS":
-                        NUM_BOATS_IN_RACE = Integer.parseInt(st.nextToken());
-                        break;
-                    case "TIMESCALE":
-                        TIME_SCALE_IN_SECONDS = (int)TimeUtils.convertMinutesToSeconds(Double.parseDouble(st.nextToken()));
+                    case "MOCK_SPEED_SCALE":
+                        MOCK_SPEED_SCALE = Double.parseDouble(st.nextToken());
                         break;
                     case "SOURCE":
                         String check = st.nextToken();
@@ -68,6 +64,7 @@ public class Config {
             }
         } catch (IOException e) {
             System.err.printf("Error reading config file. Check it is in the correct format: %s", e);
+            e.printStackTrace();
         }
     }
 
@@ -75,6 +72,6 @@ public class Config {
         return IP.matches(IP_REGEX);
     }
     public static Boolean URLMatcher(String URL){
-        return URL.contains(".");
+        return URL.contains(".") || URL.equals("localhost");
     }
 }

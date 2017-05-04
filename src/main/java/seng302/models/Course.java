@@ -1,46 +1,54 @@
 package seng302.models;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Created on 7/03/17.
  * Class to figure out the mark locations and degrees.
  */
 
-public class Course {
+public class Course extends Observable {
 
     private ArrayList<CompoundMark> courseOrder;
     private ArrayList<Coordinate> boundary;
     private double minLat, minLon, maxLat, maxLon;
-    private HashMap<String, CompoundMark> marks;
+    private Map<Integer, CompoundMark> compoundMarks;
     private double windDirection;
-    private RaceLine startingLine;
+    private RaceLine startLine, finishLine;
     private String timeZone;
 
 
     private double trueWindSpeed;
 
     public Course() {
-        this.marks = new HashMap<>();
+        this.compoundMarks = new HashMap<>();
         this.courseOrder = new ArrayList<>();
         this.boundary = new ArrayList<>();
+        allMarks = new HashMap<>();
     }
 
     /**
-     * Puts mark into the marks HashMap, with the name of the mark as the Key
-     * @param mark - a defined Mark object
+     * Puts mark into the compoundMarks HashMap, with the name of the mark as the Key
+     * @param compoundMark - a defined CompoundMark object
      */
-    public void addNewMark(CompoundMark mark){
-        marks.put(mark.getName(), mark);
+    public void addNewCompoundMark(CompoundMark compoundMark){
+        compoundMarks.put(compoundMark.getCompoundMarkID(), compoundMark);
+        Mark mark1 = compoundMark.getMark1();
+        allMarks.put(mark1.getSourceID(), mark1);
+        if(compoundMark.hasTwoMarks()){
+            Mark mark2 = compoundMark.getMark2();
+            allMarks.put(mark2.getSourceID(), mark2);
+        }
     }
 
     /**
-     * Appends a mark to the course order ArrayList. The mark must already exist in the marks HashMap
-     * @param markName - the name of the mark to look up in the marks HashMap
+     * Appends a mark to the course order ArrayList. The mark must already exist in the compoundMarks HashMap
+     * @param compoundMarkID - the name of the mark to look up in the compoundMarks HashMap
      */
-    public void addMarkInOrder(String markName){
-        courseOrder.add(marks.get(markName));
+    public void addMarkInOrder(Integer compoundMarkID){
+        if(compoundMarks.containsKey(compoundMarkID)){
+            courseOrder.add(compoundMarks.get(compoundMarkID));
+        }
     }
 
     /**
@@ -50,6 +58,7 @@ public class Course {
     public void addToBoundary(Coordinate coord){
         boundary.add(coord);
     }
+
     /**
      * This function finds the distance between each mark on the course
      * @param markIndex1 - the index in the courseOrder array of the source mark
@@ -62,9 +71,8 @@ public class Course {
         double distance = mark1.getPosition().greaterCircleDistance(mark2.getPosition());
         return distance;
     }
-
     /**
-     * This function uses heading calculations to find the headings between two marks.
+     * This function uses heading calculations to find the headings between two compoundMarks.
      * @param markIndex1 - the index in the courseOrder array of the source mark
      * @param markIndex2 - the index in the courseOrder array of the destination mark
      * @return heading - in degrees, from source mark to destination mark
@@ -101,11 +109,11 @@ public class Course {
      * This is then added to an ArrayList for future use.
      */
     public void initCourseLatLon() {
-        maxLat = minLat = this.courseOrder.get(0).getLat();
-        maxLon = minLon = this.courseOrder.get(0).getLon();
-
-        for(CompoundMark mark : courseOrder){
-            updateMinMaxLatLon(mark.getLat(), mark.getLon());
+        maxLat = maxLon = -Double.MAX_VALUE;
+        minLat = minLon = Double.MAX_VALUE;
+        for(Integer markId : allMarks.keySet()){
+            Mark mark = allMarks.get(markId);
+            updateMinMaxLatLon(mark.getPosition().getLat(), mark.getPosition().getLon());
         }
         for(Coordinate coord : boundary){
             updateMinMaxLatLon(coord.getLat(), coord.getLon());
@@ -114,28 +122,36 @@ public class Course {
         minLat -= 0.004; minLon -= 0.004; maxLat += 0.004; maxLon += 0.004;
     }
 
+    /**
+     * Updates a position of a mark
+     * @param sourceID the source id of a mark
+     * @param lat the new latitude of a mark
+     * @param lon the new longitude of a mark
+     */
+    public void updateMark(Integer sourceID, Double lat, Double lon) {
+        if(allMarks.containsKey(sourceID)){
+            Coordinate markCoordinate = allMarks.get(sourceID).getPosition();
+            markCoordinate.setLat(lat);
+            markCoordinate.setLon(lon);
+        }
+    }
+
+    public void updateCourseWindValues(int raceCourseWindDirection) {
+        windDirection = raceCourseWindDirection;
+    }
+
     public ArrayList<CompoundMark> getCourseOrder(){
         return this.courseOrder;
     }
 
-    public HashMap<String, CompoundMark> getMarks() {
-        return marks;
+    public Map<Integer, CompoundMark> getCompoundMarks() {
+        return compoundMarks;
     }
 
-    public double getWindDirection() {
-        return windDirection;
-    }
+    public double getWindDirection() { return windDirection; }
 
     public void setWindDirection(double windDirection) {
         this.windDirection = (windDirection + 360) % 360;
-    }
-
-    public void setTimeZone(String timeZone) {
-        this.timeZone = timeZone;
-    }
-
-    public String getTimeZone() {
-        return timeZone;
     }
 
     public double getMinLat() {
@@ -162,11 +178,37 @@ public class Course {
         return boundary;
     }
 
-    public RaceLine getStartingLine() {
-        return startingLine;
+    public RaceLine getStartLine() {
+        return startLine;
     }
 
-    public void setStartingLine(RaceLine startingLine) {
-        this.startingLine = startingLine;
+    public void setStartLine(RaceLine startLine) {
+        this.startLine = startLine;
+    }
+
+    public Map<Integer, Mark> getAllMarks() {
+        return Collections.unmodifiableMap(allMarks);
+    }
+
+    public void setFinishLine(RaceLine finishLine) {
+        this.finishLine = finishLine;
+    }
+
+    public RaceLine getFinishLine() {
+        return finishLine;
+    }
+
+    /**
+     * This method takes another Course and attempts to merge the differences in it into this one.
+     * Assumes that the other course has the desired changes, and overwrites it's self with these changes.
+     * The other course is not changed.
+     * For now, all it does is merge the boundary (as this is currently the only changing thing in the race XML file
+     * that we care about). In future we may look at merging changed marks as well.
+     * @param otherCourse the course to merge into this one
+     */
+    public void mergeWithOtherCourse(Course otherCourse) {
+        this.boundary = new ArrayList<>(otherCourse.getBoundary());
+        setChanged();
+        notifyObservers();
     }
 }

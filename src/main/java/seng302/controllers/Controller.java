@@ -9,11 +9,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.effect.GaussianBlur;
+import javafx.scene.effect.MotionBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -21,160 +23,182 @@ import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 
 import java.net.URL;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.*;
 
 import static javafx.collections.FXCollections.observableArrayList;
 
-public class Controller implements Initializable {
+public class Controller implements Initializable, Observer {
 
-    @FXML
-    public Canvas canvas;
-    @FXML
-    private ListView<String> placings;
-    @FXML
-    private GridPane sidePane;
-    @FXML
-    private Group root;
-    @FXML
-    private AnchorPane canvasAnchor;
-    @FXML
-    private Label fpsLabel;
-    @FXML
-    private CheckBox fpsToggle;
-    @FXML
-    private ListView<String> startersList;
-    @FXML
-    private ImageView imvCourseOverlay;
-    @FXML
-    private Pane raceClockPane;
-    @FXML
-    private Label raceTimerLabel;
-    @FXML
-    private Slider annotationsSlider;
-    @FXML
-    private Label clockLabel;
-    @FXML
-    private VBox startersOverlay;
-    @FXML
-    private ImageView windDirectionImage;
+    @FXML public Canvas canvas;
+    @FXML private Group root;
+    @FXML private AnchorPane canvasAnchor;
+    @FXML private AnchorPane rightHandSide;
+    @FXML private Label fpsLabel;
+    @FXML private ListView<String> startersList;
+    @FXML private Label clockLabel;
+    @FXML public VBox startersOverlay;
+    @FXML private Label startersOverlayTitle;
+    @FXML private ImageView windDirectionImage;
+    @FXML public ImageView mapImageView;
 
-    private final int PREP_SIGNAL_SECONDS_BEFORE_START = 120; //2 minutes
     //number of from right edge of canvas that the wind arrow will be drawn
     private final int WIND_ARROW_OFFSET = 60;
 
     //FPS Counter
-    public static SimpleStringProperty fpsString = new SimpleStringProperty();
-    private static final long[] frameTimes = new long[100];
-    private static int frameTimeIndex = 0 ;
-    private static boolean arrayFilled = false ;
+    private SimpleStringProperty fpsString = new SimpleStringProperty();
+    private final long[] frameTimes = new long[100];
+    private int frameTimeIndex = 0;
+    private boolean arrayFilled = false;
 
     //Race Clock
-    public static SimpleStringProperty raceTimerString = new SimpleStringProperty();
-    public static SimpleStringProperty clockString = new SimpleStringProperty();
-    private static double totalRaceTime;
-    private static double secondsBeforeRace;
+    public SimpleStringProperty raceTimerString = new SimpleStringProperty();
+    private SimpleStringProperty clockString = new SimpleStringProperty();
 
-    private static ObservableList<String> formattedDisplayOrder = observableArrayList();
+    private ObservableList<String> formattedDisplayOrder = observableArrayList();
     private static double canvasHeight;
     private static double canvasWidth;
+
+
+
+    private static double anchorHeight;
+    private static double anchorWidth;
     private static String timeZone;
 
-    private RaceViewController raceViewController;
-    private boolean raceBegun;
-    private double secondsElapsed = 0;
+    // Controllers
+    @FXML private RaceViewController raceViewController;
+    @FXML private ScoreBoardController scoreBoardController = new ScoreBoardController();
+
+    public boolean raceBegun;
+    private boolean raceStatusChanged = true;
     private Race race;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        placings.setItems(formattedDisplayOrder);
         canvasWidth = canvas.getWidth();
         canvasHeight = canvas.getHeight();
+        anchorWidth = canvasAnchor.getWidth();
+        anchorHeight = canvasAnchor.getHeight();
 
         race = Main.getRace();
-        raceBegun = false;
+        race.addObserver(this);
         Course course = race.getCourse();
-        timeZone = race.getCourse().getTimeZone();
+        startersOverlayTitle.setText(race.getRegattaName());
         course.initCourseLatLon();
-        race.setTotalRaceTime();
-
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
-        raceViewController = new RaceViewController(root, race, this);
 
-        canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
-            canvasWidth = (double) newValue;
-            raceViewController.redrawCourse();
-            raceViewController.moveWindArrow();
-            raceViewController.redrawBoatPaths();
-        });
-        canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> {
-            canvasHeight = (double) newValue;
-            raceViewController.redrawCourse();
-            raceViewController.moveWindArrow();
-            raceViewController.redrawBoatPaths();
-        });
+        raceViewController = new RaceViewController(root, race, this, scoreBoardController);
+        course.addObserver(raceViewController);
 
-        setupAnnotationControl();
+        createCanvasAnchorListeners();
+        scoreBoardController.setControllers(this, raceViewController);
+        scoreBoardController.setUp();
         fpsString.set("..."); //set to "..." while fps count loads
         fpsLabel.textProperty().bind(fpsString);
-        totalRaceTime = race.getTotalRaceTime();
-        secondsBeforeRace = race.getSecondsBeforeRace();
-        secondsElapsed -= secondsBeforeRace;
-        raceTimerLabel.textProperty().bind(raceTimerString);
         clockLabel.textProperty().bind(clockString);
-
-
+        hideStarterOverlay();
         setWindDirection();
-        startersOverlay.toFront();
+
         displayStarters();
+        startersOverlay.toFront();
         raceViewController.start();
+
+
     }
 
     /**
-     * Called from the RaceViewController handle if the race has not yet begun (the boats are not moving)
-     * Handles the starters Overlay and timing for the boats to line up on the start line
-     * @param currentTime the current time
-     * @param raceStartTime the time at which the race will begin and pre-race ends
+     * Creates the change in width and height listeners to redraw course objects
      */
-    public void handlePrerace(double currentTime, double raceStartTime){
-        double overlayFadeTime = (raceStartTime - PREP_SIGNAL_SECONDS_BEFORE_START);
-        if (currentTime > overlayFadeTime && startersOverlay.isVisible()) {
-            hideStarterOverlay();
-            raceViewController.initializeBoats();
-        }
-        if (currentTime >= raceStartTime) {
-            raceBegun = true;
-            for (Boat boat : race.getCompetitors()){
-                boat.maximiseSpeed();
+    private void createCanvasAnchorListeners(){
+
+        final ChangeListener<Number> resizeListener = new ChangeListener<Number>()
+        {
+            final Timer timer = new Timer(); // uses a timer to call your resize method
+            TimerTask task = null; // task to execute after defined delay
+            final long delayTime = 300; // delay that has to pass in order to consider an operation done
+
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue)
+            {
+                if (task != null)
+                {
+                    task.cancel(); // cancel it, we have a new size to consider
+                    //zoom and blur image
+
+                    mapImageView.setEffect(new GaussianBlur(300));
+                }
+
+                task = new TimerTask() // create new task that calls your resize operation
+                {
+                    @Override
+                    public void run()
+                    {
+                        // resize after time is waited
+                        raceViewController.drawMap();
+                        mapImageView.setEffect(null);
+                    }
+                };
+                // schedule new task
+                timer.schedule(task, delayTime);
             }
-            raceViewController.changeAnnotations((int) annotationsSlider.getValue(), true);
+        };
+
+
+        canvasAnchor.widthProperty().addListener(resizeListener);
+        canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
+            canvasWidth = (double) newValue;
+            anchorWidth = canvasAnchor.getWidth();
+            raceViewController.redrawCourse();
+            raceViewController.moveWindArrow();
+            raceViewController.redrawBoatPaths();
+        });
+        canvasAnchor.heightProperty().addListener(resizeListener);
+        canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> {
+            canvasHeight = (double) newValue;
+            anchorHeight = canvasAnchor.getHeight();
+            raceViewController.redrawCourse();
+            raceViewController.moveWindArrow();
+            raceViewController.redrawBoatPaths();
+        });
+
+    }
+
+
+
+    /**
+     * Called from the RaceViewController handle if there is a change in race status
+     * Handles the starters Overlay and timing for the boats objects to be created
+     */
+    public void updatePreRaceScreen(){
+        switch(race.getRaceStatus()){
+            case WARNING:
+                showStarterOverlay();
+                break;
+            case PREPARATORY:
+                hideStarterOverlay();
+                raceViewController.initializeBoats();
+                break;
+            case STARTED:
+                if(startersOverlay.isVisible()){
+                    hideStarterOverlay();
+                }
+                if(!raceViewController.hasInitializedBoats()){
+                    raceViewController.initializeBoats();
+                }
+                break;
         }
     }
 
     /**
      * Sets the wind direction image to the correct rotation and position
+     * Scales rotation value to be in degrees (a value between 0 and 360)
      */
-    private void setWindDirection(){
-        double windDirection = race.getCourse().getWindDirection();
+    public void setWindDirection(){
+        double windDirection = (float)race.getCourse().getWindDirection();
+        double scaleFactor = ((double)360/(double)159999);
+        double rotate = (windDirection * scaleFactor);
         windDirectionImage.setX(canvasWidth - WIND_ARROW_OFFSET);
-        windDirectionImage.setRotate(windDirection);
+        windDirectionImage.setRotate(rotate);
         raceViewController.setCurrentWindArrow(windDirectionImage);
-    }
-
-    /**
-     * Set up a listener for the annotation slider so that we can keep the annotations on the boats up to date with
-     * the user's selection
-     */
-    private void setupAnnotationControl() {
-        annotationsSlider.valueProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                raceViewController.changeAnnotations(newValue.intValue(), false);
-            }
-        });
-        annotationsSlider.adjustValue(annotationsSlider.getMax());
     }
 
     /**
@@ -192,8 +216,7 @@ public class Controller implements Initializable {
      * Keep the placings list up to date based on last past marked of boats
      */
     public void updatePlacings(){
-        ArrayList<Boat> raceOrder = Main.getRace().getRaceOrder();
-        Collections.sort(raceOrder);
+        List<Boat> raceOrder = Main.getRace().getRaceOrder();
         formattedDisplayOrder.clear();
         for (int i = 0; i < raceOrder.size(); i++){
             Boat boat = raceOrder.get(i);
@@ -201,7 +224,7 @@ public class Controller implements Initializable {
             if(raceOrder.get(i).isFinished()){
                 displayString += "Finished!";
             } else{
-                displayString += boat.getSpeed() + " knots";
+                displayString += String.format("%.3f knots", boat.getSpeed());
             }
             formattedDisplayOrder.add(displayString);
         }
@@ -227,14 +250,10 @@ public class Controller implements Initializable {
     }
 
     /**
-     * Updates the race clock to display the current time
-     * @param timePassed the number of seconds passed since the last update call
+     * Updates the race clock to display the current time in race
      */
-    public void updateRaceClock(double timePassed) {
-        secondsElapsed += timePassed;
-        if(totalRaceTime <= secondsElapsed) {
-            secondsElapsed = totalRaceTime;
-        }
+    public void updateRaceClock() {
+        long secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000;
         int hours = (int) secondsElapsed / 3600;
         int minutes = ((int) secondsElapsed % 3600) / 60;
         int seconds = (int) secondsElapsed % 60;
@@ -246,20 +265,14 @@ public class Controller implements Initializable {
     }
 
     /**
-     * displays the current tie zone in the GUI on the overlay
+     * displays the current time according to the UTC offset, in the GUI on the overlay
      */
-    public static void setTimeZone() {
-        clockString.set(TimeUtils.setTimeZone(timeZone));
+    public void setTimeZone(double UTCOffset) {
+        clockString.set(TimeUtils.setTimeZone(UTCOffset));
     }
 
 
-    @FXML
-    /**
-     * Called from the GUI when the fpsToggle checkbox is clicked. Updates visibility of fpsLabel.
-     */
-    private void fpsToggle(){
-        fpsLabel.setVisible(fpsToggle.isSelected());
-    }
+    public void fpsLabel(Boolean visible){fpsLabel.setVisible(visible);}
 
     /**
      * Causes the starters overlay to hide itself, enabling a proper view of the course and boats beneath
@@ -268,8 +281,9 @@ public class Controller implements Initializable {
         startersOverlay.setVisible(false);
     }
 
-    public boolean hasRaceBegun() {
-        return raceBegun;
+    private void showStarterOverlay(){
+        startersOverlay.toFront();
+        startersOverlay.setVisible(true);
     }
 
     public static void setCanvasHeight(double canvasHeight) {
@@ -280,11 +294,50 @@ public class Controller implements Initializable {
         Controller.canvasWidth = canvasWidth;
     }
 
-    public static double getCanvasHeight() {
-        return canvasHeight;
+    public static double getCanvasHeight() {return canvasHeight;}
+
+    public static double getCanvasWidth() {return canvasWidth;}
+
+    public ObservableList<String> getFormattedDisplayOrder(){
+        return formattedDisplayOrder;
     }
 
-    public static double getCanvasWidth() {
-        return canvasWidth;
+    public boolean hasRaceStatusChanged() {
+        return raceStatusChanged;
+    }
+
+    public void setRaceStatusChanged(boolean raceStatusChanged) {
+        this.raceStatusChanged = raceStatusChanged;
+    }
+
+    /**
+     * Changes aspects of the race visualizer based on changes in the race object it observes
+     * Updates the pre-race overlay when its informed race status has changed
+     * Updates the race clock when the expected start time changes
+     * @param updatedRace the race that its race status changed
+     * @param signal determines which part of the race has changed
+     */
+    @Override
+    public void update(Observable updatedRace, Object signal) {
+        if(this.race == updatedRace && signal instanceof Integer){
+            Integer sig = (Integer) signal;
+            switch(sig){
+                case Race.UPDATED_STATUS_SIGNAL:
+                    raceStatusChanged = true;
+                    break;
+            }
+        }
+    }
+
+    public static double getAnchorHeight() {
+        return anchorHeight;
+    }
+
+    public static double getAnchorWidth() {
+        return anchorWidth;
+    }
+
+    public  AnchorPane getCanvasAnchor() {
+        return canvasAnchor;
     }
 }
