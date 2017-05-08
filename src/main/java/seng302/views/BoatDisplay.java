@@ -6,6 +6,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
+import javafx.scene.Node;
 import seng302.models.*;
 
 import java.time.Instant;
@@ -103,6 +104,26 @@ public class BoatDisplay {
             timeTillMark = "-";
         }
         return timeTillMark;
+    }
+
+    public void unFocus(){
+        icon.setOpacity(0.3);
+        wake.setOpacity(0.15);
+        if(!path.getElements().isEmpty()){
+            path.setOpacity(0.3);
+        }
+        annotationLine.setOpacity(0.3);
+        annotation.setOpacity(0.3);
+    }
+
+    public void focus(){
+        icon.setOpacity(1);
+        wake.setOpacity(0.5);
+        if(!path.getElements().isEmpty()){
+            path.setOpacity(1);
+        }
+        annotation.setOpacity(1);
+        annotationLine.setOpacity(1);
     }
 }
 

@@ -14,6 +14,8 @@ import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Path;
 import javafx.scene.control.Label;
+
+import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
@@ -135,6 +137,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void drawBoat(BoatDisplay boat){
         Polyline boatImage = raceView.createBoatImage(boat.getColor());
+        boatImage.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            setBoatFocus(boat);
+        });
         root.getChildren().add(boatImage);
         boat.setIcon(boatImage);
         drawBoatWake(boat);
@@ -205,6 +210,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
         boundary = raceView.createCourseBoundary(race.getCourse().getBoundary());
         root.getChildren().add(boundary);
         boundary.toBack();
+
+        boundary.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> { // to detect if user deselects boat
+            for(BoatDisplay boat : displayBoats){
+                boat.focus();
+                scoreBoardController.btnTrack.setVisible(false);
+            }
+        });
     }
 
     /**
@@ -216,6 +228,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
         controller.mapImageView.setImage(image);
         controller.mapImageView.toBack();
         resizeMap();
+
+        controller.mapImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> { //to detect if user deselects boat
+            for(BoatDisplay boat : displayBoats){
+                boat.focus();
+                scoreBoardController.btnTrack.setVisible(false);
+            }
+        });
     }
 
     /**
@@ -235,7 +254,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void drawBoatAnnotation(BoatDisplay displayBoat, ArrayList<String> annotationText){
         CanvasCoordinate point = DisplayUtils.convertFromLatLon(displayBoat.getBoat().getCurrentPosition());
-        VBox annotationFrame = new VBox();
+        VBox annotationFrame = displayBoat.getAnnotation();
+        annotationFrame.getChildren().clear();
+
         for(String string : annotationText){
             Label annotationLabel = new Label(string);
             annotationLabel.setId("annotationLabel");
@@ -476,6 +497,18 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if(boatDisplay.getPath() != null && boatDisplay.getBoat().getStatus() != BoatStatus.FINISHED){
             boatDisplay.getPath().getElements().add(new LineTo(point.getX(), point.getY()));
             boatDisplay.getPath().toBack();
+        }
+    }
+
+    private void setBoatFocus(BoatDisplay selectedBoat){
+        scoreBoardController.btnTrack.setVisible(true);
+        selectedBoat.getIcon().toFront();
+        for(BoatDisplay boat : displayBoats){
+            if(!boat.equals(selectedBoat)){
+                boat.unFocus();
+            }else{
+                boat.focus();
+            }
         }
     }
 
