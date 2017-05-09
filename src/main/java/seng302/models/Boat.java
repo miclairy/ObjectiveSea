@@ -71,6 +71,7 @@ public class Boat implements Comparable<Boat>{
         VMGofBoat = tackingInfo.getKey();
         TWAofBoat = tackingInfo.getValue();
         this.series = new Series();
+        series.getData().add(new Data(0, 0));
     }
 
     /**

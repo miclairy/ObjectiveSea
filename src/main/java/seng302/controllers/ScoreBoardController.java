@@ -40,12 +40,15 @@ public class ScoreBoardController {
     @FXML private NumberAxis xAxis ;
     @FXML private NumberAxis yAxis ;
 
+    private Race race;
+
     public void setControllers(Controller parent, RaceViewController raceViewController){
         this.parent = parent;
         this.raceViewController = raceViewController;
     }
 
     public void setUp(){
+        race = Main.getRace();
         placings.setItems(parent.getFormattedDisplayOrder());
         raceTimerLabel.textProperty().bind(parent.raceTimerString);
         setupAnnotationControl();
@@ -96,14 +99,19 @@ public class ScoreBoardController {
     private void setupSparkLine(){
         xAxis.setAutoRanging(false);
         xAxis.setLowerBound(0);
-        xAxis.setUpperBound(6);
+        xAxis.setUpperBound(race.getCourse().getCourseOrder().size());
         xAxis.setTickUnit(1);
 
         yAxis.setAutoRanging(false);
         yAxis.setLowerBound(0);
-        yAxis.setUpperBound(7);
+        yAxis.setUpperBound(race.getCompetitors().size() + 1);
         yAxis.setTickUnit(1);
         chtSparkLine.setCreateSymbols(false);
+        chtSparkLine.setLegendVisible(false);
+        chtSparkLine.getYAxis().setTickLabelsVisible(false);
+        chtSparkLine.getXAxis().setTickLabelsVisible(false);
+        chtSparkLine.getXAxis().setTickLength(0);
+        chtSparkLine.getYAxis().setTickLength(0);
     }
 
     public boolean isSpeedSelected(){return chkSpeed.isSelected();}
