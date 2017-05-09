@@ -255,9 +255,6 @@
     -fx-background-color: #0F0F0F;
 }
 
-.series{
-    -fx-stroke-width: 2px;
-    -fx-effect: null;
--fx-stroke: #f0e68c;
--fx-background-color: #f0e68c, white;
+.chart{
+    -fx-background-color: transparent;
 }

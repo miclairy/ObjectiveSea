@@ -95,7 +95,7 @@ public class ScoreBoardController {
 
     private void setupSparkLine(){
         xAxis.setAutoRanging(false);
-        xAxis.setLowerBound(0);
+        xAxis.setLowerBound(1);
         xAxis.setUpperBound(7);
         xAxis.setTickUnit(1);
 
@@ -103,6 +103,7 @@ public class ScoreBoardController {
         yAxis.setLowerBound(0);
         yAxis.setUpperBound(7);
         yAxis.setTickUnit(1);
+        chtSparkLine.setCreateSymbols(false);
     }
 
     public boolean isSpeedSelected(){return chkSpeed.isSelected();}

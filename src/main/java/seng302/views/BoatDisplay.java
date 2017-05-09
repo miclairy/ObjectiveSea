@@ -29,15 +29,12 @@ public class BoatDisplay {
     private VBox annotation;
     private Path path;
     private Line annotationLine;
-    private Series series;
-    private int time;
 
     private Color color;
 
     public BoatDisplay(Boat boat) {
         this.boat = boat;
         this.annotation = new VBox();
-        this.series = new Series();
     }
 
     public Line getAnnotationLine() {return annotationLine;}
@@ -82,12 +79,6 @@ public class BoatDisplay {
 
     public void setColor(Color color) {
         this.color = color;
-    }
-
-    public Series getSeries(){return series;}
-
-    public void addSparkLinePoint(){
-        series.getData().add(new Data(boat.getLastRoundedMarkIndex(), boat.getCurrPlacing()));
     }
 
     public String getTimeSinceLastMark(long currTime){

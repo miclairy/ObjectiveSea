@@ -2,6 +2,8 @@ package seng302.models;
 
 
 import javafx.util.Pair;
+import javafx.scene.chart.XYChart.Series;
+import javafx.scene.chart.XYChart.Data;
 import seng302.utilities.readPolars;
 
 import seng302.data.BoatStatus;
@@ -23,6 +25,7 @@ public class Boat implements Comparable<Boat>{
     private int finishingPlace;
     private double currentVMGSpeed;
     private int currPlacing;
+    private Series series;
 
     private Coordinate currentPosition;
 
@@ -67,6 +70,7 @@ public class Boat implements Comparable<Boat>{
         gybeTWAofBoat = gybingInfo.getValue();
         VMGofBoat = tackingInfo.getKey();
         TWAofBoat = tackingInfo.getValue();
+        this.series = new Series();
     }
 
     /**
@@ -436,7 +440,12 @@ public class Boat implements Comparable<Boat>{
 
     public int getCurrPlacing(){return currPlacing;}
 
-    public void setCurrPlacing(int placing){this.currPlacing = placing;}
+    public Series getSeries(){return series;}
+
+    public void setCurrPlacing(int placing){
+        this.currPlacing = placing;
+        series.getData().add(new Data(getLastRoundedMarkIndex(), getCurrPlacing()));
+    }
 
     /**
      * Sets the boats heading to the current value. If the heading has changed,
