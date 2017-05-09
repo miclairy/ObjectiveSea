@@ -95,8 +95,8 @@ public class ScoreBoardController {
 
     private void setupSparkLine(){
         xAxis.setAutoRanging(false);
-        xAxis.setLowerBound(1);
-        xAxis.setUpperBound(7);
+        xAxis.setLowerBound(0);
+        xAxis.setUpperBound(6);
         xAxis.setTickUnit(1);
 
         yAxis.setAutoRanging(false);
