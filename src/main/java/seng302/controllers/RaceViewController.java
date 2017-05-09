@@ -1,7 +1,9 @@
 package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.ImageCursor;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -137,12 +139,20 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void drawBoat(BoatDisplay boat){
         Polyline boatImage = raceView.createBoatImage(boat.getColor());
-        boatImage.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            setBoatFocus(boat);
-        });
         root.getChildren().add(boatImage);
         boat.setIcon(boatImage);
         drawBoatWake(boat);
+
+        boatImage.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            setBoatFocus(boat);
+        });
+        boatImage.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
+            ImageCursor cursor = new ImageCursor(new Image("graphics/boat-select-cursor.png"), 7, 7);
+            root.setCursor(cursor);
+        });
+        boatImage.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
+            root.setCursor(Cursor.DEFAULT);
+        });
     }
 
     public void initBoatPaths(){
