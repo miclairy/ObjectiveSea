@@ -22,6 +22,7 @@ public class Boat implements Comparable<Boat>{
     private double speed;
     private int finishingPlace;
     private double currentVMGSpeed;
+    private int currPlacing;
 
     private Coordinate currentPosition;
 
@@ -432,6 +433,10 @@ public class Boat implements Comparable<Boat>{
     public double getHeading() {
         return heading;
     }
+
+    public int getCurrPlacing(){return currPlacing;}
+
+    public void setCurrPlacing(int placing){this.currPlacing = placing;}
 
     /**
      * Sets the boats heading to the current value. If the heading has changed,

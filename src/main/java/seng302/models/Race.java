@@ -198,6 +198,10 @@ public class Race extends Observable{
 
     private void updateRaceOrder() {
         Collections.sort(raceOrder);
+        for (int i = 0; i < raceOrder.size(); i++) {
+            Boat boat = raceOrder.get(i);
+            boat.setCurrPlacing(i + 1);
+        }
     }
 
     public RaceStatus getRaceStatus() {

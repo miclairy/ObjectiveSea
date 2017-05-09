@@ -1,11 +1,14 @@
 package seng302.views;
 
+import javafx.scene.chart.XYChart;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
+import javafx.scene.chart.XYChart.Series;
+import javafx.scene.chart.XYChart.Data;
 import javafx.scene.Node;
 import seng302.models.*;
 
@@ -26,12 +29,15 @@ public class BoatDisplay {
     private VBox annotation;
     private Path path;
     private Line annotationLine;
+    private Series series;
+    private int time;
 
     private Color color;
 
     public BoatDisplay(Boat boat) {
         this.boat = boat;
         this.annotation = new VBox();
+        this.series = new Series();
     }
 
     public Line getAnnotationLine() {return annotationLine;}
@@ -76,6 +82,12 @@ public class BoatDisplay {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public Series getSeries(){return series;}
+
+    public void addSparkLinePoint(){
+        series.getData().add(new Data(boat.getLastRoundedMarkIndex(), boat.getCurrPlacing()));
     }
 
     public String getTimeSinceLastMark(long currTime){

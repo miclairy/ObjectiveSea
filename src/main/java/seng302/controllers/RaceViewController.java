@@ -111,6 +111,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 addToBoatPath(boat, point);
             }
             moveBoatAnnotation(boat.getAnnotation(), point);
+            boat.addSparkLinePoint();
         }
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
@@ -127,7 +128,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             raceView.assignColor(displayBoat);
             displayBoats.add(displayBoat);
             drawBoat(displayBoat);
-
+            scoreBoardController.addBoatToSparkLine(displayBoat.getSeries());
         }
         initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);

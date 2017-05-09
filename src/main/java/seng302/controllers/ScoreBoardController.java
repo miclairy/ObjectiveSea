@@ -3,12 +3,17 @@ package seng302.controllers;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.util.StringConverter;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Series;
+import java.util.List;
 import seng302.models.Boat;
 import seng302.models.Race;
 
@@ -31,6 +36,9 @@ public class ScoreBoardController {
     @FXML private CheckBox chkPassMarkTime;
     @FXML private CheckBox chkEst;
     @FXML public Button btnTrack;
+    @FXML private LineChart chtSparkLine;
+    @FXML private NumberAxis xAxis ;
+    @FXML private NumberAxis yAxis ;
 
     public void setControllers(Controller parent, RaceViewController raceViewController){
         this.parent = parent;
@@ -41,6 +49,7 @@ public class ScoreBoardController {
         placings.setItems(parent.getFormattedDisplayOrder());
         raceTimerLabel.textProperty().bind(parent.raceTimerString);
         setupAnnotationControl();
+        setupSparkLine();
         annotationsSlider.setLabelFormatter(new StringConverter<Double>() {
             @Override
             public String toString(Double n) {
@@ -84,6 +93,18 @@ public class ScoreBoardController {
         annotationsSlider.adjustValue(annotationsSlider.getMax());
     }
 
+    private void setupSparkLine(){
+        xAxis.setAutoRanging(false);
+        xAxis.setLowerBound(0);
+        xAxis.setUpperBound(7);
+        xAxis.setTickUnit(1);
+
+        yAxis.setAutoRanging(false);
+        yAxis.setLowerBound(0);
+        yAxis.setUpperBound(7);
+        yAxis.setTickUnit(1);
+    }
+
     public boolean isSpeedSelected(){return chkSpeed.isSelected();}
 
     public boolean isNameSelected(){return chkName.isSelected();}
@@ -91,4 +112,8 @@ public class ScoreBoardController {
     public boolean isEstSelected(){return chkEst.isSelected();}
 
     public boolean isTimePassedSelected(){return chkPassMarkTime.isSelected();}
+
+    public void addBoatToSparkLine(Series boatSeries){
+        chtSparkLine.getData().add(boatSeries);
+    }
 }
