@@ -146,10 +146,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
         boatImage.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             setBoatFocus(boat);
         });
+
         boatImage.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
             ImageCursor cursor = new ImageCursor(new Image("graphics/boat-select-cursor.png"), 7, 7);
             root.setCursor(cursor);
         });
+
         boatImage.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
             root.setCursor(Cursor.DEFAULT);
         });
@@ -201,6 +203,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
             root.getChildren().add(circle);
             mark.setIcon(circle);
 
+            circle.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
+                ImageCursor cursor = new ImageCursor(new Image("graphics/boat-select-cursor.png"), 7, 7);
+                root.setCursor(cursor);
+            });
+
+            circle.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
+                root.setCursor(Cursor.DEFAULT);
+            });
         }
     }
 

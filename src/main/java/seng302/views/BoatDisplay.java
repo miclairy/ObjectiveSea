@@ -109,7 +109,7 @@ public class BoatDisplay {
     public void unFocus(){
         icon.setOpacity(0.3);
         wake.setOpacity(0.15);
-        if(!path.getElements().isEmpty()){
+        if(path.getElements().size() > 1){
             path.setOpacity(0.3);
         }
         annotationLine.setOpacity(0.3);
@@ -119,7 +119,7 @@ public class BoatDisplay {
     public void focus(){
         icon.setOpacity(1);
         wake.setOpacity(0.5);
-        if(!path.getElements().isEmpty()){
+        if(path.getElements().size() > 1){
             path.setOpacity(1);
         }
         annotation.setOpacity(1);
