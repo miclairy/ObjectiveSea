@@ -21,7 +21,6 @@ public class MathUtils {
             diff = 0;
             bearing -= 180;
             middle = TWD - 180;
-            System.out.println(bearing);
         } else {
             middle = 90;
             diff = Math.abs(90 - TWD);}

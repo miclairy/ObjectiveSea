@@ -120,7 +120,8 @@ public class MockRaceRunner implements Runnable {
         if(MathUtils.pointBetweenTwoAngle(windDirection,boat.getTWAofBoat(),bearing)){
             onTack = true;
             boat.setCurrentVMGSpeed(boat.getVMGofBoat());
-        } else if(MathUtils.pointBetweenTwoAngle((windDirection + 180)%360, 180 - boat.getGybeVMGofBoat(), bearing)){
+        } else if(MathUtils.pointBetweenTwoAngle((windDirection + 180)%360, 180 - boat.getGybeTWAofBoat(), bearing)){
+            System.out.println("Hello");
             onGybe = true;
             boat.setCurrentVMGSpeed(boat.getGybeVMGofBoat() * (-1.0));
         }
