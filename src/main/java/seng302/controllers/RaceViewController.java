@@ -128,21 +128,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
             displayBoats.add(displayBoat);
             drawBoat(displayBoat);
             scoreBoardController.addBoatToSparkLine(boat.getSeries());
+            addEventHandlers(displayBoat);
         }
         initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);
     }
 
-    /**
-     * Gets a drawing of a boat icon and sets it up onscreen
-     * @param boat the BoatDisplay object that is to be drawn
-     */
-    private void drawBoat(BoatDisplay boat){
-        Polyline boatImage = raceView.createBoatImage(boat.getColor());
-        root.getChildren().add(boatImage);
-        boat.setIcon(boatImage);
-        drawBoatWake(boat);
-
+    private void addEventHandlers(BoatDisplay boat){
+        Shape boatImage = boat.getIcon();
         boatImage.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             setBoatFocus(boat);
         });
@@ -155,6 +148,17 @@ public class RaceViewController extends AnimationTimer implements Observer {
         boatImage.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
             root.setCursor(Cursor.DEFAULT);
         });
+    }
+
+    /**
+     * Gets a drawing of a boat icon and sets it up onscreen
+     * @param boat the BoatDisplay object that is to be drawn
+     */
+    private void drawBoat(BoatDisplay boat){
+        Polyline boatImage = raceView.createBoatImage(boat.getColor());
+        root.getChildren().add(boatImage);
+        boat.setIcon(boatImage);
+        drawBoatWake(boat);
     }
 
     public void initBoatPaths(){
