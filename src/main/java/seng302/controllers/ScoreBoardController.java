@@ -113,8 +113,6 @@ public class ScoreBoardController {
         chtSparkLine.getXAxis().setTickLabelsVisible(false);
         chtSparkLine.getXAxis().setTickLength(0);
         chtSparkLine.getYAxis().setTickLength(0);
-
-        //Node line = chtSparkLine.lookup(".chart-series-line.series4");
     }
 
     public boolean isSpeedSelected(){return chkSpeed.isSelected();}

@@ -275,6 +275,11 @@
     -fx-minor-tick-length: 0;
 }
 
+.axis-label {
+  -fx-text-fill: white;
+  -fx-font-size: 10px;
+}
+
 .chart .chart-series-line.series0 {
     -fx-stroke: #A0D468;
     -fx-stroke-width: 2px;
@@ -303,9 +308,4 @@
 .chart .chart-series-line.series5 {
     -fx-stroke: #656D78;
     -fx-stroke-width: 2px;
-}
-
-#test {
-    -fx-stroke: #656D78;
-    -fx-fill: white;
 }

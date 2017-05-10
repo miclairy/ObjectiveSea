@@ -76,10 +76,10 @@
                            </HBox>
                         <LineChart fx:id="chtSparkLine" prefHeight="101.0" prefWidth="142.0" GridPane.rowIndex="2">
                             <xAxis>
-                                <NumberAxis side="BOTTOM" fx:id="xAxis" />
+                                <NumberAxis label="Mark" side="BOTTOM" fx:id="xAxis" />
                             </xAxis>
                             <yAxis>
-                                <NumberAxis fx:id="yAxis" layoutX="10.0" side="LEFT" />
+                                <NumberAxis fx:id="yAxis" label="Position" layoutX="10.0" side="LEFT" />
                             </yAxis>
                            <GridPane.margin>
                               <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
