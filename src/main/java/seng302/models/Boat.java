@@ -7,7 +7,6 @@ import seng302.utilities.readPolars;
 import seng302.data.BoatStatus;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class to encapsulate properties associated with a boat.
@@ -37,7 +36,7 @@ public class Boat implements Comparable<Boat>{
 
     private ArrayList<Coordinate> pathCoords;
     private double VMGofBoat;
-    private double TWAofBoat;
+    private double trueWindAngle;
     private double gybeVMGofBoat;
     private double gybeTWAofBoat;
     private long timeTillMark;
@@ -65,8 +64,7 @@ public class Boat implements Comparable<Boat>{
         gybeVMGofBoat = gybingInfo.getKey();
         gybeTWAofBoat = gybingInfo.getValue();
         VMGofBoat = tackingInfo.getKey();
-        TWAofBoat = tackingInfo.getValue();
-
+        trueWindAngle = tackingInfo.getValue();
     }
 
     /**
@@ -102,7 +100,7 @@ public class Boat implements Comparable<Boat>{
         boolean onTack = false;
         boolean onGybe = false;
         currentVMGSpeed = speed;
-        if(((windDirection - TWAofBoat)%360)+360 <= (bearing+360) && ((windDirection + TWAofBoat)%360)+360 >= (bearing + 360)){
+        if(((windDirection - trueWindAngle)%360)+360 <= (bearing+360) && ((windDirection + trueWindAngle)%360)+360 >= (bearing + 360)){
             onTack = true;
             currentVMGSpeed = VMGofBoat;
         } else if((((180+windDirection) - (180-gybeTWAofBoat))% 360)+360 <= (bearing+360) && (((180+windDirection) + (180-gybeTWAofBoat))%360)+360 >= (bearing+360)){
@@ -117,7 +115,7 @@ public class Boat implements Comparable<Boat>{
         //The polars currently used aren't for our fancy catamaran's so it is super slow and boring
         // so I've commented them out for practicality of watching :)
         if(onTack) {
-            currentSpeed = VMGofBoat / Math.cos(Math.toRadians(TWAofBoat));
+            currentSpeed = VMGofBoat / Math.cos(Math.toRadians(trueWindAngle));
         } else if(onGybe){
             currentSpeed = (gybeVMGofBoat) / Math.cos(Math.toRadians(gybeTWAofBoat));
         }
@@ -192,7 +190,7 @@ public class Boat implements Comparable<Boat>{
     public Coordinate tackingUpdateLocation(double distanceGained, ArrayList<CompoundMark> courseOrder, Boolean onTack, double alphaAngle){
         double TrueWindAngle;
         if(onTack){
-            TrueWindAngle = TWAofBoat;
+            TrueWindAngle = trueWindAngle;
         } else {
             TrueWindAngle = 180 - gybeTWAofBoat;}
 
@@ -434,6 +432,32 @@ public class Boat implements Comparable<Boat>{
     }
 
     /**
+     * Returns the layline angles of a boat
+     * @param boat
+     * @return Pair<Double, Double> laylines
+     */
+    private Pair<Double, Double> calculateLayLines(Boat boat) {
+        int twd = race.getCourse().getTrueWindDirection();
+        double twa = boat.getTrueWindAngle();
+
+        boolean upwind = checkWindUpwind(boat, twd);
+
+        double layline1 = (twd - twa) % 360;
+        double layline2 = (twd + twa) % 360;
+
+        Pair laylines = new Pair(layline1, layline2);
+
+        return laylines;
+    }
+
+    private boolean checkWindUpwind(Boat boat, int twd) {
+        if ((boat.getHeading() <= twd + 90) || (boat.getHeading() >= twd - 90)) {
+            return true;
+        } else return false;
+    }
+
+
+    /**
      * Compares boat objects based on the index of last mark rounded in race order and if that is equals, compares
      * based on time (lower time first).
      * @param otherBoat The other boat that this boat is being compared to
@@ -458,9 +482,7 @@ public class Boat implements Comparable<Boat>{
 
     public String getNickName() {return nickName;}
 
-    public double getSpeed() {
-        return this.speed;
-    }
+    public double getSpeed() { return this.speed; }
 
     public int getSpeedInMMS(){
         return (int) (this.speed * KNOTS_TO_MMS_MULTIPLIER);
@@ -534,6 +556,10 @@ public class Boat implements Comparable<Boat>{
     public double getMaxSpeed() {
         return maxSpeed;
     }
+
+    public void setTrueWindAngle(double trueWindAngle) { this.trueWindAngle = trueWindAngle; }
+
+    public double getTrueWindAngle() { return trueWindAngle; }
 
     public double getVMGofBoat() { return VMGofBoat;}
 

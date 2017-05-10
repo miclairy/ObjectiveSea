@@ -138,10 +138,11 @@ public class Course extends Observable {
         }
     }
 
-    public void updateTrueWindValues(int angle, int direction) {
-        trueWindAngle = angle;
+    public void updateTrueWindDirection(int direction) {
         trueWindDirection = direction;
     }
+
+    public Integer getTrueWindDirection() { return trueWindDirection; }
 
     public void updateCourseWindValues(int raceCourseWindDirection) {
         windDirection = raceCourseWindDirection;

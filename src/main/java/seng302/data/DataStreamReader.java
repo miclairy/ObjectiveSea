@@ -180,12 +180,12 @@ public class DataStreamReader implements Runnable{
         double speedInKnots = TimeUtils.convertMmPerSecondToKnots(boatSpeed);
 
         if(deviceType == BOAT_DEVICE_TYPE){
-            race.updateBoat(sourceID, lat, lon, heading, speedInKnots);
+            race.updateBoat(sourceID, lat, lon, heading, speedInKnots, trueWindAngle);
         } else if(deviceType == MARK_DEVICE_TYPE){
             race.getCourse().updateMark(sourceID, lat, lon);
         }
         
-        race.getCourse().updateTrueWindValues(trueWindAngle, trueWindDirection);
+        race.getCourse().updateTrueWindDirection(trueWindDirection);
     }
 
     /**

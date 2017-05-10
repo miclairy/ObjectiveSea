@@ -17,6 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
+import javafx.util.Pair;
 import seng302.data.BoatStatus;
 import seng302.data.RaceStatus;
 import seng302.utilities.DisplayUtils;
@@ -497,5 +498,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public boolean hasInitializedBoats() {
         return initializedBoats;
     }
+
+
+
 }
 
