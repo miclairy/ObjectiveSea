@@ -31,11 +31,6 @@ public class DataStreamReader implements Runnable{
     private final int BOAT_DEVICE_TYPE = 1;
     private final int MARK_DEVICE_TYPE = 3;
 
-    private final String DEFAULT_FILE_PATH = "/outputFiles/";
-    private final String REGATTA_FILE_NAME = "Regatta.xml";
-    private final String RACE_FILE_NAME = "Race.xml";
-    private final String BOAT_FILE_NAME = "Boat.xml";
-
     public DataStreamReader(String sourceAddress, int sourcePort){
         this.sourceAddress = sourceAddress;
         this.sourcePort = sourcePort;
@@ -99,7 +94,7 @@ public class DataStreamReader implements Runnable{
      * @param endIndex The ending index (exclusive) of the range of bytes to be converted
      * @return The long converted from the range of bytes in little endian order
      */
-    static long byteArrayRangeToLong(byte[] array, int beginIndex, int endIndex){
+    public static long byteArrayRangeToLong(byte[] array, int beginIndex, int endIndex){
         int length = endIndex - beginIndex;
         if(length <= 0 || length > 8){
             throw new IllegalArgumentException("The length of the range must be between 1 and 8 inclusive");
@@ -176,6 +171,8 @@ public class DataStreamReader implements Runnable{
         int boatSpeed = byteArrayRangeToInt(body, SPEED_OVER_GROUND.getStartIndex(), SPEED_OVER_GROUND.getEndIndex());
 
         int deviceType = byteArrayRangeToInt(body, DEVICE_TYPE.getStartIndex(), DEVICE_TYPE.getEndIndex());
+        int trueWindDirection = byteArrayRangeToInt(body, TRUE_WIND_DIRECTION.getStartIndex(), TRUE_WIND_DIRECTION.getEndIndex());
+        int trueWindAngle = byteArrayRangeToInt(body, TRUE_WIND_ANGLE.getStartIndex(), TRUE_WIND_ANGLE.getEndIndex());
 
         double lat = intToLatLon(latScaled);
         double lon = intToLatLon(lonScaled);
@@ -187,6 +184,8 @@ public class DataStreamReader implements Runnable{
         } else if(deviceType == MARK_DEVICE_TYPE){
             race.getCourse().updateMark(sourceID, lat, lon);
         }
+        
+        race.getCourse().updateTrueWindValues(trueWindAngle, trueWindDirection);
     }
 
     /**
@@ -264,15 +263,15 @@ public class DataStreamReader implements Runnable{
         long expectedStartTime = byteArrayRangeToLong(body, START_TIME.getStartIndex(), START_TIME.getEndIndex());
 
 
-        byte[] boatSatuses = new byte[body.length - 24];
+        byte[] boatStatuses = new byte[body.length - 24];
 
         for (int i = 24; i < body.length; i++){
-            boatSatuses[i - 24] = body[i];
+            boatStatuses[i - 24] = body[i];
         }
 
-        for  (int k = 0; k < boatSatuses.length; k += 20) {
-            int boatID = byteArrayRangeToInt(boatSatuses, 0 + k, 4 + k);
-            long estimatedTimeAtMark = byteArrayRangeToLong(boatSatuses, 8 + k, 14 + k);
+        for  (int k = 0; k < boatStatuses.length; k += 20) {
+            int boatID = byteArrayRangeToInt(boatStatuses, 0 + k, 4 + k);
+            long estimatedTimeAtMark = byteArrayRangeToLong(boatStatuses, 8 + k, 14 + k);
             Boat boat = race.getBoatById(boatID);
             boat.setTimeTillMark(estimatedTimeAtMark);
             // System.out.println("Boat ID: " + boatID + " Time to next mark: " + ConvertedTime);

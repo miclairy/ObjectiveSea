@@ -108,6 +108,7 @@ public class MockRaceRunner implements Runnable {
      * @param course the course the boat is racing on
      * @param boat the boat which location is updated for
      */
+    //Move updateLocation method with tacking from Boat to here
     private Coordinate updateLocation(Boat boat, double raceSecondsPassed, Course course) {
         if(boat.isFinished()){
             return null;

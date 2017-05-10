@@ -6,12 +6,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 import seng302.controllers.MockRaceRunner;
-import seng302.data.AC35StreamMessage;
-import seng302.data.BoatStatus;
-import seng302.data.MockStream;
-import seng302.data.RaceStatus;
+import seng302.data.*;
 import seng302.models.*;
 
+import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
@@ -190,6 +188,8 @@ public class MockStreamTest {
             assertEquals(1, body[7]);
             assertEquals(0, body[24]);
             assertEquals(0, body[28]);
+            assertEquals(0x6000, DataStreamReader.byteArrayRangeToLong(body, 46, 48));
+            assertEquals(20571, DataStreamReader.byteArrayRangeToLong(body, 48, 50));
             connectionSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
