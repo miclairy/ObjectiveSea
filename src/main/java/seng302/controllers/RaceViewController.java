@@ -68,7 +68,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         drawCourse();
-        addDeslectEvents();
+        addDeselectEvents();
     }
 
     @Override
@@ -122,22 +122,18 @@ public class RaceViewController extends AnimationTimer implements Observer {
             raceView.assignColor(displayBoat);
             displayBoats.add(displayBoat);
             drawBoat(displayBoat);
-
+            addBoatSelectionHandler(displayBoat);
         }
         initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);
     }
 
     /**
-     * Gets a drawing of a boat icon and sets it up onscreen
-     * @param boat the BoatDisplay object that is to be drawn
+     * adds event hadnlers so we can detect if the user has selected a boat
+     * @param boat
      */
-    private void drawBoat(BoatDisplay boat){
-        Polyline boatImage = raceView.createBoatImage(boat.getColor());
-        root.getChildren().add(boatImage);
-        boat.setIcon(boatImage);
-        drawBoatWake(boat);
-
+    private void addBoatSelectionHandler(BoatDisplay boat){
+        Shape boatImage = boat.getIcon();
         boatImage.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             setBoatFocus(boat);
         });
@@ -149,6 +145,17 @@ public class RaceViewController extends AnimationTimer implements Observer {
         boatImage.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
             root.setCursor(Cursor.DEFAULT);
         });
+    }
+
+    /**
+     * Gets a drawing of a boat icon and sets it up onscreen
+     * @param boat the BoatDisplay object that is to be drawn
+     */
+    private void drawBoat(BoatDisplay boat){
+        Polyline boatImage = raceView.createBoatImage(boat.getColor());
+        root.getChildren().add(boatImage);
+        boat.setIcon(boatImage);
+        drawBoatWake(boat);
     }
 
     public void initBoatPaths(){
@@ -184,7 +191,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * adds Event handlers to areas of the course than don't contain boat, so deselct of boat
      * can be detetced
      */
-    private void addDeslectEvents(){
+    private void addDeselectEvents(){
         boundary.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             for(BoatDisplay boat : displayBoats){
                 boat.focus();
