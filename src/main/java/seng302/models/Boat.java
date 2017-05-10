@@ -100,12 +100,12 @@ public class Boat implements Comparable<Boat>{
         double windDirection = course.getWindDirection();
         double bearing = course.headingsBetweenMarks(lastRoundedMarkIndex,lastRoundedMarkIndex+1);
         boolean onTack = false;
-        boolean onGybe = false;
-        currentVMGSpeed = speed;
-        if(((windDirection - TWAofBoat)%360)+360 <= (bearing+360) && ((windDirection + TWAofBoat)%360)+360 >= (bearing + 360)){
+        boolean onGybe = false; //(((180+windDirection) - (180-gybeTWAofBoat))% 360)+360 <= (bearing+360) && (((180+windDirection) + (180-gybeTWAofBoat))%360)+360 >= (bearing+360)
+        currentVMGSpeed = speed; // ((windDirection - TWAofBoat)%360)+360 <= (bearing+360) && ((windDirection + TWAofBoat)%360)+360 >= (bearing + 360)
+        if(pointBetweenTwoAngle(windDirection,TWAofBoat,bearing)){
             onTack = true;
             currentVMGSpeed = VMGofBoat;
-        } else if((((180+windDirection) - (180-gybeTWAofBoat))% 360)+360 <= (bearing+360) && (((180+windDirection) + (180-gybeTWAofBoat))%360)+360 >= (bearing+360)){
+        } else if(pointBetweenTwoAngle((windDirection + 180)%360, 180 - gybeTWAofBoat, bearing)){
             onGybe = true;
             currentVMGSpeed = gybeVMGofBoat * (-1.0);
         }
@@ -431,6 +431,38 @@ public class Boat implements Comparable<Boat>{
         double TWA = lagrangeInterpolation(pair4,pair5,pair6,TrueVMG);
         boatsTack = new Pair<>(TrueVMG, TWA);
         return boatsTack;
+    }
+
+    public Boolean pointBetweenTwoAngle(double midPoint, double deltaAngle, double point){
+        double diff;
+        double middle;
+        if(midPoint > 180){
+            diff = 0;
+            point -= 180;
+            middle = midPoint - 180;
+            System.out.println(point);
+        } else {
+            middle = 90;
+            diff = Math.abs(90 - midPoint);}
+        point += diff;
+        point = (point + 360) % 360;
+        return (middle - deltaAngle) <= point && point <= (middle + deltaAngle);
+    }
+
+    private double normalize(double point) {
+        point = point % 360;
+        if (point>=180) {
+            return point-360;
+        }
+        if (point<=180) {
+            return point+360;
+        }
+        return point;
+    }
+    public boolean pointBetweenTwoAngle1(double midPoint, double deltaAngle, double point) {
+        point = point - midPoint;
+        point = normalize(point);
+        return point<deltaAngle && point>-deltaAngle;
     }
 
     /**
