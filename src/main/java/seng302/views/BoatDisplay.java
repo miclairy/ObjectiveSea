@@ -27,6 +27,7 @@ public class BoatDisplay {
     private Line annotationLine;
 
     private Color color;
+    private Line layLine;
 
     public BoatDisplay(Boat boat) {
         this.boat = boat;
@@ -103,6 +104,14 @@ public class BoatDisplay {
             timeTillMark = "-";
         }
         return timeTillMark;
+    }
+
+    public void setLayline(Line layline) {
+        this.layLine = layline;
+    }
+
+    public Line getLayLine() {
+        return layLine;
     }
 }
 

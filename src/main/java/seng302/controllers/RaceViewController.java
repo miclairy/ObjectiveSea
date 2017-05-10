@@ -105,6 +105,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             moveWake(boat, point);
             if(race.getRaceStatus() == STARTED) {
                 addToBoatPath(boat, point);
+                //temporary code
+                drawLayLine(boat);
             }
             moveBoatAnnotation(boat.getAnnotation(), point);
         }
@@ -351,6 +353,16 @@ public class RaceViewController extends AnimationTimer implements Observer {
         Polyline wake = raceView.createBoatWake();
         root.getChildren().add(wake);
         boat.setWake(wake);
+    }
+
+    private void drawLayLine(BoatDisplay boat){
+        if (boat.getBoat().getLastRoundedMarkIndex() < race.getCourse().getCourseOrder().size()) {
+            CompoundMark mark = race.getCourse().getCourseOrder().get(boat.getBoat().getLastRoundedMarkIndex() + 1);
+            Line layline = raceView.createLayLine(boat, mark);
+            root.getChildren().add(layline);
+            boat.setLayline(layline);
+            layline.toBack();
+        }
     }
 
     /**

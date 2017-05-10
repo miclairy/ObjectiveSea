@@ -2,6 +2,8 @@ package seng302.views;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import seng302.models.Boat;
+import seng302.models.CompoundMark;
 import seng302.utilities.DisplayUtils;
 import seng302.models.CanvasCoordinate;
 import seng302.models.Coordinate;
@@ -102,6 +104,18 @@ public class RaceView {
                 convertedEnd2.getX(), convertedEnd2.getY()
         );
         line.setStroke(Color.web("#70aaa2"));
+        return line;
+    }
+
+    public Line createLayLine(BoatDisplay boat, CompoundMark mark){
+        final int LAYLINELENGTH = 75;
+        double bearing = boat.getBoat().calculateLaylineHeading();
+        Coordinate markLocation = mark.getMidPoint();
+        CanvasCoordinate markLocationXY = DisplayUtils.convertFromLatLon(markLocation.getLat(), markLocation.getLon());
+        Double endPointY = LAYLINELENGTH * Math.sin(Math.toRadians(bearing - 90)) + markLocationXY.getY();
+        Double endPointX = LAYLINELENGTH * Math.cos(Math.toRadians(bearing - 90)) + markLocationXY.getX();
+        Line line = new Line(markLocationXY.getX(), markLocationXY.getY(), endPointX, endPointY);
+        line.setStroke(boat.getColor());
         return line;
     }
 

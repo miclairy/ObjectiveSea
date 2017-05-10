@@ -570,4 +570,8 @@ public class Boat implements Comparable<Boat>{
     public void setTimeTillFinish(long timeTillFinish) {
         this.timeTillFinish = timeTillFinish;
     }
+
+    public double calculateLaylineHeading() { //TODO implement me
+        return 145;
+    }
 }
