@@ -433,37 +433,29 @@ public class Boat implements Comparable<Boat>{
         return boatsTack;
     }
 
-    public Boolean pointBetweenTwoAngle(double midPoint, double deltaAngle, double point){
+    /**
+     * A function to determine whether a boat's heading is within an angle of a direction
+     * @param TWD True wind direction
+     * @param deltaAngle the change in angle from the TWD
+     * @param bearing the boats heading
+     * @return true if he boat is within angle
+     */
+    public Boolean pointBetweenTwoAngle(double TWD, double deltaAngle, double bearing){
         double diff;
         double middle;
-        if(midPoint > 180){
+        if(TWD > 180){
             diff = 0;
-            point -= 180;
-            middle = midPoint - 180;
-            System.out.println(point);
+            bearing -= 180;
+            middle = TWD - 180;
+            System.out.println(bearing);
         } else {
             middle = 90;
-            diff = Math.abs(90 - midPoint);}
-        point += diff;
-        point = (point + 360) % 360;
-        return (middle - deltaAngle) <= point && point <= (middle + deltaAngle);
+            diff = Math.abs(90 - TWD);}
+        bearing += diff;
+        bearing = (bearing + 360) % 360;
+        return (middle - deltaAngle) <= bearing && bearing <= (middle + deltaAngle);
     }
-
-    private double normalize(double point) {
-        point = point % 360;
-        if (point>=180) {
-            return point-360;
-        }
-        if (point<=180) {
-            return point+360;
-        }
-        return point;
-    }
-    public boolean pointBetweenTwoAngle1(double midPoint, double deltaAngle, double point) {
-        point = point - midPoint;
-        point = normalize(point);
-        return point<deltaAngle && point>-deltaAngle;
-    }
+    
 
     /**
      * Compares boat objects based on the index of last mark rounded in race order and if that is equals, compares
@@ -571,7 +563,7 @@ public class Boat implements Comparable<Boat>{
 
     public double getGybeVMGofBoat() {return gybeVMGofBoat;}
 
-    public void setSpeed(double speed) {
+    public void setCurrentSpeed(double speed) {
         this.speed = speed;
     }
 
@@ -605,5 +597,33 @@ public class Boat implements Comparable<Boat>{
 
     public double calculateLaylineHeading() { //TODO implement me
         return 145;
+    }
+    
+    public void setCurrentVMGSpeed(double currentVMGSpeed) {
+        this.currentVMGSpeed = currentVMGSpeed;
+    }
+
+    public double getTWAofBoat() {
+        return TWAofBoat;
+    }
+
+    public double getGybeTWAofBoat() {
+        return gybeTWAofBoat;
+    }
+
+    public void setLastGybeMarkPassed(int lastGybeMarkPassed) {
+        this.lastGybeMarkPassed = lastGybeMarkPassed;
+    }
+
+    public void setLastTackMarkPassed(int lastTackMarkPassed) {
+        this.lastTackMarkPassed = lastTackMarkPassed;
+    }
+
+    public int getLastTackMarkPassed() {
+        return lastTackMarkPassed;
+    }
+
+    public int getLastGybeMarkPassed() {
+        return lastGybeMarkPassed;
     }
 }

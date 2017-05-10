@@ -23,7 +23,7 @@ public class BoatTest
     @Before
     public void before(){
         boat = new Boat(0, "TestBoat", "testNickname", 10);
-        boat.setSpeed(10);
+        boat.setCurrentSpeed(10);
     }
 //
 //    @Test
