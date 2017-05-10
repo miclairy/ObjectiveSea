@@ -1,6 +1,7 @@
 package seng302.utilities;
 import javafx.util.Pair;
 import seng302.data.RaceVisionXMLParser;
+import seng302.models.Polars;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,19 +16,17 @@ import java.util.ArrayList;
 public class readPolars {
     private static final String polarFile = "boatPolars.txt";
     private static final String PolarFileLocation = "/defaultFiles/boatPolars.txt";
-    public static ArrayList<Integer> getTWS() {
-        return TWS;
-    }
 
-    public static ArrayList<ArrayList<Pair<Double, Double>>> getPolars() {
+    public static ArrayList<Polars> getPolars() {
         return polars;
     }
 
-    private static ArrayList<Integer> TWS = new ArrayList<>();
-    private static ArrayList<ArrayList<Pair<Double, Double>>> polars = new ArrayList<>();
+    private static ArrayList<Polars> polars = new ArrayList<>();
+
+
     public static void polars() throws Exception{
         String thisLine;
-
+        if (polars.isEmpty()){
         try {
             BufferedReader br;
             try {
@@ -36,27 +35,31 @@ public class readPolars {
                 RaceVisionXMLParser.exportResource(PolarFileLocation, polarFile);
                 br = new BufferedReader(new FileReader(polarFile));
             }
-            thisLine = br.readLine(); // ignores the first line
-            polars.clear();
-            TWS.clear();
+            String titleLine = br.readLine(); // Reads in first line of titles
+            String[] titles = titleLine.split(",");
+
             while ((thisLine = br.readLine()) != null) {
                 String[] line = thisLine.split(",");
-                ArrayList<Pair<Double, Double>> temp = new ArrayList<>();
-                int tws = Integer.parseInt(line[0]);
-                TWS.add(tws);
+                int TWS = Integer.parseInt(line[0]);
+                Polars tempPolar = new Polars(TWS);
                 for(int i = 1; i < line.length; i+=2){
                     double x = Double.parseDouble(line[i]);
                     double y = Double.parseDouble(line[i+1]);
-                    Pair<Double,Double> pair = new Pair<>(x,y);
-                    temp.add(pair);
+                    if(titles[i].equals("UpTwa")){
+                        tempPolar.setUpWindOptimum(new Pair<>(x,y));
+                    } else if(titles[i].equals("DnTwa")){
+                        tempPolar.setDownWindOptimum(new Pair<>(x,y));
+                    } else {
+                        tempPolar.addTWAandBSP(x,y);
+                    }
                 }
-                polars.add(temp);
+                polars.add(tempPolar);
 
             }
         } catch(Exception e) {
             e.printStackTrace();
         }
-    }
+    }}
 
 }
 
