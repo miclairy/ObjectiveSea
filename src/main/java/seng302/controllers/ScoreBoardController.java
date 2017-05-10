@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
+import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -112,6 +113,8 @@ public class ScoreBoardController {
         chtSparkLine.getXAxis().setTickLabelsVisible(false);
         chtSparkLine.getXAxis().setTickLength(0);
         chtSparkLine.getYAxis().setTickLength(0);
+
+        //Node line = chtSparkLine.lookup(".chart-series-line.series4");
     }
 
     public boolean isSpeedSelected(){return chkSpeed.isSelected();}

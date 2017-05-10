@@ -127,7 +127,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             raceView.assignColor(displayBoat);
             displayBoats.add(displayBoat);
             drawBoat(displayBoat);
-            scoreBoardController.addBoatToSparkLine(displayBoat.getBoat().getSeries());
+            scoreBoardController.addBoatToSparkLine(boat.getSeries());
         }
         initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);

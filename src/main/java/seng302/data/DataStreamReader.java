@@ -273,9 +273,10 @@ public class DataStreamReader implements Runnable{
         for  (int k = 0; k < boatSatuses.length; k += 20) {
             int boatID = byteArrayRangeToInt(boatSatuses, 0 + k, 4 + k);
             long estimatedTimeAtMark = byteArrayRangeToLong(boatSatuses, 8 + k, 14 + k);
+            int legNumber = byteArrayRangeToInt(boatSatuses, 5 + k, 6 + k);
             Boat boat = race.getBoatById(boatID);
             boat.setTimeTillMark(estimatedTimeAtMark);
-            // System.out.println("Boat ID: " + boatID + " Time to next mark: " + ConvertedTime);
+            boat.setLeg(legNumber);
         }
 
         race.getCourse().updateCourseWindValues(raceCourseWindDirection);

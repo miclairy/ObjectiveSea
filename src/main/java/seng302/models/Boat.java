@@ -25,6 +25,7 @@ public class Boat implements Comparable<Boat>{
     private int finishingPlace;
     private double currentVMGSpeed;
     private int currPlacing;
+    private int leg;
     private Series series;
 
     private Coordinate currentPosition;
@@ -71,7 +72,6 @@ public class Boat implements Comparable<Boat>{
         VMGofBoat = tackingInfo.getKey();
         TWAofBoat = tackingInfo.getValue();
         this.series = new Series();
-        series.getData().add(new Data(0, 0));
     }
 
     /**
@@ -512,4 +512,8 @@ public class Boat implements Comparable<Boat>{
     public void setTimeTillFinish(long timeTillFinish) {
         this.timeTillFinish = timeTillFinish;
     }
+
+    public void setLeg(int leg){this.leg = leg;}
+
+    public int getLeg(){return leg;}
 }
