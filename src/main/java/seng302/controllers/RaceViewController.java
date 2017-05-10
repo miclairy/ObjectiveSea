@@ -74,6 +74,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         drawCourse();
+        initBoatDeslectEvents();
     }
 
     @Override
@@ -187,6 +188,26 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     /**
+     * adds Event handlers to areas of the course than don't contain boat, so deselct of boat
+     * can be detetced
+     */
+    private void initBoatDeslectEvents(){
+        boundary.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            for(BoatDisplay boat : displayBoats){
+                boat.focus();
+                scoreBoardController.btnTrack.setVisible(false);
+            }
+        });
+
+        controller.mapImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            for(BoatDisplay boat : displayBoats){
+                boat.focus();
+                scoreBoardController.btnTrack.setVisible(false);
+            }
+        });
+    }
+
+    /**
      * Draws both the start end and the finish line
      */
     private void drawRaceLines() {
@@ -230,13 +251,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         boundary = raceView.createCourseBoundary(race.getCourse().getBoundary());
         root.getChildren().add(boundary);
         boundary.toBack();
-
-        boundary.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> { // to detect if user deselects boat
-            for(BoatDisplay boat : displayBoats){
-                boat.focus();
-                scoreBoardController.btnTrack.setVisible(false);
-            }
-        });
     }
 
     /**
@@ -248,13 +262,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         controller.mapImageView.setImage(image);
         controller.mapImageView.toBack();
         resizeMap();
-
-        controller.mapImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> { //to detect if user deselects boat
-            for(BoatDisplay boat : displayBoats){
-                boat.focus();
-                scoreBoardController.btnTrack.setVisible(false);
-            }
-        });
     }
 
     /**
