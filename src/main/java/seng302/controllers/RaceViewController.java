@@ -1,6 +1,7 @@
 package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
+import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -492,6 +493,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if (course == race.getCourse()){
             courseNeedsRedraw = true;
         }
+    }
+
+    @FXML
+    /**
+     *  Going to be used to toggle the zoom level of the map (currently only two levels will exist, on or off).
+     */
+    public void zoomToggle(boolean zoomed){
+        System.out.println(zoomed);
     }
 
     public boolean hasInitializedBoats() {
