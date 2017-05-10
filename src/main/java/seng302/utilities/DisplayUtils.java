@@ -16,11 +16,13 @@ public class DisplayUtils {
     public static Coordinate max, min;
     public static String GOOGLE_API_KEY = "AIzaSyAQ8WSXVS1gXdhy5v9IpjeQL842wsMU1VQ";
 
-    public static float zoomLevel = 1;
+    public static double zoomLevel = 1;
     private static int prevDragX=0;
     private static int prevDragY=0;
     private static int offsetX=0;
     private static int offsetY=0;
+    private static int zoomCenterOffsetX=0;
+    private static int zoomCenterOffsetY=0;
 
     /**
      * Takes the given lat and lon and returns a x,y coordinate scaled to the canvas size
@@ -54,10 +56,28 @@ public class DisplayUtils {
         xCoord += offsetX;
         yCoord += offsetY;
 
+        xCoord += zoomCenterOffsetX;
+        yCoord += zoomCenterOffsetY;
+
         CanvasCoordinate point = new CanvasCoordinate(xCoord, yCoord);
         return point;
     }
 
+
+    public static void setZoomLevel(double zoomLevel) {
+
+        double deltaZoom = DisplayUtils.zoomLevel- zoomLevel;
+        double canvasY = Controller.getCanvasHeight()/2;
+        double canvasX = Controller.getCanvasWidth()/2;
+
+        zoomCenterOffsetX += (int) (canvasX*deltaZoom);
+        zoomCenterOffsetY += (int) (canvasY*deltaZoom);
+
+        System.out.println(zoomCenterOffsetX + ", "+ zoomCenterOffsetY);
+
+        DisplayUtils.zoomLevel = zoomLevel;
+
+    }
 
     public static void dragDisplay(int mouseLocationX, int mouseLocationY){
         if(abs(mouseLocationX - prevDragX) < 10 ||

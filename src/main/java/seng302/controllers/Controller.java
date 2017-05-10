@@ -42,6 +42,7 @@ public class Controller implements Initializable, Observer {
     @FXML private Label startersOverlayTitle;
     @FXML private ImageView windDirectionImage;
     @FXML public ImageView mapImageView;
+    @FXML private Slider zoomSlider;
 
 
     //number of from right edge of canvas that the wind arrow will be drawn
@@ -118,8 +119,22 @@ public class Controller implements Initializable, Observer {
             }
         });
 
+        zoomSlider.valueProperty().addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue arg0, Object arg1, Object arg2) {
+                System.out.println("dragging");
+                DisplayUtils.setZoomLevel(zoomSlider.getValue());
+
+                raceViewController.redrawCourse();
+                raceViewController.moveWindArrow();
+                raceViewController.redrawBoatPaths();
+            }
+        });
+
 
     }
+
 
     /**
      * Creates the change in width and height listeners to redraw course objects

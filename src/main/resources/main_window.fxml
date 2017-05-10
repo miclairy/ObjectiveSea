@@ -58,11 +58,12 @@
                         </ImageView>
                         <Canvas fx:id="canvas" height="400.0" width="298.0" />
                         <Label fx:id="fpsLabel" alignment="CENTER" centerShape="false" contentDisplay="BOTTOM" layoutX="4.0" layoutY="4.0" prefHeight="36.0" prefWidth="64.0" textAlignment="CENTER" />
-                  <Button layoutX="17.0" layoutY="107.0" mnemonicParsing="false" onAction="#mapZoomedOut" text="-" />
+                  <Button layoutX="17.0" layoutY="117.0" mnemonicParsing="false" onAction="#mapZoomedOut" text="-" />
                     </children>
                 </Group>
             <ImageView fx:id="mapImageView1" fitHeight="88.0" fitWidth="100.0" layoutX="10.0" layoutY="10.0" pickOnBounds="true" />
             <Button layoutX="14.0" layoutY="76.0" mnemonicParsing="false" onAction="#mapZoomed" text="+" />
+            <Slider fx:id="zoomSlider" blockIncrement="0.05" layoutX="21.0" layoutY="152.0" majorTickUnit="0.1" max="5.0" min="1.0" minorTickCount="1" orientation="VERTICAL" prefHeight="417.0" prefWidth="0.0" value="1.0" />
             </children></AnchorPane>
         <AnchorPane fx:id="rightHandSide" minWidth="440">
             <children>
