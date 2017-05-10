@@ -228,35 +228,6 @@ public class BoatTest
 //    }
 //
 //
-    @Test
-    public void pointBetweenTwoAngleTest(){
-        //if TWD is 0, then if a boat bearing is between 270 and 90 it should be true
-        Assert.assertTrue(boat.pointBetweenTwoAngle(0,90,271));
-        Assert.assertTrue(boat.pointBetweenTwoAngle(0,90,0));
-        Assert.assertTrue(boat.pointBetweenTwoAngle(0,90,89));
-        Assert.assertFalse(boat.pointBetweenTwoAngle(0,90,269));
-        Assert.assertFalse(boat.pointBetweenTwoAngle(0,90,180));
-        Assert.assertFalse(boat.pointBetweenTwoAngle(0,90,91));
-        //if TWD is 20, then if a boat bearing is between 290 and 110 it should be true
-        Assert.assertTrue(boat.pointBetweenTwoAngle(20,90,291));
-        Assert.assertTrue(boat.pointBetweenTwoAngle(20,90,10));
-        Assert.assertTrue(boat.pointBetweenTwoAngle(20,90,109));
-        Assert.assertFalse(boat.pointBetweenTwoAngle(20,90,289));
-        Assert.assertFalse(boat.pointBetweenTwoAngle(20,90,180));
-        Assert.assertFalse(boat.pointBetweenTwoAngle(20,90,111));
-        //if TWD is 0 and the boat bearing is 341 and TWA is 20
-        Assert.assertTrue(boat.pointBetweenTwoAngle(0,20,341));
-        Assert.assertTrue(boat.pointBetweenTwoAngle(0,20,0));
-        Assert.assertTrue(boat.pointBetweenTwoAngle(0,20,19));
-        Assert.assertFalse(boat.pointBetweenTwoAngle(0,20,21));
-        Assert.assertFalse(boat.pointBetweenTwoAngle(0,20,339));
-        Assert.assertFalse(boat.pointBetweenTwoAngle(0,20,180));
-        //if TWD is 280 and boat bearing is 271 and TWA is 30
-        Assert.assertTrue(boat.pointBetweenTwoAngle(280,30,271));
-        Assert.assertTrue(boat.pointBetweenTwoAngle(280,30,300));
-        Assert.assertFalse(boat.pointBetweenTwoAngle(280, 30, 0));
-        Assert.assertFalse(boat.pointBetweenTwoAngle(280, 30, 249));
 
-    }
 
 }
