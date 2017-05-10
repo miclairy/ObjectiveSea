@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -12,6 +13,7 @@ import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.effect.MotionBlur;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
@@ -40,6 +42,7 @@ public class Controller implements Initializable, Observer {
     @FXML private Label startersOverlayTitle;
     @FXML private ImageView windDirectionImage;
     @FXML public ImageView mapImageView;
+
 
     //number of from right edge of canvas that the wind arrow will be drawn
     private final int WIND_ARROW_OFFSET = 60;
@@ -103,6 +106,19 @@ public class Controller implements Initializable, Observer {
         raceViewController.start();
 
 
+        canvasAnchor.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                System.out.println(event.getX()+ ", " + event.getY() );
+                DisplayUtils.dragDisplay((int)event.getX(),(int) event.getY());
+
+                raceViewController.redrawCourse();
+                raceViewController.moveWindArrow();
+                raceViewController.redrawBoatPaths();
+            }
+        });
+
+
     }
 
     /**
@@ -159,6 +175,24 @@ public class Controller implements Initializable, Observer {
             raceViewController.moveWindArrow();
             raceViewController.redrawBoatPaths();
         });
+
+    }
+
+    @FXML private void mapZoomed( ){
+        DisplayUtils.zoomLevel+= 0.1;
+
+        raceViewController.redrawCourse();
+        raceViewController.moveWindArrow();
+        raceViewController.redrawBoatPaths();
+
+    }
+    @FXML private void mapZoomedOut( ){
+        DisplayUtils.zoomLevel-= 0.1;
+
+
+        raceViewController.redrawCourse();
+        raceViewController.moveWindArrow();
+        raceViewController.redrawBoatPaths();
 
     }
 
@@ -339,9 +373,5 @@ public class Controller implements Initializable, Observer {
 
     public static double getAnchorWidth() {
         return anchorWidth;
-    }
-
-    public  AnchorPane getCanvasAnchor() {
-        return canvasAnchor;
     }
 }

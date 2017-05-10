@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.canvas.Canvas?>
@@ -12,7 +20,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<SplitPane dividerPositions="0.99" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.Controller">
+<SplitPane dividerPositions="0.99" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.Controller">
     <items>
         <AnchorPane fx:id="canvasAnchor" minHeight="200.0" minWidth="200.0" prefHeight="160.0" prefWidth="Infinity" style="-fx-background-color: #aae7df;">
             <children>
@@ -50,9 +58,11 @@
                         </ImageView>
                         <Canvas fx:id="canvas" height="400.0" width="298.0" />
                         <Label fx:id="fpsLabel" alignment="CENTER" centerShape="false" contentDisplay="BOTTOM" layoutX="4.0" layoutY="4.0" prefHeight="36.0" prefWidth="64.0" textAlignment="CENTER" />
+                  <Button layoutX="17.0" layoutY="107.0" mnemonicParsing="false" onAction="#mapZoomedOut" text="-" />
                     </children>
                 </Group>
             <ImageView fx:id="mapImageView1" fitHeight="88.0" fitWidth="100.0" layoutX="10.0" layoutY="10.0" pickOnBounds="true" />
+            <Button layoutX="14.0" layoutY="76.0" mnemonicParsing="false" onAction="#mapZoomed" text="+" />
             </children></AnchorPane>
         <AnchorPane fx:id="rightHandSide" minWidth="440">
             <children>

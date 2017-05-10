@@ -43,6 +43,7 @@ public class MockStream implements Runnable {
      * @throws IOException
      */
     private void initialize() throws IOException  {
+
         ServerSocket server = new ServerSocket(port);
         xmlSequenceNumber.put(REGATTA_XML_MESSAGE, 0);
         xmlSequenceNumber.put(RACE_XML_MESSAGE, 0);

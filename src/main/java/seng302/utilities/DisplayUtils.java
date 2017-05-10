@@ -4,6 +4,8 @@ import seng302.controllers.Controller;
 import seng302.models.CanvasCoordinate;
 import seng302.models.Coordinate;
 
+import static java.lang.Math.abs;
+
 
 /**
  * Utils class used to calculated x y from lat lon and check bounds of the canvas.
@@ -13,6 +15,12 @@ public class DisplayUtils {
 
     public static Coordinate max, min;
     public static String GOOGLE_API_KEY = "AIzaSyAQ8WSXVS1gXdhy5v9IpjeQL842wsMU1VQ";
+
+    public static float zoomLevel = 1;
+    private static int prevDragX=0;
+    private static int prevDragY=0;
+    private static int offsetX=0;
+    private static int offsetY=0;
 
     /**
      * Takes the given lat and lon and returns a x,y coordinate scaled to the canvas size
@@ -40,9 +48,35 @@ public class DisplayUtils {
         int xCoord = (int) ((canvasX - changeInLon * xPerLon) / 2 + (lon - min.getLon()) * xPerLon);
         int yCoord = (int) (canvasY - ((canvasY - changeInLat * yPerLat) / 2 + (lat - min.getLat()) * yPerLat));
 
+        xCoord *= zoomLevel;
+        yCoord *= zoomLevel;
+
+        xCoord += offsetX;
+        yCoord += offsetY;
+
         CanvasCoordinate point = new CanvasCoordinate(xCoord, yCoord);
         return point;
     }
+
+
+    public static void dragDisplay(int mouseLocationX, int mouseLocationY){
+        if(abs(mouseLocationX - prevDragX) < 10 ||
+                abs(mouseLocationY - prevDragY) < 10){
+
+            offsetX += (mouseLocationX-prevDragX);
+            offsetY += (mouseLocationY-prevDragY);
+
+            System.out.println(offsetX+ " offset "+ offsetY);
+
+
+        }
+        prevDragX = mouseLocationX;
+        prevDragY  = mouseLocationY;
+
+    }
+
+
+
 
     /**
      * generates Static Google Maps image url withing the current bounds of the course on screen
