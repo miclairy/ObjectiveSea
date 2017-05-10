@@ -7,6 +7,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.util.StringConverter;
+import seng302.utilities.DisplayUtils;
+import seng302.views.BoatDisplay;
 
 /**
  * Created by Louis on 20-Apr-17.
@@ -77,6 +79,18 @@ public class ScoreBoardController {
         parent.fpsLabel(fpsToggle.isSelected());
     }
 
+    @FXML
+    private void btnTrackPressed(){
+        BoatDisplay selectedBoat = raceViewController.getSelectedBoat();
+        if(selectedBoat != null){
+            DisplayUtils.zoomOnPoint(selectedBoat.getBoat().getCurrentPosition());
+            raceViewController.redrawCourse();
+            raceViewController.moveWindArrow();
+            raceViewController.redrawBoatPaths();
+        }
+
+    }
+
     /**
      * Set up a listener for the annotation slider so that we can keep the annotations on the boats up to date with
      * the user's selection
@@ -94,4 +108,7 @@ public class ScoreBoardController {
     public boolean isEstSelected(){return chkEst.isSelected();}
 
     public boolean isTimePassedSelected(){return chkPassMarkTime.isSelected();}
+
+
+
 }

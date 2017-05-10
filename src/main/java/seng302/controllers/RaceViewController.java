@@ -61,6 +61,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean courseNeedsRedraw = false;
     private boolean initializedBoats = false;
     private ImageCursor cursor = new ImageCursor(new Image("graphics/boat-select-cursor.png"), 7, 7);
+    private BoatDisplay selectedBoat =null;
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
         this.root = root;
@@ -136,7 +137,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void addBoatSelectionHandler(BoatDisplay boat){
         Shape boatImage = boat.getIcon();
         boatImage.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            setBoatFocus(boat);
+            selectedBoat = boat;
+            setBoatFocus();
         });
 
         boatImage.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
@@ -224,15 +226,29 @@ public class RaceViewController extends AnimationTimer implements Observer {
             Circle circle = raceView.createMark(mark.getPosition());
             root.getChildren().add(circle);
             mark.setIcon(circle);
-            addMarkSelectionHandlers(circle);
+            addMarkSelectionHandlers(mark);
         }
     }
 
     /**
      * adds event handler to marks so we can detet if selected by the user
-     * @param circle
+     * @param mark
      */
-    private void addMarkSelectionHandlers(Circle circle){
+    private void addMarkSelectionHandlers(Mark mark){
+
+        Circle circle = mark.getIcon();
+
+        circle.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            //TODO add action on mark click
+
+            DisplayUtils.zoomOnPoint(mark.getPosition());
+            redrawCourse();
+            moveWindArrow();
+            redrawBoatPaths();
+
+
+        });
+
         circle.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
             root.setCursor(cursor);
         });
@@ -534,16 +550,19 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
-    private void setBoatFocus(BoatDisplay selectedBoat){
-        scoreBoardController.btnTrack.setVisible(true);
-        selectedBoat.getIcon().toFront();
-        for(BoatDisplay boat : displayBoats){
-            if(!boat.equals(selectedBoat)){
-                boat.unFocus();
-            }else{
-                boat.focus();
+    private void setBoatFocus(){
+        if(selectedBoat != null){
+            scoreBoardController.btnTrack.setVisible(true);
+            selectedBoat.getIcon().toFront();
+            for(BoatDisplay boat : displayBoats){
+                if(!boat.equals(selectedBoat)){
+                    boat.unFocus();
+                }else{
+                    boat.focus();
+                }
             }
         }
+
     }
 
     public void setCurrentWindArrow(ImageView currentWindArrow) {
@@ -572,5 +591,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public boolean hasInitializedBoats() {
         return initializedBoats;
     }
+
+
+    public BoatDisplay getSelectedBoat() {
+        return selectedBoat;
+    }
+
+
+
 }
 

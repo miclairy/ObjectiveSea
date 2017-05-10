@@ -21,7 +21,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<TabPane fx:id="scoreBoard" prefHeight="413.0" prefWidth="161.0" stylesheets="@style.css" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.ScoreBoardController">
+<TabPane fx:id="scoreBoard" prefHeight="413.0" prefWidth="161.0" stylesheets="@style.css" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.ScoreBoardController">
       <tabs>
          <Tab text="Race Leaderboard">
             <content>
@@ -59,7 +59,7 @@
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                    <Button fx:id="btnTrack" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" text="Track" visible="false" />
+                                    <Button fx:id="btnTrack" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#btnTrackPressed" text="Track" visible="false" />
                                  </children>
                                  <VBox.margin>
                                     <Insets left="20.0" right="20.0" top="10.0" />

@@ -3,6 +3,7 @@ import javafx.scene.Node;
 import seng302.controllers.Controller;
 import seng302.models.CanvasCoordinate;
 import seng302.models.Coordinate;
+import seng302.models.Mark;
 
 import static java.lang.Math.abs;
 
@@ -67,8 +68,8 @@ public class DisplayUtils {
     public static void setZoomLevel(double zoomLevel) {
 
         double deltaZoom = DisplayUtils.zoomLevel- zoomLevel;
-        double canvasY = Controller.getCanvasHeight()/2;
-        double canvasX = Controller.getCanvasWidth()/2;
+        double canvasY = Controller.getAnchorHeight()/2;
+        double canvasX = Controller.getAnchorWidth()/2;
 
         zoomCenterOffsetX += (int) (canvasX*deltaZoom);
         zoomCenterOffsetY += (int) (canvasY*deltaZoom);
@@ -79,9 +80,28 @@ public class DisplayUtils {
 
     }
 
+    public static void zoomOnPoint(Coordinate coordinate ){
+        setZoomLevel(5);
+        CanvasCoordinate location = convertFromLatLon(coordinate.getLat(), coordinate.getLon());
+
+
+        double deltaZoom = DisplayUtils.zoomLevel- 5;
+        double canvasY = location.getY();
+        double canvasX = location.getX();
+
+        zoomCenterOffsetX += (int) (canvasX*deltaZoom);
+        zoomCenterOffsetY += (int) (canvasY*deltaZoom);
+
+        System.out.println(zoomCenterOffsetX + ", "+ zoomCenterOffsetY);
+
+        DisplayUtils.zoomLevel = zoomLevel;
+
+
+    }
+
     public static void dragDisplay(int mouseLocationX, int mouseLocationY){
-        if(abs(mouseLocationX - prevDragX) < 10 ||
-                abs(mouseLocationY - prevDragY) < 10){
+        if(abs(mouseLocationX - prevDragX) < 35 ||
+                abs(mouseLocationY - prevDragY) < 35){
 
             offsetX += (mouseLocationX-prevDragX);
             offsetY += (mouseLocationY-prevDragY);
