@@ -3,6 +3,7 @@ package seng302.controllers;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.util.StringConverter;
@@ -27,9 +28,11 @@ public class ScoreBoardController {
     @FXML private CheckBox chkPassMarkTime;
     @FXML private CheckBox chkEst;
     @FXML private CheckBox zoomToggle;
+    @FXML public Button btnTrack;
 
     // Class Variables
     private boolean zoomed = false;
+
 
     public void setControllers(Controller parent, RaceViewController raceViewController){
         this.parent = parent;
