@@ -6,7 +6,6 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
-import javafx.scene.Node;
 import seng302.models.*;
 
 import java.time.Instant;
@@ -26,6 +25,7 @@ public class BoatDisplay {
     private VBox annotation;
     private Path path;
     private Line annotationLine;
+    private final double FADEDBOAT = 0.3;
 
     private Color color;
 
@@ -107,13 +107,13 @@ public class BoatDisplay {
     }
 
     public void unFocus(){
-        icon.setOpacity(0.3);
+        icon.setOpacity(FADEDBOAT);
         wake.setOpacity(0.15);
         if(path.getElements().size() > 1){
-            path.setOpacity(0.3);
+            path.setOpacity(FADEDBOAT);
         }
-        annotationLine.setOpacity(0.3);
-        annotation.setOpacity(0.3);
+        annotationLine.setOpacity(FADEDBOAT);
+        annotation.setOpacity(FADEDBOAT);
     }
 
     public void focus(){
