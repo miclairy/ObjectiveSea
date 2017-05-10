@@ -29,6 +29,7 @@ public class BoatDisplay {
     private VBox annotation;
     private Path path;
     private Line annotationLine;
+    private final double FADEDBOAT = 0.3;
 
     private Color color;
 
@@ -110,13 +111,13 @@ public class BoatDisplay {
     }
 
     public void unFocus(){
-        icon.setOpacity(0.3);
+        icon.setOpacity(FADEDBOAT);
         wake.setOpacity(0.15);
         if(path.getElements().size() > 1){
-            path.setOpacity(0.3);
+            path.setOpacity(FADEDBOAT);
         }
-        annotationLine.setOpacity(0.3);
-        annotation.setOpacity(0.3);
+        annotationLine.setOpacity(FADEDBOAT);
+        annotation.setOpacity(FADEDBOAT);
     }
 
     public void focus(){

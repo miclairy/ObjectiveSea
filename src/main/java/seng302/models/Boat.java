@@ -184,6 +184,7 @@ public class Boat implements Comparable<Boat>{
                 currentPosition.update(newLat, newLon);
             }
         } else {
+            status = BoatStatus.FINISHED;
             finished = true;
         }
     }
@@ -251,7 +252,7 @@ public class Boat implements Comparable<Boat>{
             }
         }
         if(lastMarkPassed == tackingMarks.size()-1 && nextMark.isFinishLine()){
-            finished = true;
+            status = BoatStatus.FINISHED;
             speed = 0;
         }
         double percentGained = (distanceGained / distanceLeftinTack);
