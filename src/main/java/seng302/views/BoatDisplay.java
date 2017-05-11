@@ -1,5 +1,6 @@
 package seng302.views;
 
+import javafx.animation.ParallelTransition;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -10,6 +11,8 @@ import javafx.scene.shape.Shape;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.Node;
+import javafx.animation.FadeTransition;
+import javafx.util.Duration;
 import seng302.models.*;
 
 import java.time.Instant;
@@ -111,22 +114,56 @@ public class BoatDisplay {
     }
 
     public void unFocus(){
-        icon.setOpacity(FADEDBOAT);
-        wake.setOpacity(0.15);
+        FadeTransition iconTransition = new FadeTransition();
+        iconTransition.setNode(icon);
+        iconTransition.setDuration(new Duration(500));
+        iconTransition.setFromValue(1.0);
+        iconTransition.setToValue(FADEDBOAT);
+
+        FadeTransition wakeTransition = new FadeTransition();
+        wakeTransition.setNode(wake);
+        wakeTransition.setDuration(new Duration(500));
+        wakeTransition.setFromValue(1.0);
+        wakeTransition.setToValue(0.15);
+
+        FadeTransition annoTransition = new FadeTransition();
+        annoTransition.setNode(annotation);
+        annoTransition.setDuration(new Duration(500));
+        annoTransition.setFromValue(1.0);
+        annoTransition.setToValue(FADEDBOAT);
+
+        ParallelTransition allTransitions = new ParallelTransition(iconTransition, wakeTransition, annoTransition);
+        allTransitions.play();
         if(path.getElements().size() > 1){
             path.setOpacity(FADEDBOAT);
         }
         annotationLine.setOpacity(FADEDBOAT);
-        annotation.setOpacity(FADEDBOAT);
     }
 
     public void focus(){
-        icon.setOpacity(1);
-        wake.setOpacity(0.5);
+        FadeTransition iconTransition = new FadeTransition();
+        iconTransition.setNode(icon);
+        iconTransition.setDuration(new Duration(500));
+        iconTransition.setFromValue(icon.getOpacity());
+        iconTransition.setToValue(1.0);
+
+        FadeTransition wakeTransition = new FadeTransition();
+        wakeTransition.setNode(wake);
+        wakeTransition.setDuration(new Duration(500));
+        wakeTransition.setFromValue(wake.getOpacity());
+        wakeTransition.setToValue(0.5);
+
+        FadeTransition annoTransition = new FadeTransition();
+        annoTransition.setNode(annotation);
+        annoTransition.setDuration(new Duration(500));
+        annoTransition.setFromValue(annotation.getOpacity());
+        annoTransition.setToValue(1.0);
+
+        ParallelTransition allTransitions = new ParallelTransition(iconTransition, wakeTransition, annoTransition);
+        allTransitions.play();
         if(path.getElements().size() > 1){
             path.setOpacity(1);
         }
-        annotation.setOpacity(1);
         annotationLine.setOpacity(1);
     }
 }

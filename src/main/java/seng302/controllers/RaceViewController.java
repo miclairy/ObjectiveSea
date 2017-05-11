@@ -1,6 +1,7 @@
 package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
+import javafx.collections.ObservableList;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.ImageCursor;
@@ -19,7 +20,6 @@ import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import seng302.data.BoatStatus;
-import seng302.data.RaceStatus;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.TimeUtils;
 import seng302.models.*;
@@ -418,11 +418,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param point where the boat display should be moved to
      */
     private void moveBoat(BoatDisplay boat, CanvasCoordinate point){
-        boat.getIcon().setTranslateY(point.getY());
-        boat.getIcon().setTranslateX(point.getX());
-        boat.getIcon().getTransforms().clear();
-        boat.getIcon().getTransforms().add(new Rotate(boat.getBoat().getHeading()));
-        boat.getIcon().toFront();
+        Shape icon = boat.getIcon();
+        icon.setTranslateY(point.getY());
+        icon.setTranslateX(point.getX());
+        icon.getTransforms().clear();
+        icon.getTransforms().add(new Rotate(boat.getBoat().getHeading()));
+        icon.toFront();
     }
 
     /**
@@ -439,11 +440,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void moveWake(BoatDisplay boat, CanvasCoordinate point){
         double scale = boat.getBoat().getSpeed() / WAKE_SCALE_FACTOR;
-        boat.getWake().getTransforms().clear();
-        boat.getWake().getTransforms().add(new Scale(scale, scale,0, 0));
-        boat.getWake().setTranslateY(point.getY());
-        boat.getWake().setTranslateX(point.getX());
-        boat.getWake().getTransforms().add(new Rotate(boat.getBoat().getHeading(), 0, 0));
+        Shape wake = boat.getWake();
+        wake.getTransforms().clear();
+        wake.getTransforms().add(new Scale(scale, scale,0, 0));
+        wake.setTranslateY(point.getY());
+        wake.setTranslateX(point.getX());
+        wake.getTransforms().add(new Rotate(boat.getBoat().getHeading(), 0, 0));
     }
 
     /**
@@ -483,10 +485,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void redrawMarks(){
         for (Mark mark : race.getCourse().getAllMarks().values()){
             CanvasCoordinate convertedPoint = DisplayUtils.convertFromLatLon(mark.getPosition());
-            mark.getIcon().toFront();
-            mark.getIcon().setCenterX(convertedPoint.getX());
-            mark.getIcon().setCenterY(convertedPoint.getY());
-            mark.getIcon().toBack();
+            Circle icon = mark.getIcon();
+            icon.toFront();
+            icon.setCenterX(convertedPoint.getX());
+            icon.setCenterY(convertedPoint.getY());
+            icon.toBack();
         }
     }
 
@@ -494,11 +497,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * Redraws the boundary at the correct scale and position after a window resize
      */
     private void redrawBoundary(){
-        boundary.getPoints().clear();
+        ObservableList<Double> points = boundary.getPoints();
+        points.clear();
         for(Coordinate coord : race.getCourse().getBoundary()){
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(coord);
-            boundary.getPoints().add(point.getX());
-            boundary.getPoints().add(point.getY());
+            points.add(point.getX());
+            points.add(point.getY());
         }
         boundary.toBack();
     }
@@ -509,17 +513,18 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     public void redrawBoatPaths(){
         for(BoatDisplay boatDisplay : displayBoats){
+            Path path = boatDisplay.getPath();
             Boat boat = boatDisplay.getBoat();
             if(race.getRaceStatus() == STARTED && !boat.isFinished()) {
                 if (boat.getPathCoords().size() > 0) {
                     CanvasCoordinate pathStart = DisplayUtils.convertFromLatLon(boat.getPathCoords().get(0));
-                    boatDisplay.getPath().getElements().clear();
-                    boatDisplay.getPath().getElements().add(new MoveTo(pathStart.getX(), pathStart.getY()));
+                    path.getElements().clear();
+                    path.getElements().add(new MoveTo(pathStart.getX(), pathStart.getY()));
                     for (Coordinate coord : boat.getPathCoords()) {
                         CanvasCoordinate currPoint = DisplayUtils.convertFromLatLon(coord);
-                        boatDisplay.getPath().getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
+                        path.getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
                     }
-                    boatDisplay.getPath().toBack();
+                    path.toBack();
                 }
             }
         }
@@ -531,7 +536,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param point The position of the boat on screen
      */
     public void addToBoatPath(BoatDisplay boatDisplay, CanvasCoordinate point){
-
         if(boatDisplay.getPath() != null && boatDisplay.getBoat().getStatus() != BoatStatus.FINISHED){
             boatDisplay.getPath().getElements().add(new LineTo(point.getX(), point.getY()));
             boatDisplay.getPath().toBack();
