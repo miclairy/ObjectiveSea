@@ -60,6 +60,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private final int WIND_ARROW_OFFSET = 60;
     private boolean courseNeedsRedraw = false;
     private boolean initializedBoats = false;
+    private BoatDisplay selectedBoat;
     private ImageCursor cursor = new ImageCursor(new Image("graphics/boat-select-cursor.png"), 7, 7);
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
@@ -105,7 +106,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             moveWake(boat, point);
             if(race.getRaceStatus() == STARTED) {
                 addToBoatPath(boat, point);
-                //temporary code
+            }
+            if (boat == selectedBoat){
                 drawLayLine(boat);
             }
             moveBoatAnnotation(boat.getAnnotation(), point);
@@ -138,7 +140,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void addBoatSelectionHandler(BoatDisplay boat){
         Shape boatImage = boat.getIcon();
         boatImage.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            setBoatFocus(boat);
+            selectedBoat = boat;
+            setBoatFocus();
         });
 
         boatImage.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
@@ -196,18 +199,21 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void addDeselectEvents(){
         boundary.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            for(BoatDisplay boat : displayBoats){
-                boat.focus();
-                scoreBoardController.btnTrack.setVisible(false);
-            }
+            deselectBoat();
         });
 
         controller.mapImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            for(BoatDisplay boat : displayBoats){
-                boat.focus();
-                scoreBoardController.btnTrack.setVisible(false);
-            }
+            deselectBoat();
         });
+    }
+
+    private void deselectBoat() {
+        for(BoatDisplay boat : displayBoats){
+            boat.focus();
+            scoreBoardController.btnTrack.setVisible(false);
+            boat.removeLaylines(root);
+            selectedBoat = null;
+        }
     }
 
     /**
@@ -417,6 +423,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     //TODO create function that chooses closest mark to draw laylines from
     private void drawLayLine(BoatDisplay boat){
         if (boat.getBoat().getLastRoundedMarkIndex() < race.getCourse().getCourseOrder().size() - 1) {
+            boat.removeLaylines(root);
             CompoundMark mark = race.getCourse().getCourseOrder().get(boat.getBoat().getLastRoundedMarkIndex() + 1);
             Pair<Double, Double> bearing = boat.getBoat().calculateLaylineHeading(race.getCourse().getTrueWindDirection());
             Pair<Line, Line> laylines = raceView.createLayLines(bearing, mark, boat);
@@ -429,6 +436,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             layline2.toBack();
         }
     }
+
 
     /**
      * Update a boat icon's position on screen, translating to the input point
@@ -556,14 +564,16 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
-    private void setBoatFocus(BoatDisplay selectedBoat){
+    private void setBoatFocus(){
         scoreBoardController.btnTrack.setVisible(true);
         selectedBoat.getIcon().toFront();
         for(BoatDisplay boat : displayBoats){
             if(!boat.equals(selectedBoat)){
                 boat.unFocus();
+                boat.removeLaylines(root);
             }else{
                 boat.focus();
+                drawLayLine(boat);
             }
         }
     }

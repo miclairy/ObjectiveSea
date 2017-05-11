@@ -1,5 +1,6 @@
 package seng302.views;
 
+import javafx.scene.Group;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
@@ -132,8 +133,12 @@ public class BoatDisplay {
         this.layLines = laylines;
     }
 
-    public Pair<Line, Line> getLayLines() {
-        return layLines;
+    public void removeLaylines(Group root) {
+        if (layLines != null) {
+            root.getChildren().remove(layLines.getKey());
+            root.getChildren().remove(layLines.getValue());
+        }
+        layLines = null;
     }
 }
 

@@ -630,7 +630,7 @@ public class Boat implements Comparable<Boat>{
         if (isTacking){
             return tackTWAofBoat;
         } else {
-            return gybeTWAofBoat * -180;
+            return gybeTWAofBoat;
         }
 
     }
