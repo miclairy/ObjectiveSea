@@ -240,13 +240,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         circle.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             //TODO add action on mark click
-
-            DisplayUtils.zoomOnPoint(mark.getPosition());
+            controller.setZoomSliderValue(5);
+            DisplayUtils.moveToPoint(mark.getPosition());
             redrawCourse();
             moveWindArrow();
             redrawBoatPaths();
-
-
         });
 
         circle.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {

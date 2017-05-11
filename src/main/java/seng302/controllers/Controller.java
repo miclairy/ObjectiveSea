@@ -1,5 +1,6 @@
 package seng302.controllers;
 
+import javafx.animation.FadeTransition;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -18,6 +19,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.util.Duration;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -110,7 +112,7 @@ public class Controller implements Initializable, Observer {
         canvasAnchor.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                System.out.println(event.getX()+ ", " + event.getY() );
+                System.out.println(Controller.getAnchorHeight() + ", " + Controller.getAnchorWidth());
                 DisplayUtils.dragDisplay((int)event.getX(),(int) event.getY());
 
                 raceViewController.redrawCourse();
@@ -123,7 +125,7 @@ public class Controller implements Initializable, Observer {
 
             @Override
             public void changed(ObservableValue arg0, Object arg1, Object arg2) {
-                System.out.println("dragging");
+                zoomSlider.setOpacity(0.8);
                 DisplayUtils.setZoomLevel(zoomSlider.getValue());
 
                 raceViewController.redrawCourse();
@@ -388,5 +390,27 @@ public class Controller implements Initializable, Observer {
 
     public static double getAnchorWidth() {
         return anchorWidth;
+    }
+
+    public void setZoomSliderValue(int level){
+        zoomSlider.setValue(level);
+    }
+
+    @FXML private void zoomCursorHover(){
+        FadeTransition fadeTransition = new FadeTransition();
+        fadeTransition.setNode(zoomSlider);
+        fadeTransition.setFromValue(zoomSlider.getOpacity());
+        fadeTransition.setToValue(0.8);
+        fadeTransition.setDuration(new Duration(500));
+        fadeTransition.play();
+    }
+
+    @FXML private void zoomCursorExitHover(){
+        FadeTransition fadeTransition = new FadeTransition();
+        fadeTransition.setNode(zoomSlider);
+        fadeTransition.setFromValue(zoomSlider.getOpacity());
+        fadeTransition.setToValue(0.4);
+        fadeTransition.setDuration(new Duration(500));
+        fadeTransition.play();
     }
 }
