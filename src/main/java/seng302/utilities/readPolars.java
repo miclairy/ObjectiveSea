@@ -43,8 +43,8 @@ public class readPolars {
                 int TWS = Integer.parseInt(line[0]);
                 Polars tempPolar = new Polars(TWS);
                 for(int i = 1; i < line.length; i+=2){
-                    double x = Double.parseDouble(line[i]);
-                    double y = Double.parseDouble(line[i+1]);
+                    double x = Double.parseDouble(line[i]); //angle
+                    double y = Double.parseDouble(line[i+1]); //speed
                     if(titles[i].equals("UpTwa")){
                         tempPolar.setUpWindOptimum(new Pair<>(x,y));
                     } else if(titles[i].equals("DnTwa")){

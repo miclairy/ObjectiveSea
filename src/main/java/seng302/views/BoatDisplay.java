@@ -109,6 +109,14 @@ public class BoatDisplay {
         return timeTillMark;
     }
 
+    public void setLaylines(Pair<Line, Line> laylines) {
+        this.layLines = laylines;
+    }
+
+    public Pair<Line, Line> getLayLines() {
+        return layLines;
+    }
+
     public void unFocus(){
         icon.setOpacity(FADEDBOAT);
         wake.setOpacity(0.15);
@@ -127,10 +135,6 @@ public class BoatDisplay {
         }
         annotation.setOpacity(1);
         annotationLine.setOpacity(1);
-    }
-
-    public void setLaylines(Pair<Line, Line> laylines) {
-        this.layLines = laylines;
     }
 
     public void removeLaylines(Group root) {

@@ -88,7 +88,7 @@ public class Race extends Observable{
             Boat boat = boatIdMap.get(sourceID);
             boat.setPosition(lat, lon);
             boat.setHeading(heading);
-            boat.setSpeed(speed);
+            boat.setCurrentSpeed(speed);
             boat.setTWAofBoat(twa);
         } else{
             System.err.println("Boat source ID not found");
