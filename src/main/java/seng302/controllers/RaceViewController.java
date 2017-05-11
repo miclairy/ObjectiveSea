@@ -103,6 +103,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
             moveBoat(boat, point);
             moveWake(boat, point);
+            moveSOGVector(boat, point);
             if(race.getRaceStatus() == STARTED) {
                 addToBoatPath(boat, point);
             }
@@ -138,6 +139,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         root.getChildren().add(boatImage);
         boat.setIcon(boatImage);
         drawBoatWake(boat);
+        drawSOGVector(boat);
     }
 
     public void initBoatPaths(){
@@ -354,6 +356,23 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     /**
+     * Draws Initial SOGVector of boat
+     * @param boat to attach the vector to
+     */
+    private void drawSOGVector(BoatDisplay boat){
+        Line line = raceView.createSOGVector(boat.getBoat().getCurrentPosition(),0.2, boat.getBoat().getHeading());
+        root.getChildren().add(line);
+        boat.setSOGVector(line);
+    }
+
+    private void moveSOGVector(BoatDisplay boat, CanvasCoordinate point){
+        root.getChildren().remove(boat.getSOGVector());
+        Line line = raceView.createSOGVector(boat.getBoat().getCurrentPosition(),0.2, boat.getBoat().getHeading());
+        root.getChildren().add(line);
+        boat.setSOGVector(line);
+    }
+
+    /**
      * Update a boat icon's position on screen, translating to the input point
      * @param boat the BoatDisplay to be moved
      * @param point where the boat display should be moved to
@@ -386,6 +405,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         boat.getWake().setTranslateX(point.getX());
         boat.getWake().getTransforms().add(new Rotate(boat.getBoat().getHeading(), 0, 0));
     }
+
 
     /**
      * Handles redrawing of the course at the correct scale and position after a window resize

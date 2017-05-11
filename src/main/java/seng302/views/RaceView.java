@@ -106,6 +106,26 @@ public class RaceView {
     }
 
     /**
+     * Creates a vector extending from the boat with length proportional to it's speed over ground
+     * @param BoatsPosition the current position of the boat
+     * @param lengthOfVector the length of the vector (in terms of Nautical Miles)
+     * @param boatBearing the bearing of the boat
+     * @return a line extending from the boat
+     */
+    public Line createSOGVector(Coordinate BoatsPosition, double lengthOfVector, double boatBearing){
+        Coordinate end2 = BoatsPosition.coordAt(lengthOfVector, boatBearing);
+        CanvasCoordinate convertedEnd1 = DisplayUtils.convertFromLatLon(BoatsPosition);
+        CanvasCoordinate convertedEnd2 = DisplayUtils.convertFromLatLon(end2);
+        Line line = new Line(
+                convertedEnd1.getX(), convertedEnd1.getY(),
+                convertedEnd2.getX(), convertedEnd2.getY()
+        );
+        line.setStroke(Color.web("#70aaa2"));
+        return line;
+
+    }
+
+    /**
      * Assigns a color to a BoatDisplay to be used when drawing things for that boat
      * @param boat the boat to assign a color to
      */

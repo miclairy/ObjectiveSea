@@ -25,6 +25,7 @@ public class BoatDisplay {
     private VBox annotation;
     private Path path;
     private Line annotationLine;
+    private Line SOGVector;
 
     private Color color;
 
@@ -45,6 +46,14 @@ public class BoatDisplay {
 
     public Polyline getWake() {
         return wake;
+    }
+
+    public Line getSOGVector() {
+        return SOGVector;
+    }
+
+    public void setSOGVector(Line SOGVector) {
+        this.SOGVector = SOGVector;
     }
 
     public void setIcon(Shape icon) {
