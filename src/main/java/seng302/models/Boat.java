@@ -8,7 +8,6 @@ import seng302.utilities.readPolars;
 import seng302.data.BoatStatus;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Class to encapsulate properties associated with a boat.
@@ -38,12 +37,14 @@ public class Boat implements Comparable<Boat>{
 
     private ArrayList<Coordinate> pathCoords;
     private double VMGofBoat;
-    private double TWAofBoat;
+    private double tackTWAofBoat;
     private double gybeVMGofBoat;
     private double gybeTWAofBoat;
     private long timeTillMark;
     private long timeTillFinish;
     private Integer id;
+
+    private boolean isTacking;
 
     public Boat(Integer id, String name, String nickName, double speed) {
         this.id = id;
@@ -66,8 +67,7 @@ public class Boat implements Comparable<Boat>{
         gybeVMGofBoat = gybingInfo.getKey();
         gybeTWAofBoat = gybingInfo.getValue();
         VMGofBoat = tackingInfo.getKey();
-        TWAofBoat = tackingInfo.getValue();
-
+        tackTWAofBoat = tackingInfo.getValue();
     }
 
     /**
@@ -244,6 +244,7 @@ public class Boat implements Comparable<Boat>{
     }
 
 
+
     /**
      * Compares boat objects based on the index of last mark rounded in race order and if that is equals, compares
      * based on time (lower time first).
@@ -269,9 +270,7 @@ public class Boat implements Comparable<Boat>{
 
     public String getNickName() {return nickName;}
 
-    public double getSpeed() {
-        return this.speed;
-    }
+    public double getSpeed() { return this.speed; }
 
     public int getSpeedInMMS(){
         return (int) (this.speed * KNOTS_TO_MMS_MULTIPLIER);
@@ -346,6 +345,10 @@ public class Boat implements Comparable<Boat>{
         return maxSpeed;
     }
 
+    public void setTWAofBoat(double TWAofBoat) { this.tackTWAofBoat = TWAofBoat; }
+
+    public double getTWAofBoat() { return tackTWAofBoat; }
+
     public double getVMGofBoat() { return VMGofBoat;}
 
     public double getGybeVMGofBoat() {return gybeVMGofBoat;}
@@ -382,8 +385,22 @@ public class Boat implements Comparable<Boat>{
         this.timeTillFinish = timeTillFinish;
     }
 
-    public double calculateLaylineHeading() { //TODO implement me
-        return 145;
+    /**
+     * Returns the layline angles of a boat
+     * @param twd
+     * @return Pair(Double, Double) laylines
+     */
+    public Pair<Double, Double> calculateLaylineHeading(double twd) {
+        boolean upwind = pointBetweenTwoAngle(twd, 90, heading);
+        if (upwind) {
+            double layline1 = (twd - tackTWAofBoat) % 360;
+            double layline2 = (twd + tackTWAofBoat) % 360;
+            return new Pair(layline1, layline2);
+        } else {
+            double layline1 = ((twd + 180) - tackTWAofBoat);
+            double layline2 = ((twd + 180) + tackTWAofBoat);
+            return new Pair(layline1, layline2);
+        }
     }
 
     public void setCurrentVMGSpeed(double currentVMGSpeed) {
@@ -413,4 +430,14 @@ public class Boat implements Comparable<Boat>{
     public int getLastGybeMarkPassed() {
         return lastGybeMarkPassed;
     }
+
+    public double getTrueWindAngle() {
+        if (isTacking){
+            return tackTWAofBoat;
+        } else {
+            return gybeTWAofBoat * -180;
+        }
+
+    }
+
 }

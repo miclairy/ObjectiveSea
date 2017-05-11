@@ -3,7 +3,6 @@ package seng302.models;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -93,7 +92,7 @@ public class RaceTest {
 
     @Test
     public void updateBoatTest(){
-        defaultRace.updateBoat(1, 2.5, 3.2, 178.1, 28.1);
+        defaultRace.updateBoat(1, 2.5, 3.2, 178.1, 28.1, 97);
 
         Boat boat = defaultRace.getBoatById(1);
 
@@ -101,6 +100,7 @@ public class RaceTest {
         Assert.assertEquals(3.2, boat.getCurrentLon(), DELTA);
         Assert.assertEquals(178.1, boat.getHeading(), DELTA);
         Assert.assertEquals(28.1, boat.getSpeed(), DELTA);
+        Assert.assertEquals(97, boat.getTWAofBoat(), DELTA);
     }
 
     @Test

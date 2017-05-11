@@ -6,6 +6,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
+import javafx.util.Pair;
 import seng302.models.*;
 
 import java.time.Instant;
@@ -28,7 +29,7 @@ public class BoatDisplay {
     private final double FADEDBOAT = 0.3;
 
     private Color color;
-    private Line layLine;
+    private Pair<Line, Line> layLines;
 
     public BoatDisplay(Boat boat) {
         this.boat = boat;
@@ -107,12 +108,12 @@ public class BoatDisplay {
         return timeTillMark;
     }
 
-    public void setLayline(Line layline) {
-        this.layLine = layline;
+    public void setLaylines(Pair<Line, Line> laylines) {
+        this.layLines = laylines;
     }
 
-    public Line getLayLine() {
-        return layLine;
+    public Pair<Line, Line> getLayLines() {
+        return layLines;
     }
 
     public void unFocus(){
