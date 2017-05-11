@@ -391,7 +391,7 @@ public class Boat implements Comparable<Boat>{
      * @return Pair(Double, Double) laylines
      */
     public Pair<Double, Double> calculateLaylineHeading(double twd) {
-        boolean upwind = pointBetweenTwoAngle(twd, 90, heading);
+        boolean upwind = MathUtils.pointBetweenTwoAngle(twd, 90, heading);
         if (upwind) {
             double layline1 = (twd - tackTWAofBoat) % 360;
             double layline2 = (twd + tackTWAofBoat) % 360;
@@ -405,10 +405,6 @@ public class Boat implements Comparable<Boat>{
 
     public void setCurrentVMGSpeed(double currentVMGSpeed) {
         this.currentVMGSpeed = currentVMGSpeed;
-    }
-
-    public double getTWAofBoat() {
-        return TWAofBoat;
     }
 
     public double getGybeTWAofBoat() {

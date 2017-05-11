@@ -205,7 +205,8 @@ public class MockRaceRunner implements Runnable {
         if(onTack){
             TrueWindAngle = boat.getTWAofBoat();
         } else {
-            TrueWindAngle = 180 - boat.getGybeTWAofBoat();}
+            TrueWindAngle = 180 - boat.getGybeTWAofBoat();
+        }
 
         CompoundMark nextMark = courseOrder.get(boat.getLastRoundedMarkIndex()+1);
         double lengthOfLeg = courseOrder.get(boat.getLastRoundedMarkIndex()).getPosition().greaterCircleDistance(nextMark.getPosition());
