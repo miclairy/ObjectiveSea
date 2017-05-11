@@ -264,16 +264,16 @@ public class DataStreamReader implements Runnable{
         long expectedStartTime = byteArrayRangeToLong(body, START_TIME.getStartIndex(), START_TIME.getEndIndex());
 
 
-        byte[] boatSatuses = new byte[body.length - 24];
+        byte[] boatStatuses = new byte[body.length - 24];
 
-        for (int i = 24; i < body.length; i++){
-            boatSatuses[i - 24] = body[i];
+        for(int i = 24; i < body.length; i++){
+            boatStatuses[i - 24] = body[i];
         }
 
-        for  (int k = 0; k < boatSatuses.length; k += 20) {
-            int boatID = byteArrayRangeToInt(boatSatuses, 0 + k, 4 + k);
-            long estimatedTimeAtMark = byteArrayRangeToLong(boatSatuses, 8 + k, 14 + k);
-            int legNumber = byteArrayRangeToInt(boatSatuses, 5 + k, 6 + k);
+        for(int k = 0; k < boatStatuses.length; k += 20){
+            int boatID = byteArrayRangeToInt(boatStatuses, k, 4 + k);
+            long estimatedTimeAtMark = byteArrayRangeToLong(boatStatuses, 8 + k, 14 + k);
+            int legNumber = byteArrayRangeToInt(boatStatuses, 5 + k, 6 + k);
             Boat boat = race.getBoatById(boatID);
             boat.setTimeTillMark(estimatedTimeAtMark);
             boat.setLeg(legNumber);

@@ -514,7 +514,12 @@ public class Boat implements Comparable<Boat>{
         this.timeTillFinish = timeTillFinish;
     }
 
-    public void setLeg(int leg){this.leg = leg;}
+    public void setLeg(int leg){
+        if(lastRoundedMarkIndex == -1){
+            lastRoundedMarkIndex = leg - 1;
+        }
+        this.leg = leg;
+    }
 
     public int getLeg(){return leg;}
 }
