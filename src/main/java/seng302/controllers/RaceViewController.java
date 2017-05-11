@@ -43,6 +43,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         NO_ANNOTATION, IMPORTANT_ANNOTATIONS, ALL_ANNOTATIONS
     }
     private final double WAKE_SCALE_FACTOR = 17;
+    private final double SOG_SCALE_FACTOR = 200.0;
 
     private final double ANNOTATION_OFFSET_X = 10;
     private final double ANNOTATION_OFFSET_Y = 15;
@@ -103,7 +104,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
             moveBoat(boat, point);
             moveWake(boat, point);
-            moveSOGVector(boat, point);
+            moveSOGVector(boat);
+            moveVMGVector(boat);
             if(race.getRaceStatus() == STARTED) {
                 addToBoatPath(boat, point);
             }
@@ -140,6 +142,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         boat.setIcon(boatImage);
         drawBoatWake(boat);
         drawSOGVector(boat);
+        drawVMGVector(boat);
     }
 
     public void initBoatPaths(){
@@ -360,19 +363,45 @@ public class RaceViewController extends AnimationTimer implements Observer {
         boat.setWake(wake);
     }
 
+    private void drawVMGVector(BoatDisplay boat){
+        double bearing = boat.getBoat().getHeading();
+        double scale = boat.getBoat().getCurrentVMGSpeed() / SOG_SCALE_FACTOR;
+        Color color = boat.getColor();
+        Course course = race.getCourse();
+        Line line = raceView.createVMGVector(boat.getBoat().getCurrentPosition(), scale, color, boat.getBoat(), course);
+        root.getChildren().add(line);
+        boat.setVMGVector(line);
+    }
+
+    private void moveVMGVector(BoatDisplay boat){
+        double scale = boat.getBoat().getVMGofBoat() / SOG_SCALE_FACTOR;
+        //System.out.println("VMG " + boat.getCurrentVMGSpeed());
+        Color color = boat.getColor();
+        Course course = race.getCourse();
+        root.getChildren().remove(boat.getVMGVector());
+        Line line = raceView.createVMGVector(boat.getBoat().getCurrentPosition(), scale, color, boat.getBoat(), course);
+        root.getChildren().add(line);
+        boat.setVMGVector(line);
+    }
+
     /**
      * Draws Initial SOGVector of boat
      * @param boat to attach the vector to
      */
     private void drawSOGVector(BoatDisplay boat){
-        Line line = raceView.createSOGVector(boat.getBoat().getCurrentPosition(),0.2, boat.getBoat().getHeading());
+        double scale = boat.getBoat().getSpeed() / SOG_SCALE_FACTOR;
+        Color color = boat.getColor();
+        Line line = raceView.createSOGVector(boat.getBoat().getCurrentPosition(),scale, boat.getBoat().getHeading(),color);
         root.getChildren().add(line);
         boat.setSOGVector(line);
     }
 
-    private void moveSOGVector(BoatDisplay boat, CanvasCoordinate point){
+    private void moveSOGVector(BoatDisplay boat){
+        double scale = boat.getBoat().getSpeed() / SOG_SCALE_FACTOR;
+        //System.out.println("SOG " + scale);
+        Color color = boat.getColor();
         root.getChildren().remove(boat.getSOGVector());
-        Line line = raceView.createSOGVector(boat.getBoat().getCurrentPosition(),0.2, boat.getBoat().getHeading());
+        Line line = raceView.createSOGVector(boat.getBoat().getCurrentPosition(),scale, boat.getBoat().getHeading(),color);
         root.getChildren().add(line);
         boat.setSOGVector(line);
     }

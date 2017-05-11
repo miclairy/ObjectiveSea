@@ -2,9 +2,8 @@ package seng302.views;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import seng302.models.*;
 import seng302.utilities.DisplayUtils;
-import seng302.models.CanvasCoordinate;
-import seng302.models.Coordinate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -112,7 +111,7 @@ public class RaceView {
      * @param boatBearing the bearing of the boat
      * @return a line extending from the boat
      */
-    public Line createSOGVector(Coordinate BoatsPosition, double lengthOfVector, double boatBearing){
+    public Line createSOGVector(Coordinate BoatsPosition, double lengthOfVector, double boatBearing, Color color){
         Coordinate end2 = BoatsPosition.coordAt(lengthOfVector, boatBearing);
         CanvasCoordinate convertedEnd1 = DisplayUtils.convertFromLatLon(BoatsPosition);
         CanvasCoordinate convertedEnd2 = DisplayUtils.convertFromLatLon(end2);
@@ -120,9 +119,29 @@ public class RaceView {
                 convertedEnd1.getX(), convertedEnd1.getY(),
                 convertedEnd2.getX(), convertedEnd2.getY()
         );
-        line.setStroke(Color.web("#70aaa2"));
+        line.setStroke(color);
         return line;
+    }
 
+    public Line createVMGVector(Coordinate BoatsPosition, double lengthOfVector, Color color, Boat boat, Course course){
+        int lastRoundedMarkIndex = boat.getLastRoundedMarkIndex();
+        ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
+        Coordinate markLocation;
+        if(lastRoundedMarkIndex + 1 < courseOrder.size()){
+        markLocation = courseOrder.get(lastRoundedMarkIndex + 1).getPosition();
+        } else {
+            markLocation = courseOrder.get(lastRoundedMarkIndex).getPosition();
+        }
+        double lineBearing = BoatsPosition.headingToCoordinate(markLocation);
+        Coordinate end2 = BoatsPosition.coordAt(lengthOfVector, lineBearing);
+        CanvasCoordinate convertedEnd1 = DisplayUtils.convertFromLatLon(BoatsPosition);
+        CanvasCoordinate convertedEnd2 = DisplayUtils.convertFromLatLon(end2);
+        Line line = new Line(
+                convertedEnd1.getX(), convertedEnd1.getY(),
+                convertedEnd2.getX(), convertedEnd2.getY()
+        );
+        line.setStroke(color);
+        return line;
     }
 
     /**

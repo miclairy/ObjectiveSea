@@ -66,6 +66,7 @@ public class Boat implements Comparable<Boat>{
         gybeTWAofBoat = gybingInfo.getValue();
         VMGofBoat = tackingInfo.getKey();
         TWAofBoat = tackingInfo.getValue();
+        currentVMGSpeed = maxSpeed;
     }
 
     /**
@@ -462,9 +463,9 @@ public class Boat implements Comparable<Boat>{
         return maxSpeed;
     }
 
-    public double getVMGofBoat() { return VMGofBoat;}
+    public double getVMGofBoat() { return this.VMGofBoat;}
 
-    public double getGybeVMGofBoat() {return gybeVMGofBoat;}
+    public double getGybeVMGofBoat() {return this.gybeVMGofBoat;}
 
     public void setSpeed(double speed) {
         this.speed = speed;
@@ -479,7 +480,7 @@ public class Boat implements Comparable<Boat>{
     }
 
     public double getCurrentVMGSpeed() {
-        return currentVMGSpeed;
+        return this.currentVMGSpeed;
     }
 
     public BoatStatus getStatus() {

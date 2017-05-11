@@ -26,6 +26,7 @@ public class BoatDisplay {
     private Path path;
     private Line annotationLine;
     private Line SOGVector;
+    private Line VMGVector;
 
     private Color color;
 
@@ -56,6 +57,10 @@ public class BoatDisplay {
         this.SOGVector = SOGVector;
     }
 
+    public Line getVMGVector() {return VMGVector;}
+
+    public void setVMGVector(Line VMGVector) {this.VMGVector = VMGVector;}
+
     public void setIcon(Shape icon) {
         this.icon = icon;
     }
@@ -73,6 +78,8 @@ public class BoatDisplay {
     public void setPath(Path path) {this.path = path;}
 
     public Path getPath() {return path;}
+
+    public double getCurrentVMGSpeed() {return boat.getCurrentVMGSpeed();}
 
     public String getSpeed(){
         return String.format("%.1fkn", boat.getSpeed());
