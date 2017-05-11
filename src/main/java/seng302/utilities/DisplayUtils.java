@@ -77,8 +77,6 @@ public class DisplayUtils {
     }
 
     public static void moveToPoint(Coordinate coordinate ){
-        setZoomLevel(5);
-
         CanvasCoordinate location = convertFromLatLon(coordinate.getLat(), coordinate.getLon());
 
 
@@ -100,8 +98,6 @@ public class DisplayUtils {
 
             offsetX += (mouseLocationX-prevDragX);
             offsetY += (mouseLocationY-prevDragY);
-
-            System.out.println(offsetX+ " offset "+ offsetY);
 
 
         }
@@ -200,4 +196,8 @@ public class DisplayUtils {
         return outsideBound;
     }
 
+    public static void resetOffsets(){
+        offsetX = 0;
+        offsetY = 0;
+    }
 }

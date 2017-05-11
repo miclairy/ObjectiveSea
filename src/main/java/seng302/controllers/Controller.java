@@ -112,12 +112,13 @@ public class Controller implements Initializable, Observer {
         canvasAnchor.setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                System.out.println(Controller.getAnchorHeight() + ", " + Controller.getAnchorWidth());
-                DisplayUtils.dragDisplay((int)event.getX(),(int) event.getY());
+                if(DisplayUtils.zoomLevel != 1){
+                    DisplayUtils.dragDisplay((int)event.getX(),(int) event.getY());
 
-                raceViewController.redrawCourse();
-                raceViewController.moveWindArrow();
-                raceViewController.redrawBoatPaths();
+                    raceViewController.redrawCourse();
+                    raceViewController.moveWindArrow();
+                    raceViewController.redrawBoatPaths();
+                }
             }
         });
 
@@ -127,7 +128,11 @@ public class Controller implements Initializable, Observer {
             public void changed(ObservableValue arg0, Object arg1, Object arg2) {
                 zoomSlider.setOpacity(0.8);
                 DisplayUtils.setZoomLevel(zoomSlider.getValue());
-
+                if(DisplayUtils.zoomLevel != 1){
+                    mapImageView.setVisible(false);
+                }else{
+                    mapImageView.setVisible(true);
+                }
                 raceViewController.redrawCourse();
                 raceViewController.moveWindArrow();
                 raceViewController.redrawBoatPaths();

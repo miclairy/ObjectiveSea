@@ -83,11 +83,12 @@ public class ScoreBoardController {
     private void btnTrackPressed(){
         BoatDisplay selectedBoat = raceViewController.getSelectedBoat();
         if(selectedBoat != null){
+            parent.setZoomSliderValue(3);
             raceViewController.setTrackingBoat(true);
             raceViewController.redrawCourse();
             raceViewController.moveWindArrow();
             raceViewController.redrawBoatPaths();
-
+            raceViewController.setMapVisibility(false);
         }
 
     }
