@@ -34,6 +34,8 @@ public class RaceView {
                 -5.0, 10.0,
                 0.0, -10.0,
                 0.0, 10.0);
+
+
         boatImage.setFill(color);
         boatImage.setStroke(Color.WHITE);
         return boatImage;

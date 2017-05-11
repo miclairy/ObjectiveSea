@@ -62,6 +62,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean initializedBoats = false;
     private ImageCursor cursor = new ImageCursor(new Image("graphics/boat-select-cursor.png"), 7, 7);
     private BoatDisplay selectedBoat =null;
+    private boolean trackingBoat = false;
+
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
         this.root = root;
@@ -101,6 +103,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void run(){
         for (BoatDisplay boat: displayBoats) {
+
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
             moveBoat(boat, point);
             moveWake(boat, point);
@@ -108,6 +111,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 addToBoatPath(boat, point);
             }
             moveBoatAnnotation(boat.getAnnotation(), point);
+
+
+            //track boat
+            if(trackingBoat && boat.equals(selectedBoat)){
+                DisplayUtils.moveToPoint(selectedBoat.getBoat().getCurrentPosition());
+                redrawCourse();
+
+            }
         }
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
@@ -199,6 +210,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             for(BoatDisplay boat : displayBoats){
                 boat.focus();
                 scoreBoardController.btnTrack.setVisible(false);
+                selectedBoat = null;
+                trackingBoat = false;
             }
         });
 
@@ -206,6 +219,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
             for(BoatDisplay boat : displayBoats){
                 boat.focus();
                 scoreBoardController.btnTrack.setVisible(false);
+                selectedBoat = null;
+                trackingBoat = false;
+
             }
         });
     }
@@ -430,9 +446,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void moveBoat(BoatDisplay boat, CanvasCoordinate point){
         boat.getIcon().setTranslateY(point.getY());
         boat.getIcon().setTranslateX(point.getX());
+        boat.getIcon().setScaleX(DisplayUtils.zoomLevel);
+        boat.getIcon().setScaleY(DisplayUtils.zoomLevel);
         boat.getIcon().getTransforms().clear();
         boat.getIcon().getTransforms().add(new Rotate(boat.getBoat().getHeading()));
         boat.getIcon().toFront();
+
     }
 
     /**
@@ -465,6 +484,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         redrawBoundary();
         resizeMap();
         redrawRaceLines();
+        redrawBoatPaths();
     }
 
     /**
@@ -494,6 +514,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
         for (Mark mark : race.getCourse().getAllMarks().values()){
             CanvasCoordinate convertedPoint = DisplayUtils.convertFromLatLon(mark.getPosition());
             mark.getIcon().toFront();
+            mark.getIcon().setScaleX(DisplayUtils.zoomLevel);
+            mark.getIcon().setScaleY(DisplayUtils.zoomLevel);
             mark.getIcon().setCenterX(convertedPoint.getX());
             mark.getIcon().setCenterY(convertedPoint.getY());
             mark.getIcon().toBack();
@@ -594,6 +616,16 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public BoatDisplay getSelectedBoat() {
         return selectedBoat;
     }
+
+
+    public boolean isTrackingBoat() {
+        return trackingBoat;
+    }
+
+    public void setTrackingBoat(boolean trackingBoat) {
+        this.trackingBoat = trackingBoat;
+    }
+
 
 
 

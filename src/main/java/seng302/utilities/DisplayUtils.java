@@ -77,6 +77,8 @@ public class DisplayUtils {
     }
 
     public static void moveToPoint(Coordinate coordinate ){
+        setZoomLevel(5);
+
         CanvasCoordinate location = convertFromLatLon(coordinate.getLat(), coordinate.getLon());
 
 
