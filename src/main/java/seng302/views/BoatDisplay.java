@@ -25,6 +25,7 @@ public class BoatDisplay {
     private VBox annotation;
     private Path path;
     private Line annotationLine;
+    private final double FADEDBOAT = 0.3;
 
     private Color color;
     private Line layLine;
@@ -112,6 +113,26 @@ public class BoatDisplay {
 
     public Line getLayLine() {
         return layLine;
+    }
+
+    public void unFocus(){
+        icon.setOpacity(FADEDBOAT);
+        wake.setOpacity(0.15);
+        if(path.getElements().size() > 1){
+            path.setOpacity(FADEDBOAT);
+        }
+        annotationLine.setOpacity(FADEDBOAT);
+        annotation.setOpacity(FADEDBOAT);
+    }
+
+    public void focus(){
+        icon.setOpacity(1);
+        wake.setOpacity(0.5);
+        if(path.getElements().size() > 1){
+            path.setOpacity(1);
+        }
+        annotation.setOpacity(1);
+        annotationLine.setOpacity(1);
     }
 }
 

@@ -102,7 +102,6 @@ public class Controller implements Initializable, Observer {
         startersOverlay.toFront();
         raceViewController.start();
 
-
     }
 
     /**

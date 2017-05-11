@@ -385,7 +385,7 @@ public class Boat implements Comparable<Boat>{
     public double calculateLaylineHeading() { //TODO implement me
         return 145;
     }
-    
+
     public void setCurrentVMGSpeed(double currentVMGSpeed) {
         this.currentVMGSpeed = currentVMGSpeed;
     }
