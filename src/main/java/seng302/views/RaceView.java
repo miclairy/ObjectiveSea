@@ -110,9 +110,9 @@ public class RaceView {
 
     public Pair<Line, Line> createLayLines(Pair<Double, Double> bearing, CompoundMark mark, BoatDisplay boat){
         final int LAYLINELENGTH = 75;
-        Coordinate markLocation = mark.getPosition();
         double bearing1 = bearing.getKey();
         double bearing2 = bearing.getValue();
+        Coordinate markLocation = mark.getPosition();
         CanvasCoordinate markLocationXY = DisplayUtils.convertFromLatLon(markLocation.getLat(), markLocation.getLon());
 
         Double endPointY1 = LAYLINELENGTH * Math.sin(Math.toRadians(bearing1 - 90)) + markLocationXY.getY();
