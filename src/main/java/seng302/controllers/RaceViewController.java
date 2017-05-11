@@ -1,7 +1,9 @@
 package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.ImageCursor;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -11,6 +13,8 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Path;
+
+import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
@@ -56,6 +60,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private final int WIND_ARROW_OFFSET = 60;
     private boolean courseNeedsRedraw = false;
     private boolean initializedBoats = false;
+    private ImageCursor cursor = new ImageCursor(new Image("graphics/boat-select-cursor.png"), 7, 7);
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
         this.root = root;
@@ -64,6 +69,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         drawCourse();
+        addDeselectEvents();
     }
 
     @Override
@@ -119,9 +125,29 @@ public class RaceViewController extends AnimationTimer implements Observer {
             raceView.assignColor(displayBoat);
             displayBoats.add(displayBoat);
             drawBoat(displayBoat);
+            addBoatSelectionHandler(displayBoat);
         }
         initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);
+    }
+
+    /**
+     * adds event hadnlers so we can detect if the user has selected a boat
+     * @param boat
+     */
+    private void addBoatSelectionHandler(BoatDisplay boat){
+        Shape boatImage = boat.getIcon();
+        boatImage.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            setBoatFocus(boat);
+        });
+
+        boatImage.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
+            root.setCursor(cursor);
+        });
+
+        boatImage.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
+            root.setCursor(Cursor.DEFAULT);
+        });
     }
 
     /**
@@ -165,6 +191,26 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     /**
+     * adds Event handlers to areas of the course than don't contain boat, so deselct of boat
+     * can be detetced
+     */
+    private void addDeselectEvents(){
+        boundary.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            for(BoatDisplay boat : displayBoats){
+                boat.focus();
+                scoreBoardController.btnTrack.setVisible(false);
+            }
+        });
+
+        controller.mapImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            for(BoatDisplay boat : displayBoats){
+                boat.focus();
+                scoreBoardController.btnTrack.setVisible(false);
+            }
+        });
+    }
+
+    /**
      * Draws both the start end and the finish line
      */
     private void drawRaceLines() {
@@ -180,8 +226,22 @@ public class RaceViewController extends AnimationTimer implements Observer {
             Circle circle = raceView.createMark(mark.getPosition());
             root.getChildren().add(circle);
             mark.setIcon(circle);
-
+            addMarkSelectionHandlers(circle);
         }
+    }
+
+    /**
+     * adds event handler to marks so we can detet if selected by the user
+     * @param circle
+     */
+    private void addMarkSelectionHandlers(Circle circle){
+        circle.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
+            root.setCursor(cursor);
+        });
+
+        circle.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
+            root.setCursor(Cursor.DEFAULT);
+        });
     }
 
     /**
@@ -230,7 +290,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void drawBoatAnnotation(BoatDisplay displayBoat, ArrayList<String> annotationText){
         CanvasCoordinate point = DisplayUtils.convertFromLatLon(displayBoat.getBoat().getCurrentPosition());
-        VBox annotationFrame = new VBox();
+        VBox annotationFrame = displayBoat.getAnnotation();
+        annotationFrame.getChildren().clear();
+
         for(String string : annotationText){
             Label annotationLabel = new Label(string);
             annotationLabel.setId("annotationLabel");
@@ -491,6 +553,18 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if(boatDisplay.getPath() != null && boatDisplay.getBoat().getStatus() != BoatStatus.FINISHED){
             boatDisplay.getPath().getElements().add(new LineTo(point.getX(), point.getY()));
             boatDisplay.getPath().toBack();
+        }
+    }
+
+    private void setBoatFocus(BoatDisplay selectedBoat){
+        scoreBoardController.btnTrack.setVisible(true);
+        selectedBoat.getIcon().toFront();
+        for(BoatDisplay boat : displayBoats){
+            if(!boat.equals(selectedBoat)){
+                boat.unFocus();
+            }else{
+                boat.focus();
+            }
         }
     }
 
