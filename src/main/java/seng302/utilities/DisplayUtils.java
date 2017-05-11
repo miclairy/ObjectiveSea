@@ -22,8 +22,7 @@ public class DisplayUtils {
     private static int prevDragY=0;
     private static int offsetX=0;
     private static int offsetY=0;
-    private static int zoomCenterOffsetX=0;
-    private static int zoomCenterOffsetY=0;
+
 
     /**
      * Takes the given lat and lon and returns a x,y coordinate scaled to the canvas size
@@ -57,8 +56,6 @@ public class DisplayUtils {
         xCoord += offsetX;
         yCoord += offsetY;
 
-        xCoord += zoomCenterOffsetX;
-        yCoord += zoomCenterOffsetY;
 
         CanvasCoordinate point = new CanvasCoordinate(xCoord, yCoord);
         return point;
@@ -68,33 +65,29 @@ public class DisplayUtils {
     public static void setZoomLevel(double zoomLevel) {
 
         double deltaZoom = DisplayUtils.zoomLevel- zoomLevel;
-        double canvasY = Controller.getAnchorHeight()/2;
-        double canvasX = Controller.getAnchorWidth()/2;
+        double canvasHeight = Controller.getAnchorHeight()/2;
+        double canvasWidth = Controller.getAnchorWidth()/2;
 
-        zoomCenterOffsetX += (int) (canvasX*deltaZoom);
-        zoomCenterOffsetY += (int) (canvasY*deltaZoom);
+        offsetX += (int) (canvasWidth*deltaZoom);
+        offsetY += (int) (canvasHeight*deltaZoom);
 
-        System.out.println(zoomCenterOffsetX + ", "+ zoomCenterOffsetY);
 
         DisplayUtils.zoomLevel = zoomLevel;
 
     }
 
-    public static void zoomOnPoint(Coordinate coordinate ){
-        setZoomLevel(5);
+    public static void moveToPoint(Coordinate coordinate ){
         CanvasCoordinate location = convertFromLatLon(coordinate.getLat(), coordinate.getLon());
 
 
-        double deltaZoom = DisplayUtils.zoomLevel- 5;
-        double canvasY = location.getY();
-        double canvasX = location.getX();
+        double locationY = location.getY();
+        double locationX = location.getX();
+        double canvasHeight = Controller.getAnchorHeight()/2;
+        double canvasWidth = Controller.getAnchorWidth()/2;
 
-        zoomCenterOffsetX += (int) (canvasX*deltaZoom);
-        zoomCenterOffsetY += (int) (canvasY*deltaZoom);
+        offsetX -= (int) (locationX - canvasWidth);
+        offsetY -= (int) (locationY - canvasHeight);
 
-        System.out.println(zoomCenterOffsetX + ", "+ zoomCenterOffsetY);
-
-        DisplayUtils.zoomLevel = zoomLevel;
 
 
     }
