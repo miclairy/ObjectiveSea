@@ -29,6 +29,7 @@ public class ScoreBoardController {
     @FXML private CheckBox chkSpeed;
     @FXML private CheckBox chkPassMarkTime;
     @FXML private CheckBox chkEst;
+    @FXML private CheckBox chkVectors;
 
     public void setControllers(Controller parent, RaceViewController raceViewController){
         this.parent = parent;
@@ -89,4 +90,8 @@ public class ScoreBoardController {
     public boolean isEstSelected(){return chkEst.isSelected();}
 
     public boolean isTimePassedSelected(){return chkPassMarkTime.isSelected();}
+
+    public boolean areVectorsSelected() {
+        return chkVectors.isSelected();
+    }
 }
