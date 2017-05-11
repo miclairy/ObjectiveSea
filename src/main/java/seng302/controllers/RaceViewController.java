@@ -1,6 +1,5 @@
 package seng302.controllers;
 
-import com.sun.xml.internal.rngom.digested.DInterleavePattern;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
