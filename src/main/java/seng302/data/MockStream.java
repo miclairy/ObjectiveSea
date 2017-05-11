@@ -247,7 +247,7 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, LONGITUDE, lon);
         addFieldToByteArray(body, HEADING, (int) (boat.getHeading() * Math.pow(2, 16) / 360));
         addFieldToByteArray(body, SPEED_OVER_GROUND, boat.getSpeedInMMS());
-        addFieldToByteArray(body, TRUE_WIND_ANGLE, (long) (55 * Math.pow(2, 15) / 180)); //south east
+        addFieldToByteArray(body, TRUE_WIND_ANGLE, (long) (boat.getTrueWindAngle() * Math.pow(2, 15) / 180)); //south east
 
         return body;
     }

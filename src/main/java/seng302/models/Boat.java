@@ -43,6 +43,8 @@ public class Boat implements Comparable<Boat>{
     private long timeTillFinish;
     private Integer id;
 
+    private boolean isTacking;
+
     public Boat(Integer id, String name, String nickName, double speed) {
         this.id = id;
         this.name = name;
@@ -102,9 +104,11 @@ public class Boat implements Comparable<Boat>{
         currentVMGSpeed = speed; // ((windDirection - TWAofBoat)%360)+360 <= (bearing+360) && ((windDirection + TWAofBoat)%360)+360 >= (bearing + 360)
         if(pointBetweenTwoAngle(windDirection, tackTWAofBoat,bearing)){
             onTack = true;
+            isTacking = true;
             currentVMGSpeed = VMGofBoat;
         } else if(pointBetweenTwoAngle((windDirection + 180)%360, 180 - gybeTWAofBoat, bearing)){
             onGybe = true;
+            isTacking = false;
             currentVMGSpeed = gybeVMGofBoat * (-1.0);
         }
 
@@ -619,6 +623,15 @@ public class Boat implements Comparable<Boat>{
             double layline2 = ((twd + 180) + tackTWAofBoat);
             return new Pair(layline1, layline2);
         }
+    }
+
+    public double getTrueWindAngle() {
+        if (isTacking){
+            return tackTWAofBoat;
+        } else {
+            return gybeTWAofBoat * -180;
+        }
+
     }
 
 }
