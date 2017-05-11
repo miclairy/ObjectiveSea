@@ -3,7 +3,6 @@ package seng302.models;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -142,7 +141,7 @@ public class RaceTest {
         Assert.assertEquals(3.2, boat.getCurrentLon(), DELTA);
         Assert.assertEquals(178.1, boat.getHeading(), DELTA);
         Assert.assertEquals(28.1, boat.getSpeed(), DELTA);
-        Assert.assertEquals(97, boat.getTrueWindAngle(), DELTA);
+        Assert.assertEquals(97, boat.getTWAofBoat(), DELTA);
     }
 
     @Test

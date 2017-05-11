@@ -15,8 +15,8 @@ public class Course extends Observable {
     private Map<Integer, CompoundMark> compoundMarks;
     private Map<Integer, Mark> allMarks;
     private double windDirection;
-    private int trueWindAngle;
-    private int trueWindDirection;
+    private double trueWindAngle;
+    private double trueWindDirection;
     private RaceLine startLine, finishLine;
 
 
@@ -138,11 +138,11 @@ public class Course extends Observable {
         }
     }
 
-    public void updateTrueWindDirection(int direction) {
+    public void updateTrueWindDirection(double direction) {
         trueWindDirection = direction;
     }
 
-    public Integer getTrueWindDirection() { return trueWindDirection; }
+    public double getTrueWindDirection() { return trueWindDirection; }
 
     public void updateCourseWindValues(int raceCourseWindDirection) {
         windDirection = raceCourseWindDirection;

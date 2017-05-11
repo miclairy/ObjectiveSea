@@ -1,34 +1,28 @@
 package seng302.controllers;
 
+import com.sun.xml.internal.bind.v2.TODO;
 import javafx.animation.AnimationTimer;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Path;
-import javafx.scene.control.Label;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.util.Pair;
 import seng302.data.BoatStatus;
-import seng302.data.RaceStatus;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.TimeUtils;
 import seng302.models.*;
 import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
-import java.awt.geom.Line2D;
-import javax.imageio.ImageIO;
-import java.net.URL;
 import java.util.*;
 
 import static seng302.data.RaceStatus.STARTED;
@@ -356,13 +350,23 @@ public class RaceViewController extends AnimationTimer implements Observer {
         boat.setWake(wake);
     }
 
+    /**
+     *  Draws laylines for a boat coming from the next mark it is heading to (at the moment is Mark1)
+     * @param boat
+     */
+    //TODO create function that chooses closest mark to draw laylines from
     private void drawLayLine(BoatDisplay boat){
-        if (boat.getBoat().getLastRoundedMarkIndex() < race.getCourse().getCourseOrder().size()) {
+        if (boat.getBoat().getLastRoundedMarkIndex() < race.getCourse().getCourseOrder().size() - 1) {
             CompoundMark mark = race.getCourse().getCourseOrder().get(boat.getBoat().getLastRoundedMarkIndex() + 1);
-            Line layline = raceView.createLayLine(boat, mark);
-            root.getChildren().add(layline);
-            boat.setLayline(layline);
-            layline.toBack();
+            Pair<Double, Double> bearing = boat.getBoat().calculateLaylineHeading(race.getCourse().getTrueWindDirection());
+            Pair<Line, Line> laylines = raceView.createLayLines(bearing, mark, boat);
+            Line layline1 = laylines.getKey();
+            Line layline2 = laylines.getValue();
+            root.getChildren().add(layline1);
+            root.getChildren().add(layline2);
+            boat.setLaylines(laylines);
+            layline1.toBack();
+            layline2.toBack();
         }
     }
 

@@ -2,6 +2,7 @@ package seng302.views;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import javafx.util.Pair;
 import seng302.models.Boat;
 import seng302.models.CompoundMark;
 import seng302.utilities.DisplayUtils;
@@ -107,16 +108,25 @@ public class RaceView {
         return line;
     }
 
-    public Line createLayLine(BoatDisplay boat, CompoundMark mark){
+    public Pair<Line, Line> createLayLines(Pair<Double, Double> bearing, CompoundMark mark, BoatDisplay boat){
         final int LAYLINELENGTH = 75;
-        double bearing = boat.getBoat().calculateLaylineHeading();
-        Coordinate markLocation = mark.getMidPoint();
+        Coordinate markLocation = mark.getPosition();
+        double bearing1 = bearing.getKey();
+        double bearing2 = bearing.getValue();
         CanvasCoordinate markLocationXY = DisplayUtils.convertFromLatLon(markLocation.getLat(), markLocation.getLon());
-        Double endPointY = LAYLINELENGTH * Math.sin(Math.toRadians(bearing - 90)) + markLocationXY.getY();
-        Double endPointX = LAYLINELENGTH * Math.cos(Math.toRadians(bearing - 90)) + markLocationXY.getX();
-        Line line = new Line(markLocationXY.getX(), markLocationXY.getY(), endPointX, endPointY);
-        line.setStroke(boat.getColor());
-        return line;
+
+        Double endPointY1 = LAYLINELENGTH * Math.sin(Math.toRadians(bearing1 - 90)) + markLocationXY.getY();
+        Double endPointX1 = LAYLINELENGTH * Math.cos(Math.toRadians(bearing1 - 90)) + markLocationXY.getX();
+        Line line1 = new Line(markLocationXY.getX(), markLocationXY.getY(), endPointX1, endPointY1);
+
+        Double endPointY2 = LAYLINELENGTH * Math.sin(Math.toRadians(bearing2 - 90)) + markLocationXY.getY();
+        Double endPointX2 = LAYLINELENGTH * Math.cos(Math.toRadians(bearing2 - 90)) + markLocationXY.getX();
+        Line line2 = new Line(markLocationXY.getX(), markLocationXY.getY(), endPointX2, endPointY2);
+
+        line1.setStroke(boat.getColor());
+        line2.setStroke(boat.getColor());
+
+        return new Pair<>(line1, line2);
     }
 
     /**

@@ -83,13 +83,13 @@ public class Race extends Observable{
      * @param heading the new heading of the boat
      * @param speed the new speed of the boat
      */
-    public void updateBoat(Integer sourceID, Double lat, Double lon, Double heading, Double speed, Integer twa){
+    public void updateBoat(Integer sourceID, Double lat, Double lon, Double heading, Double speed, double twa){
         if(boatIdMap.containsKey(sourceID)){
             Boat boat = boatIdMap.get(sourceID);
             boat.setPosition(lat, lon);
             boat.setHeading(heading);
             boat.setSpeed(speed);
-            boat.setTrueWindAngle(twa);
+            boat.setTWAofBoat(twa);
         } else{
             System.err.println("Boat source ID not found");
         }

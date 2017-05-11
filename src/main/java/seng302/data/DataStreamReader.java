@@ -117,6 +117,10 @@ public class DataStreamReader implements Runnable{
         return (double)value * 180 / Math.pow(2, 31);
     }
 
+    static double intToTrueWindAngle(int value){
+        return (double)value * 180 / Math.pow(2, 15);
+    }
+
     /**
      * Converts an integer to a heading angle as per specification.
      * @param value the heading as a scaled integer
@@ -171,9 +175,11 @@ public class DataStreamReader implements Runnable{
         int boatSpeed = byteArrayRangeToInt(body, SPEED_OVER_GROUND.getStartIndex(), SPEED_OVER_GROUND.getEndIndex());
 
         int deviceType = byteArrayRangeToInt(body, DEVICE_TYPE.getStartIndex(), DEVICE_TYPE.getEndIndex());
-        int trueWindDirection = byteArrayRangeToInt(body, TRUE_WIND_DIRECTION.getStartIndex(), TRUE_WIND_DIRECTION.getEndIndex());
-        int trueWindAngle = byteArrayRangeToInt(body, TRUE_WIND_ANGLE.getStartIndex(), TRUE_WIND_ANGLE.getEndIndex());
+        int trueWindDirectionScaled = byteArrayRangeToInt(body, TRUE_WIND_DIRECTION.getStartIndex(), TRUE_WIND_DIRECTION.getEndIndex());
+        int trueWindAngleScaled = byteArrayRangeToInt(body, TRUE_WIND_ANGLE.getStartIndex(), TRUE_WIND_ANGLE.getEndIndex());
 
+        double trueWindAngle = intToTrueWindAngle(trueWindAngleScaled);
+        double trueWindDirection = intToHeading(trueWindDirectionScaled);
         double lat = intToLatLon(latScaled);
         double lon = intToLatLon(lonScaled);
         double heading = intToHeading(headingScaled);

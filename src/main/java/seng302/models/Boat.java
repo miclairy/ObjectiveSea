@@ -36,7 +36,7 @@ public class Boat implements Comparable<Boat>{
 
     private ArrayList<Coordinate> pathCoords;
     private double VMGofBoat;
-    private double trueWindAngle;
+    private double tackTWAofBoat;
     private double gybeVMGofBoat;
     private double gybeTWAofBoat;
     private long timeTillMark;
@@ -64,7 +64,7 @@ public class Boat implements Comparable<Boat>{
         gybeVMGofBoat = gybingInfo.getKey();
         gybeTWAofBoat = gybingInfo.getValue();
         VMGofBoat = tackingInfo.getKey();
-        trueWindAngle = tackingInfo.getValue();
+        tackTWAofBoat = tackingInfo.getValue();
     }
 
     /**
@@ -99,8 +99,8 @@ public class Boat implements Comparable<Boat>{
         double bearing = course.headingsBetweenMarks(lastRoundedMarkIndex,lastRoundedMarkIndex+1);
         boolean onTack = false;
         boolean onGybe = false; //(((180+windDirection) - (180-gybeTWAofBoat))% 360)+360 <= (bearing+360) && (((180+windDirection) + (180-gybeTWAofBoat))%360)+360 >= (bearing+360)
-        currentVMGSpeed = speed; // ((windDirection - trueWindAngle)%360)+360 <= (bearing+360) && ((windDirection + trueWindAngle)%360)+360 >= (bearing + 360)
-        if(pointBetweenTwoAngle(windDirection,TWAofBoat,bearing)){
+        currentVMGSpeed = speed; // ((windDirection - TWAofBoat)%360)+360 <= (bearing+360) && ((windDirection + TWAofBoat)%360)+360 >= (bearing + 360)
+        if(pointBetweenTwoAngle(windDirection, tackTWAofBoat,bearing)){
             onTack = true;
             currentVMGSpeed = VMGofBoat;
         } else if(pointBetweenTwoAngle((windDirection + 180)%360, 180 - gybeTWAofBoat, bearing)){
@@ -115,7 +115,7 @@ public class Boat implements Comparable<Boat>{
         //The polars currently used aren't for our fancy catamaran's so it is super slow and boring
         // so I've commented them out for practicality of watching :)
         if(onTack) {
-            currentSpeed = VMGofBoat / Math.cos(Math.toRadians(trueWindAngle));
+            currentSpeed = VMGofBoat / Math.cos(Math.toRadians(tackTWAofBoat));
         } else if(onGybe){
             currentSpeed = (gybeVMGofBoat) / Math.cos(Math.toRadians(gybeTWAofBoat));
         }
@@ -188,16 +188,16 @@ public class Boat implements Comparable<Boat>{
      * @param onTack this decides whether to calculate a tack or a gybe
      */
     public Coordinate tackingUpdateLocation(double distanceGained, ArrayList<CompoundMark> courseOrder, Boolean onTack, double alphaAngle){
-        double TrueWindAngle;
+        double trueWindAngle;
         if(onTack){
-            TrueWindAngle = trueWindAngle;
+            trueWindAngle = tackTWAofBoat;
         } else {
-            TrueWindAngle = 180 - gybeTWAofBoat;}
+            trueWindAngle = 180 - gybeTWAofBoat;}
 
         CompoundMark nextMark = courseOrder.get(lastRoundedMarkIndex+1);
         double lengthOfLeg = courseOrder.get(lastRoundedMarkIndex).getPosition().greaterCircleDistance(nextMark.getPosition());
-        double betaAngle = (2*TrueWindAngle) - alphaAngle;
-        double lengthOfTack = ((lengthOfLeg* Math.sin(Math.toRadians(betaAngle)))/Math.sin(Math.toRadians(180 - 2*TrueWindAngle)))/2.0;
+        double betaAngle = (2*trueWindAngle) - alphaAngle;
+        double lengthOfTack = ((lengthOfLeg* Math.sin(Math.toRadians(betaAngle)))/Math.sin(Math.toRadians(180 - 2*trueWindAngle)))/2.0;
         ArrayList<CompoundMark> tackingMarks = new ArrayList<>();
         tackingMarks.add(courseOrder.get(lastRoundedMarkIndex));
         CompoundMark currentMark = courseOrder.get(lastRoundedMarkIndex);
@@ -431,20 +431,19 @@ public class Boat implements Comparable<Boat>{
         return boatsTack;
     }
 
-    public Boolean pointBetweenTwoAngle(double midPoint, double deltaAngle, double point){
+    public Boolean pointBetweenTwoAngle(double twd, double deltaAngle, double bearing){
         double diff;
         double middle;
-        if(midPoint > 180){
+        if(twd > 180){
             diff = 0;
-            point -= 180;
-            middle = midPoint - 180;
-            System.out.println(point);
+            bearing -= 180;
+            middle = twd - 180;
         } else {
             middle = 90;
-            diff = Math.abs(90 - midPoint);}
-        point += diff;
-        point = (point + 360) % 360;
-        return (middle - deltaAngle) <= point && point <= (middle + deltaAngle);
+            diff = Math.abs(90 - twd);}
+        bearing += diff;
+        bearing = (bearing + 360) % 360;
+        return (middle - deltaAngle) <= bearing && bearing <= (middle + deltaAngle);
     }
 
     private double normalize(double point) {
@@ -461,31 +460,6 @@ public class Boat implements Comparable<Boat>{
         point = point - midPoint;
         point = normalize(point);
         return point<deltaAngle && point>-deltaAngle;
-    }
-
-    /**
-     * Returns the layline angles of a boat
-     * @param boat
-     * @return Pair<Double, Double> laylines
-     */
-    private Pair<Double, Double> calculateLayLines(Boat boat) {
-        int twd = race.getCourse().getTrueWindDirection();
-        double twa = boat.getTrueWindAngle();
-
-        boolean upwind = checkWindUpwind(boat, twd);
-
-        double layline1 = (twd - twa) % 360;
-        double layline2 = (twd + twa) % 360;
-
-        Pair laylines = new Pair(layline1, layline2);
-
-        return laylines;
-    }
-
-    private boolean checkWindUpwind(Boat boat, int twd) {
-        if ((boat.getHeading() <= twd + 90) || (boat.getHeading() >= twd - 90)) {
-            return true;
-        } else return false;
     }
 
 
@@ -589,9 +563,9 @@ public class Boat implements Comparable<Boat>{
         return maxSpeed;
     }
 
-    public void setTrueWindAngle(double trueWindAngle) { this.trueWindAngle = trueWindAngle; }
+    public void setTWAofBoat(double TWAofBoat) { this.tackTWAofBoat = TWAofBoat; }
 
-    public double getTrueWindAngle() { return trueWindAngle; }
+    public double getTWAofBoat() { return tackTWAofBoat; }
 
     public double getVMGofBoat() { return VMGofBoat;}
 
@@ -629,7 +603,22 @@ public class Boat implements Comparable<Boat>{
         this.timeTillFinish = timeTillFinish;
     }
 
-    public double calculateLaylineHeading() { //TODO implement me
-        return 145;
+    /**
+     * Returns the layline angles of a boat
+     * @param twd
+     * @return Pair<Double, Double> laylines
+     */
+    public Pair<Double, Double> calculateLaylineHeading(double twd) {
+        boolean upwind = pointBetweenTwoAngle(twd, 90, heading);
+        if (upwind) {
+            double layline1 = (twd - tackTWAofBoat) % 360;
+            double layline2 = (twd + tackTWAofBoat) % 360;
+            return new Pair(layline1, layline2);
+        } else {
+            double layline1 = ((twd + 180) - tackTWAofBoat);
+            double layline2 = ((twd + 180) + tackTWAofBoat);
+            return new Pair(layline1, layline2);
+        }
     }
+
 }
