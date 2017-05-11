@@ -63,7 +63,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private final int WIND_ARROW_OFFSET = 60;
     private boolean courseNeedsRedraw = false;
     private boolean initializedBoats = false;
-    private ImageCursor cursor = new ImageCursor(new Image("graphics/boat-select-cursor.png"), 7, 7);
+    private ImageCursor boatCursor = new ImageCursor(new Image("graphics/boat-select-cursor.png"), 7, 7);
+    private ImageCursor markCursor = new ImageCursor(new Image("graphics/mark-select-cursor.png"), 7, 7);
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
         this.root = root;
@@ -144,7 +145,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         });
 
         boatImage.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
-            root.setCursor(cursor);
+            root.setCursor(boatCursor);
         });
 
         boatImage.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
@@ -238,7 +239,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void addMarkSelectionHandlers(Circle circle){
         circle.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
-            root.setCursor(cursor);
+            root.setCursor(markCursor);
         });
 
         circle.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {

@@ -104,8 +104,8 @@ public class ScoreBoardController {
         xAxis.setTickUnit(1);
 
         yAxis.setAutoRanging(false);
-        yAxis.setLowerBound(0);
-        yAxis.setUpperBound(race.getCompetitors().size() + 1);
+        yAxis.setLowerBound(race.getCompetitors().size() + 1);
+        yAxis.setUpperBound(0);
         yAxis.setTickUnit(1);
         chtSparkLine.setCreateSymbols(false);
         chtSparkLine.setLegendVisible(false);
