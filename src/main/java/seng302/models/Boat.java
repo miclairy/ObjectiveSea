@@ -606,7 +606,7 @@ public class Boat implements Comparable<Boat>{
     /**
      * Returns the layline angles of a boat
      * @param twd
-     * @return Pair<Double, Double> laylines
+     * @return Pair(Double, Double) laylines
      */
     public Pair<Double, Double> calculateLaylineHeading(double twd) {
         boolean upwind = pointBetweenTwoAngle(twd, 90, heading);
