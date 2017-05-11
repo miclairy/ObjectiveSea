@@ -1,5 +1,6 @@
 package seng302.controllers;
 
+import com.sun.xml.internal.rngom.digested.DInterleavePattern;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
@@ -364,8 +365,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @return a CanvasCoordinate of the best screen position
      */
     private CanvasCoordinate getAnnotationPosition(VBox currAnno){
-        double offsetX = ANNOTATION_OFFSET_X;
-        double offsetY = ANNOTATION_OFFSET_Y;
+        double offsetX = ANNOTATION_OFFSET_X * DisplayUtils.zoomLevel;
+        double offsetY = ANNOTATION_OFFSET_Y * DisplayUtils.zoomLevel;
         CanvasCoordinate coord = new CanvasCoordinate(offsetX, offsetY);
         return coord;
     }

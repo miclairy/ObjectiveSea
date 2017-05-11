@@ -132,6 +132,7 @@ public class Controller implements Initializable, Observer {
                     mapImageView.setVisible(false);
                 }else{
                     mapImageView.setVisible(true);
+                    DisplayUtils.resetOffsets();
                 }
                 raceViewController.redrawCourse();
                 raceViewController.moveWindArrow();
