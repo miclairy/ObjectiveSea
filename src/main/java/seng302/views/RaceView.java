@@ -29,11 +29,12 @@ public class RaceView {
      */
     public Polyline createBoatImage(Color color){
         Polyline boatImage = new Polyline();
-        boatImage.getPoints().addAll(0.0, -10.0,
-                5.0, 10.0,
+        boatImage.getPoints().addAll(5.0, 10.0,
                 -5.0, 10.0,
                 0.0, -10.0,
-                0.0, 10.0);
+                5.0, 10.0,
+                0.0, 10.0,
+                0.0, -10.0);
 
 
         boatImage.setFill(color);
