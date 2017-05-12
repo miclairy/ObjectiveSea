@@ -27,6 +27,7 @@ public class BoatDisplay {
     private Line annotationLine;
     private Polyline SOGVector;
     private Polyline VMGVector;
+    private final double FADEDBOAT = 0.3;
 
     private Color color;
 
@@ -129,6 +130,26 @@ public class BoatDisplay {
     public void hideVectors(){
         SOGVector.setVisible(false);
         VMGVector.setVisible(false);
+    }
+
+    public void unFocus(){
+        icon.setOpacity(FADEDBOAT);
+        wake.setOpacity(0.15);
+        if(path.getElements().size() > 1){
+            path.setOpacity(FADEDBOAT);
+        }
+        annotationLine.setOpacity(FADEDBOAT);
+        annotation.setOpacity(FADEDBOAT);
+    }
+
+    public void focus(){
+        icon.setOpacity(1);
+        wake.setOpacity(0.5);
+        if(path.getElements().size() > 1){
+            path.setOpacity(1);
+        }
+        annotation.setOpacity(1);
+        annotationLine.setOpacity(1);
     }
 }
 

@@ -5,6 +5,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.util.StringConverter;
@@ -29,6 +30,7 @@ public class ScoreBoardController {
     @FXML private CheckBox chkSpeed;
     @FXML private CheckBox chkPassMarkTime;
     @FXML private CheckBox chkEst;
+    @FXML public Button btnTrack;
     @FXML private CheckBox chkVectors;
 
     public void setControllers(Controller parent, RaceViewController raceViewController){
