@@ -61,21 +61,29 @@ public class DisplayUtils {
         return point;
     }
 
-
+    /**
+     * sets the zoom level for the canvas to redrawn at. moves offsets
+     * to allow the zoom to occur in the center of screen.
+     * @param zoomLevel the level of zoom. 1 being standard zoom, 10 being 10x zoomed in.
+     */
     public static void setZoomLevel(double zoomLevel) {
 
         double deltaZoom = DisplayUtils.zoomLevel- zoomLevel;
         double canvasHeight = Controller.getAnchorHeight()/2;
         double canvasWidth = Controller.getAnchorWidth()/2;
 
-        offsetX += (int) (canvasWidth*deltaZoom);
-        offsetY += (int) (canvasHeight*deltaZoom);
+
+        moveOffset((canvasWidth*deltaZoom), (canvasHeight*deltaZoom));
 
 
         DisplayUtils.zoomLevel = zoomLevel;
 
     }
 
+    /**
+     * Changes offsets centering map on a coordinate point
+     * @param coordinate A Coordinate (lat/lon) point for the map to be centered
+     */
     public static void moveToPoint(Coordinate coordinate ){
         CanvasCoordinate location = convertFromLatLon(coordinate.getLat(), coordinate.getLon());
 
@@ -85,24 +93,47 @@ public class DisplayUtils {
         double canvasHeight = Controller.getAnchorHeight()/2;
         double canvasWidth = Controller.getAnchorWidth()/2;
 
-        offsetX -= (int) (locationX - canvasWidth);
-        offsetY -= (int) (locationY - canvasHeight);
 
+        moveOffset(-(locationX - canvasWidth), -(locationY - canvasHeight));
 
 
     }
 
+    /**
+     * Detects dragging on the display and moves the map accordingly
+     * @param mouseLocationX The latest screen X location of the mouse during drag operation
+     * @param mouseLocationY The latest screen Y location of the mouse during drag operation
+     */
     public static void dragDisplay(int mouseLocationX, int mouseLocationY){
-        if(abs(mouseLocationX - prevDragX) < 35 ||
-                abs(mouseLocationY - prevDragY) < 35){
+        if(abs(mouseLocationX - prevDragX) < 45 &&
+                abs(mouseLocationY - prevDragY) < 45){
 
-            offsetX += (mouseLocationX-prevDragX);
-            offsetY += (mouseLocationY-prevDragY);
+            moveOffset((mouseLocationX-prevDragX), (mouseLocationY-prevDragY));
 
 
         }
         prevDragX = mouseLocationX;
         prevDragY  = mouseLocationY;
+
+    }
+
+    /**
+     * moves the offsets of the display when appropriate
+     * @param amountX the screen X amount of change to the current offset
+     * @param amountY the screen Y amount of change to the current offset
+     */
+    private static void moveOffset(double amountX, double amountY){
+        offsetX += amountX;
+        offsetY += amountY;
+
+        double canvasHeight = Controller.getAnchorHeight();
+        double canvasWidth = Controller.getAnchorWidth();
+
+//        if(offsetX > (canvasWidth * zoomLevel)){  offsetX = (int)(canvasWidth * zoomLevel);}
+//        if(offsetY > (canvasHeight * zoomLevel)){  offsetY = (int)(canvasHeight * zoomLevel);}
+//        if(offsetX < 0){  offsetX = 0;}
+//        if(offsetY < 0){  offsetY = 0;}
+
 
     }
 
