@@ -110,6 +110,7 @@ public class RaceView {
      * @param boatPosition the current position of the boat
      * @param lengthOfVector the length of the vector (in terms of Nautical Miles)
      * @param boatBearing the bearing of the boat
+     * @param color the color of the boat
      * @return a line extending from the boat
      */
     public Polyline createSOGVector(Coordinate boatPosition, double lengthOfVector, double boatBearing, Color color){
@@ -118,6 +119,15 @@ public class RaceView {
         return vector;
     }
 
+    /**
+     * Creates a vector extending from the boat with length proportional to it's velocity made good
+     * @param BoatsPosition the current position of the boat
+     * @param lengthOfVector the length of the vector (in terms of Nautical Miles)
+     * @param color the color of the boat
+     * @param boat the boat the vector is associated with
+     * @param course the course the boat is on
+     * @return a line extending from the boat
+     */
     public Polyline createVMGVector(Coordinate boatPosition, double lengthOfVector, Color color, Boat boat, Course course){
         int lastRoundedMarkIndex = boat.getLastRoundedMarkIndex();
         List<CompoundMark> courseOrder = course.getCourseOrder();
@@ -151,6 +161,30 @@ public class RaceView {
         line.setLayoutY(arrowEnd1.getY());
         line.setStroke(color);
         return line;
+    }
+
+    /**
+     * Calculates boat's VMG for use in scaling of VMGVector
+     * @param BoatsPosition the current position of the boat
+     * @param boat the boat the VMG relates to
+     * @param course the course the boat is on
+     * @return the VMG of the boat (in direction of next mark
+     */
+    public double calculateVMGofBoat(Coordinate BoatsPosition, Boat boat, Course course){
+        int lastRoundedMarkIndex = boat.getLastRoundedMarkIndex();
+        ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
+        Coordinate markLocation;
+        if(lastRoundedMarkIndex + 1 < courseOrder.size()){
+            markLocation = courseOrder.get(lastRoundedMarkIndex + 1).getPosition();
+        } else {
+            markLocation = courseOrder.get(lastRoundedMarkIndex).getPosition();
+        }
+
+        double lineBearing = BoatsPosition.headingToCoordinate(markLocation);
+        double angle = Math.abs(boat.getHeading() - lineBearing);
+
+        double VMG = Math.cos(Math.toRadians(angle)) * boat.getSpeed();
+        return VMG;
     }
 
     /**

@@ -66,7 +66,6 @@ public class Boat implements Comparable<Boat>{
         gybeTWAofBoat = gybingInfo.getValue();
         VMGofBoat = tackingInfo.getKey();
         TWAofBoat = tackingInfo.getValue();
-        currentVMGSpeed = maxSpeed;
     }
 
     /**
@@ -104,10 +103,10 @@ public class Boat implements Comparable<Boat>{
         currentVMGSpeed = speed;
         if(((windDirection - TWAofBoat)%360)+360 <= (bearing+360) && ((windDirection + TWAofBoat)%360)+360 >= (bearing + 360)){
             onTack = true;
-            currentVMGSpeed = VMGofBoat;
+            setCurrentVMGSpeed(VMGofBoat);
         } else if((((180+windDirection) - (180-gybeTWAofBoat))% 360)+360 <= (bearing+360) && (((180+windDirection) + (180-gybeTWAofBoat))%360)+360 >= (bearing+360)){
             onGybe = true;
-            currentVMGSpeed = gybeVMGofBoat * (-1.0);
+            setCurrentVMGSpeed(gybeVMGofBoat * (-1.0));
         }
 
         CompoundMark nextMark = courseOrder.get(lastRoundedMarkIndex+1);
@@ -480,7 +479,7 @@ public class Boat implements Comparable<Boat>{
     }
 
     public double getCurrentVMGSpeed() {
-        return this.currentVMGSpeed;
+        return currentVMGSpeed;
     }
 
     public BoatStatus getStatus() {
@@ -497,5 +496,9 @@ public class Boat implements Comparable<Boat>{
 
     public void setTimeTillFinish(long timeTillFinish) {
         this.timeTillFinish = timeTillFinish;
+    }
+
+    public void setCurrentVMGSpeed(double currentVMGSpeed) {
+        this.currentVMGSpeed = currentVMGSpeed;
     }
 }
