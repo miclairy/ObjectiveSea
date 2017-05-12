@@ -111,7 +111,7 @@ public class RaceView {
      * @param lengthOfVector the length of the vector (in terms of Nautical Miles)
      * @param boatBearing the bearing of the boat
      * @param color the color of the boat
-     * @return a line extending from the boat
+     * @return a polyline extending from the boat
      */
     public Polyline createSOGVector(Coordinate boatPosition, double lengthOfVector, double boatBearing, Color color){
         Coordinate end2 = boatPosition.coordAt(lengthOfVector, boatBearing);
@@ -121,12 +121,12 @@ public class RaceView {
 
     /**
      * Creates a vector extending from the boat with length proportional to it's velocity made good
-     * @param BoatsPosition the current position of the boat
+     * @param boatPosition the current position of the boat
      * @param lengthOfVector the length of the vector (in terms of Nautical Miles)
      * @param color the color of the boat
      * @param boat the boat the vector is associated with
      * @param course the course the boat is on
-     * @return a line extending from the boat
+     * @return a polyline extending from the boat
      */
     public Polyline createVMGVector(Coordinate boatPosition, double lengthOfVector, Color color, Boat boat, Course course){
         int lastRoundedMarkIndex = boat.getLastRoundedMarkIndex();
@@ -143,6 +143,14 @@ public class RaceView {
         return vector;
     }
 
+    /**
+     * Draws a vector arrow based from fromCoord to toCoord with the given color
+     * @param fromCoord The coordinate of the base of the arrow
+     * @param toCoord The coordinate of the top (pointy-end) of the arrow
+     * @param bearing The bearing from the base to the top of the arrow
+     * @param color The color of the arrow
+     * @return a Polyline generated starting from fromCoord to toCoord in terms of CanvasCoordinates on screen.
+     */
     private Polyline drawVectorArrow(Coordinate fromCoord, Coordinate toCoord, double bearing, Color color){
         double arrowHeadLength = 5;
         CanvasCoordinate arrowEnd1 = DisplayUtils.convertFromLatLon(fromCoord);
