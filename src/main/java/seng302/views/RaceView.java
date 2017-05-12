@@ -2,6 +2,7 @@ package seng302.views;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import javafx.scene.transform.Rotate;
 import seng302.models.*;
 import seng302.utilities.DisplayUtils;
 
@@ -106,40 +107,48 @@ public class RaceView {
 
     /**
      * Creates a vector extending from the boat with length proportional to it's speed over ground
-     * @param BoatsPosition the current position of the boat
+     * @param boatPosition the current position of the boat
      * @param lengthOfVector the length of the vector (in terms of Nautical Miles)
      * @param boatBearing the bearing of the boat
      * @return a line extending from the boat
      */
-    public Line createSOGVector(Coordinate BoatsPosition, double lengthOfVector, double boatBearing, Color color){
-        Coordinate end2 = BoatsPosition.coordAt(lengthOfVector, boatBearing);
-        CanvasCoordinate convertedEnd1 = DisplayUtils.convertFromLatLon(BoatsPosition);
-        CanvasCoordinate convertedEnd2 = DisplayUtils.convertFromLatLon(end2);
-        Line line = new Line(
-                convertedEnd1.getX(), convertedEnd1.getY(),
-                convertedEnd2.getX(), convertedEnd2.getY()
-        );
-        line.setStroke(color);
-        return line;
+    public Polyline createSOGVector(Coordinate boatPosition, double lengthOfVector, double boatBearing, Color color){
+        Coordinate end2 = boatPosition.coordAt(lengthOfVector, boatBearing);
+        Polyline vector = drawVectorArrow(boatPosition, end2, boatBearing, color);
+        return vector;
     }
 
-    public Line createVMGVector(Coordinate BoatsPosition, double lengthOfVector, Color color, Boat boat, Course course){
+    public Polyline createVMGVector(Coordinate boatPosition, double lengthOfVector, Color color, Boat boat, Course course){
         int lastRoundedMarkIndex = boat.getLastRoundedMarkIndex();
-        ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
+        List<CompoundMark> courseOrder = course.getCourseOrder();
         Coordinate markLocation;
         if(lastRoundedMarkIndex + 1 < courseOrder.size()){
-        markLocation = courseOrder.get(lastRoundedMarkIndex + 1).getPosition();
+            markLocation = courseOrder.get(lastRoundedMarkIndex + 1).getPosition();
         } else {
             markLocation = courseOrder.get(lastRoundedMarkIndex).getPosition();
         }
-        double lineBearing = BoatsPosition.headingToCoordinate(markLocation);
-        Coordinate end2 = BoatsPosition.coordAt(lengthOfVector, lineBearing);
-        CanvasCoordinate convertedEnd1 = DisplayUtils.convertFromLatLon(BoatsPosition);
-        CanvasCoordinate convertedEnd2 = DisplayUtils.convertFromLatLon(end2);
-        Line line = new Line(
-                convertedEnd1.getX(), convertedEnd1.getY(),
-                convertedEnd2.getX(), convertedEnd2.getY()
+        double lineBearing = boatPosition.headingToCoordinate(markLocation);
+        Coordinate end2 = boatPosition.coordAt(lengthOfVector, lineBearing);
+        Polyline vector = drawVectorArrow(boatPosition, end2, lineBearing, color);
+        return vector;
+    }
+
+    private Polyline drawVectorArrow(Coordinate fromCoord, Coordinate toCoord, double bearing, Color color){
+        double arrowHeadLength = 5;
+        CanvasCoordinate arrowEnd1 = DisplayUtils.convertFromLatLon(fromCoord);
+        CanvasCoordinate arrowEnd2 = DisplayUtils.convertFromLatLon(toCoord);
+        double arrowLength = CanvasCoordinate.distance(arrowEnd1, arrowEnd2);
+
+        Polyline line = new Polyline(
+                0, 0,
+                0, -arrowLength,
+                -arrowHeadLength, -arrowLength+arrowHeadLength,
+                0, -arrowLength,
+                arrowHeadLength, -arrowLength+arrowHeadLength
         );
+        line.getTransforms().add(new Rotate(bearing));
+        line.setLayoutX(arrowEnd1.getX());
+        line.setLayoutY(arrowEnd1.getY());
         line.setStroke(color);
         return line;
     }

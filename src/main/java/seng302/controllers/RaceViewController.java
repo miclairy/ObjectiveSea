@@ -364,22 +364,20 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     private void drawVMGVector(BoatDisplay boat){
-        double bearing = boat.getBoat().getHeading();
         double scale = boat.getBoat().getCurrentVMGSpeed() / SOG_SCALE_FACTOR;
         Color color = boat.getColor();
         Course course = race.getCourse();
-        Line line = raceView.createVMGVector(boat.getBoat().getCurrentPosition(), scale, color, boat.getBoat(), course);
+        Polyline line = raceView.createVMGVector(boat.getBoat().getCurrentPosition(), scale, color, boat.getBoat(), course);
         root.getChildren().add(line);
         boat.setVMGVector(line);
     }
 
     private void moveVMGVector(BoatDisplay boat){
         double scale = boat.getBoat().getVMGofBoat() / SOG_SCALE_FACTOR;
-        //System.out.println("VMG " + boat.getCurrentVMGSpeed());
         Color color = boat.getColor();
         Course course = race.getCourse();
         root.getChildren().remove(boat.getVMGVector());
-        Line line = raceView.createVMGVector(boat.getBoat().getCurrentPosition(), scale, color, boat.getBoat(), course);
+        Polyline line = raceView.createVMGVector(boat.getBoat().getCurrentPosition(), scale, color, boat.getBoat(), course);
         root.getChildren().add(line);
         boat.setVMGVector(line);
     }
@@ -391,7 +389,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void drawSOGVector(BoatDisplay boat){
         double scale = boat.getBoat().getSpeed() / SOG_SCALE_FACTOR;
         Color color = boat.getColor();
-        Line line = raceView.createSOGVector(boat.getBoat().getCurrentPosition(),scale, boat.getBoat().getHeading(),color);
+        Polyline line = raceView.createSOGVector(boat.getBoat().getCurrentPosition(),scale, boat.getBoat().getHeading(),color);
         root.getChildren().add(line);
         boat.setSOGVector(line);
     }
@@ -401,7 +399,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         //System.out.println("SOG " + scale);
         Color color = boat.getColor();
         root.getChildren().remove(boat.getSOGVector());
-        Line line = raceView.createSOGVector(boat.getBoat().getCurrentPosition(),scale, boat.getBoat().getHeading(),color);
+        Polyline line = raceView.createSOGVector(boat.getBoat().getCurrentPosition(),scale, boat.getBoat().getHeading(),color);
         root.getChildren().add(line);
         boat.setSOGVector(line);
     }
