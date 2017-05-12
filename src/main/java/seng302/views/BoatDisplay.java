@@ -120,5 +120,15 @@ public class BoatDisplay {
         }
         return timeTillMark;
     }
+
+    public void showVectors() {
+        SOGVector.setVisible(true);
+        VMGVector.setVisible(true);
+    }
+
+    public void hideVectors(){
+        SOGVector.setVisible(false);
+        VMGVector.setVisible(false);
+    }
 }
 
