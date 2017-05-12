@@ -3,7 +3,9 @@ package seng302.controllers;
 /**
  * Main class. Loads data and starts GUI.
  */
+import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
+import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -23,6 +25,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
         primaryStage.setTitle("Race Vision");
         primaryStage.getIcons().add(new Image("graphics/icon.png"));
@@ -45,7 +48,7 @@ public class Main extends Application {
                 e.printStackTrace();
             }
         }
-        launch(args);
+        LauncherImpl.launchApplication(Main.class, SplashScreenLoader.class, args);
     }
 
     /**
