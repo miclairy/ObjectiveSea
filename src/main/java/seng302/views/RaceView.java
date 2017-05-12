@@ -132,12 +132,14 @@ public class RaceView {
         int lastRoundedMarkIndex = boat.getLastRoundedMarkIndex();
         List<CompoundMark> courseOrder = course.getCourseOrder();
         Coordinate markLocation;
+        double lineBearing;
         if(lastRoundedMarkIndex + 1 < courseOrder.size()){
             markLocation = courseOrder.get(lastRoundedMarkIndex + 1).getPosition();
+            lineBearing = boatPosition.headingToCoordinate(markLocation);
         } else {
-            markLocation = courseOrder.get(lastRoundedMarkIndex).getPosition();
+            lineBearing = boat.getHeading();
+            lengthOfVector = 0;
         }
-        double lineBearing = boatPosition.headingToCoordinate(markLocation);
         Coordinate end2 = boatPosition.coordAt(lengthOfVector, lineBearing);
         Polyline vector = drawVectorArrow(boatPosition, end2, lineBearing, color);
         return vector;
