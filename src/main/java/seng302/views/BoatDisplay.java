@@ -140,6 +140,9 @@ public class BoatDisplay {
         }
         annotationLine.setOpacity(FADEDBOAT);
         annotation.setOpacity(FADEDBOAT);
+        SOGVector.setOpacity(FADEDBOAT);
+        VMGVector.setOpacity(FADEDBOAT);
+
     }
 
     public void focus(){
@@ -150,6 +153,8 @@ public class BoatDisplay {
         }
         annotation.setOpacity(1);
         annotationLine.setOpacity(1);
+        SOGVector.setOpacity(1);
+        VMGVector.setOpacity(1);
     }
 }
 
