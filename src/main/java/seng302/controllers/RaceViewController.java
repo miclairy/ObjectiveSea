@@ -1,6 +1,7 @@
 package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
+import javafx.animation.FadeTransition;
 import javafx.collections.ObservableList;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -19,6 +20,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
+import javafx.util.Duration;
 import seng302.data.BoatStatus;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.TimeUtils;
@@ -201,6 +203,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             for(BoatDisplay boat : displayBoats){
                 boat.focus();
                 scoreBoardController.btnTrack.setVisible(false);
+                boat.getBoat().getSeries().getNode().setOpacity(1);
             }
         });
 
@@ -208,6 +211,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             for(BoatDisplay boat : displayBoats){
                 boat.focus();
                 scoreBoardController.btnTrack.setVisible(false);
+                boat.getBoat().getSeries().getNode().setOpacity(1);
             }
         });
     }
@@ -548,8 +552,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
         for(BoatDisplay boat : displayBoats){
             if(!boat.equals(selectedBoat)){
                 boat.unFocus();
+                boat.getBoat().getSeries().getNode().setOpacity(0.2);
             }else{
                 boat.focus();
+                boat.getBoat().getSeries().getNode().setOpacity(1);
             }
         }
     }

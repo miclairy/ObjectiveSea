@@ -124,6 +124,8 @@ public class ScoreBoardController {
     public boolean isTimePassedSelected(){return chkPassMarkTime.isSelected();}
 
     public void addBoatToSparkLine(Series boatSeries){
-        chtSparkLine.getData().add(boatSeries);
+        if(!chtSparkLine.getData().contains(boatSeries)){
+            chtSparkLine.getData().add(boatSeries);
+        }
     }
 }

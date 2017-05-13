@@ -149,9 +149,11 @@ public class RaceTest {
         Boat boat1 = defaultRace.getBoatById(1);
         Boat boat2 = defaultRace.getBoatById(2);
 
-        assertEquals(0, boat1.getLastRoundedMarkIndex());
-        assertEquals(0, boat2.getLastRoundedMarkIndex());
-
+        assertEquals(-1, boat1.getLastRoundedMarkIndex());
+        assertEquals(-1, boat2.getLastRoundedMarkIndex());
+        for(Boat boat : defaultRace.getCompetitors()){
+            boat.setLeg(1);
+        }
         defaultRace.updateMarkRounded(2, 1, 1);
         assertEquals(0, boat1.getLastRoundedMarkIndex());
         assertEquals(1, boat2.getLastRoundedMarkIndex());
@@ -180,7 +182,10 @@ public class RaceTest {
 
         defaultRace.getCourse().addMarkInOrder(1);
 
-        assertEquals(0, boat1.getLastRoundedMarkIndex());
+        assertEquals(-1, boat1.getLastRoundedMarkIndex());
+        for(Boat boat : defaultRace.getCompetitors()){
+            boat.setLeg(1);
+        }
         defaultRace.updateMarkRounded(1, 1, 1);
         assertEquals(1, boat1.getLastRoundedMarkIndex());
         defaultRace.updateMarkRounded(1, 2, 5);
