@@ -502,4 +502,26 @@ public class Boat implements Comparable<Boat>{
     public void setCurrentVMGSpeed(double currentVMGSpeed) {
         this.currentVMGSpeed = currentVMGSpeed;
     }
+
+
+    /**
+     * Calculates boat's VMG
+     * @param course the course the boat is on
+     * @return the VMG of the boat (in direction of next mark
+     */
+    public double calculateVMG(Course course){
+        ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
+        Coordinate markLocation;
+        if(lastRoundedMarkIndex + 1 < courseOrder.size()){
+            markLocation = courseOrder.get(lastRoundedMarkIndex + 1).getPosition();
+        } else {
+            markLocation = courseOrder.get(lastRoundedMarkIndex).getPosition();
+        }
+
+        double lineBearing = currentPosition.headingToCoordinate(markLocation);
+        double angle = Math.abs(heading - lineBearing);
+
+        double VMG = Math.cos(Math.toRadians(angle)) * speed;
+        return VMG;
+    }
 }

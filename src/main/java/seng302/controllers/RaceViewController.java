@@ -425,9 +425,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void drawVMGVector(BoatDisplay boat){
         Color color = boat.getColor();
         Course course = race.getCourse();
-        double VMG = raceView.calculateVMGofBoat(boat.getBoat().getCurrentPosition(), boat.getBoat(), course);
+        double VMG = boat.getBoat().calculateVMG(course);
         double scale = VMG / SOG_SCALE_FACTOR;
-        Polyline line = raceView.createVMGVector(boat.getBoat().getCurrentPosition(), scale, color, boat.getBoat(), course);
+        Polyline line = raceView.createVMGVector(boat.getBoat(), scale, course, color);
         root.getChildren().add(line);
         boat.setVMGVector(line);
     }
@@ -440,9 +440,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         Color color = boat.getColor();
         Course course = race.getCourse();
         root.getChildren().remove(boat.getVMGVector());
-        double VMG = raceView.calculateVMGofBoat(boat.getBoat().getCurrentPosition(), boat.getBoat(), course);
+        double VMG = boat.getBoat().calculateVMG(course);
         double scale = VMG / SOG_SCALE_FACTOR;
-        Polyline line = raceView.createVMGVector(boat.getBoat().getCurrentPosition(), scale, color, boat.getBoat(), course);
+        Polyline line = raceView.createVMGVector(boat.getBoat(), scale, course, color);
         root.getChildren().add(line);
         boat.setVMGVector(line);
     }
@@ -454,7 +454,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void drawSOGVector(BoatDisplay boat){
         double scale = boat.getBoat().getSpeed() / SOG_SCALE_FACTOR;
         Color color = boat.getColor();
-        Polyline line = raceView.createSOGVector(boat.getBoat().getCurrentPosition(),scale, boat.getBoat().getHeading(),color);
+        Polyline line = raceView.createSOGVector(boat.getBoat(), scale, color);
         root.getChildren().add(line);
         boat.setSOGVector(line);
     }
@@ -467,7 +467,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         double scale = boat.getBoat().getSpeed() / SOG_SCALE_FACTOR;
         Color color = boat.getColor();
         root.getChildren().remove(boat.getSOGVector());
-        Polyline line = raceView.createSOGVector(boat.getBoat().getCurrentPosition(),scale, boat.getBoat().getHeading(),color);
+        Polyline line = raceView.createSOGVector(boat.getBoat(), scale, color);
         root.getChildren().add(line);
         boat.setSOGVector(line);
     }
