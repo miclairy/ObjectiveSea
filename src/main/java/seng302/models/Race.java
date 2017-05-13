@@ -244,7 +244,5 @@ public class Race extends Observable{
             boatIdMap.put(competitor.getId(), competitor);
         }
     }
-
-
 }
 
