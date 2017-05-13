@@ -21,7 +21,6 @@ public class Race extends Observable{
     private List<Boat> competitors;
     private List<Boat> raceOrder = new ArrayList<>();
     private Map<Integer, Boat> boatIdMap;
-
     private double totalRaceTime;
     private RaceStatus raceStatus = NOT_ACTIVE;
     private long startTimeInEpochMs, currentTimeInEpochMs;
