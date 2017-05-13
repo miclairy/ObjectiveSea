@@ -64,7 +64,7 @@
     <Corner SeqID="4" CompoundMarkID="3" Rounding="SP" ZoneSize="3" />
     <Corner SeqID="5" CompoundMarkID="5" Rounding="SP" ZoneSize="3" />
     <Corner SeqID="6" CompoundMarkID="4" Rounding="PS" ZoneSize="3" />
-    <Corner SeqID="11" CompoundMarkID="11" Rounding="PS" ZoneSize="3" />
+    <Corner SeqID="7" CompoundMarkID="11" Rounding="PS" ZoneSize="3" />
   </CompoundMarkSequence>
   <CourseLimit>
     <Limit SeqID="1" Lat="32.318879" Lon="-64.840290" />

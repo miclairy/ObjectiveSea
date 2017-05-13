@@ -123,7 +123,7 @@ public class BoatDisplay {
         FadeTransition wakeTransition = new FadeTransition();
         wakeTransition.setNode(wake);
         wakeTransition.setDuration(new Duration(500));
-        wakeTransition.setFromValue(1.0);
+        wakeTransition.setFromValue(wake.getOpacity());
         wakeTransition.setToValue(0.15);
 
         FadeTransition annoTransition = new FadeTransition();
@@ -134,8 +134,13 @@ public class BoatDisplay {
 
         ParallelTransition allTransitions = new ParallelTransition(iconTransition, wakeTransition, annoTransition);
         allTransitions.play();
-        if(path.getElements().size() > 1){
-            path.setOpacity(FADEDBOAT);
+        if(path != null){
+            FadeTransition pathTransition = new FadeTransition();
+            pathTransition.setNode(path);
+            pathTransition.setDuration(new Duration(500));
+            pathTransition.setFromValue(1.0);
+            pathTransition.setToValue(FADEDBOAT);
+            pathTransition.play();
         }
         annotationLine.setOpacity(FADEDBOAT);
     }
@@ -159,10 +164,15 @@ public class BoatDisplay {
         annoTransition.setFromValue(annotation.getOpacity());
         annoTransition.setToValue(1.0);
 
-        ParallelTransition allTransitions = new ParallelTransition(iconTransition, wakeTransition, annoTransition);
+        ParallelTransition allTransitions = new ParallelTransition( annoTransition, iconTransition, wakeTransition);
         allTransitions.play();
-        if(path.getElements().size() > 1){
-            path.setOpacity(1);
+        if(path != null){
+            FadeTransition pathTransition = new FadeTransition();
+            pathTransition.setNode(path);
+            pathTransition.setDuration(new Duration(500));
+            pathTransition.setFromValue(path.getOpacity());
+            pathTransition.setToValue(1);
+            pathTransition.play();
         }
         annotationLine.setOpacity(1);
     }

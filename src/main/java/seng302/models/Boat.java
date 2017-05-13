@@ -86,6 +86,9 @@ public class Boat implements Comparable<Boat>{
 
     public void setStatus(BoatStatus status) {
         this.status = status;
+        if(status.equals(BoatStatus.FINISHED)){
+            finished = true;
+        }
     }
 
     public Coordinate getCurrentPosition() {
@@ -433,7 +436,7 @@ public class Boat implements Comparable<Boat>{
     }
 
     public boolean isFinished() {
-        return status.equals(BoatStatus.FINISHED);
+        return finished;
     }
 
     public double getHeading() {
@@ -446,7 +449,7 @@ public class Boat implements Comparable<Boat>{
 
     public void setCurrPlacing(int placing){
         this.currPlacing = placing;
-        series.getData().add(new Data(getLastRoundedMarkIndex(), getCurrPlacing()));
+        series.getData().add(new Data(lastRoundedMarkIndex, currPlacing));
     }
 
     /**
@@ -516,7 +519,13 @@ public class Boat implements Comparable<Boat>{
 
     public void setLeg(int leg){
         if(lastRoundedMarkIndex == -1){
-            lastRoundedMarkIndex = leg - 1;
+            if(status.equals(BoatStatus.FINISHED)){
+                lastRoundedMarkIndex = leg;
+            }else if(leg != 0){
+                lastRoundedMarkIndex = leg - 1;
+            }else{
+                lastRoundedMarkIndex = 0;
+            }
         }
         this.leg = leg;
     }
