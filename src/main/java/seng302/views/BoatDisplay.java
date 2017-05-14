@@ -31,6 +31,7 @@ public class BoatDisplay {
 
     private Color color;
     private Pair<Line, Line> layLines;
+    private Pair<Line, Line> boatLayLines;
 
     public BoatDisplay(Boat boat) {
         this.boat = boat;
@@ -113,6 +114,10 @@ public class BoatDisplay {
         this.layLines = laylines;
     }
 
+    public void setBoatLaylines(Pair<Line, Line> boatLayLines) {
+        this.boatLayLines = boatLayLines;
+    }
+
     public Pair<Line, Line> getLayLines() {
         return layLines;
     }
@@ -143,6 +148,14 @@ public class BoatDisplay {
             root.getChildren().remove(layLines.getValue());
         }
         layLines = null;
+    }
+
+    public void removeBoatLaylines(Group root) {
+        if (boatLayLines != null) {
+            root.getChildren().remove(boatLayLines.getKey());
+            root.getChildren().remove(boatLayLines.getValue());
+        }
+        boatLayLines = null;
     }
 }
 

@@ -117,6 +117,12 @@ public class DataStreamReader implements Runnable{
         return (double)value * 180 / Math.pow(2, 31);
     }
 
+
+    /**
+     * Converts an integer to a true wind angle as per specification.
+     * @param value the angle as a scaled integer
+     * @return the actual angle of the wind
+     */
     static double intToTrueWindAngle(int value){
         return (double)value * 180 / Math.pow(2, 15);
     }

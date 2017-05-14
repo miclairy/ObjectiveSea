@@ -212,6 +212,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             boat.focus();
             scoreBoardController.btnTrack.setVisible(false);
             boat.removeLaylines(root);
+            boat.removeBoatLaylines(root);
             selectedBoat = null;
         }
     }
@@ -420,18 +421,25 @@ public class RaceViewController extends AnimationTimer implements Observer {
      *  Draws laylines for a boat coming from the next mark it is heading to (at the moment is Mark1)
      * @param boat
      */
-    //TODO create function that chooses closest mark to draw laylines from
+    //TODO create function that chooses closest mark to draw laylines from also check if boat is not tacking or gybing so lines are not drawn
     private void drawLayLine(BoatDisplay boat){
-        if (boat.getBoat().getLastRoundedMarkIndex() < race.getCourse().getCourseOrder().size() - 1) {
+        if (boat.getBoat().getLastRoundedMarkIndex() < race.getCourse().getCourseOrder().size() - 1 && boat.getBoat().getLastRoundedMarkIndex() != -1) {
             boat.removeLaylines(root);
+            boat.removeBoatLaylines(root);
             CompoundMark mark = race.getCourse().getCourseOrder().get(boat.getBoat().getLastRoundedMarkIndex() + 1);
             Pair<Double, Double> bearing = boat.getBoat().calculateLaylineHeading(race.getCourse().getTrueWindDirection());
             Pair<Line, Line> laylines = raceView.createLayLines(bearing, mark, boat);
+            Pair<Line, Line> boatLaylines = raceView.createBoatLayLines(bearing, mark, boat);
             Line layline1 = laylines.getKey();
             Line layline2 = laylines.getValue();
+            Line boatLayline1 = boatLaylines.getKey();
+            Line boatLayline2 = boatLaylines.getValue();
             root.getChildren().add(layline1);
             root.getChildren().add(layline2);
+            root.getChildren().add(boatLayline1);
+            root.getChildren().add(boatLayline2);
             boat.setLaylines(laylines);
+            boat.setBoatLaylines(boatLaylines);
             layline1.toBack();
             layline2.toBack();
         }
@@ -571,6 +579,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if(!boat.equals(selectedBoat)){
                 boat.unFocus();
                 boat.removeLaylines(root);
+                boat.removeBoatLaylines(root);
             }else{
                 boat.focus();
                 drawLayLine(boat);
