@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
@@ -40,11 +41,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         NO_ANNOTATION, IMPORTANT_ANNOTATIONS, ALL_ANNOTATIONS
     }
     private final double WAKE_SCALE_FACTOR = 17;
-
     private final double ANNOTATION_OFFSET_X = 10;
     private final double ANNOTATION_OFFSET_Y = 15;
     private Race race;
-
     private Group root;
     private Controller controller;
     private RaceView raceView;
@@ -60,6 +59,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean courseNeedsRedraw = false;
     private boolean initializedBoats = false;
     private ImageCursor cursor = new ImageCursor(new Image("graphics/boat-select-cursor.png"), 7, 7);
+    private DistanceLine distanceLine = new DistanceLine();
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
         this.root = root;
@@ -111,6 +111,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
         controller.setWindDirection();
+        distanceLine.updateLine();
     }
 
     /**
@@ -520,6 +521,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
+    private void redrawDistanceLines(){
+        distanceLine.updateLine();
+        Line line = distanceLine.getLine();
+        root.getChildren().add(line);
+    }
+
     /**
      * Adds a point to the boat path
      * @param boatDisplay The display component of the boat
@@ -562,6 +569,20 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
     public boolean hasInitializedBoats() {
         return initializedBoats;
+    }
+
+    /**
+     * Draws lines on the GUI to show which boat is in front of another boat
+     * @param boat1 the boat that is selected in the first drop down
+     * @param boat2 the boat that is selected in the second drop down
+     */
+    public void updateDistanceLine(Boat boat1, Boat boat2){
+        distanceLine.setFirstBoat(boat1);
+        distanceLine.setSecondBoat(boat2);
+        ArrayList<CompoundMark> raceOrder = race.getCourse().getCourseOrder();
+        CompoundMark nextMark = raceOrder.get(boat1.getLastRoundedMarkIndex() + 2);
+        distanceLine.setMark(nextMark);  // Needs to be correct using the leg of the race the boat is on
+        redrawDistanceLines();
     }
 }
 

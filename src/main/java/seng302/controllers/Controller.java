@@ -90,7 +90,7 @@ public class Controller implements Initializable, Observer {
         course.addObserver(raceViewController);
 
         createCanvasAnchorListeners();
-        scoreBoardController.setControllers(this, raceViewController);
+        scoreBoardController.setControllers(this, raceViewController, race);
         scoreBoardController.setUp();
         fpsString.set("..."); //set to "..." while fps count loads
         fpsLabel.textProperty().bind(fpsString);

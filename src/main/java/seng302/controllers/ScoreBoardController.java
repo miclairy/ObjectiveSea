@@ -3,14 +3,12 @@ package seng302.controllers;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.util.StringConverter;
 import seng302.models.Boat;
 import seng302.models.Race;
+
+import java.util.Objects;
 
 /**
  * Created by Louis on 20-Apr-17.
@@ -20,6 +18,7 @@ public class ScoreBoardController {
     // Controllers
     private Controller parent;
     private RaceViewController raceViewController;
+    private Race race;
 
     //FXML fields
     @FXML private CheckBox fpsToggle;
@@ -31,10 +30,13 @@ public class ScoreBoardController {
     @FXML private CheckBox chkPassMarkTime;
     @FXML private CheckBox chkEst;
     @FXML public Button btnTrack;
+    @FXML private ComboBox<String> boatDropDown1;
+    @FXML private ComboBox<String> boatDropDown2;
 
-    public void setControllers(Controller parent, RaceViewController raceViewController){
+    public void setControllers(Controller parent, RaceViewController raceViewController, Race race){
         this.parent = parent;
         this.raceViewController = raceViewController;
+        this.race = race;
     }
 
     public void setUp(){
@@ -65,6 +67,10 @@ public class ScoreBoardController {
                 }
             }
         });
+        for (Boat boat : race.getCompetitors()){
+            boatDropDown1.getItems().addAll(boat.getName());
+            boatDropDown2.getItems().addAll(boat.getName());
+        }
     }
 
     @FXML
@@ -82,6 +88,21 @@ public class ScoreBoardController {
     private void setupAnnotationControl() {
         annotationsSlider.valueProperty().addListener((observable, oldValue, newValue) -> raceViewController.changeAnnotations(newValue.intValue(), false));
         annotationsSlider.adjustValue(annotationsSlider.getMax());
+    }
+
+    @FXML
+    private void drawDistanceLines(){
+        Boat firstBoat = null;
+        Boat secondBoat = null;
+        for (Boat boat : race.getCompetitors()){
+            if (Objects.equals(boat.getName(), boatDropDown1.getValue())){
+                firstBoat = boat;
+            }
+            if (Objects.equals(boat.getName(), boatDropDown2.getValue())){
+                secondBoat = boat;
+            }
+        }
+        raceViewController.updateDistanceLine(firstBoat, secondBoat);
     }
 
     public boolean isSpeedSelected(){return chkSpeed.isSelected();}
