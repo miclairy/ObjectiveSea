@@ -11,27 +11,4 @@ public enum BoatStatus {
     BoatStatus(int value){ this.value = value; }
 
     public int getValue() {return value;}
-
-    public static BoatStatus fromInteger(int value){
-        switch(value){
-            case 0:
-                return UNDEFINED;
-            case 1:
-                return PRERACE;
-            case 2:
-                return RACING;
-            case 3:
-                return FINISHED;
-            case 4:
-                return DNS;
-            case 5:
-                return DNF;
-            case 6:
-                return DISQUALIFIED;
-            case 8:
-                return OCS;
-            default:
-                return null;
-        }
-    }
 }

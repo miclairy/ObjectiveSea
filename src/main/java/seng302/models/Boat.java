@@ -86,9 +86,6 @@ public class Boat implements Comparable<Boat>{
 
     public void setStatus(BoatStatus status) {
         this.status = status;
-        if(status.equals(BoatStatus.FINISHED)){
-            finished = true;
-        }
     }
 
     public Coordinate getCurrentPosition() {
@@ -436,7 +433,7 @@ public class Boat implements Comparable<Boat>{
     }
 
     public boolean isFinished() {
-        return finished;
+        return status.equals(BoatStatus.FINISHED);
     }
 
     public double getHeading() {

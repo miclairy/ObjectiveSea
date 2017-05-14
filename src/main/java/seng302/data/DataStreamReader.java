@@ -279,7 +279,7 @@ public class DataStreamReader implements Runnable{
             Boat boat = race.getBoatById(boatID);
             boat.setTimeTillMark(estimatedTimeAtMark);
             boat.setLeg(legNumber);
-            boat.setStatus(BoatStatus.fromInteger(boatStatus));
+            boat.setStatus(BoatStatus.values()[boatStatus]);
         }
         if(race.isFirstMessage()){
             race.updateRaceOrder();

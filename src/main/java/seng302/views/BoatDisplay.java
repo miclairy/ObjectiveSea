@@ -114,67 +114,37 @@ public class BoatDisplay {
     }
 
     public void unFocus(){
-        FadeTransition iconTransition = new FadeTransition();
-        iconTransition.setNode(icon);
-        iconTransition.setDuration(new Duration(500));
-        iconTransition.setFromValue(1.0);
-        iconTransition.setToValue(FADEDBOAT);
-
-        FadeTransition wakeTransition = new FadeTransition();
-        wakeTransition.setNode(wake);
-        wakeTransition.setDuration(new Duration(500));
-        wakeTransition.setFromValue(wake.getOpacity());
-        wakeTransition.setToValue(0.15);
-
-        FadeTransition annoTransition = new FadeTransition();
-        annoTransition.setNode(annotation);
-        annoTransition.setDuration(new Duration(500));
-        annoTransition.setFromValue(1.0);
-        annoTransition.setToValue(FADEDBOAT);
-
-        ParallelTransition allTransitions = new ParallelTransition(iconTransition, wakeTransition, annoTransition);
-        allTransitions.play();
+        fadeNodeTransition(icon, FADEDBOAT);
+        fadeNodeTransition(wake, FADEDBOAT);
+        fadeNodeTransition(annotation, FADEDBOAT);
         if(path != null){
-            FadeTransition pathTransition = new FadeTransition();
-            pathTransition.setNode(path);
-            pathTransition.setDuration(new Duration(500));
-            pathTransition.setFromValue(1.0);
-            pathTransition.setToValue(FADEDBOAT);
-            pathTransition.play();
+            fadeNodeTransition(path, FADEDBOAT);
         }
         annotationLine.setOpacity(FADEDBOAT);
     }
 
     public void focus(){
-        FadeTransition iconTransition = new FadeTransition();
-        iconTransition.setNode(icon);
-        iconTransition.setDuration(new Duration(500));
-        iconTransition.setFromValue(icon.getOpacity());
-        iconTransition.setToValue(1.0);
-
-        FadeTransition wakeTransition = new FadeTransition();
-        wakeTransition.setNode(wake);
-        wakeTransition.setDuration(new Duration(500));
-        wakeTransition.setFromValue(wake.getOpacity());
-        wakeTransition.setToValue(0.5);
-
-        FadeTransition annoTransition = new FadeTransition();
-        annoTransition.setNode(annotation);
-        annoTransition.setDuration(new Duration(500));
-        annoTransition.setFromValue(annotation.getOpacity());
-        annoTransition.setToValue(1.0);
-
-        ParallelTransition allTransitions = new ParallelTransition( annoTransition, iconTransition, wakeTransition);
-        allTransitions.play();
+        fadeNodeTransition(icon, 1.0);
+        fadeNodeTransition(wake, 1.0);
+        fadeNodeTransition(annotation, 1.0);
         if(path != null){
-            FadeTransition pathTransition = new FadeTransition();
-            pathTransition.setNode(path);
-            pathTransition.setDuration(new Duration(500));
-            pathTransition.setFromValue(path.getOpacity());
-            pathTransition.setToValue(1);
-            pathTransition.play();
+            fadeNodeTransition(path, 1.0);
         }
         annotationLine.setOpacity(1);
+    }
+
+    /**
+     * adds a fade transition to a node, so that a node fades over a set period of time
+     * @param node a node in the scene that will be faded
+     * @param endOpacity a double that represents the nodes opacity at the end of the fade
+     */
+    private void fadeNodeTransition(Node node, double endOpacity){
+        FadeTransition fadeTransition = new FadeTransition();
+        fadeTransition.setNode(node);
+        fadeTransition.setDuration(new Duration(500));
+        fadeTransition.setFromValue(node.getOpacity());
+        fadeTransition.setToValue(endOpacity);
+        fadeTransition.play();
     }
 }
 
