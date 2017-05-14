@@ -64,9 +64,9 @@ public class DisplayUtils {
                 "&style=feature:water%7Ccolor:0xaae7df" +
                 "&style=feature:all%7Celement:labels%7Cvisibility:off" +
                 "&visible=" +
-                (min.getLat() + (longPerPixel * 0.11)) + "%2C" + (min.getLon() + (longPerPixel * 0.11)) +
-                "&visible=" +
-                (max.getLat() - (longPerPixel * 0.11)) + "%2C" + (max.getLon() - (longPerPixel * 0.11)) +
+                (min.getLat() + (longPerPixel * 0.11)) + "," + (min.getLon() + (longPerPixel * 0.11)) +
+                "%7C" +
+                (max.getLat() - (longPerPixel * 0.11)) + "," + (max.getLon() - (longPerPixel * 0.11)) +
                 "&scale=2" +
                 "&key=" + GOOGLE_API_KEY;
     }
