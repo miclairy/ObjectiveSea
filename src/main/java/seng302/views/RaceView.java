@@ -5,6 +5,8 @@ import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import seng302.models.*;
 import seng302.utilities.DisplayUtils;
+import seng302.models.CanvasCoordinate;
+import seng302.models.Coordinate;
 
 import java.util.ArrayList;
 import java.util.Arrays;

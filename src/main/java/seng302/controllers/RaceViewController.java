@@ -447,6 +447,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         newLine.setOpacity(oldLine.getOpacity());
         root.getChildren().add(newLine);
         boat.setVMGVector(newLine);
+        newLine.toBack();
     }
 
     /**
@@ -474,6 +475,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         newLine.setOpacity(oldLine.getOpacity());
         root.getChildren().add(newLine);
         boat.setSOGVector(newLine);
+        newLine.toBack();
     }
 
     /**
