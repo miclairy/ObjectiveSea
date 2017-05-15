@@ -376,6 +376,7 @@ public class MockStream implements Runnable {
         body[0] = (byte) 1;
         body[15] = (byte) 1;
         body[24] = (byte) 0;
+        addFieldToByteArray(body, TRUE_WIND_DIRECTION, (long) raceRunner.getRace().getCourse().getWindDirection()); //south east
 
         return body;
     }

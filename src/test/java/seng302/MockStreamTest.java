@@ -161,14 +161,15 @@ public class MockStreamTest {
 
         try {
             MockRaceRunner mockRaceRunner = mock(MockRaceRunner.class);
-
             Race mockRace = mock(Race.class);
+
 
             when(mockRaceRunner.getRace()).thenReturn(mockRace);
             when(mockRaceRunner.getRaceId()).thenReturn(String.valueOf(1122));
             when(mockRace.getRaceStatus()).thenReturn(RaceStatus.STARTED);
 
             Boat boat = new Boat(1, "NZ", "NZ", 20);
+
             when(mockRace.getCompetitors()).thenReturn(new ArrayList<>(Arrays.asList(boat)));
 
             MockStream mockStream = new MockStream(2824, mockRaceRunner);
