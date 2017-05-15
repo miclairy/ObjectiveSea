@@ -2,6 +2,7 @@ package seng302.models;
 
 import javafx.scene.shape.Line;
 import seng302.models.CompoundMark;
+import seng302.utilities.DisplayUtils;
 
 /**
  * Inheriting from compound mark it is used to determine a start or finish point of a race.
@@ -16,11 +17,7 @@ public class RaceLine extends CompoundMark {
     }
 
     private void setPositionAsMidpoint(){
-        Coordinate mark1Coord = mark1.getPosition();
-        Coordinate mark2Coord = mark2.getPosition();
-        Double halfLat = (mark1Coord.getLat() + mark2Coord.getLat()) / 2;
-        Double halfLon = (mark1Coord.getLon() + mark2Coord.getLon()) / 2;
-        setPosition(new Coordinate(halfLat, halfLon));
+        setPosition(DisplayUtils.midPointFromTwoCoords(mark1.getPosition(), mark2.getPosition()));
     }
 
     public Line getLine() {

@@ -106,8 +106,6 @@ public class ScoreBoardController {
         }
         boatDropDown1.setValue(null);
         boatDropDown2.setValue(null);
-        assert firstBoat != null;
-        System.out.println(firstBoat.getName() + ", " + secondBoat.getName());
         raceViewController.updateDistanceLine(firstBoat, secondBoat);
     }
 
