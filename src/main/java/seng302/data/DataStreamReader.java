@@ -196,7 +196,7 @@ public class DataStreamReader implements Runnable{
         } else if(deviceType == MARK_DEVICE_TYPE){
             race.getCourse().updateMark(sourceID, lat, lon);
         }
-        
+
         race.getCourse().updateTrueWindDirection(trueWindDirection);
     }
 
@@ -277,18 +277,24 @@ public class DataStreamReader implements Runnable{
 
         byte[] boatStatuses = new byte[body.length - 24];
 
-        for (int i = 24; i < body.length; i++){
+        for(int i = 24; i < body.length; i++){
             boatStatuses[i - 24] = body[i];
         }
 
         for  (int k = 0; k < boatStatuses.length; k += 20) {
             int boatID = byteArrayRangeToInt(boatStatuses, 0 + k, 4 + k);
+            int boatStatus = byteArrayRangeToInt(boatStatuses, 4 + k, 5 + k);
             long estimatedTimeAtMark = byteArrayRangeToLong(boatStatuses, 8 + k, 14 + k);
+            int legNumber = byteArrayRangeToInt(boatStatuses, 5 + k, 6 + k);
             Boat boat = race.getBoatById(boatID);
             boat.setTimeTillMark(estimatedTimeAtMark);
-            // System.out.println("Boat ID: " + boatID + " Time to next mark: " + ConvertedTime);
+            boat.setLeg(legNumber);
+            boat.setStatus(BoatStatus.values()[boatStatus]);
         }
-
+        if(race.isFirstMessage()){
+            race.updateRaceOrder();
+            race.setFirstMessage(false);
+        }
         race.getCourse().updateCourseWindValues(raceCourseWindDirection);
         race.updateRaceStatus(RaceStatus.fromInteger(raceStatus));
         race.setStartTimeInEpochMs(expectedStartTime);

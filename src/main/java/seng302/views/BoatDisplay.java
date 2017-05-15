@@ -1,6 +1,8 @@
 package seng302.views;
 
 import javafx.scene.Group;
+import javafx.animation.ParallelTransition;
+import javafx.scene.chart.XYChart;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
@@ -8,6 +10,11 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
 import javafx.util.Pair;
+import javafx.scene.chart.XYChart.Series;
+import javafx.scene.chart.XYChart.Data;
+import javafx.scene.Node;
+import javafx.animation.FadeTransition;
+import javafx.util.Duration;
 import seng302.models.*;
 
 import java.time.Instant;
@@ -28,6 +35,7 @@ public class BoatDisplay {
     private Path path;
     private Line annotationLine;
     private final double FADEDBOAT = 0.3;
+    private boolean isShowLaylines = true;
 
     private Color color;
     private Line layline1;
@@ -121,22 +129,22 @@ public class BoatDisplay {
     }
 
     public void unFocus(){
-        icon.setOpacity(FADEDBOAT);
-        wake.setOpacity(0.15);
-        if(path.getElements().size() > 1){
-            path.setOpacity(FADEDBOAT);
+        fadeNodeTransition(icon, FADEDBOAT);
+        fadeNodeTransition(wake, FADEDBOAT);
+        fadeNodeTransition(annotation, FADEDBOAT);
+        if(path != null){
+            fadeNodeTransition(path, FADEDBOAT);
         }
         annotationLine.setOpacity(FADEDBOAT);
-        annotation.setOpacity(FADEDBOAT);
     }
 
     public void focus(){
-        icon.setOpacity(1);
-        wake.setOpacity(0.5);
-        if(path.getElements().size() > 1){
-            path.setOpacity(1);
+        fadeNodeTransition(icon, 1.0);
+        fadeNodeTransition(wake, 1.0);
+        fadeNodeTransition(annotation, 1.0);
+        if(path != null){
+            fadeNodeTransition(path, 1.0);
         }
-        annotation.setOpacity(1);
         annotationLine.setOpacity(1);
     }
 
@@ -149,12 +157,30 @@ public class BoatDisplay {
         layline2= null;
     }
 
+    public boolean isShowLaylines() {
+        return isShowLaylines;
+    }
+
     public void removeBoatLaylines(Group root) {
         if (boatLayLines != null) {
             root.getChildren().remove(boatLayLines.getKey());
             root.getChildren().remove(boatLayLines.getValue());
         }
         boatLayLines = null;
+    }
+
+    /**
+     * adds a fade transition to a node, so that a node fades over a set period of time
+     * @param node a node in the scene that will be faded
+     * @param endOpacity a double that represents the nodes opacity at the end of the fade
+     */
+    private void fadeNodeTransition(Node node, double endOpacity){
+        FadeTransition fadeTransition = new FadeTransition();
+        fadeTransition.setNode(node);
+        fadeTransition.setDuration(new Duration(500));
+        fadeTransition.setFromValue(node.getOpacity());
+        fadeTransition.setToValue(endOpacity);
+        fadeTransition.play();
     }
 }
 
