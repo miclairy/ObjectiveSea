@@ -2,6 +2,8 @@ package seng302.models;
 
 
 import javafx.util.Pair;
+import javafx.scene.chart.XYChart.Series;
+import javafx.scene.chart.XYChart.Data;
 import seng302.utilities.readPolars;
 
 import seng302.data.BoatStatus;
@@ -22,6 +24,9 @@ public class Boat implements Comparable<Boat>{
     private double speed;
     private int finishingPlace;
     private double currentVMGSpeed;
+    private int currPlacing;
+    private int leg;
+    private Series series;
 
     private Coordinate currentPosition;
 
@@ -66,6 +71,7 @@ public class Boat implements Comparable<Boat>{
         gybeTWAofBoat = gybingInfo.getValue();
         VMGofBoat = tackingInfo.getKey();
         TWAofBoat = tackingInfo.getValue();
+        this.series = new Series();
     }
 
     /**
@@ -434,6 +440,15 @@ public class Boat implements Comparable<Boat>{
         return heading;
     }
 
+    public int getCurrPlacing(){return currPlacing;}
+
+    public Series getSeries(){return series;}
+
+    public void setCurrPlacing(int placing){
+        this.currPlacing = placing;
+        series.getData().add(new Data(lastRoundedMarkIndex, currPlacing));
+    }
+
     /**
      * Sets the boats heading to the current value. If the heading has changed,
      * a new record is added the pathCoords list
@@ -498,4 +513,19 @@ public class Boat implements Comparable<Boat>{
     public void setTimeTillFinish(long timeTillFinish) {
         this.timeTillFinish = timeTillFinish;
     }
+
+    public void setLeg(int leg){
+        if(lastRoundedMarkIndex == -1){
+            if(status.equals(BoatStatus.FINISHED)){
+                lastRoundedMarkIndex = leg;
+            }else if(leg != 0){
+                lastRoundedMarkIndex = leg - 1;
+            }else{
+                lastRoundedMarkIndex = 0;
+            }
+        }
+        this.leg = leg;
+    }
+
+    public int getLeg(){return leg;}
 }
