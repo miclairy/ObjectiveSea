@@ -32,12 +32,11 @@ public class BoatTest
 
     @Test
     public void tackingTest(){
-        PolarReader.readPolars();
         ArrayList<Polar> polars = PolarReader.getPolarsForAC35Yachts();
         Course course = new Course();
         course.setTrueWindSpeed(20);
-        PolarTable table = new PolarTable(polars);
-        WindAngleAndSpeed test = table.calculateOptimumTack(20, polars);
+        PolarTable table = new PolarTable(polars, course);
+        WindAngleAndSpeed test = table.calculateOptimumTack(20);
         //Check VMG
         assertEquals(18.113029925346527, test.getWindAngle(), DELTA);
         //Check TWA
@@ -45,7 +44,7 @@ public class BoatTest
         //Check BSp
         assertEquals(24, (test.getWindAngle()/Math.cos(Math.toRadians(test.getSpeed()))), DELTA);
         //Check calculateOptimumGybe also works
-        WindAngleAndSpeed gybeTest = table.calculateOptimumGybe(20, polars);
+        WindAngleAndSpeed gybeTest = table.calculateOptimumGybe(20);
         //Check VMG
         assertEquals(-32.07623487078124, gybeTest.getWindAngle(), DELTA);
         //Check TWA

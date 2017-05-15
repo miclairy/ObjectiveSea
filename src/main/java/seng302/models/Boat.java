@@ -20,7 +20,6 @@ public class Boat implements Comparable<Boat>{
     private String name;
     private String nickName;
     private double speed;
-    private int finishingPlace;
     private double currentVMG;
 
     private Coordinate currentPosition;
@@ -39,7 +38,6 @@ public class Boat implements Comparable<Boat>{
     private long timeTillMark;
     private long timeTillFinish;
     private Integer id;
-    private PolarTable polarTable;
 
     private boolean isTacking;
     private double TWAofBoat;
@@ -53,7 +51,6 @@ public class Boat implements Comparable<Boat>{
         this.lastRoundedMarkIndex = -1;
         this.pathCoords = new ArrayList<>();
         this.currentPosition = new Coordinate(0,0);
-        this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts());
     }
 
     /**
@@ -103,14 +100,6 @@ public class Boat implements Comparable<Boat>{
 
     public int getSpeedInMMS(){
         return (int) (this.speed * KNOTS_TO_MMS_MULTIPLIER);
-    }
-
-    public int getFinishingPlace() {
-        return this.finishingPlace;
-    }
-
-    public void setFinishingPlace(int place) {
-        this.finishingPlace = place;
     }
 
     public int getLastRoundedMarkIndex() {
@@ -180,24 +169,6 @@ public class Boat implements Comparable<Boat>{
 
     public double getTWAofBoat() {
         return TWAofBoat;
-    }
-
-    public double getOptimumTWA(boolean onTack) {
-        return polarTable.getTWAofBoat(onTack);
-    }
-
-    public double getOptimumVMG(boolean onTack) {
-        return polarTable.getVMGofBoat(onTack);
-    }
-
-
-    public double getTrueWindAngle() {
-        if (isTacking){
-            return TWAofBoat;
-        } else {
-            //TODO this is probably not correct way to do this
-            return polarTable.getTWAofBoat(false);
-        }
     }
 
     public void setCurrentSpeed(double speed) {

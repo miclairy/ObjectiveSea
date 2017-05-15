@@ -3,6 +3,7 @@ package seng302.controllers;
 import org.junit.Test;
 import seng302.data.RaceStatus;
 import seng302.models.*;
+import seng302.utilities.PolarReader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,8 +76,10 @@ public class MockRaceRunnerTest {
         course.addMarkInOrder(2);
         course.setWindDirection(30);
         course.setStartLine(start);
+        course.setTrueWindSpeed(25);
 
-        double distanceGained = 58.98 * boat.getOptimumVMG(true);
+        PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), course);
+        double distanceGained = 58.98 * polarTable.getOptimumVMG(true);
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
         double windDirection = course.getWindDirection();
         double bearing = course.headingsBetweenMarks(0,1);
@@ -112,8 +115,10 @@ public class MockRaceRunnerTest {
         course.addMarkInOrder(2);
         course.setWindDirection(30);
         course.setStartLine(start);
+        course.setTrueWindSpeed(25);
 
-        double distanceGained = 58.98 * boat.getOptimumVMG(false) * - 1;
+        PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), course);
+        double distanceGained = 58.98 * polarTable.getOptimumVMG(false) * - 1;
         double windDirection = course.getWindDirection();
         double bearing = course.headingsBetweenMarks(0,1);
         double alphaAngle;

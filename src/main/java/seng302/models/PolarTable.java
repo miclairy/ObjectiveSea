@@ -15,10 +15,11 @@ public class PolarTable {
     private double gybeTWAofBoat;
     private ArrayList<Polar> polars;
 
-    public PolarTable(ArrayList<Polar> polars) {
+    public PolarTable(ArrayList<Polar> polars, Course course) {
         this.polars = polars;
-        WindAngleAndSpeed tackingInfo = calculateOptimumTack(25,polars);
-        WindAngleAndSpeed gybingInfo = calculateOptimumGybe(25,polars);
+        //TODO rerun these calculations when the course's wind speed is updated
+        WindAngleAndSpeed tackingInfo = calculateOptimumTack((int)course.getTrueWindSpeed());
+        WindAngleAndSpeed gybingInfo = calculateOptimumGybe((int)course.getTrueWindSpeed());
         gybeVMGofBoat = gybingInfo.getWindAngle();
         gybeTWAofBoat = gybingInfo.getSpeed();
         tackVMGofBoat = tackingInfo.getWindAngle();
@@ -55,10 +56,9 @@ public class PolarTable {
     /**
      * This function calculates the optimum calculateOptimumGybe angle and speed based on a polar table
      * @param TWS true wind speed
-     * @param polars the polars from the table
      * @return the TWA and VMG optimum for given boat
      */
-    public WindAngleAndSpeed calculateOptimumGybe(int TWS, ArrayList<Polar> polars){
+    public WindAngleAndSpeed calculateOptimumGybe(int TWS){
         WindAngleAndSpeed boatsGybe;
         ArrayList<Polar> interpPolars = TWSForInterp(TWS, polars);
 
@@ -120,10 +120,9 @@ public class PolarTable {
     /**
      * This function calculates the optimum tacking angle and speed based on a polar table
      * @param TWS true wind speed
-     * @param polars the polars from the table
      * @return the TWA and VMG optimum for given boat
      */
-    public WindAngleAndSpeed calculateOptimumTack(int TWS, ArrayList<Polar> polars){
+    public WindAngleAndSpeed calculateOptimumTack(int TWS){
         WindAngleAndSpeed boatsTack;
         ArrayList<Polar> interpPolars = TWSForInterp(TWS, polars);
 
@@ -185,11 +184,11 @@ public class PolarTable {
         return boatsTack;
     }
 
-    public double getVMGofBoat(boolean onTack) {
+    public double getOptimumVMG(boolean onTack) {
         return onTack ? tackVMGofBoat : gybeVMGofBoat;
     }
 
-    public double getTWAofBoat(boolean onTack) {
+    public double getOptimumTWA(boolean onTack) {
         return onTack ? tackTWAofBoat : gybeTWAofBoat;
     }
 

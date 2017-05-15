@@ -12,7 +12,6 @@ public class PolarReaderTest {
 
     @Test
     public void getPolars() throws Exception {
-        PolarReader.readPolars();
         assertEquals(7, PolarReader.getPolarsForAC35Yachts().size());
     }
 
