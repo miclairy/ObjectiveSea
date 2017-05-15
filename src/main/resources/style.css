@@ -203,6 +203,22 @@
 
 .check-box *.box{
     -fx-background-color: #1a1a1a;
+    -fx-background-radius: 10em;
+    -fx-min-width: 8px;
+    -fx-min-height: 8px;
+    -fx-max-width: 8px;
+    -fx-max-height: 8px;
+    -fx-padding: 8px;
+}
+
+.check-box:selected .mark {
+    -fx-mark-highlight-color: #4DC58B;
+    -fx-mark-color: #4DC58B;
+    -fx-shape: "M 10.29 2.19C 10.29 2.19 4.63 7.85 4.63 7.85 4.24 8.24 3.68 8.32 3.39 8.02 3.39 8.02 0.21 4.84 0.21 4.84-0.08 4.55-0 3.99 0.39 3.6 0.78 3.21 1.33 3.13 1.62 3.43 1.62 3.43 3.92 5.72 3.92 5.72 3.92 5.72 8.87 0.77 8.87 0.77 9.26 0.38 9.9 0.38 10.29 0.77 10.68 1.16 10.68 1.8 10.29 2.19Z"
+}
+
+.check-box:selected *.box{
+    -fx-background-color: #1a1a1a;
 }
 
 #boundary{
