@@ -21,7 +21,7 @@ public class Boat implements Comparable<Boat>{
     private String nickName;
     private double speed;
     private int finishingPlace;
-    private double currentVMGSpeed;
+    private double currentVMG;
 
     private Coordinate currentPosition;
 
@@ -182,28 +182,21 @@ public class Boat implements Comparable<Boat>{
         return TWAofBoat;
     }
 
-    public double getOptimumTackTWA() {
-        return polarTable.getTackTWAofBoat();
+    public double getOptimumTWA(boolean onTack) {
+        return polarTable.getTWAofBoat(onTack);
     }
 
-    public double getOptimumTackVMGofBoat() {
-        return polarTable.getTackVMGofBoat();
+    public double getOptimumVMG(boolean onTack) {
+        return polarTable.getVMGofBoat(onTack);
     }
 
-    public double getOptimumGybeVMGofBoat() {
-        return polarTable.getGybeVMGofBoat();
-    }
-
-    public double getOptimumGybeTWAofBoat() {
-        return polarTable.getGybeTWAofBoat();
-    }
 
     public double getTrueWindAngle() {
         if (isTacking){
             return TWAofBoat;
         } else {
             //TODO this is probably not correct way to do this
-            return polarTable.getGybeTWAofBoat();
+            return polarTable.getTWAofBoat(false);
         }
     }
 
@@ -219,8 +212,8 @@ public class Boat implements Comparable<Boat>{
         this.timeTillMark = timeTillMark;
     }
 
-    public double getCurrentVMGSpeed() {
-        return currentVMGSpeed;
+    public double getCurrentVMG() {
+        return currentVMG;
     }
 
     public BoatStatus getStatus() {
@@ -257,8 +250,8 @@ public class Boat implements Comparable<Boat>{
         }
     }
 
-    public void setCurrentVMGSpeed(double currentVMGSpeed) {
-        this.currentVMGSpeed = currentVMGSpeed;
+    public void setCurrentVMG(double currentVMGSpeed) {
+        this.currentVMG = currentVMGSpeed;
     }
 
     public void setLastGybeMarkPassed(int lastGybeMarkPassed) {

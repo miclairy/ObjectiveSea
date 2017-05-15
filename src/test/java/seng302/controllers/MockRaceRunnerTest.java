@@ -76,7 +76,7 @@ public class MockRaceRunnerTest {
         course.setWindDirection(30);
         course.setStartLine(start);
 
-        double distanceGained = 58.98 * boat.getOptimumTackVMGofBoat();
+        double distanceGained = 58.98 * boat.getOptimumVMG(true);
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
         double windDirection = course.getWindDirection();
         double bearing = course.headingsBetweenMarks(0,1);
@@ -113,7 +113,7 @@ public class MockRaceRunnerTest {
         course.setWindDirection(30);
         course.setStartLine(start);
 
-        double distanceGained = 58.98 * boat.getOptimumGybeVMGofBoat() * - 1;
+        double distanceGained = 58.98 * boat.getOptimumVMG(false) * - 1;
         double windDirection = course.getWindDirection();
         double bearing = course.headingsBetweenMarks(0,1);
         double alphaAngle;

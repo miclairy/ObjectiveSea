@@ -429,7 +429,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         double heading = boat.getBoat().getHeading();
         if(MathUtils.pointBetweenTwoAngle(windDirection, boat.getBoat().getTWAofBoat(), heading)){
             draw = true;
-        } else if(MathUtils.pointBetweenTwoAngle((windDirection + 180) % 360, 180 - boat.getBoat().getOptimumGybeTWAofBoat(), heading)) {
+        } else if(MathUtils.pointBetweenTwoAngle((windDirection + 180) % 360, 180 - boat.getBoat().getTWAofBoat(), heading)) {
             draw = true;
         }
         if (boat.getBoat().getLastRoundedMarkIndex() < race.getCourse().getCourseOrder().size() - 1 && boat.getBoat().getLastRoundedMarkIndex() != -1 && draw == true) {

@@ -185,21 +185,14 @@ public class PolarTable {
         return boatsTack;
     }
 
-    public double getTackVMGofBoat() {
-        return tackVMGofBoat;
+    public double getVMGofBoat(boolean onTack) {
+        return onTack ? tackVMGofBoat : gybeVMGofBoat;
     }
 
-    public double getTackTWAofBoat() {
-        return tackTWAofBoat;
+    public double getTWAofBoat(boolean onTack) {
+        return onTack ? tackTWAofBoat : gybeTWAofBoat;
     }
 
-    public double getGybeVMGofBoat() {
-        return gybeVMGofBoat;
-    }
-
-    public double getGybeTWAofBoat() {
-        return gybeTWAofBoat;
-    }
 
 
 
