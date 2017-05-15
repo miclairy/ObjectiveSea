@@ -117,24 +117,21 @@ public class MockRaceRunner implements Runnable {
 
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
         double windDirection = course.getWindDirection();
-        double bearing = course.headingsBetweenMarks(boat.getLastRoundedMarkIndex(),boat.getLastRoundedMarkIndex()+1);
+        double headingBetweenMarks = course.headingsBetweenMarks(boat.getLastRoundedMarkIndex(),boat.getLastRoundedMarkIndex()+1);
         boolean onTack = false;
         boolean onGybe = false;
 
-        if(MathUtils.pointBetweenTwoAngle(windDirection, boat.getTWAofBoat(), bearing)){
+        if(MathUtils.pointBetweenTwoAngle(windDirection, boat.getTWAofBoat(), headingBetweenMarks)){
             onTack = true;
             boat.setCurrentVMGSpeed(boat.getVMGofBoat());
-        } else if(MathUtils.pointBetweenTwoAngle((windDirection + 180) % 360, 180 - boat.getGybeTWAofBoat(), bearing)) {
+            boat.setCurrentSpeed(boat.getVMGofBoat() / Math.cos(Math.toRadians(boat.getTWAofBoat())));
+        } else if(MathUtils.pointBetweenTwoAngle((windDirection + 180) % 360, 180 - boat.getGybeTWAofBoat(), headingBetweenMarks)) {
             onGybe = true;
             boat.setCurrentVMGSpeed(boat.getGybeVMGofBoat() * (-1.0));
-        }
-
-        if(onTack) {
-            boat.setCurrentSpeed(boat.getVMGofBoat() / Math.cos(Math.toRadians(boat.getTWAofBoat())));
-        } else if(onGybe){
             boat.setCurrentSpeed(boat.getGybeVMGofBoat() / Math.cos(Math.toRadians(boat.getGybeTWAofBoat())));
         } else {
             boat.maximiseSpeed();
+            boat.setCurrentVMGSpeed(boat.getSpeed());
         }
 
         CompoundMark nextMark = courseOrder.get(boat.getLastRoundedMarkIndex()+1);
@@ -166,7 +163,7 @@ public class MockRaceRunner implements Runnable {
         if (!onGybe) boat.setLastGybeMarkPassed(0);
 
         if(onTack || onGybe) {
-            double alphaAngle = getAlphaAngle(windDirection, bearing, onTack);
+            double alphaAngle = getAlphaAngle(windDirection, headingBetweenMarks, onTack);
             Coordinate tackingPosition = tackingUpdateLocation(distanceGained, courseOrder, onTack, alphaAngle, boat);
             boatPosition.update(tackingPosition.getLat(), tackingPosition.getLon());
         } else {

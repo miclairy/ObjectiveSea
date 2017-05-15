@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import seng302.controllers.MockRaceRunner;
 import seng302.data.*;
 import seng302.models.*;
+import seng302.utilities.PolarReader;
 
 import javax.xml.crypto.Data;
 import java.io.*;
@@ -27,10 +28,11 @@ import static seng302.data.AC35StreamField.SPEED_OVER_GROUND;
 
 public class MockStreamTest {
 
-    MockRaceRunner mockRaceRunner  = new MockRaceRunner();
+    MockRaceRunner mockRaceRunner;
 
     @Before
     public void startMockRaceRunner(){
+        PolarReader.readPolars();
         mockRaceRunner = new MockRaceRunner();
         Thread runner = new Thread(mockRaceRunner);
         runner.start();

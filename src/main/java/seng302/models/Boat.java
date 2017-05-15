@@ -3,7 +3,7 @@ package seng302.models;
 
 import javafx.util.Pair;
 import seng302.utilities.MathUtils;
-import seng302.utilities.readPolars;
+import seng302.utilities.PolarReader;
 
 import seng302.data.BoatStatus;
 
@@ -55,13 +55,7 @@ public class Boat implements Comparable<Boat>{
         this.lastRoundedMarkIndex = -1;
         this.pathCoords = new ArrayList<>();
         this.currentPosition = new Coordinate(0,0);
-        try {
-            readPolars.polars();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        //ArrayList<Integer> TWSList = readPolars.getTWS();
-        ArrayList<Polars> polars = readPolars.getPolars();
+        ArrayList<Polars> polars = PolarReader.getPolars();
         Pair<Double,Double> tackingInfo = tacking(25,polars);
         Pair<Double,Double> gybingInfo = gybing(25,polars);
         gybeVMGofBoat = gybingInfo.getKey();
@@ -177,11 +171,10 @@ public class Boat implements Comparable<Boat>{
     /**
      * This function calculates the optimum tacking or gybing angle and speed based on a polar table
      * @param TWS true wind speed
-     * @param polars the polars from the table
+     * @param polars the readPolars from the table
      * @return the TWA and VMG optimum for given boat
      */
     public Pair<Double,Double> tacking(int TWS, ArrayList<Polars> polars){
-//        double TWS = course.getTrueWindSpeed();
         Pair<Double,Double> boatsTack;
         ArrayList<Polars> interpPolars = TWSForInterp(TWS, polars);
 

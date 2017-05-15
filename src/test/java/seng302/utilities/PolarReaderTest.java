@@ -12,8 +12,8 @@ public class PolarReaderTest {
 
     @Test
     public void getPolars() throws Exception {
-        readPolars.polars();
-        assertEquals(7, readPolars.getPolars().size());
+        PolarReader.readPolars();
+        assertEquals(7, PolarReader.getPolars().size());
     }
 
 

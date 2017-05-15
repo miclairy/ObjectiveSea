@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 /**
  * Created by Gemma on 10/05/17.
- * Class to hold the boat polars neatly
+ * Class to hold the boat readPolars neatly
  */
 public class Polars {
 
@@ -42,7 +42,7 @@ public class Polars {
     }
 
     /**
-     * A setter for the optimum upwind TWA and BSP of the boats, not all polars will have this
+     * A setter for the optimum upwind TWA and BSP of the boats, not all readPolars will have this
      * @param upWindOptimum
      */
     public void setUpWindOptimum(Pair<Double, Double> upWindOptimum) {
@@ -50,7 +50,7 @@ public class Polars {
     }
 
     /**
-     * A setter for the optimum downiwnd TWA and BSP of the boats, not all polars will have this
+     * A setter for the optimum downiwnd TWA and BSP of the boats, not all readPolars will have this
      * @param downWindOptimum
      */
     public void setDownWindOptimum(Pair<Double, Double> downWindOptimum) {

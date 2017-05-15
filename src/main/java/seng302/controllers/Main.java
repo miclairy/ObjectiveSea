@@ -15,6 +15,7 @@ import seng302.data.DataStreamReader;
 import seng302.data.MockStream;
 import seng302.utilities.Config;
 import seng302.models.Race;
+import seng302.utilities.PolarReader;
 
 
 public class Main extends Application {
@@ -51,7 +52,8 @@ public class Main extends Application {
     /**
      * Creates a MockStream object, puts it in it's own thread and starts the thread
      */
-    private static void setupMockStream(){
+    private static void setupMockStream() {
+        PolarReader.readPolars();
         MockRaceRunner runner = new MockRaceRunner();
         runner.setScaleFactor(Config.MOCK_SPEED_SCALE);
         Thread runnerThread = new Thread(runner);

@@ -1,14 +1,11 @@
 package seng302.models;
 
 import javafx.util.Pair;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import seng302.utilities.readPolars;
+import seng302.utilities.PolarReader;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -36,12 +33,8 @@ public class BoatTest
 
     @Test
     public void tackingTest(){
-        try {
-            readPolars.polars();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        ArrayList<Polars> polars = readPolars.getPolars();
+        PolarReader.readPolars();
+        ArrayList<Polars> polars = PolarReader.getPolars();
         Course course = new Course();
         course.setTrueWindSpeed(20);
         Pair<Double,Double> test = boat.tacking(20, polars);
