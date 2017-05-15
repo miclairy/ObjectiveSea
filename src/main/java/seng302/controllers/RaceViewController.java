@@ -422,14 +422,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
      *  Draws laylines for a boat coming from the next mark it is heading to (at the moment is Mark1)
      * @param boat
      */
-    //TODO create function that chooses closest mark to draw laylines from also check if boat is not tacking or gybing so lines are not drawn
+    //TODO create function that chooses closest mark to draw laylines from also check if boat is not calculateOptimumTack or calculateOptimumGybe so lines are not drawn
     private void drawLayLine(BoatDisplay boat){
         boolean draw = false;
         double windDirection = race.getCourse().getWindDirection();
         double heading = boat.getBoat().getHeading();
         if(MathUtils.pointBetweenTwoAngle(windDirection, boat.getBoat().getTWAofBoat(), heading)){
             draw = true;
-        } else if(MathUtils.pointBetweenTwoAngle((windDirection + 180) % 360, 180 - boat.getBoat().getGybeTWAofBoat(), heading)) {
+        } else if(MathUtils.pointBetweenTwoAngle((windDirection + 180) % 360, 180 - boat.getBoat().getOptimumGybeTWAofBoat(), heading)) {
             draw = true;
         }
         if (boat.getBoat().getLastRoundedMarkIndex() < race.getCourse().getCourseOrder().size() - 1 && boat.getBoat().getLastRoundedMarkIndex() != -1 && draw == true) {

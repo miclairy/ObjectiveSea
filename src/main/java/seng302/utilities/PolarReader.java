@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class PolarReader {
     private static final String POLAR_FILE_LOCATION = "/defaultFiles/boatPolars.txt";
 
-    public static ArrayList<Polar> getPolars() {
+    public static ArrayList<Polar> getPolarsForAC35Yachts() {
         return polars;
     }
 

@@ -1,6 +1,5 @@
 package seng302.models;
 
-import javafx.util.Pair;
 import org.junit.Before;
 import org.junit.Test;
 import seng302.utilities.PolarReader;
@@ -34,18 +33,19 @@ public class BoatTest
     @Test
     public void tackingTest(){
         PolarReader.readPolars();
-        ArrayList<Polar> polars = PolarReader.getPolars();
+        ArrayList<Polar> polars = PolarReader.getPolarsForAC35Yachts();
         Course course = new Course();
         course.setTrueWindSpeed(20);
-        WindAngleAndSpeed test = boat.tacking(20, polars);
+        PolarTable table = new PolarTable(polars);
+        WindAngleAndSpeed test = table.calculateOptimumTack(20, polars);
         //Check VMG
         assertEquals(18.113029925346527, test.getWindAngle(), DELTA);
         //Check TWA
         assertEquals(41.0, test.getSpeed(), DELTA);
         //Check BSp
         assertEquals(24, (test.getWindAngle()/Math.cos(Math.toRadians(test.getSpeed()))), DELTA);
-        //Check gybing also works
-        WindAngleAndSpeed gybeTest = boat.gybing(20, polars);
+        //Check calculateOptimumGybe also works
+        WindAngleAndSpeed gybeTest = table.calculateOptimumGybe(20, polars);
         //Check VMG
         assertEquals(-32.07623487078124, gybeTest.getWindAngle(), DELTA);
         //Check TWA

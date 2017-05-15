@@ -123,12 +123,12 @@ public class MockRaceRunner implements Runnable {
 
         if(MathUtils.pointBetweenTwoAngle(windDirection, boat.getTWAofBoat(), headingBetweenMarks)){
             onTack = true;
-            boat.setCurrentVMGSpeed(boat.getVMGofBoat());
-            boat.setCurrentSpeed(boat.getVMGofBoat() / Math.cos(Math.toRadians(boat.getTWAofBoat())));
-        } else if(MathUtils.pointBetweenTwoAngle((windDirection + 180) % 360, 180 - boat.getGybeTWAofBoat(), headingBetweenMarks)) {
+            boat.setCurrentVMGSpeed(boat.getOptimumTackVMGofBoat());
+            boat.setCurrentSpeed(boat.getOptimumTackVMGofBoat() / Math.cos(Math.toRadians(boat.getTWAofBoat())));
+        } else if(MathUtils.pointBetweenTwoAngle((windDirection + 180) % 360, 180 - boat.getOptimumGybeTWAofBoat(), headingBetweenMarks)) {
             onGybe = true;
-            boat.setCurrentVMGSpeed(boat.getGybeVMGofBoat() * (-1.0));
-            boat.setCurrentSpeed(boat.getGybeVMGofBoat() / Math.cos(Math.toRadians(boat.getGybeTWAofBoat())));
+            boat.setCurrentVMGSpeed(boat.getOptimumGybeVMGofBoat() * (-1.0));
+            boat.setCurrentSpeed(boat.getOptimumGybeVMGofBoat() / Math.cos(Math.toRadians(boat.getOptimumGybeTWAofBoat())));
         } else {
             boat.maximiseSpeed();
             boat.setCurrentVMGSpeed(boat.getSpeed());
@@ -178,7 +178,7 @@ public class MockRaceRunner implements Runnable {
     /**
      * @param windDirection the current wind direction for the course
      * @param bearing
-     * @param onTack whether tacking is happening, or gybing
+     * @param onTack whether calculateOptimumTack is happening, or calculateOptimumGybe
      * @return the alpha angle
      */
     private double getAlphaAngle(double windDirection, double bearing, boolean onTack) {
@@ -200,9 +200,9 @@ public class MockRaceRunner implements Runnable {
     public Coordinate tackingUpdateLocation(double distanceGained, ArrayList<CompoundMark> courseOrder, Boolean onTack, double alphaAngle, Boat boat){
         double TrueWindAngle;
         if(onTack){
-            TrueWindAngle = boat.getTWAofBoat();
+            TrueWindAngle = boat.getOptimumTackTWA();
         } else {
-            TrueWindAngle = 180 - boat.getGybeTWAofBoat();
+            TrueWindAngle = 180 - boat.getOptimumGybeTWAofBoat();
         }
 
         CompoundMark nextMark = courseOrder.get(boat.getLastRoundedMarkIndex()+1);
