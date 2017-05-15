@@ -37,6 +37,7 @@ public class MockStreamTest {
         mockRaceRunner = new MockRaceRunner();
         Thread runner = new Thread(mockRaceRunner);
         runner.start();
+        mockRaceRunner.getRace().getCourse().setWindDirection(135);
     }
 
 

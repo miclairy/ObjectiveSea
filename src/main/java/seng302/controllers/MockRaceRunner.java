@@ -1,5 +1,6 @@
 package seng302.controllers;
 
+import javafx.util.Pair;
 import seng302.data.BoatStatus;
 import seng302.data.RaceStatus;
 import seng302.data.RaceVisionXMLParser;
@@ -210,12 +211,9 @@ public class MockRaceRunner implements Runnable {
         } else {
             TrueWindAngle = 180 - polarTable.getOptimumTWA(false);
         }
-
         CompoundMark nextMark = courseOrder.get(boat.getLastRoundedMarkIndex()+1);
-        double lengthOfLeg = courseOrder.get(boat.getLastRoundedMarkIndex()).getPosition().greaterCircleDistance(nextMark.getPosition());
-        double betaAngle = (2*TrueWindAngle) - alphaAngle;
-        double lengthOfTack = ((lengthOfLeg* Math.sin(Math.toRadians(betaAngle)))/Math.sin(Math.toRadians(180 - 2*TrueWindAngle)))/2.0;
-        ArrayList<CompoundMark> tackingMarks = new ArrayList<>();
+        double lengthOfTack = calculateLengthOfTack(TrueWindAngle,alphaAngle,courseOrder,boat);
+        ArrayList<CompoundMark> tackingMarks = new ArrayList<>(); //Arraylist to hold 'mock' marks for the boat to tack against
         tackingMarks.add(courseOrder.get(boat.getLastRoundedMarkIndex()));
         CompoundMark currentMark = courseOrder.get(boat.getLastRoundedMarkIndex());
         if(!onTack){
@@ -268,6 +266,14 @@ public class MockRaceRunner implements Runnable {
         double newLat = boat.getCurrentLat() + percentGained * (nextTackMark.getPosition().getLat() - boat.getCurrentLat());
         double newLon = boat.getCurrentLon() + percentGained * (nextTackMark.getPosition().getLon() - boat.getCurrentLon());
         return new Coordinate(newLat, newLon);
+    }
+
+    public double calculateLengthOfTack(double TrueWindAngle, double alphaAngle,ArrayList<CompoundMark> courseOrder, Boat boat){
+        CompoundMark nextMark = courseOrder.get(boat.getLastRoundedMarkIndex()+1);
+        double lengthOfLeg = courseOrder.get(boat.getLastRoundedMarkIndex()).getPosition().greaterCircleDistance(nextMark.getPosition());
+        double betaAngle = (2*TrueWindAngle) - alphaAngle;
+        double lengthOfTack = ((lengthOfLeg* Math.sin(Math.toRadians(betaAngle)))/Math.sin(Math.toRadians(180 - 2*TrueWindAngle)))/2.0;
+        return lengthOfTack;
     }
 
     /**
