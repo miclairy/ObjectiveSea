@@ -22,6 +22,7 @@ import javafx.scene.transform.Scale;
 import javafx.util.Pair;
 import seng302.data.BoatStatus;
 import seng302.utilities.DisplayUtils;
+import seng302.utilities.MathUtils;
 import seng302.utilities.TimeUtils;
 import seng302.models.*;
 import seng302.views.BoatDisplay;
@@ -455,7 +456,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             boatDisplay.removeLaylines(root);
             boatDisplay.removeBoatLaylines(root);
 
-            CompoundMark nextMark = courseOrder.get(boat.getLastRoundedMarkIndex() + 1);
+            CompoundMark nextMark = courseOrder.get(boat.getLastRoundedMarkIndex());
             calculateLaylineHeading(race.getCourse().getTrueWindDirection(), boat.getHeading(), boat.getTWAofBoat());
             double heading1 = laylines.getHeading1();
             double heading2 = laylines.getHeading2();
