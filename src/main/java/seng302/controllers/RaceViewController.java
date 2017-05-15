@@ -3,6 +3,7 @@ package seng302.controllers;
 import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.ImageCursor;
@@ -304,6 +305,23 @@ public class RaceViewController extends AnimationTimer implements Observer {
             annotationLabel.setId("annotationLabel");
             annotationFrame.getChildren().add(annotationLabel);
         }
+
+        annotationFrame.addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
+            boolean isPressed = false;
+            @Override
+            public void handle(MouseEvent event) {
+                if (event.isPrimaryButtonDown()) {
+                    //System.out.println("Mouse Pressed");
+                    isPressed = true;
+                    
+                } else if(!event.isPrimaryButtonDown() && isPressed){
+                    //System.out.println("Mouse Released");
+                    isPressed = false;
+
+                }
+            }
+        });
+
         CanvasCoordinate annoPos = getAnnotationPosition(annotationFrame);
         annotationFrame.layoutXProperty().set(point.getX() + annoPos.getX());
         annotationFrame.layoutYProperty().set(point.getY() + annoPos.getY());
