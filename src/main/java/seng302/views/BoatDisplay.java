@@ -28,6 +28,7 @@ public class BoatDisplay {
     private Path path;
     private Line annotationLine;
     private final double FADEDBOAT = 0.3;
+    private boolean isShowLaylines = true;
 
     private Color color;
     private Pair<Line, Line> layLines;
@@ -143,6 +144,10 @@ public class BoatDisplay {
             root.getChildren().remove(layLines.getValue());
         }
         layLines = null;
+    }
+
+    public boolean isShowLaylines() {
+        return isShowLaylines;
     }
 }
 
