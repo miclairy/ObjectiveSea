@@ -55,13 +55,13 @@ public class Boat implements Comparable<Boat>{
         this.lastRoundedMarkIndex = -1;
         this.pathCoords = new ArrayList<>();
         this.currentPosition = new Coordinate(0,0);
-        ArrayList<Polars> polars = PolarReader.getPolars();
-        Pair<Double,Double> tackingInfo = tacking(25,polars);
-        Pair<Double,Double> gybingInfo = gybing(25,polars);
-        gybeVMGofBoat = gybingInfo.getKey();
-        gybeTWAofBoat = gybingInfo.getValue();
-        VMGofBoat = tackingInfo.getKey();
-        tackTWAofBoat = tackingInfo.getValue();
+        ArrayList<Polar> polars = PolarReader.getPolars();
+        WindAngleAndSpeed tackingInfo = tacking(25,polars);
+        WindAngleAndSpeed gybingInfo = gybing(25,polars);
+        gybeVMGofBoat = gybingInfo.getWindAngle();
+        gybeTWAofBoat = gybingInfo.getSpeed();
+        VMGofBoat = tackingInfo.getWindAngle();
+        tackTWAofBoat = tackingInfo.getSpeed();
     }
 
     /**
@@ -83,8 +83,8 @@ public class Boat implements Comparable<Boat>{
     }
 
 
-    public ArrayList<Polars> TWSForInterp(int TWS,ArrayList<Polars> polars){
-        ArrayList<Polars> interpPolars = new ArrayList<>();
+    public ArrayList<Polar> TWSForInterp(int TWS, ArrayList<Polar> polars){
+        ArrayList<Polar> interpPolars = new ArrayList<>();
         int index = 0;
         double TWSDiff = 1000000000;
         //Find the 3 values closest to the TWS to interpolate with
@@ -99,9 +99,9 @@ public class Boat implements Comparable<Boat>{
         if(index == 0){index ++;}
         if(index == polars.size() - 1){index -= 1;}
 
-        Polars polar1 = polars.get(index - 1);
-        Polars polar2 = polars.get(index);
-        Polars polar3 = polars.get(index + 1);
+        Polar polar1 = polars.get(index - 1);
+        Polar polar2 = polars.get(index);
+        Polar polar3 = polars.get(index + 1);
 
         interpPolars.add(polar1);
         interpPolars.add(polar2);
@@ -109,13 +109,13 @@ public class Boat implements Comparable<Boat>{
         return interpPolars;
     }
 
-    public Pair<Double,Double> gybing(int TWS, ArrayList<Polars> polars){
-        Pair<Double,Double> boatsGybe;
-        ArrayList<Polars> interpPolars = TWSForInterp(TWS, polars);
+    public WindAngleAndSpeed gybing(int TWS, ArrayList<Polar> polars){
+        WindAngleAndSpeed boatsGybe;
+        ArrayList<Polar> interpPolars = TWSForInterp(TWS, polars);
 
-        Polars polar1 = interpPolars.get(0);
-        Polars polar2 = interpPolars.get(1);
-        Polars polar3 = interpPolars.get(2);
+        Polar polar1 = interpPolars.get(0);
+        Polar polar2 = interpPolars.get(1);
+        Polar polar3 = interpPolars.get(2);
 
         double TWS1 = polar1.getTWS();
         double TWS2 = polar2.getTWS();
@@ -129,23 +129,23 @@ public class Boat implements Comparable<Boat>{
         double gybeVMG2 = 1000000;
         double gybeVMG3 = 1000000;
 
-        Pair<Double,Double> pair4;
-        Pair<Double,Double> pair5;
-        Pair<Double,Double> pair6;
+        WindAngleAndSpeed pair4;
+        WindAngleAndSpeed pair5;
+        WindAngleAndSpeed pair6;
 
         double TrueVMG;
 
         if(polar2.hasDownwindOptimum()){
-            Pair<Double,Double> dnWind1 = polar1.getDownWindOptimum();
-            Pair<Double,Double> dnWind2 = polar2.getDownWindOptimum();
-            Pair<Double,Double> dnWind3 = polar3.getDownWindOptimum();
-            gybeVMG1 = MathUtils.VMG(dnWind1.getValue(), dnWind1.getKey());
-            gybeVMG2 = MathUtils.VMG(dnWind2.getValue(), dnWind2.getKey());
-            gybeVMG3 = MathUtils.VMG(dnWind3.getValue(), dnWind3.getKey());
+            WindAngleAndSpeed dnWind1 = polar1.getDownWindOptimum();
+            WindAngleAndSpeed dnWind2 = polar2.getDownWindOptimum();
+            WindAngleAndSpeed dnWind3 = polar3.getDownWindOptimum();
+            gybeVMG1 = MathUtils.VMG(dnWind1.getSpeed(), dnWind1.getWindAngle());
+            gybeVMG2 = MathUtils.VMG(dnWind2.getSpeed(), dnWind2.getWindAngle());
+            gybeVMG3 = MathUtils.VMG(dnWind3.getSpeed(), dnWind3.getWindAngle());
 
-            TWA1 = dnWind1.getKey();
-            TWA2 = dnWind2.getKey();
-            TWA3 = dnWind3.getKey();
+            TWA1 = dnWind1.getWindAngle();
+            TWA2 = dnWind2.getWindAngle();
+            TWA3 = dnWind3.getWindAngle();
 
         } else {
             for(double k = 90; k < 181; k++){
@@ -159,12 +159,12 @@ public class Boat implements Comparable<Boat>{
                 //interpolate back to get TWA based on found VMG
 
             } }
-        pair4 = new Pair<>(gybeVMG1, TWA1);
-        pair5 = new Pair<>(gybeVMG2, TWA2);
-        pair6 = new Pair<>(gybeVMG3, TWA3);
-        TrueVMG = MathUtils.lagrangeInterpolation(new Pair<Double, Double>(TWS1, gybeVMG1),new Pair<Double, Double>(TWS2, gybeVMG2), new Pair<Double, Double>(TWS3, gybeVMG3), TWS);
+        pair4 = new WindAngleAndSpeed(gybeVMG1, TWA1);
+        pair5 = new WindAngleAndSpeed(gybeVMG2, TWA2);
+        pair6 = new WindAngleAndSpeed(gybeVMG3, TWA3);
+        TrueVMG = MathUtils.lagrangeInterpolation(new WindAngleAndSpeed(TWS1, gybeVMG1),new WindAngleAndSpeed(TWS2, gybeVMG2), new WindAngleAndSpeed(TWS3, gybeVMG3), TWS);
         double TWA = MathUtils.lagrangeInterpolation(pair4,pair5,pair6,TrueVMG);
-        boatsGybe = new Pair<>(TrueVMG, TWA);
+        boatsGybe = new WindAngleAndSpeed(TrueVMG, TWA);
         return boatsGybe;
     }
 
@@ -174,13 +174,13 @@ public class Boat implements Comparable<Boat>{
      * @param polars the readPolars from the table
      * @return the TWA and VMG optimum for given boat
      */
-    public Pair<Double,Double> tacking(int TWS, ArrayList<Polars> polars){
-        Pair<Double,Double> boatsTack;
-        ArrayList<Polars> interpPolars = TWSForInterp(TWS, polars);
+    public WindAngleAndSpeed tacking(int TWS, ArrayList<Polar> polars){
+        WindAngleAndSpeed boatsTack;
+        ArrayList<Polar> interpPolars = TWSForInterp(TWS, polars);
 
-        Polars polar1 = interpPolars.get(0);
-        Polars polar2 = interpPolars.get(1);
-        Polars polar3 = interpPolars.get(2);
+        Polar polar1 = interpPolars.get(0);
+        Polar polar2 = interpPolars.get(1);
+        Polar polar3 = interpPolars.get(2);
 
         double TWS1 = polar1.getTWS();
         double TWS2 = polar2.getTWS();
@@ -194,23 +194,23 @@ public class Boat implements Comparable<Boat>{
         double VMG2 = 0;
         double VMG3 = 0;
 
-        Pair<Double,Double> pair4;
-        Pair<Double,Double> pair5;
-        Pair<Double,Double> pair6;
+        WindAngleAndSpeed pair4;
+        WindAngleAndSpeed pair5;
+        WindAngleAndSpeed pair6;
 
         double TrueVMG;
 
 
         if(polar2.hasUpwindOptimum()){
-            Pair<Double,Double> upWind1 = polar1.getUpWindOptimum();
-            Pair<Double,Double> upWind2 = polar2.getUpWindOptimum();
-            Pair<Double,Double> upWind3 = polar3.getUpWindOptimum();
-            VMG1 = MathUtils.VMG(upWind1.getValue(), upWind1.getKey());
-            VMG2 = MathUtils.VMG(upWind2.getValue(), upWind2.getKey());
-            VMG3 = MathUtils.VMG(upWind3.getValue(), upWind3.getKey());
-            TWA1 = upWind1.getKey();
-            TWA2 = upWind2.getKey();
-            TWA3 = upWind3.getKey();
+            WindAngleAndSpeed upWind1 = polar1.getUpWindOptimum();
+            WindAngleAndSpeed upWind2 = polar2.getUpWindOptimum();
+            WindAngleAndSpeed upWind3 = polar3.getUpWindOptimum();
+            VMG1 = MathUtils.VMG(upWind1.getSpeed(), upWind1.getWindAngle());
+            VMG2 = MathUtils.VMG(upWind2.getSpeed(), upWind2.getWindAngle());
+            VMG3 = MathUtils.VMG(upWind3.getSpeed(), upWind3.getWindAngle());
+            TWA1 = upWind1.getWindAngle();
+            TWA2 = upWind2.getWindAngle();
+            TWA3 = upWind3.getWindAngle();
 
         } else {
             for(double k = 0; k < 91; k++){
@@ -224,15 +224,15 @@ public class Boat implements Comparable<Boat>{
 
             //interpolate back to get TWA based on found VMG
         }
-        TrueVMG = MathUtils.lagrangeInterpolation(new Pair<Double, Double>(TWS1, VMG1),new Pair<Double, Double>(TWS2, VMG2), new Pair<Double, Double>(TWS3, VMG3), TWS);
-        pair4 = new Pair<>(VMG1, TWA1);
-        pair5 = new Pair<>(VMG2, TWA2);
-        pair6 = new Pair<>(VMG3, TWA3);
+        TrueVMG = MathUtils.lagrangeInterpolation(new WindAngleAndSpeed(TWS1, VMG1),new WindAngleAndSpeed(TWS2, VMG2), new WindAngleAndSpeed(TWS3, VMG3), TWS);
+        pair4 = new WindAngleAndSpeed(VMG1, TWA1);
+        pair5 = new WindAngleAndSpeed(VMG2, TWA2);
+        pair6 = new WindAngleAndSpeed(VMG3, TWA3);
         //Interpolate between closet TWS to get highest VMG of each
         //if gybing 5,6,7 if tacking 1,2,3
 
         double TWA = MathUtils.lagrangeInterpolation(pair4,pair5,pair6,TrueVMG);
-        boatsTack = new Pair<>(TrueVMG, TWA);
+        boatsTack = new WindAngleAndSpeed(TrueVMG, TWA);
         return boatsTack;
     }
 

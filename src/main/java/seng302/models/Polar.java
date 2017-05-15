@@ -8,19 +8,19 @@ import java.util.ArrayList;
  * Created by Gemma on 10/05/17.
  * Class to hold the boat readPolars neatly
  */
-public class Polars {
+public class Polar {
 
     private int TWS;
-    private Pair<Double,Double> upWindOptimum = new Pair<Double,Double>(0.0,0.0);
-    private Pair<Double,Double> downWindOptimum = new Pair<Double,Double>(0.0,0.0);
-    private ArrayList<Pair<Double,Double>> TWAandBSP = new ArrayList<>();
+    private WindAngleAndSpeed upWindOptimum = new WindAngleAndSpeed(0.0,0.0);
+    private WindAngleAndSpeed downWindOptimum = new WindAngleAndSpeed(0.0,0.0);
+    private ArrayList<WindAngleAndSpeed> TWAandBSP = new ArrayList<>();
 
-    public Polars(int TWS) {
+    public Polar(int TWS) {
         this.TWS = TWS;
     }
 
     public void addTWAandBSP(Double TWA, Double BSP){
-        Pair<Double,Double> angleAndSpeed = new Pair<>(TWA,BSP);
+        WindAngleAndSpeed angleAndSpeed = new WindAngleAndSpeed(TWA,BSP);
         TWAandBSP.add(angleAndSpeed);
     }
 
@@ -29,15 +29,15 @@ public class Polars {
         return TWS;
     }
 
-    public Pair<Double, Double> getUpWindOptimum() {
+    public WindAngleAndSpeed getUpWindOptimum() {
         return upWindOptimum;
     }
 
-    public Pair<Double, Double> getDownWindOptimum() {
+    public WindAngleAndSpeed getDownWindOptimum() {
         return downWindOptimum;
     }
 
-    public ArrayList<Pair<Double, Double>> getTWAandBSP() {
+    public ArrayList<WindAngleAndSpeed> getTWAandBSP() {
         return TWAandBSP;
     }
 
@@ -45,7 +45,7 @@ public class Polars {
      * A setter for the optimum upwind TWA and BSP of the boats, not all readPolars will have this
      * @param upWindOptimum
      */
-    public void setUpWindOptimum(Pair<Double, Double> upWindOptimum) {
+    public void setUpWindOptimum(WindAngleAndSpeed upWindOptimum) {
         this.upWindOptimum = upWindOptimum;
     }
 
@@ -53,7 +53,7 @@ public class Polars {
      * A setter for the optimum downiwnd TWA and BSP of the boats, not all readPolars will have this
      * @param downWindOptimum
      */
-    public void setDownWindOptimum(Pair<Double, Double> downWindOptimum) {
+    public void setDownWindOptimum(WindAngleAndSpeed downWindOptimum) {
         this.downWindOptimum = downWindOptimum;
     }
 
@@ -62,7 +62,7 @@ public class Polars {
      * @return true if TWA and Bsp supplied
      */
     public Boolean hasUpwindOptimum(){
-        if(upWindOptimum.getKey() != 0 && upWindOptimum.getValue() != 0){
+        if(upWindOptimum.getWindAngle() != 0 && upWindOptimum.getSpeed() != 0){
             return true;
         }
         return false;
@@ -73,7 +73,7 @@ public class Polars {
      * @return true if TWA and Bsp supplied
      */
     public Boolean hasDownwindOptimum(){
-        if(downWindOptimum.getKey() != 0 && downWindOptimum.getValue() != 0){
+        if(downWindOptimum.getWindAngle() != 0 && downWindOptimum.getSpeed() != 0){
             return true;
         }
         return false;

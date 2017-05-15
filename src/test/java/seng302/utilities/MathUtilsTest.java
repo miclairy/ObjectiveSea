@@ -3,6 +3,7 @@ package seng302.utilities;
 import javafx.util.Pair;
 import org.junit.Assert;
 import org.junit.Test;
+import seng302.models.WindAngleAndSpeed;
 
 import static junit.framework.TestCase.assertEquals;
 import static seng302.utilities.MathUtils.VMG;
@@ -55,12 +56,12 @@ public class MathUtilsTest {
 
     @Test
     public void LagrangeInterpolationTest(){
-        Pair<Double, Double> A = new Pair<>(44.7,8.843719);
-        Pair<Double, Double> B = new Pair<>(80.9,2.982861);
-        Pair<Double, Double> C = new Pair<>(101.9,-4.66228);
-        Pair<Double, Double> D = new Pair<>(1.0,2.0);
-        Pair<Double, Double> E = new Pair<>(2.0,3.0);
-        Pair<Double, Double> F = new Pair<>(5.0,2.0);
+        WindAngleAndSpeed A = new WindAngleAndSpeed(44.7,8.843719);
+        WindAngleAndSpeed B = new WindAngleAndSpeed(80.9,2.982861);
+        WindAngleAndSpeed C = new WindAngleAndSpeed(101.9,-4.66228);
+        WindAngleAndSpeed D = new WindAngleAndSpeed(1.0,2.0);
+        WindAngleAndSpeed E = new WindAngleAndSpeed(2.0,3.0);
+        WindAngleAndSpeed F = new WindAngleAndSpeed(5.0,2.0);
         double x = 50.0;
         assertEquals(8.564421885974385, lagrangeInterpolation(A,B,C,x), DELTA);
         assertEquals(3, lagrangeInterpolation(D,E,F,4.0), DELTA);

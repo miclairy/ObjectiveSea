@@ -34,23 +34,23 @@ public class BoatTest
     @Test
     public void tackingTest(){
         PolarReader.readPolars();
-        ArrayList<Polars> polars = PolarReader.getPolars();
+        ArrayList<Polar> polars = PolarReader.getPolars();
         Course course = new Course();
         course.setTrueWindSpeed(20);
-        Pair<Double,Double> test = boat.tacking(20, polars);
+        WindAngleAndSpeed test = boat.tacking(20, polars);
         //Check VMG
-        assertEquals(18.113029925346527, test.getKey(), DELTA);
+        assertEquals(18.113029925346527, test.getWindAngle(), DELTA);
         //Check TWA
-        assertEquals(41.0, test.getValue(), DELTA);
+        assertEquals(41.0, test.getSpeed(), DELTA);
         //Check BSp
-        assertEquals(24, (test.getKey()/Math.cos(Math.toRadians(test.getValue()))), DELTA);
+        assertEquals(24, (test.getWindAngle()/Math.cos(Math.toRadians(test.getSpeed()))), DELTA);
         //Check gybing also works
-        Pair<Double,Double> gybeTest = boat.gybing(20, polars);
+        WindAngleAndSpeed gybeTest = boat.gybing(20, polars);
         //Check VMG
-        assertEquals(-32.07623487078124, gybeTest.getKey(), DELTA);
+        assertEquals(-32.07623487078124, gybeTest.getWindAngle(), DELTA);
         //Check TWA
-        assertEquals(153.0, gybeTest.getValue(), DELTA);
+        assertEquals(153.0, gybeTest.getSpeed(), DELTA);
         //Check BSp
-        assertEquals(36.0, (gybeTest.getKey()/Math.cos(Math.toRadians(gybeTest.getValue()))), DELTA);
+        assertEquals(36.0, (gybeTest.getWindAngle()/Math.cos(Math.toRadians(gybeTest.getSpeed()))), DELTA);
     }
 }
