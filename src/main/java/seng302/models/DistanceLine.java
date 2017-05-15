@@ -34,7 +34,8 @@ public class DistanceLine {
             if (firstBoat != null && secondBoat != null) { // Line between two boats
                 Coordinate midPoint = DisplayUtils.midPointFromTwoCoords(mark.getMark1().getPosition(), mark.getMark2().getPosition());
                 Coordinate boatMidPoint = DisplayUtils.midPointFromTwoCoords(firstBoat.getCurrentPosition(), secondBoat.getCurrentPosition());
-                createLine(midPoint, boatMidPoint);
+                Coordinate trialCoord = new Coordinate(boatMidPoint.getLat(), boatMidPoint.getLon());
+                createLine(midPoint, trialCoord);
             }
             Boat boatToUse = null;
             if (firstBoat == null){
@@ -53,8 +54,8 @@ public class DistanceLine {
         CanvasCoordinate boatCanvasMidPoint = DisplayUtils.convertFromLatLon(boatMidPoint);
         CanvasCoordinate markPoint = DisplayUtils.convertFromLatLon(markMidPoint);
         line = new Line(
-                boatCanvasMidPoint.getX(), boatCanvasMidPoint.getY(),
-                markPoint.getX(), markPoint.getY()
+                markPoint.getX(), markPoint.getY(),
+                boatCanvasMidPoint.getX(), boatCanvasMidPoint.getY()
         );
         line.setStroke(Color.web("#70aaa2"));
     }

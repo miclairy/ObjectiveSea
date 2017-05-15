@@ -42,8 +42,6 @@ public class ScoreBoardController {
     @FXML private NumberAxis xAxis ;
     @FXML private NumberAxis yAxis ;
 
-    private Race race;
-
     public void setControllers(Controller parent, RaceViewController raceViewController, Race race){
         this.parent = parent;
         this.raceViewController = raceViewController;
@@ -122,16 +120,14 @@ public class ScoreBoardController {
     }
 
     @FXML
-    private void drawDistanceLines(){
+    private void drawDistanceLines() {
         Boat firstBoat = null;
         Boat secondBoat = null;
-        for (Boat boat : race.getCompetitors()){
-            if (Objects.equals(boat.getName(), boatDropDown1.getValue())){
-                System.out.println(boat.getName());
-                System.out.println(boatDropDown1.getValue());
+        for (Boat boat : race.getCompetitors()) {
+            if (Objects.equals(boat.getName(), boatDropDown1.getValue())) {
                 firstBoat = boat;
             }
-            if (Objects.equals(boat.getName(), boatDropDown2.getValue())){
+            if (Objects.equals(boat.getName(), boatDropDown2.getValue())) {
                 secondBoat = boat;
             }
         }

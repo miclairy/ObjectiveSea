@@ -595,22 +595,23 @@ public class RaceViewController extends AnimationTimer implements Observer {
         int index = 0;
         ArrayList<CompoundMark> raceOrder = race.getCourse().getCourseOrder();
         if (boat1 != null && boat2 != null) {
-            if (boat1.getLastRoundedMarkIndex() == boat2.getLastRoundedMarkIndex()) {
-                index = boat1.getLastRoundedMarkIndex();
+            if (boat1.getLeg() == boat2.getLeg()) {
+                index = boat1.getLeg();
             } else {
                 System.out.println("Please select boats that are currently on the same leg of the race");
             }
         } else {
             if (boat1 != null && boat2 == null){
-                index = boat1.getLastRoundedMarkIndex();
+                index = boat1.getLeg();
             } else {
-                index = boat2.getLastRoundedMarkIndex();
+                index = boat2.getLeg();
             }
         }
-
-        CompoundMark nextMark = raceOrder.get(index + 2);
-        distanceLine.setMark(nextMark);  // Needs to be correct using the leg of the race the boat is on
-        redrawDistanceLines();
+        if (index < raceOrder.size()) {
+            CompoundMark nextMark = raceOrder.get(index);
+            distanceLine.setMark(nextMark);
+            redrawDistanceLines();
+        }
     }
 }
 
