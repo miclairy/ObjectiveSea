@@ -37,7 +37,6 @@ public class ScoreBoardController {
     @FXML private CheckBox chkPassMarkTime;
     @FXML private CheckBox chkEst;
     @FXML public Button btnTrack;
-    @FXML public CheckBox chkMultipleSelect;
     @FXML private CheckBox chkLaylines;
     @FXML private LineChart chtSparkLine;
     @FXML private NumberAxis xAxis ;

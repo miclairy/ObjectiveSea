@@ -138,8 +138,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void addBoatSelectionHandler(BoatDisplay boat){
         Shape boatImage = boat.getIcon();
-        boatImage.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            if (scoreBoardController.chkMultipleSelect.isSelected() || selectedBoats.isEmpty()) {
+        boatImage.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            if (selectedBoats.isEmpty() || event.isShiftDown()) {
                 if (selectedBoats.contains(boat)){
                     selectedBoats.remove(boat);
                 } else {
@@ -156,6 +156,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 setBoatFocus();
             }
         });
+
 
         boatImage.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
             root.setCursor(boatCursor);
@@ -224,7 +225,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         for(BoatDisplay boat : displayBoats){
             boat.focus();
             scoreBoardController.btnTrack.setVisible(false);
-            scoreBoardController.chkMultipleSelect.setVisible(false);
             boat.removeLaylines(root);
             boat.removeBoatLaylines(root);
             selectedBoats.remove(boat);
@@ -604,7 +604,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
     private void setBoatFocus(){
         scoreBoardController.btnTrack.setVisible(true);
-        scoreBoardController.chkMultipleSelect.setVisible(true);
         for (BoatDisplay boatDisplay : selectedBoats) {
             boatDisplay.getIcon().toFront();
         }

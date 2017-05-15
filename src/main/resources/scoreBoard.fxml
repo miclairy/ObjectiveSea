@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.chart.*?>
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -63,7 +64,6 @@
                                 </rowConstraints>
                                  <children>
                                     <Button fx:id="btnTrack" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" text="Track" visible="false" />
-                                    <CheckBox fx:id="chkMultipleSelect" mnemonicParsing="false" text="Multiple Select" textFill="WHITE" visible="false" GridPane.columnIndex="1" />
                                  </children>
                                  <VBox.margin>
                                     <Insets left="20.0" right="20.0" top="10.0" />
