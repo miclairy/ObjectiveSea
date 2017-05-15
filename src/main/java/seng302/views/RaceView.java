@@ -114,6 +114,7 @@ public class RaceView {
         double bearing2 = bearing.getValue();
         Coordinate markLocation = mark.getPosition();
         CanvasCoordinate markLocationXY = DisplayUtils.convertFromLatLon(markLocation.getLat(), markLocation.getLon());
+        CanvasCoordinate boatLocationXY = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
 
         Double endPointY1 = LAYLINELENGTH * Math.sin(Math.toRadians(bearing1 - 90)) + markLocationXY.getY();
         Double endPointX1 = LAYLINELENGTH * Math.cos(Math.toRadians(bearing1 - 90)) + markLocationXY.getX();
@@ -127,6 +128,28 @@ public class RaceView {
         line2.setStroke(boat.getColor());
 
         return new Pair<>(line1, line2);
+    }
+
+    public Pair<Line, Line> createBoatLayLines(Pair<Double, Double> bearing, CompoundMark mark, BoatDisplay boat){
+        final int LAYLINELENGTH = 75;
+        double bearing1 = bearing.getKey();
+        double bearing2 = bearing.getValue();
+        Coordinate markLocation = mark.getPosition();
+        CanvasCoordinate markLocationXY = DisplayUtils.convertFromLatLon(markLocation.getLat(), markLocation.getLon());
+        CanvasCoordinate boatLocationXY = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
+
+        Double endPointY1FromBoat = LAYLINELENGTH * Math.sin(Math.toRadians(bearing1 + 90)) + boatLocationXY.getY();
+        Double endPointX1FromBoat = LAYLINELENGTH * Math.cos(Math.toRadians(bearing1 + 90)) + boatLocationXY.getX();
+        Line line1FromBoat = new Line(boatLocationXY.getX(), boatLocationXY.getY(), endPointX1FromBoat, endPointY1FromBoat);
+
+        Double endPointY2FromBoat = LAYLINELENGTH * Math.sin(Math.toRadians(bearing2 + 90)) + boatLocationXY.getY();
+        Double endPointX2FromBoat = LAYLINELENGTH * Math.cos(Math.toRadians(bearing2 + 90)) + boatLocationXY.getX();
+        Line line2FromBoat = new Line(boatLocationXY.getX(), boatLocationXY.getY(), endPointX2FromBoat, endPointY2FromBoat);
+
+        line1FromBoat.setStroke(boat.getColor());
+        line2FromBoat.setStroke(boat.getColor());
+
+        return new Pair<>(line1FromBoat, line2FromBoat);
     }
 
     /**

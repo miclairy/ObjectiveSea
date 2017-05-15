@@ -247,7 +247,8 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, LONGITUDE, lon);
         addFieldToByteArray(body, HEADING, (int) (boat.getHeading() * Math.pow(2, 16) / 360));
         addFieldToByteArray(body, SPEED_OVER_GROUND, boat.getSpeedInMMS());
-        addFieldToByteArray(body, TRUE_WIND_ANGLE, (long) (boat.getTrueWindAngle() * Math.pow(2, 15) / 180)); //south east
+        addFieldToByteArray(body, TRUE_WIND_DIRECTION, (long) (raceRunner.getRace().getCourse().getWindDirection() * (65536.0 / 360.0))); //convert decimal to unsigned short binary
+        addFieldToByteArray(body, TRUE_WIND_ANGLE, (long) (boat.getTrueWindAngle() * Math.pow(2, 15) / 180)); //convert decimal to unsigned short binary
 
         return body;
     }
