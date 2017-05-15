@@ -110,25 +110,27 @@ public class RaceTest {
 
         assertEquals(-1, boat1.getLastRoundedMarkIndex());
         assertEquals(-1, boat2.getLastRoundedMarkIndex());
-
+        for(Boat boat : defaultRace.getCompetitors()){
+            boat.setLeg(1);
+        }
         defaultRace.updateMarkRounded(2, 1, 1);
-        assertEquals(-1, boat1.getLastRoundedMarkIndex());
-        assertEquals(0, boat2.getLastRoundedMarkIndex());
+        assertEquals(0, boat1.getLastRoundedMarkIndex());
+        assertEquals(1, boat2.getLastRoundedMarkIndex());
         assertEquals(boat2, defaultRace.getRaceOrder().get(0));
         assertEquals(boat1, defaultRace.getRaceOrder().get(1));
 
         defaultRace.updateMarkRounded(1, 1, 2);
-        assertEquals(0, boat1.getLastRoundedMarkIndex());
-        assertEquals(0, boat2.getLastRoundedMarkIndex());
+        assertEquals(1, boat1.getLastRoundedMarkIndex());
+        assertEquals(1, boat2.getLastRoundedMarkIndex());
         assertEquals(boat2, defaultRace.getRaceOrder().get(0));
         assertEquals(boat1, defaultRace.getRaceOrder().get(1));
 
         defaultRace.updateMarkRounded(1, 999, 2); //Non-existent mark
-        assertEquals(0, boat1.getLastRoundedMarkIndex());
-        assertEquals(0, boat2.getLastRoundedMarkIndex());
+        assertEquals(1, boat1.getLastRoundedMarkIndex());
+        assertEquals(1, boat2.getLastRoundedMarkIndex());
 
         defaultRace.updateMarkRounded(1, 2, 2);
-        assertEquals(1, boat1.getLastRoundedMarkIndex());
+        assertEquals(2, boat1.getLastRoundedMarkIndex());
         assertEquals(boat1, defaultRace.getRaceOrder().get(0));
         assertEquals(boat2, defaultRace.getRaceOrder().get(1));
     }
@@ -140,14 +142,17 @@ public class RaceTest {
         defaultRace.getCourse().addMarkInOrder(1);
 
         assertEquals(-1, boat1.getLastRoundedMarkIndex());
+        for(Boat boat : defaultRace.getCompetitors()){
+            boat.setLeg(1);
+        }
         defaultRace.updateMarkRounded(1, 1, 1);
-        assertEquals(0, boat1.getLastRoundedMarkIndex());
-        defaultRace.updateMarkRounded(1, 2, 5);
         assertEquals(1, boat1.getLastRoundedMarkIndex());
-        defaultRace.updateMarkRounded(1, 1, 10);
+        defaultRace.updateMarkRounded(1, 2, 5);
         assertEquals(2, boat1.getLastRoundedMarkIndex());
+        defaultRace.updateMarkRounded(1, 1, 10);
+        assertEquals(3, boat1.getLastRoundedMarkIndex());
 
         defaultRace.updateMarkRounded(1, 2, 10); //No more marks of this id exist in race order
-        assertEquals(2, boat1.getLastRoundedMarkIndex());
+        assertEquals(3, boat1.getLastRoundedMarkIndex());
     }
 }

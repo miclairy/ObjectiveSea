@@ -21,11 +21,11 @@ public class Race extends Observable{
     private List<Boat> competitors;
     private List<Boat> raceOrder = new ArrayList<>();
     private Map<Integer, Boat> boatIdMap;
-
     private double totalRaceTime;
     private RaceStatus raceStatus = NOT_ACTIVE;
     private long startTimeInEpochMs, currentTimeInEpochMs;
     private double UTCOffset;
+    private boolean firstMessage = true;
 
 
     public Race(String name, Course course, List<Boat> competitors) {
@@ -50,6 +50,7 @@ public class Race extends Observable{
         for(Boat competitor : competitors){
             boatIdMap.put(competitor.getId(), competitor);
         }
+        updateRaceOrder();
         raceStatus = NOT_ACTIVE;
     }
 
@@ -143,7 +144,6 @@ public class Race extends Observable{
     public void updateRaceStatus(RaceStatus newRaceStatus) {
         if(raceStatus != newRaceStatus){
             raceStatus = newRaceStatus;
-            //System.out.println(regattaName + " Status: " + newRaceStatus);
             setChanged();
             notifyObservers(UPDATED_STATUS_SIGNAL);
         }
@@ -161,13 +161,12 @@ public class Race extends Observable{
     public void updateMarkRounded(int sourceID, int roundedMarkID, long time) {
         Boat boat = boatIdMap.get(sourceID);
         List<CompoundMark> courseOrder = course.getCourseOrder();
-        for(int markIndex = boat.getLastRoundedMarkIndex()+1; markIndex < courseOrder.size(); markIndex++){
+        for(int markIndex = boat.getLastRoundedMarkIndex(); markIndex < courseOrder.size(); markIndex++){
             CompoundMark mark = courseOrder.get(markIndex);
             if(mark.getCompoundMarkID() == roundedMarkID){
-                boat.setLastRoundedMarkIndex(markIndex);
+                boat.setLastRoundedMarkIndex(markIndex + 1);
                 boat.setLastRoundedMarkTime(time);
                 updateRaceOrder();
-                //System.out.println(boat.getName() + " rounded " + course.getCompoundMarks().get(roundedMarkID).getName() + " at " + time);
                 return;
             }
         }
@@ -197,8 +196,12 @@ public class Race extends Observable{
         this.currentTimeInEpochMs = currentTimeInEpoch;
     }
 
-    private void updateRaceOrder() {
+    public void updateRaceOrder() {
         Collections.sort(raceOrder);
+        for (int i = 0; i < raceOrder.size(); i++) {
+            Boat boat = raceOrder.get(i);
+            boat.setCurrPlacing(i + 1);
+        }
     }
 
     public RaceStatus getRaceStatus() {
@@ -225,6 +228,14 @@ public class Race extends Observable{
         this.course = course;
     }
 
+    public boolean isFirstMessage() {
+        return firstMessage;
+    }
+
+    public void setFirstMessage(boolean firstMessage) {
+        this.firstMessage = firstMessage;
+    }
+
     public void setCompetitors(List<Boat> competitors) {
         this.competitors = competitors;
         raceOrder.addAll(competitors);
@@ -233,7 +244,5 @@ public class Race extends Observable{
             boatIdMap.put(competitor.getId(), competitor);
         }
     }
-
-
 }
 
