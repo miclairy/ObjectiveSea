@@ -96,12 +96,18 @@ public class ScoreBoardController {
         Boat secondBoat = null;
         for (Boat boat : race.getCompetitors()){
             if (Objects.equals(boat.getName(), boatDropDown1.getValue())){
+                System.out.println(boat.getName());
+                System.out.println(boatDropDown1.getValue());
                 firstBoat = boat;
             }
             if (Objects.equals(boat.getName(), boatDropDown2.getValue())){
                 secondBoat = boat;
             }
         }
+        boatDropDown1.setValue(null);
+        boatDropDown2.setValue(null);
+        assert firstBoat != null;
+        System.out.println(firstBoat.getName() + ", " + secondBoat.getName());
         raceViewController.updateDistanceLine(firstBoat, secondBoat);
     }
 

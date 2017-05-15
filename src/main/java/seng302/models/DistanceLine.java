@@ -29,16 +29,33 @@ public class DistanceLine {
         return line;
     }
 
-    public void updateLine() {
-        if (mark != null && firstBoat != null && secondBoat != null) {
-            Coordinate markCoord = mark.getPosition();
-            CanvasCoordinate boatPosition = DisplayUtils.convertFromLatLon(firstBoat.getCurrentPosition());
-            CanvasCoordinate markPosition = DisplayUtils.convertFromLatLon(markCoord);
-            line = new Line(
-                    boatPosition.getX(), boatPosition.getY(),
-                    markPosition.getX(), markPosition.getY()
-            );
-            line.setStroke(Color.web("#70aaa2"));
+    public void reCalcLine() {
+        if (mark != null){
+            if (firstBoat != null && secondBoat != null) { // Line between two boats
+                Coordinate midPoint = DisplayUtils.midPointFromTwoCoords(mark.getMark1().getPosition(), mark.getMark2().getPosition());
+                Coordinate boatMidPoint = DisplayUtils.midPointFromTwoCoords(firstBoat.getCurrentPosition(), secondBoat.getCurrentPosition());
+                createLine(midPoint, boatMidPoint);
+            }
+            Boat boatToUse = null;
+            if (firstBoat == null){
+                boatToUse = secondBoat;
+            } else if (secondBoat == null) {
+                boatToUse = firstBoat;
+            }
+            if (boatToUse != null) {
+                Coordinate midPoint = DisplayUtils.midPointFromTwoCoords(mark.getMark1().getPosition(), mark.getMark2().getPosition());
+                createLine(midPoint, boatToUse.getCurrentPosition());
+            }
         }
+    }
+
+    private void createLine(Coordinate markMidPoint, Coordinate boatMidPoint){
+        CanvasCoordinate boatCanvasMidPoint = DisplayUtils.convertFromLatLon(boatMidPoint);
+        CanvasCoordinate markPoint = DisplayUtils.convertFromLatLon(markMidPoint);
+        line = new Line(
+                boatCanvasMidPoint.getX(), boatCanvasMidPoint.getY(),
+                markPoint.getX(), markPoint.getY()
+        );
+        line.setStroke(Color.web("#70aaa2"));
     }
 }

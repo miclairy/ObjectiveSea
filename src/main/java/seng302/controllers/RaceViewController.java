@@ -8,7 +8,6 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
@@ -111,7 +110,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
         controller.setWindDirection();
-        distanceLine.updateLine();
     }
 
     /**
@@ -522,7 +520,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     private void redrawDistanceLines(){
-        distanceLine.updateLine();
+        distanceLine.reCalcLine();
         Line line = distanceLine.getLine();
         root.getChildren().add(line);
     }

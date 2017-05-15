@@ -73,6 +73,19 @@ public class DisplayUtils {
 
 
     /**
+     * Wrapper for the midPoint calculation, takes two coords instead of taking 4 doubles
+     * @param first coord of first object
+     * @param second coord of second object
+     * @return midPoint between the two objects
+     */
+    public static Coordinate midPointFromTwoCoords(Coordinate first, Coordinate second){
+        Double halfLat = (first.getLat() + second.getLat()) / 2;
+        Double halfLon = (first.getLon() + second.getLon()) / 2;
+        return new Coordinate(halfLat, halfLon);
+    }
+
+
+    /**
      * finds the geographic midpoint between two lat/lng points
      * @param lat1 latitude of first point
      * @param lon1 longitude of first point
