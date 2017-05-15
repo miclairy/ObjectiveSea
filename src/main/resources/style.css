@@ -24,16 +24,16 @@
     -fx-effect: dropshadow(three-pass-box, rgb(21, 54, 50), 50, 0, 0, 0);
 }
 
-#startersOverlayTitle {
-    -fx-background-color: #3c619b;
-    -fx-font-size: 27px;
-    -fx-text-fill: White;
-    -fx-border-radius: 10 10 0 0;
-    -fx-background-radius: 10 10 0 0;
-}
+#startersOverlayTitle { 
+    -fx-background-color: linear-gradient(#B9D9DA, #AAD2D2); 
+    -fx-font-size: 27px; 
+    -fx-text-fill: White; 
+    -fx-border-radius: 10 10 0 0; 
+    -fx-background-radius: 10 10 0 0; 
+}  
 
-#clockLabel {
-    -fx-background-color: #3c619b;
+#clockLabel { 
+    -fx-background-color: linear-gradient(#AAD2D2, #91BDC0); 
 }
 
 #annotationLine {
