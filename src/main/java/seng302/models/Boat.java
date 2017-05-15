@@ -385,24 +385,6 @@ public class Boat implements Comparable<Boat>{
         this.timeTillFinish = timeTillFinish;
     }
 
-    /**
-     * Returns the layline angles of a boat
-     * @param twd
-     * @return Pair(Double, Double) laylines
-     */
-    public Pair<Double, Double> calculateLaylineHeading(double twd) {
-        boolean upwind = MathUtils.pointBetweenTwoAngle(twd, 90, heading);
-        if (upwind) {
-            double layline1 = (twd - tackTWAofBoat) % 360;
-            double layline2 = (twd + tackTWAofBoat) % 360;
-            return new Pair(layline1, layline2);
-        } else {
-            double layline1 = ((twd + 180) - tackTWAofBoat);
-            double layline2 = ((twd + 180) + tackTWAofBoat);
-            return new Pair(layline1, layline2);
-        }
-    }
-
     public void setCurrentVMGSpeed(double currentVMGSpeed) {
         this.currentVMGSpeed = currentVMGSpeed;
     }

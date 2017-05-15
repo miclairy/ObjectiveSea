@@ -194,6 +194,7 @@ public class MockRaceRunner implements Runnable {
         return onTack ? alphaAngle : 180 - alphaAngle;
     }
 
+
     /**
      * Updates the boat's coordinates by how much it moved in timePassed hours on the course
      * @param distanceGained the distance gained by the boat since last update
@@ -212,6 +213,7 @@ public class MockRaceRunner implements Runnable {
         double lengthOfLeg = courseOrder.get(boat.getLastRoundedMarkIndex()).getPosition().greaterCircleDistance(nextMark.getPosition());
         double betaAngle = (2*TrueWindAngle) - alphaAngle;
         double lengthOfTack = ((lengthOfLeg* Math.sin(Math.toRadians(betaAngle)))/Math.sin(Math.toRadians(180 - 2*TrueWindAngle)))/2.0;
+
         ArrayList<CompoundMark> tackingMarks = new ArrayList<>();
         tackingMarks.add(courseOrder.get(boat.getLastRoundedMarkIndex()));
         CompoundMark currentMark = courseOrder.get(boat.getLastRoundedMarkIndex());

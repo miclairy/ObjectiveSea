@@ -63,6 +63,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean initializedBoats = false;
     private BoatDisplay selectedBoat;
     private ImageCursor cursor = new ImageCursor(new Image("graphics/boat-select-cursor.png"), 7, 7);
+    private Layline laylines = new Layline();
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
         this.root = root;
@@ -420,38 +421,67 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
     /**
      *  Draws laylines for a boat coming from the next mark it is heading to (at the moment is Mark1)
-     * @param boat
+     * @param
      */
     //TODO create function that chooses closest mark to draw laylines from also check if boat is not tacking or gybing so lines are not drawn
-    private void drawLayLine(BoatDisplay boat){
-        boolean draw = false;
-        double windDirection = race.getCourse().getWindDirection();
-        double heading = boat.getBoat().getHeading();
-        if(MathUtils.pointBetweenTwoAngle(windDirection, boat.getBoat().getTWAofBoat(), heading)){
-            draw = true;
-        } else if(MathUtils.pointBetweenTwoAngle((windDirection + 180) % 360, 180 - boat.getBoat().getGybeTWAofBoat(), heading)) {
-            draw = true;
-        }
-        if (boat.getBoat().getLastRoundedMarkIndex() < race.getCourse().getCourseOrder().size() - 1 && boat.getBoat().getLastRoundedMarkIndex() != -1 && draw == true) {
-            boat.removeLaylines(root);
-            boat.removeBoatLaylines(root);
-            CompoundMark mark = race.getCourse().getCourseOrder().get(boat.getBoat().getLastRoundedMarkIndex() + 1);
-            Pair<Double, Double> bearing = boat.getBoat().calculateLaylineHeading(race.getCourse().getTrueWindDirection());
-            Pair<Line, Line> laylines = raceView.createLayLines(bearing, mark, boat);
-            Pair<Line, Line> boatLaylines = raceView.createBoatLayLines(bearing, mark, boat);
-            Line layline1 = laylines.getKey();
-            Line layline2 = laylines.getValue();
-            Line boatLayline1 = boatLaylines.getKey();
-            Line boatLayline2 = boatLaylines.getValue();
+    private void drawLayLine(BoatDisplay boatDisplay){
+        Boat boat = boatDisplay.getBoat();
+        ArrayList<CompoundMark> courseOrder = race.getCourse().getCourseOrder();
+
+        if (boat.getLastRoundedMarkIndex() < race.getCourse().getCourseOrder().size() - 1 && boat.getLastRoundedMarkIndex() != -1) {
+            boatDisplay.removeLaylines(root);
+            boatDisplay.removeBoatLaylines(root);
+
+            CompoundMark nextMark = courseOrder.get(boat.getLastRoundedMarkIndex() + 1);
+            calculateLaylineHeading(race.getCourse().getTrueWindDirection(), boat.getHeading(), boat.getTWAofBoat());
+            double heading1 = laylines.getHeading1();
+            double heading2 = laylines.getHeading2();
+            Line layline1 = raceView.createLayLine(heading1, nextMark, boatDisplay);
+            Line layline2 = raceView.createLayLine(heading2, nextMark, boatDisplay);
             root.getChildren().add(layline1);
             root.getChildren().add(layline2);
-            root.getChildren().add(boatLayline1);
-            root.getChildren().add(boatLayline2);
-            boat.setLaylines(laylines);
-            boat.setBoatLaylines(boatLaylines);
+            boatDisplay.setLaylines(layline1, layline2);
             layline1.toBack();
             layline2.toBack();
+//            CompoundMark currentMark = courseOrder.get(boat.getLastRoundedMarkIndex());
+//            double laylineLength = boat.getBoat().calculateLayLineLength(nextMark, currentMark, bearing.getKey(), boat.getBoat().getTrueWindAngle());
+//            Pair<Line, Line> boatLaylines = raceView.createBoatLayLines(bearing, nextMark, boatDisplay);
+//            Line boatLayline1 = boatLaylines.getKey();
+//            Line boatLayline2 = boatLaylines.getValue();
+//            root.getChildren().add(boatLayline1);
+//            root.getChildren().add(boatLayline2);
+//            boatDisplay.setBoatLaylines(boatLaylines);
         }
+    }
+
+    /**
+     * Calculates the layline heading of a boat
+     */
+    public void calculateLaylineHeading(double twd, double heading, double tackTWAofBoat) {
+        boolean upwind = MathUtils.pointBetweenTwoAngle(twd, 90, heading);
+        double layline1;
+        double layline2;
+        if (upwind) {
+            boolean tacking = MathUtils.pointBetweenTwoAngle(twd, 45, heading);
+            if (tacking){
+                layline1 = ((twd - tackTWAofBoat) % 360);
+                layline2 = (twd + tackTWAofBoat) % 360;
+            } else {
+                layline1 = tackTWAofBoat;
+                layline2 = tackTWAofBoat + (2*twd);
+            }
+        } else {
+            boolean gybing = MathUtils.pointBetweenTwoAngle(twd, 45, heading);
+            if (gybing) {
+                layline1 = ((twd + 180) - tackTWAofBoat);
+                layline2 = ((twd + 180) + tackTWAofBoat);
+            } else {
+                layline1 = tackTWAofBoat;
+                layline2 = tackTWAofBoat + (2*twd);
+            }
+        }
+        laylines.setHeading1(layline1);
+        laylines.setHeading2(layline2);
     }
 
 

@@ -30,7 +30,8 @@ public class BoatDisplay {
     private final double FADEDBOAT = 0.3;
 
     private Color color;
-    private Pair<Line, Line> layLines;
+    private Line layline1;
+    private Line layline2;
     private Pair<Line, Line> boatLayLines;
 
     public BoatDisplay(Boat boat) {
@@ -110,16 +111,13 @@ public class BoatDisplay {
         return timeTillMark;
     }
 
-    public void setLaylines(Pair<Line, Line> laylines) {
-        this.layLines = laylines;
+    public void setLaylines(Line layline1, Line layline2) {
+        this.layline1 = layline1;
+        this.layline2 = layline2;
     }
 
     public void setBoatLaylines(Pair<Line, Line> boatLayLines) {
         this.boatLayLines = boatLayLines;
-    }
-
-    public Pair<Line, Line> getLayLines() {
-        return layLines;
     }
 
     public void unFocus(){
@@ -143,11 +141,12 @@ public class BoatDisplay {
     }
 
     public void removeLaylines(Group root) {
-        if (layLines != null) {
-            root.getChildren().remove(layLines.getKey());
-            root.getChildren().remove(layLines.getValue());
+        if (layline1 != null && layline2 != null) {
+            root.getChildren().remove(layline1);
+            root.getChildren().remove(layline2);
         }
-        layLines = null;
+        layline1= null;
+        layline2= null;
     }
 
     public void removeBoatLaylines(Group root) {
