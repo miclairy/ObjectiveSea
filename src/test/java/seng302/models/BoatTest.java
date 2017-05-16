@@ -1,14 +1,10 @@
 package seng302.models;
 
-import javafx.util.Pair;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import seng302.utilities.readPolars;
+import seng302.utilities.PolarReader;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -36,28 +32,24 @@ public class BoatTest
 
     @Test
     public void tackingTest(){
-        try {
-            readPolars.polars();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        ArrayList<Polars> polars = readPolars.getPolars();
+        ArrayList<Polar> polars = PolarReader.getPolarsForAC35Yachts();
         Course course = new Course();
         course.setTrueWindSpeed(20);
-        Pair<Double,Double> test = boat.tacking(20, polars);
+        PolarTable table = new PolarTable(polars, course);
+        WindAngleAndSpeed test = table.calculateOptimumTack(20);
         //Check VMG
-        assertEquals(18.113029925346527, test.getKey(), DELTA);
+        assertEquals(18.113029925346527, test.getWindAngle(), DELTA);
         //Check TWA
-        assertEquals(41.0, test.getValue(), DELTA);
+        assertEquals(41.0, test.getSpeed(), DELTA);
         //Check BSp
-        assertEquals(24, (test.getKey()/Math.cos(Math.toRadians(test.getValue()))), DELTA);
-        //Check gybing also works
-        Pair<Double,Double> gybeTest = boat.gybing(20, polars);
+        assertEquals(24, (test.getWindAngle()/Math.cos(Math.toRadians(test.getSpeed()))), DELTA);
+        //Check calculateOptimumGybe also works
+        WindAngleAndSpeed gybeTest = table.calculateOptimumGybe(20);
         //Check VMG
-        assertEquals(-32.07623487078124, gybeTest.getKey(), DELTA);
+        assertEquals(-32.07623487078124, gybeTest.getWindAngle(), DELTA);
         //Check TWA
-        assertEquals(153.0, gybeTest.getValue(), DELTA);
+        assertEquals(153.0, gybeTest.getSpeed(), DELTA);
         //Check BSp
-        assertEquals(36.0, (gybeTest.getKey()/Math.cos(Math.toRadians(gybeTest.getValue()))), DELTA);
+        assertEquals(36.0, (gybeTest.getWindAngle()/Math.cos(Math.toRadians(gybeTest.getSpeed()))), DELTA);
     }
 }

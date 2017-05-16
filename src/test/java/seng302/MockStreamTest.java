@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import seng302.controllers.MockRaceRunner;
 import seng302.data.*;
 import seng302.models.*;
+import seng302.utilities.PolarReader;
 
 import javax.xml.crypto.Data;
 import java.io.*;
@@ -23,17 +24,20 @@ import java.util.List;
 import static junit.framework.TestCase.assertEquals;
 import static org.mockito.Mockito.*;
 import static seng302.data.AC35StreamField.SPEED_OVER_GROUND;
+import static seng302.data.AC35StreamField.TRUE_WIND_ANGLE;
+import static seng302.data.AC35StreamField.TRUE_WIND_DIRECTION;
 
 
 public class MockStreamTest {
 
-    MockRaceRunner mockRaceRunner  = new MockRaceRunner();
+    MockRaceRunner mockRaceRunner;
 
     @Before
     public void startMockRaceRunner(){
         mockRaceRunner = new MockRaceRunner();
         Thread runner = new Thread(mockRaceRunner);
         runner.start();
+        mockRaceRunner.getRace().getCourse().setWindDirection(135);
     }
 
 
@@ -162,13 +166,17 @@ public class MockStreamTest {
         try {
             MockRaceRunner mockRaceRunner = mock(MockRaceRunner.class);
             Race mockRace = mock(Race.class);
+            Course mockCourse = mock(Course.class);
 
 
             when(mockRaceRunner.getRace()).thenReturn(mockRace);
             when(mockRaceRunner.getRaceId()).thenReturn(String.valueOf(1122));
             when(mockRace.getRaceStatus()).thenReturn(RaceStatus.STARTED);
+            when(mockRace.getCourse()).thenReturn(mockCourse);
+            when(mockCourse.getWindDirection()).thenReturn(25.0);
 
             Boat boat = new Boat(1, "NZ", "NZ", 20);
+            boat.setTWAofBoat(15);
 
             when(mockRace.getCompetitors()).thenReturn(new ArrayList<>(Arrays.asList(boat)));
 
@@ -189,8 +197,8 @@ public class MockStreamTest {
             assertEquals(1, body[7]);
             assertEquals(0, body[24]);
             assertEquals(0, body[28]);
-            assertEquals(0x6000, DataStreamReader.byteArrayRangeToLong(body, 46, 48));
-            assertEquals(20571, DataStreamReader.byteArrayRangeToLong(body, 48, 50));
+            assertEquals(4551, DataStreamReader.byteArrayRangeToLong(body, TRUE_WIND_DIRECTION.getStartIndex(), TRUE_WIND_DIRECTION.getEndIndex()));
+            assertEquals(2730, DataStreamReader.byteArrayRangeToLong(body, TRUE_WIND_ANGLE.getStartIndex(), TRUE_WIND_ANGLE.getEndIndex()));
             connectionSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
