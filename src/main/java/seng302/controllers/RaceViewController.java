@@ -563,7 +563,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             Circle icon = mark.getIcon();
             icon.toFront();
             icon.setScaleX(DisplayUtils.zoomLevel);
-            icon.setScaleY(DisplayUtils.zoomLevel)
+            icon.setScaleY(DisplayUtils.zoomLevel);
             icon.setCenterX(convertedPoint.getX());
             icon.setCenterY(convertedPoint.getY());
             icon.toBack();
@@ -602,7 +602,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                         path.getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
                     }
                     path.toBack();
-                    path..setStrokeWidth(DisplayUtils.zoomLevel);
+                    path.setStrokeWidth(DisplayUtils.zoomLevel);
                 }
             }
         }

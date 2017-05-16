@@ -16,6 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
