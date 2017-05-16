@@ -2,6 +2,7 @@ package seng302.models;
 
 
 import javafx.util.Pair;
+import seng302.data.StartTimingStatus;
 import seng302.utilities.readPolars;
 
 import seng302.data.BoatStatus;
@@ -34,6 +35,7 @@ public class Boat implements Comparable<Boat>{
     private double maxSpeed;
 
     private BoatStatus status = BoatStatus.UNDEFINED;
+    private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
 
     private ArrayList<Coordinate> pathCoords;
     private double VMGofBoat;
@@ -496,5 +498,13 @@ public class Boat implements Comparable<Boat>{
 
     public void setTimeTillFinish(long timeTillFinish) {
         this.timeTillFinish = timeTillFinish;
+    }
+
+    public StartTimingStatus getTimeStatus() {
+        return timeStatus;
+    }
+
+    public void setTimeStatus(StartTimingStatus timeStatus) {
+        this.timeStatus = timeStatus;
     }
 }

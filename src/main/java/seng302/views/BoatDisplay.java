@@ -6,6 +6,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
+import seng302.data.StartTimingStatus;
 import seng302.models.*;
 
 import java.time.Instant;
@@ -104,5 +105,21 @@ public class BoatDisplay {
         }
         return timeTillMark;
     }
+
+    public String getStartTimingAnnotation(){
+            if(boat.getTimeStatus().equals(StartTimingStatus.EARLY)){
+                return "-";
+            } else if(boat.getTimeStatus().equals(StartTimingStatus.EARLY)){
+                return "+";
+            }
+            return "";
+    }
+
+    public void getStartTiming(){
+        //implement method to figure out if boat is early, late or ontime
+        boat.setTimeStatus(StartTimingStatus.EARLY); //example
+    }
+
+
 }
 
