@@ -31,6 +31,7 @@ import seng302.views.RaceView;
 import java.util.*;
 
 import static seng302.data.RaceStatus.STARTED;
+import static seng302.data.RaceStatus.TERMINATED;
 
 /**
  * Created on 6/03/17.
@@ -565,7 +566,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public void redrawBoatPaths(){
         for(BoatDisplay boatDisplay : displayBoats){
             Boat boat = boatDisplay.getBoat();
-            if(race.getRaceStatus() == STARTED && !boat.isFinished()) {
+            if(race.getRaceStatus() == STARTED || race.getRaceStatus() == TERMINATED) {
                 if (boat.getPathCoords().size() > 0) {
                     CanvasCoordinate pathStart = DisplayUtils.convertFromLatLon(boat.getPathCoords().get(0));
                     boatDisplay.getPath().getElements().clear();
