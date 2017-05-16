@@ -82,6 +82,14 @@ public class MockStream implements Runnable {
     }
 
     /**
+     * Exit out of run
+     */
+    public void stop(){
+
+        raceRunner.getRace().updateRaceStatus(RaceStatus.FINISHED);
+    }
+
+    /**
      * Sends the XML messages when the client has connected
      */
     private void sendInitialRaceMessages() {
@@ -398,5 +406,9 @@ public class MockStream implements Runnable {
         for (int i = 0; i < numBytes; i ++) {
             array[start + i] = (byte) (item >> i * 8);
         }
+    }
+
+    public boolean isSending(){
+        return !clientSocket.isClosed();
     }
 }
