@@ -60,10 +60,7 @@ public class Main extends Application {
         });
     }
 
-    public static void main( String[] args )
-    {
-        launch(args);
-    }
+    public static void main( String[] args ) {launch(args);}
 
     /**
      * Creates a MockStream object, puts it in it's own thread and starts the thread
