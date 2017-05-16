@@ -1,0 +1,13 @@
+#annotationLine {
+    -fx-stroke: White;
+}
+
+#annotationLabel {
+    -fx-text-fill: #2b2b2b;
+}
+
+#wake{
+    -fx-stroke: #eaf2ff;
+    -fx-fill: rgb(132, 218, 255);
+    -fx-opacity: 0.5;
+}
