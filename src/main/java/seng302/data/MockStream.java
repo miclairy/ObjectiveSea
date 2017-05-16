@@ -247,8 +247,8 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, LONGITUDE, lon);
         addFieldToByteArray(body, HEADING, (int) (boat.getHeading() * Math.pow(2, 16) / 360));
         addFieldToByteArray(body, SPEED_OVER_GROUND, boat.getSpeedInMMS());
-        addFieldToByteArray(body, TRUE_WIND_DIRECTION, (long) (135.0 * (65536.0 / 360.0))); //convert decimal to unsigned short binary
-        addFieldToByteArray(body, TRUE_WIND_ANGLE, (long) (113 * Math.pow(2, 15) / 180)); //convert decimal to unsigned short binary, boat.getTrueWindAngle()
+        addFieldToByteArray(body, TRUE_WIND_DIRECTION, (long) (raceRunner.getRace().getCourse().getWindDirection() * (65536.0 / 360.0))); //convert decimal to unsigned short binary
+        addFieldToByteArray(body, TRUE_WIND_ANGLE, (long) (boat.getTWAofBoat() * Math.pow(2, 15) / 180)); //convert decimal to unsigned short binary,
 
         return body;
     }
@@ -376,7 +376,7 @@ public class MockStream implements Runnable {
         body[0] = (byte) 1;
         body[15] = (byte) 1;
         body[24] = (byte) 0;
-        addFieldToByteArray(body, TRUE_WIND_DIRECTION, (long) 135.0); //south east raceRunner.getRace().getCourse().getWindDirection()
+        addFieldToByteArray(body, TRUE_WIND_DIRECTION, (long) raceRunner.getRace().getCourse().getWindDirection()); //south east raceRunner.getRace().getCourse().getWindDirection()
 
         return body;
     }
