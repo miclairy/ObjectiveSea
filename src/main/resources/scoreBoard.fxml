@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
@@ -18,7 +19,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<TabPane fx:id="scoreBoard" prefHeight="413.0" prefWidth="161.0" stylesheets="@style.css" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.ScoreBoardController">
+<TabPane fx:id="scoreBoard" prefHeight="413.0" prefWidth="161.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.ScoreBoardController">
       <tabs>
          <Tab text="Race">
             <content>
@@ -36,7 +37,7 @@
                     </rowConstraints>
                      <children>
                            <ListView fx:id="placings" prefHeight="251.0" prefWidth="161.0" GridPane.rowIndex="1" />
-                           <VBox fx:id="settingsPane" styleClass="settingsPane" stylesheets="@style.css" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS">
+                           <VBox fx:id="settingsPane" styleClass="settingsPane" stylesheets="@style/generalStyle.css" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS">
                               <children>
                                  <AnchorPane>
                                     <children>
@@ -74,7 +75,7 @@
                                  </Label>
                               </children>
                            </HBox>
-                        <LineChart fx:id="chtSparkLine" prefHeight="101.0" prefWidth="142.0" GridPane.rowIndex="2">
+                        <LineChart fx:id="chtSparkLine" prefHeight="101.0" prefWidth="142.0" stylesheets="@style/sparkLineStyle.css" GridPane.rowIndex="2">
                             <xAxis>
                                 <NumberAxis label="Mark" side="BOTTOM" fx:id="xAxis" />
                             </xAxis>
@@ -164,4 +165,8 @@
             </content>
          </Tab>
       </tabs>
+   <stylesheets>
+      <URL value="@style/generalStyle.css" />
+      <URL value="@style/settingsPaneStyle.css" />
+   </stylesheets>
    </TabPane>
