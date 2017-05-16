@@ -6,20 +6,27 @@ import seng302.utilities.DisplayUtils;
 
 /**
  * Created by Louis on 14-May-17.
+ *
  */
+
 public class DistanceLine {
     private Boat firstBoat;
     private Boat secondBoat;
     private CompoundMark mark;
     private Line line;
+    private double distanceBetweenBoats;
 
     public void setFirstBoat(Boat firstBoat) {
         this.firstBoat = firstBoat;
     }
 
+    public Boat getFirstBoat(){ return firstBoat;}
+
     public void setSecondBoat(Boat secondBoat) {
         this.secondBoat = secondBoat;
     }
+
+    public Boat getSecondBoat(){ return secondBoat;}
 
     public void setMark(CompoundMark mark) {
         this.mark = mark;
@@ -59,4 +66,15 @@ public class DistanceLine {
         );
         line.setStroke(Color.web("#70aaa2"));
     }
+
+//
+//    private void updateDistanceBetweenBoats(){
+//        Coordinate firstBoatOnLine;
+//        Coordinate secondBoatOnLine;
+//        distanceBetweenBoats = TimeUtils.calcDistance(firstBoatOnLine, secondBoatOnLine);
+//    }
+//
+//    private double getDistanceBetweenBoats(){
+//        return distanceBetweenBoats;
+//    }
 }

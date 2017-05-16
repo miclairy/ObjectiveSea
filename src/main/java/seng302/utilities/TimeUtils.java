@@ -1,5 +1,7 @@
 package seng302.utilities;
 
+import seng302.models.Coordinate;
+
 import java.time.*;
 import java.util.DoubleSummaryStatistics;
 import java.util.TimeZone;
@@ -82,6 +84,21 @@ public class TimeUtils {
             }
         }
         return utcFormat;
+    }
+
+
+    /**
+     * Wrapper for calcDistance to allow it to take two coordinates instead of 4 doubles
+     * @param point1 coordinate of the first point
+     * @param point2 coordinate of the second point
+     * @return a distance double in nautical
+     */
+    public static double calcDistance(Coordinate point1, Coordinate point2){
+        double lat1 = point1.getLat();
+        double lat2 = point2.getLat();
+        double lon1 = point1.getLon();
+        double lon2 = point2.getLon();
+        return calcDistance(lat1, lat2, lon1, lon2);
     }
 
 

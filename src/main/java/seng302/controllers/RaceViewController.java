@@ -65,6 +65,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean initializedBoats = false;
     private DistanceLine distanceLine = new DistanceLine();
     private ImageCursor boatCursor = new ImageCursor(new Image("graphics/boat-select-cursor.png"), 7, 7);
+    private boolean drawDistanceLine = false;
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
         this.root = root;
@@ -113,6 +114,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             moveBoatAnnotation(boat.getAnnotation(), point);
         }
         if (courseNeedsRedraw) redrawCourse();
+        if (drawDistanceLine) redrawDistanceLines();
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
         controller.setWindDirection();
@@ -534,9 +536,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     private void redrawDistanceLines(){
+        updateDistanceMark();
+        root.getChildren().remove(distanceLine.getLine());
         distanceLine.reCalcLine();
-        Line line = distanceLine.getLine();
-        root.getChildren().add(line);
+        root.getChildren().add(distanceLine.getLine());
+        distanceLine.getLine().toBack();
     }
 
     /**
@@ -592,6 +596,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public void updateDistanceLine(Boat boat1, Boat boat2){
         distanceLine.setFirstBoat(boat1);
         distanceLine.setSecondBoat(boat2);
+        updateDistanceMark();
+        drawDistanceLine = true;
+    }
+
+    private void updateDistanceMark(){
+        Boat boat1 = distanceLine.getFirstBoat();
+        Boat boat2 = distanceLine.getSecondBoat();
         int index = 0;
         ArrayList<CompoundMark> raceOrder = race.getCourse().getCourseOrder();
         if (boat1 != null && boat2 != null) {
@@ -601,7 +612,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 System.out.println("Please select boats that are currently on the same leg of the race");
             }
         } else {
-            if (boat1 != null && boat2 == null){
+            if (boat1 != null){
                 index = boat1.getLeg();
             } else {
                 index = boat2.getLeg();
@@ -610,7 +621,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if (index < raceOrder.size()) {
             CompoundMark nextMark = raceOrder.get(index);
             distanceLine.setMark(nextMark);
-            redrawDistanceLines();
         }
     }
 }
