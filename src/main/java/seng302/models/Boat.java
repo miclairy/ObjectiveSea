@@ -1,14 +1,9 @@
 package seng302.models;
 
-
-import javafx.util.Pair;
-import seng302.utilities.MathUtils;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.XYChart.Data;
-import seng302.utilities.readPolars;
 
 import seng302.data.BoatStatus;
-import seng302.utilities.PolarReader;
 
 import java.util.ArrayList;
 
@@ -223,10 +218,6 @@ public class Boat implements Comparable<Boat>{
         this.currentVMG = currentVMGSpeed;
     }
 
-    public double getGybeTWAofBoat() {
-        return gybeTWAofBoat;
-    }
-
     public void setLastGybeMarkPassed(int lastGybeMarkPassed) {
         this.lastGybeMarkPassed = lastGybeMarkPassed;
     }
@@ -242,16 +233,6 @@ public class Boat implements Comparable<Boat>{
     public int getLastGybeMarkPassed() {
         return lastGybeMarkPassed;
     }
-
-    public double getTrueWindAngle() {
-        if (isTacking){
-            return tackTWAofBoat;
-        } else {
-            return gybeTWAofBoat;
-        }
-
-    }
-
 
     public void setLeg(int leg){
         if(lastRoundedMarkIndex == -1){
