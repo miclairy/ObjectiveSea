@@ -16,6 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
@@ -86,6 +87,10 @@ public class Controller implements Initializable, Observer {
         canvasHeight = canvas.getHeight();
         anchorWidth = canvasAnchor.getWidth();
         anchorHeight = canvasAnchor.getHeight();
+
+
+
+
 
         race = Main.getRace();
         race.addObserver(this);
