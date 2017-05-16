@@ -537,10 +537,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
     private void redrawDistanceLines(){
         updateDistanceMark();
-        root.getChildren().remove(distanceLine.getLine());
+        for(Line line : distanceLine.getLines()){
+            root.getChildren().remove(line);
+        }
         distanceLine.reCalcLine();
-        root.getChildren().add(distanceLine.getLine());
-        distanceLine.getLine().toBack();
+        for(Line line : distanceLine.getLines()){
+            root.getChildren().add(line);
+            line.toBack();
+        }
     }
 
     /**
