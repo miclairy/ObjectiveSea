@@ -75,7 +75,29 @@ public class Controller implements Initializable, Observer {
         canvasHeight = canvas.getHeight();
         anchorWidth = canvasAnchor.getWidth();
         anchorHeight = canvasAnchor.getHeight();
-        initializeRace();
+
+        race = Main.getRace();
+        race.addObserver(this);
+        Course course = race.getCourse();
+        startersOverlayTitle.setText(race.getRegattaName());
+        course.initCourseLatLon();
+        DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
+
+        raceViewController = new RaceViewController(root, race, this, scoreBoardController);
+        course.addObserver(raceViewController);
+
+        createCanvasAnchorListeners();
+        scoreBoardController.setControllers(this, raceViewController);
+        scoreBoardController.setUp();
+        fpsString.set("..."); //set to "..." while fps count loads
+        fpsLabel.textProperty().bind(fpsString);
+        clockLabel.textProperty().bind(clockString);
+        hideStarterOverlay();
+        setWindDirection();
+
+        displayStarters();
+        startersOverlay.toFront();
+        raceViewController.start();
     }
 
     /**
@@ -316,30 +338,5 @@ public class Controller implements Initializable, Observer {
 
     public  AnchorPane getCanvasAnchor() {
         return canvasAnchor;
-    }
-
-    public void initializeRace(){
-        race = Main.getRace();
-        race.addObserver(this);
-        Course course = race.getCourse();
-        startersOverlayTitle.setText(race.getRegattaName());
-        course.initCourseLatLon();
-        DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
-
-        raceViewController = new RaceViewController(root, race, this, scoreBoardController);
-        course.addObserver(raceViewController);
-
-        createCanvasAnchorListeners();
-        scoreBoardController.setControllers(this, raceViewController);
-        scoreBoardController.setUp();
-        fpsString.set("..."); //set to "..." while fps count loads
-        fpsLabel.textProperty().bind(fpsString);
-        clockLabel.textProperty().bind(clockString);
-        hideStarterOverlay();
-        setWindDirection();
-
-        displayStarters();
-        startersOverlay.toFront();
-        raceViewController.start();
     }
 }
