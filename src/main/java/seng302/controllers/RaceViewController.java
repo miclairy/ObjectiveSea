@@ -117,6 +117,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 addToBoatPath(boat, point);
             }
             moveBoatAnnotation(boat.getAnnotation(), point);
+
+
+
         }
         if(selectedBoat != null){
             selectedBoat.getIcon().toFront();
@@ -483,6 +486,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param point where the boat is now positioned
      */
     private void moveWake(BoatDisplay boat, CanvasCoordinate point){
+
         double scale = boat.getBoat().getSpeed() / WAKE_SCALE_FACTOR;
         scale *= DisplayUtils.zoomLevel;
         boat.getWake().getTransforms().clear();

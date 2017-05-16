@@ -138,6 +138,26 @@ public class DisplayUtils {
     }
 
 
+    public static boolean pointOnDisplay(CanvasCoordinate canvasCoordinate){
+        double canvasHeight = Controller.getAnchorHeight();
+        double canvasWidth = Controller.getAnchorWidth();
+        double maxX = canvasWidth+offsetX;
+        double minX = offsetX;
+        double maxY = canvasHeight+offsetY;
+        double minY = offsetY;
+
+        if (
+                canvasCoordinate.getX() < maxX &&
+                canvasCoordinate.getX() > minX &&
+                canvasCoordinate.getY() < maxY &&
+                canvasCoordinate.getY() > minY) {
+
+            return true;
+        }
+        return false;
+    }
+
+
 
 
     /**
@@ -147,7 +167,6 @@ public class DisplayUtils {
     public static String getGoogleMapsURL(){
         double canvasY = Controller.getAnchorHeight();
         double canvasX = Controller.getAnchorWidth(); //halved to keep within google size guidelines
-        //System.out.println("width: " + canvasX +"    height: " +canvasY);
         Coordinate midPoint = midPoint(max.getLat(), max.getLon(), min.getLat(), min.getLon());
 
         double longPerPixel = (max.getLon() - min.getLon());
