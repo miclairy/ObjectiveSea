@@ -1,5 +1,6 @@
 package seng302.controllers;
 
+import com.sun.deploy.uitoolkit.DragContext;
 import javafx.animation.AnimationTimer;
 import javafx.animation.FadeTransition;
 import javafx.collections.ObservableList;
@@ -10,6 +11,7 @@ import javafx.scene.ImageCursor;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.layout.VBox;
@@ -345,22 +347,20 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void moveBoatAnnotation(VBox annotation, CanvasCoordinate point, BoatDisplay boatDisplay){
 
-
         annotation.addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
             boolean isPressed = false;
-            @Override
             public void handle(MouseEvent event) {
-                if(event.isPrimaryButtonDown()) {
-                    if (event.isDragDetect()) {
-                        isPressed = true;
-                        annotation.relocate(event.getSceneX() - ANNOTATION_OFFSET_X,
-                                event.getSceneY() - ANNOTATION_OFFSET_Y);
-                        boatDisplay.setAnnoHasMoved(true);
+                if (event.isDragDetect()) {
+                    System.out.println(event.isPrimaryButtonDown());
+                    annotation.relocate(event.getSceneX() - ANNOTATION_OFFSET_X,
+                            event.getSceneY() - ANNOTATION_OFFSET_Y);
+                    boatDisplay.setAnnoHasMoved(true);
+                    isPressed = true;
+                    System.out.println("Mouse Dragged");
 
-                    } else if (!event.isPrimaryButtonDown() && isPressed) {
+                } else if (!event.isPrimaryButtonDown() && isPressed) {
                         System.out.println("Mouse Released");
                         isPressed = false;
-                    }
                 }
             }
         });
