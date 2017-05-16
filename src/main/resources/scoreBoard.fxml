@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.LineChart?>
@@ -19,7 +26,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<TabPane fx:id="scoreBoard" prefHeight="413.0" prefWidth="161.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.ScoreBoardController">
+<TabPane fx:id="scoreBoard" prefHeight="413.0" prefWidth="161.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.ScoreBoardController">
       <tabs>
          <Tab text="Race">
             <content>
@@ -115,6 +122,7 @@
                                  <RowConstraints maxHeight="65.0" minHeight="10.0" prefHeight="33.0" vgrow="SOMETIMES" />
                                  <RowConstraints maxHeight="64.0" minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
                                  <RowConstraints maxHeight="64.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="64.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
                               </rowConstraints>
                               <children>
                                  <Label fx:id="lblSettings" text="Important Annotation Settings" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="TOP">
@@ -134,6 +142,7 @@
                                     </GridPane.margin>
                                  </CheckBox>
                                  <CheckBox id="chkAnno" fx:id="chkEst" mnemonicParsing="false" text="Estimated time to mark" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                              <CheckBox id="chkAnno" fx:id="chkStart" mnemonicParsing="false" text="Start timing of boat" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                               </children>
                            </GridPane>
                            <GridPane GridPane.rowIndex="1">

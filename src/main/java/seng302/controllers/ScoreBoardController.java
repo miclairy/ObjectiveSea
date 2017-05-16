@@ -30,6 +30,7 @@ public class ScoreBoardController {
     @FXML private CheckBox chkSpeed;
     @FXML private CheckBox chkPassMarkTime;
     @FXML private CheckBox chkEst;
+    @FXML private CheckBox chkStart;
     @FXML public Button btnTrack;
     @FXML private LineChart chtSparkLine;
     @FXML private NumberAxis xAxis ;
@@ -112,6 +113,8 @@ public class ScoreBoardController {
     public boolean isSpeedSelected(){return chkSpeed.isSelected();}
 
     public boolean isNameSelected(){return chkName.isSelected();}
+
+    public boolean isStartTimeSelected(){return chkStart.isSelected();}
 
     public boolean isEstSelected(){return chkEst.isSelected();}
 

@@ -108,6 +108,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
             moveBoat(boat, point);
             moveWake(boat, point);
+            System.out.println(boat.getBoat().getLeg());
+            if(boat.getBoat().getLeg() == 0){
+                boat.getStartTiming();
+            }
             if(race.getRaceStatus() == STARTED) {
                 addToBoatPath(boat, point);
             }
@@ -383,6 +387,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     if(scoreBoardController.isEstSelected()){
                         annotations.add(displayBoat.getTimeToNextMark(displayBoat.getBoat().getTimeAtNextMark(), currTime));
                     }
+                    if(scoreBoardController.isStartTimeSelected()){
+                        annotations.add(displayBoat.getStartTimingAnnotation());
+                    }
                     drawBoatAnnotation(displayBoat, annotations);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
                     annotations.clear();
@@ -390,6 +397,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     annotations.add(displayBoat.getSpeed());
                     annotations.add(displayBoat.getTimeSinceLastMark(currTime));
                     annotations.add(displayBoat.getTimeToNextMark(displayBoat.getBoat().getTimeAtNextMark(), currTime));
+                    annotations.add(displayBoat.getStartTimingAnnotation()); // + or - if early or late
                     drawBoatAnnotation(displayBoat, annotations);
                 }
             }
