@@ -79,6 +79,7 @@ public class DistanceLine {
         Coordinate closestPoint2 = infiniteLine.closestPoint(secondBoat.getCurrentPosition());
         double dist1 = target.greaterCircleDistance(closestPoint1);
         double dist2 = target.greaterCircleDistance(closestPoint2);
+        distanceBetweenBoats = Math.abs(dist2 - dist1);
         if(dist1 < dist2){
             createLine(target, closestPoint2);
         } else{
@@ -99,14 +100,15 @@ public class DistanceLine {
         lines.add(line);
     }
 
-//
-//    private void updateDistanceBetweenBoats(){
-//        Coordinate firstBoatOnLine;
-//        Coordinate secondBoatOnLine;
-//        distanceBetweenBoats = TimeUtils.calcDistance(firstBoatOnLine, secondBoatOnLine);
-//    }
-//
-//    private double getDistanceBetweenBoats(){
-//        return distanceBetweenBoats;
-//    }
+    public boolean sameLeg(){
+        return firstBoat.getLeg() == secondBoat.getLeg();
+    }
+
+    public boolean boatsFinished(){
+        return firstBoat.isFinished() == secondBoat.isFinished();
+    }
+
+    public double getDistanceBetweenBoats(){
+        return distanceBetweenBoats;
+    }
 }

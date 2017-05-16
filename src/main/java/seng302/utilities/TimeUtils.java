@@ -148,4 +148,8 @@ public class TimeUtils {
     public static String getFormatUTCOffset(double UTCOffset) {
         return formatUTCOffset(UTCOffset);
     }
+
+    public static double convertNauticalMilesToMetres(double nautMiles){
+        return nautMiles * 1852;
+    }
 }
