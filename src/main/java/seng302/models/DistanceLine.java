@@ -39,7 +39,10 @@ public class DistanceLine {
     public void reCalcLine() {
         if (mark != null){
             if (firstBoat != null && secondBoat != null) { // Line between two boats
-                Coordinate midPoint = DisplayUtils.midPointFromTwoCoords(mark.getMark1().getPosition(), mark.getMark2().getPosition());
+                Coordinate midPoint = mark.getPosition();
+                if (mark.hasTwoMarks()) {
+                    midPoint = DisplayUtils.midPointFromTwoCoords(mark.getMark1().getPosition(), mark.getMark2().getPosition());
+                }
                 Coordinate boatMidPoint = DisplayUtils.midPointFromTwoCoords(firstBoat.getCurrentPosition(), secondBoat.getCurrentPosition());
                 Coordinate trialCoord = new Coordinate(boatMidPoint.getLat(), boatMidPoint.getLon());
                 createLine(midPoint, trialCoord);
@@ -51,7 +54,10 @@ public class DistanceLine {
                 boatToUse = firstBoat;
             }
             if (boatToUse != null) {
-                Coordinate midPoint = DisplayUtils.midPointFromTwoCoords(mark.getMark1().getPosition(), mark.getMark2().getPosition());
+                Coordinate midPoint = mark.getPosition();
+                if (mark.hasTwoMarks()) {
+                    midPoint = DisplayUtils.midPointFromTwoCoords(mark.getMark1().getPosition(), mark.getMark2().getPosition());
+                }
                 createLine(midPoint, boatToUse.getCurrentPosition());
             }
         }
