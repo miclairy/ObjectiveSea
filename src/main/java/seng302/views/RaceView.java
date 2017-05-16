@@ -132,12 +132,12 @@ public class RaceView {
      */
     public Polyline createVMGVector(Boat boat, double lengthOfVector, Course course, Color color){
         Coordinate boatPosition = boat.getCurrentPosition();
-        int lastRoundedMarkIndex = boat.getLastRoundedMarkIndex();
+        int nextMark = boat.getLeg();
         List<CompoundMark> courseOrder = course.getCourseOrder();
         Coordinate markLocation;
         double lineBearing;
-        if(lastRoundedMarkIndex + 1 < courseOrder.size()){
-            markLocation = courseOrder.get(lastRoundedMarkIndex + 1).getPosition();
+        if(nextMark < courseOrder.size()){
+            markLocation = courseOrder.get(nextMark).getPosition();
             lineBearing = boatPosition.headingToCoordinate(markLocation);
         } else {
             lineBearing = boat.getHeading();
