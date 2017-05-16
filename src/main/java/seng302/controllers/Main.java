@@ -3,7 +3,6 @@ package seng302.controllers;
 /**
  * Main class. Loads data and starts GUI.
  */
-import com.sun.javafx.application.LauncherImpl;
 import javafx.application.Application;
 import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
@@ -13,31 +12,24 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.geometry.Rectangle2D;
+import javafx.stage.WindowEvent;
+import javafx.event.EventHandler;
+import javafx.application.Platform;
 import seng302.data.DataStreamReader;
 import seng302.data.MockStream;
 import seng302.utilities.Config;
 import seng302.models.Race;
 
 
+
 public class Main extends Application {
 
     private static Race race;
 
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
-        Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
-        primaryStage.setTitle("Race Vision");
-        primaryStage.getIcons().add(new Image("graphics/icon.png"));
-        primaryStage.setScene(new Scene(parent));
-        Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-        primaryStage.setHeight(primaryScreenBounds.getHeight());
-        primaryStage.setWidth(primaryScreenBounds.getWidth());
-        primaryStage.show();
-    }
 
-    public static void main( String[] args )
-    {
         Config.initializeConfig();
         setupMockStream();
         setUpDataStreamReader();
@@ -48,7 +40,29 @@ public class Main extends Application {
                 e.printStackTrace();
             }
         }
-        LauncherImpl.launchApplication(Main.class, SplashScreenLoader.class, args);
+
+        Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
+        primaryStage.setTitle("Race Vision");
+        primaryStage.getIcons().add(new Image("graphics/icon.png"));
+        primaryStage.setScene(new Scene(parent));
+        Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+        primaryStage.setHeight(primaryScreenBounds.getHeight());
+        primaryStage.setWidth(primaryScreenBounds.getWidth());
+        notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
+        primaryStage.show();
+
+        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent e) {
+                Platform.exit();
+                System.exit(0);
+            }
+        });
+    }
+
+    public static void main( String[] args )
+    {
+        launch(args);
     }
 
     /**
