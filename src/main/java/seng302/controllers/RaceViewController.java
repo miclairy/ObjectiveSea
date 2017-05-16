@@ -14,8 +14,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Path;
-import javafx.animation.TranslateTransition;
-import javafx.util.Duration;
 
 import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.*;
@@ -64,8 +62,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean courseNeedsRedraw = false;
     private boolean initializedBoats = false;
     private ImageCursor cursor = new ImageCursor(new Image("graphics/boat-select-cursor.png"), 7, 7);
-    private BoatDisplay selectedBoat =null;
-    private boolean trackingBoat = false;
+
+    private BoatDisplay selectedBoat = null;
+    private Mark selectedMark = null;
+    private boolean trackingPoint = false;
 
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
@@ -107,18 +107,23 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void run(){
         for (BoatDisplay boat: displayBoats) {
             //track boat
-            if(trackingBoat && boat.equals(selectedBoat)){
+            if(trackingPoint && boat.equals(selectedBoat)) {
                 DisplayUtils.moveToPoint(selectedBoat.getBoat().getCurrentPosition());
                 redrawCourse();
             }
+            else if (trackingPoint && selectedMark != null){
+                DisplayUtils.moveToPoint(selectedMark.getPosition());
+                redrawCourse();
+            }
+
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
+
             moveBoat(boat, point);
             moveWake(boat, point);
             if(race.getRaceStatus() == STARTED) {
                 addToBoatPath(boat, point);
             }
             moveBoatAnnotation(boat.getAnnotation(), point);
-
 
 
         }
@@ -154,6 +159,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         Shape boatImage = boat.getIcon();
         boatImage.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             selectedBoat = boat;
+            selectedMark = null;
             setBoatFocus();
         });
 
@@ -207,33 +213,37 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     /**
-     * adds Event handlers to areas of the course than don't contain boat, so deselct of boat
-     * can be detetced
+     * adds Event handlers to areas of the course than don't contain boat, so deselect of boat
+     * can be detected
      */
     private void addDeselectEvents(){
         boundary.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            for(BoatDisplay boat : displayBoats){
-                boat.focus();
-                scoreBoardController.btnTrack.setVisible(false);
-                selectedBoat = null;
-                trackingBoat = false;
-                if(DisplayUtils.zoomLevel == 1){
-                    setMapVisibility(true);
-                }
-            }
+            deselectEventAction();
         });
 
         controller.mapImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            for(BoatDisplay boat : displayBoats){
-                boat.focus();
-                scoreBoardController.btnTrack.setVisible(false);
-                selectedBoat = null;
-                trackingBoat = false;
-                if(DisplayUtils.zoomLevel == 1){
-                    setMapVisibility(true);
-                }
-            }
+            deselectEventAction();
         });
+    }
+
+    /**
+     * the action of the event handler to areas of the course than don't contain boat, so deselect of boat
+     * can be detected
+     */
+    private void deselectEventAction(){
+        for(BoatDisplay boat : displayBoats){
+            boat.focus();
+            scoreBoardController.btnTrack.setVisible(false);
+            selectedBoat = null;
+            selectedMark = null;
+            trackingPoint = false;
+            if(DisplayUtils.zoomLevel == 1){
+                setMapVisibility(true);
+                DisplayUtils.resetOffsets();
+                redrawCourse();
+
+            }
+        }
     }
 
     /**
@@ -265,20 +275,22 @@ public class RaceViewController extends AnimationTimer implements Observer {
         Circle circle = mark.getIcon();
 
         circle.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            //TODO add action on mark click
-            if(DisplayUtils.zoomLevel != 3){
+
+            if(mark != selectedMark){
                 controller.setZoomSliderValue(3);
                 DisplayUtils.moveToPoint(mark.getPosition());
+                selectedMark = mark;
+                trackingPoint = true;
+                selectedBoat = null;
                 redrawCourse();
-                moveWindArrow();
-                redrawBoatPaths();
                 setMapVisibility(false);
             }else{
                 controller.setZoomSliderValue(1);
+                selectedMark = null;
+                trackingPoint = false;
+
                 DisplayUtils.resetOffsets();
                 redrawCourse();
-                moveWindArrow();
-                redrawBoatPaths();
                 setMapVisibility(true);
             }
         });
@@ -494,8 +506,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         boat.getWake().getTransforms().add(new Scale(scale, scale,0, 0));
         boat.getWake().setTranslateY(point.getY());
         boat.getWake().setTranslateX(point.getX());
-        //boat.getWake().setScaleX(DisplayUtils.zoomLevel);
-        //boat.getWake().setScaleY(DisplayUtils.zoomLevel);
         boat.getWake().getTransforms().add(new Rotate(boat.getBoat().getHeading(), 0, 0));
     }
 
@@ -643,12 +653,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
 
-    public boolean isTrackingBoat() {
-        return trackingBoat;
+    public boolean isTrackingPoint() {
+        return trackingPoint;
     }
 
-    public void setTrackingBoat(boolean trackingBoat) {
-        this.trackingBoat = trackingBoat;
+    public void setTrackingPoint(boolean trackingPoint) {
+        this.trackingPoint = trackingPoint;
     }
 
     public void setMapVisibility(boolean visible){

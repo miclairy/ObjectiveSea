@@ -82,21 +82,25 @@ public class DisplayUtils {
 
     /**
      * Changes offsets centering map on a coordinate point
-     * @param coordinate A Coordinate (lat/lon) point for the map to be centered
+     * @param location A CanvasCoordinate (x/y) point for the map to be centered
      */
-    public static void moveToPoint(Coordinate coordinate ){
-        CanvasCoordinate location = convertFromLatLon(coordinate.getLat(), coordinate.getLon());
-
-
+    public static void moveToPoint(CanvasCoordinate location){
         double locationY = location.getY();
         double locationX = location.getX();
         double canvasHeight = Controller.getAnchorHeight()/2;
         double canvasWidth = Controller.getAnchorWidth()/2;
 
-
         moveOffset(-(locationX - canvasWidth), -(locationY - canvasHeight));
 
+    }
 
+    /**
+     * Changes offsets centering map on a coordinate point
+     * @param coordinate A Coordinate (lat/lng) point for the map to be centered
+     */
+    public static void moveToPoint(Coordinate coordinate) {
+        CanvasCoordinate location = convertFromLatLon(coordinate.getLat(), coordinate.getLon());
+        moveToPoint(location);
     }
 
     /**
@@ -129,32 +133,6 @@ public class DisplayUtils {
         double canvasHeight = Controller.getAnchorHeight();
         double canvasWidth = Controller.getAnchorWidth();
 
-//        if(offsetX > (canvasWidth * zoomLevel)){  offsetX = (int)(canvasWidth * zoomLevel);}
-//        if(offsetY > (canvasHeight * zoomLevel)){  offsetY = (int)(canvasHeight * zoomLevel);}
-//        if(offsetX < 0){  offsetX = 0;}
-//        if(offsetY < 0){  offsetY = 0;}
-
-
-    }
-
-
-    public static boolean pointOnDisplay(CanvasCoordinate canvasCoordinate){
-        double canvasHeight = Controller.getAnchorHeight();
-        double canvasWidth = Controller.getAnchorWidth();
-        double maxX = canvasWidth+offsetX;
-        double minX = offsetX;
-        double maxY = canvasHeight+offsetY;
-        double minY = offsetY;
-
-        if (
-                canvasCoordinate.getX() < maxX &&
-                canvasCoordinate.getX() > minX &&
-                canvasCoordinate.getY() < maxY &&
-                canvasCoordinate.getY() > minY) {
-
-            return true;
-        }
-        return false;
     }
 
 

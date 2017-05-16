@@ -7,7 +7,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.util.StringConverter;
-import seng302.utilities.DisplayUtils;
 import seng302.views.BoatDisplay;
 
 /**
@@ -32,8 +31,7 @@ public class ScoreBoardController {
     @FXML private CheckBox zoomToggle;
     @FXML public Button btnTrack;
 
-    // Class Variables
-    private boolean zoomed = false;
+
 
 
     public void setControllers(Controller parent, RaceViewController raceViewController){
@@ -83,18 +81,17 @@ public class ScoreBoardController {
     private void btnTrackPressed(){
         BoatDisplay selectedBoat = raceViewController.getSelectedBoat();
         if(selectedBoat != null){
-            if(raceViewController.isTrackingBoat()){
+            if(raceViewController.isTrackingPoint()){
                 parent.setZoomSliderValue(1);
-                raceViewController.setTrackingBoat(false);
+                raceViewController.setTrackingPoint(false);
             }else{
                 parent.setZoomSliderValue(3);
-                raceViewController.setTrackingBoat(true);
+                raceViewController.setTrackingPoint(true);
 
                 raceViewController.setMapVisibility(false);
             }
             raceViewController.redrawCourse();
-            raceViewController.moveWindArrow();
-            raceViewController.redrawBoatPaths();
+
 
         }
 
