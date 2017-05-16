@@ -10,6 +10,8 @@ import javafx.scene.ImageCursor;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -33,6 +35,7 @@ import java.awt.geom.Line2D;
 import javax.imageio.ImageIO;
 import java.net.URL;
 import java.util.*;
+import java.awt.MouseInfo;
 
 import static seng302.data.RaceStatus.STARTED;
 
@@ -112,7 +115,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if(race.getRaceStatus() == STARTED) {
                 addToBoatPath(boat, point);
             }
-            moveBoatAnnotation(boat.getAnnotation(), point);
+            moveBoatAnnotation(boat.getAnnotation(), point, boat);
         }
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
@@ -306,25 +309,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
             annotationFrame.getChildren().add(annotationLabel);
         }
 
-        annotationFrame.addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
-            boolean isPressed = false;
-            @Override
-            public void handle(MouseEvent event) {
-                if (event.isPrimaryButtonDown()) {
-                    //System.out.println("Mouse Pressed");
-                    isPressed = true;
-                    
-                } else if(!event.isPrimaryButtonDown() && isPressed){
-                    //System.out.println("Mouse Released");
-                    isPressed = false;
+//        CanvasCoordinate annoPos = getAnnotationPosition(annotationFrame);
+//        annotationFrame.layoutXProperty().set(point.getX() + annoPos.getX());
+//        annotationFrame.layoutYProperty().set(point.getY() + annoPos.getY());
 
-                }
-            }
-        });
-
-        CanvasCoordinate annoPos = getAnnotationPosition(annotationFrame);
-        annotationFrame.layoutXProperty().set(point.getX() + annoPos.getX());
-        annotationFrame.layoutYProperty().set(point.getY() + annoPos.getY());
 
         Line annoLine = new Line(point.getX(), point.getY(), annotationFrame.getLayoutX(), annotationFrame.getLayoutY());
         annoLine.setId("annotationLine");
@@ -355,18 +343,41 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param annotation the annotation to be moved
      * @param point where the boat has moved to
      */
-    private void moveBoatAnnotation(VBox annotation, CanvasCoordinate point){
-        double adjustX = 10;
-        annotation.relocate(
-                (point.getX() + ANNOTATION_OFFSET_X),
-                (point.getY() + ANNOTATION_OFFSET_Y)
-        );
-        if(DisplayUtils.checkBounds(annotation)){
-            adjustX -= annotation.getBoundsInParent().getWidth();
+    private void moveBoatAnnotation(VBox annotation, CanvasCoordinate point, BoatDisplay boatDisplay){
+
+
+        annotation.addEventHandler(MouseEvent.ANY, new EventHandler<MouseEvent>() {
+            boolean isPressed = false;
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.isPrimaryButtonDown()) {
+                    if (event.isDragDetect()) {
+                        isPressed = true;
+                        annotation.relocate(event.getSceneX() - ANNOTATION_OFFSET_X,
+                                event.getSceneY() - ANNOTATION_OFFSET_Y);
+                        boatDisplay.setAnnoHasMoved(true);
+
+                    } else if (!event.isPrimaryButtonDown() && isPressed) {
+                        System.out.println("Mouse Released");
+                        isPressed = false;
+                    }
+                }
+            }
+        });
+
+        if(!boatDisplay.getAnnoHasMoved()) {
+            double adjustX = 10;
             annotation.relocate(
-                    (point.getX() + adjustX),
+                    (point.getX() + ANNOTATION_OFFSET_X),
                     (point.getY() + ANNOTATION_OFFSET_Y)
             );
+            if (DisplayUtils.checkBounds(annotation)) {
+                adjustX -= annotation.getBoundsInParent().getWidth();
+                annotation.relocate(
+                        (point.getX() + adjustX),
+                        (point.getY() + ANNOTATION_OFFSET_Y)
+                );
+            }
         }
     }
 

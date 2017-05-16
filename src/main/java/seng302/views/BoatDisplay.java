@@ -32,6 +32,7 @@ public class BoatDisplay {
     private VBox annotation;
     private Path path;
     private Line annotationLine;
+    private boolean annoHasMoved = false;
     private final double FADEDBOAT = 0.3;
 
     private Color color;
@@ -39,6 +40,14 @@ public class BoatDisplay {
     public BoatDisplay(Boat boat) {
         this.boat = boat;
         this.annotation = new VBox();
+    }
+
+    public boolean getAnnoHasMoved() {
+        return annoHasMoved;
+    }
+
+    public void setAnnoHasMoved(boolean hasMoved) {
+        annoHasMoved = hasMoved;
     }
 
     public Line getAnnotationLine() {return annotationLine;}
