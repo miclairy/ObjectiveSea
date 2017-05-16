@@ -12,14 +12,10 @@ import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
-import javafx.scene.effect.MotionBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.web.WebEngine;
-import javafx.scene.web.WebView;
-import javafx.util.Duration;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -69,6 +65,10 @@ public class Controller implements Initializable, Observer {
     private static double anchorHeight;
     private static double anchorWidth;
     private static String timeZone;
+    private final String BOAT_CSS = "/style/boatStyle.css";
+    private final String COURSE_CSS = "/style/courseStyle.css";
+    private final String STARTERS_CSS = "/style/startersOverlayStyle.css";
+    private final String SETTINGSPANE_CSS = "/style/settingsPaneStyle.css";
 
     // Controllers
     @FXML private RaceViewController raceViewController;
@@ -80,6 +80,7 @@ public class Controller implements Initializable, Observer {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        root.getStylesheets().addAll(BOAT_CSS, COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS);
         canvasWidth = canvas.getWidth();
         canvasHeight = canvas.getHeight();
         anchorWidth = canvasAnchor.getWidth();
@@ -91,7 +92,6 @@ public class Controller implements Initializable, Observer {
         startersOverlayTitle.setText(race.getRegattaName());
         course.initCourseLatLon();
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
-
         raceViewController = new RaceViewController(root, race, this, scoreBoardController);
         course.addObserver(raceViewController);
 

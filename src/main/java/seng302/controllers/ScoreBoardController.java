@@ -1,6 +1,7 @@
 package seng302.controllers;
 
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
@@ -8,6 +9,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.util.StringConverter;
 import seng302.views.BoatDisplay;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart.Series;
+import seng302.models.Race;
 
 /**
  * Created by Louis on 20-Apr-17.
@@ -30,6 +34,11 @@ public class ScoreBoardController {
     @FXML private CheckBox chkEst;
     @FXML private CheckBox zoomToggle;
     @FXML public Button btnTrack;
+    @FXML private LineChart chtSparkLine;
+    @FXML private NumberAxis xAxis ;
+    @FXML private NumberAxis yAxis ;
+
+    private Race race;
 
 
 
@@ -40,9 +49,11 @@ public class ScoreBoardController {
     }
 
     public void setUp(){
+        race = Main.getRace();
         placings.setItems(parent.getFormattedDisplayOrder());
         raceTimerLabel.textProperty().bind(parent.raceTimerString);
         setupAnnotationControl();
+        setupSparkLine();
         annotationsSlider.setLabelFormatter(new StringConverter<Double>() {
             @Override
             public String toString(Double n) {
@@ -107,6 +118,24 @@ public class ScoreBoardController {
         annotationsSlider.adjustValue(annotationsSlider.getMax());
     }
 
+    private void setupSparkLine(){
+        xAxis.setAutoRanging(false);
+        xAxis.setLowerBound(0);
+        xAxis.setUpperBound(race.getCourse().getCourseOrder().size());
+        xAxis.setTickUnit(1);
+
+        yAxis.setAutoRanging(false);
+        yAxis.setLowerBound(race.getCompetitors().size() + 1);
+        yAxis.setUpperBound(0);
+        yAxis.setTickUnit(1);
+        chtSparkLine.setCreateSymbols(false);
+        chtSparkLine.setLegendVisible(false);
+        chtSparkLine.getYAxis().setTickLabelsVisible(false);
+        chtSparkLine.getXAxis().setTickLabelsVisible(false);
+        chtSparkLine.getXAxis().setTickLength(0);
+        chtSparkLine.getYAxis().setTickLength(0);
+    }
+
     public boolean isSpeedSelected(){return chkSpeed.isSelected();}
 
     public boolean isNameSelected(){return chkName.isSelected();}
@@ -115,6 +144,9 @@ public class ScoreBoardController {
 
     public boolean isTimePassedSelected(){return chkPassMarkTime.isSelected();}
 
-
-
+    public void addBoatToSparkLine(Series boatSeries){
+        if(!chtSparkLine.getData().contains(boatSeries)){
+            chtSparkLine.getData().add(boatSeries);
+        }
+    }
 }
