@@ -117,7 +117,7 @@ public class BoatDisplay {
     public String getStartTimingAnnotation(){
             if(boat.getTimeStatus().equals(StartTimingStatus.EARLY)){
                 return "-";
-            } else if(boat.getTimeStatus().equals(StartTimingStatus.EARLY)){
+            } else if(boat.getTimeStatus().equals(StartTimingStatus.LATE)){
                 return "+";
             }
             return "";
@@ -125,7 +125,7 @@ public class BoatDisplay {
 
     public void getStartTiming(){
         //implement method to figure out if boat is early, late or ontime
-        boat.setTimeStatus(StartTimingStatus.EARLY); //example
+        boat.setTimeStatus(StartTimingStatus.LATE); //example
     }
 
 

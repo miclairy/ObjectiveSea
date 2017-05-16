@@ -22,6 +22,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.util.Duration;
 import seng302.data.BoatStatus;
+import seng302.data.StartTimingStatus;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.TimeUtils;
 import seng302.models.*;
@@ -108,9 +109,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
             moveBoat(boat, point);
             moveWake(boat, point);
-            System.out.println(boat.getBoat().getLeg());
             if(boat.getBoat().getLeg() == 0){
                 boat.getStartTiming();
+            } else {
+               boat.getBoat().setTimeStatus(StartTimingStatus.INRACE);
             }
             if(race.getRaceStatus() == STARTED) {
                 addToBoatPath(boat, point);
