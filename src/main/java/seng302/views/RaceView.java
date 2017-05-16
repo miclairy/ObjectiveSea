@@ -107,18 +107,17 @@ public class RaceView {
         return line;
     }
 
-    public Line createLayLine(double bearing, CompoundMark mark, BoatDisplay boat){
-
+    public Line createLayLine(double bearing, Coordinate markCoord, BoatDisplay boat){
         double LAYLINELENGTH = 75;
 
-        Coordinate markLocation = mark.getPosition();
-        CanvasCoordinate markLocationXY = DisplayUtils.convertFromLatLon(markLocation.getLat(), markLocation.getLon());
+        CanvasCoordinate markLocationXY = DisplayUtils.convertFromLatLon(markCoord.getLat(), markCoord.getLon());
 
-        Double endPointY = LAYLINELENGTH * Math.sin(Math.toRadians(bearing - 90)) + markLocationXY.getY();
-        Double endPointX = LAYLINELENGTH * Math.cos(Math.toRadians(bearing - 90)) + markLocationXY.getX();
+        Double endPointY = LAYLINELENGTH * Math.sin(Math.toRadians(bearing + 90)) + markLocationXY.getY();
+        Double endPointX = LAYLINELENGTH * Math.cos(Math.toRadians(bearing + 90)) + markLocationXY.getX();
         Line line = new Line(markLocationXY.getX(), markLocationXY.getY(), endPointX, endPointY);
 
         line.setStroke(boat.getColor());
+        line.setStrokeWidth(2.0);
 
         return line;
     }

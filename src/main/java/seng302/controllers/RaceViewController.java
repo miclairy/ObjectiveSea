@@ -19,7 +19,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
-import javafx.util.Pair;
 import seng302.data.BoatStatus;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.MathUtils;
@@ -451,61 +450,47 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void drawLayLine(BoatDisplay boatDisplay){
         Boat boat = boatDisplay.getBoat();
         ArrayList<CompoundMark> courseOrder = race.getCourse().getCourseOrder();
-
         if (boat.getLastRoundedMarkIndex() < race.getCourse().getCourseOrder().size() - 1 && boat.getLastRoundedMarkIndex() != -1) {
             boatDisplay.removeLaylines(root);
             boatDisplay.removeBoatLaylines(root);
 
-            CompoundMark nextMark = courseOrder.get(boat.getLastRoundedMarkIndex());
-            calculateLaylineHeading(race.getCourse().getTrueWindDirection(), boat.getHeading(), boat.getTWAofBoat());
-            double heading1 = laylines.getHeading1();
-            double heading2 = laylines.getHeading2();
-            Line layline1 = raceView.createLayLine(heading1, nextMark, boatDisplay);
-            Line layline2 = raceView.createLayLine(heading2, nextMark, boatDisplay);
+            CompoundMark nextMark = courseOrder.get(boat.getLastRoundedMarkIndex() + 1);
+            calculateLaylineAngle(race.getCourse().getWindDirection(), boat.getHeading(), boat.getTWAofBoat());
+            double angle1 = laylines.getAngle1();
+            double angle2 = laylines.getAngle2();
+
+            Mark mark1 = nextMark.getMark1();
+            Mark mark2 = nextMark.getMark2();
+            Coordinate mark1Coord = mark1.getPosition();
+            Coordinate mark2Coord = mark2.getPosition();
+
+            Line layline1 = raceView.createLayLine(angle1, mark1Coord, boatDisplay);
+            Line layline2 = raceView.createLayLine(angle2, mark2Coord, boatDisplay);
             root.getChildren().add(layline1);
             root.getChildren().add(layline2);
             boatDisplay.setLaylines(layline1, layline2);
             layline1.toBack();
             layline2.toBack();
-//            CompoundMark currentMark = courseOrder.get(boat.getLastRoundedMarkIndex());
-//            double laylineLength = boat.getBoat().calculateLayLineLength(nextMark, currentMark, bearing.getKey(), boat.getBoat().getTrueWindAngle());
-//            Pair<Line, Line> boatLaylines = raceView.createBoatLayLines(bearing, nextMark, boatDisplay);
-//            Line boatLayline1 = boatLaylines.getKey();
-//            Line boatLayline2 = boatLaylines.getValue();
-//            root.getChildren().add(boatLayline1);
-//            root.getChildren().add(boatLayline2);
-//            boatDisplay.setBoatLaylines(boatLaylines);
         }
     }
 
     /**
      * Calculates the layline heading of a boat
+     * @param twd, boatHeading, twa
      */
-    public void calculateLaylineHeading(double twd, double heading, double tackTWAofBoat) {
-        boolean upwind = MathUtils.pointBetweenTwoAngle(twd, 90, heading);
+    public void calculateLaylineAngle(double twd, double boatHeading, double twa) {
+        boolean upwind = MathUtils.pointBetweenTwoAngle(twd, 90, boatHeading);
         double layline1;
         double layline2;
         if (upwind) {
-            boolean tacking = MathUtils.pointBetweenTwoAngle(twd, 45, heading);
-            if (tacking){
-                layline1 = ((twd - tackTWAofBoat) % 360);
-                layline2 = (twd + tackTWAofBoat) % 360;
-            } else {
-                layline1 = tackTWAofBoat;
-                layline2 = tackTWAofBoat + (2*twd);
-            }
+            layline1 = twd + 45;
+            layline2 = twd + 315;
         } else {
-            boolean gybing = MathUtils.pointBetweenTwoAngle(twd, 45, heading);
-            if (gybing) {
-                layline1 = ((twd + 180) - tackTWAofBoat);
-                layline2 = ((twd + 180) + tackTWAofBoat);
-            } else {
-                layline1 = tackTWAofBoat;
-                layline2 = tackTWAofBoat + (2*twd);
-            }
+            layline1 = twd + 135;
+            layline2 = twd + 225;
         }
-        laylines.setHeading1(layline1);
-        laylines.setHeading2(layline2);
+        laylines.setAngle1(layline1);
+        laylines.setAngle2(layline2);
     }
 
 

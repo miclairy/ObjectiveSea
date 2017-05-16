@@ -7,8 +7,8 @@ import javafx.scene.shape.Line;
  */
 public class Layline {
 
-    private double heading1;
-    private double heading2;
+    private double angle1;
+    private double angle2;
     private Line layline1;
     private Line layline2;
 
@@ -21,13 +21,13 @@ public class Layline {
 //        return lengthOfTack;
 //    }
 
-    public double getHeading1() { return heading1; }
+    public double getAngle1() { return angle1; }
 
-    public void setHeading1(double heading1) { this.heading1 = heading1; }
+    public void setAngle1(double angle1) { this.angle1 = angle1; }
 
-    public double getHeading2() { return heading2; }
+    public double getAngle2() { return angle2; }
 
-    public void setHeading2(double heading2) { this.heading2 = heading2; }
+    public void setAngle2(double angle2) { this.angle2 = angle2; }
 
     public Line getLayline1() {
         return layline1;

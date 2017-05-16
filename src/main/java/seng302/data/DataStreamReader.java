@@ -183,7 +183,6 @@ public class DataStreamReader implements Runnable{
         int deviceType = byteArrayRangeToInt(body, DEVICE_TYPE.getStartIndex(), DEVICE_TYPE.getEndIndex());
         int trueWindDirectionScaled = byteArrayRangeToInt(body, TRUE_WIND_DIRECTION.getStartIndex(), TRUE_WIND_DIRECTION.getEndIndex());
         int trueWindAngleScaled = byteArrayRangeToInt(body, TRUE_WIND_ANGLE.getStartIndex(), TRUE_WIND_ANGLE.getEndIndex());
-
         double trueWindAngle = intToTrueWindAngle(trueWindAngleScaled);
         double trueWindDirection = intToHeading(trueWindDirectionScaled);
         double lat = intToLatLon(latScaled);
@@ -195,9 +194,10 @@ public class DataStreamReader implements Runnable{
             race.updateBoat(sourceID, lat, lon, heading, speedInKnots, trueWindAngle);
         } else if(deviceType == MARK_DEVICE_TYPE){
             race.getCourse().updateMark(sourceID, lat, lon);
+
         }
 
-        race.getCourse().updateTrueWindDirection(trueWindDirection);
+        //race.getCourse().updateTrueWindDirection(trueWindDirection);
     }
 
     /**
@@ -274,6 +274,8 @@ public class DataStreamReader implements Runnable{
         long currentTime = byteArrayRangeToLong(body, CURRENT_TIME.getStartIndex(), CURRENT_TIME.getEndIndex());
         long expectedStartTime = byteArrayRangeToLong(body, START_TIME.getStartIndex(), START_TIME.getEndIndex());
 
+        double windDirectionInDegrees = intToHeading(raceCourseWindDirection);
+
 
         byte[] boatStatuses = new byte[body.length - 24];
 
@@ -295,7 +297,7 @@ public class DataStreamReader implements Runnable{
             race.updateRaceOrder();
             race.setFirstMessage(false);
         }
-        race.getCourse().updateCourseWindValues(raceCourseWindDirection);
+        race.getCourse().setWindDirection(windDirectionInDegrees);
         race.updateRaceStatus(RaceStatus.fromInteger(raceStatus));
         race.setStartTimeInEpochMs(expectedStartTime);
         race.setCurrentTimeInEpochMs(currentTime);
