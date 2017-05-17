@@ -110,12 +110,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if(isTrackingPoint && boat.equals(selectedBoat)) {
                 DisplayUtils.moveToPoint(selectedBoat.getBoat().getCurrentPosition());
                 redrawCourse();
-                root.getTransforms().clear();
                 if(isRotationEnabled){
                     if(DisplayUtils.zoomLevel > 1){
                         rotationOffset = -selectedBoat.getBoat().getHeading();
-                        root.getTransforms().add(new Rotate(rotationOffset, controller.getCanvasWidth()/2, controller.getCanvasHeight()/2));
-                    }
+                        updateRotation();                    }
                 }
             }
             else if (isTrackingPoint && selectedMark != null){
@@ -191,6 +189,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawBoatWake(boat);
     }
 
+    /**
+     * inits drawing of the boat paths
+     */
     public void initBoatPaths(){
         for (BoatDisplay boat : displayBoats){
             initBoatPath(boat);
@@ -249,7 +250,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
             selectedBoat = null;
             selectedMark = null;
             isTrackingPoint = false;
-            if(DisplayUtils.zoomLevel == 1){
+            rotationOffset =0;
+            updateRotation();
+
+
+        if(DisplayUtils.zoomLevel == 1){
                 setMapVisibility(true);
                 DisplayUtils.resetOffsets();
                 redrawCourse();
@@ -289,6 +294,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         circle.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
 
+            rotationOffset = 0;
+            updateRotation();
+
             if(mark != selectedMark){
                 controller.setZoomSliderValue(3);
                 DisplayUtils.moveToPoint(mark.getPosition());
@@ -305,6 +313,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 DisplayUtils.resetOffsets();
                 redrawCourse();
                 setMapVisibility(true);
+
             }
         });
 
@@ -644,12 +653,21 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
+    /**
+     * updates the rotation of the canvas to the rotationOffset class variable
+     */
+    private void updateRotation(){
+        root.getTransforms().clear();
+        root.getTransforms().add(new Rotate(rotationOffset, controller.getCanvasWidth()/2, controller.getCanvasHeight()/2));
+    }
+
     @FXML
     /**
      *  Going to be used to toggle the zoom level of the map (currently only two levels will exist, on or off).
      */
     public void zoomToggle(boolean zoomed){
         isRotationEnabled = zoomed;
+        rotationOffset = 0;
     }
 
     public boolean hasInitializedBoats() {
