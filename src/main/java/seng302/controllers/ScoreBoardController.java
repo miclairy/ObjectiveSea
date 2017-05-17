@@ -1,7 +1,5 @@
 package seng302.controllers;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.CheckBox;
@@ -9,13 +7,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
-import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
-import java.util.List;
-import seng302.models.Boat;
 import seng302.models.Race;
 
 /**
@@ -38,6 +32,7 @@ public class ScoreBoardController {
     @FXML private CheckBox chkEst;
     @FXML public Button btnTrack;
     @FXML private CheckBox chkLaylines;
+    @FXML private CheckBox chkVectors;
     @FXML private LineChart chtSparkLine;
     @FXML private NumberAxis xAxis ;
     @FXML private NumberAxis yAxis ;
@@ -123,6 +118,10 @@ public class ScoreBoardController {
     public boolean isEstSelected(){return chkEst.isSelected();}
 
     public boolean isTimePassedSelected(){return chkPassMarkTime.isSelected();}
+
+    public boolean areVectorsSelected() {
+        return chkVectors.isSelected();
+    }
 
     public boolean isLayLinesSelected(){
         return chkLaylines.isSelected();

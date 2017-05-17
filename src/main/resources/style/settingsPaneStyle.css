@@ -1,0 +1,77 @@
+#settingsPane {
+    -fx-background-color: #2b2b2b;
+}
+
+#raceClockHBox {
+    -fx-background-color: #2a2a2a;
+}
+
+#btnTrack{
+  -fx-graphic:url('/graphics/buttonImages/track-boat-dark.png');
+  -fx-background-color:  #232323;
+  -fx-text-fill: #FFFFFF;
+  -fx-font-size: 16px;
+  -fx-content-display: left;
+  -fx-text-alignment: right;
+}
+
+#btnTrack:hover{
+    -fx-background-color: #1C1C1C;
+}
+
+#btnTrack:pressed{
+    -fx-background-color: #0F0F0F;
+}
+
+#lblAnnotation{
+    -fx-font-size: 14px;
+    -fx-padding: 10 0 5 0 ;
+}
+
+#annotationsSlider{
+    -fx-padding: 0 20 0 20;
+}
+
+#sliderLbl{
+    -fx-padding: 0 20 0 20;
+}
+
+#fpsToggle{
+    -fx-padding: 20 20 20 20;
+}
+
+#fpsLabel{
+    -fx-content-display: center;
+    -fx-padding: 10 10 10 10;
+    -fx-opacity: 0.8;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: White;
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 20px;
+}
+
+#placings {
+    -fx-control-inner-background: #2a2a2a;
+    -fx-background-color: #2a2a2a;
+    -fx-font-size: 16px;
+    -fx-focus-color: transparent;
+    -fx-border-color: #1a1a1a;
+}
+
+#startersList{
+    -fx-control-inner-background: #1a1a1a;
+    -fx-font-size: 17px;
+    -fx-focus-color: transparent;
+    -fx-background-insets: 0, 0;
+}
+
+
+#lblSettings{
+    -fx-font-size: 13px;
+    -fx-text-fill: White;
+}
+
+#chkAnno{
+    -fx-text-fill: White;
+}
