@@ -42,7 +42,7 @@ public class MockStreamTest {
         mockRaceRunner.setScaleFactor(200);
         upStream = new Thread(mockStream);
         upStream.start();
-        Thread.sleep(1000); //because otherwise connection refused errors
+        Thread.sleep(1); //because otherwise connection refused errors
         connectionSocket = new Socket("localhost", 2829 + i);
         i++;
     }
@@ -229,8 +229,6 @@ public class MockStreamTest {
     @After
     public void closeOpened() throws IOException, InterruptedException {
         mockStream.stop();
-
-//        Thread.sleep(1000);
     }
 
     @AfterClass
