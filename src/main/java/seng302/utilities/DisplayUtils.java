@@ -1,5 +1,7 @@
 package seng302.utilities;
+import javafx.animation.FadeTransition;
 import javafx.scene.Node;
+import javafx.util.Duration;
 import seng302.controllers.Controller;
 import seng302.models.CanvasCoordinate;
 import seng302.models.Coordinate;
@@ -227,5 +229,19 @@ public class DisplayUtils {
     public static void resetOffsets(){
         offsetX = 0;
         offsetY = 0;
+    }
+
+    /**
+     * adds a fade transition to a node, so that a node fades over a set period of time
+     * @param node a node in the scene that will be faded
+     * @param endOpacity a double that represents the nodes opacity at the end of the fade
+     */
+    public static void fadeNodeTransition(Node node, double endOpacity){
+        FadeTransition fadeTransition = new FadeTransition();
+        fadeTransition.setNode(node);
+        fadeTransition.setDuration(new Duration(500));
+        fadeTransition.setFromValue(node.getOpacity());
+        fadeTransition.setToValue(endOpacity);
+        fadeTransition.play();
     }
 }

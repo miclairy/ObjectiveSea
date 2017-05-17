@@ -44,7 +44,6 @@ public class Controller implements Initializable, Observer {
     @FXML public ImageView mapImageView;
     @FXML private Slider zoomSlider;
 
-
     //number of from right edge of canvas that the wind arrow will be drawn
     private final int WIND_ARROW_OFFSET = 60;
 
@@ -62,8 +61,6 @@ public class Controller implements Initializable, Observer {
     private static double canvasHeight;
     private static double canvasWidth;
 
-
-
     private static double anchorHeight;
     private static double anchorWidth;
     private static String timeZone;
@@ -80,6 +77,10 @@ public class Controller implements Initializable, Observer {
     private boolean raceStatusChanged = true;
     private Race race;
 
+
+    private final double FOCUSED_ZOOMSLIDER_OPACITY =0.8;
+    private final double IDLE_ZOOMSLIDER_OPACITY = 0.4;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         canvasAnchor.getStylesheets().addAll(BOAT_CSS, COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS);
@@ -87,10 +88,6 @@ public class Controller implements Initializable, Observer {
         canvasHeight = canvas.getHeight();
         anchorWidth = canvasAnchor.getWidth();
         anchorHeight = canvasAnchor.getHeight();
-
-
-
-
 
         race = Main.getRace();
         race.addObserver(this);
@@ -114,7 +111,15 @@ public class Controller implements Initializable, Observer {
         startersOverlay.toFront();
         raceViewController.start();
 
-        //Dragged Display
+        initDisplayDrag();
+        initZoom();
+    }
+
+    /**
+     * initilizes display listeners to detect dragging on display. Calls DisplayUtils to move display
+     * and redraw course and paths as appropriate.
+     */
+    private void initDisplayDrag(){
         canvasAnchor.setOnMouseDragged(event -> {
             if(DisplayUtils.zoomLevel != 1){
                 DisplayUtils.dragDisplay((int)event.getX(),(int) event.getY());
@@ -122,10 +127,15 @@ public class Controller implements Initializable, Observer {
                 raceViewController.redrawBoatPaths();
             }
         });
+    }
 
+    /**
+     * Initilizes zoom slider on display. Resets zoom on slide out
+     */
+    private void initZoom(){
         //Zoomed out
         zoomSlider.valueProperty().addListener((arg0, arg1, arg2) -> {
-            zoomSlider.setOpacity(0.8);
+            zoomSlider.setOpacity(FOCUSED_ZOOMSLIDER_OPACITY);
             DisplayUtils.setZoomLevel(zoomSlider.getValue());
             if(DisplayUtils.zoomLevel != 1){
                 mapImageView.setVisible(false);
@@ -140,8 +150,6 @@ public class Controller implements Initializable, Observer {
             raceViewController.redrawCourse();
             raceViewController.redrawBoatPaths();
         });
-
-
     }
 
 
@@ -381,20 +389,10 @@ public class Controller implements Initializable, Observer {
     }
 
     @FXML private void zoomCursorHover(){
-        FadeTransition fadeTransition = new FadeTransition();
-        fadeTransition.setNode(zoomSlider);
-        fadeTransition.setFromValue(zoomSlider.getOpacity());
-        fadeTransition.setToValue(0.8);
-        fadeTransition.setDuration(new Duration(500));
-        fadeTransition.play();
+        DisplayUtils.fadeNodeTransition(zoomSlider, FOCUSED_ZOOMSLIDER_OPACITY);
     }
 
     @FXML private void zoomCursorExitHover(){
-        FadeTransition fadeTransition = new FadeTransition();
-        fadeTransition.setNode(zoomSlider);
-        fadeTransition.setFromValue(zoomSlider.getOpacity());
-        fadeTransition.setToValue(0.4);
-        fadeTransition.setDuration(new Duration(500));
-        fadeTransition.play();
+        DisplayUtils.fadeNodeTransition(zoomSlider, IDLE_ZOOMSLIDER_OPACITY);
     }
 }

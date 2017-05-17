@@ -166,7 +166,7 @@
                                           <Insets top="8.0" />
                                        </padding>
                                     </CheckBox>
-                                    <CheckBox fx:id="zoomToggle" mnemonicParsing="false" prefHeight="17.0" prefWidth="286.0" text="Track boat with heading" textFill="WHITE" GridPane.columnIndex="1" />
+                                    <CheckBox fx:id="zoomToggle" mnemonicParsing="false" prefHeight="17.0" prefWidth="286.0" text="Match heading when tracking" textFill="WHITE" GridPane.columnIndex="1" />
                                  </children>
                               </GridPane>
                               </children>

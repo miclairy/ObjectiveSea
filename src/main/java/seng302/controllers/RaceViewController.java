@@ -105,40 +105,35 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * Body of main loop of animation
      */
     private void run(){
-        for (BoatDisplay boat: displayBoats) {
-            //track boat
-            if(isTrackingPoint && boat.equals(selectedBoat)) {
-                DisplayUtils.moveToPoint(selectedBoat.getBoat().getCurrentPosition());
-                redrawCourse();
-                if(isRotationEnabled){
-                    if(DisplayUtils.zoomLevel > 1){
-                        rotationOffset = -selectedBoat.getBoat().getHeading();
-                        updateRotation();                    }
+        if (isTrackingPoint && selectedMark != null){
+            DisplayUtils.moveToPoint(selectedMark.getPosition());
+            redrawCourse();
+        }
+        if (isTrackingPoint && selectedBoat != null) {
+            selectedBoat.getIcon().toFront();
+            DisplayUtils.moveToPoint(selectedBoat.getBoat().getCurrentPosition());
+            redrawCourse();
+            if(isRotationEnabled){
+                if(DisplayUtils.zoomLevel > 1){
+                    rotationOffset = -selectedBoat.getBoat().getHeading();
+                    updateRotation();
                 }
             }
-            else if (isTrackingPoint && selectedMark != null){
-                DisplayUtils.moveToPoint(selectedMark.getPosition());
-                redrawCourse();
-            }
-
+        }
+        for (BoatDisplay boat: displayBoats) {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
-
             moveBoat(boat, point);
             moveWake(boat, point);
             if(race.getRaceStatus() == STARTED) {
                 addToBoatPath(boat, point);
             }
             moveBoatAnnotation(boat.getAnnotation(), point);
-
-
-        }
-        if(selectedBoat != null){
-            selectedBoat.getIcon().toFront();
         }
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
         controller.setWindDirection();
+
     }
 
     /**
