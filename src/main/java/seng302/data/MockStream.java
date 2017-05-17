@@ -174,7 +174,7 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, BOAT_TIMESTAMP, raceRunner.getRace().getCurrentTimeInEpochMs());
         addFieldToByteArray(body, MARK_ACK, 0); //todo make proper ack
         addFieldToByteArray(body, MARK_RACE_ID, Integer.parseInt(raceRunner.getRaceId()));
-        addFieldToByteArray(body, MARK_SOURCE, boat.getId());
+        addFieldToByteArray(body, ROUNDING_SOURCE_ID, boat.getId());
         addFieldToByteArray(body, MARK_BOAT_STATUS, boat.getStatus().getValue());
         addFieldToByteArray(body, ROUNDING_SIDE, 0); //todo present correct side
         if (course.getCourseOrder().get(boat.getLastRoundedMarkIndex()).hasTwoMarks()) {

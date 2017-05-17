@@ -43,6 +43,7 @@ public class MockStreamTest {
         runner.start();
 
         mockStream = new MockStream(2829 + i, mockRaceRunner);
+        mockRaceRunner.setScaleFactor(50);
 
         upStream = new Thread(mockStream);
         upStream.start();
@@ -65,7 +66,6 @@ public class MockStreamTest {
 
     }
 
-    @Ignore
     @Test
     public void sendRaceXmlTest(){
         try {
@@ -102,7 +102,6 @@ public class MockStreamTest {
 
     }
 
-    @Ignore
     @Test
     public void sendBodyXmlTest(){
         try {
@@ -185,11 +184,11 @@ public class MockStreamTest {
             readUtilMessageType(dataInputStream, 37);
             byte[] body = new byte[56];
             dataInputStream.readFully(body);
-            boat.setStatus(BoatStatus.FINISHED);
+            //boat.setStatus(BoatStatus.FINISHED);
 
             assertEquals(1, body[0]);
             assertEquals(1, body[15]);
-            assertEquals(1, body[7]);
+            assertEquals(101, body[7]);
             assertEquals(0, body[24]);
             assertEquals(0, body[28]);
         } catch (IOException e) {
@@ -202,29 +201,15 @@ public class MockStreamTest {
     @Test
     public void sendMarkRoundedTest(){
         try {
-            MockRaceRunner mockRaceRunner = mock(MockRaceRunner.class, Mockito.RETURNS_DEEP_STUBS);
-            Course course = mock(Course.class);
-            when(mockRaceRunner.getRace().getCourse()).thenReturn(course);
-            when(mockRaceRunner.getRaceId()).thenReturn(String.valueOf(1122));
-            when(mockRaceRunner.getRace().getRaceStatus()).thenReturn(RaceStatus.STARTED);
-            Boat boat = new Boat(1, "NZ", "NZ", 20);
-            boat.setLastRoundedMarkIndex(0);
-            CompoundMark mark = mock(CompoundMark.class);
-            when(course.getCourseOrder()).thenReturn(new ArrayList<>(Arrays.asList(mark, mark, mark)));
-            when(course.getCourseOrder().get(boat.getLastRoundedMarkIndex()).hasTwoMarks()).thenReturn(false);
-            when(mockRaceRunner.getRace().getCompetitors()).thenReturn(new ArrayList<>(Arrays.asList(boat)));
 
-            //Socket connectionSocket = new Socket("localhost", 2829);
             InputStream stream = connectionSocket.getInputStream();
 
             DataInputStream dataInputStream = new DataInputStream(stream);
             readUtilMessageType(dataInputStream, 38);
             byte[] body = new byte[21];
             dataInputStream.readFully(body);
-            boat.setStatus(BoatStatus.FINISHED);
-
             assertEquals(1, body[0]);
-            assertEquals(1, body[13]);
+            assertEquals(101, body[13]);
             assertEquals(0, body[18]);
         } catch (IOException e) {
             e.printStackTrace();
@@ -271,10 +256,9 @@ public class MockStreamTest {
     public void closeOpened() throws IOException {
         mockStream.stop();
         while (mockStream.isSending()) {
-            System.out.println("still alive");
         }
-        connectionSocket.getInputStream().close();
-        connectionSocket.close();
+        //connectionSocket.getInputStream().close();
+        //cconnectionSocket.close();
 
 
 
