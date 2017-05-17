@@ -1,10 +1,7 @@
 package seng302;
 
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.Mockito;
 import seng302.controllers.MockRaceRunner;
 import seng302.data.AC35StreamMessage;
@@ -161,7 +158,6 @@ public class MockStreamTest {
     }
 
 
-    @Ignore
     @Test
     public void sendBoatLocationTest(){
 
@@ -190,14 +186,13 @@ public class MockStreamTest {
             assertEquals(1, body[15]);
             assertEquals(101, body[7]);
             assertEquals(0, body[24]);
-            assertEquals(0, body[28]);
+            assertEquals(0, body[30]);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
 
-    @Ignore
     @Test
     public void sendMarkRoundedTest(){
         try {
@@ -216,12 +211,10 @@ public class MockStreamTest {
         }
     }
 
-    @Ignore
     @Test
     public void sendRaceStatusTest(){
         try {
 
-//            Socket connectionSocket = new Socket("localhost", 2829);
             InputStream stream = null;
             stream = connectionSocket.getInputStream();
 
@@ -257,9 +250,6 @@ public class MockStreamTest {
         mockStream.stop();
         while (mockStream.isSending()) {
         }
-        //connectionSocket.getInputStream().close();
-        //cconnectionSocket.close();
-
 
 
     }
