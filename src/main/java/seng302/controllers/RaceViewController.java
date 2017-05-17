@@ -301,7 +301,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         VBox annotationFrame = displayBoat.getAnnotation();
         annotationFrame.setId("annotationFrame");
         annotationFrame.getChildren().clear();
-
         for(String string : annotationText){
             Label annotationLabel = new Label(string);
             annotationLabel.setId("annotationLabel");

@@ -81,6 +81,7 @@ public class ScoreBoardController {
                 }
             }
         });
+        annotationsSlider.setValue(1);
         for (Boat boat : race.getCompetitors()){
             boatDropDown1.getItems().addAll(boat.getName());
             boatDropDown2.getItems().addAll(boat.getName());
