@@ -34,14 +34,15 @@ public class MockStreamTest {
     private static int i = 0;
 
     @Before
-    public void startMockRaceRunner() throws IOException {
+    public void startMockRaceRunner() throws IOException, InterruptedException {
         mockRaceRunner = new MockRaceRunner();
         Thread runner = new Thread(mockRaceRunner);
         runner.start();
         mockStream = new MockStream(2829 + i, mockRaceRunner);
-        mockRaceRunner.setScaleFactor(100);
+        mockRaceRunner.setScaleFactor(200);
         upStream = new Thread(mockStream);
         upStream.start();
+        Thread.sleep(1000); //because otherwise connection refused errors
         connectionSocket = new Socket("localhost", 2829 + i);
         i++;
     }
@@ -226,11 +227,10 @@ public class MockStreamTest {
     }
 
     @After
-    public void closeOpened() throws IOException {
+    public void closeOpened() throws IOException, InterruptedException {
         mockStream.stop();
-        while (mockStream.isSending()) {
-        }
 
+//        Thread.sleep(1000);
     }
 
     @AfterClass

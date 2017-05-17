@@ -408,7 +408,4 @@ public class MockStream implements Runnable {
         }
     }
 
-    public boolean isSending(){
-        return !clientSocket.isClosed();
-    }
 }
