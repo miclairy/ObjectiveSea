@@ -71,7 +71,8 @@ public class BoatDisplay {
 
     public void setPath(Path path) {this.path = path;}
 
-    public Path getPath() {return path;}
+    public Path getPath() {return
+            path;}
 
     public String getSpeed(){
         return String.format("%.1fkn", boat.getSpeed());
