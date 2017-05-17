@@ -116,6 +116,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if(trackingPoint && boat.equals(selectedBoat)) {
                 DisplayUtils.moveToPoint(selectedBoat.getBoat().getCurrentPosition());
                 redrawCourse();
+                //rotate root
+                root.getTransforms().clear();
+                root.getTransforms().add(new Rotate(-selectedBoat.getBoat().getHeading(), controller.getCanvasWidth()/2, controller.getCanvasHeight()/2));
             }
             else if (trackingPoint && selectedMark != null){
                 DisplayUtils.moveToPoint(selectedMark.getPosition());

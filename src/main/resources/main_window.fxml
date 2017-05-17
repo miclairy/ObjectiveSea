@@ -51,17 +51,17 @@
                 </VBox>
                 <Group fx:id="root" layoutY="-1.0">
                     <children>
-                        <ImageView fx:id="windDirectionImage" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" x="410.0" y="15.0">
-                            <image>
-                                <Image url="@graphics/arrow.png" />
-                            </image>
-                        </ImageView>
                         <Canvas fx:id="canvas" height="400.0" width="298.0" />
-                        <Label fx:id="fpsLabel" alignment="CENTER" centerShape="false" contentDisplay="BOTTOM" layoutX="4.0" layoutY="4.0" prefHeight="36.0" prefWidth="64.0" textAlignment="CENTER" />
                     </children>
                 </Group>
                 <ImageView fx:id="mapImageView1" fitHeight="88.0" fitWidth="100.0" layoutX="10.0" layoutY="10.0" pickOnBounds="true" />
                   <Slider fx:id="zoomSlider" blockIncrement="0.05" layoutX="1431.0" layoutY="70.0" majorTickUnit="0.1" max="5.0" min="1.0" minorTickCount="1" onMouseEntered="#zoomCursorHover" onMouseExited="#zoomCursorExitHover" opacity="0.4" orientation="VERTICAL" prefHeight="250.0" prefWidth="16.0" value="1.0" AnchorPane.rightAnchor="31.0" AnchorPane.topAnchor="70.0" />
+                  <ImageView fx:id="windDirectionImage" fitHeight="40.0" fitWidth="40.0" layoutX="1009.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true" x="410.0" y="15.0" AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="19.0">
+                      <image>
+                          <Image url="@graphics/arrow.png" />
+                      </image>
+                  </ImageView>
+                  <Label fx:id="fpsLabel" alignment="CENTER" centerShape="false" contentDisplay="BOTTOM" layoutX="352.0" layoutY="21.0" prefHeight="36.0" prefWidth="64.0" textAlignment="CENTER" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0" />
             </children>
         </AnchorPane>
         <AnchorPane fx:id="rightHandSide" minWidth="440">
