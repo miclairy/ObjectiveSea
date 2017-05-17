@@ -27,6 +27,5 @@
     -fx-background-color: #3F3F3F;
     -fx-background-radius: 0.5em;
     -fx-padding: 6px;
-    -fx-opacity: 0.8;
     -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
 }

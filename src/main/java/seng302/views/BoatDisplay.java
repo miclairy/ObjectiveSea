@@ -39,6 +39,7 @@ public class BoatDisplay {
     public BoatDisplay(Boat boat) {
         this.boat = boat;
         this.annotation = new VBox();
+        annotation.setOpacity(0.8);
     }
 
     public Line getAnnotationLine() {return annotationLine;}
@@ -126,7 +127,7 @@ public class BoatDisplay {
     public void focus(){
         fadeNodeTransition(icon, 1.0);
         fadeNodeTransition(wake, 1.0);
-        fadeNodeTransition(annotation, 1.0);
+        fadeNodeTransition(annotation, 0.8);
         if(path != null){
             fadeNodeTransition(path, 1.0);
         }
