@@ -39,7 +39,7 @@ public class MockStreamTest {
         Thread runner = new Thread(mockRaceRunner);
         runner.start();
 
-        mockStream = new MockStream(2829 + i, mockRaceRunner);
+        mockStream = new MockStream(2929 + i, mockRaceRunner);
         mockRaceRunner.setScaleFactor(50);
 
         upStream = new Thread(mockStream);
