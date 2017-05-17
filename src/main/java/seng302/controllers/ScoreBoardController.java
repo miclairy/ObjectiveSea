@@ -5,13 +5,15 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.chart.LineChart;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Slider;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
-import java.util.List;
-import seng302.models.Boat;
 import seng302.models.Race;
 
 import java.util.Objects;
