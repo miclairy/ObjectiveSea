@@ -1,6 +1,6 @@
 package seng302.models;
 
-import javafx.scene.layout.VBox;
+import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import seng302.utilities.DisplayUtils;
@@ -21,12 +21,13 @@ public class DistanceLine {
     private CompoundMark mark;
     private Set<Line> lines;
     private double distanceBetweenBoats;
-    private VBox annotation = new VBox();
+    private Label annotation = new Label();
     private Coordinate closestPoint1;
     private Coordinate closestPoint2;
 
     public DistanceLine(){
         lines = new HashSet<>();
+        annotation.setId("distanceAnnotation");
     }
 
     public void setFirstBoat(Boat firstBoat) {
@@ -100,7 +101,7 @@ public class DistanceLine {
                 canvasPoint1.getX(), canvasPoint1.getY(),
                 canvasPoint2.getX(), canvasPoint2.getY()
         );
-        line.setStroke(Color.web("#70aaa2"));
+        line.setId("distanceLine");
         lines.add(line);
     }
 
@@ -120,11 +121,11 @@ public class DistanceLine {
         return distanceBetweenBoats;
     }
 
-    public VBox getAnnotation() {
+    public Label getAnnotation() {
         return annotation;
     }
 
-    public void setAnnotation(VBox annotation) {
+    public void setAnnotation(Label annotation) {
         this.annotation = annotation;
     }
 

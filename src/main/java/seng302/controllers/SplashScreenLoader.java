@@ -3,15 +3,9 @@ package seng302.controllers;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ProgressBar;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.application.Preloader;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.Image;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 
 import java.io.IOException;

@@ -15,6 +15,7 @@ import javafx.util.StringConverter;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
 import seng302.models.Race;
+import seng302.models.Boat;
 
 import java.util.Objects;
 

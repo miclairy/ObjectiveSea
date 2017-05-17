@@ -46,8 +46,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
         NO_ANNOTATION, IMPORTANT_ANNOTATIONS, ALL_ANNOTATIONS
     }
     private final double WAKE_SCALE_FACTOR = 17;
-    private final double ANNOTATION_OFFSET_X = 10;
-    private final double ANNOTATION_OFFSET_Y = 15;
+    private final double ANNOTATION_OFFSET_X = 25;
+    private final double ANNOTATION_OFFSET_Y = 30;
     private Race race;
     private Group root;
     private Controller controller;
@@ -104,6 +104,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * Body of main loop of animation
      */
     private void run(){
+        if (drawDistanceLine) redrawDistanceLines();
         for (BoatDisplay boat: displayBoats) {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
             moveBoat(boat, point);
@@ -114,10 +115,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
             moveBoatAnnotation(boat.getAnnotation(), point);
         }
         if (courseNeedsRedraw) redrawCourse();
-        if (drawDistanceLine) redrawDistanceLines();
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
         controller.setWindDirection();
+        distanceLine.getAnnotation().toFront();
     }
 
     /**
@@ -298,6 +299,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void drawBoatAnnotation(BoatDisplay displayBoat, ArrayList<String> annotationText){
         CanvasCoordinate point = DisplayUtils.convertFromLatLon(displayBoat.getBoat().getCurrentPosition());
         VBox annotationFrame = displayBoat.getAnnotation();
+        annotationFrame.setId("annotationFrame");
         annotationFrame.getChildren().clear();
 
         for(String string : annotationText){
@@ -473,7 +475,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     /**
-     * Redraws a raceline on the visuial
+     * Redraws a raceline on the visual
      * @param raceLine
      */
     private void redrawRaceLine(RaceLine raceLine) {
@@ -553,15 +555,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     private void updateDistanceLineAnnotation(){
-        VBox distanceLineAnnotation = distanceLine.getAnnotation();
-        distanceLineAnnotation.getChildren().clear();
-        Label distanceLineLabel = new Label();
-        distanceLineLabel.setId("distanceLine");
-        distanceLineLabel.setText(String.valueOf((int) TimeUtils.convertNauticalMilesToMetres(distanceLine.getDistanceBetweenBoats())) + " meters");
-        distanceLineAnnotation.getChildren().add(distanceLineLabel);
+        Label distanceLineAnnotation = distanceLine.getAnnotation();
+        distanceLineAnnotation.setText(String.valueOf((int) TimeUtils.convertNauticalMilesToMetres(distanceLine.getDistanceBetweenBoats())) + " m");
         distanceLineAnnotation.layoutXProperty().set(distanceLine.halfwayBetweenBoatsCoord().getX());
         distanceLineAnnotation.layoutYProperty().set(distanceLine.halfwayBetweenBoatsCoord().getY());
         distanceLine.setAnnotation(distanceLineAnnotation);
+        distanceLineAnnotation.toFront();
     }
 
     /**

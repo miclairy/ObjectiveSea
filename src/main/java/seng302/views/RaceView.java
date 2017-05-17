@@ -1,11 +1,14 @@
 package seng302.views;
 
+import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import javafx.scene.shape.Polygon;
 import seng302.utilities.DisplayUtils;
 import seng302.models.CanvasCoordinate;
 import seng302.models.Coordinate;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,7 +62,6 @@ public class RaceView {
      */
     public Path createBoatPath(Color color) {
         Path path = new Path();
-        path.getStrokeDashArray().addAll(5.0,7.0,5.0,7.0);
         path.setId("boatPath");
         path.setOpacity(1);
         path.setStroke(color);

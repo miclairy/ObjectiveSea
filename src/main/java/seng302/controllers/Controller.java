@@ -64,6 +64,7 @@ public class Controller implements Initializable, Observer {
     private final String COURSE_CSS = "/style/courseStyle.css";
     private final String STARTERS_CSS = "/style/startersOverlayStyle.css";
     private final String SETTINGSPANE_CSS = "/style/settingsPaneStyle.css";
+    private final String DISTANCELINE_CSS = "/style/distanceLineStyle.css";
 
     // Controllers
     @FXML private RaceViewController raceViewController;
@@ -75,7 +76,7 @@ public class Controller implements Initializable, Observer {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        root.getStylesheets().addAll(BOAT_CSS, COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS);
+        root.getStylesheets().addAll(BOAT_CSS, COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, DISTANCELINE_CSS);
         canvasWidth = canvas.getWidth();
         canvasHeight = canvas.getHeight();
         anchorWidth = canvasAnchor.getWidth();
