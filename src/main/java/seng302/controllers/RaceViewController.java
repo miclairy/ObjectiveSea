@@ -2,7 +2,6 @@ package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
-import javafx.animation.FadeTransition;
 import javafx.collections.ObservableList;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -21,7 +20,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
-import javafx.util.Duration;
 import seng302.data.BoatStatus;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.TimeUtils;
@@ -29,9 +27,6 @@ import seng302.models.*;
 import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
-import java.awt.geom.Line2D;
-import javax.imageio.ImageIO;
-import java.net.URL;
 import java.util.*;
 
 import static seng302.data.RaceStatus.STARTED;
@@ -59,19 +54,18 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private ScoreBoardController scoreBoardController;
     private ArrayList<BoatDisplay> displayBoats = new ArrayList<>();
     private double previousTime = 0;
-    private ImageView currentWindArrow;
     private Polygon boundary;
     private double currentTimeInSeconds;
     private AnnotationLevel currentAnnotationsLevel;
-    //number of pixels from right edge of canvas that the wind arrow will be drawn
-    private final int WIND_ARROW_OFFSET = 60;
     private boolean courseNeedsRedraw = false;
     private boolean initializedBoats = false;
     private ImageCursor boatCursor = new ImageCursor(new Image("graphics/boat-select-cursor.png"), 7, 7);
 
     private BoatDisplay selectedBoat = null;
     private Mark selectedMark = null;
-    private boolean trackingPoint = false;
+    private boolean isTrackingPoint = false;
+    private double rotationOffset = 0;
+    private boolean isRotationEnabled = false;
 
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
@@ -113,14 +107,18 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void run(){
         for (BoatDisplay boat: displayBoats) {
             //track boat
-            if(trackingPoint && boat.equals(selectedBoat)) {
+            if(isTrackingPoint && boat.equals(selectedBoat)) {
                 DisplayUtils.moveToPoint(selectedBoat.getBoat().getCurrentPosition());
                 redrawCourse();
-                //rotate root
                 root.getTransforms().clear();
-                root.getTransforms().add(new Rotate(-selectedBoat.getBoat().getHeading(), controller.getCanvasWidth()/2, controller.getCanvasHeight()/2));
+                if(isRotationEnabled){
+                    if(DisplayUtils.zoomLevel > 1){
+                        rotationOffset = -selectedBoat.getBoat().getHeading();
+                        root.getTransforms().add(new Rotate(rotationOffset, controller.getCanvasWidth()/2, controller.getCanvasHeight()/2));
+                    }
+                }
             }
-            else if (trackingPoint && selectedMark != null){
+            else if (isTrackingPoint && selectedMark != null){
                 DisplayUtils.moveToPoint(selectedMark.getPosition());
                 redrawCourse();
             }
@@ -250,7 +248,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             scoreBoardController.btnTrack.setVisible(false);
             selectedBoat = null;
             selectedMark = null;
-            trackingPoint = false;
+            isTrackingPoint = false;
             if(DisplayUtils.zoomLevel == 1){
                 setMapVisibility(true);
                 DisplayUtils.resetOffsets();
@@ -295,14 +293,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 controller.setZoomSliderValue(3);
                 DisplayUtils.moveToPoint(mark.getPosition());
                 selectedMark = mark;
-                trackingPoint = true;
+                isTrackingPoint = true;
                 selectedBoat = null;
                 redrawCourse();
                 setMapVisibility(false);
             }else{
                 controller.setZoomSliderValue(1);
                 selectedMark = null;
-                trackingPoint = false;
+                isTrackingPoint = false;
 
                 DisplayUtils.resetOffsets();
                 redrawCourse();
@@ -412,6 +410,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 (point.getX() + ANNOTATION_OFFSET_X),
                 (point.getY() + ANNOTATION_OFFSET_Y)
         );
+        annotation.setRotate(-rotationOffset);
         if(DisplayUtils.checkBounds(annotation)){
             adjustX -= annotation.getBoundsInParent().getWidth();
             annotation.relocate(
@@ -501,12 +500,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         icon.toFront();
     }
 
-    /**
-     * Moves compass arrow to correct position when canvas is resized.
-     */
-    public void moveWindArrow() {
-        currentWindArrow.setX(Controller.getCanvasWidth() - WIND_ARROW_OFFSET);
-    }
 
     /**
      * Moves the wake of a boat to the correct position
@@ -639,9 +632,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
-    public void setCurrentWindArrow(ImageView currentWindArrow) {
-        this.currentWindArrow = currentWindArrow;
-    }
 
     /**
      * This is currently called when the Course gets updated, and will redraw the course to reflect these changes
@@ -659,7 +649,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      *  Going to be used to toggle the zoom level of the map (currently only two levels will exist, on or off).
      */
     public void zoomToggle(boolean zoomed){
-        System.out.println(zoomed);
+        isRotationEnabled = zoomed;
     }
 
     public boolean hasInitializedBoats() {
@@ -673,17 +663,24 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
 
     public boolean isTrackingPoint() {
-        return trackingPoint;
+        return isTrackingPoint;
     }
 
     public void setTrackingPoint(boolean trackingPoint) {
-        this.trackingPoint = trackingPoint;
+        this.isTrackingPoint = trackingPoint;
     }
 
     public void setMapVisibility(boolean visible){
         controller.mapImageView.setVisible(visible);
     }
 
+    public double getRotationOffset() {
+        return rotationOffset;
+    }
+
+    public void setRotationOffset(double rotationOffset) {
+        this.rotationOffset = rotationOffset;
+    }
 
 }
 

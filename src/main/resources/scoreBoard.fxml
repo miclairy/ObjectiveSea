@@ -19,7 +19,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<TabPane fx:id="scoreBoard" prefHeight="413.0" prefWidth="161.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.ScoreBoardController">
+<TabPane fx:id="scoreBoard" prefHeight="674.0" prefWidth="379.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.ScoreBoardController">
       <tabs>
          <Tab text="Race Leaderboard">
             <content>
@@ -96,7 +96,7 @@
             <content>
                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
-                     <GridPane prefHeight="364.0" prefWidth="128.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <GridPane prefHeight="593.0" prefWidth="428.0" AnchorPane.bottomAnchor="-70.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <columnConstraints>
                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         </columnConstraints>
@@ -166,7 +166,7 @@
                                           <Insets top="8.0" />
                                        </padding>
                                     </CheckBox>
-                                    <CheckBox fx:id="zoomToggle" mnemonicParsing="false" prefHeight="17.0" prefWidth="115.0" text="Toggle Zoom" textFill="WHITE" GridPane.columnIndex="1" />
+                                    <CheckBox fx:id="zoomToggle" mnemonicParsing="false" prefHeight="17.0" prefWidth="286.0" text="Follow Boat Direction" textFill="WHITE" GridPane.columnIndex="1" />
                                  </children>
                               </GridPane>
                               </children>

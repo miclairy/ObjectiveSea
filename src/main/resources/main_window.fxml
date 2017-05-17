@@ -61,7 +61,7 @@
                           <Image url="@graphics/arrow.png" />
                       </image>
                   </ImageView>
-                  <Label fx:id="fpsLabel" alignment="CENTER" centerShape="false" contentDisplay="BOTTOM" layoutX="352.0" layoutY="21.0" prefHeight="36.0" prefWidth="64.0" textAlignment="CENTER" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="20.0" />
+                  <Label fx:id="fpsLabel" alignment="CENTER" centerShape="false" contentDisplay="BOTTOM" layoutX="352.0" layoutY="21.0" prefHeight="36.0" prefWidth="64.0" textAlignment="CENTER" AnchorPane.leftAnchor="16.0" AnchorPane.topAnchor="16.0" />
             </children>
         </AnchorPane>
         <AnchorPane fx:id="rightHandSide" minWidth="440">

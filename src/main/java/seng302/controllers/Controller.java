@@ -114,37 +114,31 @@ public class Controller implements Initializable, Observer {
         startersOverlay.toFront();
         raceViewController.start();
 
-
-        canvasAnchor.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if(DisplayUtils.zoomLevel != 1){
-                    DisplayUtils.dragDisplay((int)event.getX(),(int) event.getY());
-
-                    raceViewController.redrawCourse();
-                    raceViewController.moveWindArrow();
-                    raceViewController.redrawBoatPaths();
-                }
+        //Dragged Display
+        canvasAnchor.setOnMouseDragged(event -> {
+            if(DisplayUtils.zoomLevel != 1){
+                DisplayUtils.dragDisplay((int)event.getX(),(int) event.getY());
+                raceViewController.redrawCourse();
+                raceViewController.redrawBoatPaths();
             }
         });
 
-        zoomSlider.valueProperty().addListener(new ChangeListener() {
-
-            @Override
-            public void changed(ObservableValue arg0, Object arg1, Object arg2) {
-                zoomSlider.setOpacity(0.8);
-                DisplayUtils.setZoomLevel(zoomSlider.getValue());
-                if(DisplayUtils.zoomLevel != 1){
-                    mapImageView.setVisible(false);
-                }else{
-                    mapImageView.setVisible(true);
-                    raceViewController.setTrackingPoint(false);
-                    DisplayUtils.resetOffsets();
-                }
-                raceViewController.redrawCourse();
-                raceViewController.moveWindArrow();
-                raceViewController.redrawBoatPaths();
+        //Zoomed out
+        zoomSlider.valueProperty().addListener((arg0, arg1, arg2) -> {
+            zoomSlider.setOpacity(0.8);
+            DisplayUtils.setZoomLevel(zoomSlider.getValue());
+            if(DisplayUtils.zoomLevel != 1){
+                mapImageView.setVisible(false);
+            }else{
+                //Zoom out full, reset everything
+                raceViewController.setRotationOffset(0);
+                root.getTransforms().clear();
+                mapImageView.setVisible(true);
+                raceViewController.setTrackingPoint(false);
+                DisplayUtils.resetOffsets();
             }
+            raceViewController.redrawCourse();
+            raceViewController.redrawBoatPaths();
         });
 
 
@@ -194,7 +188,6 @@ public class Controller implements Initializable, Observer {
             canvasWidth = (double) newValue;
             anchorWidth = canvasAnchor.getWidth();
             raceViewController.redrawCourse();
-            raceViewController.moveWindArrow();
             raceViewController.redrawBoatPaths();
         });
         canvasAnchor.heightProperty().addListener(resizeListener);
@@ -202,30 +195,10 @@ public class Controller implements Initializable, Observer {
             canvasHeight = (double) newValue;
             anchorHeight = canvasAnchor.getHeight();
             raceViewController.redrawCourse();
-            raceViewController.moveWindArrow();
             raceViewController.redrawBoatPaths();
         });
 
     }
-
-    @FXML private void mapZoomed( ){
-        DisplayUtils.zoomLevel+= 0.1;
-
-        raceViewController.redrawCourse();
-        raceViewController.moveWindArrow();
-        raceViewController.redrawBoatPaths();
-
-    }
-    @FXML private void mapZoomedOut( ){
-        DisplayUtils.zoomLevel-= 0.1;
-
-
-        raceViewController.redrawCourse();
-        raceViewController.moveWindArrow();
-        raceViewController.redrawBoatPaths();
-
-    }
-
 
 
     /**
@@ -260,10 +233,8 @@ public class Controller implements Initializable, Observer {
     public void setWindDirection(){
         double windDirection = (float)race.getCourse().getWindDirection();
         double scaleFactor = ((double)360/(double)159999);
-        double rotate = (windDirection * scaleFactor);
-        windDirectionImage.setX(canvasWidth - WIND_ARROW_OFFSET);
+        double rotate = (windDirection * scaleFactor) + raceViewController.getRotationOffset();
         windDirectionImage.setRotate(rotate);
-        raceViewController.setCurrentWindArrow(windDirectionImage);
     }
 
     /**
