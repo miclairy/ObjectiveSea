@@ -93,8 +93,6 @@ public class BoatDisplay {
 
     public Path getPath() {return path;}
 
-    public double getCurrentVMGSpeed() {return boat.getCurrentVMGSpeed();}
-
     public String getSpeed(){
         return String.format("%.1fkn", boat.getSpeed());
     }

@@ -249,10 +249,6 @@ public class Boat implements Comparable<Boat>{
 
     public int getLeg(){return leg;}
 
-    public void setCurrentVMGSpeed(double currentVMGSpeed) {
-        this.currentVMGSpeed = currentVMGSpeed;
-    }
-
 
     /**
      * Calculates boat's VMG
