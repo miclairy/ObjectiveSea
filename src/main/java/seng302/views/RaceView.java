@@ -2,6 +2,8 @@ package seng302.views;
 
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import javafx.scene.transform.Rotate;
+import seng302.models.*;
 import seng302.utilities.DisplayUtils;
 import seng302.models.CanvasCoordinate;
 import seng302.models.Coordinate;
@@ -102,6 +104,75 @@ public class RaceView {
                 convertedEnd2.getX(), convertedEnd2.getY()
         );
         line.setStroke(Color.web("#70aaa2"));
+        return line;
+    }
+
+    /**
+     * Creates a vector extending from the boat with length proportional to it's speed over ground
+     * @param boat the boat the SOG vector is to be drawn for
+     * @param lengthOfVector the length of the vector (in terms of Nautical Miles)
+     * @param color the color of the boat
+     * @return a polyline extending from the boat
+     */
+    public Polyline createSOGVector(Boat boat, double lengthOfVector, Color color){
+        Coordinate boatPosition = boat.getCurrentPosition();
+        double boatBearing = boat.getHeading();
+        Coordinate end2 = boatPosition.coordAt(lengthOfVector, boatBearing);
+        Polyline vector = drawVectorArrow(boatPosition, end2, boatBearing, color);
+        return vector;
+    }
+
+    /**
+     * Creates a vector extending from the boat with length proportional to it's velocity made good
+     * @param boat the boat the VMG vector is to be drawn for
+     * @param lengthOfVector the length of the vector (in terms of Nautical Miles)
+     * @param course the course the boat is on
+     * @param color the color of the boat
+     * @return a polyline extending from the boat
+     */
+    public Polyline createVMGVector(Boat boat, double lengthOfVector, Course course, Color color){
+        Coordinate boatPosition = boat.getCurrentPosition();
+        int nextMark = boat.getLeg();
+        List<CompoundMark> courseOrder = course.getCourseOrder();
+        Coordinate markLocation;
+        double lineBearing;
+        if(nextMark < courseOrder.size()){
+            markLocation = courseOrder.get(nextMark).getPosition();
+            lineBearing = boatPosition.headingToCoordinate(markLocation);
+        } else {
+            lineBearing = boat.getHeading();
+            lengthOfVector = 0;
+        }
+        Coordinate end2 = boatPosition.coordAt(lengthOfVector, lineBearing);
+        Polyline vector = drawVectorArrow(boatPosition, end2, lineBearing, color);
+        return vector;
+    }
+
+    /**
+     * Draws a vector arrow based from fromCoord to toCoord with the given color
+     * @param fromCoord The coordinate of the base of the arrow
+     * @param toCoord The coordinate of the top (pointy-end) of the arrow
+     * @param bearing The bearing from the base to the top of the arrow
+     * @param color The color of the arrow
+     * @return a Polyline generated starting from fromCoord to toCoord in terms of CanvasCoordinates on screen.
+     */
+    private Polyline drawVectorArrow(Coordinate fromCoord, Coordinate toCoord, double bearing, Color color){
+        double arrowHeadLength = 5;
+        CanvasCoordinate arrowEnd1 = DisplayUtils.convertFromLatLon(fromCoord);
+        CanvasCoordinate arrowEnd2 = DisplayUtils.convertFromLatLon(toCoord);
+        double arrowLength = CanvasCoordinate.distance(arrowEnd1, arrowEnd2);
+
+        Polyline line = new Polyline(
+                0, 0,
+                0, -arrowLength,
+                -arrowHeadLength, -arrowLength+arrowHeadLength,
+                0, -arrowLength,
+                arrowHeadLength, -arrowLength+arrowHeadLength
+        );
+        line.getTransforms().add(new Rotate(bearing));
+        line.setLayoutX(arrowEnd1.getX());
+        line.setLayoutY(arrowEnd1.getY());
+        line.setStroke(color);
         return line;
     }
 
