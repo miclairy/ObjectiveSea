@@ -123,9 +123,33 @@ public class BoatDisplay {
             return "";
     }
 
-    public void getStartTiming(){
-        //implement method to figure out if boat is early, late or ontime
-        boat.setTimeStatus(StartTimingStatus.LATE); //example
+    public void getStartTiming(Course course){
+        Coordinate position = boat.getCurrentPosition();
+        Coordinate startLine1 = course.getCourseOrder().get(0).getMark1().getPosition(); //position of startline
+        Coordinate startLine2 = course.getCourseOrder().get(0).getMark2().getPosition(); //position of startline
+        Boolean toLeftOfStart = pointOnLeftOfLine(position.getLat(),position.getLon(),startLine1.getLat(),startLine1.getLon(),startLine2.getLat(),startLine2.getLon()); //if left of startline e.g heading towards the line
+        double timeToStart = 0;
+        if(toLeftOfStart){
+            double distanceToStart = position.greaterCircleDistance(startLine1); // maybe need to compute a midpoint? to be more accurate
+            timeToStart = distanceToStart/boat.getSpeed() * 60 * 60; //converted to seconds (nautical miles/knots = hours)
+        }
+        if(timeToStart > 5.0){
+            boat.setTimeStatus(StartTimingStatus.LATE);
+        } if(timeToStart < 0.0){
+            boat.setTimeStatus(StartTimingStatus.EARLY);
+        } else{
+            boat.setTimeStatus(StartTimingStatus.ONTIME);
+        }
+    }
+
+    //doesn't yet work for the negative values
+    public Boolean pointOnLeftOfLine(double pointLat, double pointLong, double mark1Lat, double mark1Long, double mark2Lat, double mark2Long){
+        double determinant = (pointLong - mark1Long)*(mark2Lat - mark1Lat) - (pointLat - mark1Lat)*(mark2Long - mark1Long);
+        if(determinant > 0){
+            return true;
+        } else {
+            return false;
+        }
     }
 
 
