@@ -403,7 +403,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     }
                     if (scoreBoardController.isLayLinesSelected()){
                         if (selectedBoats.contains(displayBoat)) {
-                            drawLayLine(displayBoat);
+                            //commented out for initial merge to avoid drawing weird laylines
+                            //drawLayLine(displayBoat);
                         }
                     }
                     drawBoatAnnotation(displayBoat, annotations);
@@ -415,7 +416,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     annotations.add(displayBoat.getTimeToNextMark(displayBoat.getBoat().getTimeAtNextMark(), currTime));
                     drawBoatAnnotation(displayBoat, annotations);
                     if (selectedBoats.contains(displayBoat)) {
-                        drawLayLine(displayBoat);
+                        //commented out for initial merge to avoid drawing weird laylines
+                        //drawLayLine(displayBoat);
                     }
                 }
             }
