@@ -593,9 +593,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
             Path path = boatDisplay.getPath();
             Boat boat = boatDisplay.getBoat();
             if(race.getRaceStatus() == STARTED || race.getRaceStatus() == TERMINATED) {
-                if (boat.getPathCoords().size() > 0) {
-                    CanvasCoordinate pathStart = DisplayUtils.convertFromLatLon(boat.getPathCoords().get(0));
+                if (!boat.getPathCoords().isEmpty() && path != null) {
                     path.getElements().clear();
+                    CanvasCoordinate pathStart = DisplayUtils.convertFromLatLon(boat.getPathCoords().get(0));
                     path.getElements().add(new MoveTo(pathStart.getX(), pathStart.getY()));
                     for (Coordinate coord : boat.getPathCoords()) {
                         CanvasCoordinate currPoint = DisplayUtils.convertFromLatLon(coord);
