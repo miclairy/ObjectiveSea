@@ -82,7 +82,7 @@ public class Controller implements Initializable, Observer {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        root.getStylesheets().addAll(BOAT_CSS, COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS);
+        canvasAnchor.getStylesheets().addAll(BOAT_CSS, COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS);
         canvasWidth = canvas.getWidth();
         canvasHeight = canvas.getHeight();
         anchorWidth = canvasAnchor.getWidth();
