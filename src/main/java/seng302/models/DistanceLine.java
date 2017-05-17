@@ -1,5 +1,6 @@
 package seng302.models;
 
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import seng302.utilities.DisplayUtils;
@@ -20,6 +21,9 @@ public class DistanceLine {
     private CompoundMark mark;
     private Set<Line> lines;
     private double distanceBetweenBoats;
+    private VBox annotation = new VBox();
+    private Coordinate closestPoint1;
+    private Coordinate closestPoint2;
 
     public DistanceLine(){
         lines = new HashSet<>();
@@ -75,8 +79,8 @@ public class DistanceLine {
         Coordinate boatMidPoint = DisplayUtils.midPointFromTwoCoords(firstBoat.getCurrentPosition(), secondBoat.getCurrentPosition());
 
         InfiniteLine infiniteLine = new InfiniteLine(target, boatMidPoint);
-        Coordinate closestPoint1 = infiniteLine.closestPoint(firstBoat.getCurrentPosition());
-        Coordinate closestPoint2 = infiniteLine.closestPoint(secondBoat.getCurrentPosition());
+        closestPoint1 = infiniteLine.closestPoint(firstBoat.getCurrentPosition());
+        closestPoint2 = infiniteLine.closestPoint(secondBoat.getCurrentPosition());
         double dist1 = target.greaterCircleDistance(closestPoint1);
         double dist2 = target.greaterCircleDistance(closestPoint2);
         distanceBetweenBoats = Math.abs(dist2 - dist1);
@@ -105,10 +109,27 @@ public class DistanceLine {
     }
 
     public boolean boatsFinished(){
-        return firstBoat.isFinished() == secondBoat.isFinished();
+        if (firstBoat.isFinished() && secondBoat.isFinished()){
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public double getDistanceBetweenBoats(){
         return distanceBetweenBoats;
+    }
+
+    public VBox getAnnotation() {
+        return annotation;
+    }
+
+    public void setAnnotation(VBox annotation) {
+        this.annotation = annotation;
+    }
+
+    public CanvasCoordinate halfwayBetweenBoatsCoord(){
+        CanvasCoordinate halfway = DisplayUtils.convertFromLatLon(DisplayUtils.midPointFromTwoCoords(closestPoint1, closestPoint2));
+        return halfway;
     }
 }

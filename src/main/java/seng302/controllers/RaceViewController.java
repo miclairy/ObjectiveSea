@@ -538,16 +538,30 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void redrawDistanceLines(){
         for(Line line : distanceLine.getLines()){
             root.getChildren().remove(line);
+            root.getChildren().remove(distanceLine.getAnnotation());
         }
-        if (distanceLine.sameLeg()) {
-            System.out.println((int) TimeUtils.convertNauticalMilesToMetres(distanceLine.getDistanceBetweenBoats()));
+        if (distanceLine.sameLeg() && distanceLine.boatsFinished()) {
             updateDistanceMark();
             distanceLine.reCalcLine();
             for (Line line : distanceLine.getLines()) {
                 root.getChildren().add(line);
                 line.toBack();
             }
+            updateDistanceLineAnnotation();
+            root.getChildren().add(distanceLine.getAnnotation());
         }
+    }
+
+    private void updateDistanceLineAnnotation(){
+        VBox distanceLineAnnotation = distanceLine.getAnnotation();
+        distanceLineAnnotation.getChildren().clear();
+        Label distanceLineLabel = new Label();
+        distanceLineLabel.setId("distanceLine");
+        distanceLineLabel.setText(String.valueOf((int) TimeUtils.convertNauticalMilesToMetres(distanceLine.getDistanceBetweenBoats())) + " meters");
+        distanceLineAnnotation.getChildren().add(distanceLineLabel);
+        distanceLineAnnotation.layoutXProperty().set(distanceLine.halfwayBetweenBoatsCoord().getX());
+        distanceLineAnnotation.layoutYProperty().set(distanceLine.halfwayBetweenBoatsCoord().getY());
+        distanceLine.setAnnotation(distanceLineAnnotation);
     }
 
     /**
@@ -610,7 +624,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void updateDistanceMark(){
         Boat boat1 = distanceLine.getFirstBoat();
         Boat boat2 = distanceLine.getSecondBoat();
-        int index = 0;
+        int index = -1;
         ArrayList<CompoundMark> raceOrder = race.getCourse().getCourseOrder();
         if (boat1 != null && boat2 != null) {
             if (boat1.getLeg() == boat2.getLeg()) {
@@ -621,11 +635,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
         } else {
             if (boat1 != null){
                 index = boat1.getLeg();
-            } else {
+            } else if (boat2 != null) {
                 index = boat2.getLeg();
             }
         }
-        if (index < raceOrder.size()) {
+        if (index < raceOrder.size() && index >= 0) {
             CompoundMark nextMark = raceOrder.get(index);
             distanceLine.setMark(nextMark);
         }

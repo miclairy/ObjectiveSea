@@ -131,8 +131,6 @@ public class ScoreBoardController {
                 secondBoat = boat;
             }
         }
-        boatDropDown1.setValue(null);
-        boatDropDown2.setValue(null);
         raceViewController.updateDistanceLine(firstBoat, secondBoat);
     }
 
