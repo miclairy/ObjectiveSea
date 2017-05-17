@@ -31,6 +31,7 @@ public class ScoreBoardController {
     @FXML private CheckBox chkPassMarkTime;
     @FXML private CheckBox chkEst;
     @FXML public Button btnTrack;
+    @FXML private CheckBox chkVectors;
     @FXML private LineChart chtSparkLine;
     @FXML private NumberAxis xAxis ;
     @FXML private NumberAxis yAxis ;
@@ -116,6 +117,10 @@ public class ScoreBoardController {
     public boolean isEstSelected(){return chkEst.isSelected();}
 
     public boolean isTimePassedSelected(){return chkPassMarkTime.isSelected();}
+
+    public boolean areVectorsSelected() {
+        return chkVectors.isSelected();
+    }
 
     public void addBoatToSparkLine(Series boatSeries){
         if(!chtSparkLine.getData().contains(boatSeries)){

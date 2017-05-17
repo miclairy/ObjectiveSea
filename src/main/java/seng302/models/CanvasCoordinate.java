@@ -26,4 +26,8 @@ public class CanvasCoordinate {
     public void setY(double y) {
         this.y = y;
     }
+
+    public static double distance(CanvasCoordinate a, CanvasCoordinate b){
+        return Math.hypot(a.getX()-b.getX(), a.getY()-b.getY());
+    }
 }

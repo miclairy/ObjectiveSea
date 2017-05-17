@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
@@ -46,6 +47,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         NO_ANNOTATION, IMPORTANT_ANNOTATIONS, ALL_ANNOTATIONS
     }
     private final double WAKE_SCALE_FACTOR = 17;
+    private final double SOG_SCALE_FACTOR = 200.0;
 
     private final double ANNOTATION_OFFSET_X = 10;
     private final double ANNOTATION_OFFSET_Y = 15;
@@ -108,6 +110,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
             moveBoat(boat, point);
             moveWake(boat, point);
+            moveSOGVector(boat);
+            moveVMGVector(boat);
             if(race.getRaceStatus() == STARTED) {
                 addToBoatPath(boat, point);
             }
@@ -163,6 +167,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
         root.getChildren().add(boatImage);
         boat.setIcon(boatImage);
         drawBoatWake(boat);
+        drawSOGVector(boat);
+        drawVMGVector(boat);
     }
 
     public void initBoatPaths(){
@@ -368,6 +374,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 if (oldAnnotation != null) {
                     root.getChildren().remove(oldAnnotation);
                     root.getChildren().remove(displayBoat.getAnnotationLine());
+                    displayBoat.hideVectors();
                 }
                 if (level == AnnotationLevel.IMPORTANT_ANNOTATIONS) {
                     annotations.clear();
@@ -383,6 +390,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     if(scoreBoardController.isEstSelected()){
                         annotations.add(displayBoat.getTimeToNextMark(displayBoat.getBoat().getTimeAtNextMark(), currTime));
                     }
+                    if(scoreBoardController.areVectorsSelected()){
+                        displayBoat.showVectors();
+                    }
                     drawBoatAnnotation(displayBoat, annotations);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
                     annotations.clear();
@@ -390,6 +400,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     annotations.add(displayBoat.getSpeed());
                     annotations.add(displayBoat.getTimeSinceLastMark(currTime));
                     annotations.add(displayBoat.getTimeToNextMark(displayBoat.getBoat().getTimeAtNextMark(), currTime));
+                    displayBoat.showVectors();
                     drawBoatAnnotation(displayBoat, annotations);
                 }
             }
@@ -414,6 +425,66 @@ public class RaceViewController extends AnimationTimer implements Observer {
         Polyline wake = raceView.createBoatWake();
         root.getChildren().add(wake);
         boat.setWake(wake);
+    }
+
+    /**
+     * Draws Initial VMGVector of boat
+     * @param boat to attach the vector to
+     */
+    private void drawVMGVector(BoatDisplay boat){
+        Color color = boat.getColor();
+        Course course = race.getCourse();
+        double VMG = boat.getBoat().calculateVMG(course);
+        double scale = VMG / SOG_SCALE_FACTOR;
+        Polyline line = raceView.createVMGVector(boat.getBoat(), scale, course, color);
+        root.getChildren().add(line);
+        boat.setVMGVector(line);
+    }
+
+    /**
+     * Moves the VMGVector of a boat to the correct position
+     * @param boat the boatDisplay who's VMGVector should move
+     */
+    private void moveVMGVector(BoatDisplay boat){
+        Color color = boat.getColor();
+        Course course = race.getCourse();
+        root.getChildren().remove(boat.getVMGVector());
+        double VMG = boat.getBoat().calculateVMG(course);
+        double scale = VMG / SOG_SCALE_FACTOR;
+        Polyline oldLine = boat.getVMGVector();
+        Polyline newLine = raceView.createVMGVector(boat.getBoat(), scale, course, color);
+        newLine.setOpacity(oldLine.getOpacity());
+        root.getChildren().add(newLine);
+        boat.setVMGVector(newLine);
+        newLine.toBack();
+    }
+
+    /**
+     * Draws Initial SOGVector of boat
+     * @param boat to attach the vector to
+     */
+    private void drawSOGVector(BoatDisplay boat){
+        double scale = boat.getBoat().getSpeed() / SOG_SCALE_FACTOR;
+        Color color = boat.getColor();
+        Polyline line = raceView.createSOGVector(boat.getBoat(), scale, color);
+        root.getChildren().add(line);
+        boat.setSOGVector(line);
+    }
+
+    /**
+     * Moves the SOGVector of a boat to the correct position
+     * @param boat the boatDisplay who's SOGVector should move
+     */
+    private void moveSOGVector(BoatDisplay boat){
+        double scale = boat.getBoat().getSpeed() / SOG_SCALE_FACTOR;
+        Color color = boat.getColor();
+        root.getChildren().remove(boat.getSOGVector());
+        Polyline oldLine = boat.getSOGVector();
+        Polyline newLine = raceView.createSOGVector(boat.getBoat(), scale, color);
+        newLine.setOpacity(oldLine.getOpacity());
+        root.getChildren().add(newLine);
+        boat.setSOGVector(newLine);
+        newLine.toBack();
     }
 
     /**
@@ -451,6 +522,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         wake.setTranslateX(point.getX());
         wake.getTransforms().add(new Rotate(boat.getBoat().getHeading(), 0, 0));
     }
+
 
     /**
      * Handles redrawing of the course at the correct scale and position after a window resize
