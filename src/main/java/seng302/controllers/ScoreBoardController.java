@@ -49,7 +49,6 @@ public class ScoreBoardController {
     @FXML private LineChart chtSparkLine;
     @FXML private NumberAxis xAxis ;
     @FXML private NumberAxis yAxis ;
-    private Race race;
 
 
 
