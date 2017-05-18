@@ -41,10 +41,9 @@ public class MockStreamTest {
         runner.start();
         mockStream = new MockStream(2829 + i, mockRaceRunner);
         mockRaceRunner.setScaleFactor(200);
-        mockRaceRunner.getRace().getCourse().setWindDirection(135);
         upStream = new Thread(mockStream);
         upStream.start();
-        Thread.sleep(1); //because otherwise connection refused errors
+        Thread.sleep(10); //because otherwise connection refused errors
         connectionSocket = new Socket("localhost", 2829 + i);
         i++;
     }
@@ -173,9 +172,6 @@ public class MockStreamTest {
             assertEquals(101, body[7]);
             assertEquals(0, body[24]);
             assertEquals(0, body[30]);
-            assertEquals(0, body[28]);
-            assertEquals(4551, DataStreamReader.byteArrayRangeToLong(body, TRUE_WIND_DIRECTION.getStartIndex(), TRUE_WIND_DIRECTION.getEndIndex()));
-            assertEquals(2730, DataStreamReader.byteArrayRangeToLong(body, TRUE_WIND_ANGLE.getStartIndex(), TRUE_WIND_ANGLE.getEndIndex()));
         } catch (IOException e) {
             e.printStackTrace();
         }
