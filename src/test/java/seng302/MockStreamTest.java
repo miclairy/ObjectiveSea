@@ -4,12 +4,11 @@ package seng302;
 import org.junit.*;
 import org.mockito.Mockito;
 import seng302.controllers.MockRaceRunner;
-import seng302.data.AC35StreamMessage;
-import seng302.data.BoatStatus;
-import seng302.data.MockStream;
-import seng302.data.RaceStatus;
+import seng302.data.*;
 import seng302.models.*;
+import seng302.utilities.PolarReader;
 
+import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
@@ -23,6 +22,8 @@ import java.util.List;
 import static junit.framework.TestCase.assertEquals;
 import static org.mockito.Mockito.*;
 import static seng302.data.AC35StreamField.SPEED_OVER_GROUND;
+import static seng302.data.AC35StreamField.TRUE_WIND_ANGLE;
+import static seng302.data.AC35StreamField.TRUE_WIND_DIRECTION;
 
 
 public class MockStreamTest {
@@ -40,6 +41,7 @@ public class MockStreamTest {
         runner.start();
         mockStream = new MockStream(2829 + i, mockRaceRunner);
         mockRaceRunner.setScaleFactor(200);
+        mockRaceRunner.getRace().getCourse().setWindDirection(135);
         upStream = new Thread(mockStream);
         upStream.start();
         Thread.sleep(1); //because otherwise connection refused errors
@@ -171,6 +173,9 @@ public class MockStreamTest {
             assertEquals(101, body[7]);
             assertEquals(0, body[24]);
             assertEquals(0, body[30]);
+            assertEquals(0, body[28]);
+            assertEquals(4551, DataStreamReader.byteArrayRangeToLong(body, TRUE_WIND_DIRECTION.getStartIndex(), TRUE_WIND_DIRECTION.getEndIndex()));
+            assertEquals(2730, DataStreamReader.byteArrayRangeToLong(body, TRUE_WIND_ANGLE.getStartIndex(), TRUE_WIND_ANGLE.getEndIndex()));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -102,6 +102,9 @@ public class RaceVisionXMLParser {
                                 Element corner = (Element) legs.item(k);
                                 Integer seqNumber = Integer.parseInt(corner.getAttribute(XMLTags.Course.SEQ_ID));
                                 Integer compoundMarkID = Integer.parseInt(corner.getAttribute(XMLTags.Course.COMPOUND_MARK_ID));
+                                String rounding = corner.getAttribute(XMLTags.Course.ROUNDING);
+                                CompoundMark mark = course.getCompoundMarkByID(compoundMarkID);
+                                mark.setRounding(rounding);
                                 markOrder.put(seqNumber, compoundMarkID);
                             }
                             for(Integer seqNumber : markOrder.keySet()){
