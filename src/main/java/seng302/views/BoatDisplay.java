@@ -34,6 +34,8 @@ public class BoatDisplay {
     private VBox annotation;
     private Path path;
     private Line annotationLine;
+    private Polyline SOGVector;
+    private Polyline VMGVector;
     private final double FADEDBOAT = 0.3;
 
     private Laylines laylines;
@@ -60,6 +62,18 @@ public class BoatDisplay {
     public Polyline getWake() {
         return wake;
     }
+
+    public Polyline getSOGVector() {
+        return SOGVector;
+    }
+
+    public void setSOGVector(Polyline SOGVector) {
+        this.SOGVector = SOGVector;
+    }
+
+    public Polyline getVMGVector() {return VMGVector;}
+
+    public void setVMGVector(Polyline VMGVector) {this.VMGVector = VMGVector;}
 
     public void setIcon(Shape icon) {
         this.icon = icon;
@@ -119,6 +133,25 @@ public class BoatDisplay {
         return timeTillMark;
     }
 
+    public void setLaylines(Line layline1, Line layline2) {
+        this.layline1 = layline1;
+        this.layline2 = layline2;
+    }
+
+    public void setBoatLaylines(Pair<Line, Line> boatLayLines) {
+        this.boatLayLines = boatLayLines;
+    }
+
+    public void showVectors() {
+        SOGVector.setVisible(true);
+        VMGVector.setVisible(true);
+    }
+
+    public void hideVectors(){
+        SOGVector.setVisible(false);
+        VMGVector.setVisible(false);
+    }
+
     public void unFocus(){
         fadeNodeTransition(icon, FADEDBOAT);
         fadeNodeTransition(wake, FADEDBOAT);
@@ -137,6 +170,8 @@ public class BoatDisplay {
             fadeNodeTransition(path, 1.0);
         }
         annotationLine.setOpacity(1);
+        SOGVector.setOpacity(1);
+        VMGVector.setOpacity(1);
     }
 
     /**
