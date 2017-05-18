@@ -1,5 +1,6 @@
 package seng302.models;
 
+import javax.swing.plaf.ComponentUI;
 import java.util.*;
 
 /**
@@ -15,6 +16,8 @@ public class Course extends Observable {
     private Map<Integer, CompoundMark> compoundMarks;
     private Map<Integer, Mark> allMarks;
     private double windDirection;
+    private double trueWindAngle;
+    private double trueWindDirection;
     private RaceLine startLine, finishLine;
 
 
@@ -136,9 +139,11 @@ public class Course extends Observable {
         }
     }
 
-    public void updateCourseWindValues(int raceCourseWindDirection) {
-        windDirection = raceCourseWindDirection;
+    public void updateTrueWindDirection(double direction) {
+        trueWindDirection = direction;
     }
+
+    public double getTrueWindDirection() { return trueWindDirection; }
 
     public ArrayList<CompoundMark> getCourseOrder(){
         return this.courseOrder;
@@ -216,5 +221,9 @@ public class Course extends Observable {
         if(compoundMarks.containsKey(mark.getCompoundMarkID())){
             compoundMarks.remove(mark.getCompoundMarkID());
         }
+    }
+
+    public CompoundMark getCompoundMarkByID(int id) {
+        return compoundMarks.get(id);
     }
 }

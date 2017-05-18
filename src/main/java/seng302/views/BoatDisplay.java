@@ -1,5 +1,6 @@
 package seng302.views;
 
+import javafx.scene.Group;
 import javafx.animation.ParallelTransition;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.VBox;
@@ -8,6 +9,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
+import javafx.util.Pair;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.Node;
@@ -35,8 +37,12 @@ public class BoatDisplay {
     private Polyline SOGVector;
     private Polyline VMGVector;
     private final double FADEDBOAT = 0.3;
+    private boolean isShowLaylines = true;
 
     private Color color;
+    private Line layline1;
+    private Line layline2;
+    private Pair<Line, Line> boatLayLines;
 
     public BoatDisplay(Boat boat) {
         this.boat = boat;
@@ -87,8 +93,6 @@ public class BoatDisplay {
 
     public Path getPath() {return path;}
 
-    public double getCurrentVMGSpeed() {return boat.getCurrentVMGSpeed();}
-
     public String getSpeed(){
         return String.format("%.1fkn", boat.getSpeed());
     }
@@ -129,6 +133,15 @@ public class BoatDisplay {
         return timeTillMark;
     }
 
+    public void setLaylines(Line layline1, Line layline2) {
+        this.layline1 = layline1;
+        this.layline2 = layline2;
+    }
+
+    public void setBoatLaylines(Pair<Line, Line> boatLayLines) {
+        this.boatLayLines = boatLayLines;
+    }
+
     public void showVectors() {
         SOGVector.setVisible(true);
         VMGVector.setVisible(true);
@@ -159,6 +172,27 @@ public class BoatDisplay {
         annotationLine.setOpacity(1);
         SOGVector.setOpacity(1);
         VMGVector.setOpacity(1);
+    }
+
+    public void removeLaylines(Group root) {
+        if (layline1 != null && layline2 != null) {
+            root.getChildren().remove(layline1);
+            root.getChildren().remove(layline2);
+        }
+        layline1= null;
+        layline2= null;
+    }
+
+    public boolean isShowLaylines() {
+        return isShowLaylines;
+    }
+
+    public void removeBoatLaylines(Group root) {
+        if (boatLayLines != null) {
+            root.getChildren().remove(boatLayLines.getKey());
+            root.getChildren().remove(boatLayLines.getValue());
+        }
+        boatLayLines = null;
     }
 
     /**
