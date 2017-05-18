@@ -132,36 +132,79 @@ public class BoatDisplay {
 
     public String getStartTimingAnnotation(){
             if(boat.getTimeStatus().equals(StartTimingStatus.EARLY)){
-                return "-";
+                return "- : Early";
             } else if(boat.getTimeStatus().equals(StartTimingStatus.LATE)){
-                return "+";
+                return "+ : Late";
             }
             return "";
     }
 
+    /**
+     * Set's the boats start timing status to Late if the boat is going to be more than 5sec late, early if it'll cross the start line early or nothing if neither
+     * @param course the course the boat is on
+     */
     public void getStartTiming(Course course){
         Coordinate position = boat.getCurrentPosition();
+        CompoundMark startLine = course.getStartLine();
         Coordinate startLine1 = course.getCourseOrder().get(0).getMark1().getPosition(); //position of startline
         Coordinate startLine2 = course.getCourseOrder().get(0).getMark2().getPosition(); //position of startline
-        Boolean toLeftOfStart = pointOnLeftOfLine(position.getLat(),position.getLon(),startLine1.getLat(),startLine1.getLon(),startLine2.getLat(),startLine2.getLon()); //if left of startline e.g heading towards the line
+        Coordinate mark = course.getCourseOrder().get(0).getPosition(); //Position of first mark to determine which way the course goes
+        Boolean toLeftOfStart = boatBeforeStartline(position.getLat(),position.getLon(),startLine1.getLat(),startLine1.getLon(),startLine2.getLat(),startLine2.getLon(),mark.getLat(),mark.getLon()); //checks if boat on correct side of the line
         double timeToStart = 0;
-        if(toLeftOfStart){
-            double distanceToStart = position.greaterCircleDistance(startLine1); // maybe need to compute a midpoint? to be more accurate
+        double boatsHeading = boat.getHeading();
+        double headingOfStartLine = startLine1.headingToCoordinate(startLine2);
+        Boolean boatHeadingToStart = true; //need function of angles from laylines
+        Coordinate midPointOfStart = calculateMidPoint(startLine);
+        if(toLeftOfStart && boatHeadingToStart){
+            double distanceToStart = position.greaterCircleDistance(midPointOfStart); // need to use Ray's formula
             timeToStart = distanceToStart/boat.getSpeed() * 60 * 60; //converted to seconds (nautical miles/knots = hours)
+        } else if(!toLeftOfStart && !boatHeadingToStart){ // If boat is on the wrong side of the line but heading to the mark (from wrong direction), this checks if it is possible for the boat to even get there
+            double distanceToStart = position.greaterCircleDistance(midPointOfStart);  // need to use Ray's formula
+            timeToStart = distanceToStart/boat.getSpeed() * 60 * 60; //converted to seconds (nautical miles/knots = hours)
+            if(timeToStart < 5.0){
+                timeToStart = 0.0;
+            }
         }
         if(timeToStart > 5.0){
             boat.setTimeStatus(StartTimingStatus.LATE);
         } if(timeToStart < 0.0){
             boat.setTimeStatus(StartTimingStatus.EARLY);
-        } else{
+        }  else{
             boat.setTimeStatus(StartTimingStatus.ONTIME);
         }
     }
 
-    //doesn't yet work for the negative values
-    public Boolean pointOnLeftOfLine(double pointLat, double pointLong, double mark1Lat, double mark1Long, double mark2Lat, double mark2Long){
-        double determinant = (pointLong - mark1Long)*(mark2Lat - mark1Lat) - (pointLat - mark1Lat)*(mark2Long - mark1Long);
-        if(determinant > 0){
+    /**
+     * Calculates the midpoint between two marks
+     * @param mark first mark
+     * @return new coordinate at half way between the two marks
+     */
+    public Coordinate calculateMidPoint(CompoundMark mark){
+        Coordinate mark1Coord = mark.getMark1().getPosition();
+        Coordinate mark2Coord = mark.getMark2().getPosition();
+        Double halfLat = (mark1Coord.getLat() + mark2Coord.getLat()) / 2;
+        Double halfLong = (mark1Coord.getLon() + mark2Coord.getLon()) / 2;
+        return new Coordinate(halfLat,halfLong);
+    }
+
+    /**
+     * Function to determine if a boat is on the correct side of the start line (e.g if the boat is on the side that the course isn't on)
+     * @param BoatLat the latitude of the boat
+     * @param BoatLong the longitude of the boat
+     * @param startMark1Lat the latitude of the first start mark
+     * @param startMark1Long the longitude of the first start mark
+     * @param startMark2Lat the latitude of the first second mark
+     * @param startMark2Long the longitude of the first second mark
+     * @param markLat the latitude of the first mark
+     * @param markLong the longitude of the first mark
+     * @return true if the boat is on the correct side of the start line
+     */
+    public Boolean boatBeforeStartline(double BoatLat, double BoatLong, double startMark1Lat, double startMark1Long, double startMark2Lat, double startMark2Long, double markLat, double markLong){
+        double determinantOfMark = (markLong - startMark1Long)*(startMark2Lat - startMark1Lat) - (markLat - startMark1Lat)*(startMark2Long - startMark1Long);
+        double determinantOfBoat = (BoatLong - startMark1Long)*(startMark2Lat - startMark1Lat) - (BoatLat - startMark1Lat)*(startMark2Long - startMark1Long);
+        if(determinantOfBoat > 0 && determinantOfMark < 0){
+            return true;
+        } else if(determinantOfBoat < 0 && determinantOfMark > 0){
             return true;
         } else {
             return false;
