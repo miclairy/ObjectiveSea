@@ -240,9 +240,7 @@ public class Controller implements Initializable, Observer {
      */
     public void setWindDirection(){
         double windDirection = (float)race.getCourse().getWindDirection();
-        double scaleFactor = ((double)360/(double)159999);
-        double rotate = (windDirection * scaleFactor) + raceViewController.getRotationOffset();
-        windDirectionImage.setRotate(rotate);
+        windDirectionImage.setRotate(windDirection + raceViewController.getRotationOffset());
     }
 
     /**

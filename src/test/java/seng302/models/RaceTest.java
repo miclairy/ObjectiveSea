@@ -3,7 +3,6 @@ package seng302.models;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -86,47 +85,6 @@ public class RaceTest {
     }
 
     @Test
-    public void checkFinishPlacings(){
-        Course course = new Course();
-
-        Mark startLine1 = new Mark(0, "Start Line 1", new Coordinate(51.55, 30.11));
-        Mark startLine2 = new Mark(1, "Start Line 2", new Coordinate(51.60, 30.16));
-        RaceLine start = new RaceLine(1, "Start Line", startLine1, startLine2);
-
-        start.setMarkAsStart();
-        course.setStartLine(start);
-
-        Mark finishLine1 = new Mark(2, "Finish Line 1", new Coordinate(51.56, 30.12));
-        Mark finishLine2 = new Mark(3, "Finish Line 2", new Coordinate(51.61, 30.18));
-        RaceLine finish = new RaceLine(2, "Finish", finishLine1, finishLine2);
-        finish.setMarkAsFinish();
-
-        course.addNewCompoundMark(start);
-        course.addNewCompoundMark(finish);
-
-        course.addMarkInOrder(1);
-        course.addMarkInOrder(2);
-        ArrayList<Boat> boats = new ArrayList<>();
-
-        Boat testBoat1 = new Boat(0, "Boat 1","1", 10);
-        Boat testBoat2 = new Boat(1, "Boat 2", "2",15);
-        testBoat1.setLastRoundedMarkIndex(0);
-        testBoat2.setLastRoundedMarkIndex(0);
-
-        boats.add(testBoat1);
-        boats.add(testBoat2);
-
-        Race race = new Race("Test Race", course, boats);
-
-        testBoat1.updateLocation(2, course);
-        testBoat2.updateLocation(2, course);
-        List<Boat> places = new ArrayList<>();
-        places.add(testBoat1);
-        places.add(testBoat2);
-        assertEquals(places, race.getRaceOrder());
-    }
-
-    @Test
     public void totalRaceTimeTest(){
         defaultRace.setTotalRaceTime();
         Assert.assertEquals(30542, Math.round(defaultRace.getTotalRaceTime()), 1);
@@ -134,7 +92,7 @@ public class RaceTest {
 
     @Test
     public void updateBoatTest(){
-        defaultRace.updateBoat(1, 2.5, 3.2, 178.1, 28.1);
+        defaultRace.updateBoat(1, 2.5, 3.2, 178.1, 28.1, 97);
 
         Boat boat = defaultRace.getBoatById(1);
 
@@ -142,6 +100,7 @@ public class RaceTest {
         Assert.assertEquals(3.2, boat.getCurrentLon(), DELTA);
         Assert.assertEquals(178.1, boat.getHeading(), DELTA);
         Assert.assertEquals(28.1, boat.getSpeed(), DELTA);
+        Assert.assertEquals(97, boat.getTWAofBoat(), DELTA);
     }
 
     @Test
