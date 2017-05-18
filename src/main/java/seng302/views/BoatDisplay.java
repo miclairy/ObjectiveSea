@@ -14,6 +14,7 @@ import javafx.scene.Node;
 import javafx.animation.FadeTransition;
 import javafx.util.Duration;
 import seng302.models.*;
+import seng302.utilities.DisplayUtils;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -21,6 +22,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.ZoneOffset;
 import java.util.Observable;
 import java.util.Observer;
+
+import static seng302.utilities.DisplayUtils.fadeNodeTransition;
 
 
 /**
@@ -96,7 +99,8 @@ public class BoatDisplay implements Observer {
 
     public void setPath(Path path) {this.path = path;}
 
-    public Path getPath() {return path;}
+    public Path getPath() {return
+            path;}
 
     public String getSpeed(){
         return String.format("%.1fkn", boat.getSpeed());
@@ -198,20 +202,6 @@ public class BoatDisplay implements Observer {
             root.getChildren().remove(boatLayLines.getValue());
         }
         boatLayLines = null;
-    }
-
-    /**
-     * adds a fade transition to a node, so that a node fades over a set period of time
-     * @param node a node in the scene that will be faded
-     * @param endOpacity a double that represents the nodes opacity at the end of the fade
-     */
-    private void fadeNodeTransition(Node node, double endOpacity){
-        FadeTransition fadeTransition = new FadeTransition();
-        fadeTransition.setNode(node);
-        fadeTransition.setDuration(new Duration(500));
-        fadeTransition.setFromValue(node.getOpacity());
-        fadeTransition.setToValue(endOpacity);
-        fadeTransition.play();
     }
 
     public Series getSeries() {return series;}
