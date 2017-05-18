@@ -7,6 +7,13 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import java.net.*?>
+<?import javafx.scene.chart.*?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import java.net.URL?>
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
@@ -128,6 +135,7 @@
                                  <RowConstraints maxHeight="64.0" minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
                                  <RowConstraints maxHeight="64.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
                               <RowConstraints maxHeight="64.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="64.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
                               </rowConstraints>
                               <children>
                                  <Label fx:id="lblSettings" text="Important Annotation Settings" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="TOP">
@@ -147,6 +155,11 @@
                                     </GridPane.margin>
                                  </CheckBox>
                                  <CheckBox id="chkAnno" fx:id="chkEst" mnemonicParsing="false" text="Estimated time to mark" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                              <CheckBox fx:id="chkLaylines" mnemonicParsing="false" text="Lay Lines" textFill="WHITE" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+                                 <GridPane.margin>
+                                    <Insets left="30.0" />
+                                 </GridPane.margin>
+                              </CheckBox>
                               <CheckBox id="chkAnno" fx:id="chkVectors" mnemonicParsing="false" text="Vectors" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                                  <GridPane.margin>
                                     <Insets left="30.0" />

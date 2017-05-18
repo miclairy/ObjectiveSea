@@ -4,9 +4,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import seng302.models.*;
+import javafx.util.Pair;
+import seng302.controllers.MockRaceRunner;
+import seng302.controllers.RaceViewController;
+import seng302.models.*;
 import seng302.utilities.DisplayUtils;
-import seng302.models.CanvasCoordinate;
-import seng302.models.Coordinate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -174,6 +176,44 @@ public class RaceView {
         line.setLayoutY(arrowEnd1.getY());
         line.setStroke(color);
         return line;
+    }
+
+    public Line createLayLine(double bearing, Coordinate markCoord, BoatDisplay boat){
+        double LAYLINELENGTH = 75;
+
+        CanvasCoordinate markLocationXY = DisplayUtils.convertFromLatLon(markCoord.getLat(), markCoord.getLon());
+
+        Double endPointY = LAYLINELENGTH * Math.sin(Math.toRadians(bearing + 90)) + markLocationXY.getY();
+        Double endPointX = LAYLINELENGTH * Math.cos(Math.toRadians(bearing + 90)) + markLocationXY.getX();
+        Line line = new Line(markLocationXY.getX(), markLocationXY.getY(), endPointX, endPointY);
+
+        line.setStroke(boat.getColor());
+        line.setStrokeWidth(2.0);
+
+        return line;
+    }
+
+
+    public Pair<Line, Line> createBoatLayLines(Pair<Double, Double> bearing, CompoundMark mark, BoatDisplay boat){
+        final int LAYLINELENGTH = 75;
+        double bearing1 = bearing.getKey();
+        double bearing2 = bearing.getValue();
+        Coordinate markLocation = mark.getPosition();
+        CanvasCoordinate markLocationXY = DisplayUtils.convertFromLatLon(markLocation.getLat(), markLocation.getLon());
+        CanvasCoordinate boatLocationXY = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
+
+        Double endPointY1FromBoat = LAYLINELENGTH * Math.sin(Math.toRadians(bearing1 + 90)) + boatLocationXY.getY();
+        Double endPointX1FromBoat = LAYLINELENGTH * Math.cos(Math.toRadians(bearing1 + 90)) + boatLocationXY.getX();
+        Line line1FromBoat = new Line(boatLocationXY.getX(), boatLocationXY.getY(), endPointX1FromBoat, endPointY1FromBoat);
+
+        Double endPointY2FromBoat = LAYLINELENGTH * Math.sin(Math.toRadians(bearing2 + 90)) + boatLocationXY.getY();
+        Double endPointX2FromBoat = LAYLINELENGTH * Math.cos(Math.toRadians(bearing2 + 90)) + boatLocationXY.getX();
+        Line line2FromBoat = new Line(boatLocationXY.getX(), boatLocationXY.getY(), endPointX2FromBoat, endPointY2FromBoat);
+
+        line1FromBoat.setStroke(boat.getColor());
+        line2FromBoat.setStroke(boat.getColor());
+
+        return new Pair<>(line1FromBoat, line2FromBoat);
     }
 
     /**

@@ -32,6 +32,7 @@ public class ScoreBoardController {
     @FXML private CheckBox chkEst;
     @FXML private CheckBox chkStart;
     @FXML public Button btnTrack;
+    @FXML private CheckBox chkLaylines;
     @FXML private CheckBox chkVectors;
     @FXML private LineChart chtSparkLine;
     @FXML private NumberAxis xAxis ;
@@ -123,6 +124,10 @@ public class ScoreBoardController {
 
     public boolean areVectorsSelected() {
         return chkVectors.isSelected();
+    }
+
+    public boolean isLayLinesSelected(){
+        return chkLaylines.isSelected();
     }
 
     public void addBoatToSparkLine(Series boatSeries){
