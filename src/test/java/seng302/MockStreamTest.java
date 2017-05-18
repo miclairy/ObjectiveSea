@@ -1,9 +1,7 @@
 package seng302;
 
 
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.Mockito;
 import seng302.controllers.MockRaceRunner;
 import seng302.data.*;
@@ -30,14 +28,24 @@ import static seng302.data.AC35StreamField.TRUE_WIND_DIRECTION;
 
 public class MockStreamTest {
 
-    MockRaceRunner mockRaceRunner;
+    private MockRaceRunner mockRaceRunner;
+    private MockStream mockStream;
+    private static Socket connectionSocket;
+    private Thread upStream;
+    private static int i = 0;
 
     @Before
-    public void startMockRaceRunner(){
+    public void startMockRaceRunner() throws IOException, InterruptedException {
         mockRaceRunner = new MockRaceRunner();
         Thread runner = new Thread(mockRaceRunner);
         runner.start();
-        mockRaceRunner.getRace().getCourse().setWindDirection(135);
+        mockStream = new MockStream(2829 + i, mockRaceRunner);
+        mockRaceRunner.setScaleFactor(200);
+        upStream = new Thread(mockStream);
+        upStream.start();
+        Thread.sleep(10); //because otherwise connection refused errors
+        connectionSocket = new Socket("localhost", 2829 + i);
+        i++;
     }
 
 
@@ -45,12 +53,8 @@ public class MockStreamTest {
     public void checkUpstreamIsSending(){
 
         try {
-            MockStream mockStream = new MockStream(2827, mockRaceRunner);
-            Thread upStream = new Thread(mockStream);
-            upStream.start();
-            Socket connectionSocket = new Socket("localhost", 2827);
-            assertEquals(71, connectionSocket.getInputStream().read());
 
+            assertEquals(71, connectionSocket.getInputStream().read());
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -62,10 +66,7 @@ public class MockStreamTest {
     @Test
     public void sendRaceXmlTest(){
         try {
-            MockStream mockStream = new MockStream(2829, mockRaceRunner);
-            Thread upStream = new Thread(mockStream);
-            upStream.start();
-            Socket connectionSocket = new Socket("localhost", 2829);
+
             InputStream stream = connectionSocket.getInputStream();
             DataInputStream dataInputStream = new DataInputStream(stream);
             byte[] header = new byte[15];
@@ -89,7 +90,6 @@ public class MockStreamTest {
             for (int i = 0; i < receivedContent.size(); i++){
                 assertEquals(receivedContent.get(i).trim(), raceBodyContent.get(i).trim());
             }
-
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -101,10 +101,7 @@ public class MockStreamTest {
     @Test
     public void sendBodyXmlTest(){
         try {
-            MockStream mockStream = new MockStream(2825, mockRaceRunner);
-            Thread upStream = new Thread(mockStream);
-            upStream.start();
-            Socket connectionSocket = new Socket("localhost", 2825);
+
             InputStream stream = connectionSocket.getInputStream();
             DataInputStream dataInputStream = new DataInputStream(stream);
 
@@ -135,7 +132,6 @@ public class MockStreamTest {
             for (int i = 0; i < receivedContent.size(); i++){
                 assertEquals(boatBodyContent.get(i).trim(), receivedContent.get(i).trim());
             }
-
         } catch (SocketException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -164,42 +160,18 @@ public class MockStreamTest {
     public void sendBoatLocationTest(){
 
         try {
-            MockRaceRunner mockRaceRunner = mock(MockRaceRunner.class);
-            Race mockRace = mock(Race.class);
-            Course mockCourse = mock(Course.class);
 
-
-            when(mockRaceRunner.getRace()).thenReturn(mockRace);
-            when(mockRaceRunner.getRaceId()).thenReturn(String.valueOf(1122));
-            when(mockRace.getRaceStatus()).thenReturn(RaceStatus.STARTED);
-            when(mockRace.getCourse()).thenReturn(mockCourse);
-            when(mockCourse.getWindDirection()).thenReturn(25.0);
-
-            Boat boat = new Boat(1, "NZ", "NZ", 20);
-            boat.setTWAofBoat(15);
-
-            when(mockRace.getCompetitors()).thenReturn(new ArrayList<>(Arrays.asList(boat)));
-
-            MockStream mockStream = new MockStream(2824, mockRaceRunner);
-            Thread upStream = new Thread(mockStream);
-            upStream.start();
-            Socket connectionSocket = new Socket("localhost", 2824);
-            InputStream stream = null;
-            stream = connectionSocket.getInputStream();
+            InputStream stream = connectionSocket.getInputStream();
             DataInputStream dataInputStream = new DataInputStream(stream);
             readUtilMessageType(dataInputStream, 37);
             byte[] body = new byte[56];
             dataInputStream.readFully(body);
-            boat.setStatus(BoatStatus.FINISHED);
 
             assertEquals(1, body[0]);
             assertEquals(1, body[15]);
-            assertEquals(1, body[7]);
+            assertEquals(101, body[7]);
             assertEquals(0, body[24]);
-            assertEquals(0, body[28]);
-            assertEquals(4551, DataStreamReader.byteArrayRangeToLong(body, TRUE_WIND_DIRECTION.getStartIndex(), TRUE_WIND_DIRECTION.getEndIndex()));
-            assertEquals(2730, DataStreamReader.byteArrayRangeToLong(body, TRUE_WIND_ANGLE.getStartIndex(), TRUE_WIND_ANGLE.getEndIndex()));
-            connectionSocket.close();
+            assertEquals(0, body[30]);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -209,34 +181,15 @@ public class MockStreamTest {
     @Test
     public void sendMarkRoundedTest(){
         try {
-            MockRaceRunner mockRaceRunner = mock(MockRaceRunner.class, Mockito.RETURNS_DEEP_STUBS);
-            Course course = mock(Course.class);
-            when(mockRaceRunner.getRace().getCourse()).thenReturn(course);
-            when(mockRaceRunner.getRaceId()).thenReturn(String.valueOf(1122));
-            when(mockRaceRunner.getRace().getRaceStatus()).thenReturn(RaceStatus.STARTED);
-            Boat boat = new Boat(1, "NZ", "NZ", 20);
-            boat.setLastRoundedMarkIndex(0);
-            CompoundMark mark = mock(CompoundMark.class);
-            when(course.getCourseOrder()).thenReturn(new ArrayList<>(Arrays.asList(mark, mark, mark)));
-            when(course.getCourseOrder().get(boat.getLastRoundedMarkIndex()).hasTwoMarks()).thenReturn(false);
-            when(mockRaceRunner.getRace().getCompetitors()).thenReturn(new ArrayList<>(Arrays.asList(boat)));
-            MockStream mockStream = new MockStream(2823, mockRaceRunner);
-            Thread upStream = new Thread(mockStream);
-            upStream.start();
-            Socket connectionSocket = new Socket("localhost", 2823);
-            InputStream stream = null;
-            stream = connectionSocket.getInputStream();
 
+            InputStream stream = connectionSocket.getInputStream();
             DataInputStream dataInputStream = new DataInputStream(stream);
             readUtilMessageType(dataInputStream, 38);
             byte[] body = new byte[21];
             dataInputStream.readFully(body);
-            boat.setStatus(BoatStatus.FINISHED);
-
             assertEquals(1, body[0]);
-            assertEquals(1, body[13]);
+            assertEquals(101, body[13]);
             assertEquals(0, body[18]);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -245,13 +198,8 @@ public class MockStreamTest {
     @Test
     public void sendRaceStatusTest(){
         try {
-            MockStream mockStream = new MockStream(2822, mockRaceRunner);
-            Thread upStream = new Thread(mockStream);
-            upStream.start();
-            Socket connectionSocket = new Socket("localhost", 2822);
-            InputStream stream = null;
-            stream = connectionSocket.getInputStream();
 
+            InputStream stream = connectionSocket.getInputStream();
             DataInputStream dataInputStream = new DataInputStream(stream);
             boolean passMarkType = false;
             byte[] header = new byte[15];
@@ -274,10 +222,19 @@ public class MockStreamTest {
             assertEquals(2, body[23]);
             assertEquals(0, body[30]); //leg number
 
-
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @After
+    public void closeOpened() throws IOException, InterruptedException {
+        mockStream.stop();
+    }
+
+    @AfterClass
+    public static void closeConnection() throws IOException {
+        connectionSocket.close();
     }
 
 }
