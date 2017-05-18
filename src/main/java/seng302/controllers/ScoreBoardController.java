@@ -92,7 +92,7 @@ public class ScoreBoardController {
 
     @FXML
     private void btnTrackPressed(){
-        BoatDisplay selectedBoat = raceViewController.getSelectedBoat();
+        BoatDisplay selectedBoat = raceViewController.getTrackingBoat();
         if(selectedBoat != null){
             if(raceViewController.isTrackingPoint()){
                 parent.setZoomSliderValue(1);

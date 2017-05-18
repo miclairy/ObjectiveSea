@@ -8,7 +8,6 @@ import javafx.scene.Group;
 import javafx.scene.ImageCursor;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -66,7 +65,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private ImageCursor boatCursor = new ImageCursor(new Image("graphics/boat-select-cursor.png"), 7, 7);
     private Layline laylines = new Layline();
 
-    private BoatDisplay selectedBoat = null;
+    private BoatDisplay trackingBoat = null;
     private Mark selectedMark = null;
     private boolean isTrackingPoint = false;
     private double rotationOffset = 0;
@@ -114,13 +113,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
             DisplayUtils.moveToPoint(selectedMark.getPosition());
             redrawCourse();
         }
-        if (isTrackingPoint && selectedBoat != null) {
-            selectedBoat.getIcon().toFront();
-            DisplayUtils.moveToPoint(selectedBoat.getBoat().getCurrentPosition());
+        if (isTrackingPoint && trackingBoat != null) {
+            trackingBoat.getIcon().toFront();
+            DisplayUtils.moveToPoint(trackingBoat.getBoat().getCurrentPosition());
             redrawCourse();
             if(isRotationEnabled){
                 if(DisplayUtils.zoomLevel > 1){
-                    rotationOffset = -selectedBoat.getBoat().getHeading();
+                    rotationOffset = -trackingBoat.getBoat().getHeading();
                     updateRotation();
                 }
             }
@@ -167,6 +166,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void addBoatSelectionHandler(BoatDisplay boat){
         Shape boatImage = boat.getIcon();
         boatImage.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            trackingBoat = boat;
             if (selectedBoats.isEmpty() || event.isShiftDown()) {
                 if (selectedBoats.contains(boat)){
                     selectedBoats.remove(boat);
@@ -264,7 +264,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             boat.removeBoatLaylines(root);
             selectedBoats.remove(boat);
             boat.getSeries().getNode().setOpacity(1);
-            selectedBoat = null;
+            trackingBoat = null;
             selectedMark = null;
             isTrackingPoint = false;
             rotationOffset =0;
@@ -310,7 +310,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 DisplayUtils.moveToPoint(mark.getPosition());
                 selectedMark = mark;
                 isTrackingPoint = true;
-                selectedBoat = null;
+                trackingBoat = null;
                 redrawCourse();
                 setMapVisibility(false);
             }else{
@@ -781,9 +781,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
-    public void setCurrentWindArrow(ImageView currentWindArrow) {
-        this.currentWindArrow = currentWindArrow;
-    }
 
 
     /**
@@ -819,8 +816,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
 
-    public BoatDisplay getSelectedBoat() {
-        return selectedBoat;
+    public BoatDisplay getTrackingBoat() {
+        return trackingBoat;
     }
 
 
