@@ -12,6 +12,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
+import seng302.views.BoatDisplay;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
 import seng302.models.Race;
@@ -21,6 +22,7 @@ import java.util.Objects;
 
 /**
  * Created by Louis on 20-Apr-17.
+ *
  */
 public class ScoreBoardController {
 
@@ -38,6 +40,7 @@ public class ScoreBoardController {
     @FXML private CheckBox chkSpeed;
     @FXML private CheckBox chkPassMarkTime;
     @FXML private CheckBox chkEst;
+    @FXML private CheckBox zoomToggle;
     @FXML public Button btnTrack;
     @FXML private ComboBox<String> boatDropDown1;
     @FXML private ComboBox<String> boatDropDown2;
@@ -46,6 +49,9 @@ public class ScoreBoardController {
     @FXML private LineChart chtSparkLine;
     @FXML private NumberAxis xAxis ;
     @FXML private NumberAxis yAxis ;
+    private Race race;
+
+
 
     public void setControllers(Controller parent, RaceViewController raceViewController, Race race){
         this.parent = parent;
@@ -98,12 +104,33 @@ public class ScoreBoardController {
         parent.fpsLabel(fpsToggle.isSelected());
     }
 
+    @FXML
+    private void btnTrackPressed(){
+        BoatDisplay selectedBoat = raceViewController.getTrackingBoat();
+        if(selectedBoat != null){
+            if(raceViewController.isTrackingPoint()){
+                parent.setZoomSliderValue(1);
+                raceViewController.setTrackingPoint(false);
+            }else{
+                parent.setZoomSliderValue(3);
+                raceViewController.setTrackingPoint(true);
+
+                raceViewController.setMapVisibility(false);
+            }
+            raceViewController.redrawCourse();
+
+
+        }
+
+    }
+
     /**
      * Set up a listener for the annotation slider so that we can keep the annotations on the boats up to date with
      * the user's selection
      */
     private void setupAnnotationControl() {
         annotationsSlider.valueProperty().addListener((observable, oldValue, newValue) -> raceViewController.changeAnnotations(newValue.intValue(), false));
+        zoomToggle.selectedProperty().addListener((observable, oldValue, newValue) -> raceViewController.zoomToggle(newValue));
         annotationsSlider.adjustValue(annotationsSlider.getMax());
     }
 

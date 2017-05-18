@@ -1,8 +1,13 @@
 package seng302.utilities;
+import javafx.animation.FadeTransition;
 import javafx.scene.Node;
+import javafx.util.Duration;
 import seng302.controllers.Controller;
 import seng302.models.CanvasCoordinate;
 import seng302.models.Coordinate;
+import seng302.models.Mark;
+
+import static java.lang.Math.abs;
 
 
 /**
@@ -13,6 +18,13 @@ public class DisplayUtils {
 
     public static Coordinate max, min;
     public static String GOOGLE_API_KEY = "AIzaSyAQ8WSXVS1gXdhy5v9IpjeQL842wsMU1VQ";
+
+    public static double zoomLevel = 1;
+    private static int prevDragX=0;
+    private static int prevDragY=0;
+    private static int offsetX=0;
+    private static int offsetY=0;
+
 
     /**
      * Takes the given lat and lon and returns a x,y coordinate scaled to the canvas size
@@ -40,9 +52,93 @@ public class DisplayUtils {
         int xCoord = (int) ((canvasX - changeInLon * xPerLon) / 2 + (lon - min.getLon()) * xPerLon);
         int yCoord = (int) (canvasY - ((canvasY - changeInLat * yPerLat) / 2 + (lat - min.getLat()) * yPerLat));
 
+        xCoord *= zoomLevel;
+        yCoord *= zoomLevel;
+
+        xCoord += offsetX;
+        yCoord += offsetY;
+
+
         CanvasCoordinate point = new CanvasCoordinate(xCoord, yCoord);
         return point;
     }
+
+    /**
+     * sets the zoom level for the canvas to redrawn at. moves offsets
+     * to allow the zoom to occur in the center of screen.
+     * @param zoomLevel the level of zoom. 1 being standard zoom, 10 being 10x zoomed in.
+     */
+    public static void setZoomLevel(double zoomLevel) {
+
+        double deltaZoom = DisplayUtils.zoomLevel- zoomLevel;
+        double canvasHeight = Controller.getAnchorHeight()/2;
+        double canvasWidth = Controller.getAnchorWidth()/2;
+
+
+        moveOffset((canvasWidth*deltaZoom), (canvasHeight*deltaZoom));
+
+
+        DisplayUtils.zoomLevel = zoomLevel;
+
+    }
+
+    /**
+     * Changes offsets centering map on a coordinate point
+     * @param location A CanvasCoordinate (x/y) point for the map to be centered
+     */
+    public static void moveToPoint(CanvasCoordinate location){
+        double locationY = location.getY();
+        double locationX = location.getX();
+        double canvasHeight = Controller.getAnchorHeight()/2;
+        double canvasWidth = Controller.getAnchorWidth()/2;
+
+        moveOffset(-(locationX - canvasWidth), -(locationY - canvasHeight));
+
+    }
+
+    /**
+     * Changes offsets centering map on a coordinate point
+     * @param coordinate A Coordinate (lat/lng) point for the map to be centered
+     */
+    public static void moveToPoint(Coordinate coordinate) {
+        CanvasCoordinate location = convertFromLatLon(coordinate.getLat(), coordinate.getLon());
+        moveToPoint(location);
+    }
+
+    /**
+     * Detects dragging on the display and moves the map accordingly
+     * @param mouseLocationX The latest screen X location of the mouse during drag operation
+     * @param mouseLocationY The latest screen Y location of the mouse during drag operation
+     */
+    public static void dragDisplay(int mouseLocationX, int mouseLocationY){
+        if(abs(mouseLocationX - prevDragX) < 45 &&
+                abs(mouseLocationY - prevDragY) < 45){
+
+            moveOffset((mouseLocationX-prevDragX), (mouseLocationY-prevDragY));
+
+
+        }
+        prevDragX = mouseLocationX;
+        prevDragY  = mouseLocationY;
+
+    }
+
+    /**
+     * moves the offsets of the display when appropriate
+     * @param amountX the screen X amount of change to the current offset
+     * @param amountY the screen Y amount of change to the current offset
+     */
+    private static void moveOffset(double amountX, double amountY){
+        offsetX += amountX;
+        offsetY += amountY;
+
+        double canvasHeight = Controller.getAnchorHeight();
+        double canvasWidth = Controller.getAnchorWidth();
+
+    }
+
+
+
 
     /**
      * generates Static Google Maps image url withing the current bounds of the course on screen
@@ -143,4 +239,22 @@ public class DisplayUtils {
         return outsideBound;
     }
 
+    public static void resetOffsets(){
+        offsetX = 0;
+        offsetY = 0;
+    }
+
+    /**
+     * adds a fade transition to a node, so that a node fades over a set period of time
+     * @param node a node in the scene that will be faded
+     * @param endOpacity a double that represents the nodes opacity at the end of the fade
+     */
+    public static void fadeNodeTransition(Node node, double endOpacity){
+        FadeTransition fadeTransition = new FadeTransition();
+        fadeTransition.setNode(node);
+        fadeTransition.setDuration(new Duration(500));
+        fadeTransition.setFromValue(node.getOpacity());
+        fadeTransition.setToValue(endOpacity);
+        fadeTransition.play();
+    }
 }

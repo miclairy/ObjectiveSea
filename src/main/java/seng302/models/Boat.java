@@ -152,7 +152,9 @@ public class Boat extends Observable implements Comparable<Boat>{
         }
     }
 
-    public ArrayList<Coordinate> getPathCoords() {return pathCoords;}
+    public ArrayList<Coordinate> getPathCoords() {
+        return pathCoords;
+    }
 
     public void addPathCoord(Coordinate newCoord){
         this.pathCoords.add(newCoord);

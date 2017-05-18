@@ -36,11 +36,14 @@ public class RaceView {
      */
     public Polyline createBoatImage(Color color){
         Polyline boatImage = new Polyline();
-        boatImage.getPoints().addAll(0.0, -10.0,
-                5.0, 10.0,
+        boatImage.getPoints().addAll(5.0, 10.0,
                 -5.0, 10.0,
                 0.0, -10.0,
-                0.0, 10.0);
+                5.0, 10.0,
+                0.0, 10.0,
+                0.0, -10.0);
+
+
         boatImage.setFill(color);
         boatImage.setStroke(Color.WHITE);
         return boatImage;
@@ -53,7 +56,7 @@ public class RaceView {
     public Polyline createBoatWake() {
         Polyline wake = new Polyline();
         wake.getPoints().addAll(-5.0, 40.0,
-                0.0, -10.0,
+                0.0, -5.0,
                 5.0, 40.0);
         wake.setId("wake");
         return wake;
