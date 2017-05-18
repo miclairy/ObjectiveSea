@@ -127,11 +127,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public void initializeBoats() {
         for (Boat boat : race.getCompetitors()){
             BoatDisplay displayBoat = new BoatDisplay(boat);
+            boat.addObserver(displayBoat);
+            scoreBoardController.addBoatToSparkLine(displayBoat.getSeries());
             raceView.assignColor(displayBoat);
             displayBoats.add(displayBoat);
             drawBoat(displayBoat);
             addBoatSelectionHandler(displayBoat);
-            scoreBoardController.addBoatToSparkLine(boat.getSeries());
         }
         initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);
@@ -235,7 +236,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             boat.removeLaylines(root);
             boat.removeBoatLaylines(root);
             selectedBoats.remove(boat);
-            boat.getBoat().getSeries().getNode().setOpacity(1);
+            boat.getSeries().getNode().setOpacity(1);
         }
     }
 
@@ -708,11 +709,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 boat.unFocus();
                 boat.removeLaylines(root);
                 boat.removeBoatLaylines(root);
-                boat.getBoat().getSeries().getNode().setOpacity(0.2);
+                boat.getSeries().getNode().setOpacity(0.2);
             }else{
                 boat.focus();
                 drawLayLine(boat);
-                boat.getBoat().getSeries().getNode().setOpacity(1);
+                boat.getSeries().getNode().setOpacity(1);
             }
         }
     }

@@ -1,8 +1,6 @@
 package seng302.views;
 
 import javafx.scene.Group;
-import javafx.animation.ParallelTransition;
-import javafx.scene.chart.XYChart;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
@@ -21,12 +19,14 @@ import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.ZoneOffset;
+import java.util.Observable;
+import java.util.Observer;
 
 
 /**
  * Encapsulates the display properties of the boat.
  */
-public class BoatDisplay {
+public class BoatDisplay implements Observer {
 
     private Boat boat;
     private Shape icon;
@@ -36,17 +36,22 @@ public class BoatDisplay {
     private Line annotationLine;
     private Polyline SOGVector;
     private Polyline VMGVector;
+    private Series series;
     private final double FADEDBOAT = 0.3;
     private boolean isShowLaylines = true;
 
     private Color color;
     private Line layline1;
+
     private Line layline2;
     private Pair<Line, Line> boatLayLines;
 
     public BoatDisplay(Boat boat) {
         this.boat = boat;
         this.annotation = new VBox();
+        this.series = new Series();
+        series.getData().add(new Data(boat.getLastRoundedMarkIndex(), boat.getCurrPlacing()));
+
     }
 
     public Line getAnnotationLine() {return annotationLine;}
@@ -207,6 +212,19 @@ public class BoatDisplay {
         fadeTransition.setFromValue(node.getOpacity());
         fadeTransition.setToValue(endOpacity);
         fadeTransition.play();
+    }
+
+    public Series getSeries() {return series;}
+
+    /**
+     * updates display boat when boat passes a mark and positon updates. Adds new position to sparkline
+     * @param boatObservable the boat that has an updated placing
+     * @param arg
+     */
+    @Override
+    public void update(Observable boatObservable, Object arg) {
+        Boat boat = (Boat) boatObservable;
+        series.getData().add(new Data(boat.getLastRoundedMarkIndex(), boat.getCurrPlacing()));
     }
 }
 
