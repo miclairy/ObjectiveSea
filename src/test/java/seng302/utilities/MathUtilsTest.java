@@ -3,12 +3,13 @@ package seng302.utilities;
 import javafx.util.Pair;
 import org.junit.Assert;
 import org.junit.Test;
+import seng302.models.CompoundMark;
+import seng302.models.Coordinate;
+import seng302.models.Mark;
 import seng302.models.WindAngleAndSpeed;
 
 import static junit.framework.TestCase.assertEquals;
-import static seng302.utilities.MathUtils.VMG;
-import static seng302.utilities.MathUtils.lagrangeInterpolation;
-import static seng302.utilities.MathUtils.pointBetweenTwoAngle;
+import static seng302.utilities.MathUtils.*;
 
 /**
  * Created by gla42 on 11/05/17.
@@ -65,5 +66,24 @@ public class MathUtilsTest {
         double x = 50.0;
         assertEquals(8.564421885974385, lagrangeInterpolation(A,B,C,x), DELTA);
         assertEquals(3, lagrangeInterpolation(D,E,F,4.0), DELTA);
+    }
+
+    @Test
+    public void calculateMidPointTest(){
+        Coordinate mark1Coord = new Coordinate(32, 64);
+        Coordinate mark2Coord = new Coordinate(35, 68);
+        Mark mark1 = new Mark(0, "Test",mark1Coord);
+        Mark mark2 = new Mark(0, "Test",mark2Coord);
+        CompoundMark cm1 = new CompoundMark(0, "Test",mark1,mark2);
+        Coordinate testAnswer = new Coordinate(33.5, 66);
+        assertEquals(testAnswer, calculateMidPoint(cm1));
+    }
+
+    @Test
+    public void boatBeforeStartlineTest(){
+        Assert.assertTrue(boatBeforeStartline(32.2937,-64.855242,32.296577,-64.854304,-32.293771,-64.855242,32.293039,-64.845045));
+        Assert.assertTrue(boatBeforeStartline(32.293039,-64.845045,32.296577,-64.854304,-32.293771,-64.855242,32.2937,-64.855242));
+        Assert.assertFalse(boatBeforeStartline(32.296577,-64.854304,32.296577,-64.854304,-32.293771,-64.855242,32.2937,-64.855242));
+
     }
 }
