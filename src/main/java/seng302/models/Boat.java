@@ -248,4 +248,6 @@ public class Boat implements Comparable<Boat>{
     }
 
     public int getLeg(){return leg;}
+
+
 }

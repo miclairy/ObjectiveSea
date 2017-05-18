@@ -23,21 +23,6 @@ public class CompoundMark {
     private Rounding rounding;
 
 
-    public Rounding getRounding() { return rounding; }
-
-    public void setRounding(String roundingString) {
-        if (roundingString == "SP") {
-            rounding = Rounding.SP;
-        } else if (roundingString == "PS") {
-            rounding = Rounding.PS;
-        } else if (roundingString == "Port") {
-            rounding = Rounding.PORT;
-        } else if (roundingString == "Stbd") {
-            rounding = Rounding.STBD;
-        }
-    }
-
-
     public CompoundMark(Integer compoundMarkID, String name, Mark mark1, Mark mark2){
         this.name = name;
         this.compoundMarkID = compoundMarkID;
@@ -110,4 +95,19 @@ public class CompoundMark {
         }
         return raceLine;
     }
+
+    public Rounding getRounding() { return rounding; }
+
+    public void setRounding(String roundingString) {
+        if (roundingString == "SP") {
+            rounding = Rounding.SP;
+        } else if (roundingString == "PS") {
+            rounding = Rounding.PS;
+        } else if (roundingString == "Port") {
+            rounding = Rounding.PORT;
+        } else if (roundingString == "Stbd") {
+            rounding = Rounding.STBD;
+        }
+    }
+
 }

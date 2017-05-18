@@ -23,6 +23,11 @@ public class CoordinateTest {
         Coordinate coord1 = new Coordinate(50, 45);
         Coordinate coord2 = new Coordinate(100, 28);
         assertEquals(4, Math.round(coord1.headingToCoordinate(coord2)));
+
+        Coordinate latLong1 = new Coordinate(32.293039, -64.843983);
+        Coordinate latlong2 = new Coordinate(32.280164, -64.847591);
+        assertEquals(193, Math.round(latLong1.headingToCoordinate(latlong2)));
+
     }
 
     @Test

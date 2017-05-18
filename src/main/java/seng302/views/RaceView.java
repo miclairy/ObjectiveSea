@@ -107,7 +107,7 @@ public class RaceView {
         return line;
     }
 
-    public Line createLayLine(double bearing, Coordinate markCoord, BoatDisplay boat){
+    public Line drawLayline(double bearing, Coordinate markCoord, BoatDisplay boat){
         double LAYLINELENGTH = 75;
 
         CanvasCoordinate markLocationXY = DisplayUtils.convertFromLatLon(markCoord.getLat(), markCoord.getLon());

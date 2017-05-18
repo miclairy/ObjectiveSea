@@ -35,16 +35,16 @@ public class BoatDisplay {
     private Path path;
     private Line annotationLine;
     private final double FADEDBOAT = 0.3;
-    private boolean isShowLaylines = true;
 
+    private Laylines laylines;
+    private PolarTable polarTable;
     private Color color;
-    private Line layline1;
-    private Line layline2;
-    private Pair<Line, Line> boatLayLines;
 
-    public BoatDisplay(Boat boat) {
+    public BoatDisplay(Boat boat, PolarTable polarTable) {
         this.boat = boat;
         this.annotation = new VBox();
+        this.laylines = new Laylines();
+        this.polarTable = polarTable;
     }
 
     public Line getAnnotationLine() {return annotationLine;}
@@ -119,15 +119,6 @@ public class BoatDisplay {
         return timeTillMark;
     }
 
-    public void setLaylines(Line layline1, Line layline2) {
-        this.layline1 = layline1;
-        this.layline2 = layline2;
-    }
-
-    public void setBoatLaylines(Pair<Line, Line> boatLayLines) {
-        this.boatLayLines = boatLayLines;
-    }
-
     public void unFocus(){
         fadeNodeTransition(icon, FADEDBOAT);
         fadeNodeTransition(wake, FADEDBOAT);
@@ -148,27 +139,6 @@ public class BoatDisplay {
         annotationLine.setOpacity(1);
     }
 
-    public void removeLaylines(Group root) {
-        if (layline1 != null && layline2 != null) {
-            root.getChildren().remove(layline1);
-            root.getChildren().remove(layline2);
-        }
-        layline1= null;
-        layline2= null;
-    }
-
-    public boolean isShowLaylines() {
-        return isShowLaylines;
-    }
-
-    public void removeBoatLaylines(Group root) {
-        if (boatLayLines != null) {
-            root.getChildren().remove(boatLayLines.getKey());
-            root.getChildren().remove(boatLayLines.getValue());
-        }
-        boatLayLines = null;
-    }
-
     /**
      * adds a fade transition to a node, so that a node fades over a set period of time
      * @param node a node in the scene that will be faded
@@ -181,6 +151,19 @@ public class BoatDisplay {
         fadeTransition.setFromValue(node.getOpacity());
         fadeTransition.setToValue(endOpacity);
         fadeTransition.play();
+    }
+
+
+    public Laylines getLaylines() {
+        return laylines;
+    }
+
+    public void setLaylines(Laylines laylines) {
+        this.laylines = laylines;
+    }
+
+    public PolarTable getPolarTable() {
+        return polarTable;
     }
 }
 
