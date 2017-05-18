@@ -169,14 +169,14 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, MARK_SOURCE, boat.getId());
         addFieldToByteArray(body, MARK_BOAT_STATUS, boat.getStatus().getValue());
         addFieldToByteArray(body, ROUNDING_SIDE, 0); //todo present correct side
-        if (course.getCourseOrder().get(boat.getLastRoundedMarkIndex()).hasTwoMarks()) {
+
+        CompoundMark lastRoundedMark = course.getCourseOrder().get(boat.getLastRoundedMarkIndex());
+        if (lastRoundedMark.hasTwoMarks()) {
             addFieldToByteArray(body, MARK_TYPE, GATE_TYPE);
         } else {
             addFieldToByteArray(body, MARK_TYPE, ROUNDING_MARK_TYPE);
         }
-
-        CompoundMark lastRoundedMark = course.getCourseOrder().get(boat.getLastRoundedMarkIndex());
-        int markId = lastRoundedMark.getCompoundMarkID();
+        int markId = boat.getLastRoundedMarkIndex();
         if(lastRoundedMark.isStartLine()){
             markId = passedStartLineId;
         } else if(lastRoundedMark.isFinishLine()){

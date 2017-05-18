@@ -155,21 +155,13 @@ public class Race extends Observable{
      * If a mark occurs multiple times in the race order, the rounded mark index will be the one next occurrence
      * of the mark that the boat has not rounded yet.
      * @param sourceID the boat's id
-     * @param roundedMarkID the mark's id
+     * @param roundedMarkIndex the mark's index in race order
      * @param time the time that the boat rounded the mark
      */
-    public void updateMarkRounded(int sourceID, int roundedMarkID, long time) {
+    public void updateMarkRounded(int sourceID, int roundedMarkIndex, long time) {
         Boat boat = boatIdMap.get(sourceID);
-        List<CompoundMark> courseOrder = course.getCourseOrder();
-        for(int markIndex = boat.getLastRoundedMarkIndex(); markIndex < courseOrder.size(); markIndex++){
-            CompoundMark mark = courseOrder.get(markIndex);
-            if(mark.getCompoundMarkID() == roundedMarkID){
-                boat.setLastRoundedMarkIndex(markIndex + 1);
-                boat.setLastRoundedMarkTime(time);
-                updateRaceOrder();
-                return;
-            }
-        }
+        boat.setLastRoundedMarkIndex(roundedMarkIndex);
+        boat.setLastRoundedMarkTime(time);
     }
 
     /**

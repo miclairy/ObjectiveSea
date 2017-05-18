@@ -238,10 +238,8 @@ public class Boat implements Comparable<Boat>{
         if(lastRoundedMarkIndex == -1){
             if(status.equals(BoatStatus.FINISHED)){
                 lastRoundedMarkIndex = leg;
-            }else if(leg != 0){
+            } else {
                 lastRoundedMarkIndex = leg - 1;
-            }else{
-                lastRoundedMarkIndex = 0;
             }
         }
         this.leg = leg;

@@ -24,8 +24,6 @@ public class PolarTable {
         gybeTWAofBoat = gybingInfo.getSpeed();
         tackVMGofBoat = tackingInfo.getWindAngle();
         tackTWAofBoat = tackingInfo.getSpeed();
-        System.out.println(tackTWAofBoat);
-        System.out.println(gybeTWAofBoat);
     }
 
     public ArrayList<Polar> TWSForInterp(int TWS, ArrayList<Polar> polars){
