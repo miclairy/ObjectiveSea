@@ -1,10 +1,12 @@
 package seng302.controllers;
 
+import javafx.util.Pair;
 import seng302.data.BoatStatus;
 import seng302.data.RaceStatus;
 import seng302.data.RaceVisionXMLParser;
 import seng302.models.*;
-import seng302.utilities.DisplayUtils;
+import seng302.utilities.MathUtils;
+import seng302.utilities.PolarReader;
 import seng302.utilities.TimeUtils;
 
 import java.text.DateFormat;
@@ -31,26 +33,35 @@ public class MockRaceRunner implements Runnable {
 
     private String raceId;
     private Race race;
+    private PolarTable polarTable;
 
     public MockRaceRunner(){
-        this.raceId = generateRaceId();
+        //set race up with default files
+        List<Boat> boatsInRace = RaceVisionXMLParser.importDefaultStarters();
+        Course course = RaceVisionXMLParser.importCourse();
+        course.setTrueWindSpeed(20);
+        course.setWindDirection(26);
+        race = new Race("Mock Runner Race", course, boatsInRace);
+        setRandomBoatSpeeds();
 
         initialize();
     }
 
-    public void initialize(){
-        List<Boat> boatsInRace = RaceVisionXMLParser.importDefaultStarters();
-        Course course = RaceVisionXMLParser.importCourse();
-        course.setTrueWindSpeed(20);
-        course.setWindDirection(26.561799230287797);
-        race = new Race("Mock Runner Race", course, boatsInRace);
+    public MockRaceRunner(Race race) {
+        this.race = race;
+        initialize();
+    }
 
+    public void initialize(){
+        this.raceId = generateRaceId();
+        //for now we assume all boats racing are AC35 class yachts such that we can use the polars we have for them
+        this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
         setStartingPositions();
         race.updateRaceStatus(RaceStatus.PRESTART);
         long currentTime = Instant.now().toEpochMilli();
         race.setCurrentTimeInEpochMs(currentTime);
         race.setStartTimeInEpochMs(currentTime + (1000 * 60 * 3)); //3 minutes from now
-        boatsInRace.forEach(b -> b.setStatus(BoatStatus.PRERACE));
+        race.getCompetitors().forEach(b -> b.setStatus(BoatStatus.PRERACE));
     }
 
     /**
@@ -72,7 +83,7 @@ public class MockRaceRunner implements Runnable {
             race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs() + (long)(raceSecondsPassed * 1000));
             for (Boat boat : race.getCompetitors()) {
                 if(race.getRaceStatus().equals(RaceStatus.STARTED)){
-                    boat.updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), race.getCourse());
+                    updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), race.getCourse(), boat);
                     calculateTimeAtNextMark(boat);
                 } else {
                     long millisBeforeStart = race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs();
@@ -101,55 +112,169 @@ public class MockRaceRunner implements Runnable {
             }
         }
     }
-
     /**
      * Updates the boat's coordinates by how much it moved in timePassed hours on the course
-     * @param raceSecondsPassed the amount of race seconds since the last update
+     * @param timePassed the amount of race hours since the last update
      * @param course the course the boat is racing on
-     * @param boat the boat which location is updated for
      */
-    private Coordinate updateLocation(Boat boat, double raceSecondsPassed, Course course) {
-        if(boat.isFinished()){
-            return null;
-        }
-        int lastPassedMark = boat.getLastRoundedMarkIndex();
-        boat.setSpeed(boat.getMaxSpeed());
-        ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
-        CompoundMark nextMark = courseOrder.get(lastPassedMark+1);
+    public void updateLocation(double timePassed, Course course, Boat boat) {
+        if(boat.isFinished()) return;
 
-        Coordinate currentPosition = boat.getCurrentPosition();
-        double distanceGained = TimeUtils.convertSecondsToHours(raceSecondsPassed) * boat.getSpeed();
-        double distanceLeftInLeg = currentPosition.greaterCircleDistance(nextMark.getPosition());
+        ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
+        double windDirection = course.getWindDirection();
+        double headingBetweenMarks = course.headingsBetweenMarks(boat.getLastRoundedMarkIndex(),boat.getLastRoundedMarkIndex()+1);
+        boolean onTack = false;
+        boolean onGybe = false;
+
+        if(MathUtils.pointBetweenTwoAngle(windDirection, polarTable.getOptimumTWA(true), headingBetweenMarks)){
+            onTack = true;
+            double optimumTackingVMG = polarTable.getOptimumVMG(true);
+            boat.setCurrentVMG(optimumTackingVMG);
+            boat.setCurrentSpeed(optimumTackingVMG / Math.cos(Math.toRadians(polarTable.getOptimumTWA(true))));
+        } else if(MathUtils.pointBetweenTwoAngle((windDirection + 180) % 360, 180 - polarTable.getOptimumTWA(false), headingBetweenMarks)) {
+            onGybe = true;
+            double optimumGybingVMG = polarTable.getOptimumVMG(false);
+            boat.setCurrentVMG(optimumGybingVMG * (-1.0));
+            boat.setCurrentSpeed(optimumGybingVMG/ Math.cos(Math.toRadians(polarTable.getOptimumTWA(false))));
+        } else {
+            boat.maximiseSpeed();
+            boat.setCurrentVMG(boat.getSpeed());
+        }
+
+        CompoundMark nextMark = courseOrder.get(boat.getLastRoundedMarkIndex()+1);
+        Coordinate nextMarkPosition = nextMark.getPosition();
+        Coordinate boatPosition = boat.getCurrentPosition();
+        double distanceGained = timePassed * boat.getSpeed();
+        double distanceLeftInLeg = boatPosition.greaterCircleDistance(nextMark.getPosition());
 
         //If boat moves more than the remaining distance in the leg
-        while(distanceGained > distanceLeftInLeg && lastPassedMark < courseOrder.size()-1){
+        while(distanceGained > distanceLeftInLeg && boat.getLastRoundedMarkIndex() < courseOrder.size()-1) {
             distanceGained -= distanceLeftInLeg;
-
             //Set boat position to next mark
-            currentPosition.setLat(nextMark.getPosition().getLat());
-            currentPosition.setLon(nextMark.getPosition().getLon());
-            lastPassedMark++;
-            boat.setLastRoundedMarkIndex(lastPassedMark);
+            boatPosition.update(nextMarkPosition.getLat(), nextMarkPosition.getLon());
+            boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
 
-            if(lastPassedMark < courseOrder.size()-1){
-                boat.setHeading(course.headingsBetweenMarks(lastPassedMark, lastPassedMark + 1));
-                nextMark = courseOrder.get(lastPassedMark+1);
-                distanceLeftInLeg = currentPosition.greaterCircleDistance(nextMark.getPosition());
+            if(boat.getLastRoundedMarkIndex() < courseOrder.size()-1){
+                boat.setHeading(course.headingsBetweenMarks(boat.getLastRoundedMarkIndex(), boat.getLastRoundedMarkIndex() + 1));
+                nextMark = courseOrder.get(boat.getLastRoundedMarkIndex() +1 );
+                nextMarkPosition = nextMark.getPosition();
+                distanceLeftInLeg = boatPosition.greaterCircleDistance(nextMark.getPosition());
+            } else {
+                boat.setStatus(BoatStatus.FINISHED);
+                boat.setCurrentSpeed(0);
+                return;
             }
         }
 
-        //Check if boat has finished
-        if(lastPassedMark == courseOrder.size()-1){
-            boat.setStatus(BoatStatus.FINISHED);
-            boat.setSpeed(0);
-        } else{
+        if (!onTack) boat.setLastTackMarkPassed(0);
+        if (!onGybe) boat.setLastGybeMarkPassed(0);
+
+        if(onTack || onGybe) {
+            double alphaAngle = getAlphaAngle(windDirection, headingBetweenMarks, onTack);
+            Coordinate tackingPosition = tackingUpdateLocation(distanceGained, courseOrder, onTack, alphaAngle, boat);
+            boatPosition.update(tackingPosition.getLat(), tackingPosition.getLon());
+        } else {
             //Move the remaining distance in leg
             double percentGained = (distanceGained / distanceLeftInLeg);
-            double newLat = currentPosition.getLat() + percentGained * (nextMark.getPosition().getLat() - currentPosition.getLat());
-            double newLon = currentPosition.getLon() + percentGained * (nextMark.getPosition().getLon() - currentPosition.getLon());
-            currentPosition.update(newLat, newLon);
+            double newLat = boat.getCurrentLat() + percentGained * (nextMarkPosition.getLat() - boat.getCurrentLat());
+            double newLon = boat.getCurrentLon() + percentGained * (nextMarkPosition.getLon() - boat.getCurrentLon());
+            boatPosition.update(newLat, newLon);
         }
-        return currentPosition;
+    }
+
+    /**
+     * @param windDirection the current wind direction for the course
+     * @param bearing
+     * @param onTack whether calculateOptimumTack is happening, or calculateOptimumGybe
+     * @return the alpha angle
+     */
+    private double getAlphaAngle(double windDirection, double bearing, boolean onTack) {
+        double alphaAngle;
+        if(bearing <= (windDirection + 90.0)){
+            alphaAngle = Math.abs(bearing - windDirection) % 360;
+        } else {
+            alphaAngle = (360 + windDirection - bearing) % 360;
+        }
+        return onTack ? alphaAngle : 180 - alphaAngle;
+    }
+
+
+    /**
+     * Updates the boat's coordinates by how much it moved in timePassed hours on the course
+     * @param distanceGained the distance gained by the boat since last update
+     * @param courseOrder the order of the set marks
+     * @param onTack this decides whether to calculate a tack or a gybe
+     */
+    public Coordinate tackingUpdateLocation(double distanceGained, ArrayList<CompoundMark> courseOrder, Boolean onTack, double alphaAngle, Boat boat){
+        double TrueWindAngle;
+        if(onTack){
+            TrueWindAngle = polarTable.getOptimumTWA(onTack);
+        } else {
+            TrueWindAngle = 180 - polarTable.getOptimumTWA(false);
+        }
+        CompoundMark nextMark = courseOrder.get(boat.getLastRoundedMarkIndex()+1);
+        double lengthOfTack = calculateLengthOfTack(TrueWindAngle,alphaAngle,courseOrder,boat);
+        ArrayList<CompoundMark> tackingMarks = new ArrayList<>(); //Arraylist to hold 'mock' marks for the boat to tack against
+        tackingMarks.add(courseOrder.get(boat.getLastRoundedMarkIndex()));
+        CompoundMark currentMark = courseOrder.get(boat.getLastRoundedMarkIndex());
+        if(!onTack){
+            alphaAngle += 180;
+        }
+        Coordinate tackingCoord = currentMark.getPosition().coordAt(lengthOfTack,alphaAngle);
+        Mark tackingMark = new Mark(0, "tackingMark", tackingCoord);
+
+        CompoundMark tackingMarkCM = new CompoundMark(0, "tack1", tackingMark);
+        tackingMarks.add(tackingMarkCM);
+        tackingMarks.add(nextMark);
+
+        int lastMarkPassed;
+        if(onTack){
+            lastMarkPassed = boat.getLastTackMarkPassed();
+        } else {
+            lastMarkPassed = boat.getLastGybeMarkPassed();
+        }
+        CompoundMark nextTackMark = tackingMarks.get(lastMarkPassed+1);
+        double distanceLeftinTack = boat.getCurrentPosition().greaterCircleDistance(nextTackMark.getPosition());
+        if(lastMarkPassed == 0){
+            double newHeading = tackingMarks.get(lastMarkPassed).getPosition().headingToCoordinate(tackingMarks.get(lastMarkPassed + 1).getPosition());
+            boat.setHeading(newHeading);
+        }
+        //If boat moves more than the remaining distance in the leg
+        while(distanceGained > distanceLeftinTack && lastMarkPassed < tackingMarks.size()-1){
+            distanceGained -= distanceLeftinTack;
+            //Set boat position to next mark
+            boat.getCurrentPosition().setLat(nextTackMark.getPosition().getLat());
+            boat.getCurrentPosition().setLon(nextTackMark.getPosition().getLon());
+            if(onTack){
+                boat.setLastTackMarkPassed(boat.getLastTackMarkPassed() + 1);
+            } else {
+                boat.setLastGybeMarkPassed(boat.getLastGybeMarkPassed() + 1);
+            }
+            lastMarkPassed++;
+
+            if(lastMarkPassed < tackingMarks.size()-1){
+                double newHeading = tackingMarks.get(lastMarkPassed).getPosition().headingToCoordinate(tackingMarks.get(lastMarkPassed + 1).getPosition());
+                boat.setHeading(newHeading);
+                nextTackMark = tackingMarks.get(lastMarkPassed+1);
+                distanceLeftinTack = boat.getCurrentPosition().greaterCircleDistance(nextTackMark.getPosition());
+            }
+        }
+        if(lastMarkPassed == tackingMarks.size()-1 && nextMark.isFinishLine()){
+            boat.setStatus(BoatStatus.FINISHED);
+            boat.setCurrentSpeed(0);
+        }
+        double percentGained = (distanceGained / distanceLeftinTack);
+        double newLat = boat.getCurrentLat() + percentGained * (nextTackMark.getPosition().getLat() - boat.getCurrentLat());
+        double newLon = boat.getCurrentLon() + percentGained * (nextTackMark.getPosition().getLon() - boat.getCurrentLon());
+        return new Coordinate(newLat, newLon);
+    }
+
+    public double calculateLengthOfTack(double TrueWindAngle, double alphaAngle,ArrayList<CompoundMark> courseOrder, Boat boat){
+        CompoundMark nextMark = courseOrder.get(boat.getLastRoundedMarkIndex()+1);
+        double lengthOfLeg = courseOrder.get(boat.getLastRoundedMarkIndex()).getPosition().greaterCircleDistance(nextMark.getPosition());
+        double betaAngle = (2*TrueWindAngle) - alphaAngle;
+        double lengthOfTack = ((lengthOfLeg* Math.sin(Math.toRadians(betaAngle)))/Math.sin(Math.toRadians(180 - 2*TrueWindAngle)))/2.0;
+        return lengthOfTack;
     }
 
     /**
@@ -166,18 +291,26 @@ public class MockRaceRunner implements Runnable {
         Double curLat = startingEnd1.getLat() + dLat;
         Double curLon = startingEnd1.getLon() + dLon;
         for (Boat boat : race.getCompetitors()){
-            Random random = new Random();
-            double rangeMin = 15.0;
-            double rangeMax = 25.0;
-            double speed = rangeMin + (rangeMax - rangeMin) * random.nextDouble();
-            boat.setMaxSpeed(speed);
-            boat.maximiseSpeed();
             boat.setPosition(curLat, curLon);
             boat.setHeading(race.getCourse().headingsBetweenMarks(0, 1));
             boat.getPathCoords().add(new Coordinate(curLat, curLon));
             boat.setLastRoundedMarkIndex(0);
             curLat += dLat;
             curLon += dLon;
+        }
+    }
+
+    /**
+     * Gives each boat in the race a randomized speed so that each race is a bit different.
+     */
+    private void setRandomBoatSpeeds(){
+        for (Boat boat : race.getCompetitors()) {
+            Random random = new Random();
+            double rangeMin = 15.0;
+            double rangeMax = 25.0;
+            double speed = rangeMin + (rangeMax - rangeMin) * random.nextDouble();
+            boat.setMaxSpeed(speed);
+            boat.maximiseSpeed();
         }
     }
 
@@ -192,7 +325,7 @@ public class MockRaceRunner implements Runnable {
             Coordinate boatLocation = boat.getCurrentPosition();
             Coordinate markLocation = nextMark.getPosition();
             double dist = TimeUtils.calcDistance(boatLocation.getLat(), markLocation.getLat(), boatLocation.getLon(), markLocation.getLon());
-            double testTime = dist / boat.getCurrentVMGSpeed(); // 10 is the VMG estimate of the boats
+            double testTime = dist / boat.getCurrentVMG(); // 10 is the VMG estimate of the boats
             double time = (TimeUtils.convertHoursToSeconds(testTime) * 1000) + race.getCurrentTimeInEpochMs(); //time at next mark in milliseconds
             try {
                 if (nextMark.isFinishLine()){

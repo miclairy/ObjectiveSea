@@ -41,6 +41,8 @@ public class ScoreBoardController {
     @FXML public Button btnTrack;
     @FXML private ComboBox<String> boatDropDown1;
     @FXML private ComboBox<String> boatDropDown2;
+    @FXML private CheckBox chkLaylines;
+    @FXML private CheckBox chkVectors;
     @FXML private LineChart chtSparkLine;
     @FXML private NumberAxis xAxis ;
     @FXML private NumberAxis yAxis ;
@@ -145,6 +147,14 @@ public class ScoreBoardController {
     public boolean isEstSelected(){return chkEst.isSelected();}
 
     public boolean isTimePassedSelected(){return chkPassMarkTime.isSelected();}
+
+    public boolean areVectorsSelected() {
+        return chkVectors.isSelected();
+    }
+
+    public boolean isLayLinesSelected(){
+        return chkLaylines.isSelected();
+    }
 
     public void addBoatToSparkLine(Series boatSeries){
         if(!chtSparkLine.getData().contains(boatSeries)){
