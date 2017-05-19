@@ -24,6 +24,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.ZoneOffset;
 
+import static seng302.utilities.MathUtils.pointBetweenTwoAngle;
+
 
 /**
  * Encapsulates the display properties of the boat.
@@ -167,7 +169,7 @@ public class BoatDisplay {
         double timeToStart = 0;
         double boatsHeading = boat.getHeading();
         double headingOfStartLine = startLine1.headingToCoordinate(startLine2);
-        Boolean boatHeadingToStart = true; //need function of angles from laylines
+        Boolean boatHeadingToStart = boatHeadingToLine(boatsHeading, headingOfStartLine, mark, startLine1);
         Coordinate midPointOfStart = MathUtils.calculateMidPoint(startLine);
         if(toLeftOfStart && boatHeadingToStart){
             double distanceToStart = position.greaterCircleDistance(midPointOfStart); // need to use Ray's formula
@@ -188,6 +190,17 @@ public class BoatDisplay {
         }
     }
 
+
+    public Boolean boatHeadingToLine(double boatsHeading, double lineHeading, Coordinate MarkPosition, Coordinate startLine){
+        Boolean towardsLine = false;
+        double headingOfMark = MarkPosition.headingToCoordinate(startLine);
+        if(pointBetweenTwoAngle(lineHeading + 270, 90, boatsHeading) && pointBetweenTwoAngle(lineHeading + 90, 90, headingOfMark)){
+            towardsLine = true;
+        } else if(pointBetweenTwoAngle(lineHeading + 90, 90, boatsHeading) && pointBetweenTwoAngle(lineHeading + 270, 90, headingOfMark)){
+            towardsLine = true;
+        }
+        return towardsLine;
+    }
 
 
 
