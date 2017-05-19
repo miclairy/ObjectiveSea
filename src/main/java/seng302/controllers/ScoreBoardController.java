@@ -42,13 +42,12 @@ public class ScoreBoardController {
     @FXML private CheckBox chkEst;
     @FXML private CheckBox zoomToggle;
     @FXML public Button btnTrack;
-    @FXML private ComboBox<String> boatDropDown1;
-    @FXML private ComboBox<String> boatDropDown2;
     @FXML private CheckBox chkLaylines;
     @FXML private CheckBox chkVectors;
     @FXML private LineChart chtSparkLine;
     @FXML private NumberAxis xAxis ;
     @FXML private NumberAxis yAxis ;
+    @FXML private CheckBox DistanceLinesToggle;
 
 
 
@@ -89,10 +88,6 @@ public class ScoreBoardController {
             }
         });
         annotationsSlider.setValue(1);
-        for (Boat boat : race.getCompetitors()){
-            boatDropDown1.getItems().addAll(boat.getName());
-            boatDropDown2.getItems().addAll(boat.getName());
-        }
     }
 
     @FXML
@@ -152,18 +147,8 @@ public class ScoreBoardController {
     }
 
     @FXML
-    private void drawDistanceLines() {
-        Boat firstBoat = null;
-        Boat secondBoat = null;
-        for (Boat boat : race.getCompetitors()) {
-            if (Objects.equals(boat.getName(), boatDropDown1.getValue())) {
-                firstBoat = boat;
-            }
-            if (Objects.equals(boat.getName(), boatDropDown2.getValue())) {
-                secondBoat = boat;
-            }
-        }
-        raceViewController.updateDistanceLine(firstBoat, secondBoat);
+    private void toggleDistanceLines() {
+        raceViewController.updateDistanceLine(DistanceLinesToggle.isSelected());
     }
 
     public boolean isSpeedSelected(){return chkSpeed.isSelected();}

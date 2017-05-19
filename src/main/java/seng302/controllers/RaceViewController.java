@@ -753,10 +753,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     private void redrawDistanceLines(){
-        for(Line line : distanceLine.getLines()){
-            root.getChildren().remove(line);
-            root.getChildren().remove(distanceLine.getAnnotation());
-        }
+        removeDistanceLines();
         if (distanceLine.sameLeg() && distanceLine.boatsFinished()) {
             updateDistanceMark();
             distanceLine.reCalcLine();
@@ -766,6 +763,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
             updateDistanceLineAnnotation();
             root.getChildren().add(distanceLine.getAnnotation());
+        }
+    }
+
+    private void removeDistanceLines(){
+        for(Line line : distanceLine.getLines()){
+            root.getChildren().remove(line);
+            root.getChildren().remove(distanceLine.getAnnotation());
         }
     }
 
@@ -845,14 +849,23 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
     /**
      * Draws lines on the GUI to show which boat is in front of another boat
-     * @param boat1 the boat that is selected in the first drop down
-     * @param boat2 the boat that is selected in the second drop down
      */
-    public void updateDistanceLine(Boat boat1, Boat boat2){
-        distanceLine.setFirstBoat(boat1);
-        distanceLine.setSecondBoat(boat2);
+    public void updateDistanceLine(Boolean draw){
+        if (!draw){
+            removeDistanceLines();
+        }
+        int counter = 0;
+        for (BoatDisplay boat : selectedBoats){
+            if (counter == 0){
+                distanceLine.setFirstBoat(boat.getBoat());
+            }
+            if (counter == 1){
+                distanceLine.setSecondBoat(boat.getBoat());
+            }
+            counter += 1;
+        }
         updateDistanceMark();
-        drawDistanceLine = true;
+        drawDistanceLine = draw;
     }
 
     public BoatDisplay getTrackingBoat() {
