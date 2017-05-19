@@ -2,9 +2,11 @@ package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.ImageCursor;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -312,17 +314,44 @@ public class RaceViewController extends AnimationTimer implements Observer {
         displayBoat.getAnnotationLine().toBack();
     }
 
-    public void makeDraggable(VBox annotation, BoatDisplay boatDisplay){
-        annotation.setOnMouseDragOver(event -> {
-            root.setCursor(Cursor.CLOSED_HAND);
-            System.out.println("yup");
+    public void makeDraggable(Node annotation, BoatDisplay boatDisplay){
+        final Delta dragDelta = new Delta();
+        annotation.setOnMouseEntered(me -> {
+            annotation.getScene().setCursor(Cursor.HAND);
+            if(me.isPrimaryButtonDown()) {
+                annotation.getScene().setCursor(Cursor.CLOSED_HAND);
+                annotation.setLayoutX(annotation.getLayoutX() + me.getX() - dragDelta.x);
+                annotation.setLayoutY(annotation.getLayoutY() + me.getY() - dragDelta.y);
+                boatDisplay.setAnnoHasMoved(true);
+            }
         });
 
-        annotation.setOnMouseDragReleased(event -> {
-            boatDisplay.setAnnoOffsetX(event.getX());
-            boatDisplay.setAnnoOffsetY(event.getY());
+        annotation.setOnMouseExited(me ->{
+            annotation.getScene().setCursor(Cursor.DEFAULT);
         });
 
+        annotation.setOnMouseDragged(me -> {
+            if(me.isPrimaryButtonDown()) {
+                annotation.getScene().setCursor(Cursor.CLOSED_HAND);
+                annotation.setLayoutX(annotation.getLayoutX() + me.getX() - dragDelta.x);
+                annotation.setLayoutY(annotation.getLayoutY() + me.getY() - dragDelta.y);
+                boatDisplay.setAnnoHasMoved(true);
+            }
+        });
+
+        annotation.setOnMouseDragOver(me -> {
+            if(me.isPrimaryButtonDown()) {
+                annotation.getScene().setCursor(Cursor.CLOSED_HAND);
+                annotation.setLayoutX(annotation.getLayoutX() + me.getX() - dragDelta.x);
+                annotation.setLayoutY(annotation.getLayoutY() + me.getY() - dragDelta.y);
+                boatDisplay.setAnnoHasMoved(true);
+            }
+        });
+    }
+
+    private class Delta {
+        public double x;
+        public double y;
     }
 
     /**
@@ -331,10 +360,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param point where the boat has moved to
      */
     private void moveBoatAnnotation(VBox annotation, CanvasCoordinate point, BoatDisplay boatDisplay){
-        annotation.relocate(
-                (point.getX() + boatDisplay.getAnnoOffsetX()),
-                (point.getY() + boatDisplay.getAnnoOffsetY())
-        );
+        if(!boatDisplay.getAnnoHasMoved()){
+            annotation.relocate(
+                    (point.getX() + boatDisplay.getAnnoOffsetX()),
+                    (point.getY() + boatDisplay.getAnnoOffsetY())
+            );
+        }
     }
 
     /**
