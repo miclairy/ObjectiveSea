@@ -4,6 +4,7 @@ import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import seng302.utilities.DisplayUtils;
+import seng302.utilities.TimeUtils;
 
 import java.util.*;
 
@@ -65,7 +66,7 @@ public class DistanceLine {
                 if (mark.hasTwoMarks()) {
                     midPoint = DisplayUtils.midPointFromTwoCoords(mark.getMark1().getPosition(), mark.getMark2().getPosition());
                 }
-                createLine(midPoint, firstBoat.getCurrentPosition());
+                createLine(midPoint, firstBoat.getCurrentPosition(), true);
             }
         }
     }
@@ -80,21 +81,25 @@ public class DistanceLine {
         double dist2 = target.greaterCircleDistance(closestPoint2);
         distanceBetweenBoats = Math.abs(dist2 - dist1);
         if(dist1 < dist2){
-            createLine(target, closestPoint2);
+            createLine(target, closestPoint1, false);
         } else{
-            createLine(target, closestPoint1);
+            createLine(target, closestPoint2, false);
         }
-        createLine(firstBoat.getCurrentPosition(), closestPoint1);
-        createLine(secondBoat.getCurrentPosition(), closestPoint2);
+        createLine(firstBoat.getCurrentPosition(), closestPoint1, false);
+        createLine(secondBoat.getCurrentPosition(), closestPoint2, false);
+        createLine(closestPoint1, closestPoint2, true);
     }
 
-    private void createLine(Coordinate point1, Coordinate point2){
+    private void createLine(Coordinate point1, Coordinate point2, Boolean toColor){
         CanvasCoordinate canvasPoint1 = DisplayUtils.convertFromLatLon(point1);
         CanvasCoordinate canvasPoint2 = DisplayUtils.convertFromLatLon(point2);
         Line line = new Line(
                 canvasPoint1.getX(), canvasPoint1.getY(),
                 canvasPoint2.getX(), canvasPoint2.getY()
         );
+        if (toColor){
+            line.setStroke(Color.GREEN);
+        }
         line.setId("distanceLine");
         lines.add(line);
     }
