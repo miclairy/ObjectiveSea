@@ -9,12 +9,13 @@ import javafx.scene.chart.XYChart.Data;
 import seng302.data.BoatStatus;
 
 import java.util.ArrayList;
+import java.util.Observable;
 
 /**
  * Class to encapsulate properties associated with a boat.
  */
 
-public class Boat implements Comparable<Boat>{
+public class Boat extends Observable implements Comparable<Boat>{
 
     private final double KNOTS_TO_MMS_MULTIPLIER = 514.444;
 
@@ -24,7 +25,6 @@ public class Boat implements Comparable<Boat>{
     private double currentVMG;
     private int currPlacing;
     private int leg;
-    private Series series;
 
     private Coordinate currentPosition;
 
@@ -56,7 +56,6 @@ public class Boat implements Comparable<Boat>{
         this.lastRoundedMarkIndex = -1;
         this.pathCoords = new ArrayList<>();
         this.currentPosition = new Coordinate(0,0);
-        this.series = new Series();
     }
 
     /**
@@ -142,11 +141,10 @@ public class Boat implements Comparable<Boat>{
 
     public int getCurrPlacing(){return currPlacing;}
 
-    public Series getSeries(){return series;}
-
     public void setCurrPlacing(int placing){
         this.currPlacing = placing;
-        series.getData().add(new Data(lastRoundedMarkIndex, currPlacing));
+        setChanged();
+        notifyObservers();
     }
 
     /**
@@ -161,7 +159,9 @@ public class Boat implements Comparable<Boat>{
         }
     }
 
-    public ArrayList<Coordinate> getPathCoords() {return pathCoords;}
+    public ArrayList<Coordinate> getPathCoords() {
+        return pathCoords;
+    }
 
     public void addPathCoord(Coordinate newCoord){
         this.pathCoords.add(newCoord);
