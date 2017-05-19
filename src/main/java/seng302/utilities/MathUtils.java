@@ -91,5 +91,23 @@ public class MathUtils {
         return new Coordinate(halfLat,halfLong);
     }
 
+    /**
+     * Function to determine if the boat which is on the correct side of the sideline is heading towards it
+     * @param boatsHeading heading of boat
+     * @param lineHeading the heading of the line, if the boat is heading towards it the boat will essentially be heading on either side of the perpendicular line ot it
+     * @param headingOfMark the heading from the mark to the startline
+     * @return true if the boat is heading in the general direction of the line
+     */
+    public static Boolean boatHeadingToLine(double boatsHeading, double lineHeading, double headingOfMark){
+        Boolean towardsLine = false;
+
+        if(pointBetweenTwoAngle(lineHeading + 270, 90, boatsHeading) && pointBetweenTwoAngle(lineHeading + 90, 90, headingOfMark)){
+            towardsLine = true;
+        } else if(pointBetweenTwoAngle(lineHeading + 90, 90, boatsHeading) && pointBetweenTwoAngle(lineHeading + 270, 90, headingOfMark)){
+            towardsLine = true;
+        }
+        return towardsLine;
+    }
+
 
 }

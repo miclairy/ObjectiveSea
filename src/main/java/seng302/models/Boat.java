@@ -273,7 +273,7 @@ public class Boat extends Observable implements Comparable<Boat>{
         if(lastRoundedMarkIndex + 1 < courseOrder.size()){
             markLocation = courseOrder.get(lastRoundedMarkIndex + 1).getPosition();
         } else {
-            markLocation = courseOrder.get(lastRoundedMarkIndex).getPosition();
+            markLocation = courseOrder.get(courseOrder.size() - 1).getPosition();
         }
 
         double lineBearing = currentPosition.headingToCoordinate(markLocation);

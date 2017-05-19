@@ -166,52 +166,46 @@ public class BoatDisplay implements Observer {
 
     /**
      * Set's the boats start timing status to Late if the boat is going to be more than 5sec late, early if it'll cross the start line early or nothing if neither
-     * @param course the course the boat is on
+     * @param race the race the boat is in
      */
-    public void getStartTiming(Course course){
+    public void getStartTiming(Race race){
+        long secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000;
+        Course course = race.getCourse();
         Coordinate position = boat.getCurrentPosition();
         CompoundMark startLine = course.getStartLine();
         Coordinate startLine1 = course.getCourseOrder().get(0).getMark1().getPosition(); //position of startline
         Coordinate startLine2 = course.getCourseOrder().get(0).getMark2().getPosition(); //position of startline
         Coordinate mark = course.getCourseOrder().get(0).getPosition(); //Position of first mark to determine which way the course goes
         Boolean toLeftOfStart = MathUtils.boatBeforeStartline(position.getLat(),position.getLon(),startLine1.getLat(),startLine1.getLon(),startLine2.getLat(),startLine2.getLon(),mark.getLat(),mark.getLon()); //checks if boat on correct side of the line
-        double timeToStart = 0;
+        double timeToStart;
+        double timeToCrossStartLine = 0;
         double boatsHeading = boat.getHeading();
         double headingOfStartLine = startLine1.headingToCoordinate(startLine2);
-        Boolean boatHeadingToStart = boatHeadingToLine(boatsHeading, headingOfStartLine, mark, startLine1);
+        double headingOfMark = mark.headingToCoordinate(startLine1);
+        Boolean boatHeadingToStart = MathUtils.boatHeadingToLine(boatsHeading, headingOfStartLine, headingOfMark);
         Coordinate midPointOfStart = MathUtils.calculateMidPoint(startLine);
         if(toLeftOfStart && boatHeadingToStart){
             double distanceToStart = position.greaterCircleDistance(midPointOfStart); // need to use Ray's formula
             timeToStart = distanceToStart/boat.getSpeed() * 60 * 60; //converted to seconds (nautical miles/knots = hours)
+            System.out.println(timeToCrossStartLine);
+            timeToCrossStartLine = timeToStart + secondsElapsed;
         } else if(!toLeftOfStart && !boatHeadingToStart){ // If boat is on the wrong side of the line but heading to the mark (from wrong direction), this checks if it is possible for the boat to even get there
             double distanceToStart = position.greaterCircleDistance(midPointOfStart);  // need to use Ray's formula
             timeToStart = distanceToStart/boat.getSpeed() * 60 * 60; //converted to seconds (nautical miles/knots = hours)
-            if(timeToStart < 5.0){
-                timeToStart = 0.0;
+            timeToCrossStartLine = timeToStart + secondsElapsed;
+            if(timeToCrossStartLine < 5.0){
+                timeToCrossStartLine = 0.0;
             }
+            System.out.println(timeToCrossStartLine);
         }
-        if(timeToStart > 5.0){
+        if(timeToCrossStartLine > 5.0){
             boat.setTimeStatus(StartTimingStatus.LATE);
-        } if(timeToStart < 0.0){
+        } if(timeToCrossStartLine < 0.0){
             boat.setTimeStatus(StartTimingStatus.EARLY);
         }  else{
             boat.setTimeStatus(StartTimingStatus.ONTIME);
         }
     }
-
-
-    public Boolean boatHeadingToLine(double boatsHeading, double lineHeading, Coordinate MarkPosition, Coordinate startLine){
-        Boolean towardsLine = false;
-        double headingOfMark = MarkPosition.headingToCoordinate(startLine);
-        if(pointBetweenTwoAngle(lineHeading + 270, 90, boatsHeading) && pointBetweenTwoAngle(lineHeading + 90, 90, headingOfMark)){
-            towardsLine = true;
-        } else if(pointBetweenTwoAngle(lineHeading + 90, 90, boatsHeading) && pointBetweenTwoAngle(lineHeading + 270, 90, headingOfMark)){
-            towardsLine = true;
-        }
-        return towardsLine;
-    }
-
-
 
 
     public void showVectors() {

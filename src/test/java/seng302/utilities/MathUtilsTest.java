@@ -84,6 +84,11 @@ public class MathUtilsTest {
         Assert.assertTrue(boatBeforeStartline(32.2937,-64.855242,32.296577,-64.854304,-32.293771,-64.855242,32.293039,-64.845045));
         Assert.assertTrue(boatBeforeStartline(32.293039,-64.845045,32.296577,-64.854304,-32.293771,-64.855242,32.2937,-64.855242));
         Assert.assertFalse(boatBeforeStartline(32.296577,-64.854304,32.296577,-64.854304,-32.293771,-64.855242,32.2937,-64.855242));
+    }
 
+    @Test
+    public void boatHeadingToLineTest(){
+        Assert.assertTrue(boatHeadingToLine(90,0,270));
+        Assert.assertFalse(boatHeadingToLine(90,0,85));
     }
 }
