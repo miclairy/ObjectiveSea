@@ -5,10 +5,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import seng302.utilities.DisplayUtils;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Louis on 14-May-17.
@@ -16,8 +13,8 @@ import java.util.Set;
  */
 
 public class DistanceLine {
-    private Boat firstBoat;
-    private Boat secondBoat;
+    private Boat firstBoat = null;
+    private Boat secondBoat = null;
     private CompoundMark mark;
     private Set<Line> lines;
     private double distanceBetweenBoats;
@@ -46,6 +43,10 @@ public class DistanceLine {
         this.mark = mark;
     }
 
+    public CompoundMark getMark(){
+        return mark;
+    }
+
     public Collection<Line> getLines() {
         return Collections.unmodifiableCollection(lines);
     }
@@ -53,25 +54,18 @@ public class DistanceLine {
     public void reCalcLine() {
         lines.clear();
         if (mark != null){
-            if (firstBoat != null && secondBoat != null) { // Line between two boats
+            if (!Objects.equals(firstBoat.getId(), secondBoat.getId())) { // Line between two boats
                 Coordinate midPoint = mark.getPosition();
                 if (mark.hasTwoMarks()) {
                     midPoint = DisplayUtils.midPointFromTwoCoords(mark.getMark1().getPosition(), mark.getMark2().getPosition());
                 }
                 createLinesBetweenTwoBoats(midPoint);
-            }
-            Boat boatToUse = null;
-            if (firstBoat == null){
-                boatToUse = secondBoat;
-            } else if (secondBoat == null) {
-                boatToUse = firstBoat;
-            }
-            if (boatToUse != null) {
+            } else {
                 Coordinate midPoint = mark.getPosition();
                 if (mark.hasTwoMarks()) {
                     midPoint = DisplayUtils.midPointFromTwoCoords(mark.getMark1().getPosition(), mark.getMark2().getPosition());
                 }
-                createLine(midPoint, boatToUse.getCurrentPosition());
+                createLine(midPoint, firstBoat.getCurrentPosition());
             }
         }
     }
@@ -110,11 +104,7 @@ public class DistanceLine {
     }
 
     public boolean boatsFinished(){
-        if (firstBoat.isFinished() && secondBoat.isFinished()){
-            return false;
-        } else {
-            return true;
-        }
+        return firstBoat.isFinished() && secondBoat.isFinished();
     }
 
     public double getDistanceBetweenBoats(){
