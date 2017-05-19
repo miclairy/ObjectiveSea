@@ -98,7 +98,7 @@ public class DistanceLine {
                 canvasPoint2.getX(), canvasPoint2.getY()
         );
         if (toColor){
-            line.setStroke(Color.GREEN);
+            line.setStroke(Color.web("#4DC58B"));
         }
         line.setId("distanceLine");
         lines.add(line);
