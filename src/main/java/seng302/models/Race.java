@@ -162,6 +162,7 @@ public class Race extends Observable{
         Boat boat = boatIdMap.get(sourceID);
         boat.setLastRoundedMarkIndex(roundedMarkIndex);
         boat.setLastRoundedMarkTime(time);
+        updateRaceOrder();
     }
 
     /**

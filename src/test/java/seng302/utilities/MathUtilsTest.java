@@ -64,36 +64,4 @@ public class MathUtilsTest {
         assertEquals(8.564421885974385, lagrangeInterpolation(A,B,C,x), DELTA);
         assertEquals(3, lagrangeInterpolation(D,E,F,4.0), DELTA);
     }
-
-    @Test
-    public void calculateBearingBetweenTwoPointsTest(){
-        Mark testMark = new Mark(2, "Test Mark", new Coordinate(0, 4));
-        CompoundMark compoundtestMark = new CompoundMark(1, "Compound test mark", testMark);
-
-        Mark testGate1 = new Mark(3, "Test gate 1", new Coordinate(4, 4));
-        Mark testGate2 = new Mark(4, "Gate 2", new Coordinate(0, 0));
-        CompoundMark compoundtestGate = new CompoundMark(3, "Gate", testGate1, testGate2);
-
-        double bearing1 = calculateBearingBetweenTwoPoints(compoundtestMark, compoundtestGate);
-        double bearing2 = calculateBearingBetweenTwoPoints(compoundtestGate, compoundtestMark);
-        double bearing3 = calculateBearingBetweenTwoPoints(compoundtestMark,compoundtestMark);
-
-        assertEquals(135, bearing1, DELTA);
-        assertEquals(250, bearing2, DELTA);
-        assertEquals(0, bearing3, DELTA);
-
-//
-//        Mark mark1 = new Mark(2, "Mark 1", new Coordinate(32.293039, -64.843983));
-//        CompoundMark mark = new CompoundMark(2, "Mark", mark1);
-//
-//        Mark gate1 = new Mark(3, "Gate 1", new Coordinate(32.284680, -64.850045));
-//        Mark gate2 = new Mark(4, "Gate 2", new Coordinate(32.280164, -64.847591)); //midpoint is (32.2825, -64.848889)
-//        CompoundMark gate = new CompoundMark(3, "Gate", gate1, gate2);
-//
-//        double bearing = calculateBearingBetweenTwoPoints(mark, gate);
-//
-//        assertEquals(100, bearing, DELTA);
-
-
-    }
 }

@@ -126,7 +126,7 @@ public class RaceTest {
         assertEquals(boat1, defaultRace.getRaceOrder().get(1));
 
         defaultRace.updateMarkRounded(1, 999, 2); //Non-existent mark
-        assertEquals(1, boat1.getLastRoundedMarkIndex());
+        assertEquals(999, boat1.getLastRoundedMarkIndex());
         assertEquals(1, boat2.getLastRoundedMarkIndex());
 
         defaultRace.updateMarkRounded(1, 2, 2);
@@ -149,10 +149,8 @@ public class RaceTest {
         assertEquals(1, boat1.getLastRoundedMarkIndex());
         defaultRace.updateMarkRounded(1, 2, 5);
         assertEquals(2, boat1.getLastRoundedMarkIndex());
-        defaultRace.updateMarkRounded(1, 1, 10);
+        defaultRace.updateMarkRounded(1, 3, 10);
         assertEquals(3, boat1.getLastRoundedMarkIndex());
 
-        defaultRace.updateMarkRounded(1, 2, 10); //No more marks of this id exist in race order
-        assertEquals(3, boat1.getLastRoundedMarkIndex());
     }
 }

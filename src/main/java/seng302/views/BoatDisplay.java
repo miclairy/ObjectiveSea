@@ -133,15 +133,6 @@ public class BoatDisplay {
         return timeTillMark;
     }
 
-    public void setLaylines(Line layline1, Line layline2) {
-        this.layline1 = layline1;
-        this.layline2 = layline2;
-    }
-
-    public void setBoatLaylines(Pair<Line, Line> boatLayLines) {
-        this.boatLayLines = boatLayLines;
-    }
-
     public void showVectors() {
         SOGVector.setVisible(true);
         VMGVector.setVisible(true);
