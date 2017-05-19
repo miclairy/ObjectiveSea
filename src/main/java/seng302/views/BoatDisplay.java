@@ -32,6 +32,8 @@ public class BoatDisplay {
     private VBox annotation;
     private Path path;
     private Line annotationLine;
+    private double annoOffsetX;
+    private double annoOffsetY;
     private boolean annoHasMoved = false;
     private final double FADEDBOAT = 0.3;
 
@@ -40,6 +42,8 @@ public class BoatDisplay {
     public BoatDisplay(Boat boat) {
         this.boat = boat;
         this.annotation = new VBox();
+        this.annoOffsetX = 25;
+        this.annoOffsetY = 30;
     }
 
     public boolean getAnnoHasMoved() {
@@ -53,6 +57,22 @@ public class BoatDisplay {
     public Line getAnnotationLine() {return annotationLine;}
 
     public void setAnnotationLine(Line line) {this.annotationLine = line;}
+
+    public double getAnnoOffsetX() {
+        return annoOffsetX;
+    }
+
+    public void setAnnoOffsetX(double annoOffsetX) {
+        this.annoOffsetX = annoOffsetX;
+    }
+
+    public double getAnnoOffsetY() {
+        return annoOffsetY;
+    }
+
+    public void setAnnoOffsetY(double annoOffsetY) {
+        this.annoOffsetY = annoOffsetY;
+    }
 
     public VBox getAnnotation() {return annotation;}
 
