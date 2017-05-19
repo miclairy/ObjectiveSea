@@ -175,6 +175,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     selectedBoats.remove(boat);
                 } else {
                     selectedBoats.add(boat);
+                    updateDistanceLine(scoreBoardController.isDistanceLineSelected());
                 }
 
             } else {
@@ -272,6 +273,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             isTrackingPoint = false;
             rotationOffset =0;
             updateRotation();
+            updateDistanceLine(false);
         }
     }
 

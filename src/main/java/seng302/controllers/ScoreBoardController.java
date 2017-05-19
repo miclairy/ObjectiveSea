@@ -167,6 +167,8 @@ public class ScoreBoardController {
         return chkLaylines.isSelected();
     }
 
+    public boolean isDistanceLineSelected(){return DistanceLinesToggle.isSelected();}
+
     public void addBoatToSparkLine(Series boatSeries){
         if(!chtSparkLine.getData().contains(boatSeries)){
             chtSparkLine.getData().add(boatSeries);
