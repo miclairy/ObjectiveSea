@@ -169,14 +169,15 @@ public class BoatDisplay implements Observer {
      * @param race the race the boat is in
      */
     public void getStartTiming(Race race){
-        long secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000;
+        long secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000; //time till race
         Course course = race.getCourse();
         Coordinate position = boat.getCurrentPosition();
         CompoundMark startLine = course.getStartLine();
-        Coordinate startLine1 = course.getCourseOrder().get(0).getMark1().getPosition(); //position of startline
-        Coordinate startLine2 = course.getCourseOrder().get(0).getMark2().getPosition(); //position of startline
-        Coordinate mark = course.getCourseOrder().get(0).getPosition(); //Position of first mark to determine which way the course goes
+        Coordinate startLine1 = course.getCourseOrder().get(0).getMark1().getPosition(); //position of start line
+        Coordinate startLine2 = course.getCourseOrder().get(0).getMark2().getPosition(); //position of start line
+        Coordinate mark = course.getCourseOrder().get(1).getPosition(); //Position of first mark to determine which way the course goes
         Boolean toLeftOfStart = MathUtils.boatBeforeStartline(position.getLat(),position.getLon(),startLine1.getLat(),startLine1.getLon(),startLine2.getLat(),startLine2.getLon(),mark.getLat(),mark.getLon()); //checks if boat on correct side of the line
+
         double timeToStart;
         double timeToCrossStartLine = 0;
         double boatsHeading = boat.getHeading();
@@ -187,7 +188,7 @@ public class BoatDisplay implements Observer {
         if(toLeftOfStart && boatHeadingToStart){
             double distanceToStart = position.greaterCircleDistance(midPointOfStart); // need to use Ray's formula
             timeToStart = distanceToStart/boat.getSpeed() * 60 * 60; //converted to seconds (nautical miles/knots = hours)
-            System.out.println(timeToCrossStartLine);
+            System.out.println("I'm on the right side with time " + timeToCrossStartLine);
             timeToCrossStartLine = timeToStart + secondsElapsed;
         } else if(!toLeftOfStart && !boatHeadingToStart){ // If boat is on the wrong side of the line but heading to the mark (from wrong direction), this checks if it is possible for the boat to even get there
             double distanceToStart = position.greaterCircleDistance(midPointOfStart);  // need to use Ray's formula
@@ -196,13 +197,13 @@ public class BoatDisplay implements Observer {
             if(timeToCrossStartLine < 5.0){
                 timeToCrossStartLine = 0.0;
             }
-            System.out.println(timeToCrossStartLine);
+            System.out.println("On wrong side with time" + timeToCrossStartLine);
         }
-        if(timeToCrossStartLine > 5.0){
+        if(timeToCrossStartLine > 5.0){ //Time to cross the line is greater than 5 sec so will be late
             boat.setTimeStatus(StartTimingStatus.LATE);
-        } if(timeToCrossStartLine < 0.0){
+        } if(timeToCrossStartLine < 0.0){ //Time to cross the line is less than zero so will be early
             boat.setTimeStatus(StartTimingStatus.EARLY);
-        }  else{
+        } else{ //else the boat is essentially on time
             boat.setTimeStatus(StartTimingStatus.ONTIME);
         }
     }
