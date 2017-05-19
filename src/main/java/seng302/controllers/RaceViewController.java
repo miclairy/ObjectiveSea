@@ -1,19 +1,14 @@
 package seng302.controllers;
 
-import com.sun.deploy.uitoolkit.DragContext;
 import javafx.animation.AnimationTimer;
-import javafx.animation.FadeTransition;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.ImageCursor;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -24,7 +19,6 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
-import javafx.util.Duration;
 import seng302.data.BoatStatus;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.TimeUtils;
@@ -32,11 +26,7 @@ import seng302.models.*;
 import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
-import java.awt.geom.Line2D;
-import javax.imageio.ImageIO;
-import java.net.URL;
 import java.util.*;
-import java.awt.MouseInfo;
 
 import static seng302.data.RaceStatus.STARTED;
 
