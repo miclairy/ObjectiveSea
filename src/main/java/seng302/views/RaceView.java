@@ -52,9 +52,9 @@ public class RaceView {
      */
     public Polyline createBoatWake() {
         Polyline wake = new Polyline();
-        wake.getPoints().addAll(-5.0, 40.0,
+        wake.getPoints().addAll(5.0, 40.0,
                 0.0, -5.0,
-                5.0, 40.0);
+                -5.0, 40.0);
         wake.setId("wake");
         return wake;
     }
