@@ -1,9 +1,9 @@
 package seng302.models;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import seng302.utilities.DisplayUtils;
-
 import static org.junit.Assert.*;
 
 /**
@@ -12,13 +12,13 @@ import static org.junit.Assert.*;
  */
 public class lineTest {
 
-    private Boat boat1;
-    private Boat boat2;
-    private CompoundMark compoundMark;
-    private DistanceLine distanceLine;
+    private static Boat boat1;
+    private static Boat boat2;
+    private static CompoundMark compoundMark;
+    private static DistanceLine distanceLine;
 
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public static void setUp() {
         boat1 = new Boat(0, "TestBoat", "testNickname", 10);
         boat1.setCurrentSpeed(10);
         boat1.setPosition(10,10);
@@ -34,15 +34,11 @@ public class lineTest {
         DisplayUtils.setMaxMinLatLon(30, 20, 150, 150);
     }
 
-    /**
-     * Currently testing that some lines are created without caring about the actual
-     * line start and stop points.
-     */
     @Test
     public void distanceLineTest() {
-        assertEquals(distanceLine.getLines().size(), 0);
+        assertEquals(4, distanceLine.getLines().size());
         distanceLine.reCalcLine();
-        assertNotEquals(distanceLine.getLines().size(), 0);
+        assertNotEquals(0, distanceLine.getLines().size());
     }
 
     @Test
