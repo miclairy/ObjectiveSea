@@ -158,7 +158,7 @@ public class DataStreamReader implements Runnable{
             } else if (xmlSubtype == RACE_XML_MESSAGE) {
                 System.out.printf("New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 if (race.getCourse() != null) {
-                    race.getCourse().mergeWithOtherCourse(RaceVisionXMLParser.importCourse());
+                    race.getCourse().mergeWithOtherCourse(RaceVisionXMLParser.importCourse(xmlInputStream));
                 } else {
                     race.setCourse(RaceVisionXMLParser.importCourse(xmlInputStream));
                 }

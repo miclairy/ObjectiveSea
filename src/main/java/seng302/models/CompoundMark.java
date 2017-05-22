@@ -15,7 +15,8 @@ public class CompoundMark {
     public enum Rounding {
         SP, PORT, STBD, PS
     }
-	protected Mark mark1, mark2;
+	protected Mark mark1;
+    protected Mark mark2;
 	private String name;
     private Integer compoundMarkID;
     private MarkType type;
@@ -77,6 +78,10 @@ public class CompoundMark {
 
     public Mark getMark2() {
         return mark2;
+    }
+
+    public void setMark2(Mark mark2) {
+        this.mark2 = mark2;
     }
 
     /**
