@@ -153,7 +153,12 @@ public class RaceVisionXMLParser {
             course.getCourseOrder().set(0, startRaceLine);
             course.addNewCompoundMark(startRaceLine);
         } else{
-            throw new InputMismatchException("The start line must have 2 marks.");
+            course.removeCompoundMark(startLine);
+            startLine.setMark2(startLine.getMark1());
+            RaceLine startRaceLine = CompoundMark.convertToRaceLine(startLine, CompoundMark.MarkType.START);
+            course.setStartLine(startRaceLine);
+            course.getCourseOrder().set(0, startRaceLine);
+            course.addNewCompoundMark(startRaceLine);
         }
 
         int lastMarkIndex = course.getCourseOrder().size() - 1;
