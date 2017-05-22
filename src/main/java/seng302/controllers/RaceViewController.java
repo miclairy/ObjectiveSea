@@ -861,6 +861,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public void zoomToggle(boolean zoomed){
         isRotationEnabled = zoomed;
         rotationOffset = 0;
+        updateRotation();
     }
 
     public boolean hasInitializedBoats() {
