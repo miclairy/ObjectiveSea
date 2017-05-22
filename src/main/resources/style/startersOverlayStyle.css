@@ -7,7 +7,7 @@
 }
 
 #startersOverlay{
-    -fx-effect: dropshadow(three-pass-box, rgb(21, 54, 50), 50, 0, 0, 0);
+    -fx-effect: dropshadow(three-pass-box, rgb(21, 54, 50), 40, 0, 0, 15);
 }
 
 #startersOverlayTitle {

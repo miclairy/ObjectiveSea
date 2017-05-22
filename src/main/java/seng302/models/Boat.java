@@ -3,6 +3,8 @@ package seng302.models;
 import seng302.data.BoatStatus;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Observable;
 
 /**
@@ -32,7 +34,7 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     private BoatStatus status = BoatStatus.UNDEFINED;
 
-    private ArrayList<Coordinate> pathCoords;
+    private List<Coordinate> pathCoords;
     private long timeTillMark;
     private long timeTillFinish;
     private Integer id;
@@ -152,8 +154,8 @@ public class Boat extends Observable implements Comparable<Boat>{
         }
     }
 
-    public ArrayList<Coordinate> getPathCoords() {
-        return pathCoords;
+    public List getPathCoords() {
+        return Collections.unmodifiableList(new ArrayList<>(pathCoords));
     }
 
     public void addPathCoord(Coordinate newCoord){
