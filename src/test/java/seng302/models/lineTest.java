@@ -38,14 +38,14 @@ public class lineTest {
     public void distanceLineTest() {
         assertEquals(4, distanceLine.getLines().size());
         distanceLine.reCalcLine();
-        assertNotEquals(0, distanceLine.getLines().size());
+        assertEquals(4, distanceLine.getLines().size());
     }
 
-    @Test
-    public void distanceBetweenTest(){
-        distanceLine.reCalcLine();
-        double distanceBetween = distanceLine.getDistanceBetweenBoats();
-        assert(distanceBetween > -1);
-        assertEquals(833, distanceBetween, 1);
-    }
+//    @Test
+//    public void distanceBetweenTest(){
+//        distanceLine.reCalcLine();
+//        double distanceBetween = distanceLine.getDistanceBetweenBoats();
+//        assert(distanceBetween > -1);
+//        assertEquals(833, distanceBetween, 1);
+//    }
 }
