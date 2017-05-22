@@ -145,21 +145,15 @@ public class RaceVisionXMLParser {
      */
     private static void setRaceLines(Course course) {
         CompoundMark startLine = course.getCourseOrder().get(0);
-        if(startLine.hasTwoMarks()){
-            course.removeCompoundMark(startLine);
-
-            RaceLine startRaceLine = CompoundMark.convertToRaceLine(startLine, CompoundMark.MarkType.START);
-            course.setStartLine(startRaceLine);
-            course.getCourseOrder().set(0, startRaceLine);
-            course.addNewCompoundMark(startRaceLine);
-        } else{
-            course.removeCompoundMark(startLine);
+        if(!startLine.hasTwoMarks()) {
+            System.err.println("WARNING: Start line only had one mark.");
             startLine.setMark2(startLine.getMark1());
-            RaceLine startRaceLine = CompoundMark.convertToRaceLine(startLine, CompoundMark.MarkType.START);
-            course.setStartLine(startRaceLine);
-            course.getCourseOrder().set(0, startRaceLine);
-            course.addNewCompoundMark(startRaceLine);
         }
+        course.removeCompoundMark(startLine);
+        RaceLine startRaceLine = CompoundMark.convertToRaceLine(startLine, CompoundMark.MarkType.START);
+        course.setStartLine(startRaceLine);
+        course.getCourseOrder().set(0, startRaceLine);
+        course.addNewCompoundMark(startRaceLine);
 
         int lastMarkIndex = course.getCourseOrder().size() - 1;
         CompoundMark finishLine = course.getCourseOrder().get(lastMarkIndex);
