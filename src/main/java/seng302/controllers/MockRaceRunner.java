@@ -1,6 +1,5 @@
 package seng302.controllers;
 
-import javafx.util.Pair;
 import seng302.data.BoatStatus;
 import seng302.data.RaceStatus;
 import seng302.data.RaceVisionXMLParser;
@@ -26,7 +25,7 @@ import static seng302.data.RaceStatus.*;
 
 public class MockRaceRunner implements Runnable {
 
-    private final double SECONDS_PER_UPDATE = 0.2;
+    private final double SECONDS_PER_UPDATE = 0.02;
     private double scaleFactor = 1;
     private final double WARNING_SIGNAL_TIME_IN_MS = (1000 * 60 * 3);
     private final double PREPATORY_SIGNAL_TIME_IN_MS = (1000 * 60 * 1);
