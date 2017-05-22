@@ -57,7 +57,7 @@ public class TimeUtilsTest {
 
     @Test
     public void setTimeZoneTest() {
-        String test = TimeUtils.setTimeZone(17.0);
+        String test = TimeUtils.setTimeZone(17.0, 0);
         assertEquals("Incorrect TimeZone in XML file. TimeZone reset to default.", outContent.toString());
     }
 
