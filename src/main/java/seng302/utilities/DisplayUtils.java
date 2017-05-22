@@ -70,7 +70,7 @@ public class DisplayUtils {
      */
     public static void setZoomLevel(double zoomLevel) {
 
-        double deltaZoom = DisplayUtils.zoomLevel- zoomLevel;
+        double deltaZoom = DisplayUtils.zoomLevel - zoomLevel;
         double canvasHeight = Controller.getAnchorHeight()/2;
         double canvasWidth = Controller.getAnchorWidth()/2;
 

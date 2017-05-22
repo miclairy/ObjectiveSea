@@ -4,7 +4,6 @@ import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import seng302.utilities.DisplayUtils;
-import seng302.utilities.TimeUtils;
 
 import java.util.*;
 
@@ -19,13 +18,12 @@ public class DistanceLine {
     private CompoundMark mark;
     private Set<Line> lines;
     private double distanceBetweenBoats;
-    private Label annotation = new Label();
+    private Label annotation;
     private Coordinate closestPoint1;
     private Coordinate closestPoint2;
 
     public DistanceLine(){
         lines = new HashSet<>();
-        annotation.setId("distanceAnnotation");
     }
 
     public void setFirstBoat(Boat firstBoat) {
@@ -117,6 +115,10 @@ public class DistanceLine {
     }
 
     public Label getAnnotation() {
+        if (annotation == null){
+            annotation = new Label();
+            annotation.setId("distanceAnnotation");
+        }
         return annotation;
     }
 
@@ -125,7 +127,10 @@ public class DistanceLine {
     }
 
     public CanvasCoordinate halfwayBetweenBoatsCoord(){
-        CanvasCoordinate halfway = DisplayUtils.convertFromLatLon(DisplayUtils.midPointFromTwoCoords(closestPoint1, closestPoint2));
+        Coordinate tempCoord = DisplayUtils.midPointFromTwoCoords(closestPoint1, closestPoint2);
+        System.out.println(tempCoord.getLat() + " , " + tempCoord.getLon());
+        CanvasCoordinate halfway = DisplayUtils.convertFromLatLon(tempCoord);
+        System.out.println(halfway.getX() + " , " + halfway.getY());
         return halfway;
     }
 }

@@ -2,14 +2,10 @@ package seng302.utilities;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import seng302.utilities.TimeUtils;
-
+import seng302.models.Coordinate;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-
 import static org.junit.Assert.*;
 
 /**
@@ -74,10 +70,19 @@ public class TimeUtilsTest {
     }
 
     @Test
-    public void calcDistanceTest() throws Exception {
+    public void calcDistanceTest() {
+        Coordinate testCoord = new Coordinate(10, 10);
+        Coordinate testCoord2Two = new Coordinate(100, 100);
         assertEquals(0, TimeUtils.calcDistance(10, 10, 10, 10), 0.0005);
         assertEquals(0, TimeUtils.calcDistance(0, 0, 0, 0), 0);
-        assertEquals(4809.027, TimeUtils.calcDistance(10, 100, 10, 100), 0.0005);
+        assertEquals(TimeUtils.calcDistance(testCoord, testCoord2Two), TimeUtils.calcDistance(10, 100, 10, 100), 0.0005);
 
+    }
+
+    @Test
+    public void testNauticalMilesToMetres(){
+        assertEquals(1852.0, TimeUtils.convertNauticalMilesToMetres(1), 0.001);
+        assertEquals(0.0, TimeUtils.convertNauticalMilesToMetres(0), 0.001);
+        assertEquals(18520.0, TimeUtils.convertNauticalMilesToMetres(10), 0.001);
     }
 }
