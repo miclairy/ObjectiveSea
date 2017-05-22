@@ -36,7 +36,7 @@ public class lineTest {
 
     @Test
     public void distanceLineTest() {
-        assertEquals(4, distanceLine.getLines().size());
+        assertEquals(0, distanceLine.getLines().size());
         distanceLine.reCalcLine();
         assertEquals(4, distanceLine.getLines().size());
     }
