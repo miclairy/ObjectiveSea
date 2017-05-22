@@ -42,18 +42,13 @@ public class lineTest {
         assertEquals(true, distanceLine.sameLeg());
     }
 
-//    @Test
-//    public void distanceLineTest() {
-//        assertEquals(0, distanceLine.getLines().size());
-//        distanceLine.reCalcLine();
-//        assertEquals(4, distanceLine.getLines().size());
-//    }
-
-//    @Test
-//    public void distanceBetweenTest(){
-//        distanceLine.reCalcLine();
-//        double distanceBetween = distanceLine.getDistanceBetweenBoats();
-//        assert(distanceBetween > -1);
-//        assertEquals(833, distanceBetween, 1);
-//    }
+    @Test
+    public void checkFurthermostTest(){
+        Coordinate midPoint = DisplayUtils.midPointFromTwoCoords(compoundMark.getMark1().getPosition(), compoundMark.getMark1().getPosition());
+        boolean dist2 = distanceLine.findFurtherestDistance(midPoint); // returns dist1 < dist2
+        assertEquals(true, dist2);
+        CanvasCoordinate halfway = distanceLine.halfwayBetweenBoatsCoord();
+        assertEquals(0.0, halfway.getX(),0.001);
+        assertEquals(0.0, halfway.getY(), 0.001);
+    }
 }

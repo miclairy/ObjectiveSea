@@ -69,16 +69,19 @@ public class DistanceLine {
         }
     }
 
-    private void createLinesBetweenTwoBoats(Coordinate target){
+    public boolean findFurtherestDistance(Coordinate target){
         Coordinate boatMidPoint = DisplayUtils.midPointFromTwoCoords(firstBoat.getCurrentPosition(), secondBoat.getCurrentPosition());
-
         InfiniteLine infiniteLine = new InfiniteLine(target, boatMidPoint);
         closestPoint1 = infiniteLine.closestPoint(firstBoat.getCurrentPosition());
         closestPoint2 = infiniteLine.closestPoint(secondBoat.getCurrentPosition());
         double dist1 = target.greaterCircleDistance(closestPoint1);
         double dist2 = target.greaterCircleDistance(closestPoint2);
         distanceBetweenBoats = Math.abs(dist2 - dist1);
-        if(dist1 < dist2){
+        return dist1 < dist2;
+    }
+
+    private void createLinesBetweenTwoBoats(Coordinate target){
+        if (findFurtherestDistance(target)){
             createLine(target, closestPoint1, false);
         } else{
             createLine(target, closestPoint2, false);
@@ -87,6 +90,8 @@ public class DistanceLine {
         createLine(secondBoat.getCurrentPosition(), closestPoint2, false);
         createLine(closestPoint1, closestPoint2, true);
     }
+
+
 
     private void createLine(Coordinate point1, Coordinate point2, Boolean toColor){
         CanvasCoordinate canvasPoint1 = DisplayUtils.convertFromLatLon(point1);
@@ -128,9 +133,7 @@ public class DistanceLine {
 
     public CanvasCoordinate halfwayBetweenBoatsCoord(){
         Coordinate tempCoord = DisplayUtils.midPointFromTwoCoords(closestPoint1, closestPoint2);
-        System.out.println(tempCoord.getLat() + " , " + tempCoord.getLon());
         CanvasCoordinate halfway = DisplayUtils.convertFromLatLon(tempCoord);
-        System.out.println(halfway.getX() + " , " + halfway.getY());
         return halfway;
     }
 }
