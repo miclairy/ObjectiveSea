@@ -576,14 +576,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     /**
-     * Draws laylines for a boat coming from the next mark it is heading to
-     * @param
+     * Draws laylines for a boat at the next gate it is heading to if it is a windward gate
+     * @param boatDisplay the boat object to display laylines for
      */
     private void createLayline(BoatDisplay boatDisplay){
         Boat boat = boatDisplay.getBoat();
         Course course = race.getCourse();
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
-        if (boat.getLastRoundedMarkIndex() < course.getCourseOrder().size() - 1 && boat.getLastRoundedMarkIndex() != -1) {
+        if (boat.getLastRoundedMarkIndex() < course.getCourseOrder().size() - 2 && boat.getLastRoundedMarkIndex() != -1) {
             Laylines laylines = boatDisplay.getLaylines();
             laylines.removeDrawnLines(root);
 
@@ -597,15 +597,17 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 Coordinate mark2Coord = nextMark.getMark2().getPosition();
 
                 laylines.calculateLaylineAngle(course.getWindDirection(), lastMark, nextMark, boatDisplay.getPolarTable());
-                Line layline1 = raceView.drawLayline(laylines.getAngle1(), mark1Coord, boatDisplay);
-                Line layline2 = raceView.drawLayline(laylines.getAngle2(), mark2Coord, boatDisplay);
+                if (laylines.shouldDraw()) {
+                    Line layline1 = raceView.drawLayline(laylines.getAngle1(), mark1Coord, boatDisplay.getColor());
+                    Line layline2 = raceView.drawLayline(laylines.getAngle2(), mark2Coord, boatDisplay.getColor());
 
-                root.getChildren().add(layline1);
-                root.getChildren().add(layline2);
-                layline1.toBack();
-                layline2.toBack();
+                    root.getChildren().add(layline1);
+                    root.getChildren().add(layline2);
+                    layline1.toBack();
+                    layline2.toBack();
 
-                laylines.setDrawnlines(layline1, layline2);
+                    laylines.setDrawnlines(layline1, layline2);
+                }
             }
         }
     }

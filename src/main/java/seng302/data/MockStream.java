@@ -209,12 +209,21 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, RACE_STATUS, raceRunner.getRace().getRaceStatus().getValue());
         addFieldToByteArray(body, EXPECTED_START_TIME, raceRunner.getRace().getStartTimeInEpochMs());
         addFieldToByteArray(body, CURRENT_TIME, raceRunner.getRace().getCurrentTimeInEpochMs());
-        addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, 0x6000); // left for now
-        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, 10); //left at 10knots for now
+        addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, convertHeadingToInt(raceRunner.getRace().getCourse().getWindDirection()));
+        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, 20); //left at 10knots for now
         addFieldToByteArray(body, NUMBER_OF_BOATS_IN_RACE, numBoats);
         addFieldToByteArray(body, RACE_TYPE, 2); //fleet race
 
         return body;
+    }
+
+    /**
+     * Converts a heading in degrees into the AC35 heading format
+     * @param heading the heading in degress
+     * @return the converted heading, represented by a long
+     */
+    private long convertHeadingToInt(double heading) {
+        return (long)(heading * Math.pow(2, 16)) / 360;
     }
 
     /**
@@ -256,8 +265,7 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, LONGITUDE, lon);
         addFieldToByteArray(body, HEADING, (int) (boat.getHeading() * Math.pow(2, 16) / 360));
         addFieldToByteArray(body, SPEED_OVER_GROUND, boat.getSpeedInMMS());
-        //TODO decide if we actually want to bother sending these
-        addFieldToByteArray(body, TRUE_WIND_DIRECTION, (long) (raceRunner.getRace().getCourse().getWindDirection() * (65536.0 / 360.0))); //convert decimal to unsigned short binary
+        addFieldToByteArray(body, TRUE_WIND_DIRECTION, convertHeadingToInt(raceRunner.getRace().getCourse().getWindDirection() ));
         addFieldToByteArray(body, TRUE_WIND_ANGLE, (long) (boat.getTWAofBoat() * Math.pow(2, 15) / 180)); //convert decimal to unsigned short binary,
 
         return body;
