@@ -3,6 +3,7 @@ package seng302.models;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import seng302.controllers.Controller;
 import seng302.utilities.DisplayUtils;
 import static org.junit.Assert.*;
 
@@ -12,13 +13,15 @@ import static org.junit.Assert.*;
  */
 public class lineTest {
 
-    private static Boat boat1;
-    private static Boat boat2;
-    private static CompoundMark compoundMark;
-    private static DistanceLine distanceLine;
+    private Boat boat1;
+    private Boat boat2;
+    private CompoundMark compoundMark;
+    private DistanceLine distanceLine;
 
-    @BeforeClass
-    public static void setUp() {
+    @Before
+    public void setUp() {
+        Controller.setCanvasWidth(100.0);
+        Controller.setCanvasHeight(100.0);
         boat1 = new Boat(0, "TestBoat", "testNickname", 10);
         boat1.setCurrentSpeed(10);
         boat1.setPosition(10,10);
@@ -48,7 +51,7 @@ public class lineTest {
         boolean dist2 = distanceLine.findFurtherestDistance(midPoint); // returns dist1 < dist2
         assertEquals(true, dist2);
         CanvasCoordinate halfway = distanceLine.halfwayBetweenBoatsCoord();
-        assertEquals(0.0, halfway.getX(),0.001);
-        assertEquals(0.0, halfway.getY(), 0.001);
+        assertEquals(-3.0, halfway.getX(),0.001);
+        assertEquals(107.0, halfway.getY(), 0.001);
     }
 }
