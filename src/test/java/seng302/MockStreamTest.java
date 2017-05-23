@@ -34,7 +34,7 @@ public class MockStreamTest {
         mockRaceRunner.setScaleFactor(200);
         upStream = new Thread(mockStream);
         upStream.start();
-        Thread.sleep(500); //because otherwise connection refused errors
+        Thread.sleep(10); //because otherwise connection refused errors
         connectionSocket = new Socket("localhost", 2829 + i);
         i++;
     }
