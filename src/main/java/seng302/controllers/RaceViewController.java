@@ -34,6 +34,7 @@ import seng302.views.RaceView;
 
 import java.util.*;
 
+import static java.lang.Math.abs;
 import static seng302.data.RaceStatus.STARTED;
 import static seng302.data.RaceStatus.TERMINATED;
 
@@ -158,7 +159,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             displayBoats.add(displayBoat);
             drawBoat(displayBoat);
             addBoatSelectionHandler(displayBoat);
-            scoreBoardController.addBoatToSparkLine(boat.getSeries());
+            //scoreBoardController.addBoatToSparkLine(boat.getSeries());
            // makeDraggable(displayBoat.getAnnotation(), displayBoat);
 
             Rectangle r = new Rectangle();
@@ -433,13 +434,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
         annotation.setOnMouseDragged(me -> {
             if(me.isPrimaryButtonDown()) {
                   annotation.getScene().setCursor(Cursor.CLOSED_HAND);
-                //System.out.println(me.getX());
-                annotation.setLayoutX(annotation.getLayoutX() + me.getX() - Delta.x);
-                annotation.setLayoutY(annotation.getLayoutY() + me.getY() - Delta.y);
-                VBox vbox = boatDisplay.getAnnotation();
-                vbox.setLayoutX(annotation.getLayoutX());
-                vbox.setLayoutY(annotation.getLayoutY());
-                boatDisplay.setAnnoHasMoved(true);
+                if(abs(me.getX() - Delta.x) < 45 &&
+                        abs(me.getY() - Delta.y) < 45) {
+                    boatDisplay.setAnnoOffsetX(boatDisplay.getAnnoOffsetX() + (me.getX() - Delta.x));
+                    boatDisplay.setAnnoOffsetY(boatDisplay.getAnnoOffsetY() + (me.getY() - Delta.y));
+                }
+                Delta.x = me.getX();
+                Delta.y = me.getY();
 
             }
         });

@@ -113,10 +113,7 @@ public class DisplayUtils {
     public static void dragDisplay(int mouseLocationX, int mouseLocationY){
         if(abs(mouseLocationX - prevDragX) < 45 &&
                 abs(mouseLocationY - prevDragY) < 45){
-
             moveOffset((mouseLocationX-prevDragX), (mouseLocationY-prevDragY));
-
-
         }
         prevDragX = mouseLocationX;
         prevDragY  = mouseLocationY;
