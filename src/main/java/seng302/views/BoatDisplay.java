@@ -1,27 +1,36 @@
 package seng302.views;
 
-import javafx.animation.ParallelTransition;
-import javafx.scene.chart.XYChart;
+import javafx.scene.Group;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Polyline;
+import javafx.scene.shape.Shape;
+import javafx.util.Pair;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.Node;
 import javafx.animation.FadeTransition;
 import javafx.util.Duration;
 import seng302.models.*;
+import seng302.utilities.DisplayUtils;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.ZoneOffset;
+import java.util.Observable;
+import java.util.Observer;
+
+import static seng302.utilities.DisplayUtils.fadeNodeTransition;
 
 
 /**
  * Encapsulates the display properties of the boat.
  */
-public class BoatDisplay {
+public class BoatDisplay implements Observer {
 
     private Boat boat;
     private Shape icon;
@@ -32,13 +41,23 @@ public class BoatDisplay {
     private double annoOffsetX;
     private double annoOffsetY;
     private boolean annoHasMoved = false;
+    private Polyline SOGVector;
+    private Polyline VMGVector;
+    private Series series;
     private final double FADEDBOAT = 0.3;
 
+    private Laylines laylines;
+    private PolarTable polarTable;
     private Color color;
 
-    public BoatDisplay(Boat boat) {
+    public BoatDisplay(Boat boat, PolarTable polarTable) {
         this.boat = boat;
         this.annotation = new VBox();
+        this.laylines = new Laylines();
+        this.polarTable = polarTable;
+        this.series = new Series();
+        series.getData().add(new Data(boat.getLastRoundedMarkIndex(), boat.getCurrPlacing()));
+
         this.annoOffsetX = 25;
         this.annoOffsetY = 30;
     }
@@ -81,6 +100,18 @@ public class BoatDisplay {
         return wake;
     }
 
+    public Polyline getSOGVector() {
+        return SOGVector;
+    }
+
+    public void setSOGVector(Polyline SOGVector) {
+        this.SOGVector = SOGVector;
+    }
+
+    public Polyline getVMGVector() {return VMGVector;}
+
+    public void setVMGVector(Polyline VMGVector) {this.VMGVector = VMGVector;}
+
     public void setIcon(Shape icon) {
         this.icon = icon;
     }
@@ -97,7 +128,8 @@ public class BoatDisplay {
 
     public void setPath(Path path) {this.path = path;}
 
-    public Path getPath() {return path;}
+    public Path getPath() {return
+            path;}
 
     public String getSpeed(){
         return String.format("%.1fkn", boat.getSpeed());
@@ -149,6 +181,16 @@ public class BoatDisplay {
         return timeTillMark;
     }
 
+    public void showVectors() {
+        SOGVector.setVisible(true);
+        VMGVector.setVisible(true);
+    }
+
+    public void hideVectors(){
+        SOGVector.setVisible(false);
+        VMGVector.setVisible(false);
+    }
+
     public void unFocus(){
         fadeNodeTransition(icon, FADEDBOAT);
         fadeNodeTransition(wake, FADEDBOAT);
@@ -167,20 +209,34 @@ public class BoatDisplay {
             fadeNodeTransition(path, 1.0);
         }
         annotationLine.setOpacity(1);
+        SOGVector.setOpacity(1);
+        VMGVector.setOpacity(1);
     }
 
+    public Series getSeries() {return series;}
+
     /**
-     * adds a fade transition to a node, so that a node fades over a set period of time
-     * @param node a node in the scene that will be faded
-     * @param endOpacity a double that represents the nodes opacity at the end of the fade
+     * updates display boat when boat passes a mark and positon updates. Adds new position to sparkline
+     * @param boatObservable the boat that has an updated placing
+     * @param arg
      */
-    private void fadeNodeTransition(Node node, double endOpacity){
-        FadeTransition fadeTransition = new FadeTransition();
-        fadeTransition.setNode(node);
-        fadeTransition.setDuration(new Duration(500));
-        fadeTransition.setFromValue(node.getOpacity());
-        fadeTransition.setToValue(endOpacity);
-        fadeTransition.play();
+    @Override
+    public void update(Observable boatObservable, Object arg) {
+        Boat boat = (Boat) boatObservable;
+        series.getData().add(new Data(boat.getLastRoundedMarkIndex(), boat.getCurrPlacing()));
+    }
+
+
+    public Laylines getLaylines() {
+        return laylines;
+    }
+
+    public void setLaylines(Laylines laylines) {
+        this.laylines = laylines;
+    }
+
+    public PolarTable getPolarTable() {
+        return polarTable;
     }
 }
 

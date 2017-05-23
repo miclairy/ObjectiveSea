@@ -70,7 +70,7 @@ public class Race extends Observable{
         for (Boat boat : competitors){
             boat.setPosition(curLat, curLon);
             boat.setHeading(course.headingsBetweenMarks(0, 1));
-            boat.getPathCoords().add(new Coordinate(curLat, curLon));
+            boat.addPathCoord(new Coordinate(curLat, curLon));
             curLat += dLat;
             curLon += dLon;
         }
@@ -84,12 +84,13 @@ public class Race extends Observable{
      * @param heading the new heading of the boat
      * @param speed the new speed of the boat
      */
-    public void updateBoat(Integer sourceID, Double lat, Double lon, Double heading, Double speed){
+    public void updateBoat(Integer sourceID, Double lat, Double lon, Double heading, Double speed, double twa){
         if(boatIdMap.containsKey(sourceID)){
             Boat boat = boatIdMap.get(sourceID);
             boat.setPosition(lat, lon);
             boat.setHeading(heading);
-            boat.setSpeed(speed);
+            boat.setCurrentSpeed(speed);
+            boat.setTWAofBoat(twa);
         } else{
             System.err.println("Boat source ID not found");
         }
@@ -154,21 +155,14 @@ public class Race extends Observable{
      * If a mark occurs multiple times in the race order, the rounded mark index will be the one next occurrence
      * of the mark that the boat has not rounded yet.
      * @param sourceID the boat's id
-     * @param roundedMarkID the mark's id
+     * @param roundedMarkIndex the mark's index in race order
      * @param time the time that the boat rounded the mark
      */
-    public void updateMarkRounded(int sourceID, int roundedMarkID, long time) {
+    public void updateMarkRounded(int sourceID, int roundedMarkIndex, long time) {
         Boat boat = boatIdMap.get(sourceID);
-        List<CompoundMark> courseOrder = course.getCourseOrder();
-        for(int markIndex = boat.getLastRoundedMarkIndex(); markIndex < courseOrder.size(); markIndex++){
-            CompoundMark mark = courseOrder.get(markIndex);
-            if(mark.getCompoundMarkID() == roundedMarkID){
-                boat.setLastRoundedMarkIndex(markIndex + 1);
-                boat.setLastRoundedMarkTime(time);
-                updateRaceOrder();
-                return;
-            }
-        }
+        boat.setLastRoundedMarkIndex(roundedMarkIndex);
+        boat.setLastRoundedMarkTime(time);
+        updateRaceOrder();
     }
 
     /**
