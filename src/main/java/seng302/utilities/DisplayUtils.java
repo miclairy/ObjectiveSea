@@ -73,7 +73,7 @@ public class DisplayUtils {
      */
     public static void setZoomLevel(double zoomLevel) {
 
-        double deltaZoom = DisplayUtils.zoomLevel- zoomLevel;
+        double deltaZoom = DisplayUtils.zoomLevel - zoomLevel;
         double canvasHeight = Controller.getAnchorHeight()/2;
         double canvasWidth = Controller.getAnchorWidth()/2;
 
@@ -168,6 +168,19 @@ public class DisplayUtils {
                 (max.getLat() - (longPerPixel * 0.11)) + "," + (max.getLon() - (longPerPixel * 0.11)) +
                 "&scale=2" +
                 "&key=" + GOOGLE_API_KEY;
+    }
+
+
+    /**
+     * Wrapper for the midPoint calculation, takes two coords instead of taking 4 doubles
+     * @param first coord of first object
+     * @param second coord of second object
+     * @return midPoint between the two objects
+     */
+    public static Coordinate midPointFromTwoCoords(Coordinate first, Coordinate second){
+        Double halfLat = (first.getLat() + second.getLat()) / 2;
+        Double halfLon = (first.getLon() + second.getLon()) / 2;
+        return new Coordinate(halfLat, halfLon);
     }
 
 

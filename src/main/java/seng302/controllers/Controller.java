@@ -1,11 +1,9 @@
 package seng302.controllers;
 
-import javafx.animation.FadeTransition;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -13,11 +11,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.transform.Rotate;
-import javafx.util.Duration;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -68,6 +63,7 @@ public class Controller implements Initializable, Observer {
     private final String COURSE_CSS = "/style/courseStyle.css";
     private final String STARTERS_CSS = "/style/startersOverlayStyle.css";
     private final String SETTINGSPANE_CSS = "/style/settingsPaneStyle.css";
+    private final String DISTANCELINE_CSS = "/style/distanceLineStyle.css";
 
     // Controllers
     @FXML private RaceViewController raceViewController;
@@ -83,7 +79,7 @@ public class Controller implements Initializable, Observer {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        canvasAnchor.getStylesheets().addAll(BOAT_CSS, COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS);
+        canvasAnchor.getStylesheets().addAll(BOAT_CSS, COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, DISTANCELINE_CSS);
         canvasWidth = canvas.getWidth();
         canvasHeight = canvas.getHeight();
         anchorWidth = canvasAnchor.getWidth();
@@ -99,7 +95,7 @@ public class Controller implements Initializable, Observer {
         course.addObserver(raceViewController);
 
         createCanvasAnchorListeners();
-        scoreBoardController.setControllers(this, raceViewController);
+        scoreBoardController.setControllers(this, raceViewController, race);
         scoreBoardController.setUp();
         fpsString.set("..."); //set to "..." while fps count loads
         fpsLabel.textProperty().bind(fpsString);
