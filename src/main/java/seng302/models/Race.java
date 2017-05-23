@@ -70,7 +70,7 @@ public class Race extends Observable{
         for (Boat boat : competitors){
             boat.setPosition(curLat, curLon);
             boat.setHeading(course.headingsBetweenMarks(0, 1));
-            boat.getPathCoords().add(new Coordinate(curLat, curLon));
+            boat.addPathCoord(new Coordinate(curLat, curLon));
             curLat += dLat;
             curLon += dLon;
         }

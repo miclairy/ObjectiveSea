@@ -293,7 +293,7 @@ public class MockRaceRunner implements Runnable {
         for (Boat boat : race.getCompetitors()){
             boat.setPosition(curLat, curLon);
             boat.setHeading(race.getCourse().headingsBetweenMarks(0, 1));
-            boat.getPathCoords().add(new Coordinate(curLat, curLon));
+            boat.addPathCoord(new Coordinate(curLat, curLon));
             boat.setLastRoundedMarkIndex(0);
             curLat += dLat;
             curLon += dLon;
