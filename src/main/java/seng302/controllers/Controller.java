@@ -104,7 +104,7 @@ public class Controller implements Initializable, Observer {
         fpsString.set("..."); //set to "..." while fps count loads
         fpsLabel.textProperty().bind(fpsString);
         clockLabel.textProperty().bind(clockString);
-        hideStarterOverlay();
+        //hideStarterOverlay();
         setWindDirection();
 
         displayStarters();
@@ -323,7 +323,8 @@ public class Controller implements Initializable, Observer {
      * Causes the starters overlay to hide itself, enabling a proper view of the course and boats beneath
      */
     public void hideStarterOverlay(){
-        startersOverlay.setVisible(false);
+        DisplayUtils.removeNodeTransition(startersOverlay);
+        //startersOverlay.setVisible(false);
     }
 
     private void showStarterOverlay(){

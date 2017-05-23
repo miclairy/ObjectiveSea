@@ -1,5 +1,6 @@
 package seng302.utilities;
 import javafx.animation.FadeTransition;
+import javafx.animation.ScaleTransition;
 import javafx.scene.Node;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
@@ -243,5 +244,15 @@ public class DisplayUtils {
         fadeTransition.setFromValue(node.getOpacity());
         fadeTransition.setToValue(endOpacity);
         fadeTransition.play();
+    }
+
+
+    public static void removeNodeTransition(Node node){
+        ScaleTransition scaleTransition = new ScaleTransition();
+        scaleTransition.setNode(node);
+        scaleTransition.setDuration(new Duration(400));
+        scaleTransition.setByX(-1.0f);
+        scaleTransition.setByY(-1.0f);
+        scaleTransition.play();
     }
 }
