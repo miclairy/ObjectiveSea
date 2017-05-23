@@ -184,6 +184,7 @@ public class DataStreamReader implements Runnable{
         int trueWindDirectionScaled = byteArrayRangeToInt(body, TRUE_WIND_DIRECTION.getStartIndex(), TRUE_WIND_DIRECTION.getEndIndex());
         int trueWindAngleScaled = byteArrayRangeToInt(body, TRUE_WIND_ANGLE.getStartIndex(), TRUE_WIND_ANGLE.getEndIndex());
         double trueWindAngle = intToTrueWindAngle(trueWindAngleScaled);
+        //unused as we believe this is always sent as 0 from the AC35 feed
         double trueWindDirection = intToHeading(trueWindDirectionScaled);
         double lat = intToLatLon(latScaled);
         double lon = intToLatLon(lonScaled);
@@ -194,10 +195,7 @@ public class DataStreamReader implements Runnable{
             race.updateBoat(sourceID, lat, lon, heading, speedInKnots, trueWindAngle);
         } else if(deviceType == MARK_DEVICE_TYPE){
             race.getCourse().updateMark(sourceID, lat, lon);
-
         }
-
-        //race.getCourse().updateTrueWindDirection(trueWindDirection);
     }
 
     /**
@@ -253,7 +251,7 @@ public class DataStreamReader implements Runnable{
                                 }
                             }
                     }
-                } else{
+                } else {
                     System.err.println("Incorrect CRC. Message Ignored.");
                 }
             } catch (IOException e) {
@@ -313,14 +311,14 @@ public class DataStreamReader implements Runnable{
         int passedFinishLineId = 103;
         long time = byteArrayRangeToLong(body, ROUNDING_TIME.getStartIndex(), ROUNDING_TIME.getEndIndex());
         int sourceID = byteArrayRangeToInt(body, ROUNDING_SOURCE_ID.getStartIndex(), ROUNDING_SOURCE_ID.getEndIndex());
-        int markID = byteArrayRangeToInt(body, ROUNDING_MARK_ID.getStartIndex(), ROUNDING_MARK_ID.getEndIndex());
+        int markIndex = byteArrayRangeToInt(body, ROUNDING_MARK_ID.getStartIndex(), ROUNDING_MARK_ID.getEndIndex());
 
-        if(markID == passedStartLineId){
-            markID = race.getCourse().getStartLine().getCompoundMarkID();
-        } else if(markID == passedFinishLineId){
-            markID = race.getCourse().getFinishLine().getCompoundMarkID();
+        if(markIndex == passedStartLineId){
+            markIndex = 0;
+        } else if(markIndex == passedFinishLineId){
+            markIndex = race.getCourse().getCourseOrder().size()-1;
         }
-        race.updateMarkRounded(sourceID, markID, time);
+        race.updateMarkRounded(sourceID, markIndex, time);
     }
 
     public Socket getClientSocket() {

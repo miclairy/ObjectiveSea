@@ -41,17 +41,16 @@ public class BoatDisplay implements Observer {
     private Polyline VMGVector;
     private Series series;
     private final double FADEDBOAT = 0.3;
-    private boolean isShowLaylines = true;
 
+    private Laylines laylines;
+    private PolarTable polarTable;
     private Color color;
-    private Line layline1;
 
-    private Line layline2;
-    private Pair<Line, Line> boatLayLines;
-
-    public BoatDisplay(Boat boat) {
+    public BoatDisplay(Boat boat, PolarTable polarTable) {
         this.boat = boat;
         this.annotation = new VBox();
+        this.laylines = new Laylines();
+        this.polarTable = polarTable;
         this.series = new Series();
         series.getData().add(new Data(boat.getLastRoundedMarkIndex(), boat.getCurrPlacing()));
 
@@ -142,15 +141,6 @@ public class BoatDisplay implements Observer {
         return timeTillMark;
     }
 
-    public void setLaylines(Line layline1, Line layline2) {
-        this.layline1 = layline1;
-        this.layline2 = layline2;
-    }
-
-    public void setBoatLaylines(Pair<Line, Line> boatLayLines) {
-        this.boatLayLines = boatLayLines;
-    }
-
     public void showVectors() {
         SOGVector.setVisible(true);
         VMGVector.setVisible(true);
@@ -183,27 +173,6 @@ public class BoatDisplay implements Observer {
         VMGVector.setOpacity(1);
     }
 
-    public void removeLaylines(Group root) {
-        if (layline1 != null && layline2 != null) {
-            root.getChildren().remove(layline1);
-            root.getChildren().remove(layline2);
-        }
-        layline1= null;
-        layline2= null;
-    }
-
-    public boolean isShowLaylines() {
-        return isShowLaylines;
-    }
-
-    public void removeBoatLaylines(Group root) {
-        if (boatLayLines != null) {
-            root.getChildren().remove(boatLayLines.getKey());
-            root.getChildren().remove(boatLayLines.getValue());
-        }
-        boatLayLines = null;
-    }
-
     public Series getSeries() {return series;}
 
     /**
@@ -215,6 +184,19 @@ public class BoatDisplay implements Observer {
     public void update(Observable boatObservable, Object arg) {
         Boat boat = (Boat) boatObservable;
         series.getData().add(new Data(boat.getLastRoundedMarkIndex(), boat.getCurrPlacing()));
+    }
+
+
+    public Laylines getLaylines() {
+        return laylines;
+    }
+
+    public void setLaylines(Laylines laylines) {
+        this.laylines = laylines;
+    }
+
+    public PolarTable getPolarTable() {
+        return polarTable;
     }
 }
 

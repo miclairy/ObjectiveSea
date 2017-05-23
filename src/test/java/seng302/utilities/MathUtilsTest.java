@@ -3,12 +3,10 @@ package seng302.utilities;
 import javafx.util.Pair;
 import org.junit.Assert;
 import org.junit.Test;
-import seng302.models.WindAngleAndSpeed;
+import seng302.models.*;
 
 import static junit.framework.TestCase.assertEquals;
-import static seng302.utilities.MathUtils.VMG;
-import static seng302.utilities.MathUtils.lagrangeInterpolation;
-import static seng302.utilities.MathUtils.pointBetweenTwoAngle;
+import static seng302.utilities.MathUtils.*;
 
 /**
  * Created by gla42 on 11/05/17.

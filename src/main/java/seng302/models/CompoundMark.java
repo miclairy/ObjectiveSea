@@ -1,7 +1,5 @@
 package seng302.models;
 
-import java.util.InputMismatchException;
-
 /**
  * Created on 7/03/17.
  * Class to specify the marks/gates on the course.
@@ -12,32 +10,12 @@ public class CompoundMark {
     public enum MarkType {
         START, FINISH, NORMAL
     }
-    public enum Rounding {
-        SP, PORT, STBD, PS
-    }
 	protected Mark mark1;
     protected Mark mark2;
 	private String name;
     private Integer compoundMarkID;
     private MarkType type;
     private Coordinate position;
-    private Rounding rounding;
-
-
-    public Rounding getRounding() { return rounding; }
-
-    public void setRounding(String roundingString) {
-        if (roundingString == "SP") {
-            rounding = Rounding.SP;
-        } else if (roundingString == "PS") {
-            rounding = Rounding.PS;
-        } else if (roundingString == "Port") {
-            rounding = Rounding.PORT;
-        } else if (roundingString == "Stbd") {
-            rounding = Rounding.STBD;
-        }
-    }
-
 
     public CompoundMark(Integer compoundMarkID, String name, Mark mark1, Mark mark2){
         this.name = name;
