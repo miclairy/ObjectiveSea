@@ -12,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
@@ -124,9 +125,26 @@ public class RaceViewController extends AnimationTimer implements Observer {
             drawBoat(displayBoat);
             addBoatSelectionHandler(displayBoat);
             scoreBoardController.addBoatToSparkLine(boat.getSeries());
+           // makeDraggable(displayBoat.getAnnotation(), displayBoat);
+
+            Rectangle r = new Rectangle();
+            r.setX(0);
+            r.setY(0);
+            r.setWidth(50);
+            r.setHeight(50);
+            r.setArcWidth(20);
+            r.setArcHeight(20);
+            r.setFill(Color.ORANGE);
+
+            displayBoat.setRectangle(r);
+            root.getChildren().add(r);
+            makeDraggable(r, displayBoat);
         }
         initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);
+
+
+
     }
 
     /**
@@ -298,8 +316,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             annotationLabel.setId("annotationLabel");
             annotationFrame.getChildren().add(annotationLabel);
         }
-
-        makeDraggable(annotationFrame, displayBoat);
+        //makeDraggable(annotationFrame, displayBoat);
 
         Line annoLine = new Line(point.getX(), point.getY(), annotationFrame.getLayoutX(), annotationFrame.getLayoutY());
         annoLine.setId("annotationLine");
@@ -315,43 +332,30 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     public void makeDraggable(Node annotation, BoatDisplay boatDisplay){
-        final Delta dragDelta = new Delta();
-        annotation.setOnMouseEntered(me -> {
-            annotation.getScene().setCursor(Cursor.HAND);
-            if(me.isPrimaryButtonDown()) {
-                annotation.getScene().setCursor(Cursor.CLOSED_HAND);
-                annotation.setLayoutX(annotation.getLayoutX() + me.getX() - dragDelta.x);
-                annotation.setLayoutY(annotation.getLayoutY() + me.getY() - dragDelta.y);
-                boatDisplay.setAnnoHasMoved(true);
-            }
-        });
+        //final Delta dragDelta = new Delta();
+        annotation.requestFocus();
 
-        annotation.setOnMouseExited(me ->{
-            annotation.getScene().setCursor(Cursor.DEFAULT);
-        });
+        root.onKeyPressedProperty().bind(annotation.onKeyPressedProperty());
 
         annotation.setOnMouseDragged(me -> {
             if(me.isPrimaryButtonDown()) {
-                annotation.getScene().setCursor(Cursor.CLOSED_HAND);
-                annotation.setLayoutX(annotation.getLayoutX() + me.getX() - dragDelta.x);
-                annotation.setLayoutY(annotation.getLayoutY() + me.getY() - dragDelta.y);
+                  annotation.getScene().setCursor(Cursor.CLOSED_HAND);
+                //System.out.println(me.getX());
+                annotation.setLayoutX(annotation.getLayoutX() + me.getX() - Delta.x);
+                annotation.setLayoutY(annotation.getLayoutY() + me.getY() - Delta.y);
+                VBox vbox = boatDisplay.getAnnotation();
+                vbox.setLayoutX(annotation.getLayoutX());
+                vbox.setLayoutY(annotation.getLayoutY());
                 boatDisplay.setAnnoHasMoved(true);
+
             }
         });
 
-        annotation.setOnMouseDragOver(me -> {
-            if(me.isPrimaryButtonDown()) {
-                annotation.getScene().setCursor(Cursor.CLOSED_HAND);
-                annotation.setLayoutX(annotation.getLayoutX() + me.getX() - dragDelta.x);
-                annotation.setLayoutY(annotation.getLayoutY() + me.getY() - dragDelta.y);
-                boatDisplay.setAnnoHasMoved(true);
-            }
-        });
     }
 
-    private class Delta {
-        public double x;
-        public double y;
+    private static class Delta {
+        public static double x;
+        public static double y;
     }
 
     /**
@@ -366,6 +370,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     (point.getY() + boatDisplay.getAnnoOffsetY())
             );
         }
+        Rectangle r = boatDisplay.getRectangle();
+        r.setX(point.getX() + boatDisplay.getAnnoOffsetX() + 100);
+        r.setY(point.getY() + boatDisplay.getAnnoOffsetY());
+        r.toFront();
     }
 
     /**

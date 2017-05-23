@@ -4,10 +4,7 @@ import javafx.animation.ParallelTransition;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Polyline;
-import javafx.scene.shape.Shape;
+import javafx.scene.shape.*;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.XYChart.Data;
 import javafx.scene.Node;
@@ -109,6 +106,16 @@ public class BoatDisplay {
     public Color getColor() {
         return color;
     }
+
+    public Rectangle getRectangle() {
+        return rectangle;
+    }
+
+    public void setRectangle(Rectangle rectangle) {
+        this.rectangle = rectangle;
+    }
+
+    public Rectangle rectangle;
 
     public void setColor(Color color) {
         this.color = color;
