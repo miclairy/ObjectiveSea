@@ -18,12 +18,15 @@ public class DisplayUtils {
 
     public static Coordinate max, min;
     public static String GOOGLE_API_KEY = "AIzaSyAQ8WSXVS1gXdhy5v9IpjeQL842wsMU1VQ";
+    public static boolean externalDragEvent = false;
+
 
     public static double zoomLevel = 1;
     private static int prevDragX=0;
     private static int prevDragY=0;
     private static int offsetX=0;
     private static int offsetY=0;
+
 
 
     /**
@@ -111,12 +114,16 @@ public class DisplayUtils {
      * @param mouseLocationY The latest screen Y location of the mouse during drag operation
      */
     public static void dragDisplay(int mouseLocationX, int mouseLocationY){
-        if(abs(mouseLocationX - prevDragX) < 45 &&
-                abs(mouseLocationY - prevDragY) < 45){
-            moveOffset((mouseLocationX-prevDragX), (mouseLocationY-prevDragY));
+        if(!externalDragEvent){
+            if(abs(mouseLocationX - prevDragX) < 45 &&
+                    abs(mouseLocationY - prevDragY) < 45){
+                moveOffset((mouseLocationX-prevDragX), (mouseLocationY-prevDragY));
+            }
+            prevDragX = mouseLocationX;
+            prevDragY  = mouseLocationY;
+        }else{
+            externalDragEvent = false;
         }
-        prevDragX = mouseLocationX;
-        prevDragY  = mouseLocationY;
 
     }
 
