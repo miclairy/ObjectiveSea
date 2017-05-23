@@ -197,7 +197,9 @@ public class RaceVisionXMLParser {
         String compoundMarkName = compoundMarkElement.getAttribute(XMLTags.Course.NAME);
         NodeList markNodes = compoundMarkElement.getElementsByTagName(XMLTags.Course.MARK);
 
-        if(!compoundMarkID.equals(1) && !compoundMarkName.equals("Start")){
+        if(compoundMarkID.equals(1) && !compoundMarkName.equals("Start")) {
+            return compoundMark;
+        }
             if (markNodes.getLength() < 1) {
                 throw new XMLParseException(XMLTags.Course.COMPOUND_MARK, "Required tag was not defined.");
             }
@@ -214,7 +216,6 @@ public class RaceVisionXMLParser {
                 Mark mark = parseMark(markElement, course);
                 compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark);
             }
-        }
         return compoundMark;
     }
 
