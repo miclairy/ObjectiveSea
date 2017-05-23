@@ -485,6 +485,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param point where the boat has moved to
      */
     private void moveBoatAnnotation(VBox annotation, CanvasCoordinate point, BoatDisplay boatDisplay){
+        if(isRotationEnabled){
+            annotation.getTransforms().clear();
+            annotation.getTransforms().add(new Rotate(-rotationOffset));
+        }
         if(!boatDisplay.getAnnoHasMoved()){
             annotation.relocate(
                     (point.getX() + boatDisplay.getAnnoOffsetX() * zoomLevel),
