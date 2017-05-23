@@ -21,6 +21,8 @@ public class Mark {
         return position;
     }
 
+    public void setPosition(Coordinate position) { this.position = position; }
+
     public Integer getSourceID() {
         return sourceID;
     }

@@ -9,6 +9,8 @@ import javafx.scene.chart.XYChart.Data;
 import seng302.data.BoatStatus;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Observable;
 
 /**
@@ -39,7 +41,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
 
-    private ArrayList<Coordinate> pathCoords;
+    private List<Coordinate> pathCoords;
     private long timeTillMark;
     private long timeTillFinish;
     private Integer id;
@@ -159,8 +161,8 @@ public class Boat extends Observable implements Comparable<Boat>{
         }
     }
 
-    public ArrayList<Coordinate> getPathCoords() {
-        return pathCoords;
+    public List getPathCoords() {
+        return Collections.unmodifiableList(new ArrayList<>(pathCoords));
     }
 
     public void addPathCoord(Coordinate newCoord){
@@ -250,10 +252,8 @@ public class Boat extends Observable implements Comparable<Boat>{
         if(lastRoundedMarkIndex == -1){
             if(status.equals(BoatStatus.FINISHED)){
                 lastRoundedMarkIndex = leg;
-            }else if(leg != 0){
+            } else {
                 lastRoundedMarkIndex = leg - 1;
-            }else{
-                lastRoundedMarkIndex = 0;
             }
         }
         this.leg = leg;

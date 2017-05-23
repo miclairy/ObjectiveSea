@@ -91,7 +91,7 @@ public class RaceVisionXMLParser {
                         case XMLTags.Course.COURSE:
                             NodeList compoundMarks = element.getElementsByTagName(XMLTags.Course.COMPOUND_MARK);
                             for (int j = 0; j < compoundMarks.getLength(); j++){
-                                CompoundMark mark = parseCompoundMark((Element) compoundMarks.item(j));
+                                CompoundMark mark = parseCompoundMark((Element) compoundMarks.item(j), course);
                                 course.addNewCompoundMark(mark);
                             }
                             break;
@@ -102,9 +102,6 @@ public class RaceVisionXMLParser {
                                 Element corner = (Element) legs.item(k);
                                 Integer seqNumber = Integer.parseInt(corner.getAttribute(XMLTags.Course.SEQ_ID));
                                 Integer compoundMarkID = Integer.parseInt(corner.getAttribute(XMLTags.Course.COMPOUND_MARK_ID));
-                                String rounding = corner.getAttribute(XMLTags.Course.ROUNDING);
-                                CompoundMark mark = course.getCompoundMarkByID(compoundMarkID);
-                                mark.setRounding(rounding);
                                 markOrder.put(seqNumber, compoundMarkID);
                             }
                             for(Integer seqNumber : markOrder.keySet()){
@@ -145,16 +142,15 @@ public class RaceVisionXMLParser {
      */
     private static void setRaceLines(Course course) {
         CompoundMark startLine = course.getCourseOrder().get(0);
-        if(startLine.hasTwoMarks()){
-            course.removeCompoundMark(startLine);
-
-            RaceLine startRaceLine = CompoundMark.convertToRaceLine(startLine, CompoundMark.MarkType.START);
-            course.setStartLine(startRaceLine);
-            course.getCourseOrder().set(0, startRaceLine);
-            course.addNewCompoundMark(startRaceLine);
-        } else{
-            throw new InputMismatchException("The start line must have 2 marks.");
+        if(!startLine.hasTwoMarks()) {
+            System.err.println("WARNING: Start line only had one mark.");
+            startLine.setMark2(startLine.getMark1());
         }
+        course.removeCompoundMark(startLine);
+        RaceLine startRaceLine = CompoundMark.convertToRaceLine(startLine, CompoundMark.MarkType.START);
+        course.setStartLine(startRaceLine);
+        course.getCourseOrder().set(0, startRaceLine);
+        course.addNewCompoundMark(startRaceLine);
 
         int lastMarkIndex = course.getCourseOrder().size() - 1;
         CompoundMark finishLine = course.getCourseOrder().get(lastMarkIndex);
@@ -174,13 +170,16 @@ public class RaceVisionXMLParser {
      * @param markElement A <Mark> element
      * @return a Mark representing the data given in the Mark element of the XML
      */
-    private static Mark parseMark(Element markElement){
+    private static Mark parseMark(Element markElement, Course course){
         String markName = markElement.getAttribute(XMLTags.Course.NAME);
         Double lat1 = Double.parseDouble(markElement.getAttribute(XMLTags.Course.TARGET_LAT));
         Double lon1 = Double.parseDouble(markElement.getAttribute(XMLTags.Course.TARGET_LON));
         Integer sourceId = Integer.parseInt(markElement.getAttribute(XMLTags.Course.SOURCE_ID));
-        Mark mark = new Mark(sourceId, markName, new Coordinate(lat1, lon1));
-        return mark;
+        if(course.getAllMarks().containsKey(sourceId)){
+            return course.getAllMarks().get(sourceId);
+        } else{
+            return new Mark(sourceId, markName, new Coordinate(lat1, lon1));
+        }
     }
 
     /**
@@ -190,7 +189,7 @@ public class RaceVisionXMLParser {
      * @return a CompoundMark (potentially RaceLine) object
      * @throws XMLParseException when an expected tag is missing or unexpectedly formatted
      */
-    private static CompoundMark parseCompoundMark(Element compoundMarkElement) throws  XMLParseException{
+    private static CompoundMark parseCompoundMark(Element compoundMarkElement, Course course) throws  XMLParseException{
         CompoundMark compoundMark;
         Integer compoundMarkID = Integer.parseInt(compoundMarkElement.getAttribute(XMLTags.Course.COMPOUND_MARK_ID));
         String compoundMarkName = compoundMarkElement.getAttribute(XMLTags.Course.NAME);
@@ -203,21 +202,12 @@ public class RaceVisionXMLParser {
             Element mark1Element = (Element) markNodes.item(0);
             Element mark2Element = (Element) markNodes.item(1);
 
-            Mark mark1 = parseMark(mark1Element);
-            Mark mark2 = parseMark(mark2Element);
+            Mark mark1 = parseMark(mark1Element, course);
+            Mark mark2 = parseMark(mark2Element, course);
             compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark1, mark2);
-//            if(mark1.getName().toLowerCase().contains(XMLTags.Course.START)){
-//                compoundMark = new RaceLine(compoundMarkID, compoundMarkName, mark1, mark2);
-//                compoundMark.setMarkAsStart();
-//            }else if(mark1.getName().toLowerCase().contains(XMLTags.Course.FINISH)){
-//                compoundMark = new RaceLine(compoundMarkID, compoundMarkName, mark1, mark2);
-//                compoundMark.setMarkAsFinish();
-//            } else{
-//                compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark1, mark2);
-//            }
         }else{
             Element markElement = (Element) markNodes.item(0);
-            Mark mark = parseMark(markElement);
+            Mark mark = parseMark(markElement, course);
             compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark);
         }
         return compoundMark;

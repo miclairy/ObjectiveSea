@@ -7,6 +7,7 @@ import seng302.models.CompoundMark;
 import seng302.models.Coordinate;
 import seng302.models.Mark;
 import seng302.models.WindAngleAndSpeed;
+import seng302.models.*;
 
 import static junit.framework.TestCase.assertEquals;
 import static seng302.utilities.MathUtils.*;
