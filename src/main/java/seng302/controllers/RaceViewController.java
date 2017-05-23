@@ -54,8 +54,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private final double WAKE_SCALE_FACTOR = 17;
     private final double SOG_SCALE_FACTOR = 200.0;
 
-    private final double ANNOTATION_OFFSET_X = 25;
-    private final double ANNOTATION_OFFSET_Y = 30;
+
     private Race race;
     private Group root;
     private Controller controller;
@@ -172,8 +171,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             r.setY(0);
             r.setWidth(10);
             r.setHeight(10);
-            r.setArcWidth(20);
-            r.setArcHeight(20);
+            r.setArcWidth(10);
+            r.setArcHeight(10);
             r.setFill(Color.BLACK);
             r.setOpacity(0.6);
 
@@ -501,8 +500,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             );
         }
         Rectangle r = boatDisplay.getRectangle();
-        r.setX(point.getX() + boatDisplay.getAnnoOffsetX() * zoomLevel - 13);
-        r.setY(point.getY() + boatDisplay.getAnnoOffsetY() * zoomLevel + 3);
+        r.setX(point.getX() + boatDisplay.getAnnoOffsetX() * zoomLevel -15);
+        r.setY(point.getY() + boatDisplay.getAnnoOffsetY() * zoomLevel -15);
         r.toFront();
     }
 
