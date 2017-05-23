@@ -14,6 +14,7 @@ public class TimeUtils {
     private static final double NANOSECONDS_IN_SECOND = 1e9f;
     private static final double SECONDS_IN_MINUTE = 60;
     private static final double MINUTES_IN_HOUR = 60;
+    private static final int CONVERSION_RATE_NAUTICALM_TO_METRES = 1852;
 
     private static boolean incorrectTimeZone = true;
     private static String foundId = new String();
@@ -138,7 +139,7 @@ public class TimeUtils {
     }
 
     public static Double convertMmPerSecondToKnots(Integer mmPerSecond){
-        Double kilometersInNauticalMile = 1.852;
+        Double kilometersInNauticalMile = (double) CONVERSION_RATE_NAUTICALM_TO_METRES / 1000;
         Double kilometersPerSecond = mmPerSecond / 1e6;
         Double kilometersPerHour = kilometersPerSecond * SECONDS_IN_MINUTE * MINUTES_IN_HOUR;
         Double knots = kilometersPerHour / kilometersInNauticalMile;
@@ -150,6 +151,6 @@ public class TimeUtils {
     }
 
     public static double convertNauticalMilesToMetres(double nautMiles){
-        return nautMiles * 1852;
+        return nautMiles * CONVERSION_RATE_NAUTICALM_TO_METRES;
     }
 }
