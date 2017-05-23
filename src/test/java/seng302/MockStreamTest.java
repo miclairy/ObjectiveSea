@@ -2,28 +2,19 @@ package seng302;
 
 
 import org.junit.*;
-import org.mockito.Mockito;
 import seng302.controllers.MockRaceRunner;
 import seng302.data.*;
-import seng302.models.*;
-import seng302.utilities.PolarReader;
 
-import javax.xml.crypto.Data;
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
-import static org.mockito.Mockito.*;
-import static seng302.data.AC35StreamField.SPEED_OVER_GROUND;
-import static seng302.data.AC35StreamField.TRUE_WIND_ANGLE;
-import static seng302.data.AC35StreamField.TRUE_WIND_DIRECTION;
 
 
 public class MockStreamTest {
@@ -154,7 +145,6 @@ public class MockStreamTest {
             }
         }
     }
-
 
     @Test
     public void sendBoatLocationTest(){

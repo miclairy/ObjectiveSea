@@ -21,7 +21,8 @@ public class MockStream implements Runnable {
     private final int GATE_TYPE = 2;
     private final String DEFAULT_RESOURCES_FOLDER = "/defaultFiles/";
 
-    private final int SECONDS_PER_UPDATE = 200;
+    private final double SECONDS_PER_UPDATE = 0.2;
+    private double scaleFactor = 1;
 
     private DataOutputStream outToServer;
     private int port;
@@ -69,7 +70,7 @@ public class MockStream implements Runnable {
             while (!raceRunner.raceHasEnded()) {
                 sendRaceUpdates();
                 try {
-                    Thread.sleep(SECONDS_PER_UPDATE);
+                    Thread.sleep((long)(SECONDS_PER_UPDATE * 1000 / scaleFactor));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -422,4 +423,7 @@ public class MockStream implements Runnable {
         }
     }
 
+    public void setScaleFactor(double scaleFactor) {
+        this.scaleFactor = scaleFactor;
+    }
 }
