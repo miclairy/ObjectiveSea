@@ -142,15 +142,18 @@ public class RaceVisionXMLParser {
      */
     private static void setRaceLines(Course course) {
         CompoundMark startLine;
+        int startLinePos = 0;
         if(course.getCourseOrder().get(0).hasTwoMarks()){
             startLine = course.getCourseOrder().get(0);
         }else {
             startLine = course.getCourseOrder().get(1);
+            course.setHasEntryMark(true);
+            startLinePos = 1;
         }
         course.removeCompoundMark(startLine);
         RaceLine startRaceLine = CompoundMark.convertToRaceLine(startLine, CompoundMark.MarkType.START);
         course.setStartLine(startRaceLine);
-        course.getCourseOrder().set(0, startRaceLine);
+        course.getCourseOrder().set(startLinePos, startRaceLine);
         course.addNewCompoundMark(startRaceLine);
 
         int lastMarkIndex = course.getCourseOrder().size() - 1;

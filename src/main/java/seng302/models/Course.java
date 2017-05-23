@@ -19,7 +19,7 @@ public class Course extends Observable {
     private double trueWindAngle;
     private double trueWindDirection;
     private RaceLine startLine, finishLine;
-
+    private boolean hasEntryMark;
 
     private double trueWindSpeed;
 
@@ -28,6 +28,7 @@ public class Course extends Observable {
         this.courseOrder = new ArrayList<>();
         this.boundary = new ArrayList<>();
         allMarks = new HashMap<>();
+        hasEntryMark = false;
     }
 
     /**
@@ -202,6 +203,10 @@ public class Course extends Observable {
     public RaceLine getFinishLine() {
         return finishLine;
     }
+
+    public boolean hasEntryMark() {return hasEntryMark;}
+
+    public void setHasEntryMark(boolean hasEntryMark) {this.hasEntryMark = hasEntryMark;}
 
     /**
      * This method takes another Course and attempts to merge the differences in it into this one.
