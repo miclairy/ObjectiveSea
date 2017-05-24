@@ -539,8 +539,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     root.getChildren().remove(displayBoat.getAnnotationLine());
                     displayBoat.getLaylines().removeDrawnLines(root);
                     displayBoat.hideVectors();
+                    displayBoat.annoGrabHandle.setVisible(false);
                 }
                 if (level == AnnotationLevel.IMPORTANT_ANNOTATIONS) {
+                    displayBoat.annoGrabHandle.setVisible(true);
                     annotations.clear();
                     if(scoreBoardController.isNameSelected()){
                         annotations.add(boatName);
@@ -564,6 +566,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     }
                     drawBoatAnnotation(displayBoat, annotations);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
+                    displayBoat.annoGrabHandle.setVisible(true);
                     annotations.clear();
                     annotations.add(boatName);
                     annotations.add(displayBoat.getSpeed());
