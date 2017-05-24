@@ -137,7 +137,21 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if(race.getRaceStatus() == STARTED) {
                 addToBoatPath(boat, point);
             }
+
             moveBoatAnnotation(boat.getAnnotation(), point);
+            if(scoreBoardController.areVectorsSelected()){
+                boat.showVectors();
+            }else{
+                boat.hideVectors();
+            }
+            if (scoreBoardController.isLayLinesSelected()){
+                boat.getLaylines().removeDrawnLines(root);
+                if (selectedBoats.contains(boat)) {
+                    createLayline(boat);
+                }
+            }else{
+                boat.getLaylines().removeDrawnLines(root);
+            }
         }
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
@@ -459,8 +473,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 if (oldAnnotation != null) {
                     root.getChildren().remove(oldAnnotation);
                     root.getChildren().remove(displayBoat.getAnnotationLine());
-                    displayBoat.getLaylines().removeDrawnLines(root);
-                    displayBoat.hideVectors();
                 }
                 if (level == AnnotationLevel.IMPORTANT_ANNOTATIONS) {
                     annotations.clear();
@@ -476,14 +488,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     if(scoreBoardController.isEstSelected()){
                         annotations.add(displayBoat.getTimeToNextMark(displayBoat.getBoat().getTimeAtNextMark(), currTime));
                     }
-                    if(scoreBoardController.areVectorsSelected()){
-                        displayBoat.showVectors();
-                    }
-                    if (scoreBoardController.isLayLinesSelected()){
-                        if (selectedBoats.contains(displayBoat)) {
-                            createLayline(displayBoat);
-                        }
-                    }
                     drawBoatAnnotation(displayBoat, annotations);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
                     annotations.clear();
@@ -491,11 +495,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     annotations.add(displayBoat.getSpeed());
                     annotations.add(displayBoat.getTimeSinceLastMark(currTime));
                     annotations.add(displayBoat.getTimeToNextMark(displayBoat.getBoat().getTimeAtNextMark(), currTime));
-                    displayBoat.showVectors();
                     drawBoatAnnotation(displayBoat, annotations);
-                    if (selectedBoats.contains(displayBoat)) {
-                        createLayline(displayBoat);
-                    }
                 }
             }
             currentAnnotationsLevel = level;

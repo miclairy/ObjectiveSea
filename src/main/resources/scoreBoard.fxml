@@ -131,7 +131,7 @@
                               <RowConstraints maxHeight="64.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
                               </rowConstraints>
                               <children>
-                                 <Label fx:id="lblSettings" text="Important Annotations" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                                 <Label id="settingHeader" fx:id="lblSettings" text="Important Annotations" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                                     <GridPane.margin>
                                        <Insets top="10.0" />
                                     </GridPane.margin>
@@ -141,7 +141,7 @@
                                        <Insets left="30.0" />
                                     </GridPane.margin>
                                  </CheckBox>
-                                 <CheckBox id="chkAnno" fx:id="chkSpeed" mnemonicParsing="false" text="Speed" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                                 <CheckBox id="chkAnno" fx:id="chkSpeed" mnemonicParsing="false" selected="true" text="Speed" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                                  <GridPane.margin>
                                     <Insets left="30.0" />
                                  </GridPane.margin></CheckBox>
@@ -150,7 +150,7 @@
                                        <Insets left="30.0" />
                                     </GridPane.margin>
                                  </CheckBox>
-                                 <CheckBox id="chkAnno" fx:id="chkEst" mnemonicParsing="false" text="Estimated time to mark" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                                 <CheckBox id="chkAnno" fx:id="chkEst" mnemonicParsing="false" text="Est time to mark" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                                  <GridPane.margin>
                                     <Insets left="30.0" />
                                  </GridPane.margin></CheckBox>
@@ -166,7 +166,7 @@
                                  <RowConstraints maxHeight="92.0" minHeight="2.0" prefHeight="41.0" vgrow="SOMETIMES" />
                               </rowConstraints>
                               <children>
-                                 <Label fx:id="lblSettings" text="Boat Graphics" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                                 <Label id="settingHeader" fx:id="lblSettings" text="Boat Graphics" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                                     <GridPane.margin>
                                        <Insets top="10.0" />
                                     </GridPane.margin>
@@ -190,11 +190,6 @@
                                           <Insets left="30.0" />
                                        </GridPane.margin>
                                     </CheckBox>
-                                     <CheckBox fx:id="DistanceLinesToggle" mnemonicParsing="false" onAction="#toggleDistanceLines" text="Toggle Distance Lines" textFill="WHITE" GridPane.columnIndex="1">
-                                         <padding>
-                                             <Insets top="8.0" />
-                                         </padding>
-                                     </CheckBox>
                                  </children>
                               </GridPane>
                               <GridPane layoutX="10.0" layoutY="50.0" GridPane.rowIndex="2">
@@ -205,6 +200,16 @@
                                  <rowConstraints>
                                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                  </rowConstraints>
+                                 <children>
+                                     <CheckBox fx:id="DistanceLinesToggle" mnemonicParsing="false" onAction="#toggleDistanceLines" text="Distance Lines" textFill="WHITE">
+                                         <padding>
+                                             <Insets top="8.0" />
+                                         </padding>
+                                       <GridPane.margin>
+                                          <Insets left="30.0" />
+                                       </GridPane.margin>
+                                     </CheckBox>
+                                 </children>
                               </GridPane>
                               </children>
                            </GridPane>
@@ -212,6 +217,7 @@
                           <columnConstraints>
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints />
                           </columnConstraints>
                           <rowConstraints>
                             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -224,12 +230,12 @@
                                     <Insets left="30.0" />
                                  </GridPane.margin>
                               </CheckBox>
-                              <CheckBox fx:id="zoomToggle" mnemonicParsing="false" prefHeight="17.0" prefWidth="286.0" text="Match heading when tracking" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                              <CheckBox fx:id="zoomToggle" mnemonicParsing="false" prefHeight="17.0" prefWidth="286.0" text="Track Boat Heading" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                  <GridPane.margin>
                                     <Insets left="30.0" />
                                  </GridPane.margin>
                               </CheckBox>
-                              <Label fx:id="lblSettings" text="Other" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                              <Label id="settingHeader" fx:id="lblSettings" text="Other" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
                            </children>
                         </GridPane>
                         </children>
