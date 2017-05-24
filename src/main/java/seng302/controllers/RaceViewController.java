@@ -163,7 +163,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             displayBoats.add(displayBoat);
             drawBoat(displayBoat);
             addBoatSelectionHandler(displayBoat);
-            //scoreBoardController.addBoatToSparkLine(boat.getSeries());
            // makeDraggable(displayBoat.getAnnotation(), displayBoat);
 
             Rectangle r = new Rectangle();
@@ -439,12 +438,15 @@ public class RaceViewController extends AnimationTimer implements Observer {
             annotationLabel.setId("annotationLabel");
             annotationFrame.getChildren().add(annotationLabel);
         }
-        //makeDraggable(annotationFrame, displayBoat);
 
-        Line annoLine = new Line(point.getX(), point.getY(), annotationFrame.getLayoutX(), annotationFrame.getLayoutY());
+        double annoHeight = annotationFrame.getBoundsInParent().getHeight() / 2;
+        double annoWidth = annotationFrame.getBoundsInParent().getWidth() / 2;
+
+        Line annoLine = new Line(point.getX(), point.getY(), annotationFrame.getLayoutX() + annoWidth, annotationFrame.getLayoutY() + annoHeight);
         annoLine.setId("annotationLine");
         root.getChildren().remove(displayBoat.getAnnotationLine());
         displayBoat.setAnnotationLine(annoLine);
+
 
         root.getChildren().add(annotationFrame);
         root.getChildren().add(annoLine);
@@ -473,9 +475,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         });
 
+        annotation.setOnMouseExited(me ->{
+            annotation.getScene().setCursor(Cursor.DEFAULT);
+        });
 
-
-
+        annotation.setOnMouseEntered(me ->{
+            annotation.getScene().setCursor(Cursor.OPEN_HAND);
+        });
     }
 
     private static class Delta {
