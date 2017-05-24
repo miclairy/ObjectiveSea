@@ -17,8 +17,9 @@ import static java.lang.Math.abs;
 public class DisplayUtils {
 
     public static Coordinate max, min;
-    public static String GOOGLE_API_KEY = "AIzaSyAQ8WSXVS1gXdhy5v9IpjeQL842wsMU1VQ";
+    public static final String GOOGLE_API_KEY = "AIzaSyAQ8WSXVS1gXdhy5v9IpjeQL842wsMU1VQ";
     public static boolean externalDragEvent = false;
+    public static final int DRAG_TOLERANCE = 45;
 
 
     public static double zoomLevel = 1;
@@ -115,8 +116,8 @@ public class DisplayUtils {
      */
     public static void dragDisplay(int mouseLocationX, int mouseLocationY){
         if(!externalDragEvent){
-            if(abs(mouseLocationX - prevDragX) < 45 &&
-                    abs(mouseLocationY - prevDragY) < 45){
+            if(abs(mouseLocationX - prevDragX) < DRAG_TOLERANCE &&
+                    abs(mouseLocationY - prevDragY) < DRAG_TOLERANCE){
                 moveOffset((mouseLocationX-prevDragX), (mouseLocationY-prevDragY));
             }
             prevDragX = mouseLocationX;
@@ -235,9 +236,14 @@ public class DisplayUtils {
      * @param node Node to check if inside canvas.
      * @return Boolean of whether it is outside the bounds.
      */
-    public static boolean checkBounds(Node node){
+    public static boolean isOutsideBounds(Node node){
         boolean outsideBound = false;
-        if(node.getBoundsInParent().getMaxX() > Controller.getCanvasWidth()){
+        if(
+                node.getBoundsInParent().getMaxX() > Controller.getCanvasWidth() ||
+                node.getBoundsInParent().getMinX() < 0 ||
+                node.getBoundsInParent().getMaxY() > Controller.getCanvasHeight() ||
+                node.getBoundsInParent().getMinY() < 0)
+        {
             outsideBound = true;
         }
         return outsideBound;
