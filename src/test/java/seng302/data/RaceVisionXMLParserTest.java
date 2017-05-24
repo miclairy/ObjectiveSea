@@ -51,7 +51,7 @@ public class RaceVisionXMLParserTest {
 
         Mark startLine1 = new Mark(122, "Start Line 1", new Coordinate(57.6703330, 11.8278330));
         Mark startLine2 = new Mark(123, "Start Line 2", new Coordinate(57.6703330, 11.8278330));
-        RaceLine start = new RaceLine(1, "Mark0", startLine1, startLine2);
+        RaceLine start = new RaceLine(1, "Start", startLine1, startLine2);
         start.setMarkAsStart();
 
         Mark mark1 = new Mark(131, "Mark1", new Coordinate(57.6675700, 11.8359880));
@@ -79,7 +79,7 @@ public class RaceVisionXMLParserTest {
 
         Mark finishLine1 = new Mark(128, "Finish Line 1", new Coordinate(57.6715240, 11.8444950));
         Mark finishLine2 = new Mark(129, "Finish Line 2", new Coordinate(57.6715240, 11.8444950));
-        RaceLine finish = new RaceLine(11, "Mark4", finishLine1, finishLine2);
+        RaceLine finish = new RaceLine(11, "Finish", finishLine1, finishLine2);
         finish.setMarkAsFinish();
 
         expected.addNewCompoundMark(start);
