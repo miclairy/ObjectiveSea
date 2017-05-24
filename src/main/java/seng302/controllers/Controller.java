@@ -322,8 +322,7 @@ public class Controller implements Initializable, Observer {
      * Causes the starters overlay to hide itself, enabling a proper view of the course and boats beneath
      */
     public void hideStarterOverlay(){
-        DisplayUtils.removeNodeTransition(startersOverlay);
-        //startersOverlay.setVisible(false);
+        startersOverlay.setVisible(false);
     }
 
     private void showStarterOverlay(){
@@ -381,10 +380,6 @@ public class Controller implements Initializable, Observer {
         lblUserHelp.setMinWidth(canvasWidth);
         lblUserHelp.setText(helper);
         DisplayUtils.fadeInFadeOutNodeTransition(lblUserHelp, 1);
-    }
-
-    public void displayUserHelp(){
-        DisplayUtils.fadeNodeTransition(lblUserHelp, 1);
     }
 
     public static double getAnchorHeight() {
