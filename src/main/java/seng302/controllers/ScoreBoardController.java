@@ -1,17 +1,24 @@
 package seng302.controllers;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.scene.control.*;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
+import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
 import seng302.views.BoatDisplay;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
 import seng302.models.Race;
+import seng302.models.Boat;
+
+import java.util.Objects;
 
 /**
  * Created by Louis on 20-Apr-17.
@@ -22,6 +29,7 @@ public class ScoreBoardController {
     // Controllers
     private Controller parent;
     private RaceViewController raceViewController;
+    private Race race;
 
     //FXML fields
     @FXML private CheckBox fpsToggle;
@@ -40,15 +48,14 @@ public class ScoreBoardController {
     @FXML private LineChart chtSparkLine;
     @FXML private NumberAxis xAxis ;
     @FXML private NumberAxis yAxis ;
-
-    private Race race;
-
+    @FXML private CheckBox DistanceLinesToggle;
 
 
 
-    public void setControllers(Controller parent, RaceViewController raceViewController){
+    public void setControllers(Controller parent, RaceViewController raceViewController, Race race){
         this.parent = parent;
         this.raceViewController = raceViewController;
+        this.race = race;
     }
 
     public void setUp(){
@@ -81,6 +88,7 @@ public class ScoreBoardController {
                 }
             }
         });
+        annotationsSlider.setValue(1);
     }
 
     @FXML
@@ -139,6 +147,11 @@ public class ScoreBoardController {
         chtSparkLine.getYAxis().setTickLength(0);
     }
 
+    @FXML
+    private void toggleDistanceLines() {
+        raceViewController.updateDistanceLine(DistanceLinesToggle.isSelected());
+    }
+
     public boolean isSpeedSelected(){return chkSpeed.isSelected();}
 
     public boolean isNameSelected(){return chkName.isSelected();}
@@ -156,6 +169,8 @@ public class ScoreBoardController {
     public boolean isLayLinesSelected(){
         return chkLaylines.isSelected();
     }
+
+    public boolean isDistanceLineSelected(){return DistanceLinesToggle.isSelected();}
 
     public void addBoatToSparkLine(Series boatSeries){
         if(!chtSparkLine.getData().contains(boatSeries)){

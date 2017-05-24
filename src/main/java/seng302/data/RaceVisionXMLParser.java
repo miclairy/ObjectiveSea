@@ -92,9 +92,7 @@ public class RaceVisionXMLParser {
                             NodeList compoundMarks = element.getElementsByTagName(XMLTags.Course.COMPOUND_MARK);
                             for (int j = 0; j < compoundMarks.getLength(); j++){
                                 CompoundMark mark = parseCompoundMark((Element) compoundMarks.item(j), course);
-                                if(mark != null){
-                                    course.addNewCompoundMark(mark);
-                                }
+                                course.addNewCompoundMark(mark);
                             }
                             break;
                         case XMLTags.Course.COMPOUND_MARK_SEQUENCE:
@@ -143,15 +141,19 @@ public class RaceVisionXMLParser {
      * @param course The course that the raceLines will be changed
      */
     private static void setRaceLines(Course course) {
-        CompoundMark startLine = course.getCourseOrder().get(0);
-        if(!startLine.hasTwoMarks()) {
-            System.err.println("WARNING: Start line only had one mark.");
-            startLine.setMark2(startLine.getMark1());
+        CompoundMark startLine;
+        int startLinePos = 0;
+        if(course.getCourseOrder().get(0).hasTwoMarks()){
+            startLine = course.getCourseOrder().get(0);
+        }else {
+            startLine = course.getCourseOrder().get(1);
+            course.setHasEntryMark(true);
+            startLinePos = 1;
         }
         course.removeCompoundMark(startLine);
         RaceLine startRaceLine = CompoundMark.convertToRaceLine(startLine, CompoundMark.MarkType.START);
         course.setStartLine(startRaceLine);
-        course.getCourseOrder().set(0, startRaceLine);
+        course.getCourseOrder().set(startLinePos, startRaceLine);
         course.addNewCompoundMark(startRaceLine);
 
         int lastMarkIndex = course.getCourseOrder().size() - 1;
@@ -192,30 +194,27 @@ public class RaceVisionXMLParser {
      * @throws XMLParseException when an expected tag is missing or unexpectedly formatted
      */
     private static CompoundMark parseCompoundMark(Element compoundMarkElement, Course course) throws  XMLParseException{
-        CompoundMark compoundMark = null;
+        CompoundMark compoundMark;
         Integer compoundMarkID = Integer.parseInt(compoundMarkElement.getAttribute(XMLTags.Course.COMPOUND_MARK_ID));
         String compoundMarkName = compoundMarkElement.getAttribute(XMLTags.Course.NAME);
         NodeList markNodes = compoundMarkElement.getElementsByTagName(XMLTags.Course.MARK);
 
-        if(compoundMarkID.equals(1) && !compoundMarkName.equals("Start")) {
-            return compoundMark;
+        if (markNodes.getLength() < 1) {
+            throw new XMLParseException(XMLTags.Course.COMPOUND_MARK, "Required tag was not defined.");
         }
-            if (markNodes.getLength() < 1) {
-                throw new XMLParseException(XMLTags.Course.COMPOUND_MARK, "Required tag was not defined.");
-            }
-            int numMarks = markNodes.getLength();
-            if(numMarks == 2){
-                Element mark1Element = (Element) markNodes.item(0);
-                Element mark2Element = (Element) markNodes.item(1);
+        int numMarks = markNodes.getLength();
+        if(numMarks == 2){
+            Element mark1Element = (Element) markNodes.item(0);
+            Element mark2Element = (Element) markNodes.item(1);
 
-                Mark mark1 = parseMark(mark1Element, course);
-                Mark mark2 = parseMark(mark2Element, course);
-                compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark1, mark2);
-            }else{
-                Element markElement = (Element) markNodes.item(0);
-                Mark mark = parseMark(markElement, course);
-                compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark);
-            }
+            Mark mark1 = parseMark(mark1Element, course);
+            Mark mark2 = parseMark(mark2Element, course);
+            compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark1, mark2);
+        }else{
+            Element markElement = (Element) markNodes.item(0);
+            Mark mark = parseMark(markElement, course);
+            compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark);
+        }
         return compoundMark;
     }
 

@@ -15,9 +15,10 @@
         </columnConstraints>
         <rowConstraints>
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <ImageView fitHeight="400.0" fitWidth="630.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER">
+            <ImageView fitHeight="400.0" fitWidth="630.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowSpan="2" GridPane.valignment="CENTER">
                <image>
                   <Image url="@graphics/splash_screen.png" />
                </image>

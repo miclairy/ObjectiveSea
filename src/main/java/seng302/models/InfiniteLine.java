@@ -19,7 +19,7 @@ public class InfiniteLine {
      * @param point1 The first point which defines the line
      * @param point2 The second point which defines the line
      */
-    public InfiniteLine(Coordinate point1, Coordinate point2){
+    InfiniteLine(Coordinate point1, Coordinate point2){
         if(Math.abs(point1.getLon() - point2.getLon()) < EPS){
             a = 1.0;
             b = 0.0;

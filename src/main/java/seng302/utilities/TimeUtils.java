@@ -1,5 +1,7 @@
 package seng302.utilities;
 
+import seng302.models.Coordinate;
+
 import java.time.*;
 import java.util.DoubleSummaryStatistics;
 import java.util.TimeZone;
@@ -12,6 +14,7 @@ public class TimeUtils {
     private static final double NANOSECONDS_IN_SECOND = 1e9f;
     private static final double SECONDS_IN_MINUTE = 60;
     private static final double MINUTES_IN_HOUR = 60;
+    private static final int CONVERSION_RATE_NAUTICALM_TO_METRES = 1852;
 
     private static boolean incorrectTimeZone = true;
     private static String foundId = new String();
@@ -26,7 +29,7 @@ public class TimeUtils {
      * @param UTCOffset The UTC Offset from the Data Stream
      * @return String containing the correct time for the given time zone
      */
-    public static String setTimeZone(double UTCOffset) {
+    public static String setTimeZone(double UTCOffset, long epochMs) {
         String utcFormat = "";
         try {
             utcFormat = formatUTCOffset(UTCOffset);
@@ -37,7 +40,7 @@ public class TimeUtils {
             utcFormat = "+00:00";
             System.out.print(e.getMessage());
         } finally {
-            Instant instant = Instant.now();
+            Instant instant = Instant.ofEpochMilli(epochMs);
             ZoneId zone = ZoneId.of(utcFormat);
             ZonedDateTime zonedDateTime = instant.atZone(zone);
             int hours = zonedDateTime.getHour();
@@ -86,6 +89,21 @@ public class TimeUtils {
 
 
     /**
+     * Wrapper for calcDistance to allow it to take two coordinates instead of 4 doubles
+     * @param point1 coordinate of the first point
+     * @param point2 coordinate of the second point
+     * @return a distance double in nautical
+     */
+    public static double calcDistance(Coordinate point1, Coordinate point2){
+        double lat1 = point1.getLat();
+        double lat2 = point2.getLat();
+        double lon1 = point1.getLon();
+        double lon2 = point2.getLon();
+        return calcDistance(lat1, lat2, lon1, lon2);
+    }
+
+
+    /**
      * taken from sprint 2 work, however the original code is http://www.geodatasource.com/developers/java
      * @param lat1 latitude of the boat
      * @param lat2 latitude of the mark
@@ -121,7 +139,7 @@ public class TimeUtils {
     }
 
     public static Double convertMmPerSecondToKnots(Integer mmPerSecond){
-        Double kilometersInNauticalMile = 1.852;
+        Double kilometersInNauticalMile = (double) CONVERSION_RATE_NAUTICALM_TO_METRES / 1000;
         Double kilometersPerSecond = mmPerSecond / 1e6;
         Double kilometersPerHour = kilometersPerSecond * SECONDS_IN_MINUTE * MINUTES_IN_HOUR;
         Double knots = kilometersPerHour / kilometersInNauticalMile;
@@ -130,5 +148,9 @@ public class TimeUtils {
 
     public static String getFormatUTCOffset(double UTCOffset) {
         return formatUTCOffset(UTCOffset);
+    }
+
+    public static double convertNauticalMilesToMetres(double nautMiles){
+        return nautMiles * CONVERSION_RATE_NAUTICALM_TO_METRES;
     }
 }
