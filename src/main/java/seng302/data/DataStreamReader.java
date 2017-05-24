@@ -309,13 +309,15 @@ public class DataStreamReader implements Runnable{
      * @param body the body of the mark rounding message
      */
     private void parseMarkRoundingMessage(byte[] body) {
+        int passedEntryLimitLine = 100;
+        int passedEntryLine = 101;
         int passedStartLineId = 102;
         int passedFinishLineId = 103;
         long time = byteArrayRangeToLong(body, ROUNDING_TIME.getStartIndex(), ROUNDING_TIME.getEndIndex());
         int sourceID = byteArrayRangeToInt(body, ROUNDING_SOURCE_ID.getStartIndex(), ROUNDING_SOURCE_ID.getEndIndex());
         int markIndex = byteArrayRangeToInt(body, ROUNDING_MARK_ID.getStartIndex(), ROUNDING_MARK_ID.getEndIndex());
 
-        if(markIndex == passedStartLineId){
+        if(markIndex == passedStartLineId || markIndex == passedEntryLimitLine ||markIndex == passedEntryLine){
             markIndex = 0;
         } else if(markIndex == passedFinishLineId){
             markIndex = race.getCourse().getCourseOrder().size()-1;
