@@ -1,6 +1,5 @@
 package seng302.views;
 
-import javafx.scene.Group;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
@@ -8,14 +7,9 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
-import javafx.util.Pair;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.XYChart.Data;
-import javafx.scene.Node;
-import javafx.animation.FadeTransition;
-import javafx.util.Duration;
 import seng302.models.*;
-import seng302.utilities.DisplayUtils;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -45,6 +39,7 @@ public class BoatDisplay implements Observer {
     private Polyline VMGVector;
     private Series series;
     private final double FADEDBOAT = 0.3;
+    public Circle annoGrabHandle;
 
     private Laylines laylines;
     private PolarTable polarTable;
@@ -139,15 +134,13 @@ public class BoatDisplay implements Observer {
         return color;
     }
 
-    public Rectangle getRectangle() {
-        return rectangle;
+    public Circle getAnnoGrabHandle() {
+        return annoGrabHandle;
     }
 
-    public void setRectangle(Rectangle rectangle) {
-        this.rectangle = rectangle;
+    public void setAnnoGrabHandle(Circle annoGrabHandle) {
+        this.annoGrabHandle = annoGrabHandle;
     }
-
-    public Rectangle rectangle;
 
     public void setColor(Color color) {
         this.color = color;
