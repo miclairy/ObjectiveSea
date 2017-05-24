@@ -379,7 +379,7 @@ public class Controller implements Initializable, Observer {
         lblUserHelp.setMaxWidth(canvasWidth);
         lblUserHelp.setMinWidth(canvasWidth);
         lblUserHelp.setText(helper);
-        displayUserHelp();
+        DisplayUtils.fadeInFadeOutNodeTransition(lblUserHelp, 1);
     }
 
     public void displayUserHelp(){

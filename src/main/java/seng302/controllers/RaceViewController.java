@@ -922,7 +922,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if (boat1.getLeg() == boat2.getLeg()) {
                 index = boat1.getLeg();
             } else {
-                controller.setUserHelpLabel("Distance line will display when boats are on the same leg");
+                if (drawDistanceLine){
+                    controller.setUserHelpLabel("Distance line will display when boats are on the same leg");
+                }
             }
         } else {
             index = boat1.getLeg();
