@@ -31,9 +31,9 @@ public class MathUtils {
             middle = TWD - 180;
         } else {
             middle = 90;
-            diff = Math.abs(90 - TWD);}
-        bearing += diff;
-        bearing = (bearing + 360) % 360;
+            diff = Math.abs(90 - TWD);
+            bearing += diff;
+            bearing = (bearing + 360) % 360;}
         return (middle - deltaAngle) <= bearing && bearing <= (middle + deltaAngle);
     }
 
@@ -106,9 +106,9 @@ public class MathUtils {
     public static Boolean boatHeadingToLine(double boatsHeading, double lineHeading, double headingOfMark){
         Boolean towardsLine = false;
 
-        if(pointBetweenTwoAngle(lineHeading + 270, 90, boatsHeading) && pointBetweenTwoAngle(lineHeading + 90, 90, headingOfMark)){
+        if(pointBetweenTwoAngle((lineHeading + 270)%360, 90, boatsHeading) && pointBetweenTwoAngle(lineHeading + 90, 90, headingOfMark)){
             towardsLine = true;
-        } else if(pointBetweenTwoAngle(lineHeading + 90, 90, boatsHeading) && pointBetweenTwoAngle(lineHeading + 270, 90, headingOfMark)){
+        } else if(pointBetweenTwoAngle(lineHeading + 90, 90, boatsHeading) && pointBetweenTwoAngle((lineHeading + 270)%360, 90, headingOfMark)){
             towardsLine = true;
         }
         return towardsLine;

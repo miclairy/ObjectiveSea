@@ -47,6 +47,12 @@ public class MathUtilsTest {
         Assert.assertFalse(pointBetweenTwoAngle(280, 30, 0));
         Assert.assertFalse(pointBetweenTwoAngle(280, 30, 249));
 
+        Assert.assertFalse(pointBetweenTwoAngle((131+270)%360,90,165));
+        Assert.assertFalse(pointBetweenTwoAngle(131+90,90,27));
+
+        Assert.assertTrue(pointBetweenTwoAngle(131+90,90,165));
+        Assert.assertTrue(pointBetweenTwoAngle((131+270)%360,90,27));
+
     }
 
         @Test
@@ -91,5 +97,6 @@ public class MathUtilsTest {
     public void boatHeadingToLineTest(){
         Assert.assertTrue(boatHeadingToLine(90,0,270));
         Assert.assertFalse(boatHeadingToLine(90,0,85));
+        Assert.assertTrue(boatHeadingToLine(165,131,27));
     }
 }

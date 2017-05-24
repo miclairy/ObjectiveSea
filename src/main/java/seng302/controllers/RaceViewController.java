@@ -131,7 +131,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             moveWake(boat, point);
             if(boat.getBoat().getLeg() == 0){
                 boat.getStartTiming(race);
-                System.out.println(boat.getBoat().getTimeStatus());
             } else {
                boat.getBoat().setTimeStatus(StartTimingStatus.INRACE);
             }
