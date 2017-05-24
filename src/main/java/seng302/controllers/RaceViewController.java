@@ -71,6 +71,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean isTrackingPoint = false;
     private double rotationOffset = 0;
     private boolean isRotationEnabled = false;
+    private int flickercounter = 0;
 
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
@@ -129,11 +130,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
             moveBoat(boat, point);
             moveWake(boat, point);
+            if(flickercounter % 300 == 0){
             if(boat.getBoat().getLeg() == 0){
                 boat.getStartTiming(race);
             } else {
                boat.getBoat().setTimeStatus(StartTimingStatus.INRACE);
-            }
+            }}
             moveSOGVector(boat);
             moveVMGVector(boat);
             if(race.getRaceStatus() == STARTED) {
@@ -145,7 +147,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
         controller.setWindDirection();
-
+        flickercounter++;
     }
 
     /**

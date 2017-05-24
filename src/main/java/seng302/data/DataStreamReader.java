@@ -255,8 +255,8 @@ public class DataStreamReader implements Runnable{
                     System.err.println("Incorrect CRC. Message Ignored.");
                 }
                 try{
-                    Thread.sleep(5);
-                } catch (InterruptedException e){
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             } catch (IOException e) {
