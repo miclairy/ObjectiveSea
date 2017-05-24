@@ -28,7 +28,7 @@ public class TimeUtils {
      * @param UTCOffset The UTC Offset from the Data Stream
      * @return String containing the correct time for the given time zone
      */
-    public static String setTimeZone(double UTCOffset) {
+    public static String setTimeZone(double UTCOffset, long epochMs) {
         String utcFormat = "";
         try {
             utcFormat = formatUTCOffset(UTCOffset);
@@ -39,7 +39,7 @@ public class TimeUtils {
             utcFormat = "+00:00";
             System.out.print(e.getMessage());
         } finally {
-            Instant instant = Instant.now();
+            Instant instant = Instant.ofEpochMilli(epochMs);
             ZoneId zone = ZoneId.of(utcFormat);
             ZonedDateTime zonedDateTime = instant.atZone(zone);
             int hours = zonedDateTime.getHour();
