@@ -1,23 +1,20 @@
 package seng302.controllers;
 
-import javafx.animation.FadeTransition;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.transform.Rotate;
-import javafx.util.Duration;
+import javafx.scene.text.TextAlignment;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -43,6 +40,7 @@ public class Controller implements Initializable, Observer {
     @FXML private ImageView windDirectionImage;
     @FXML public ImageView mapImageView;
     @FXML private Slider zoomSlider;
+    @FXML public Label lblUserHelp;
 
     //number of from right edge of canvas that the wind arrow will be drawn
     private final int WIND_ARROW_OFFSET = 60;
@@ -68,6 +66,7 @@ public class Controller implements Initializable, Observer {
     private final String COURSE_CSS = "/style/courseStyle.css";
     private final String STARTERS_CSS = "/style/startersOverlayStyle.css";
     private final String SETTINGSPANE_CSS = "/style/settingsPaneStyle.css";
+    private final String DISTANCELINE_CSS = "/style/distanceLineStyle.css";
 
     // Controllers
     @FXML private RaceViewController raceViewController;
@@ -83,7 +82,7 @@ public class Controller implements Initializable, Observer {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        canvasAnchor.getStylesheets().addAll(BOAT_CSS, COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS);
+        canvasAnchor.getStylesheets().addAll(BOAT_CSS, COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, DISTANCELINE_CSS);
         canvasWidth = canvas.getWidth();
         canvasHeight = canvas.getHeight();
         anchorWidth = canvasAnchor.getWidth();
@@ -99,7 +98,7 @@ public class Controller implements Initializable, Observer {
         course.addObserver(raceViewController);
 
         createCanvasAnchorListeners();
-        scoreBoardController.setControllers(this, raceViewController);
+        scoreBoardController.setControllers(this, raceViewController, race);
         scoreBoardController.setUp();
         fpsString.set("..."); //set to "..." while fps count loads
         fpsLabel.textProperty().bind(fpsString);
@@ -313,7 +312,7 @@ public class Controller implements Initializable, Observer {
      * displays the current time according to the UTC offset, in the GUI on the overlay
      */
     public void setTimeZone(double UTCOffset) {
-        clockString.set(TimeUtils.setTimeZone(UTCOffset));
+        clockString.set(TimeUtils.setTimeZone(UTCOffset, race.getCurrentTimeInEpochMs()));
     }
 
 
@@ -373,6 +372,19 @@ public class Controller implements Initializable, Observer {
                     break;
             }
         }
+    }
+
+    public void setUserHelpLabel(String helper){
+        lblUserHelp.setOpacity(0);
+        lblUserHelp.setPrefWidth(canvasWidth);
+        lblUserHelp.setMaxWidth(canvasWidth);
+        lblUserHelp.setMinWidth(canvasWidth);
+        lblUserHelp.setText(helper);
+        DisplayUtils.fadeInFadeOutNodeTransition(lblUserHelp, 1);
+    }
+
+    public void displayUserHelp(){
+        DisplayUtils.fadeNodeTransition(lblUserHelp, 1);
     }
 
     public static double getAnchorHeight() {

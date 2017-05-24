@@ -141,15 +141,19 @@ public class RaceVisionXMLParser {
      * @param course The course that the raceLines will be changed
      */
     private static void setRaceLines(Course course) {
-        CompoundMark startLine = course.getCourseOrder().get(0);
-        if(!startLine.hasTwoMarks()) {
-            System.err.println("WARNING: Start line only had one mark.");
-            startLine.setMark2(startLine.getMark1());
+        CompoundMark startLine;
+        int startLinePos = 0;
+        if(course.getCourseOrder().get(0).hasTwoMarks()){
+            startLine = course.getCourseOrder().get(0);
+        }else {
+            startLine = course.getCourseOrder().get(1);
+            course.setHasEntryMark(true);
+            startLinePos = 1;
         }
         course.removeCompoundMark(startLine);
         RaceLine startRaceLine = CompoundMark.convertToRaceLine(startLine, CompoundMark.MarkType.START);
         course.setStartLine(startRaceLine);
-        course.getCourseOrder().set(0, startRaceLine);
+        course.getCourseOrder().set(startLinePos, startRaceLine);
         course.addNewCompoundMark(startRaceLine);
 
         int lastMarkIndex = course.getCourseOrder().size() - 1;
@@ -194,6 +198,7 @@ public class RaceVisionXMLParser {
         Integer compoundMarkID = Integer.parseInt(compoundMarkElement.getAttribute(XMLTags.Course.COMPOUND_MARK_ID));
         String compoundMarkName = compoundMarkElement.getAttribute(XMLTags.Course.NAME);
         NodeList markNodes = compoundMarkElement.getElementsByTagName(XMLTags.Course.MARK);
+
         if (markNodes.getLength() < 1) {
             throw new XMLParseException(XMLTags.Course.COMPOUND_MARK, "Required tag was not defined.");
         }

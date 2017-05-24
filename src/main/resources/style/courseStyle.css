@@ -16,3 +16,8 @@
     -fx-stroke: #cdfaf4;
     -fx-stroke-width: 2.0;
 }
+
+#userHelp{
+    -fx-text-fill: white;
+    -fx-font-weight: 700;
+}

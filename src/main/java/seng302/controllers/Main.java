@@ -73,6 +73,7 @@ public class Main extends Application {
         runnerThread.start();
         MockStream mockStream;
         mockStream = new MockStream(2828, runner);
+        mockStream.setScaleFactor(Config.MOCK_SPEED_SCALE);
         Thread upStream = new Thread(mockStream);
         upStream.start();
     }

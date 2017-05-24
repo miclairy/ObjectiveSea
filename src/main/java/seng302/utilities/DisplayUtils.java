@@ -1,6 +1,9 @@
 package seng302.utilities;
 import javafx.animation.FadeTransition;
 import javafx.animation.ScaleTransition;
+import javafx.animation.Interpolator;
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
 import javafx.scene.Node;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
@@ -71,7 +74,7 @@ public class DisplayUtils {
      */
     public static void setZoomLevel(double zoomLevel) {
 
-        double deltaZoom = DisplayUtils.zoomLevel- zoomLevel;
+        double deltaZoom = DisplayUtils.zoomLevel - zoomLevel;
         double canvasHeight = Controller.getAnchorHeight()/2;
         double canvasWidth = Controller.getAnchorWidth()/2;
 
@@ -169,6 +172,19 @@ public class DisplayUtils {
 
 
     /**
+     * Wrapper for the midPoint calculation, takes two coords instead of taking 4 doubles
+     * @param first coord of first object
+     * @param second coord of second object
+     * @return midPoint between the two objects
+     */
+    public static Coordinate midPointFromTwoCoords(Coordinate first, Coordinate second){
+        Double halfLat = (first.getLat() + second.getLat()) / 2;
+        Double halfLon = (first.getLon() + second.getLon()) / 2;
+        return new Coordinate(halfLat, halfLon);
+    }
+
+
+    /**
      * finds the geographic midpoint between two lat/lng points
      * @param lat1 latitude of first point
      * @param lon1 longitude of first point
@@ -244,6 +260,23 @@ public class DisplayUtils {
         fadeTransition.setFromValue(node.getOpacity());
         fadeTransition.setToValue(endOpacity);
         fadeTransition.play();
+    }
+
+    /**
+     * adds a fade transition to a node, so that a node fades in and out over a period of time
+     * @param node a node in the scene that will be faded
+     * @param endOpacity a double that represents the nodes opacity at the end of the fade
+     */
+    public static void fadeInFadeOutNodeTransition(Node node, double endOpacity){
+        FadeTransition fadeTransition = new FadeTransition();
+        fadeTransition.setNode(node);
+        fadeTransition.setDuration(new Duration(500));
+        fadeTransition.setFromValue(node.getOpacity());
+        fadeTransition.setToValue(endOpacity);
+        fadeTransition.setAutoReverse(true);
+        fadeTransition.setCycleCount(2);
+        fadeTransition.play();
+
     }
 
 
