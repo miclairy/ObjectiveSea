@@ -1,5 +1,8 @@
 package seng302.utilities;
 import javafx.animation.FadeTransition;
+import javafx.animation.Interpolator;
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
 import javafx.scene.Node;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
@@ -266,5 +269,22 @@ public class DisplayUtils {
         fadeTransition.setFromValue(node.getOpacity());
         fadeTransition.setToValue(endOpacity);
         fadeTransition.play();
+    }
+
+    /**
+     * adds a fade transition to a node, so that a node fades in and out over a period of time
+     * @param node a node in the scene that will be faded
+     * @param endOpacity a double that represents the nodes opacity at the end of the fade
+     */
+    public static void fadeInFadeOutNodeTransition(Node node, double endOpacity){
+        FadeTransition fadeTransition = new FadeTransition();
+        fadeTransition.setNode(node);
+        fadeTransition.setDuration(new Duration(500));
+        fadeTransition.setFromValue(node.getOpacity());
+        fadeTransition.setToValue(endOpacity);
+        fadeTransition.setAutoReverse(true);
+        fadeTransition.setCycleCount(2);
+        fadeTransition.play();
+
     }
 }

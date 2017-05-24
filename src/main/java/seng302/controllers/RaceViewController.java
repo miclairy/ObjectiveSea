@@ -29,6 +29,7 @@ import seng302.models.*;
 import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
+import java.text.Annotation;
 import java.util.*;
 
 import static java.lang.Math.abs;
@@ -832,7 +833,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 line.toBack();
             }
             updateDistanceLineAnnotation();
-            root.getChildren().add(distanceLine.getAnnotation());
+            Label annotation = distanceLine.getAnnotation();
+            annotation.getTransforms().clear();
+            if(isRotationEnabled){
+                annotation.getTransforms().add(new Rotate(-rotationOffset));
+            }
+            root.getChildren().add(annotation);
         }
     }
 
@@ -999,7 +1005,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if (boat1.getLeg() == boat2.getLeg()) {
                 index = boat1.getLeg();
             } else {
-                System.out.println("Please select boats that are currently on the same leg of the race");
+                if (drawDistanceLine){
+                    controller.setUserHelpLabel("Distance line will display when boats are on the same leg");
+                }
             }
         } else {
             index = boat1.getLeg();

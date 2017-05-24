@@ -289,9 +289,11 @@ public class DataStreamReader implements Runnable{
             int boatStatus = byteArrayRangeToInt(boatStatuses, 4 + k, 5 + k);
             long estimatedTimeAtMark = byteArrayRangeToLong(boatStatuses, 8 + k, 14 + k);
             int legNumber = byteArrayRangeToInt(boatStatuses, 5 + k, 6 + k);
+            int legOffset = 0;
+            if(race.getCourse().hasEntryMark()) legOffset += 1;
             Boat boat = race.getBoatById(boatID);
             boat.setTimeTillMark(estimatedTimeAtMark);
-            boat.setLeg(legNumber);
+            boat.setLeg(legNumber + legOffset);
             boat.setStatus(BoatStatus.values()[boatStatus]);
         }
         if(race.isFirstMessage()){
@@ -309,13 +311,15 @@ public class DataStreamReader implements Runnable{
      * @param body the body of the mark rounding message
      */
     private void parseMarkRoundingMessage(byte[] body) {
+        int passedEntryLimitLine = 100;
+        int passedEntryLine = 101;
         int passedStartLineId = 102;
         int passedFinishLineId = 103;
         long time = byteArrayRangeToLong(body, ROUNDING_TIME.getStartIndex(), ROUNDING_TIME.getEndIndex());
         int sourceID = byteArrayRangeToInt(body, ROUNDING_SOURCE_ID.getStartIndex(), ROUNDING_SOURCE_ID.getEndIndex());
         int markIndex = byteArrayRangeToInt(body, ROUNDING_MARK_ID.getStartIndex(), ROUNDING_MARK_ID.getEndIndex());
 
-        if(markIndex == passedStartLineId){
+        if(markIndex == passedStartLineId || markIndex == passedEntryLimitLine ||markIndex == passedEntryLine){
             markIndex = 0;
         } else if(markIndex == passedFinishLineId){
             markIndex = race.getCourse().getCourseOrder().size()-1;
