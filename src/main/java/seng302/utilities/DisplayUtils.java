@@ -1,5 +1,6 @@
 package seng302.utilities;
 import javafx.animation.FadeTransition;
+import javafx.animation.ScaleTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
@@ -279,12 +280,11 @@ public class DisplayUtils {
     public static void fadeInFadeOutNodeTransition(Node node, double endOpacity){
         FadeTransition fadeTransition = new FadeTransition();
         fadeTransition.setNode(node);
-        fadeTransition.setDuration(new Duration(500));
+        fadeTransition.setDuration(new Duration(800));
         fadeTransition.setFromValue(node.getOpacity());
         fadeTransition.setToValue(endOpacity);
         fadeTransition.setAutoReverse(true);
         fadeTransition.setCycleCount(2);
         fadeTransition.play();
-
     }
 }

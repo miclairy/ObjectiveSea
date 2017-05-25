@@ -150,6 +150,19 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 addToBoatPath(boat, point);
             }
             moveBoatAnnotation(boat.getAnnotation(), point, boat);
+            if(scoreBoardController.areVectorsSelected()){
+                boat.showVectors();
+            }else{
+                boat.hideVectors();
+            }
+            if (scoreBoardController.isLayLinesSelected()){
+                boat.getLaylines().removeDrawnLines(root);
+                if (selectedBoats.contains(boat)) {
+                    createLayline(boat);
+                }
+            }else{
+                boat.getLaylines().removeDrawnLines(root);
+            }
         }
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
@@ -554,8 +567,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 if (oldAnnotation != null) {
                     root.getChildren().remove(oldAnnotation);
                     root.getChildren().remove(displayBoat.getAnnotationLine());
-                    displayBoat.getLaylines().removeDrawnLines(root);
-                    displayBoat.hideVectors();
                     displayBoat.annoGrabHandle.setVisible(false);
                 }
                 if (level == AnnotationLevel.IMPORTANT_ANNOTATIONS) {
@@ -597,11 +608,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     if(displayBoat.getStartTimingAnnotation() != null){
                         annotations.add(displayBoat.getStartTimingAnnotation());
                     }
-                    displayBoat.showVectors();
                     drawBoatAnnotation(displayBoat, annotations);
-                    if (selectedBoats.contains(displayBoat)) {
-                        createLayline(displayBoat);
-                    }
                 }
             }
             currentAnnotationsLevel = level;
@@ -653,6 +660,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         double scale = VMG / SOG_SCALE_FACTOR;
         Polyline oldLine = boat.getVMGVector();
         Polyline newLine = raceView.createVMGVector(boat.getBoat(), scale, course, color);
+        newLine.setId("vectorLine");
         newLine.setOpacity(oldLine.getOpacity());
         root.getChildren().add(newLine);
         boat.setVMGVector(newLine);

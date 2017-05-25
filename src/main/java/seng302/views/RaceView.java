@@ -45,7 +45,7 @@ public class RaceView {
 
 
         boatImage.setFill(color);
-        boatImage.setStroke(Color.WHITE);
+        boatImage.setId("boatIcon");
         return boatImage;
     }
 

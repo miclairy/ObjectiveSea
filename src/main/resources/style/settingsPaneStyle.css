@@ -6,6 +6,12 @@
     -fx-background-color: #2a2a2a;
 }
 
+#settingHeader{
+    -fx-font-size: 14px;
+    -fx-font-weight: 700;
+    -fx-text-fill: white;
+}
+
 #btnTrack{
   -fx-graphic:url('/graphics/buttonImages/track-boat-dark.png');
   -fx-background-color:  #232323;
@@ -34,10 +40,6 @@
 
 #sliderLbl{
     -fx-padding: 0 20 0 20;
-}
-
-#fpsToggle{
-    -fx-padding: 20 20 20 20;
 }
 
 #fpsLabel{
