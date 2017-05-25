@@ -149,7 +149,9 @@ public class DataStreamReader implements Runnable{
         xmlBody = xmlBody.trim();
         InputStream xmlInputStream = new ByteArrayInputStream(xmlBody.getBytes());
 
-        if (xmlSequenceNumbers.get(xmlSubtype) < xmlSequenceNumber) {
+
+        //Taken out since the new stream sends xmls not in order
+//        if (xmlSequenceNumbers.get(xmlSubtype) < xmlSequenceNumber) {
             xmlSequenceNumbers.put(xmlSubtype, xmlSequenceNumber);
             if (xmlSubtype == REGATTA_XML_MESSAGE) {
                 System.out.printf("New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
@@ -160,12 +162,16 @@ public class DataStreamReader implements Runnable{
                     race.getCourse().mergeWithOtherCourse(RaceVisionXMLParser.importCourse(xmlInputStream));
                 } else {
                     race.setCourse(RaceVisionXMLParser.importCourse(xmlInputStream));
+                    xmlInputStream = new ByteArrayInputStream(xmlBody.getBytes());
+                    race.setCompetitorIds(RaceVisionXMLParser.importCompetitorIds(xmlInputStream));
                 }
             } else if (xmlSubtype == BOAT_XML_MESSAGE) {
                 System.out.printf("New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
-                 race.setCompetitors(RaceVisionXMLParser.importStarters(xmlInputStream));
+                if(race.getCompetitors().size() == 0){
+                    race.setCompetitors(RaceVisionXMLParser.importStarters(xmlInputStream));
+                }
             }
-        }
+//        }
     }
 
     /**
@@ -289,9 +295,11 @@ public class DataStreamReader implements Runnable{
             int legOffset = 0;
             if(race.getCourse().hasEntryMark()) legOffset += 1;
             Boat boat = race.getBoatById(boatID);
-            boat.setTimeTillMark(estimatedTimeAtMark);
-            boat.setLeg(legNumber + legOffset);
-            boat.setStatus(BoatStatus.values()[boatStatus]);
+            if(boat != null){
+                boat.setTimeTillMark(estimatedTimeAtMark);
+                boat.setLeg(legNumber + legOffset);
+                boat.setStatus(BoatStatus.values()[boatStatus]);
+            }
         }
         if(race.isFirstMessage()){
             race.updateRaceOrder();
