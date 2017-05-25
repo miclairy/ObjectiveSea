@@ -103,7 +103,7 @@ public class Controller implements Initializable, Observer {
         fpsString.set("..."); //set to "..." while fps count loads
         fpsLabel.textProperty().bind(fpsString);
         clockLabel.textProperty().bind(clockString);
-        //hideStarterOverlay();
+        hideStarterOverlay();
         setWindDirection();
 
         displayStarters();
