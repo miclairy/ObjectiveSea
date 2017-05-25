@@ -18,7 +18,7 @@ public class Race extends Observable{
 
     private String regattaName;
     private Course course;
-    private List<Boat> competitors;
+    private List<Boat> competitors = new ArrayList<>();
     private List<Boat> raceOrder = new ArrayList<>();
     private Map<Integer, Boat> boatIdMap;
     private double totalRaceTime;
@@ -26,13 +26,14 @@ public class Race extends Observable{
     private long startTimeInEpochMs, currentTimeInEpochMs;
     private double UTCOffset;
     private boolean firstMessage = true;
-
+    private Set<Integer> competitorIds = new HashSet<>();
 
     public Race(String name, Course course, List<Boat> competitors) {
         initialize(name, course, competitors);
     }
 
     public Race(){
+
     }
 
     /**
@@ -91,8 +92,6 @@ public class Race extends Observable{
             boat.setHeading(heading);
             boat.setCurrentSpeed(speed);
             boat.setTWAofBoat(twa);
-        } else{
-            System.err.println("Boat source ID not found");
         }
     }
 
@@ -160,9 +159,11 @@ public class Race extends Observable{
      */
     public void updateMarkRounded(int sourceID, int roundedMarkIndex, long time) {
         Boat boat = boatIdMap.get(sourceID);
-        boat.setLastRoundedMarkIndex(roundedMarkIndex);
-        boat.setLastRoundedMarkTime(time);
-        updateRaceOrder();
+        if(boat != null){
+            boat.setLastRoundedMarkIndex(roundedMarkIndex);
+            boat.setLastRoundedMarkTime(time);
+            updateRaceOrder();
+        }
     }
 
     /**
@@ -229,13 +230,29 @@ public class Race extends Observable{
         this.firstMessage = firstMessage;
     }
 
+    private List<Boat> filterNonCompetitors(List<Boat> possibleCompetitors){
+        List<Boat> participantsInRace = new ArrayList<>();
+        for(Boat boat : possibleCompetitors){
+            if(competitorIds.contains(boat.getId())){
+                participantsInRace.add(boat);
+            }
+        }
+        return participantsInRace;
+    }
+
     public void setCompetitors(List<Boat> competitors) {
-        this.competitors = competitors;
-        raceOrder.addAll(competitors);
+        List<Boat> actualCompetitors = filterNonCompetitors(competitors);
+        this.competitors = actualCompetitors;
+
+        raceOrder.addAll(actualCompetitors);
         boatIdMap = new HashMap<>();
-        for(Boat competitor : competitors){
+        for(Boat competitor : actualCompetitors){
             boatIdMap.put(competitor.getId(), competitor);
         }
+    }
+
+    public void setCompetitorIds(Set<Integer> competitorIds) {
+        this.competitorIds = competitorIds;
     }
 }
 
