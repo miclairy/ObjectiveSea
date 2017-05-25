@@ -253,6 +253,7 @@ public class DataStreamReader implements Runnable{
                 } else {
                     System.err.println("Incorrect CRC. Message Ignored.");
                 }
+
             } catch (IOException e) {
                 System.err.println("Error occurred when reading data from stream:");
                 System.err.println(e);
@@ -270,6 +271,7 @@ public class DataStreamReader implements Runnable{
         int raceCourseWindDirection = byteArrayRangeToInt(body, WIND_DIRECTION.getStartIndex(), WIND_DIRECTION.getEndIndex());
         long currentTime = byteArrayRangeToLong(body, CURRENT_TIME.getStartIndex(), CURRENT_TIME.getEndIndex());
         long expectedStartTime = byteArrayRangeToLong(body, START_TIME.getStartIndex(), START_TIME.getEndIndex());
+        int windSpeed = byteArrayRangeToInt(body, WIND_SPEED.getStartIndex(), WIND_SPEED.getEndIndex());
 
         double windDirectionInDegrees = intToHeading(raceCourseWindDirection);
 
@@ -297,6 +299,7 @@ public class DataStreamReader implements Runnable{
             race.setFirstMessage(false);
         }
         race.getCourse().setWindDirection(windDirectionInDegrees);
+        race.getCourse().setTrueWindSpeed(TimeUtils.convertMmPerSecondToKnots(windSpeed));
         race.updateRaceStatus(RaceStatus.fromInteger(raceStatus));
         race.setStartTimeInEpochMs(expectedStartTime);
         race.setCurrentTimeInEpochMs(currentTime);

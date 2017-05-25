@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import java.net.*?>
 <?import javafx.scene.chart.*?>
 <?import java.lang.*?>
@@ -154,6 +161,7 @@
                                     <Insets left="30.0" />
                                  </GridPane.margin>
                               </CheckBox>
+                              <CheckBox id="chkAnno" fx:id="chkStart" mnemonicParsing="false" text="Start timing of boat" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                               </children>
                            </GridPane>
                            <GridPane prefHeight="135.0" prefWidth="161.0" GridPane.rowIndex="1">

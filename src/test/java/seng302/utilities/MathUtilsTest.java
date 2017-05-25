@@ -3,6 +3,10 @@ package seng302.utilities;
 import javafx.util.Pair;
 import org.junit.Assert;
 import org.junit.Test;
+import seng302.models.CompoundMark;
+import seng302.models.Coordinate;
+import seng302.models.Mark;
+import seng302.models.WindAngleAndSpeed;
 import seng302.models.*;
 
 import static junit.framework.TestCase.assertEquals;
@@ -43,6 +47,12 @@ public class MathUtilsTest {
         Assert.assertFalse(pointBetweenTwoAngle(280, 30, 0));
         Assert.assertFalse(pointBetweenTwoAngle(280, 30, 249));
 
+        Assert.assertFalse(pointBetweenTwoAngle((131+270)%360,90,165));
+        Assert.assertFalse(pointBetweenTwoAngle(131+90,90,27));
+
+        Assert.assertTrue(pointBetweenTwoAngle(131+90,90,165));
+        Assert.assertTrue(pointBetweenTwoAngle((131+270)%360,90,27));
+
     }
 
         @Test
@@ -63,5 +73,30 @@ public class MathUtilsTest {
         double x = 50.0;
         assertEquals(8.564421885974385, lagrangeInterpolation(A,B,C,x), DELTA);
         assertEquals(3, lagrangeInterpolation(D,E,F,4.0), DELTA);
+    }
+
+    @Test
+    public void calculateMidPointTest(){
+        Coordinate mark1Coord = new Coordinate(32, 64);
+        Coordinate mark2Coord = new Coordinate(35, 68);
+        Mark mark1 = new Mark(0, "Test",mark1Coord);
+        Mark mark2 = new Mark(0, "Test",mark2Coord);
+        CompoundMark cm1 = new CompoundMark(0, "Test",mark1,mark2);
+        Coordinate testAnswer = new Coordinate(33.5, 66);
+        assertEquals(testAnswer, calculateMidPoint(cm1));
+    }
+
+    @Test
+    public void boatBeforeStartlineTest(){
+        Assert.assertTrue(boatBeforeStartline(32.2937,-64.855242,32.296577,-64.854304,-32.293771,-64.855242,32.293039,-64.845045));
+        Assert.assertTrue(boatBeforeStartline(32.293039,-64.845045,32.296577,-64.854304,-32.293771,-64.855242,32.2937,-64.855242));
+        Assert.assertFalse(boatBeforeStartline(32.296577,-64.854304,32.296577,-64.854304,-32.293771,-64.855242,32.2937,-64.855242));
+    }
+
+    @Test
+    public void boatHeadingToLineTest(){
+        Assert.assertTrue(boatHeadingToLine(90,0,270));
+        Assert.assertFalse(boatHeadingToLine(90,0,85));
+        Assert.assertTrue(boatHeadingToLine(165,131,27));
     }
 }
