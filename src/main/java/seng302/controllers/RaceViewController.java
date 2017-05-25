@@ -134,12 +134,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
             moveBoat(boat, point);
             moveWake(boat, point);
-            if(flickercounter % 300 == 0){
             if(race.getCourse().getCourseOrder().get(boat.getBoat().getLeg()).isStartLine()){
-                boat.getStartTiming(race);
+            if(flickercounter % 300 == 0){
+                boat.getStartTiming(race);}
             } else {
-               boat.getBoat().setTimeStatus(StartTimingStatus.INRACE);
-            }}
+                boat.getBoat().setTimeStatus(StartTimingStatus.INRACE);
+            }
             moveSOGVector(boat);
             moveVMGVector(boat);
             if(race.getRaceStatus() == STARTED) {
