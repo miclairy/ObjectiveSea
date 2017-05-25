@@ -1,13 +1,10 @@
-# SENG302 Project Template
+# Race Vision Pro
 
-Basic Maven project with required Maven reporting setup and basic GitLab CI.
 
-It is a requirement that your product should be completely built to a deliverable form using the Maven package goal.
+The first time the system is run, a config.txt file is generated.
 
-Remember to set up your GitLab CI server (refer to the student guide for instructions).
+The first value in the config defines a scale speed for the MockFeed to run the race at for convenience of testing.
 
-# Basic Project Structure
- - `src/` Your application source
- - `doc/` User and design documentation
- - `doc/examples/` Demo example files for use with your application
- 
+The next 2 fields define the address and port of the feed to connect to, which by default is the official America's Cup test feed.
+
+To configure the system to connect to the MockFeed, set the SOURCE_ADDRESS to localhost and the SOURCE_PORT to 2828.
