@@ -19,7 +19,7 @@ public class InfiniteLine {
      * @param point1 The first point which defines the line
      * @param point2 The second point which defines the line
      */
-    InfiniteLine(Coordinate point1, Coordinate point2){
+    public InfiniteLine(Coordinate point1, Coordinate point2){
         if(Math.abs(point1.getLon() - point2.getLon()) < EPS){
             a = 1.0;
             b = 0.0;
@@ -57,7 +57,7 @@ public class InfiniteLine {
      */
     public static Coordinate intersectionPoint(InfiniteLine infiniteLine1, InfiniteLine infiniteLine2) {
         double lon = (infiniteLine1.getB() * infiniteLine2.getC() - infiniteLine2.getB() * infiniteLine1.getC()) /
-                     (infiniteLine1.getA() * infiniteLine2.getB() - infiniteLine2.getA() * infiniteLine1.getB());
+                (infiniteLine1.getA() * infiniteLine2.getB() - infiniteLine2.getA() * infiniteLine1.getB());
         double lat;
         if(!infiniteLine1.isVertical()){
             lat = -(infiniteLine1.getA() * lon + infiniteLine1.getC());

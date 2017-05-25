@@ -3,6 +3,9 @@ package seng302.controllers;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.application.Preloader;
@@ -18,9 +21,8 @@ public class SplashScreenLoader extends Preloader {
     @Override
     public void start(Stage stage) throws Exception {
         splashScreen = stage;
-        splashScreen.initStyle(StageStyle.TRANSPARENT);
+        splashScreen.initStyle(StageStyle.UNDECORATED);
         Scene scene = createScene();
-        scene.setFill(Color.TRANSPARENT);
         splashScreen.setScene(scene);
         splashScreen.show();
     }
@@ -36,7 +38,4 @@ public class SplashScreenLoader extends Preloader {
             splashScreen.hide();
         }
     }
-
-
-
 }
