@@ -1,8 +1,8 @@
 package seng302.views;
 
-import javafx.scene.Group;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.*;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
@@ -42,10 +42,14 @@ public class BoatDisplay implements Observer {
     private VBox annotation;
     private Path path;
     private Line annotationLine;
+    private double annoOffsetX;
+    private double annoOffsetY;
+    private boolean annoHasMoved = false;
     private Polyline SOGVector;
     private Polyline VMGVector;
     private Series series;
     private final double FADEDBOAT = 0.3;
+    public Circle annoGrabHandle;
 
     private Laylines laylines;
     private PolarTable polarTable;
@@ -59,11 +63,37 @@ public class BoatDisplay implements Observer {
         this.series = new Series();
         series.getData().add(new Data(boat.getLastRoundedMarkIndex(), boat.getCurrPlacing()));
 
+        this.annoOffsetX = 25;
+        this.annoOffsetY = 30;
+    }
+
+    public boolean getAnnoHasMoved() {
+        return annoHasMoved;
+    }
+
+    public void setAnnoHasMoved(boolean hasMoved) {
+        annoHasMoved = hasMoved;
     }
 
     public Line getAnnotationLine() {return annotationLine;}
 
     public void setAnnotationLine(Line line) {this.annotationLine = line;}
+
+    public double getAnnoOffsetX() {
+        return annoOffsetX;
+    }
+
+    public void setAnnoOffsetX(double annoOffsetX) {
+        this.annoOffsetX = annoOffsetX;
+    }
+
+    public double getAnnoOffsetY() {
+        return annoOffsetY;
+    }
+
+    public void setAnnoOffsetY(double annoOffsetY) {
+        this.annoOffsetY = annoOffsetY;
+    }
 
     public VBox getAnnotation() {return annotation;}
 
@@ -112,6 +142,14 @@ public class BoatDisplay implements Observer {
 
     public Color getColor() {
         return color;
+    }
+
+    public Circle getAnnoGrabHandle() {
+        return annoGrabHandle;
+    }
+
+    public void setAnnoGrabHandle(Circle annoGrabHandle) {
+        this.annoGrabHandle = annoGrabHandle;
     }
 
     public void setColor(Color color) {
