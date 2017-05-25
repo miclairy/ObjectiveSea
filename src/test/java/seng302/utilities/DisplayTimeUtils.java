@@ -37,6 +37,6 @@ public class DisplayTimeUtils {
         long currentTime = Instant.now().toEpochMilli();
         long timeAtMark = Instant.now().toEpochMilli() + 1000000;
         String formattedTime = boatDisplay.getTimeSinceLastMark(currentTime);
-        assert(Objects.equals(formattedTime, "-"));
+        assert(Objects.equals(formattedTime, "..."));
     }
 }

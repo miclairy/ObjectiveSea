@@ -399,7 +399,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * handles the drawing of the map image and makes it fullscreen
      */
     public void drawMap(){
-        String mapURL = DisplayUtils.getGoogleMapsURL();
+        String mapURL = DisplayUtils.getLocalMapURL();
         Image image = new Image(mapURL);
         controller.mapImageView.setImage(image);
         controller.mapImageView.toBack();
@@ -863,7 +863,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                         path.getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
                     }
                     path.toBack();
-                    path.setStrokeWidth(zoomLevel);
                 }
             }
         }
