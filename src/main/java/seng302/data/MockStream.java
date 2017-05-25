@@ -21,7 +21,8 @@ public class MockStream implements Runnable {
     private final int GATE_TYPE = 2;
     private final String DEFAULT_RESOURCES_FOLDER = "/defaultFiles/";
 
-    private final int SECONDS_PER_UPDATE = 200;
+    private final double SECONDS_PER_UPDATE = 0.2;
+    private double scaleFactor = 1;
 
     private DataOutputStream outToServer;
     private int port;
@@ -43,6 +44,7 @@ public class MockStream implements Runnable {
      * @throws IOException
      */
     private void initialize() throws IOException  {
+
         ServerSocket server = new ServerSocket(port);
         xmlSequenceNumber.put(REGATTA_XML_MESSAGE, 0);
         xmlSequenceNumber.put(RACE_XML_MESSAGE, 0);
@@ -68,7 +70,7 @@ public class MockStream implements Runnable {
             while (!raceRunner.raceHasEnded()) {
                 sendRaceUpdates();
                 try {
-                    Thread.sleep(SECONDS_PER_UPDATE);
+                    Thread.sleep((long)(SECONDS_PER_UPDATE * 1000 / scaleFactor));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -79,6 +81,14 @@ public class MockStream implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Exit out of run
+     */
+    public void stop(){
+
+        raceRunner.getRace().updateRaceStatus(RaceStatus.FINISHED);
     }
 
     /**
@@ -105,7 +115,7 @@ public class MockStream implements Runnable {
             for (int i = 0; i < boatStatus.length; i++){
                 raceStatusBody[i + offset] = boatStatus[i];
             }
-            if(raceStatus.equals(RaceStatus.STARTED) && !boat.isFinished()) {
+            if(!boat.isFinished()) {
                 sendBoatMessages(boat);
             }
             offset += 20;
@@ -166,17 +176,17 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, BOAT_TIMESTAMP, raceRunner.getRace().getCurrentTimeInEpochMs());
         addFieldToByteArray(body, MARK_ACK, 0); //todo make proper ack
         addFieldToByteArray(body, MARK_RACE_ID, Integer.parseInt(raceRunner.getRaceId()));
-        addFieldToByteArray(body, MARK_SOURCE, boat.getId());
+        addFieldToByteArray(body, ROUNDING_SOURCE_ID, boat.getId());
         addFieldToByteArray(body, MARK_BOAT_STATUS, boat.getStatus().getValue());
         addFieldToByteArray(body, ROUNDING_SIDE, 0); //todo present correct side
-        if (course.getCourseOrder().get(boat.getLastRoundedMarkIndex()).hasTwoMarks()) {
+
+        CompoundMark lastRoundedMark = course.getCourseOrder().get(boat.getLastRoundedMarkIndex());
+        if (lastRoundedMark.hasTwoMarks()) {
             addFieldToByteArray(body, MARK_TYPE, GATE_TYPE);
         } else {
             addFieldToByteArray(body, MARK_TYPE, ROUNDING_MARK_TYPE);
         }
-
-        CompoundMark lastRoundedMark = course.getCourseOrder().get(boat.getLastRoundedMarkIndex());
-        int markId = lastRoundedMark.getCompoundMarkID();
+        int markId = boat.getLastRoundedMarkIndex();
         if(lastRoundedMark.isStartLine()){
             markId = passedStartLineId;
         } else if(lastRoundedMark.isFinishLine()){
@@ -200,12 +210,21 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, RACE_STATUS, raceRunner.getRace().getRaceStatus().getValue());
         addFieldToByteArray(body, EXPECTED_START_TIME, raceRunner.getRace().getStartTimeInEpochMs());
         addFieldToByteArray(body, CURRENT_TIME, raceRunner.getRace().getCurrentTimeInEpochMs());
-        addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, 0x6000); // left for now
-        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, 10); //left at 10knots for now
+        addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, convertHeadingToInt(raceRunner.getRace().getCourse().getWindDirection()));
+        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, 20); //left at 10knots for now
         addFieldToByteArray(body, NUMBER_OF_BOATS_IN_RACE, numBoats);
         addFieldToByteArray(body, RACE_TYPE, 2); //fleet race
 
         return body;
+    }
+
+    /**
+     * Converts a heading in degrees into the AC35 heading format
+     * @param heading the heading in degress
+     * @return the converted heading, represented by a long
+     */
+    private long convertHeadingToInt(double heading) {
+        return (long)(heading * Math.pow(2, 16)) / 360;
     }
 
     /**
@@ -247,6 +266,8 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, LONGITUDE, lon);
         addFieldToByteArray(body, HEADING, (int) (boat.getHeading() * Math.pow(2, 16) / 360));
         addFieldToByteArray(body, SPEED_OVER_GROUND, boat.getSpeedInMMS());
+        addFieldToByteArray(body, TRUE_WIND_DIRECTION, convertHeadingToInt(raceRunner.getRace().getCourse().getWindDirection() ));
+        addFieldToByteArray(body, TRUE_WIND_ANGLE, (long) (boat.getTWAofBoat() * Math.pow(2, 15) / 180)); //convert decimal to unsigned short binary,
 
         return body;
     }
@@ -374,6 +395,8 @@ public class MockStream implements Runnable {
         body[0] = (byte) 1;
         body[15] = (byte) 1;
         body[24] = (byte) 0;
+        addFieldToByteArray(body, TRUE_WIND_DIRECTION, (long) raceRunner.getRace().getCourse().getWindDirection()); //south east raceRunner.getRace().getCourse().getWindDirection()
+
         return body;
     }
 
@@ -398,5 +421,9 @@ public class MockStream implements Runnable {
         for (int i = 0; i < numBytes; i ++) {
             array[start + i] = (byte) (item >> i * 8);
         }
+    }
+
+    public void setScaleFactor(double scaleFactor) {
+        this.scaleFactor = scaleFactor;
     }
 }

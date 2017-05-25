@@ -3,47 +3,6 @@
     -fx-text-fill: White;
 }
 
-#lblSettings{
-    -fx-font-size: 13px;
-    -fx-text-fill: White;
-}
-
-#chkAnno{
-    -fx-text-fill: White;
-}
-
-#startersList{
-    -fx-control-inner-background: #2a2a2a;
-    -fx-font-size: 17px;
-    -fx-text-fill: White;
-    -fx-focus-color: transparent;
-    -fx-background-insets: 0, 0;
-}
-
-#startersOverlay{
-    -fx-effect: dropshadow(three-pass-box, rgb(21, 54, 50), 50, 0, 0, 0);
-}
-
-#startersOverlayTitle {
-    -fx-background-color: #3c619b;
-    -fx-font-size: 27px;
-    -fx-text-fill: White;
-    -fx-border-radius: 10 10 0 0;
-    -fx-background-radius: 10 10 0 0;
-}
-
-#clockLabel {
-    -fx-background-color: #3c619b;
-}
-
-#annotationLine {
-    -fx-stroke: White;
-}
-
-#annotationLabel {
-    -fx-text-fill: #2b2b2b;
-}
-
 .split-pane {
     -fx-background-insets: 0, 0;
     -fx-padding: 0;
@@ -157,83 +116,23 @@
  -fx-background-color: transparent,rgb(96,96,96),rgb(96,96,96);
 }
 
-
-#placings {
-    -fx-control-inner-background: #2a2a2a;
-    -fx-background-color: #2a2a2a;
-    -fx-font-size: 16px;
-    -fx-focus-color: transparent;
-    -fx-border-color: #1a1a1a;
-}
-
-#startersList{
-    -fx-control-inner-background: #1a1a1a;
-    -fx-font-size: 17px;
-    -fx-focus-color: transparent;
-    -fx-background-insets: 0, 0;
-}
-
-#lblAnnotation{
-    -fx-font-size: 14px;
-    -fx-padding: 10 0 5 0 ;
-}
-
-#annotationsSlider{
-    -fx-padding: 0 20 0 20;
-}
-
-#sliderLbl{
-    -fx-padding: 0 20 0 20;
-}
-
-#fpsToggle{
-    -fx-padding: 20 20 20 20;
-}
-
-#fpsLabel{
-    -fx-content-display: center;
-    -fx-padding: 10 10 10 10;
-    -fx-opacity: 0.8;
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-text-fill: White;
-    -fx-background-color: #2a2a2a;
-    -fx-background-radius: 20px;
-}
-
 .check-box *.box{
+    -fx-background-color: #1a1a1a;
+    -fx-background-radius: 10em;
+    -fx-min-width: 8px;
+    -fx-min-height: 8px;
+    -fx-max-width: 8px;
+    -fx-max-height: 8px;
+    -fx-padding: 8px;
+}
+
+.check-box:selected .mark {
+    -fx-mark-highlight-color: #4DC58B;
+    -fx-mark-color: #4DC58B;
+    -fx-shape: "M 10.29 2.19C 10.29 2.19 4.63 7.85 4.63 7.85 4.24 8.24 3.68 8.32 3.39 8.02 3.39 8.02 0.21 4.84 0.21 4.84-0.08 4.55-0 3.99 0.39 3.6 0.78 3.21 1.33 3.13 1.62 3.43 1.62 3.43 3.92 5.72 3.92 5.72 3.92 5.72 8.87 0.77 8.87 0.77 9.26 0.38 9.9 0.38 10.29 0.77 10.68 1.16 10.68 1.8 10.29 2.19Z"
+}
+
+.check-box:selected *.box{
     -fx-background-color: #1a1a1a;
 }
 
-#boundary{
-    -fx-fill: rgb(136, 230, 239);
-    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 10, 0.4, 0, 0);
-    -fx-stroke: rgb(64, 122, 151);
-    -fx-stroke-width: 0.5px;
-    -fx-opacity: 0.2;
-}
-
-#wake{
-    -fx-stroke: #eaf2ff;
-    -fx-fill: rgb(132, 218, 255);
-    -fx-opacity: 0.5;
-}
-
-#mark{
-    -fx-fill: white;
-    -fx-effect: dropshadow(gaussian, #6db1b7, 10, 0.2, 0, 0);
-    -fx-stroke: #cdfaf4;
-    -fx-stroke-width: 2.0;
-}
-
-#settingsPane {
-    -fx-background-color: #2b2b2b;
-}
-
-#raceClockHBox {
-    -fx-background-color: #2a2a2a;
-}
-
-#windDirectionImage{
-    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 10, 0.1, 0, 0);
-}

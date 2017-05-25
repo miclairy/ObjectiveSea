@@ -1,39 +1,89 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import java.net.*?>
+<?import javafx.scene.chart.*?>
+<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import java.net.URL?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-   <TabPane fx:id="scoreBoard" prefHeight="413.0" prefWidth="161.0" tabClosingPolicy="UNAVAILABLE" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.ScoreBoardController">
+<TabPane fx:id="scoreBoard" prefHeight="674.0" prefWidth="379.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.ScoreBoardController">
       <tabs>
-         <Tab text="Race">
+         <Tab text="Race Leaderboard">
             <content>
                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
-                     <GridPane fx:id="sidePane" layoutY="1.0" prefHeight="367.0" prefWidth="128.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                        <columnConstraints>
-                           <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
-                        </columnConstraints>
-                        <rowConstraints>
-                           <RowConstraints percentHeight="10.0" valignment="CENTER" vgrow="ALWAYS" />
-                           <RowConstraints maxHeight="1204.0" minHeight="247.0" percentHeight="70.0" prefHeight="305.0" vgrow="ALWAYS" />
-                           <RowConstraints maxHeight="363.0" minHeight="2.0" percentHeight="20.0" prefHeight="46.0" vgrow="NEVER" />
-                        </rowConstraints>
-                        <children>
-                           <ListView fx:id="placings" prefHeight="241.0" prefWidth="131.0" GridPane.rowIndex="1" />
-                           <VBox fx:id="settingsPane" styleClass="settingsPane" stylesheets="@style.css" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
+                  <GridPane prefHeight="377.0" prefWidth="161.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints maxHeight="41.0" minHeight="10.0" prefHeight="41.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="244.0" minHeight="5.0" prefHeight="157.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="284.0" minHeight="10.0" prefHeight="156.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="282.0" minHeight="10.0" prefHeight="23.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                           <ListView fx:id="placings" prefHeight="251.0" prefWidth="161.0" GridPane.rowIndex="1" />
+                           <VBox fx:id="settingsPane" styleClass="settingsPane" stylesheets="@style/generalStyle.css" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS">
                               <children>
                                  <AnchorPane>
                                     <children>
                                        <Label fx:id="lblAnnotation" alignment="CENTER" prefHeight="17.0" prefWidth="128.0" text="Annotations" textAlignment="CENTER" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                     </children>
                                  </AnchorPane>
-                                 <Slider fx:id="annotationsSlider" majorTickUnit="1.0" max="2.0" minorTickCount="0" prefHeight="10.0" prefWidth="128.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+                                 <Slider fx:id="annotationsSlider" majorTickUnit="1.0" max="2.0" minorTickCount="0" prefHeight="10.0" prefWidth="128.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="1.0">
                                     <padding>
                                        <Insets top="4.0" />
                                     </padding>
                                  </Slider>
+                              <GridPane>
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <Button fx:id="btnTrack" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#btnTrackPressed" text="Track" visible="false" />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets left="20.0" right="20.0" top="10.0" />
+                                 </VBox.margin>
+                              </GridPane>
                               </children>
                            </VBox>
                            <HBox fx:id="raceClockHBox" alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
@@ -45,8 +95,19 @@
                                  </Label>
                               </children>
                            </HBox>
-                        </children>
-                     </GridPane>
+                        <LineChart fx:id="chtSparkLine" prefHeight="101.0" prefWidth="142.0" stylesheets="@style/sparkLineStyle.css" GridPane.rowIndex="2">
+                            <xAxis>
+                                <NumberAxis label="Mark" side="BOTTOM" fx:id="xAxis" />
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis fx:id="yAxis" label="Position" layoutX="10.0" side="LEFT" />
+                            </yAxis>
+                           <GridPane.margin>
+                              <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
+                           </GridPane.margin>
+                        </LineChart>
+                     </children>
+                  </GridPane>
                   </children>
                </AnchorPane>
             </content>
@@ -55,17 +116,17 @@
             <content>
                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
-                     <GridPane prefHeight="364.0" prefWidth="128.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <GridPane prefHeight="642.0" prefWidth="379.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                         <columnConstraints>
                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         </columnConstraints>
                         <rowConstraints>
-                           <RowConstraints maxHeight="136.0" minHeight="10.0" prefHeight="89.0" vgrow="SOMETIMES" />
-                           <RowConstraints maxHeight="186.0" minHeight="10.0" prefHeight="150.0" vgrow="SOMETIMES" />
-                           <RowConstraints maxHeight="125.0" minHeight="10.0" prefHeight="125.0" vgrow="SOMETIMES" />
+                           <RowConstraints maxHeight="251.0" minHeight="10.0" prefHeight="251.0" vgrow="SOMETIMES" />
+                           <RowConstraints maxHeight="186.0" minHeight="10.0" prefHeight="110.0" vgrow="SOMETIMES" />
+                           <RowConstraints maxHeight="125.0" minHeight="10.0" prefHeight="16.0" vgrow="SOMETIMES" />
                         </rowConstraints>
                         <children>
-                           <GridPane prefHeight="109.0" prefWidth="128.0">
+                           <GridPane prefHeight="96.0" prefWidth="135.0">
                               <columnConstraints>
                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -74,9 +135,10 @@
                                  <RowConstraints maxHeight="65.0" minHeight="10.0" prefHeight="33.0" vgrow="SOMETIMES" />
                                  <RowConstraints maxHeight="64.0" minHeight="10.0" prefHeight="20.0" vgrow="SOMETIMES" />
                                  <RowConstraints maxHeight="64.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="64.0" minHeight="10.0" prefHeight="38.0" vgrow="SOMETIMES" />
                               </rowConstraints>
                               <children>
-                                 <Label fx:id="lblSettings" text="Important Annotation Settings" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                                 <Label id="settingHeader" fx:id="lblSettings" text="Important Annotations" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                                     <GridPane.margin>
                                        <Insets top="10.0" />
                                     </GridPane.margin>
@@ -86,37 +148,108 @@
                                        <Insets left="30.0" />
                                     </GridPane.margin>
                                  </CheckBox>
-                                 <CheckBox id="chkAnno" fx:id="chkSpeed" mnemonicParsing="false" text="Speed" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                                 <CheckBox id="chkAnno" fx:id="chkPassMarkTime" mnemonicParsing="false" text="Time since passing mark" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                                 <CheckBox id="chkAnno" fx:id="chkSpeed" mnemonicParsing="false" selected="true" text="Speed" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                                 <GridPane.margin>
+                                    <Insets left="30.0" />
+                                 </GridPane.margin></CheckBox>
+                                 <CheckBox id="chkAnno" fx:id="chkPassMarkTime" mnemonicParsing="false" text="Time since last mark" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                                     <GridPane.margin>
                                        <Insets left="30.0" />
                                     </GridPane.margin>
                                  </CheckBox>
-                                 <CheckBox id="chkAnno" fx:id="chkEst" mnemonicParsing="false" text="Estimated time to mark" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                                 <CheckBox id="chkAnno" fx:id="chkEst" mnemonicParsing="false" text="Est time to mark" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                                 <GridPane.margin>
+                                    <Insets left="30.0" />
+                                 </GridPane.margin>
+                              </CheckBox>
+                              <CheckBox id="chkAnno" fx:id="chkStart" mnemonicParsing="false" text="Startline Arrival" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                 <GridPane.margin>
+                                    <Insets left="30.0" />
+                                 </GridPane.margin></CheckBox>
                               </children>
                            </GridPane>
-                           <GridPane GridPane.rowIndex="1">
+                           <GridPane prefHeight="135.0" prefWidth="161.0" GridPane.rowIndex="1">
                               <columnConstraints>
                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                               </columnConstraints>
                               <rowConstraints>
-                                 <RowConstraints maxHeight="46.0" minHeight="10.0" prefHeight="28.0" vgrow="SOMETIMES" />
-                                 <RowConstraints maxHeight="65.0" minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                 <RowConstraints maxHeight="92.0" minHeight="10.0" prefHeight="91.0" vgrow="SOMETIMES" />
+                                 <RowConstraints maxHeight="46.0" minHeight="10.0" prefHeight="34.0" vgrow="SOMETIMES" />
+                                 <RowConstraints maxHeight="65.0" minHeight="10.0" prefHeight="41.0" vgrow="SOMETIMES" />
+                                 <RowConstraints maxHeight="92.0" minHeight="2.0" prefHeight="41.0" vgrow="SOMETIMES" />
                               </rowConstraints>
                               <children>
-                                 <CheckBox fx:id="fpsToggle" mnemonicParsing="false" onAction="#fpsToggle" selected="true" text="Display FPS" textFill="WHITE" GridPane.rowIndex="1">
-                                    <padding>
-                                       <Insets top="8.0" />
-                                    </padding>
-                                 </CheckBox>
-                                 <Label fx:id="lblSettings" text="Other Settings" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                                 <Label id="settingHeader" fx:id="lblSettings" text="Boat Graphics" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                                     <GridPane.margin>
                                        <Insets top="10.0" />
                                     </GridPane.margin>
                                  </Label>
+                              <GridPane GridPane.rowIndex="1">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <CheckBox id="chkAnno" fx:id="chkVectors" mnemonicParsing="false" text="Vectors" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+                                       <GridPane.margin>
+                                          <Insets left="30.0" />
+                                       </GridPane.margin>
+                                    </CheckBox>
+                                    <CheckBox fx:id="chkLaylines" mnemonicParsing="false" text="Lay Lines" textFill="WHITE" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+                                       <GridPane.margin>
+                                          <Insets left="30.0" />
+                                       </GridPane.margin>
+                                    </CheckBox>
+                                 </children>
+                              </GridPane>
+                              <GridPane layoutX="10.0" layoutY="50.0" GridPane.rowIndex="2">
+                                 <columnConstraints>
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                 </columnConstraints>
+                                 <rowConstraints>
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                 </rowConstraints>
+                                 <children>
+                                     <CheckBox fx:id="DistanceLinesToggle" mnemonicParsing="false" onAction="#toggleDistanceLines" text="Distance Lines" textFill="WHITE">
+                                         <padding>
+                                             <Insets top="8.0" />
+                                         </padding>
+                                       <GridPane.margin>
+                                          <Insets left="30.0" />
+                                       </GridPane.margin>
+                                     </CheckBox>
+                                 </children>
+                              </GridPane>
                               </children>
                            </GridPane>
+                        <GridPane GridPane.rowIndex="2">
+                          <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                              <ColumnConstraints />
+                          </columnConstraints>
+                          <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                           <children>
+                              <CheckBox fx:id="fpsToggle" mnemonicParsing="false" onAction="#fpsToggle" selected="true" text="Display FPS" textFill="WHITE" GridPane.rowIndex="1">
+                                 <GridPane.margin>
+                                    <Insets left="30.0" />
+                                 </GridPane.margin>
+                              </CheckBox>
+                              <CheckBox fx:id="zoomToggle" mnemonicParsing="false" prefHeight="17.0" prefWidth="286.0" text="Track Boat Heading" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                 <GridPane.margin>
+                                    <Insets left="30.0" />
+                                 </GridPane.margin>
+                              </CheckBox>
+                              <Label id="settingHeader" fx:id="lblSettings" text="Other" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                           </children>
+                        </GridPane>
                         </children>
                      </GridPane>
                   </children>
@@ -124,4 +257,8 @@
             </content>
          </Tab>
       </tabs>
+   <stylesheets>
+      <URL value="@style/generalStyle.css" />
+      <URL value="@style/settingsPaneStyle.css" />
+   </stylesheets>
    </TabPane>
