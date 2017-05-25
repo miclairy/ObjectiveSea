@@ -49,7 +49,6 @@ public class Main extends Application {
         primaryStage.setWidth(primaryScreenBounds.getWidth());
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
         primaryStage.show();
-
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent e) {
