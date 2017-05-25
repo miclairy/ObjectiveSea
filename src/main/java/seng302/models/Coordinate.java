@@ -111,6 +111,25 @@ public class Coordinate {
         lat2 = Math.toDegrees(lat2);
         long2 = Math.toDegrees(long2);
         return new Coordinate(lat2,long2);
+    }
 
+    /**
+     * Determines whether this coordinate is on the left side of a line drawn from the midpoint of this coordinate
+     * and other in the direction of bearing
+     * @param other the other coordinate
+     * @param bearing the direction of the line from the midpoint to test against
+     * @return true if this coordinate is on the left of the line
+     */
+    public boolean isOnLeftOfBearingFromMidpoint(Coordinate other, double bearing) {
+        Coordinate midPoint = new Coordinate((this.getLat() + other.getLat())/2,
+                (this.getLon() + other.getLon())/2);
+
+        Double endPointLat = 10 * Math.sin(Math.toRadians(bearing + 90)) + midPoint.getLat();
+        Double endPointLon = 10 * Math.cos(Math.toRadians(bearing + 90)) + midPoint.getLon();
+
+        double val = (endPointLon - midPoint.getLon()) *(this.getLat() - midPoint.getLat())
+                - (this.getLon() - midPoint.getLon()) * (endPointLat - midPoint.getLat());
+
+        return val < 0;
     }
 }
