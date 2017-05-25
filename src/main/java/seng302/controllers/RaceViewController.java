@@ -830,7 +830,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     @Override
     public void update(Observable course, Object arg) {
-        if (!(course == race.getCourse())){
+        if (course == race.getCourse()){
             courseNeedsRedraw = true;
         }
     }
