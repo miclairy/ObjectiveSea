@@ -16,8 +16,6 @@ public class Course extends Observable {
     private Map<Integer, CompoundMark> compoundMarks;
     private Map<Integer, Mark> allMarks;
     private double windDirection;
-    private double trueWindAngle;
-    private double trueWindDirection;
     private RaceLine startLine, finishLine;
     private boolean hasEntryMark;
 
@@ -139,12 +137,6 @@ public class Course extends Observable {
             markCoordinate.setLon(lon);
         }
     }
-
-    public void updateTrueWindDirection(double direction) {
-        trueWindDirection = direction;
-    }
-
-    public double getTrueWindDirection() { return trueWindDirection; }
 
     public ArrayList<CompoundMark> getCourseOrder(){
         return this.courseOrder;

@@ -281,7 +281,6 @@ public class DataStreamReader implements Runnable{
 
         double windDirectionInDegrees = intToHeading(raceCourseWindDirection);
 
-
         byte[] boatStatuses = new byte[body.length - 24];
 
         for(int i = 24; i < body.length; i++){
