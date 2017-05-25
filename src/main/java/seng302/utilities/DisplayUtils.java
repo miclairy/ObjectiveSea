@@ -157,14 +157,11 @@ public class DisplayUtils {
     public static String getLocalMapURL(){
         String mapURL;
         if (Objects.equals(Config.SOURCE_ADDRESS, "livedata.americascup.com")){ // getting live data
-            File file = new File("src/main/resources/graphics/liveData.png");
-            mapURL = file.toURI().toString();
+            mapURL = DisplayUtils.class.getResource("/graphics/liveData.png").toExternalForm();
         } else if (Objects.equals(Config.SOURCE_ADDRESS, "csse-s302staff.canterbury.ac.nz")){
-            File file = new File("src/main/resources/graphics/liveData.png");
-            mapURL = file.toURI().toString();
+            mapURL = DisplayUtils.class.getResource("/graphics/liveData.png").toExternalForm();
         } else {
-            File file = new File("src/main/resources/graphics/mockData.png");
-            mapURL = file.toURI().toString();
+            mapURL = DisplayUtils.class.getResource("/graphics/mockData.png").toExternalForm();
         }
         return mapURL;
     }
