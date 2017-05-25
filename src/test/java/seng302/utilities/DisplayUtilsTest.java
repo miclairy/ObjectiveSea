@@ -48,4 +48,12 @@ public class DisplayUtilsTest {
         assertEquals(681, (int) testPoint.getY());
     }
 
+    @Test
+    public void testMidPoint(){
+        Coordinate midPoint = DisplayUtils.midPoint(10.0,10.0,15.0,15.0);
+        assertEquals(midPoint.getLat(), 12.511, 0.01);
+        assertEquals(midPoint.getLon(), 12.476, 0.01);
+    }
+
+
 }

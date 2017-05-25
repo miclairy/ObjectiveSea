@@ -1,5 +1,6 @@
 package seng302.models;
 
+import javax.swing.plaf.ComponentUI;
 import java.util.*;
 
 /**
@@ -16,7 +17,7 @@ public class Course extends Observable {
     private Map<Integer, Mark> allMarks;
     private double windDirection;
     private RaceLine startLine, finishLine;
-
+    private boolean hasEntryMark;
 
     private double trueWindSpeed;
 
@@ -25,6 +26,7 @@ public class Course extends Observable {
         this.courseOrder = new ArrayList<>();
         this.boundary = new ArrayList<>();
         allMarks = new HashMap<>();
+        hasEntryMark = false;
     }
 
     /**
@@ -136,10 +138,6 @@ public class Course extends Observable {
         }
     }
 
-    public void updateCourseWindValues(int raceCourseWindDirection) {
-        windDirection = raceCourseWindDirection;
-    }
-
     public ArrayList<CompoundMark> getCourseOrder(){
         return this.courseOrder;
     }
@@ -198,6 +196,10 @@ public class Course extends Observable {
         return finishLine;
     }
 
+    public boolean hasEntryMark() {return hasEntryMark;}
+
+    public void setHasEntryMark(boolean hasEntryMark) {this.hasEntryMark = hasEntryMark;}
+
     /**
      * This method takes another Course and attempts to merge the differences in it into this one.
      * Assumes that the other course has the desired changes, and overwrites it's self with these changes.
@@ -216,5 +218,9 @@ public class Course extends Observable {
         if(compoundMarks.containsKey(mark.getCompoundMarkID())){
             compoundMarks.remove(mark.getCompoundMarkID());
         }
+    }
+
+    public CompoundMark getCompoundMarkByID(int id) {
+        return compoundMarks.get(id);
     }
 }

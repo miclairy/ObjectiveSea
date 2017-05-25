@@ -1,25 +1,35 @@
 package seng302.controllers;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.scene.control.*;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
+import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
+import seng302.views.BoatDisplay;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
 import seng302.models.Race;
+import seng302.models.Boat;
+
+import java.util.Objects;
 
 /**
  * Created by Louis on 20-Apr-17.
+ *
  */
 public class ScoreBoardController {
 
     // Controllers
     private Controller parent;
     private RaceViewController raceViewController;
+    private Race race;
 
     //FXML fields
     @FXML private CheckBox fpsToggle;
@@ -30,16 +40,22 @@ public class ScoreBoardController {
     @FXML private CheckBox chkSpeed;
     @FXML private CheckBox chkPassMarkTime;
     @FXML private CheckBox chkEst;
+    @FXML private CheckBox chkStart;
+    @FXML private CheckBox zoomToggle;
     @FXML public Button btnTrack;
+    @FXML private CheckBox chkLaylines;
+    @FXML private CheckBox chkVectors;
     @FXML private LineChart chtSparkLine;
     @FXML private NumberAxis xAxis ;
     @FXML private NumberAxis yAxis ;
+    @FXML private CheckBox DistanceLinesToggle;
 
-    private Race race;
 
-    public void setControllers(Controller parent, RaceViewController raceViewController){
+
+    public void setControllers(Controller parent, RaceViewController raceViewController, Race race){
         this.parent = parent;
         this.raceViewController = raceViewController;
+        this.race = race;
     }
 
     public void setUp(){
@@ -72,6 +88,7 @@ public class ScoreBoardController {
                 }
             }
         });
+        annotationsSlider.setValue(1);
     }
 
     @FXML
@@ -82,12 +99,33 @@ public class ScoreBoardController {
         parent.fpsLabel(fpsToggle.isSelected());
     }
 
+    @FXML
+    private void btnTrackPressed(){
+        BoatDisplay selectedBoat = raceViewController.getTrackingBoat();
+        if(selectedBoat != null){
+            if(raceViewController.isTrackingPoint()){
+                parent.setZoomSliderValue(1);
+                raceViewController.setTrackingPoint(false);
+            }else{
+                parent.setZoomSliderValue(3);
+                raceViewController.setTrackingPoint(true);
+
+                raceViewController.setMapVisibility(false);
+            }
+            raceViewController.redrawCourse();
+
+
+        }
+
+    }
+
     /**
      * Set up a listener for the annotation slider so that we can keep the annotations on the boats up to date with
      * the user's selection
      */
     private void setupAnnotationControl() {
         annotationsSlider.valueProperty().addListener((observable, oldValue, newValue) -> raceViewController.changeAnnotations(newValue.intValue(), false));
+        zoomToggle.selectedProperty().addListener((observable, oldValue, newValue) -> raceViewController.zoomToggle(newValue));
         annotationsSlider.adjustValue(annotationsSlider.getMax());
     }
 
@@ -109,13 +147,30 @@ public class ScoreBoardController {
         chtSparkLine.getYAxis().setTickLength(0);
     }
 
+    @FXML
+    private void toggleDistanceLines() {
+        raceViewController.updateDistanceLine(DistanceLinesToggle.isSelected());
+    }
+
     public boolean isSpeedSelected(){return chkSpeed.isSelected();}
 
     public boolean isNameSelected(){return chkName.isSelected();}
 
+    public boolean isStartTimeSelected(){return chkStart.isSelected();}
+
     public boolean isEstSelected(){return chkEst.isSelected();}
 
     public boolean isTimePassedSelected(){return chkPassMarkTime.isSelected();}
+
+    public boolean areVectorsSelected() {
+        return chkVectors.isSelected();
+    }
+
+    public boolean isLayLinesSelected(){
+        return chkLaylines.isSelected();
+    }
+
+    public boolean isDistanceLineSelected(){return DistanceLinesToggle.isSelected();}
 
     public void addBoatToSparkLine(Series boatSeries){
         if(!chtSparkLine.getData().contains(boatSeries)){

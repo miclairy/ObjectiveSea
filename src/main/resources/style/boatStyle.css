@@ -1,13 +1,41 @@
 #annotationLine {
     -fx-stroke: White;
+    -fx-stroke-width: 1.5px;
+}
+
+#boatPath{
+
+    -fx-stroke-dash-array: 0.4 7.0 0.4 7.0;
+    -fx-border-style: dotted;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-stroke-width: 3px;
 }
 
 #annotationLabel {
-    -fx-text-fill: #2b2b2b;
+    -fx-text-fill: white;
+    -fx-font-weight: 700;
 }
 
 #wake{
     -fx-stroke: #eaf2ff;
     -fx-fill: rgb(132, 218, 255);
     -fx-opacity: 0.5;
+}
+
+#annotationFrame{
+    -fx-background-color: #3F3F3F;
+    -fx-background-radius: 0.5em;
+    -fx-padding: 6px;
+    -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
+}
+
+#boatIcon{
+    -fx-stroke: White;
+}
+
+#annoGrabHandle{
+    -fx-opacity: 0.6;
+    -fx-background-color: #3F3F3F;
+    -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
 }

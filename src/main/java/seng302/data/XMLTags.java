@@ -28,6 +28,7 @@ public class XMLTags {
         public static final String RACE = "Race";
         public static final String COURSE = "Course";
 
+        public static final String PARTICIPANTS = "Participants";
         //compound marks
         public static final String COMPOUND_MARK = "CompoundMark";
         public static final String MARK = "Mark";
@@ -47,6 +48,7 @@ public class XMLTags {
         public static final String COMPOUND_MARK_SEQUENCE = "CompoundMarkSequence";
         public static final String CORNER = "Corner";
         public static final String SEQ_ID = "SeqID";
+        public static final String ROUNDING = "Rounding";
 
         //wind
         public static final String WIND = "wind";

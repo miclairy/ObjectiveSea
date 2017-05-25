@@ -1,18 +1,14 @@
 package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -26,8 +22,8 @@ import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import seng302.data.BoatStatus;
+import seng302.data.StartTimingStatus;
 import seng302.utilities.DisplayUtils;
-import seng302.utilities.MathUtils;
 import seng302.utilities.PolarReader;
 import seng302.utilities.TimeUtils;
 import seng302.models.*;
@@ -39,6 +35,8 @@ import java.util.*;
 import static java.lang.Math.abs;
 import static seng302.data.RaceStatus.STARTED;
 import static seng302.data.RaceStatus.TERMINATED;
+import static seng302.utilities.DisplayUtils.DRAG_TOLERANCE;
+import static seng302.utilities.DisplayUtils.isOutsideBounds;
 import static seng302.utilities.DisplayUtils.zoomLevel;
 
 /**
@@ -53,6 +51,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
     private final double WAKE_SCALE_FACTOR = 17;
     private final double SOG_SCALE_FACTOR = 200.0;
+    private final int ANNOTATION_HANDLE_OFFSET = 8;
+
 
 
     private Race race;
@@ -78,6 +78,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean isTrackingPoint = false;
     private double rotationOffset = 0;
     private boolean isRotationEnabled = false;
+    private int flickercounter = 0;
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
         this.root = root;
@@ -132,21 +133,44 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 }
             }
         }
-        for (BoatDisplay boat: displayBoats) {
-            CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
-            moveBoat(boat, point);
-            moveWake(boat, point);
-            moveSOGVector(boat);
-            moveVMGVector(boat);
-            if(race.getRaceStatus() == STARTED) {
-                addToBoatPath(boat, point);
+        for (BoatDisplay displayBoat: displayBoats) {
+            CanvasCoordinate point = DisplayUtils.convertFromLatLon(displayBoat.getBoat().getCurrentLat(), displayBoat.getBoat().getCurrentLon());
+            moveBoat(displayBoat, point);
+            moveWake(displayBoat, point);
+            Boat boat = displayBoat.getBoat();
+            if (boat.getTimeStatus() != StartTimingStatus.INRACE &&
+                    race.getCourse().getCourseOrder().get(boat.getLeg()).isStartLine()) {
+                if (flickercounter % 300 == 0) {
+                    displayBoat.getStartTiming(race);
+                }
+            } else {
+                boat.setTimeStatus(StartTimingStatus.INRACE);
             }
-            moveBoatAnnotation(boat.getAnnotation(), point, boat);
+            moveSOGVector(displayBoat);
+            moveVMGVector(displayBoat);
+            if(race.getRaceStatus() == STARTED) {
+                addToBoatPath(displayBoat, point);
+            }
+            moveBoatAnnotation(displayBoat.getAnnotation(), point, displayBoat);
+            if(scoreBoardController.areVectorsSelected()){
+                displayBoat.showVectors();
+            } else {
+                displayBoat.hideVectors();
+            }
+            if (scoreBoardController.isLayLinesSelected()){
+                displayBoat.getLaylines().removeDrawnLines(root);
+                if (selectedBoats.contains(displayBoat)) {
+                    createLayline(displayBoat);
+                }
+            } else {
+                displayBoat.getLaylines().removeDrawnLines(root);
+            }
         }
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
         controller.setWindDirection();
+        flickercounter++;
         distanceLine.getAnnotation().toFront();
     }
 
@@ -163,50 +187,18 @@ public class RaceViewController extends AnimationTimer implements Observer {
             displayBoats.add(displayBoat);
             drawBoat(displayBoat);
             addBoatSelectionHandler(displayBoat);
-            //scoreBoardController.addBoatToSparkLine(boat.getSeries());
-           // makeDraggable(displayBoat.getAnnotation(), displayBoat);
 
-            Rectangle r = new Rectangle();
-            r.setX(0);
-            r.setY(0);
-            r.setWidth(10);
-            r.setHeight(10);
-            r.setArcWidth(10);
-            r.setArcHeight(10);
-            r.setFill(Color.BLACK);
-            r.setOpacity(0.6);
+            Circle grabHandle = new Circle(5);
+            grabHandle.setId("annoGrabHandle");
+            grabHandle.setCenterX(0);
+            grabHandle.setCenterY(0);
 
-            displayBoat.setRectangle(r);
-            root.getChildren().add(r);
-            makeDraggable(r, displayBoat);
-
-
-
-//
-//            displayBoat.getAnnotation().hoverProperty.lambda(new EventHandler<MouseEvent>
-//                    () {
-//                @Override
-//                public void handle(MouseEvent t) {
-//                    System.out.println("hovered");
-//                    displayBoat.getRectangle().setFill(Color.GREEN);
-//                }
-//            });
-//            displayBoat.getAnnotation().setOnMouseExited(new EventHandler<MouseEvent>
-//                    () {
-//                @Override
-//                public void handle(MouseEvent t) {
-//                        System.out.println("unhovered");
-//                        displayBoat.getRectangle().setFill(Color.ORANGE);
-
-//
-//                }
-//            });
+            displayBoat.setAnnoGrabHandle(grabHandle);
+            root.getChildren().add(grabHandle);
+            makeDraggable(grabHandle, displayBoat);
         }
         initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);
-
-
-
     }
 
     /**
@@ -407,7 +399,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * handles the drawing of the map image and makes it fullscreen
      */
     public void drawMap(){
-        String mapURL = DisplayUtils.getGoogleMapsURL();
+        String mapURL = DisplayUtils.getLocalMapURL();
         Image image = new Image(mapURL);
         controller.mapImageView.setImage(image);
         controller.mapImageView.toBack();
@@ -439,12 +431,15 @@ public class RaceViewController extends AnimationTimer implements Observer {
             annotationLabel.setId("annotationLabel");
             annotationFrame.getChildren().add(annotationLabel);
         }
-        //makeDraggable(annotationFrame, displayBoat);
 
-        Line annoLine = new Line(point.getX(), point.getY(), annotationFrame.getLayoutX(), annotationFrame.getLayoutY());
+        double annoHeight = annotationFrame.getBoundsInParent().getHeight() / 2;
+        double annoWidth = annotationFrame.getBoundsInParent().getWidth() / 2;
+
+        Line annoLine = new Line(point.getX(), point.getY(), annotationFrame.getLayoutX() + annoWidth, annotationFrame.getLayoutY() + annoHeight);
         annoLine.setId("annotationLine");
         root.getChildren().remove(displayBoat.getAnnotationLine());
         displayBoat.setAnnotationLine(annoLine);
+
 
         root.getChildren().add(annotationFrame);
         root.getChildren().add(annoLine);
@@ -454,28 +449,60 @@ public class RaceViewController extends AnimationTimer implements Observer {
         displayBoat.getAnnotationLine().toBack();
     }
 
-    public void makeDraggable(Node annotation, BoatDisplay boatDisplay){
-        annotation.requestFocus();
+    /**
+     * Assigns drag listeners to Drag handle objects
+     * @param dragHandle the object that is dragged
+     * @param boatDisplay the boat the object is attached to
+     */
+    public void makeDraggable(Node dragHandle, BoatDisplay boatDisplay){
+        dragHandle.requestFocus();
 
-        root.onKeyPressedProperty().bind(annotation.onKeyPressedProperty());
+        root.onKeyPressedProperty().bind(dragHandle.onKeyPressedProperty());
 
-        annotation.setOnMouseDragged(me -> {
-            annotation.getScene().setCursor(Cursor.CLOSED_HAND);
-            if(abs(me.getX() - Delta.x) < 45 &&
-                    abs(me.getY() - Delta.y) < 45) {
-                boatDisplay.setAnnoOffsetX(boatDisplay.getAnnoOffsetX() + ((me.getX() - Delta.x)/zoomLevel));
-                boatDisplay.setAnnoOffsetY(boatDisplay.getAnnoOffsetY() + ((me.getY() - Delta.y)/zoomLevel));
+        dragHandle.setOnMouseDragged(me -> {
+            root.setCursor(Cursor.CLOSED_HAND);
+            VBox annotation = boatDisplay.getAnnotation();
+
+            if(zoomLevel > 1 || (zoomLevel <=1 && !isOutsideBounds(annotation))){
+                //inside bounds
+                if(abs(me.getX() - Delta.x) < DRAG_TOLERANCE &&
+                        abs(me.getY() - Delta.y) < DRAG_TOLERANCE) {
+                    double scaledChangeX = ((me.getX() - Delta.x)/zoomLevel);
+                    double scaledChangeY = ((me.getY() - Delta.y)/zoomLevel);
+                    boatDisplay.setAnnoOffsetX(boatDisplay.getAnnoOffsetX() + scaledChangeX);
+                    boatDisplay.setAnnoOffsetY(boatDisplay.getAnnoOffsetY() + scaledChangeY);
+                }
             }
             Delta.x = me.getX();
             Delta.y = me.getY();
 
             DisplayUtils.externalDragEvent = true;
-
         });
 
+        dragHandle.setOnMouseExited(me ->{
+            root.setCursor(Cursor.DEFAULT);
+        });
 
+        dragHandle.setOnMouseEntered(me ->{
+            root.setCursor(Cursor.OPEN_HAND);
+        });
 
+        dragHandle.setOnMousePressed(me ->{
+            root.setCursor(Cursor.CLOSED_HAND);
+            dragHandle.setScaleX(1.2);
+            dragHandle.setScaleY(1.2);
+            boatDisplay.getAnnotation().setScaleX(1.2);
+            boatDisplay.getAnnotation().setScaleY(1.2);
+        });
 
+        dragHandle.setOnMouseReleased(me ->{
+            root.setCursor(Cursor.OPEN_HAND);
+
+            dragHandle.setScaleX(1);
+            dragHandle.setScaleY(1);
+            boatDisplay.getAnnotation().setScaleX(1);
+            boatDisplay.getAnnotation().setScaleY(1);
+        });
     }
 
     private static class Delta {
@@ -487,21 +514,43 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * Move's the annotation to where the boat is now.
      * @param annotation the annotation to be moved
      * @param point where the boat has moved to
+     * @param point where the boat has moved to
      */
     private void moveBoatAnnotation(VBox annotation, CanvasCoordinate point, BoatDisplay boatDisplay){
-        annotation.getTransforms().clear();
-        annotation.getTransforms().add(new Rotate(-rotationOffset));
-        
+        if(isRotationEnabled){
+            annotation.getTransforms().clear();
+            annotation.getTransforms().add(new Rotate(-rotationOffset, annotation.getWidth()/2, annotation.getHeight()/2));
+        }
+
+        if (zoomLevel <=1){
+            //check if outside bounds
+            double outsideX = 0;
+            double outsideY = 0;
+            if(annotation.getBoundsInParent().getMaxX() > Controller.getCanvasWidth()){
+                outsideX += annotation.getBoundsInParent().getMaxX() - Controller.getCanvasWidth();
+            } else if (annotation.getBoundsInParent().getMinX() < 0){
+                outsideX += annotation.getBoundsInParent().getMinX();
+            }
+            if(annotation.getBoundsInParent().getMaxY() > Controller.getCanvasHeight()){
+                outsideY += annotation.getBoundsInParent().getMaxY() - Controller.getCanvasHeight();
+            } else if (annotation.getBoundsInParent().getMinY() < 0){
+                outsideY += annotation.getBoundsInParent().getMinY();
+            }
+            boatDisplay.setAnnoOffsetX(boatDisplay.getAnnoOffsetX() - outsideX);
+            boatDisplay.setAnnoOffsetY(boatDisplay.getAnnoOffsetY() - outsideY);
+        }
+
+
         if(!boatDisplay.getAnnoHasMoved()){
             annotation.relocate(
                     (point.getX() + boatDisplay.getAnnoOffsetX() * zoomLevel),
                     (point.getY() + boatDisplay.getAnnoOffsetY() * zoomLevel)
             );
         }
-        Rectangle r = boatDisplay.getRectangle();
-        r.setX(point.getX() + boatDisplay.getAnnoOffsetX() * zoomLevel -15);
-        r.setY(point.getY() + boatDisplay.getAnnoOffsetY() * zoomLevel -15);
-        r.toFront();
+        Circle grabHandle = boatDisplay.getAnnoGrabHandle();
+        grabHandle.setCenterX(point.getX() + boatDisplay.getAnnoOffsetX() * zoomLevel - ANNOTATION_HANDLE_OFFSET);
+        grabHandle.setCenterY(point.getY() + boatDisplay.getAnnoOffsetY() * zoomLevel - ANNOTATION_HANDLE_OFFSET);
+        grabHandle.toFront();
     }
 
     /**
@@ -520,10 +569,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 if (oldAnnotation != null) {
                     root.getChildren().remove(oldAnnotation);
                     root.getChildren().remove(displayBoat.getAnnotationLine());
-                    displayBoat.getLaylines().removeDrawnLines(root);
-                    displayBoat.hideVectors();
+                    displayBoat.annoGrabHandle.setVisible(false);
                 }
                 if (level == AnnotationLevel.IMPORTANT_ANNOTATIONS) {
+                    displayBoat.annoGrabHandle.setVisible(true);
                     annotations.clear();
                     if(scoreBoardController.isNameSelected()){
                         annotations.add(boatName);
@@ -537,6 +586,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     if(scoreBoardController.isEstSelected()){
                         annotations.add(displayBoat.getTimeToNextMark(displayBoat.getBoat().getTimeAtNextMark(), currTime));
                     }
+                    if(scoreBoardController.isStartTimeSelected()){
+                        if(displayBoat.getStartTimingAnnotation() != null){
+                            annotations.add(displayBoat.getStartTimingAnnotation());
+                        }
+                    }
                     if(scoreBoardController.areVectorsSelected()){
                         displayBoat.showVectors();
                     }
@@ -547,16 +601,16 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     }
                     drawBoatAnnotation(displayBoat, annotations);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
+                    displayBoat.annoGrabHandle.setVisible(true);
                     annotations.clear();
                     annotations.add(boatName);
                     annotations.add(displayBoat.getSpeed());
                     annotations.add(displayBoat.getTimeSinceLastMark(currTime));
                     annotations.add(displayBoat.getTimeToNextMark(displayBoat.getBoat().getTimeAtNextMark(), currTime));
-                    displayBoat.showVectors();
-                    drawBoatAnnotation(displayBoat, annotations);
-                    if (selectedBoats.contains(displayBoat)) {
-                        createLayline(displayBoat);
+                    if(displayBoat.getStartTimingAnnotation() != null){
+                        annotations.add(displayBoat.getStartTimingAnnotation());
                     }
+                    drawBoatAnnotation(displayBoat, annotations);
                 }
             }
             currentAnnotationsLevel = level;
@@ -608,6 +662,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         double scale = VMG / SOG_SCALE_FACTOR;
         Polyline oldLine = boat.getVMGVector();
         Polyline newLine = raceView.createVMGVector(boat.getBoat(), scale, course, color);
+        newLine.setId("vectorLine");
         newLine.setOpacity(oldLine.getOpacity());
         root.getChildren().add(newLine);
         boat.setVMGVector(newLine);
@@ -663,10 +718,22 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 Coordinate mark1Coord = nextMark.getMark1().getPosition();
                 Coordinate mark2Coord = nextMark.getMark2().getPosition();
 
-                laylines.calculateLaylineAngle(course.getWindDirection(), lastMark, nextMark, boatDisplay.getPolarTable());
+                double TWD = course.getWindDirection();
+                laylines.calculateLaylineAngle(TWD, lastMark, nextMark, boatDisplay.getPolarTable());
                 if (laylines.shouldDraw()) {
-                    Line layline1 = raceView.drawLayline(laylines.getAngle1(), mark1Coord, boatDisplay.getColor());
-                    Line layline2 = raceView.drawLayline(laylines.getAngle2(), mark2Coord, boatDisplay.getColor());
+
+                    boolean mark1OnLeft = mark1Coord.isOnLeftOfBearingFromMidpoint(mark2Coord, TWD);
+                    Coordinate leftOfLine, rightOfLine;
+                    if (mark1OnLeft) {
+                        leftOfLine = mark1Coord;
+                        rightOfLine = mark2Coord;
+                    } else {
+                        leftOfLine = mark2Coord;
+                        rightOfLine = mark1Coord;
+                    }
+
+                    Line layline1 = raceView.drawLayline(laylines.getRightOfTWDAngle(), rightOfLine, boatDisplay.getColor());
+                    Line layline2 = raceView.drawLayline(laylines.getLeftOfTWDAngle(), leftOfLine, boatDisplay.getColor());
 
                     root.getChildren().add(layline1);
                     root.getChildren().add(layline2);
@@ -796,7 +863,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                         path.getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
                     }
                     path.toBack();
-                    path.setStrokeWidth(zoomLevel);
                 }
             }
         }
@@ -812,7 +878,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 line.toBack();
             }
             updateDistanceLineAnnotation();
-            root.getChildren().add(distanceLine.getAnnotation());
+            Label annotation = distanceLine.getAnnotation();
+            annotation.getTransforms().clear();
+            if(isRotationEnabled){
+                annotation.getTransforms().add(new Rotate(-rotationOffset));
+            }
+            root.getChildren().add(annotation);
         }
     }
 
@@ -887,7 +958,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     @Override
     public void update(Observable course, Object arg) {
-        if (!(course == race.getCourse())){
+        if (course == race.getCourse()){
             courseNeedsRedraw = true;
         }
     }
@@ -979,7 +1050,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if (boat1.getLeg() == boat2.getLeg()) {
                 index = boat1.getLeg();
             } else {
-                System.out.println("Please select boats that are currently on the same leg of the race");
+                if (drawDistanceLine){
+                    controller.setUserHelpLabel("Distance line will display when boats are on the same leg");
+                }
             }
         } else {
             index = boat1.getLeg();

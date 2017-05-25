@@ -9,15 +9,10 @@ import static org.junit.Assert.*;
  */
 public class PolarReaderTest {
 
-    @Test
-    public void getTWS() throws Exception {
-        readPolars.polars();
-        assertEquals(7, readPolars.getTWS().size());
-    }
 
     @Test
     public void getPolars() throws Exception {
-        assertEquals(7, readPolars.getPolars().size());
+        assertEquals(7, PolarReader.getPolarsForAC35Yachts().size());
     }
 
 

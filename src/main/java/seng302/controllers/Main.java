@@ -19,6 +19,7 @@ import seng302.data.DataStreamReader;
 import seng302.data.MockStream;
 import seng302.utilities.Config;
 import seng302.models.Race;
+import seng302.utilities.PolarReader;
 
 
 
@@ -29,7 +30,6 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
         Config.initializeConfig();
         setupMockStream();
         setUpDataStreamReader();
@@ -40,7 +40,6 @@ public class Main extends Application {
                 e.printStackTrace();
             }
         }
-
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
         primaryStage.setTitle("Race Vision");
         primaryStage.getIcons().add(new Image("graphics/icon.png"));
@@ -50,7 +49,6 @@ public class Main extends Application {
         primaryStage.setWidth(primaryScreenBounds.getWidth());
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
         primaryStage.show();
-
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent e) {
@@ -60,18 +58,19 @@ public class Main extends Application {
         });
     }
 
-    public static void main( String[] args ) {launch(args);}
+    public static void main( String[] args ) {launch(args); }
 
     /**
      * Creates a MockStream object, puts it in it's own thread and starts the thread
      */
-    private static void setupMockStream(){
+    private static void setupMockStream() {
         MockRaceRunner runner = new MockRaceRunner();
         runner.setScaleFactor(Config.MOCK_SPEED_SCALE);
         Thread runnerThread = new Thread(runner);
         runnerThread.start();
         MockStream mockStream;
         mockStream = new MockStream(2828, runner);
+        mockStream.setScaleFactor(Config.MOCK_SPEED_SCALE);
         Thread upStream = new Thread(mockStream);
         upStream.start();
     }

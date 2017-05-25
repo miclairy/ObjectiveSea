@@ -31,11 +31,6 @@ public class DataStreamReader implements Runnable{
     private final int BOAT_DEVICE_TYPE = 1;
     private final int MARK_DEVICE_TYPE = 3;
 
-    private final String DEFAULT_FILE_PATH = "/outputFiles/";
-    private final String REGATTA_FILE_NAME = "Regatta.xml";
-    private final String RACE_FILE_NAME = "Race.xml";
-    private final String BOAT_FILE_NAME = "Boat.xml";
-
     public DataStreamReader(String sourceAddress, int sourcePort){
         this.sourceAddress = sourceAddress;
         this.sourcePort = sourcePort;
@@ -61,7 +56,6 @@ public class DataStreamReader implements Runnable{
     void setUpConnection() {
         try {
             clientSocket = new Socket(sourceAddress, sourcePort);
-            //System.out.println("Connecting to server");
             dataStream = clientSocket.getInputStream();
         } catch (IOException e) {
             e.printStackTrace();
@@ -99,7 +93,7 @@ public class DataStreamReader implements Runnable{
      * @param endIndex The ending index (exclusive) of the range of bytes to be converted
      * @return The long converted from the range of bytes in little endian order
      */
-    static long byteArrayRangeToLong(byte[] array, int beginIndex, int endIndex){
+    public static long byteArrayRangeToLong(byte[] array, int beginIndex, int endIndex){
         int length = endIndex - beginIndex;
         if(length <= 0 || length > 8){
             throw new IllegalArgumentException("The length of the range must be between 1 and 8 inclusive");
@@ -120,6 +114,16 @@ public class DataStreamReader implements Runnable{
      */
     static double intToLatLon(int value){
         return (double)value * 180 / Math.pow(2, 31);
+    }
+
+
+    /**
+     * Converts an integer to a true wind angle as per specification.
+     * @param value the angle as a scaled integer
+     * @return the actual angle of the wind
+     */
+    static double intToTrueWindAngle(int value){
+        return (double)value * 180 / Math.pow(2, 15);
     }
 
     /**
@@ -145,7 +149,9 @@ public class DataStreamReader implements Runnable{
         xmlBody = xmlBody.trim();
         InputStream xmlInputStream = new ByteArrayInputStream(xmlBody.getBytes());
 
-        if (xmlSequenceNumbers.get(xmlSubtype) < xmlSequenceNumber) {
+
+        //Taken out since the new stream sends xmls not in order
+//        if (xmlSequenceNumbers.get(xmlSubtype) < xmlSequenceNumber) {
             xmlSequenceNumbers.put(xmlSubtype, xmlSequenceNumber);
             if (xmlSubtype == REGATTA_XML_MESSAGE) {
                 System.out.printf("New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
@@ -153,15 +159,19 @@ public class DataStreamReader implements Runnable{
             } else if (xmlSubtype == RACE_XML_MESSAGE) {
                 System.out.printf("New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 if (race.getCourse() != null) {
-                    race.getCourse().mergeWithOtherCourse(RaceVisionXMLParser.importCourse());
+                    race.getCourse().mergeWithOtherCourse(RaceVisionXMLParser.importCourse(xmlInputStream));
                 } else {
                     race.setCourse(RaceVisionXMLParser.importCourse(xmlInputStream));
+                    xmlInputStream = new ByteArrayInputStream(xmlBody.getBytes());
+                    race.setCompetitorIds(RaceVisionXMLParser.importCompetitorIds(xmlInputStream));
                 }
             } else if (xmlSubtype == BOAT_XML_MESSAGE) {
                 System.out.printf("New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
-                 race.setCompetitors(RaceVisionXMLParser.importStarters(xmlInputStream));
+                if(race.getCompetitors().size() == 0){
+                    race.setCompetitors(RaceVisionXMLParser.importStarters(xmlInputStream));
+                }
             }
-        }
+//        }
     }
 
     /**
@@ -176,14 +186,18 @@ public class DataStreamReader implements Runnable{
         int boatSpeed = byteArrayRangeToInt(body, SPEED_OVER_GROUND.getStartIndex(), SPEED_OVER_GROUND.getEndIndex());
 
         int deviceType = byteArrayRangeToInt(body, DEVICE_TYPE.getStartIndex(), DEVICE_TYPE.getEndIndex());
-
+        int trueWindDirectionScaled = byteArrayRangeToInt(body, TRUE_WIND_DIRECTION.getStartIndex(), TRUE_WIND_DIRECTION.getEndIndex());
+        int trueWindAngleScaled = byteArrayRangeToInt(body, TRUE_WIND_ANGLE.getStartIndex(), TRUE_WIND_ANGLE.getEndIndex());
+        double trueWindAngle = intToTrueWindAngle(trueWindAngleScaled);
+        //unused as we believe this is always sent as 0 from the AC35 feed
+        double trueWindDirection = intToHeading(trueWindDirectionScaled);
         double lat = intToLatLon(latScaled);
         double lon = intToLatLon(lonScaled);
         double heading = intToHeading(headingScaled);
         double speedInKnots = TimeUtils.convertMmPerSecondToKnots(boatSpeed);
 
         if(deviceType == BOAT_DEVICE_TYPE){
-            race.updateBoat(sourceID, lat, lon, heading, speedInKnots);
+            race.updateBoat(sourceID, lat, lon, heading, speedInKnots, trueWindAngle);
         } else if(deviceType == MARK_DEVICE_TYPE){
             race.getCourse().updateMark(sourceID, lat, lon);
         }
@@ -210,8 +224,8 @@ public class DataStreamReader implements Runnable{
      */
     private void readData(){
         DataInput dataInput = new DataInputStream(dataStream);
-        while(!race.getRaceStatus().isRaceEndedStatus()){
-            try{
+        while(!race.getRaceStatus().isRaceEndedStatus()) {
+            try {
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
 
@@ -223,8 +237,8 @@ public class DataStreamReader implements Runnable{
                 dataInput.readFully(body);
                 byte[] crc = new byte[CRC_LENGTH];
                 dataInput.readFully(crc);
-                if(checkCRC(header, body, crc)){
-                    switch(messageType){
+                if (checkCRC(header, body, crc)) {
+                    switch (messageType) {
                         case XML_MESSAGE:
                             convertXMLMessage(body);
                             break;
@@ -242,10 +256,11 @@ public class DataStreamReader implements Runnable{
                                 }
                             }
                     }
-                } else{
+                } else {
                     System.err.println("Incorrect CRC. Message Ignored.");
                 }
-            } catch (IOException e){
+
+            } catch (IOException e) {
                 System.err.println("Error occurred when reading data from stream:");
                 System.err.println(e);
             }
@@ -262,7 +277,9 @@ public class DataStreamReader implements Runnable{
         int raceCourseWindDirection = byteArrayRangeToInt(body, WIND_DIRECTION.getStartIndex(), WIND_DIRECTION.getEndIndex());
         long currentTime = byteArrayRangeToLong(body, CURRENT_TIME.getStartIndex(), CURRENT_TIME.getEndIndex());
         long expectedStartTime = byteArrayRangeToLong(body, START_TIME.getStartIndex(), START_TIME.getEndIndex());
+        int windSpeed = byteArrayRangeToInt(body, WIND_SPEED.getStartIndex(), WIND_SPEED.getEndIndex());
 
+        double windDirectionInDegrees = intToHeading(raceCourseWindDirection);
 
         byte[] boatStatuses = new byte[body.length - 24];
 
@@ -270,22 +287,26 @@ public class DataStreamReader implements Runnable{
             boatStatuses[i - 24] = body[i];
         }
 
-        for(int k = 0; k < boatStatuses.length; k += 20){
-            int boatID = byteArrayRangeToInt(boatStatuses, k, 4 + k);
+        for  (int k = 0; k < boatStatuses.length; k += 20) {
+            int boatID = byteArrayRangeToInt(boatStatuses, 0 + k, 4 + k);
             int boatStatus = byteArrayRangeToInt(boatStatuses, 4 + k, 5 + k);
             long estimatedTimeAtMark = byteArrayRangeToLong(boatStatuses, 8 + k, 14 + k);
             int legNumber = byteArrayRangeToInt(boatStatuses, 5 + k, 6 + k);
-
+            int legOffset = 0;
+            if(race.getCourse().hasEntryMark()) legOffset += 1;
             Boat boat = race.getBoatById(boatID);
-            boat.setTimeTillMark(estimatedTimeAtMark);
-            boat.setLeg(legNumber);
-            boat.setStatus(BoatStatus.values()[boatStatus]);
+            if(boat != null){
+                boat.setTimeTillMark(estimatedTimeAtMark);
+                boat.setLeg(legNumber + legOffset);
+                boat.setStatus(BoatStatus.values()[boatStatus]);
+            }
         }
         if(race.isFirstMessage()){
             race.updateRaceOrder();
             race.setFirstMessage(false);
         }
-        race.getCourse().updateCourseWindValues(raceCourseWindDirection);
+        race.getCourse().setWindDirection(windDirectionInDegrees);
+        race.getCourse().setTrueWindSpeed(TimeUtils.convertMmPerSecondToKnots(windSpeed));
         race.updateRaceStatus(RaceStatus.fromInteger(raceStatus));
         race.setStartTimeInEpochMs(expectedStartTime);
         race.setCurrentTimeInEpochMs(currentTime);
@@ -296,18 +317,20 @@ public class DataStreamReader implements Runnable{
      * @param body the body of the mark rounding message
      */
     private void parseMarkRoundingMessage(byte[] body) {
+        int passedEntryLimitLine = 100;
+        int passedEntryLine = 101;
         int passedStartLineId = 102;
         int passedFinishLineId = 103;
         long time = byteArrayRangeToLong(body, ROUNDING_TIME.getStartIndex(), ROUNDING_TIME.getEndIndex());
         int sourceID = byteArrayRangeToInt(body, ROUNDING_SOURCE_ID.getStartIndex(), ROUNDING_SOURCE_ID.getEndIndex());
-        int markID = byteArrayRangeToInt(body, ROUNDING_MARK_ID.getStartIndex(), ROUNDING_MARK_ID.getEndIndex());
+        int markIndex = byteArrayRangeToInt(body, ROUNDING_MARK_ID.getStartIndex(), ROUNDING_MARK_ID.getEndIndex());
 
-        if(markID == passedStartLineId){
-            markID = race.getCourse().getStartLine().getCompoundMarkID();
-        } else if(markID == passedFinishLineId){
-            markID = race.getCourse().getFinishLine().getCompoundMarkID();
+        if(markIndex == passedStartLineId || markIndex == passedEntryLimitLine ||markIndex == passedEntryLine){
+            markIndex = 0;
+        } else if(markIndex == passedFinishLineId){
+            markIndex = race.getCourse().getCourseOrder().size()-1;
         }
-        race.updateMarkRounded(sourceID, markID, time);
+        race.updateMarkRounded(sourceID, markIndex, time);
     }
 
     public Socket getClientSocket() {

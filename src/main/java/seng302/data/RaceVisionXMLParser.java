@@ -91,7 +91,7 @@ public class RaceVisionXMLParser {
                         case XMLTags.Course.COURSE:
                             NodeList compoundMarks = element.getElementsByTagName(XMLTags.Course.COMPOUND_MARK);
                             for (int j = 0; j < compoundMarks.getLength(); j++){
-                                CompoundMark mark = parseCompoundMark((Element) compoundMarks.item(j));
+                                CompoundMark mark = parseCompoundMark((Element) compoundMarks.item(j), course);
                                 course.addNewCompoundMark(mark);
                             }
                             break;
@@ -105,7 +105,14 @@ public class RaceVisionXMLParser {
                                 markOrder.put(seqNumber, compoundMarkID);
                             }
                             for(Integer seqNumber : markOrder.keySet()){
-                                course.addMarkInOrder(markOrder.get(seqNumber));
+                                int markID = markOrder.get(seqNumber);
+                                if (seqNumber == 1) {
+                                    CompoundMark mark = course.getCompoundMarkByID(markID);
+                                    if (!mark.hasTwoMarks()){
+                                        continue;
+                                    }
+                                }
+                                course.addMarkInOrder(markID);
                             }
                             break;
                         case XMLTags.Course.WIND:
@@ -141,17 +148,20 @@ public class RaceVisionXMLParser {
      * @param course The course that the raceLines will be changed
      */
     private static void setRaceLines(Course course) {
-        CompoundMark startLine = course.getCourseOrder().get(0);
-        if(startLine.hasTwoMarks()){
-            course.removeCompoundMark(startLine);
-
-            RaceLine startRaceLine = CompoundMark.convertToRaceLine(startLine, CompoundMark.MarkType.START);
-            course.setStartLine(startRaceLine);
-            course.getCourseOrder().set(0, startRaceLine);
-            course.addNewCompoundMark(startRaceLine);
-        } else{
-            throw new InputMismatchException("The start line must have 2 marks.");
+        CompoundMark startLine;
+        int startLinePos = 0;
+        if(course.getCourseOrder().get(0).hasTwoMarks()){
+            startLine = course.getCourseOrder().get(0);
+        }else {
+            startLine = course.getCourseOrder().get(1);
+            course.setHasEntryMark(true);
+            startLinePos = 1;
         }
+        course.removeCompoundMark(startLine);
+        RaceLine startRaceLine = CompoundMark.convertToRaceLine(startLine, CompoundMark.MarkType.START);
+        course.setStartLine(startRaceLine);
+        course.getCourseOrder().set(startLinePos, startRaceLine);
+        course.addNewCompoundMark(startRaceLine);
 
         int lastMarkIndex = course.getCourseOrder().size() - 1;
         CompoundMark finishLine = course.getCourseOrder().get(lastMarkIndex);
@@ -171,13 +181,16 @@ public class RaceVisionXMLParser {
      * @param markElement A <Mark> element
      * @return a Mark representing the data given in the Mark element of the XML
      */
-    private static Mark parseMark(Element markElement){
+    private static Mark parseMark(Element markElement, Course course){
         String markName = markElement.getAttribute(XMLTags.Course.NAME);
         Double lat1 = Double.parseDouble(markElement.getAttribute(XMLTags.Course.TARGET_LAT));
         Double lon1 = Double.parseDouble(markElement.getAttribute(XMLTags.Course.TARGET_LON));
         Integer sourceId = Integer.parseInt(markElement.getAttribute(XMLTags.Course.SOURCE_ID));
-        Mark mark = new Mark(sourceId, markName, new Coordinate(lat1, lon1));
-        return mark;
+        if(course.getAllMarks().containsKey(sourceId)){
+            return course.getAllMarks().get(sourceId);
+        } else{
+            return new Mark(sourceId, markName, new Coordinate(lat1, lon1));
+        }
     }
 
     /**
@@ -187,11 +200,12 @@ public class RaceVisionXMLParser {
      * @return a CompoundMark (potentially RaceLine) object
      * @throws XMLParseException when an expected tag is missing or unexpectedly formatted
      */
-    private static CompoundMark parseCompoundMark(Element compoundMarkElement) throws  XMLParseException{
+    private static CompoundMark parseCompoundMark(Element compoundMarkElement, Course course) throws  XMLParseException{
         CompoundMark compoundMark;
         Integer compoundMarkID = Integer.parseInt(compoundMarkElement.getAttribute(XMLTags.Course.COMPOUND_MARK_ID));
         String compoundMarkName = compoundMarkElement.getAttribute(XMLTags.Course.NAME);
         NodeList markNodes = compoundMarkElement.getElementsByTagName(XMLTags.Course.MARK);
+
         if (markNodes.getLength() < 1) {
             throw new XMLParseException(XMLTags.Course.COMPOUND_MARK, "Required tag was not defined.");
         }
@@ -200,21 +214,12 @@ public class RaceVisionXMLParser {
             Element mark1Element = (Element) markNodes.item(0);
             Element mark2Element = (Element) markNodes.item(1);
 
-            Mark mark1 = parseMark(mark1Element);
-            Mark mark2 = parseMark(mark2Element);
+            Mark mark1 = parseMark(mark1Element, course);
+            Mark mark2 = parseMark(mark2Element, course);
             compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark1, mark2);
-//            if(mark1.getName().toLowerCase().contains(XMLTags.Course.START)){
-//                compoundMark = new RaceLine(compoundMarkID, compoundMarkName, mark1, mark2);
-//                compoundMark.setMarkAsStart();
-//            }else if(mark1.getName().toLowerCase().contains(XMLTags.Course.FINISH)){
-//                compoundMark = new RaceLine(compoundMarkID, compoundMarkName, mark1, mark2);
-//                compoundMark.setMarkAsFinish();
-//            } else{
-//                compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark1, mark2);
-//            }
         }else{
             Element markElement = (Element) markNodes.item(0);
-            Mark mark = parseMark(markElement);
+            Mark mark = parseMark(markElement, course);
             compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark);
         }
         return compoundMark;
@@ -296,7 +301,6 @@ public class RaceVisionXMLParser {
         if(starters.size() < 2){
             throw new InputMismatchException("There must be at least two boats in the race.");
         }
-
         return starters;
     }
 
@@ -417,4 +421,47 @@ public class RaceVisionXMLParser {
         }
     }
 
+    public static Set<Integer> importCompetitorIds(InputStream xmlInputStream) {
+        try {
+            parseXMLStream(xmlInputStream);
+            return parseCompetitorIds();
+        }  catch (IOException ioe) {
+            System.err.printf("Unable to read %s as a course definition file. " +
+                    "Ensure it is correctly formatted.\n", xmlInputStream);
+            ioe.printStackTrace();
+            return null;
+        }
+    }
+
+    private static Set<Integer> parseCompetitorIds() {
+        Set<Integer> competitorIds = null;
+        try {
+            Element root = dom.getDocumentElement();
+            if (root.getTagName() != XMLTags.Course.RACE) {
+                String message = String.format("The root tag must be <%s>.", XMLTags.Course.RACE);
+                throw new XMLParseException(XMLTags.Course.RACE, message);
+            }
+            competitorIds = new HashSet<>();
+            NodeList nodes = root.getChildNodes();
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Node node = nodes.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) node;
+                    if(element.getTagName().equals(XMLTags.Course.PARTICIPANTS)){
+                        NodeList competitors = element.getChildNodes();
+                        for (int j = 0; j < competitors.getLength(); j++) {
+                            if (competitors.item(j).getNodeType() == Node.ELEMENT_NODE) {
+                                Element boatNode = (Element) competitors.item(j);
+                                competitorIds.add(Integer.parseInt(boatNode.getAttribute(XMLTags.Boats.SOURCE_ID)));
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (XMLParseException e) {
+            System.err.printf("Error reading course file around tag <%s>.\n", e.getTag());
+            e.printStackTrace();
+        }
+        return competitorIds;
+    }
 }
