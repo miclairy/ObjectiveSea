@@ -849,7 +849,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                         path.getElements().add(new LineTo(currPoint.getX(), currPoint.getY()));
                     }
                     path.toBack();
-                    path.setStrokeWidth(zoomLevel);
                 }
             }
         }
