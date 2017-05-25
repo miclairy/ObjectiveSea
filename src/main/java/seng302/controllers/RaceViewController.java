@@ -52,6 +52,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
     private final double WAKE_SCALE_FACTOR = 17;
     private final double SOG_SCALE_FACTOR = 200.0;
+    private final int ANNOTATION_HANDLE_OFFSET = 8;
+
 
 
     private Race race;
@@ -432,6 +434,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
         displayBoat.getAnnotationLine().toBack();
     }
 
+    /**
+     * Assigns drag listeners to Drag handle objects
+     * @param dragHandle the object that is dragged
+     * @param boatDisplay the boat the object is attached to
+     */
     public void makeDraggable(Node dragHandle, BoatDisplay boatDisplay){
         dragHandle.requestFocus();
 
@@ -526,8 +533,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             );
         }
         Circle grabHandle = boatDisplay.getAnnoGrabHandle();
-        grabHandle.setCenterX(point.getX() + boatDisplay.getAnnoOffsetX() * zoomLevel - 8);
-        grabHandle.setCenterY(point.getY() + boatDisplay.getAnnoOffsetY() * zoomLevel - 8);
+        grabHandle.setCenterX(point.getX() + boatDisplay.getAnnoOffsetX() * zoomLevel - ANNOTATION_HANDLE_OFFSET);
+        grabHandle.setCenterY(point.getY() + boatDisplay.getAnnoOffsetY() * zoomLevel - ANNOTATION_HANDLE_OFFSET);
         grabHandle.toFront();
     }
 
