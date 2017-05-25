@@ -150,8 +150,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 addToBoatPath(boat, point);
             }
             moveBoatAnnotation(boat.getAnnotation(), point, boat);
-
-            moveBoatAnnotation(boat.getAnnotation(), point);
             if(scoreBoardController.areVectorsSelected()){
                 boat.showVectors();
             }else{
