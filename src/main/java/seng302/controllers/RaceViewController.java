@@ -22,14 +22,12 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import seng302.data.BoatStatus;
 import seng302.utilities.DisplayUtils;
-import seng302.utilities.MathUtils;
 import seng302.utilities.PolarReader;
 import seng302.utilities.TimeUtils;
 import seng302.models.*;
 import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
-import java.text.Annotation;
 import java.util.*;
 
 import static seng302.data.RaceStatus.STARTED;
@@ -602,10 +600,22 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 Coordinate mark1Coord = nextMark.getMark1().getPosition();
                 Coordinate mark2Coord = nextMark.getMark2().getPosition();
 
-                laylines.calculateLaylineAngle(course.getWindDirection(), lastMark, nextMark, boatDisplay.getPolarTable());
+                double TWD = course.getWindDirection();
+                laylines.calculateLaylineAngle(TWD, lastMark, nextMark, boatDisplay.getPolarTable());
                 if (laylines.shouldDraw()) {
-                    Line layline1 = raceView.drawLayline(laylines.getAngle1(), mark1Coord, boatDisplay.getColor());
-                    Line layline2 = raceView.drawLayline(laylines.getAngle2(), mark2Coord, boatDisplay.getColor());
+
+                    boolean mark1OnLeft = mark1Coord.isOnLeftOfBearingFromMidpoint(mark2Coord, TWD);
+                    Coordinate leftOfLine, rightOfLine;
+                    if (mark1OnLeft) {
+                        leftOfLine = mark1Coord;
+                        rightOfLine = mark2Coord;
+                    } else {
+                        leftOfLine = mark2Coord;
+                        rightOfLine = mark1Coord;
+                    }
+
+                    Line layline1 = raceView.drawLayline(laylines.getRightOfTWDAngle(), rightOfLine, boatDisplay.getColor());
+                    Line layline2 = raceView.drawLayline(laylines.getLeftOfTWDAngle(), leftOfLine, boatDisplay.getColor());
 
                     root.getChildren().add(layline1);
                     root.getChildren().add(layline2);

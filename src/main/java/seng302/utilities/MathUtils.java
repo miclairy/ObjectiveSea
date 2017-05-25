@@ -1,12 +1,8 @@
 package seng302.utilities;
 
-import javafx.util.Pair;
 import seng302.models.CompoundMark;
 import seng302.models.Coordinate;
-import seng302.models.Mark;
 import seng302.models.WindAngleAndSpeed;
-
-import static java.lang.Math.atan2;
 
 /**
  * Created by gla42 on 11/05/17.

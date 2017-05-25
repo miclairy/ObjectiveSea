@@ -10,8 +10,8 @@ import seng302.utilities.MathUtils;
  */
 public class Laylines {
 
-    private double angle1;
-    private double angle2;
+    private double rightOfTWDAngle;
+    private double leftOfTWDAngle;
     private Line layline1;
     private Line layline2;
     private boolean shouldDraw;
@@ -29,9 +29,9 @@ public class Laylines {
         layline2 = null;
     }
 
-    public double getAngle1() { return angle1; }
+    public double getRightOfTWDAngle() { return rightOfTWDAngle; }
 
-    public double getAngle2() { return angle2; }
+    public double getLeftOfTWDAngle() { return leftOfTWDAngle; }
 
     public void setDrawnlines(Line layline1, Line layline2) {
         this.layline1 = layline1;
@@ -52,8 +52,8 @@ public class Laylines {
         double markBearing = lastMarkPosition.headingToCoordinate(nextMarkPosition);
         boolean upwind = MathUtils.pointBetweenTwoAngle(TWD, 90, markBearing);
         double TWA = polarTable.getOptimumTWA(upwind);
-        this.angle1 = TWD + TWA;
-        this.angle2 = TWD - TWA;
+        this.rightOfTWDAngle = TWD + TWA;
+        this.leftOfTWDAngle = TWD - TWA;
         shouldDraw = !upwind;
     }
 
