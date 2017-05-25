@@ -258,7 +258,6 @@ public class DataStreamReader implements Runnable{
                 System.err.println("Error occurred when reading data from stream:");
                 System.err.println(e);
             }
-
         }
     }
 
