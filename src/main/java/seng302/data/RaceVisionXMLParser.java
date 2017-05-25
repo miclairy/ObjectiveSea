@@ -105,7 +105,14 @@ public class RaceVisionXMLParser {
                                 markOrder.put(seqNumber, compoundMarkID);
                             }
                             for(Integer seqNumber : markOrder.keySet()){
-                                course.addMarkInOrder(markOrder.get(seqNumber));
+                                int markID = markOrder.get(seqNumber);
+                                if (seqNumber == 1) {
+                                    CompoundMark mark = course.getCompoundMarkByID(markID);
+                                    if (!mark.hasTwoMarks()){
+                                        continue;
+                                    }
+                                }
+                                course.addMarkInOrder(markID);
                             }
                             break;
                         case XMLTags.Course.WIND:
