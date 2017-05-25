@@ -120,7 +120,7 @@ public class BoatDisplay implements Observer {
     public String getTimeSinceLastMark(long currTime){
         String timeSincePassed;
         if(boat.getLastRoundedMarkTime() == 0){
-            timeSincePassed = "-";
+            timeSincePassed = "...";
         }else{
             long timeElapsed = currTime - boat.getLastRoundedMarkTime();
             Instant instant = Instant.ofEpochMilli(timeElapsed);
@@ -140,7 +140,7 @@ public class BoatDisplay implements Observer {
             ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
             timeTillMark = formatter.format(zdt);
         } else {
-            timeTillMark = "-";
+            timeTillMark = "...";
         }
         return timeTillMark;
     }
@@ -152,11 +152,11 @@ public class BoatDisplay implements Observer {
     public String getStartTimingAnnotation(){
             if(boat.getTimeStatus().equals(StartTimingStatus.EARLY)){
 
-                return "- : Early";
+                return "- Early";
             } else if(boat.getTimeStatus().equals(StartTimingStatus.LATE)){
-                return "+ : Late";
+                return "+ Late";
             }
-            return "";
+            return null;
     }
 
     /**
