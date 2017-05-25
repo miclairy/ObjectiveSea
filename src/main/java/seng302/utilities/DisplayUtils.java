@@ -270,22 +270,11 @@ public class DisplayUtils {
     public static void fadeInFadeOutNodeTransition(Node node, double endOpacity){
         FadeTransition fadeTransition = new FadeTransition();
         fadeTransition.setNode(node);
-        fadeTransition.setDuration(new Duration(500));
+        fadeTransition.setDuration(new Duration(800));
         fadeTransition.setFromValue(node.getOpacity());
         fadeTransition.setToValue(endOpacity);
         fadeTransition.setAutoReverse(true);
         fadeTransition.setCycleCount(2);
         fadeTransition.play();
-
-    }
-
-
-    public static void removeNodeTransition(Node node){
-        ScaleTransition scaleTransition = new ScaleTransition();
-        scaleTransition.setNode(node);
-        scaleTransition.setDuration(new Duration(400));
-        scaleTransition.setByX(-1.0f);
-        scaleTransition.setByY(-1.0f);
-        scaleTransition.play();
     }
 }

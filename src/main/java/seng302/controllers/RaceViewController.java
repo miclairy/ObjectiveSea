@@ -520,7 +520,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     if(displayBoat.getStartTimingAnnotation() != null){
                         annotations.add(displayBoat.getStartTimingAnnotation());
                     }
-                    displayBoat.showVectors();
                     drawBoatAnnotation(displayBoat, annotations);
                 }
             }
