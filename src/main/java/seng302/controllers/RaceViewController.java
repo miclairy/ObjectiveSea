@@ -133,34 +133,37 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 }
             }
         }
-        for (BoatDisplay boat: displayBoats) {
-            CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
-            moveBoat(boat, point);
-            moveWake(boat, point);
-            if(race.getCourse().getCourseOrder().get(boat.getBoat().getLeg()).isStartLine()){
-            if(flickercounter % 300 == 0){
-                boat.getStartTiming(race);}
+        for (BoatDisplay displayBoat: displayBoats) {
+            CanvasCoordinate point = DisplayUtils.convertFromLatLon(displayBoat.getBoat().getCurrentLat(), displayBoat.getBoat().getCurrentLon());
+            moveBoat(displayBoat, point);
+            moveWake(displayBoat, point);
+            Boat boat = displayBoat.getBoat();
+            if (boat.getTimeStatus() != StartTimingStatus.INRACE &&
+                    race.getCourse().getCourseOrder().get(boat.getLeg()).isStartLine()) {
+                if (flickercounter % 300 == 0) {
+                    displayBoat.getStartTiming(race);
+                }
             } else {
-                boat.getBoat().setTimeStatus(StartTimingStatus.INRACE);
+                boat.setTimeStatus(StartTimingStatus.INRACE);
             }
-            moveSOGVector(boat);
-            moveVMGVector(boat);
+            moveSOGVector(displayBoat);
+            moveVMGVector(displayBoat);
             if(race.getRaceStatus() == STARTED) {
-                addToBoatPath(boat, point);
+                addToBoatPath(displayBoat, point);
             }
-            moveBoatAnnotation(boat.getAnnotation(), point, boat);
+            moveBoatAnnotation(displayBoat.getAnnotation(), point, displayBoat);
             if(scoreBoardController.areVectorsSelected()){
-                boat.showVectors();
-            }else{
-                boat.hideVectors();
+                displayBoat.showVectors();
+            } else {
+                displayBoat.hideVectors();
             }
             if (scoreBoardController.isLayLinesSelected()){
-                boat.getLaylines().removeDrawnLines(root);
-                if (selectedBoats.contains(boat)) {
-                    createLayline(boat);
+                displayBoat.getLaylines().removeDrawnLines(root);
+                if (selectedBoats.contains(displayBoat)) {
+                    createLayline(displayBoat);
                 }
-            }else{
-                boat.getLaylines().removeDrawnLines(root);
+            } else {
+                displayBoat.getLaylines().removeDrawnLines(root);
             }
         }
         if (courseNeedsRedraw) redrawCourse();
