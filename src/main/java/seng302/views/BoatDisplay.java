@@ -9,6 +9,10 @@ import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.XYChart.Data;
+import javafx.scene.Node;
+import javafx.animation.FadeTransition;
+import javafx.util.Duration;
+import seng302.data.BoatStatus;
 import seng302.models.*;
 
 import java.time.Instant;
@@ -148,7 +152,7 @@ public class BoatDisplay implements Observer {
 
     public String getTimeSinceLastMark(long currTime){
         String timeSincePassed;
-        if(boat.getLastRoundedMarkTime() == 0){
+        if(boat.getStatus() != BoatStatus.RACING || boat.getLastRoundedMarkTime() == 0){
             timeSincePassed = "-";
         }else{
             long timeElapsed = currTime - boat.getLastRoundedMarkTime();
