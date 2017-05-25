@@ -30,7 +30,6 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-
         Config.initializeConfig();
         setupMockStream();
         setUpDataStreamReader();
@@ -41,7 +40,6 @@ public class Main extends Application {
                 e.printStackTrace();
             }
         }
-
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
         primaryStage.setTitle("Race Vision");
         primaryStage.getIcons().add(new Image("graphics/icon.png"));
@@ -51,7 +49,6 @@ public class Main extends Application {
         primaryStage.setWidth(primaryScreenBounds.getWidth());
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
         primaryStage.show();
-
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent e) {
@@ -61,7 +58,7 @@ public class Main extends Application {
         });
     }
 
-    public static void main( String[] args ) {launch(args);}
+    public static void main( String[] args ) {launch(args); }
 
     /**
      * Creates a MockStream object, puts it in it's own thread and starts the thread

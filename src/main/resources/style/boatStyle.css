@@ -29,3 +29,13 @@
     -fx-padding: 6px;
     -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
 }
+
+#boatIcon{
+    -fx-stroke: White;
+}
+
+#annoGrabHandle{
+    -fx-opacity: 0.6;
+    -fx-background-color: #3F3F3F;
+    -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
+}

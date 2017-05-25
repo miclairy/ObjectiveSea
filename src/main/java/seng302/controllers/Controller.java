@@ -382,10 +382,6 @@ public class Controller implements Initializable, Observer {
         DisplayUtils.fadeInFadeOutNodeTransition(lblUserHelp, 1);
     }
 
-    public void displayUserHelp(){
-        DisplayUtils.fadeNodeTransition(lblUserHelp, 1);
-    }
-
     public static double getAnchorHeight() {
         return anchorHeight;
     }

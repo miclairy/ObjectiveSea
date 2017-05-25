@@ -301,7 +301,6 @@ public class RaceVisionXMLParser {
         if(starters.size() < 2){
             throw new InputMismatchException("There must be at least two boats in the race.");
         }
-
         return starters;
     }
 
@@ -422,4 +421,47 @@ public class RaceVisionXMLParser {
         }
     }
 
+    public static Set<Integer> importCompetitorIds(InputStream xmlInputStream) {
+        try {
+            parseXMLStream(xmlInputStream);
+            return parseCompetitorIds();
+        }  catch (IOException ioe) {
+            System.err.printf("Unable to read %s as a course definition file. " +
+                    "Ensure it is correctly formatted.\n", xmlInputStream);
+            ioe.printStackTrace();
+            return null;
+        }
+    }
+
+    private static Set<Integer> parseCompetitorIds() {
+        Set<Integer> competitorIds = null;
+        try {
+            Element root = dom.getDocumentElement();
+            if (root.getTagName() != XMLTags.Course.RACE) {
+                String message = String.format("The root tag must be <%s>.", XMLTags.Course.RACE);
+                throw new XMLParseException(XMLTags.Course.RACE, message);
+            }
+            competitorIds = new HashSet<>();
+            NodeList nodes = root.getChildNodes();
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Node node = nodes.item(i);
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    Element element = (Element) node;
+                    if(element.getTagName().equals(XMLTags.Course.PARTICIPANTS)){
+                        NodeList competitors = element.getChildNodes();
+                        for (int j = 0; j < competitors.getLength(); j++) {
+                            if (competitors.item(j).getNodeType() == Node.ELEMENT_NODE) {
+                                Element boatNode = (Element) competitors.item(j);
+                                competitorIds.add(Integer.parseInt(boatNode.getAttribute(XMLTags.Boats.SOURCE_ID)));
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (XMLParseException e) {
+            System.err.printf("Error reading course file around tag <%s>.\n", e.getTag());
+            e.printStackTrace();
+        }
+        return competitorIds;
+    }
 }

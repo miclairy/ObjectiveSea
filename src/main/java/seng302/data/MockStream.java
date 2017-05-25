@@ -115,7 +115,7 @@ public class MockStream implements Runnable {
             for (int i = 0; i < boatStatus.length; i++){
                 raceStatusBody[i + offset] = boatStatus[i];
             }
-            if(raceStatus.equals(RaceStatus.STARTED) && !boat.isFinished()) {
+            if(!boat.isFinished()) {
                 sendBoatMessages(boat);
             }
             offset += 20;

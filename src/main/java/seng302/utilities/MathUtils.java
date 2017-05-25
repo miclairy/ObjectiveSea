@@ -2,6 +2,9 @@ package seng302.utilities;
 
 import seng302.models.CompoundMark;
 import seng302.models.Coordinate;
+import seng302.models.Mark;
+import seng302.models.CompoundMark;
+import seng302.models.Coordinate;
 import seng302.models.WindAngleAndSpeed;
 
 /**
@@ -25,9 +28,9 @@ public class MathUtils {
             middle = TWD - 180;
         } else {
             middle = 90;
-            diff = Math.abs(90 - TWD);}
-        bearing += diff;
-        bearing = (bearing + 360) % 360;
+            diff = Math.abs(90 - TWD);
+            bearing += diff;
+            bearing = (bearing + 360) % 360;}
         return (middle - deltaAngle) <= bearing && bearing <= (middle + deltaAngle);
     }
 
@@ -51,6 +54,61 @@ public class MathUtils {
      */
     public static double VMG(double boatSpeed, double TWA){
         return boatSpeed * Math.cos(Math.toRadians(TWA));
+    }
+
+    /**
+     * Function to determine if a boat is on the correct side of the start line (e.g if the boat is on the side that the course isn't on)
+     * @param BoatLat the latitude of the boat
+     * @param BoatLong the longitude of the boat
+     * @param startMark1Lat the latitude of the first start mark
+     * @param startMark1Long the longitude of the first start mark
+     * @param startMark2Lat the latitude of the first second mark
+     * @param startMark2Long the longitude of the first second mark
+     * @param markLat the latitude of the first mark
+     * @param markLong the longitude of the first mark
+     * @return true if the boat is on the correct side of the start line
+     */
+    public static Boolean boatBeforeStartline(double BoatLat, double BoatLong, double startMark1Lat, double startMark1Long, double startMark2Lat, double startMark2Long, double markLat, double markLong){
+        double determinantOfMark = (markLong - startMark1Long)*(startMark2Lat - startMark1Lat) - (markLat - startMark1Lat)*(startMark2Long - startMark1Long);
+        double determinantOfBoat = (BoatLong - startMark1Long)*(startMark2Lat - startMark1Lat) - (BoatLat - startMark1Lat)*(startMark2Long - startMark1Long);
+        if(determinantOfBoat > 0 && determinantOfMark < 0){
+            return true;
+        } else if(determinantOfBoat < 0 && determinantOfMark > 0){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Calculates the midpoint between two marks
+     * @param mark first mark
+     * @return new coordinate at half way between the two marks
+     */
+    public static Coordinate calculateMidPoint(CompoundMark mark){
+        Coordinate mark1Coord = mark.getMark1().getPosition();
+        Coordinate mark2Coord = mark.getMark2().getPosition();
+        Double halfLat = (mark1Coord.getLat() + mark2Coord.getLat()) / 2;
+        Double halfLong = (mark1Coord.getLon() + mark2Coord.getLon()) / 2;
+        return new Coordinate(halfLat,halfLong);
+    }
+
+    /**
+     * Function to determine if the boat which is on the correct side of the sideline is heading towards it
+     * @param boatsHeading heading of boat
+     * @param lineHeading the heading of the line, if the boat is heading towards it the boat will essentially be heading on either side of the perpendicular line ot it
+     * @param headingOfMark the heading from the mark to the startline
+     * @return true if the boat is heading in the general direction of the line
+     */
+    public static Boolean boatHeadingToLine(double boatsHeading, double lineHeading, double headingOfMark){
+        Boolean towardsLine = false;
+
+        if(pointBetweenTwoAngle((lineHeading + 270)%360, 90, boatsHeading) && pointBetweenTwoAngle(lineHeading + 90, 90, headingOfMark)){
+            towardsLine = true;
+        } else if(pointBetweenTwoAngle(lineHeading + 90, 90, boatsHeading) && pointBetweenTwoAngle((lineHeading + 270)%360, 90, headingOfMark)){
+            towardsLine = true;
+        }
+        return towardsLine;
     }
 
 
