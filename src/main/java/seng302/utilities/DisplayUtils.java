@@ -10,6 +10,9 @@ import seng302.models.CanvasCoordinate;
 import seng302.models.Coordinate;
 import seng302.models.Mark;
 
+import java.io.File;
+import java.util.Objects;
+
 import static java.lang.Math.abs;
 
 
@@ -140,6 +143,26 @@ public class DisplayUtils {
 
     }
 
+    /**
+     * method used for getting a local image of the area for the race. Currently picks between two different pictures
+     * have stored in our resources folder
+     * @return a string that relates to a picture
+     */
+    public static String getLocalMapURL(){
+        String mapURL;
+        if (Objects.equals(Config.SOURCE_ADDRESS, "livedata.americascup.com")){ // getting live data
+            File file = new File("src/main/resources/graphics/liveData.png");
+            mapURL = file.toURI().toString();
+        } else if (Objects.equals(Config.SOURCE_ADDRESS, "csse-s302staff.canterbury.ac.nz")){
+            File file = new File("src/main/resources/graphics/liveData.png");
+            mapURL = file.toURI().toString();
+        } else {
+            File file = new File("src/main/resources/graphics/mockData.png");
+            mapURL = file.toURI().toString();
+        }
+        return mapURL;
+    }
+
 
 
 
@@ -150,23 +173,26 @@ public class DisplayUtils {
     public static String getGoogleMapsURL(){
         double canvasY = Controller.getAnchorHeight();
         double canvasX = Controller.getAnchorWidth(); //halved to keep within google size guidelines
-        Coordinate midPoint = midPoint(max.getLat(), max.getLon(), min.getLat(), min.getLon());
 
-        double longPerPixel = (max.getLon() - min.getLon());
+        Coordinate bottomMarker = new Coordinate(min.getLat(), min.getLon());
+        Coordinate topMarker = new Coordinate(max.getLat(), max.getLon());
 
-        return "https://maps.googleapis.com/maps/api/staticmap?" +
+        Coordinate middlePoint = DisplayUtils.midPointFromTwoCoords(bottomMarker, topMarker);
+
+        String mapURL = "https://maps.googleapis.com/maps/api/staticmap?" +
                 "center=" +
-                midPoint.getLat() + "," + midPoint.getLon() +
+                middlePoint.getLat() + "," + middlePoint.getLon() +
                 "&size=" +
-                (int)canvasX/2 + "x" + (int)canvasY/2 +                         //dimentions of image
+                (int)canvasX/2 + "x" + (int)canvasY/2 +
                 "&style=feature:water%7Ccolor:0xaae7df" +
                 "&style=feature:all%7Celement:labels%7Cvisibility:off" +
                 "&visible=" +
-                (min.getLat() + (longPerPixel * 0.11)) + "," + (min.getLon() + (longPerPixel * 0.11)) +
+                bottomMarker.getLat() + "," + bottomMarker.getLon() +
                 "%7C" +
-                (max.getLat() - (longPerPixel * 0.11)) + "," + (max.getLon() - (longPerPixel * 0.11)) +
+                topMarker.getLat() + "," + topMarker.getLon() +
                 "&scale=2" +
                 "&key=" + GOOGLE_API_KEY;
+        return mapURL;
     }
 
 

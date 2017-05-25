@@ -218,8 +218,8 @@ public class DataStreamReader implements Runnable{
      */
     private void readData(){
         DataInput dataInput = new DataInputStream(dataStream);
-        while(!race.getRaceStatus().isRaceEndedStatus()){
-            try{
+        while(!race.getRaceStatus().isRaceEndedStatus()) {
+            try {
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
 
@@ -231,8 +231,8 @@ public class DataStreamReader implements Runnable{
                 dataInput.readFully(body);
                 byte[] crc = new byte[CRC_LENGTH];
                 dataInput.readFully(crc);
-                if(checkCRC(header, body, crc)){
-                    switch(messageType){
+                if (checkCRC(header, body, crc)) {
+                    switch (messageType) {
                         case XML_MESSAGE:
                             convertXMLMessage(body);
                             break;
@@ -257,7 +257,6 @@ public class DataStreamReader implements Runnable{
                 System.err.println("Error occurred when reading data from stream:");
                 System.err.println(e);
             }
-
         }
     }
 
