@@ -1,5 +1,11 @@
 package seng302.models;
 
+
+import javafx.util.Pair;
+import seng302.data.StartTimingStatus;
+import javafx.scene.chart.XYChart.Series;
+import javafx.scene.chart.XYChart.Data;
+
 import seng302.data.BoatStatus;
 
 import java.util.ArrayList;
@@ -33,6 +39,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private double maxSpeed;
 
     private BoatStatus status = BoatStatus.UNDEFINED;
+    private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
 
     private List<Coordinate> pathCoords;
     private long timeTillMark;
@@ -213,6 +220,14 @@ public class Boat extends Observable implements Comparable<Boat>{
         this.timeTillFinish = timeTillFinish;
     }
 
+    public StartTimingStatus getTimeStatus() {
+        return timeStatus;
+    }
+
+    public void setTimeStatus(StartTimingStatus timeStatus) {
+        this.timeStatus = timeStatus;
+    }
+
     public void setCurrentVMG(double currentVMGSpeed) {
         this.currentVMG = currentVMGSpeed;
     }
@@ -258,7 +273,7 @@ public class Boat extends Observable implements Comparable<Boat>{
         if(lastRoundedMarkIndex + 1 < courseOrder.size()){
             markLocation = courseOrder.get(lastRoundedMarkIndex + 1).getPosition();
         } else {
-            markLocation = courseOrder.get(lastRoundedMarkIndex).getPosition();
+            markLocation = courseOrder.get(courseOrder.size() - 1).getPosition();
         }
 
         double lineBearing = currentPosition.headingToCoordinate(markLocation);

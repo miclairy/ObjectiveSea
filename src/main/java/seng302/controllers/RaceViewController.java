@@ -21,6 +21,7 @@ import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import seng302.data.BoatStatus;
+import seng302.data.StartTimingStatus;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.MathUtils;
 import seng302.utilities.PolarReader;
@@ -73,6 +74,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean isTrackingPoint = false;
     private double rotationOffset = 0;
     private boolean isRotationEnabled = false;
+    private int flickercounter = 0;
 
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
@@ -132,6 +134,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getBoat().getCurrentLat(), boat.getBoat().getCurrentLon());
             moveBoat(boat, point);
             moveWake(boat, point);
+            if(race.getCourse().getCourseOrder().get(boat.getBoat().getLeg()).isStartLine()){
+            if(flickercounter % 300 == 0){
+                boat.getStartTiming(race);}
+            } else {
+                boat.getBoat().setTimeStatus(StartTimingStatus.INRACE);
+            }
             moveSOGVector(boat);
             moveVMGVector(boat);
             if(race.getRaceStatus() == STARTED) {
@@ -157,6 +165,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
         controller.setWindDirection();
+        flickercounter++;
         distanceLine.getAnnotation().toFront();
     }
 
@@ -488,6 +497,19 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     if(scoreBoardController.isEstSelected()){
                         annotations.add(displayBoat.getTimeToNextMark(displayBoat.getBoat().getTimeAtNextMark(), currTime));
                     }
+                    if(scoreBoardController.isStartTimeSelected()){
+                        if(displayBoat.getStartTimingAnnotation() != null){
+                            annotations.add(displayBoat.getStartTimingAnnotation());
+                        }
+                    }
+                    if(scoreBoardController.areVectorsSelected()){
+                        displayBoat.showVectors();
+                    }
+                    if (scoreBoardController.isLayLinesSelected()){
+                        if (selectedBoats.contains(displayBoat)) {
+                            createLayline(displayBoat);
+                        }
+                    }
                     drawBoatAnnotation(displayBoat, annotations);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
                     annotations.clear();
@@ -495,6 +517,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     annotations.add(displayBoat.getSpeed());
                     annotations.add(displayBoat.getTimeSinceLastMark(currTime));
                     annotations.add(displayBoat.getTimeToNextMark(displayBoat.getBoat().getTimeAtNextMark(), currTime));
+                    if(displayBoat.getStartTimingAnnotation() != null){
+                        annotations.add(displayBoat.getStartTimingAnnotation());
+                    }
+                    displayBoat.showVectors();
                     drawBoatAnnotation(displayBoat, annotations);
                 }
             }
