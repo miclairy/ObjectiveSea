@@ -14,6 +14,7 @@ import javafx.scene.chart.XYChart.Data;
 import javafx.scene.Node;
 import javafx.animation.FadeTransition;
 import javafx.util.Duration;
+import seng302.data.BoatStatus;
 import seng302.models.*;
 import seng302.utilities.MathUtils;
 import seng302.utilities.DisplayUtils;
