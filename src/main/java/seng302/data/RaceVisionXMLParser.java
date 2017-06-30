@@ -7,7 +7,17 @@ import seng302.models.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -18,9 +28,11 @@ import java.util.*;
 public class RaceVisionXMLParser {
 
     private static final String DEFAULT_FILE_PATH = "/outputFiles/";
-    private static final String COURSE_FILE = "Race.xml";
+    public static final String COURSE_FILE = "Race.xml";
     private static final String BOAT_FILE = "Boat.xml";
     private static final String REGATTA_FILE = "Regatta.xml";
+
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
     private static Document dom;
 
@@ -50,6 +62,78 @@ public class RaceVisionXMLParser {
     public static Course importCourse(){
         String resourcePath = "/defaultFiles/" + COURSE_FILE;
         return importCourse(RaceVisionXMLParser.class.getResourceAsStream(resourcePath));
+    }
+
+    /**
+     * Sets the race id in the Race.xml dom
+     * @param root The root tag ("Race") of the dom
+     * @param raceId The desired race id
+     */
+    private static void setRaceId(Element root, Integer raceId){
+        NodeList raceIdList = root.getElementsByTagName(XMLTags.Race.RACE_ID);
+        raceIdList.item(0).setTextContent(String.valueOf(raceId));
+    }
+
+    /**
+     * Sets the message creation date and time in the Race.xml dom
+     * @param root The root tag ("Race") of the dom
+     */
+    private static void setCreationTime(Element root){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
+        NodeList creationTimeList = root.getElementsByTagName(XMLTags.Race.CREATION_TIME);
+
+        LocalDateTime creationTime = LocalDateTime.now(ZoneId.of("UTC"));
+        String formattedCreationTime = creationTime.format(formatter);
+
+        creationTimeList.item(0).setTextContent(formattedCreationTime);
+    }
+
+    /**
+     * Sets the race start time in the Race.xml dom
+     * @param root The root tag ("Race") of the dom
+     * @param expectStartTimeEpochMs The expected race start time in epoch milliseconds
+     */
+    private static void setStartTime(Element root, Long expectStartTimeEpochMs){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
+        NodeList startTimeList = root.getElementsByTagName(XMLTags.Race.START_TIME);
+
+        LocalDateTime startTime = LocalDateTime.ofEpochSecond(expectStartTimeEpochMs / 1000, 0, ZoneOffset.UTC);
+        String formattedStartTime = startTime.format(formatter);
+
+        startTimeList.item(0).getAttributes().getNamedItem("Start").setTextContent(formattedStartTime);
+    }
+
+    /**
+     * Updates the race.xml in race id, race creation time and race start time fields.
+     * @param raceXML The InputStream-ed race xml file
+     * @param raceId The race id of the race
+     * @param expectStartTimeEpochMs The expected start time of the race
+     * @return A InputStream with the race xml containing the update fields
+     */
+    static InputStream updateRace(InputStream raceXML, Integer raceId, Long expectStartTimeEpochMs){
+        try {
+            parseXMLStream(raceXML);
+            Element root = dom.getDocumentElement();
+
+            setRaceId(root, raceId);
+            setCreationTime(root);
+            setStartTime(root, expectStartTimeEpochMs);
+
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            StringWriter writer = new StringWriter();
+            transformer.transform(new DOMSource(dom), new StreamResult(writer));
+
+            String output = writer.getBuffer().toString();
+
+            return new ByteArrayInputStream(output.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (TransformerConfigurationException e) {
+            e.printStackTrace();
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 

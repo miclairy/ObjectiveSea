@@ -297,7 +297,7 @@ public class MockStream implements Runnable {
      */
     private byte[] generateXmlBody(AC35StreamXMLMessage subType, String fileName) {
         try {
-            byte[] bodyContent = readXMLIntoByteArray(DEFAULT_RESOURCES_FOLDER + fileName);
+            byte[] bodyContent = readXMLIntoByteArray(DEFAULT_RESOURCES_FOLDER, fileName);
             byte[] body = new byte[XML_BODY.getStartIndex() + bodyContent.length];
 
             int sequenceNumber = xmlSequenceNumber.get(subType) + 1; //increment sequence number
@@ -326,8 +326,12 @@ public class MockStream implements Runnable {
      * @return a byte array containing the data from the file
      * @throws IOException
      */
-    private byte[] readXMLIntoByteArray(String fileName) throws IOException {
-        InputStream resourceStream = MockStream.class.getResourceAsStream(fileName);
+    private byte[] readXMLIntoByteArray(String filePath, String fileName) throws IOException {
+        InputStream resourceStream = MockStream.class.getResourceAsStream(filePath + fileName);
+        if(fileName.equals(RaceVisionXMLParser.COURSE_FILE)){
+            Race race = raceRunner.getRace();
+            resourceStream = RaceVisionXMLParser.updateRace(resourceStream, race.getId(), race.getStartTimeInEpochMs());
+        }
         ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
         int read = resourceStream.read();
         while (read != -1){
