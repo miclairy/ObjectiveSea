@@ -1,5 +1,6 @@
 package seng302.data;
 
+import org.joda.time.DateTime;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import seng302.models.*;
@@ -47,6 +48,25 @@ public class RaceVisionXMLParser {
         try {
             parseXMLStream(resourcePath);
             return importCourseFromXML();
+        }  catch (IOException ioe) {
+            System.err.printf("Unable to read %s as a course definition file. " +
+                    "Ensure it is correctly formatted.\n", resourcePath);
+            ioe.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Manages importing the race from the correct place
+     * If a file path is specified, this will be used, otherwise a default is packaged with the jar.
+     * Currently this an XML file at DEFAULT_FILE_PATH/COURSE_FILE
+     * @param resourcePath String of the file path of the file to read in.
+     * @return a Race object.
+     */
+    public static Race importRace(InputStream resourcePath){
+        try {
+            parseXMLStream(resourcePath);
+            return importRaceFromXML();
         }  catch (IOException ioe) {
             System.err.printf("Unable to read %s as a course definition file. " +
                     "Ensure it is correctly formatted.\n", resourcePath);
@@ -150,6 +170,30 @@ public class RaceVisionXMLParser {
         } catch(ParserConfigurationException | SAXException pce) {
             pce.printStackTrace();
         }
+    }
+
+    /**
+     * Decodes an XML file into a Race object
+     * @return a Race Object
+     */
+    public static Race importRaceFromXML(){
+        Race race = new Race();
+
+        race.setCourse(importCourseFromXML());
+
+        Element root = dom.getDocumentElement();
+        NodeList raceIdList = root.getElementsByTagName(XMLTags.Race.RACE_ID);
+        int raceId = Integer.parseInt(raceIdList.item(0).getTextContent());
+        race.setId(raceId);
+
+        NodeList startTimeList = root.getElementsByTagName(XMLTags.Race.START_TIME);
+        String startTimeString = startTimeList.item(0).getAttributes().getNamedItem("Start").getTextContent();
+        DateTime startTime = new DateTime( startTimeString ) ;
+
+        race.setStartTimeInEpochMs(startTime.getMillis());
+        race.setCompetitorIds(parseCompetitorIds());
+
+        return race;
     }
 
     /**
