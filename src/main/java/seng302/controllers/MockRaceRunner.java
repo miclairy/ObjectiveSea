@@ -39,7 +39,7 @@ public class MockRaceRunner implements Runnable {
         List<Boat> boatsInRace = RaceVisionXMLParser.importDefaultStarters();
         Course course = RaceVisionXMLParser.importCourse();
         course.setTrueWindSpeed(20);
-        course.setWindDirection(26);
+        course.setWindDirection(course.getWindDirectionBasedOnGates() - 180); // TODO Remove the -180 when wind direction is fixed
         race = new Race("Mock Runner Race", course, boatsInRace);
         setRandomBoatSpeeds();
 

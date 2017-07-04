@@ -144,4 +144,22 @@ public class CourseTest {
         assertEquals(startLine1.getPosition().getLon(), 128.0, 0);
     }
 
+    @Test
+    public void getWindDirectionBasedOnGatesTest(){
+        Course course = new Course();
+
+        Mark leewardGate1 = new Mark(0, "Leeward Gate 1", new Coordinate(32.284680, -64.850045));
+        Mark leewardGate2 = new Mark(1, "Leeward Gate 2", new Coordinate(32.280164, -64.847591));
+        CompoundMark leewardGate = new CompoundMark(1, "Leeward Gate", leewardGate1, leewardGate2);
+        course.addNewCompoundMark(leewardGate);
+
+        Mark windwardGate1 = new Mark(2, "Windward Gate 1", new Coordinate(32.309693, -64.835249));
+        Mark windwardGate2 = new Mark(3, "Windward Gate 2", new Coordinate(32.308046, -64.831785));
+        CompoundMark windwardGate = new CompoundMark(2, "Windward Gate", windwardGate1, windwardGate2);
+        course.addNewCompoundMark(windwardGate);
+
+        Double windDirection = course.getWindDirectionBasedOnGates();
+
+        Assert.assertEquals(206.569705, windDirection, DELTA);
+    }
 }
