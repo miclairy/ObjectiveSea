@@ -130,7 +130,7 @@ public class RaceVisionXMLParser {
      * @param expectStartTimeEpochMs The expected start time of the race
      * @return A InputStream with the race xml containing the update fields
      */
-    static InputStream updateRace(InputStream raceXML, String raceId, Long expectStartTimeEpochMs){
+    static InputStream injectRaceXMLFields(InputStream raceXML, String raceId, Long expectStartTimeEpochMs){
         try {
             parseXMLStream(raceXML);
             Element root = dom.getDocumentElement();

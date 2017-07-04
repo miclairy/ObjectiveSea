@@ -331,7 +331,7 @@ public class MockStream implements Runnable {
         InputStream resourceStream = MockStream.class.getResourceAsStream(filePath + fileName);
         if(fileName.equals(RaceVisionXMLParser.COURSE_FILE)){
             Race race = raceRunner.getRace();
-            resourceStream = RaceVisionXMLParser.updateRace(resourceStream, race.getId(), race.getStartTimeInEpochMs());
+            resourceStream = RaceVisionXMLParser.injectRaceXMLFields(resourceStream, race.getId(), race.getStartTimeInEpochMs());
         }
         ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
         int read = resourceStream.read();
