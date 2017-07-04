@@ -175,7 +175,7 @@ public class MockStream implements Runnable {
         body[0] = 1;
         addFieldToByteArray(body, BOAT_TIMESTAMP, raceRunner.getRace().getCurrentTimeInEpochMs());
         addFieldToByteArray(body, MARK_ACK, 0); //todo make proper ack
-        addFieldToByteArray(body, MARK_RACE_ID, Integer.parseInt(raceRunner.getRaceId()));
+        addFieldToByteArray(body, MARK_RACE_ID, Integer.parseInt(raceRunner.getRace().getId()));
         addFieldToByteArray(body, ROUNDING_SOURCE_ID, boat.getId());
         addFieldToByteArray(body, MARK_BOAT_STATUS, boat.getStatus().getValue());
         addFieldToByteArray(body, ROUNDING_SIDE, 0); //todo present correct side
@@ -204,13 +204,14 @@ public class MockStream implements Runnable {
      */
     private byte[] initialiseRaceStatusMessage(int numBoats) {
         byte[] body = new byte[24 + (20 * numBoats)];
+        Race race = raceRunner.getRace();
         addFieldToByteArray(body, STATUS_MESSAGE_VERSION_NUMBER, 2);
-        addFieldToByteArray(body, BOAT_TIMESTAMP, raceRunner.getRace().getCurrentTimeInEpochMs());
-        addFieldToByteArray(body, STATUS_RACE_ID, Integer.parseInt(raceRunner.getRaceId()));
-        addFieldToByteArray(body, RACE_STATUS, raceRunner.getRace().getRaceStatus().getValue());
-        addFieldToByteArray(body, EXPECTED_START_TIME, raceRunner.getRace().getStartTimeInEpochMs());
-        addFieldToByteArray(body, CURRENT_TIME, raceRunner.getRace().getCurrentTimeInEpochMs());
-        addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, convertHeadingToInt(raceRunner.getRace().getCourse().getWindDirection()));
+        addFieldToByteArray(body, BOAT_TIMESTAMP, race.getCurrentTimeInEpochMs());
+        addFieldToByteArray(body, STATUS_RACE_ID, Integer.parseInt(race.getId()));
+        addFieldToByteArray(body, RACE_STATUS, race.getRaceStatus().getValue());
+        addFieldToByteArray(body, EXPECTED_START_TIME, race.getStartTimeInEpochMs());
+        addFieldToByteArray(body, CURRENT_TIME, race.getCurrentTimeInEpochMs());
+        addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, convertHeadingToInt(race.getCourse().getWindDirection()));
         addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, 20); //left at 10knots for now
         addFieldToByteArray(body, NUMBER_OF_BOATS_IN_RACE, numBoats);
         addFieldToByteArray(body, RACE_TYPE, 2); //fleet race

@@ -15,7 +15,7 @@ import java.util.*;
 public class Race extends Observable{
 
     public static final int UPDATED_STATUS_SIGNAL = 1;
-    private Integer id = 282828;
+    private String id;
     private String regattaName;
     private Course course;
     private List<Boat> competitors = new ArrayList<>();
@@ -222,7 +222,7 @@ public class Race extends Observable{
         this.course = course;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -259,7 +259,7 @@ public class Race extends Observable{
         this.competitorIds = competitorIds;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 }

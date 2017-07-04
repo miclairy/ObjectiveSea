@@ -28,6 +28,9 @@ public class XMLTags {
         public static final String RACE_ID = "RaceID";
         public static final String CREATION_TIME = "CreationTimeDate";
         public static final String START_TIME = "RaceStartTime";
+
+        //Time Attributes
+        public static final String START = "Start";
     }
 
     public class Course {

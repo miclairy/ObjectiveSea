@@ -89,9 +89,9 @@ public class RaceVisionXMLParser {
      * @param root The root tag ("Race") of the dom
      * @param raceId The desired race id
      */
-    private static void setRaceId(Element root, Integer raceId){
+    private static void setRaceId(Element root, String raceId){
         NodeList raceIdList = root.getElementsByTagName(XMLTags.Race.RACE_ID);
-        raceIdList.item(0).setTextContent(String.valueOf(raceId));
+        raceIdList.item(0).setTextContent(raceId);
     }
 
     /**
@@ -120,7 +120,7 @@ public class RaceVisionXMLParser {
         LocalDateTime startTime = LocalDateTime.ofEpochSecond(expectStartTimeEpochMs / 1000, 0, ZoneOffset.UTC);
         String formattedStartTime = startTime.format(formatter);
 
-        startTimeList.item(0).getAttributes().getNamedItem("Start").setTextContent(formattedStartTime);
+        startTimeList.item(0).getAttributes().getNamedItem(XMLTags.Race.START).setTextContent(formattedStartTime);
     }
 
     /**
@@ -130,7 +130,7 @@ public class RaceVisionXMLParser {
      * @param expectStartTimeEpochMs The expected start time of the race
      * @return A InputStream with the race xml containing the update fields
      */
-    static InputStream updateRace(InputStream raceXML, Integer raceId, Long expectStartTimeEpochMs){
+    static InputStream updateRace(InputStream raceXML, String raceId, Long expectStartTimeEpochMs){
         try {
             parseXMLStream(raceXML);
             Element root = dom.getDocumentElement();
@@ -162,7 +162,7 @@ public class RaceVisionXMLParser {
      * @param inputStream - the location of the file to be read, must be XML
      * @throws IOException if the file is not found
      */
-    public static void parseXMLStream(InputStream inputStream) throws IOException{
+    private static void parseXMLStream(InputStream inputStream) throws IOException{
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -176,18 +176,18 @@ public class RaceVisionXMLParser {
      * Decodes an XML file into a Race object
      * @return a Race Object
      */
-    public static Race importRaceFromXML(){
+    private static Race importRaceFromXML(){
         Race race = new Race();
 
         race.setCourse(importCourseFromXML());
 
         Element root = dom.getDocumentElement();
         NodeList raceIdList = root.getElementsByTagName(XMLTags.Race.RACE_ID);
-        int raceId = Integer.parseInt(raceIdList.item(0).getTextContent());
+        String raceId = raceIdList.item(0).getTextContent();
         race.setId(raceId);
 
         NodeList startTimeList = root.getElementsByTagName(XMLTags.Race.START_TIME);
-        String startTimeString = startTimeList.item(0).getAttributes().getNamedItem("Start").getTextContent();
+        String startTimeString = startTimeList.item(0).getAttributes().getNamedItem(XMLTags.Race.START).getTextContent();
         DateTime startTime = new DateTime( startTimeString ) ;
 
         race.setStartTimeInEpochMs(startTime.getMillis());
@@ -200,7 +200,7 @@ public class RaceVisionXMLParser {
      * Decodes an XML file into a Course object
      * @return a Course object
      */
-    public static Course importCourseFromXML() {
+    private static Course importCourseFromXML() {
         Course course = new Course();
 
         try {
@@ -394,7 +394,7 @@ public class RaceVisionXMLParser {
      *
      * @return starters - ArrayList of Boat objects defined in file
      */
-    public static List<Boat> importStartersFromXML(){
+    private static List<Boat> importStartersFromXML(){
         List<Boat> starters = new ArrayList<>();
         ArrayList<Boat> allBoats = new ArrayList<>();
         try {
@@ -471,7 +471,7 @@ public class RaceVisionXMLParser {
     /**
      * Imports file found at DEFAULT_FILE_PATH/REGATTA_FILE and updates attributes in race
      */
-    public static void importRegattaFromXML(Race race) {
+    private static void importRegattaFromXML(Race race) {
         try {
             Element root = dom.getDocumentElement();
             if (!Objects.equals(root.getTagName(), XMLTags.Regatta.REGATTA_CONFIG)) {
@@ -544,18 +544,6 @@ public class RaceVisionXMLParser {
             parseXMLStream(RaceVisionXMLParser.class.getResourceAsStream(resourcePath));
             return importStartersFromXML();
         } catch (IOException ioe) {
-            ioe.printStackTrace();
-            return null;
-        }
-    }
-
-    public static Set<Integer> importCompetitorIds(InputStream xmlInputStream) {
-        try {
-            parseXMLStream(xmlInputStream);
-            return parseCompetitorIds();
-        }  catch (IOException ioe) {
-            System.err.printf("Unable to read %s as a course definition file. " +
-                    "Ensure it is correctly formatted.\n", xmlInputStream);
             ioe.printStackTrace();
             return null;
         }

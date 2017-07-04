@@ -174,11 +174,11 @@ public class RaceVisionXMLParserTest {
     public void updateRaceTest(){
         InputStream raceStream = RaceVisionXMLParserTest.class.getResourceAsStream("/data/testFiles/testRace.xml");
         long currentTime = Instant.now().toEpochMilli();
-        InputStream result = RaceVisionXMLParser.updateRace(raceStream,11,currentTime);
+        InputStream result = RaceVisionXMLParser.updateRace(raceStream,"11", currentTime);
 
         Race race = RaceVisionXMLParser.importRace(result);
 
-        Assert.assertEquals(11, (int) race.getId());
+        Assert.assertEquals("11", race.getId());
         Assert.assertEquals(currentTime - (currentTime % 1000),race.getStartTimeInEpochMs());
     }
 }
