@@ -39,7 +39,7 @@ public class MockRaceRunner implements Runnable {
         List<Boat> boatsInRace = RaceVisionXMLParser.importDefaultStarters();
         Course course = RaceVisionXMLParser.importCourse();
         course.setTrueWindSpeed(20);
-        course.setWindDirection(course.getWindDirectionBasedOnGates() - 180); // TODO Remove the -180 when wind direction is fixed
+        course.setWindDirection(course.getWindDirectionBasedOnGates());
         race = new Race("Mock Runner Race", course, boatsInRace);
         setRandomBoatSpeeds();
 
@@ -120,7 +120,7 @@ public class MockRaceRunner implements Runnable {
         if(boat.isFinished()) return;
 
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
-        double windDirection = course.getWindDirection();
+        double windDirection = course.getWindDirection() - 180;
         double headingBetweenMarks = course.headingsBetweenMarks(boat.getLastRoundedMarkIndex(),boat.getLastRoundedMarkIndex()+1);
         boolean onTack = false;
         boolean onGybe = false;
