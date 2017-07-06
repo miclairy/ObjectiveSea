@@ -158,6 +158,11 @@ public class BoatDisplay implements Observer {
         this.color = color;
     }
 
+    /**
+     * Computes the time since the previous mark label
+     * @param currTime current time in epoch ms
+     * @return time since last mark in mm:ss or .. if invalid
+     */
     public String getTimeSinceLastMark(long currTime){
         String timeSincePassed;
         if(boat.getLastRoundedMarkTime() == 0){
@@ -172,6 +177,12 @@ public class BoatDisplay implements Observer {
         return timeSincePassed;
     }
 
+    /**
+     * Computes the time until the next mark label
+     * @param timeAtMark time to the next mark in epoch ms
+     * @param currTime current time in epoch ms
+     * @return the time to next mark in mm:ss or ... if invalid
+     */
     public String getTimeToNextMark(long timeAtMark, long currTime){
         String timeTillMark;
         long convertedTime = (timeAtMark - currTime);
