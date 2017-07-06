@@ -21,6 +21,7 @@ public class MockStream implements Runnable {
     private final int GATE_TYPE = 2;
     private final String DEFAULT_RESOURCES_FOLDER = "/defaultFiles/";
 
+
     private final double SECONDS_PER_UPDATE = 0.2;
     private double scaleFactor = 1;
 
@@ -211,7 +212,7 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, EXPECTED_START_TIME, raceRunner.getRace().getStartTimeInEpochMs());
         addFieldToByteArray(body, CURRENT_TIME, raceRunner.getRace().getCurrentTimeInEpochMs());
         addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, convertHeadingToInt(raceRunner.getRace().getCourse().getWindDirection()));
-        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, 20); //left at 10knots for now
+        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, (long) raceRunner.getRace().getCourse().getTrueWindSpeed()); //left at 10knots for now
         addFieldToByteArray(body, NUMBER_OF_BOATS_IN_RACE, numBoats);
         addFieldToByteArray(body, RACE_TYPE, 2); //fleet race
 
@@ -426,4 +427,6 @@ public class MockStream implements Runnable {
     public void setScaleFactor(double scaleFactor) {
         this.scaleFactor = scaleFactor;
     }
+
+
 }
