@@ -22,7 +22,7 @@ public class BoatDisplayTest {
         ArrayList<Polar> polars = PolarReader.getPolarsForAC35Yachts();
         Course course = new Course();
         PolarTable pl = new PolarTable(polars,course);
-        BoatDisplay boatDisplay = new BoatDisplay(boat, null);
+        BoatDisplay boatDisplay = new BoatDisplay(boat, pl);
         String time = boatDisplay.getTimeToNextMark(2000000,0);
         String time1 = boatDisplay.getTimeToNextMark(2000,0);
 
