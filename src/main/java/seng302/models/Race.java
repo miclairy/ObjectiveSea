@@ -89,6 +89,9 @@ public class Race extends Observable{
         if(boatIdMap.containsKey(sourceID)){
             Boat boat = boatIdMap.get(sourceID);
             boat.setPosition(lat, lon);
+            if ((raceStatus.equals(STARTED) && !raceStatus.equals(TERMINATED)) && (boat.getHeading() != heading)){
+                boat.addPathCoord(new Coordinate(boat.getCurrentLat(), boat.getCurrentLon()));
+            }
             boat.setHeading(heading);
             boat.setCurrentSpeed(speed);
             boat.setTWAofBoat(twa);
