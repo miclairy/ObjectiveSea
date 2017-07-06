@@ -51,7 +51,7 @@ public class BoatDisplay implements Observer {
     private final double FADEDBOAT = 0.3;
     public Circle annoGrabHandle;
 
-    private final int HALF_AN_HOUR_MS = 1800000;
+
 
     private Laylines laylines;
     private PolarTable polarTable;
@@ -158,44 +158,7 @@ public class BoatDisplay implements Observer {
         this.color = color;
     }
 
-    /**
-     * Computes the time since the previous mark label
-     * @param currTime current time in epoch ms
-     * @return time since last mark in mm:ss or .. if invalid
-     */
-    public String getTimeSinceLastMark(long currTime){
-        String timeSincePassed;
-        if(boat.getLastRoundedMarkTime() == 0){
-            timeSincePassed = "...";
-        }else{
-            long timeElapsed = currTime - boat.getLastRoundedMarkTime();
-            Instant instant = Instant.ofEpochMilli(timeElapsed);
-            ZonedDateTime zdt = ZonedDateTime.ofInstant (instant , ZoneOffset.UTC );
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern ("mm:ss");
-            timeSincePassed = formatter.format(zdt);
-        }
-        return timeSincePassed;
-    }
 
-    /**
-     * Computes the time until the next mark label
-     * @param timeAtMark time to the next mark in epoch ms
-     * @param currTime current time in epoch ms
-     * @return the time to next mark in mm:ss or ... if invalid
-     */
-    public String getTimeToNextMark(long timeAtMark, long currTime){
-        String timeTillMark;
-        long convertedTime = (timeAtMark - currTime);
-        if (timeAtMark > 0 && convertedTime < HALF_AN_HOUR_MS) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("mm:ss");
-            Instant instant = Instant.ofEpochMilli(convertedTime);
-            ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
-            timeTillMark = formatter.format(zdt);
-        } else {
-            timeTillMark = "...";
-        }
-        return timeTillMark;
-    }
 
     /**
      * A getter for the start timing annotation
