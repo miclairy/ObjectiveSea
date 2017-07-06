@@ -51,6 +51,8 @@ public class BoatDisplay implements Observer {
     private final double FADEDBOAT = 0.3;
     public Circle annoGrabHandle;
 
+    private final int HALF_AN_HOUR_MS = 1800000;
+
     private Laylines laylines;
     private PolarTable polarTable;
     private Color color;
@@ -172,10 +174,10 @@ public class BoatDisplay implements Observer {
 
     public String getTimeToNextMark(long timeAtMark, long currTime){
         String timeTillMark;
-        if (timeAtMark > 0) {
-            long ConvertedTime = (timeAtMark - currTime);
+        long convertedTime = (timeAtMark - currTime);
+        if (timeAtMark > 0 && convertedTime < HALF_AN_HOUR_MS) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("mm:ss");
-            Instant instant = Instant.ofEpochMilli(ConvertedTime);
+            Instant instant = Instant.ofEpochMilli(convertedTime);
             ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
             timeTillMark = formatter.format(zdt);
         } else {
