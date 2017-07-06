@@ -56,6 +56,8 @@ public class XMLTags {
         //course limit
         public static final String COURSE_LIMIT = "CourseLimit";
         public static final String LIMIT = "Limit";
+        public static final String COURSE_LIMIT_NAME_ATTR = "name";
+        public static final String BOUNDARY = "Boundary";
 
     }
 }

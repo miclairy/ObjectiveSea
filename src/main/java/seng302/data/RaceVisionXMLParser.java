@@ -58,7 +58,7 @@ public class RaceVisionXMLParser {
      * @param inputStream - the location of the file to be read, must be XML
      * @throws IOException if the file is not found
      */
-    public static void parseXMLStream(InputStream inputStream) throws IOException{
+    private static void parseXMLStream(InputStream inputStream) throws IOException{
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -72,7 +72,7 @@ public class RaceVisionXMLParser {
      * Decodes an XML file into a Course object
      * @return a Course object
      */
-    public static Course importCourseFromXML() {
+    private static Course importCourseFromXML() {
         Course course = new Course();
 
         try {
@@ -119,10 +119,12 @@ public class RaceVisionXMLParser {
                             course.setWindDirection(Double.parseDouble(element.getTextContent()));
                             break;
                         case XMLTags.Course.COURSE_LIMIT:
-                            NodeList courseLimits = element.getElementsByTagName(XMLTags.Course.LIMIT);
-                            for (int k = 0; k < courseLimits.getLength(); k++) {
-                                Coordinate coord = parseCourseLimitCoord((Element) courseLimits.item(k));
-                                course.addToBoundary(coord);
+                            if (element.getAttribute(XMLTags.Course.COURSE_LIMIT_NAME_ATTR).equals(XMLTags.Course.BOUNDARY)) {
+                                NodeList courseLimits = element.getElementsByTagName(XMLTags.Course.LIMIT);
+                                for (int k = 0; k < courseLimits.getLength(); k++) {
+                                    Coordinate coord = parseCourseLimitCoord((Element) courseLimits.item(k));
+                                    course.addToBoundary(coord);
+                                }
                             }
                             break;
                     }
@@ -266,9 +268,8 @@ public class RaceVisionXMLParser {
      *
      * @return starters - ArrayList of Boat objects defined in file
      */
-    public static List<Boat> importStartersFromXML(){
+    private static List<Boat> importStartersFromXML(){
         List<Boat> starters = new ArrayList<>();
-        ArrayList<Boat> allBoats = new ArrayList<>();
         try {
             Element root = dom.getDocumentElement();
             if (!Objects.equals(root.getTagName(), XMLTags.Boats.BOAT_CONFIG)) {
@@ -281,16 +282,14 @@ public class RaceVisionXMLParser {
                 Node node = nodes.item(i);
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     Element element = (Element) node;
-                    switch (element.getTagName()) {
-                        case XMLTags.Boats.BOATS:
-                            NodeList boats = element.getElementsByTagName(XMLTags.Boats.BOAT);
-                            for (int j = 0; j < boats.getLength(); j++) {
-                                Boat boat = parseBoat((Element) boats.item(j));
-                                if (boat != null) {
-                                    starters.add(boat);
-                                }
+                    if (element.getTagName().equals(XMLTags.Boats.BOATS)) {
+                        NodeList boats = element.getElementsByTagName(XMLTags.Boats.BOAT);
+                        for (int j = 0; j < boats.getLength(); j++) {
+                            Boat boat = parseBoat((Element) boats.item(j));
+                            if (boat != null) {
+                                starters.add(boat);
                             }
-                            break;
+                        }
                     }
                 }
             }
@@ -343,7 +342,7 @@ public class RaceVisionXMLParser {
     /**
      * Imports file found at DEFAULT_FILE_PATH/REGATTA_FILE and updates attributes in race
      */
-    public static void importRegattaFromXML(Race race) {
+    private static void importRegattaFromXML(Race race) {
         try {
             Element root = dom.getDocumentElement();
             if (!Objects.equals(root.getTagName(), XMLTags.Regatta.REGATTA_CONFIG)) {
