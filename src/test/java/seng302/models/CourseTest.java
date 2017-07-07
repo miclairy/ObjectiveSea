@@ -160,6 +160,6 @@ public class CourseTest {
 
         Double windDirection = course.getWindDirectionBasedOnGates();
 
-        Assert.assertEquals(206.569705, windDirection, DELTA);
+        Assert.assertEquals(26.561799230, windDirection, DELTA);
     }
 }

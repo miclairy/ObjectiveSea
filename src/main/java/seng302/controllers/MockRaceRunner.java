@@ -127,7 +127,7 @@ public class MockRaceRunner implements Runnable {
         if(boat.isFinished()) return;
 
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
-        double windDirection = course.getWindDirection() - 180;
+        double windDirection = course.getWindDirection();
         double headingBetweenMarks = course.headingsBetweenMarks(boat.getLastRoundedMarkIndex(),boat.getLastRoundedMarkIndex()+1);
         boolean onTack = false;
         boolean onGybe = false;

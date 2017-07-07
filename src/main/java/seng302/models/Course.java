@@ -249,7 +249,7 @@ public class Course extends Observable {
     public Double getWindDirectionBasedOnGates(){
         CompoundMark leewardGate = findCompoundMarkByName(LEEWARD_GATE_NAME);
         CompoundMark windwardGate = findCompoundMarkByName(WINDWARD_GATE_NAME);
-        return windwardGate.getPosition().headingToCoordinate(leewardGate.getPosition());
+        return leewardGate.getPosition().headingToCoordinate(windwardGate.getPosition());
     }
 
 }
