@@ -29,9 +29,9 @@ public class MockRaceRunner implements Runnable {
     private double scaleFactor = 1;
     private final double WARNING_SIGNAL_TIME_IN_MS = (1000 * 60 * 3);
     private final double PREPATORY_SIGNAL_TIME_IN_MS = (1000 * 60 * 1);
-    private final double MIN_WIND_SPEED = 6.0; //in mm/sec
-    private final double MAX_WIND_SPEED = 24.0; // in mm/sec
-    private double currentWindSpeed;
+    private final double MIN_WIND_SPEED = 6.0;
+    private final double MAX_WIND_SPEED = 24.0;
+    private double initialWindSpeed;
 
     private String raceId;
     private Race race;
@@ -42,7 +42,7 @@ public class MockRaceRunner implements Runnable {
         intialWindSpeedGenerator();
         List<Boat> boatsInRace = RaceVisionXMLParser.importDefaultStarters();
         Course course = RaceVisionXMLParser.importCourse();
-        course.setTrueWindSpeed(currentWindSpeed);
+        course.setTrueWindSpeed(initialWindSpeed);
         course.setWindDirection(course.getWindDirectionBasedOnGates());
         race = new Race("Mock Runner Race", course, boatsInRace);
         setRandomBoatSpeeds();
@@ -79,8 +79,6 @@ public class MockRaceRunner implements Runnable {
 
     @Override
     public void run() {
-        windSpeedGenerator();
-        race.getCourse().setTrueWindSpeed(currentWindSpeed);
 
         while (!race.getRaceStatus().isRaceEndedStatus()) {
             boolean atLeastOneBoatNotFinished = false;
@@ -366,19 +364,13 @@ public class MockRaceRunner implements Runnable {
         this.race = race;
     }
 
-    public void intialWindSpeedGenerator(){
+    /**
+     * Randomly generates an initial wind speed between race regulations of 6-24 knots
+     */
+    private void intialWindSpeedGenerator(){
         Random random = new Random();
-        currentWindSpeed = MIN_WIND_SPEED + (MAX_WIND_SPEED - MIN_WIND_SPEED) * random.nextDouble();
+        initialWindSpeed = MIN_WIND_SPEED + (MAX_WIND_SPEED - MIN_WIND_SPEED) * random.nextDouble();
     }
 
-    public void windSpeedGenerator(){
-        Boolean random = new Random().nextBoolean();
-
-        if(random){
-            currentWindSpeed += 0.1;
-        } else{
-            currentWindSpeed -= 0.1;
-        }
-    }
 
 }
