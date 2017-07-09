@@ -6,7 +6,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
@@ -14,7 +13,7 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.TextAlignment;
+import javafx.scene.shape.Polyline;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -104,12 +103,11 @@ public class Controller implements Initializable, Observer {
         fpsLabel.textProperty().bind(fpsString);
         clockLabel.textProperty().bind(clockString);
         hideStarterOverlay();
-        setWindDirection();
+        raceViewController.updateWindArrow();
 
         displayStarters();
         startersOverlay.toFront();
         raceViewController.start();
-
         initDisplayDrag();
         initZoom();
     }
@@ -231,15 +229,6 @@ public class Controller implements Initializable, Observer {
                 raceViewController.initBoatPaths();
                 break;
         }
-    }
-
-    /**
-     * Sets the wind direction image to the correct rotation and position
-     * Scales rotation value to be in degrees (a value between 0 and 360)
-     */
-    public void setWindDirection(){
-        double windDirection = (float)race.getCourse().getWindDirection();
-        windDirectionImage.setRotate(windDirection + raceViewController.getRotationOffset());
     }
 
     /**

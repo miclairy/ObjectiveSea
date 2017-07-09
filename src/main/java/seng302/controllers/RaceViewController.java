@@ -63,6 +63,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private ArrayList<BoatDisplay> displayBoats = new ArrayList<>();
     private double previousTime = 0;
     private Polygon boundary;
+    private Polyline windArrow;
     private double currentTimeInSeconds;
     private AnnotationLevel currentAnnotationsLevel;
     private boolean courseNeedsRedraw = false;
@@ -87,6 +88,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         drawCourse();
+        windArrow = raceView.drawWindArrow();
+        root.getChildren().add(windArrow);
         addDeselectEvents();
     }
 
@@ -169,7 +172,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
-        controller.setWindDirection();
+        updateWindArrow();
         flickercounter++;
         distanceLine.getAnnotation().toFront();
     }
@@ -1013,6 +1016,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
             updateDistanceMark();
         }
+    }
+
+    public void updateWindArrow(){
+        double windDirection = (float)race.getCourse().getWindDirection();
+        windArrow.setRotate(windDirection + getRotationOffset());
     }
 
     public BoatDisplay getTrackingBoat() {
