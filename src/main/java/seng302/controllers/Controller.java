@@ -101,7 +101,7 @@ public class Controller implements Initializable, Observer {
         fpsLabel.textProperty().bind(fpsString);
         clockLabel.textProperty().bind(clockString);
         hideStarterOverlay();
-        raceViewController.updateWindArrowDirection();
+        raceViewController.updateWindArrow();
 
         displayStarters();
         startersOverlay.toFront();
