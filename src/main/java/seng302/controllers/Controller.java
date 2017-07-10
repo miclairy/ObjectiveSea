@@ -13,7 +13,6 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Polyline;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -36,7 +35,6 @@ public class Controller implements Initializable, Observer {
     @FXML private Label clockLabel;
     @FXML public VBox startersOverlay;
     @FXML private Label startersOverlayTitle;
-    @FXML private ImageView windDirectionImage;
     @FXML public ImageView mapImageView;
     @FXML private Slider zoomSlider;
     @FXML public Label lblUserHelp;
@@ -103,7 +101,7 @@ public class Controller implements Initializable, Observer {
         fpsLabel.textProperty().bind(fpsString);
         clockLabel.textProperty().bind(clockString);
         hideStarterOverlay();
-        raceViewController.updateWindArrow();
+        raceViewController.updateWindArrowDirection();
 
         displayStarters();
         startersOverlay.toFront();
@@ -202,7 +200,6 @@ public class Controller implements Initializable, Observer {
             raceViewController.redrawCourse();
             raceViewController.redrawBoatPaths();
         });
-
     }
 
 

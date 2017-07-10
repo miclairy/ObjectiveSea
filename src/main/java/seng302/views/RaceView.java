@@ -195,13 +195,8 @@ public class RaceView {
                 0, -arrowLength,
                 arrowHeadLength, -arrowLength+arrowHeadLength
         );
-
-        windArrow.setLayoutX(80);
-        windArrow.setLayoutY(70);
-        windArrow.setStrokeWidth(4);
+        windArrow.setId("windArrow");
         windArrow.setStroke(Color.WHITE);
-        windArrow.setStrokeLineCap(StrokeLineCap.ROUND);
-        windArrow.setStrokeLineJoin(StrokeLineJoin.ROUND);
         return windArrow;
     }
 

@@ -52,6 +52,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private final double WAKE_SCALE_FACTOR = 17;
     private final double SOG_SCALE_FACTOR = 200.0;
     private final int ANNOTATION_HANDLE_OFFSET = 8;
+    private final double WIND_ARROW_X_PADDING = 40;
+    private final double WIND_ARROW_Y_PADDING = 50;
 
 
 
@@ -63,6 +65,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private ArrayList<BoatDisplay> displayBoats = new ArrayList<>();
     private double previousTime = 0;
     private Polygon boundary;
+    private Circle windCircle;
     private Polyline windArrow;
     private double currentTimeInSeconds;
     private AnnotationLevel currentAnnotationsLevel;
@@ -88,8 +91,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         drawCourse();
-        windArrow = raceView.drawWindArrow();
-        root.getChildren().add(windArrow);
         addDeselectEvents();
     }
 
@@ -172,7 +173,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
-        updateWindArrow();
+        updateWindArrowDirection();
         flickercounter++;
         distanceLine.getAnnotation().toFront();
     }
@@ -286,6 +287,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawMarks();
         drawRaceLines();
         drawMap();
+        drawWindArrow();
     }
 
     /**
@@ -794,6 +796,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         resizeMap();
         redrawRaceLines();
         redrawBoatPaths();
+        redrawWindArrow();
     }
 
     /**
@@ -887,6 +890,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
             root.getChildren().add(annotation);
         }
+    }
+
+    private void redrawWindArrow() {
+        windArrow.setLayoutX(Controller.getAnchorWidth() - WIND_ARROW_X_PADDING);
+        windCircle.setCenterX(Controller.getAnchorWidth() - WIND_ARROW_X_PADDING);
     }
 
     private void removeDistanceLines(){
@@ -1018,7 +1026,21 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
-    public void updateWindArrow(){
+    public void drawWindArrow() {
+        windArrow = raceView.drawWindArrow();
+        windArrow.setLayoutX(Controller.getAnchorWidth() - WIND_ARROW_X_PADDING);
+        windArrow.setLayoutY(WIND_ARROW_Y_PADDING);
+        windCircle = new Circle();
+        windCircle.setRadius(25);
+        windCircle.setLayoutX(Controller.getAnchorWidth());
+        windCircle.setLayoutY(WIND_ARROW_Y_PADDING - 15);
+        windCircle.setId("windCircle");
+        root.getChildren().add(windArrow);
+        root.getChildren().add(windCircle);
+
+    }
+
+    public void updateWindArrowDirection(){
         double windDirection = (float)race.getCourse().getWindDirection();
         windArrow.setRotate(windDirection + getRotationOffset());
     }
