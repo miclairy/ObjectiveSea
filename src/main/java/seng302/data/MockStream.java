@@ -4,7 +4,6 @@ import seng302.controllers.MockRaceRunner;
 import seng302.models.*;
 
 import java.io.*;
-import java.net.*;
 import java.util.*;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
@@ -25,9 +24,7 @@ public class MockStream implements Runnable {
     private final double SECONDS_PER_UPDATE = 0.2;
     private double scaleFactor = 1;
 
-    private DataOutputStream outToServer;
-    private int port;
-    private Socket clientSocket;
+    private ConnectionManager connectionManager;
 
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumber = new HashMap<>();
     private Map<Boat, Integer> boatSequenceNumbers = new HashMap<>();
@@ -35,9 +32,9 @@ public class MockStream implements Runnable {
 
     private MockRaceRunner raceRunner;
 
-    public MockStream(int port, MockRaceRunner raceRunner){
-        this.port = port;
+    public MockStream(MockRaceRunner raceRunner, ConnectionManager connectionManager){
         this.raceRunner = raceRunner;
+        this.connectionManager = connectionManager;
     }
 
     /**
@@ -46,7 +43,6 @@ public class MockStream implements Runnable {
      */
     private void initialize() throws IOException  {
 
-        ServerSocket server = new ServerSocket(port);
         xmlSequenceNumber.put(REGATTA_XML_MESSAGE, 0);
         xmlSequenceNumber.put(RACE_XML_MESSAGE, 0);
         xmlSequenceNumber.put(BOAT_XML_MESSAGE, 0);
@@ -56,8 +52,6 @@ public class MockStream implements Runnable {
             lastMarkRoundingSent.put(boat, -1);
         }
 
-        clientSocket = server.accept();
-        outToServer = new DataOutputStream(clientSocket.getOutputStream());
     }
 
     /**
@@ -68,6 +62,8 @@ public class MockStream implements Runnable {
         try {
             initialize();
             sendInitialRaceMessages();
+            Thread managerThread = new Thread(connectionManager);
+            managerThread.start();
             while (!raceRunner.raceHasEnded()) {
                 sendRaceUpdates();
                 try {
@@ -78,7 +74,6 @@ public class MockStream implements Runnable {
             }
             sendRaceUpdates(); //send one last message block with ending data
 
-            clientSocket.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -157,9 +152,8 @@ public class MockStream implements Runnable {
      * @throws IOException
      */
     private void sendPacket(byte[] header, byte[] body) throws IOException {
-        outToServer.write(header);
-        outToServer.write(body);
-        sendCRC(header, body);
+        byte[] packet = generatePacket(header,body);
+        connectionManager.sendToClients(packet);
     }
 
     /**
@@ -282,11 +276,29 @@ public class MockStream implements Runnable {
         byte[] header = createHeader(XML_MESSAGE);
         byte[] xmlBody = generateXmlBody(type, fileName);
         addFieldToByteArray(header, MESSAGE_LENGTH, xmlBody.length);
-        try {
-            sendPacket(header, xmlBody);
-        } catch (IOException e) {
-            e.printStackTrace();
+        byte[] packet = generatePacket(header,xmlBody);
+        connectionManager.setXmlMessage(type,packet);
+    }
+
+    /**
+     * Combines the header, body and crc byte arrays together
+     * @param header the message header
+     * @param body the message body
+     * @param crc the computed crc to be sent
+     * @return the combined message consisting of all three parts
+     */
+    private byte[] combineMessageParts(byte[] header, byte[] body, byte[] crc){
+        byte[] combined = new byte[header.length + body.length + crc.length];
+        for(int i = 0; i < header.length; i++){
+            combined[i] = header[i];
         }
+        for(int i = 0; i < body.length; i++){
+            combined[i+header.length] = body[i];
+        }
+        for(int i = 0; i < crc.length; i++){
+            combined[i+header.length + body.length] = crc[i];
+        }
+        return combined;
     }
 
     /**
@@ -365,7 +377,7 @@ public class MockStream implements Runnable {
      * @param header The header byte array used to compute the CRC
      * @param body the body byte array used to compute the CRC
      */
-    private void sendCRC(byte[] header, byte[] body){
+    private byte[] generateCRC(byte[] header, byte[] body){
         final int CRC_LENGTH = 4;
         Checksum crc = new CRC32();
         byte[] toCRC = new byte[header.length + body.length];
@@ -377,13 +389,22 @@ public class MockStream implements Runnable {
             }
         }
         crc.update(toCRC, 0, toCRC.length);
-        try {
-            byte[] crcArray = new byte[CRC_LENGTH];
-            addIntIntoByteArray(crcArray, 0, (int) crc.getValue(), CRC_LENGTH);
-            outToServer.write(crcArray);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        byte[] crcArray = new byte[CRC_LENGTH];
+        addIntIntoByteArray(crcArray, 0, (int) crc.getValue(), CRC_LENGTH);
+        return crcArray;
+
+    }
+
+    /**
+     * Generates the packet that is to be sent by calculating the crc and combining the messages together
+     * @param header the message header
+     * @param body the message body
+     * @return the combined messages with calculated crc
+     */
+    public byte[] generatePacket(byte[] header, byte[] body){
+        byte[] crc = generateCRC(header,body);
+        return combineMessageParts(header,body,crc);
     }
 
     /**
