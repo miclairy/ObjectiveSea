@@ -30,6 +30,7 @@ public class ScoreBoardController {
     private Controller parent;
     private RaceViewController raceViewController;
     private Race race;
+    private SelectionController selectionController;
 
     //FXML fields
     @FXML private CheckBox fpsToggle;
@@ -52,9 +53,10 @@ public class ScoreBoardController {
 
 
 
-    public void setControllers(Controller parent, RaceViewController raceViewController, Race race){
+    public void setControllers(Controller parent, RaceViewController raceViewController, Race race, SelectionController selectionController){
         this.parent = parent;
         this.raceViewController = raceViewController;
+        this.selectionController = selectionController;
         this.race = race;
     }
 
@@ -101,22 +103,7 @@ public class ScoreBoardController {
 
     @FXML
     private void btnTrackPressed(){
-        BoatDisplay selectedBoat = raceViewController.getTrackingBoat();
-        if(selectedBoat != null){
-            if(raceViewController.isTrackingPoint()){
-                parent.setZoomSliderValue(1);
-                raceViewController.setTrackingPoint(false);
-            }else{
-                parent.setZoomSliderValue(3);
-                raceViewController.setTrackingPoint(true);
-
-                raceViewController.setMapVisibility(false);
-            }
-            raceViewController.redrawCourse();
-
-
-        }
-
+        selectionController.trackBoat();
     }
 
     /**
