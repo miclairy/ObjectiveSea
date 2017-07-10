@@ -35,7 +35,6 @@ public class SelectionController extends Observable {
     private Controller controller;
     private Set<BoatDisplay> selectedBoats = new HashSet<>();
     private ImageCursor boatCursor = new ImageCursor(new Image("graphics/boat-select-cursor.png"), 7, 7);
-    private Polygon boundary;
     private Mark selectedMark = null;
     private BoatDisplay trackingBoat = null;
     private boolean isTrackingPoint = false;
@@ -47,8 +46,6 @@ public class SelectionController extends Observable {
         this.root = root;
         this.scoreBoardController = scoreBoardController;
         this.controller = controller;
-        addDeselectEvents();
-
     }
 
     void trackBoat() {
@@ -94,7 +91,7 @@ public class SelectionController extends Observable {
      * adds Event handlers to areas of the course than don't contain boat, so deselect of boat
      * can be detected
      */
-    private void addDeselectEvents(){
+    void addDeselectEvents(Polygon boundary){
         boundary.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             deselectBoat();
         });
@@ -293,9 +290,6 @@ public class SelectionController extends Observable {
         });
     }
 
-    public void setBoundary(Polygon boundary) {
-        this.boundary = boundary;
-    }
 
     public Set<BoatDisplay> getSelectedBoats() {
         return Collections.unmodifiableSet(selectedBoats);

@@ -95,8 +95,8 @@ public class Controller implements Initializable, Observer {
         startersOverlayTitle.setText(race.getRegattaName());
         course.initCourseLatLon();
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
-        raceViewController = new RaceViewController(root, race, this, scoreBoardController, selectionController);
         selectionController = new SelectionController(root, scoreBoardController, this);
+        raceViewController = new RaceViewController(root, race, this, scoreBoardController, selectionController);
         selectionController.addObserver(raceViewController);
         course.addObserver(raceViewController);
 

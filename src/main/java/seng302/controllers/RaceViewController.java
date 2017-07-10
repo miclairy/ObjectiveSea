@@ -269,7 +269,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         boundary = raceView.createCourseBoundary(race.getCourse().getBoundary());
         root.getChildren().add(boundary);
         boundary.toBack();
-        selectionController.setBoundary(boundary);
+        selectionController.addDeselectEvents(boundary);
     }
 
     /**
@@ -658,8 +658,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             points.add(point.getY());
         }
         boundary.toBack();
-        selectionController.setBoundary(boundary);
-
+        selectionController.addDeselectEvents(boundary);
     }
 
     /**
