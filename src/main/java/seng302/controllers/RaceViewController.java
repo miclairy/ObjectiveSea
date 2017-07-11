@@ -244,22 +244,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
-
-    /**
-     * Redraws the boundary at the correct scale and position after a window resize
-     */
-    private void redrawBoundary(){
-        ObservableList<Double> points = boundary.getPoints();
-        points.clear();
-        for(Coordinate coord : race.getCourse().getBoundary()){
-            CanvasCoordinate point = DisplayUtils.convertFromLatLon(coord);
-            points.add(point.getX());
-            points.add(point.getY());
-        }
-        boundary.toBack();
-        selectionController.addDeselectEvents(boundary);
-    }
-
     /**
      * Handles drawing the boundary and adds styling from the course array of co-ordinates
      */
@@ -605,7 +589,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public void redrawCourse(){
         courseNeedsRedraw = false;
         redrawMarks();
-        redrawBoundary();
+        drawBoundary();
         resizeMap();
         redrawRaceLines();
         redrawBoatPaths();
@@ -744,6 +728,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     @Override
     public void update(Observable course, Object arg) {
+        courseNeedsRedraw = selectionController.isCourseNeedsRedraw();
         if (course == race.getCourse()){
             courseNeedsRedraw = true;
         }
@@ -757,7 +742,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
         }
         selectedBoats = selectionController.getSelectedBoats();
-        courseNeedsRedraw = selectionController.isCourseNeedsRedraw();
+
     }
 
 

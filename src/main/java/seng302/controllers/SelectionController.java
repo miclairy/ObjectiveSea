@@ -70,6 +70,8 @@ public class SelectionController extends Observable {
         if (isTrackingPoint && selectedMark != null){
             DisplayUtils.moveToPoint(selectedMark.getPosition());
             courseNeedsRedraw = true;
+            setChanged();
+            notifyObservers();
        }
         if (isTrackingPoint && trackingBoat != null) {
             trackingBoat.getIcon().toFront();
@@ -81,9 +83,10 @@ public class SelectionController extends Observable {
                     updateRotation();
                 }
             }
+            setChanged();
+            notifyObservers();
         }
-        setChanged();
-        notifyObservers();
+
     }
 
 
