@@ -1,15 +1,10 @@
 package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
-import javafx.fxml.FXML;
 import javafx.collections.ObservableList;
-import javafx.scene.Cursor;
 import javafx.scene.Group;
-import javafx.scene.ImageCursor;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.input.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -35,8 +30,6 @@ import java.util.*;
 import static java.lang.Math.abs;
 import static seng302.data.RaceStatus.STARTED;
 import static seng302.data.RaceStatus.TERMINATED;
-import static seng302.utilities.DisplayUtils.DRAG_TOLERANCE;
-import static seng302.utilities.DisplayUtils.isOutsideBounds;
 import static seng302.utilities.DisplayUtils.zoomLevel;
 
 /**
@@ -139,7 +132,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if (scoreBoardController.isLayLinesSelected()){
                 displayBoat.getLaylines().removeDrawnLines(root);
                 if (selectedBoats.contains(displayBoat)) {
-                    createLayline(displayBoat);
+                    drawLayline(displayBoat);
                 }
             } else {
                 displayBoat.getLaylines().removeDrawnLines(root);
@@ -235,8 +228,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * Draws both the start end and the finish line
      */
     private void drawRaceLines() {
-        drawRaceLine(race.getCourse().getStartLine());
-        drawRaceLine(race.getCourse().getFinishLine());
+        redrawRaceLine(race.getCourse().getStartLine());
+        redrawRaceLine(race.getCourse().getFinishLine());
     }
 
     /**
@@ -252,20 +245,28 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
 
-
     /**
-     * Creates a Line object based on two ends of a RaceLine
-     * @param raceLine The RaceLine object for the line to be drawn for
+     * Redraws the boundary at the correct scale and position after a window resize
      */
-    private void drawRaceLine(RaceLine raceLine){
-        Line line = raceView.createRaceLine(raceLine.getMark1().getPosition(), raceLine.getMark2().getPosition());
-        raceLine.setLine(line);
+    private void redrawBoundary(){
+        ObservableList<Double> points = boundary.getPoints();
+        points.clear();
+        for(Coordinate coord : race.getCourse().getBoundary()){
+            CanvasCoordinate point = DisplayUtils.convertFromLatLon(coord);
+            points.add(point.getX());
+            points.add(point.getY());
+        }
+        boundary.toBack();
+        selectionController.addDeselectEvents(boundary);
     }
 
     /**
      * Handles drawing the boundary and adds styling from the course array of co-ordinates
      */
     private void drawBoundary(){
+        if (root.getChildren().contains(boundary)){
+            root.getChildren().remove(boundary);
+        }
         boundary = raceView.createCourseBoundary(race.getCourse().getBoundary());
         root.getChildren().add(boundary);
         boundary.toBack();
@@ -412,7 +413,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     }
                     if (scoreBoardController.isLayLinesSelected()){
                         if (selectedBoats.contains(displayBoat)) {
-                            createLayline(displayBoat);
+                            drawLayline(displayBoat);
                         }
                     }
                     drawBoatAnnotation(displayBoat, annotations);
@@ -517,7 +518,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * Draws laylines for a boat at the next gate it is heading to if it is a windward gate
      * @param boatDisplay the boat object to display laylines for
      */
-    private void createLayline(BoatDisplay boatDisplay){
+    private void drawLayline(BoatDisplay boatDisplay){
         Boat boat = boatDisplay.getBoat();
         Course course = race.getCourse();
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
@@ -623,7 +624,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param raceLine
      */
     private void redrawRaceLine(RaceLine raceLine) {
-        root.getChildren().remove(raceLine.getLine());
+        if (root.getChildren().contains(raceLine.getLine())) {
+            root.getChildren().remove(raceLine.getLine());
+        }
         Line line = raceView.createRaceLine(raceLine.getMark1().getPosition(), raceLine.getMark2().getPosition());
         root.getChildren().add(line);
         raceLine.setLine(line);
@@ -644,21 +647,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             icon.setCenterY(convertedPoint.getY());
             icon.toBack();
         }
-    }
-
-    /**
-     * Redraws the boundary at the correct scale and position after a window resize
-     */
-    private void redrawBoundary(){
-        ObservableList<Double> points = boundary.getPoints();
-        points.clear();
-        for(Coordinate coord : race.getCourse().getBoundary()){
-            CanvasCoordinate point = DisplayUtils.convertFromLatLon(coord);
-            points.add(point.getX());
-            points.add(point.getY());
-        }
-        boundary.toBack();
-        selectionController.addDeselectEvents(boundary);
     }
 
     /**
@@ -765,21 +753,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
             if (selectedBoats.contains(boat)){
                 updateDistanceLine(scoreBoardController.isDistanceLineSelected());
-                createLayline(boat);
+                drawLayline(boat);
             }
         }
         selectedBoats = selectionController.getSelectedBoats();
         courseNeedsRedraw = selectionController.isCourseNeedsRedraw();
     }
 
-
-    /**
-     *  Going to be used to toggle the zoom level of the map (currently only two levels will exist, on or off).
-     */
-    @FXML
-    public void zoomToggle(boolean zoomed){ //TODO move entire method
-        selectionController.zoomToggle(zoomed);
-    }
 
     public boolean hasInitializedBoats() {
         return initializedBoats;

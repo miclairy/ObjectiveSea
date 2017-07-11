@@ -193,7 +193,7 @@ public class SelectionController extends Observable {
      * @param dragHandle the object that is dragged
      * @param boatDisplay the boat the object is attached to
      */
-    public void makeDraggable(Node dragHandle, BoatDisplay boatDisplay){
+    void makeDraggable(Node dragHandle, BoatDisplay boatDisplay){
         dragHandle.requestFocus();
 
         root.onKeyPressedProperty().bind(dragHandle.onKeyPressedProperty());
@@ -328,7 +328,8 @@ public class SelectionController extends Observable {
         this.rotationOffset = rotationOffset;
     }
 
-    void zoomToggle(boolean zoomed){
+    @FXML
+    public void zoomToggle(boolean zoomed){
         isRotationEnabled = zoomed;
         rotationOffset = 0;
         updateRotation();

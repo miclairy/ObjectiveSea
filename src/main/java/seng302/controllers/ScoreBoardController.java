@@ -112,7 +112,7 @@ public class ScoreBoardController {
      */
     private void setupAnnotationControl() {
         annotationsSlider.valueProperty().addListener((observable, oldValue, newValue) -> raceViewController.changeAnnotations(newValue.intValue(), false));
-        zoomToggle.selectedProperty().addListener((observable, oldValue, newValue) -> raceViewController.zoomToggle(newValue));
+        zoomToggle.selectedProperty().addListener((observable, oldValue, newValue) -> selectionController.zoomToggle(newValue));
         annotationsSlider.adjustValue(annotationsSlider.getMax());
     }
 
