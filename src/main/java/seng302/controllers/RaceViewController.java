@@ -1052,25 +1052,27 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     public void updateWindArrow(){
-        if(testCount == 100)
-        {
-            ScaleTransition st = new ScaleTransition(Duration.millis(100), windArrow);
-            st.setByX(0.4);
-            st.setByY(0.4);
-            st.setAutoReverse(true);
-            st.setInterpolator(Interpolator.EASE_OUT);
-            st.setCycleCount(2);
-            st.play();
+//        if(testCount == 20)
+//        {
+//            ScaleTransition st = new ScaleTransition(Duration.millis(100), windArrow);
+//            st.setByX(0.4);
+//            st.setByY(0.4);
+//            st.setAutoReverse(true);
+//            st.setInterpolator(Interpolator.EASE_OUT);
+//            st.setCycleCount(2);
+//            st.play();
+//
+//            windArrow.setStroke(WIND_COLORS.get(testNum));
+//            testCount = 0;
+//            if(testNum != 5){
+//                testNum += 1;
+//            }else {
+//                testNum = 0;
+//            }
+//        }
+//      testCount += 1;
+        System.out.println(race.getCourse().getTrueWindSpeed());
 
-            windArrow.setStroke(WIND_COLORS.get(testNum));
-            testCount = 0;
-            if(testNum != 5){
-                testNum += 1;
-            }else {
-                testNum = 0;
-            }
-        }
-        testCount += 1;
         double windDirection = (float)race.getCourse().getWindDirection();
         windArrow.setRotate(windDirection + getRotationOffset());
     }

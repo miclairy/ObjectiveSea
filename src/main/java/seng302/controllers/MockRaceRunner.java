@@ -80,6 +80,7 @@ public class MockRaceRunner implements Runnable {
             double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
 
             race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs() + (long)(raceSecondsPassed * 1000));
+            generateWindSpeed();
             for (Boat boat : race.getCompetitors()) {
                 if(race.getRaceStatus().equals(RaceStatus.STARTED)){
                     updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), race.getCourse(), boat);
@@ -334,6 +335,12 @@ public class MockRaceRunner implements Runnable {
             } catch (NumberFormatException ignored){ // Throws error at start when trying to convert ∞ to a double
             }
         }
+    }
+
+    public void generateWindSpeed(){
+        Random rand = new Random();
+        int speed = rand.nextInt(50 - 10 + 1) + 10;
+        race.getCourse().setTrueWindSpeed(speed);
     }
 
     public String getRaceId() {
