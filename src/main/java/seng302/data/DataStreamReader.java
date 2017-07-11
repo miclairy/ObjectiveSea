@@ -1,5 +1,6 @@
 package seng302.data;
 
+import com.sun.xml.internal.bind.v2.TODO;
 import seng302.models.Boat;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
@@ -204,6 +205,37 @@ public class DataStreamReader implements Runnable{
     }
 
     /**
+     * parses body of the boat action message that is incoming from the client.
+     * @param body currently a single number that corresponds to a control from the client
+     */
+    private void parseBoatActionMessage(byte[] body){
+        int action = byteArrayRangeToInt(body, 0, 1); // boat action messages should always be 1 length
+        // TODO add boat action message to enum field
+        switch (action){
+            case 1:
+                // Autopilot VMG
+                break;
+            case 2:
+                // Sails in
+                break;
+            case 3:
+                // Sails out
+                break;
+            case 4:
+                // Tack / gybe
+                break;
+            case 5:
+                // Upwind
+                break;
+            case 6:
+                // Downwind
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
      * Calculates the CRC from header + body and checks if it is equal to the value from the expected CRC byte array
      * @param header The header of the message
      * @param body The body of the message
@@ -250,6 +282,9 @@ public class DataStreamReader implements Runnable{
                                         break;
                                     case RACE_STATUS_MESSAGE:
                                         parseRaceStatusMessage(body);
+                                        break;
+                                    case BOAT_ACTION_MESSAGE:
+                                        parseBoatActionMessage(body);
                                         break;
                                     case MARK_ROUNDING_MESSAGE:
                                         parseMarkRoundingMessage(body);
