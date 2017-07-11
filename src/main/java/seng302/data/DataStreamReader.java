@@ -1,6 +1,5 @@
 package seng302.data;
 
-import com.sun.xml.internal.bind.v2.TODO;
 import seng302.models.Boat;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
