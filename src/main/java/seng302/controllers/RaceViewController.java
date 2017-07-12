@@ -1087,5 +1087,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
             distanceLine.setMark(nextMark);
         }
     }
+
+
+    public BoatDisplay getCurrentUserBoatDisplay() {
+        return currentUserBoatDisplay;
+    }
 }
 

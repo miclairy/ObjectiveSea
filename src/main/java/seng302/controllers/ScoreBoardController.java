@@ -11,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.paint.Color;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import seng302.views.BoatDisplay;
 import javafx.scene.chart.NumberAxis;
@@ -58,7 +59,34 @@ public class ScoreBoardController {
         this.race = race;
     }
 
+    public class YourFormatCell extends ListCell<String> {
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            setText(item);
+            setTextFill(Color.WHITE);
+
+            BoatDisplay userBoat = raceViewController.getCurrentUserBoatDisplay();
+            if(userBoat != null && item != null){
+                if(item.contains(userBoat.getBoat().getName())){
+                    setTextFill(Color.rgb(77, 197, 138));
+
+                }
+            }
+
+        }
+    }
+
     public void setUp(){
+
+        placings.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+            @Override
+            public ListCell<String> call(ListView<String> list) {
+                return new YourFormatCell();
+            }
+        });
+
+
         race = Main.getRace();
         placings.setItems(parent.getFormattedDisplayOrder());
         raceTimerLabel.textProperty().bind(parent.raceTimerString);
