@@ -32,15 +32,13 @@ public class DisplayUtils {
     public static final String GOOGLE_API_KEY = "AIzaSyAQ8WSXVS1gXdhy5v9IpjeQL842wsMU1VQ";
     public static boolean externalDragEvent = false;
     public static final int DRAG_TOLERANCE = 45;
-    private static final int HALF_AN_HOUR_MS = 1800000;
-
+    private static final int FIFTY_NINE_MINUTES_MS = 3540000;
 
     public static double zoomLevel = 1;
     private static int prevDragX=0;
     private static int prevDragY=0;
     private static int offsetX=0;
     private static int offsetY=0;
-
 
 
     /**
@@ -345,7 +343,7 @@ public class DisplayUtils {
     public static String getTimeToNextMark(long timeAtMark, long currTime){
         String timeTillMark;
         long convertedTime = (timeAtMark - currTime);
-        if (timeAtMark > 0 && convertedTime < HALF_AN_HOUR_MS) {
+        if (timeAtMark > 0 && convertedTime < FIFTY_NINE_MINUTES_MS) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("mm:ss");
             Instant instant = Instant.ofEpochMilli(convertedTime);
             ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);

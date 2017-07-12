@@ -51,8 +51,6 @@ public class BoatDisplay implements Observer {
     private final double FADEDBOAT = 0.3;
     public Circle annoGrabHandle;
 
-
-
     private Laylines laylines;
     private PolarTable polarTable;
     private Color color;
