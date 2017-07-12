@@ -15,6 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
@@ -54,8 +55,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         NO_ANNOTATION, IMPORTANT_ANNOTATIONS, ALL_ANNOTATIONS
     }
 
-    private final ArrayList<Color> WIND_COLORS = new ArrayList<>((Arrays.asList(Color.web("#5899d9"), Color.web("#6893cd"),
-            Color.web("#7d8bbc"), Color.web("#b07995"), Color.web("#d16c7c"), Color.web("#e9636a"))));
+    private final ArrayList<Paint> WIND_COLORS = new ArrayList<>((Arrays.asList(Paint.valueOf("#5899d9"), Paint.valueOf("#6893cd"),
+            Paint.valueOf("#7d8bbc"), Paint.valueOf("#b07995"), Paint.valueOf("#d16c7c"), Paint.valueOf("#e9636a"),
+            Paint.valueOf("#e9636a"), Paint.valueOf("#e9636a"))));
 
     private final double WAKE_SCALE_FACTOR = 17;
     private final double SOG_SCALE_FACTOR = 200.0;
@@ -65,8 +67,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
 
 
-    private int testCount = 0;
-    private int testNum = 0;
     private Race race;
     private Group root;
     private Controller controller;
@@ -1052,26 +1052,45 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     public void updateWindArrow(){
-//        if(testCount == 20)
-//        {
-//            ScaleTransition st = new ScaleTransition(Duration.millis(100), windArrow);
-//            st.setByX(0.4);
-//            st.setByY(0.4);
-//            st.setAutoReverse(true);
-//            st.setInterpolator(Interpolator.EASE_OUT);
-//            st.setCycleCount(2);
-//            st.play();
-//
-//            windArrow.setStroke(WIND_COLORS.get(testNum));
-//            testCount = 0;
-//            if(testNum != 5){
-//                testNum += 1;
-//            }else {
-//                testNum = 0;
-//            }
-//        }
-//      testCount += 1;
-        System.out.println(race.getCourse().getTrueWindSpeed());
+        double speed = race.getCourse().getTrueWindSpeed();
+        int colorNum = 0;
+        if(speed < 15 ){
+            colorNum = 0;
+        }
+        else if(speed >= 15 && speed < 20){
+            colorNum = 1;
+        }
+        else if(speed >= 20 && speed < 25){
+            colorNum = 2;
+        }
+        else if(speed >= 25 && speed < 30){
+            colorNum = 3;
+        }
+        else if(speed >= 30 && speed < 35){
+            colorNum = 4;
+        }
+        else if(speed >= 35 && speed < 40){
+            colorNum = 5;
+        }
+        else if(speed >= 40 && speed < 45){
+            colorNum = 6;
+        }
+        else if(speed >= 45){
+            colorNum = 7;
+        }
+
+        if(windArrow.getStroke().hashCode() != WIND_COLORS.get(colorNum).hashCode()){
+            windArrow.setStroke(WIND_COLORS.get(colorNum));
+            ScaleTransition st = new ScaleTransition(Duration.millis(100), windArrow);
+            st.setFromX(1);
+            st.setFromY(1);
+            st.setToX(1.4);
+            st.setToY(1.4);
+            st.setAutoReverse(true);
+            st.setInterpolator(Interpolator.EASE_OUT);
+            st.setCycleCount(2);
+            st.play();
+        }
 
         double windDirection = (float)race.getCourse().getWindDirection();
         windArrow.setRotate(windDirection + getRotationOffset());
