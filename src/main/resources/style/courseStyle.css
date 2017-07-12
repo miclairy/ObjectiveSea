@@ -36,3 +36,13 @@
     -fx-stroke: white;
     -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 3);
 }
+
+#lblWindSpeed {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: White;
+}
+
+#imvSpeedScale {
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 0);
+}

@@ -39,7 +39,7 @@ public class MockRaceRunner implements Runnable {
         //set race up with default files
         List<Boat> boatsInRace = RaceVisionXMLParser.importDefaultStarters();
         Course course = RaceVisionXMLParser.importCourse();
-        course.setTrueWindSpeed(20);
+        course.setTrueWindSpeed(22);
         course.setWindDirection(26);
         race = new Race("Mock Runner Race", course, boatsInRace);
         setRandomBoatSpeeds();
@@ -342,7 +342,7 @@ public class MockRaceRunner implements Runnable {
      * generates a random windspeed and wind angle within a range of the current speed and angle
      */
     public void generateWind(){
-        double range = 0.2;
+        double range = 0.05;
         double maxSpeed = race.getCourse().getTrueWindSpeed() + range;
         double minSpeed = race.getCourse().getTrueWindSpeed() - range;
 

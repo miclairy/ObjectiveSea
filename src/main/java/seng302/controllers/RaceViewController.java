@@ -55,9 +55,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         NO_ANNOTATION, IMPORTANT_ANNOTATIONS, ALL_ANNOTATIONS
     }
 
-    private final ArrayList<Paint> WIND_COLORS = new ArrayList<>((Arrays.asList(Paint.valueOf("#5899d9"), Paint.valueOf("#6893cd"),
-            Paint.valueOf("#7d8bbc"), Paint.valueOf("#b07995"), Paint.valueOf("#d16c7c"), Paint.valueOf("#e9636a"),
-            Paint.valueOf("#e9636a"), Paint.valueOf("#e9636a"))));
+    private final ArrayList<Paint> WIND_COLORS = new ArrayList<>((Arrays.asList(Paint.valueOf("#92c9ff"), Paint.valueOf("#77b9f6"),
+            Paint.valueOf("#5aa4d8"), Paint.valueOf("#668ecb"), Paint.valueOf("#a57da3"), Paint.valueOf("#cb7387"),
+            Paint.valueOf("#e6666e"), Paint.valueOf("#ea4849"))));
 
     private final double WAKE_SCALE_FACTOR = 17;
     private final double SOG_SCALE_FACTOR = 200.0;
@@ -93,6 +93,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private double rotationOffset = 0;
     private boolean isRotationEnabled = false;
     private int flickercounter = 0;
+    private int prevWindColorNum = 0;
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
         this.root = root;
@@ -1080,20 +1081,24 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
 
         if(windArrow.getStroke().hashCode() != WIND_COLORS.get(colorNum).hashCode()){
+            double scale = 0.6;
+            if(colorNum > prevWindColorNum) scale = 1.4;
             windArrow.setStroke(WIND_COLORS.get(colorNum));
             ScaleTransition st = new ScaleTransition(Duration.millis(100), windArrow);
             st.setFromX(1);
             st.setFromY(1);
-            st.setToX(1.4);
-            st.setToY(1.4);
+            st.setToX(scale);
+            st.setToY(scale);
             st.setAutoReverse(true);
             st.setInterpolator(Interpolator.EASE_OUT);
             st.setCycleCount(2);
             st.play();
+            prevWindColorNum = colorNum;
         }
 
         double windDirection = (float)race.getCourse().getWindDirection();
         windArrow.setRotate(windDirection + getRotationOffset());
+        controller.lblWindSpeed.setText(String.valueOf(speed) + "kn");
     }
 
     public BoatDisplay getTrackingBoat() {
