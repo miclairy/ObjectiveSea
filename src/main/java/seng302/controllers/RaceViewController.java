@@ -1,5 +1,6 @@
 package seng302.controllers;
 
+import com.sun.javafx.geom.*;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.collections.ObservableList;
@@ -19,6 +20,7 @@ import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Path;
 
 import javafx.scene.shape.*;
+import javafx.scene.shape.Shape;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import seng302.data.BoatStatus;
@@ -79,6 +81,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private double rotationOffset = 0;
     private boolean isRotationEnabled = false;
     private int flickercounter = 0;
+
+    BoatDisplay currentUserBoatDisplay;
+    Shape boatHighlight = null;
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
         this.root = root;
@@ -199,6 +204,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
         initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);
+
+        currentUserBoatDisplay = displayBoats.get(0); //TODO: implement this into a User Model
     }
 
     /**
@@ -251,6 +258,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawBoatWake(boat);
         drawSOGVector(boat);
         drawVMGVector(boat);
+    }
+
+    public void initBoatHighlight(){
+        boatHighlight = new Circle(0,0,10, Color.DARKBLUE);
+        boatHighlight.setOpacity(0.05);
+        boatHighlight.setStrokeWidth(0);
+        root.getChildren().add(boatHighlight);
     }
 
     /**
@@ -759,7 +773,19 @@ public class RaceViewController extends AnimationTimer implements Observer {
         icon.setScaleY(zoomLevel);
         icon.getTransforms().clear();
         icon.getTransforms().add(new Rotate(boat.getBoat().getHeading()));
+
+        if(boat.equals(currentUserBoatDisplay)){
+            boatHighlight.setTranslateY(point.getY());
+            boatHighlight.setTranslateX(point.getX());
+            boatHighlight.setScaleX(zoomLevel*1.5);
+            boatHighlight.setScaleY(zoomLevel*1.5);
+            boatHighlight.toFront();
+
+        }
+
         icon.toFront();
+
+
     }
 
 
