@@ -1083,7 +1083,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if(windArrow.getStroke().hashCode() != WIND_COLORS.get(colorNum).hashCode()){
             double scale = 0.6;
             if(colorNum > prevWindColorNum) scale = 1.4;
-            windArrow.setStroke(WIND_COLORS.get(colorNum));
             ScaleTransition st = new ScaleTransition(Duration.millis(100), windArrow);
             st.setFromX(1);
             st.setFromY(1);
@@ -1093,6 +1092,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             st.setInterpolator(Interpolator.EASE_OUT);
             st.setCycleCount(2);
             st.play();
+            windArrow.setStroke(WIND_COLORS.get(colorNum));
             prevWindColorNum = colorNum;
         }
 
