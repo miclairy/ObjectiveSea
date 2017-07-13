@@ -4,6 +4,8 @@ import javafx.animation.AnimationTimer;
 import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.collections.ObservableList;
 import javafx.scene.Cursor;
@@ -77,6 +79,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private Polygon boundary;
     private Circle windCircle;
     private Polyline windArrow;
+    private boolean windTransitionPlaying = false;
     private double currentTimeInSeconds;
     private AnnotationLevel currentAnnotationsLevel;
     private boolean courseNeedsRedraw = false;
@@ -1052,53 +1055,68 @@ public class RaceViewController extends AnimationTimer implements Observer {
         root.getChildren().add(windArrow);
     }
 
-    public void updateWindArrow(){
+    /**
+     * checks if wind arrow needs updating
+     */
+    public void updateWindArrow() {
         double speed = race.getCourse().getTrueWindSpeed();
-        int colorNum = 0;
-        if(speed < 15 ){
-            colorNum = 0;
-        }
-        else if(speed >= 15 && speed < 20){
-            colorNum = 1;
-        }
-        else if(speed >= 20 && speed < 25){
-            colorNum = 2;
-        }
-        else if(speed >= 25 && speed < 30){
-            colorNum = 3;
-        }
-        else if(speed >= 30 && speed < 35){
-            colorNum = 4;
-        }
-        else if(speed >= 35 && speed < 40){
-            colorNum = 5;
-        }
-        else if(speed >= 40 && speed < 45){
-            colorNum = 6;
-        }
-        else if(speed >= 45){
-            colorNum = 7;
-        }
+        int colorNum = calculateWindColor(speed);
 
         if(windArrow.getStroke().hashCode() != WIND_COLORS.get(colorNum).hashCode()){
-            double scale = 0.6;
-            if(colorNum > prevWindColorNum) scale = 1.4;
-            ScaleTransition st = new ScaleTransition(Duration.millis(100), windArrow);
-            st.setFromX(1);
-            st.setFromY(1);
-            st.setToX(scale);
-            st.setToY(scale);
-            st.setAutoReverse(true);
-            st.setInterpolator(Interpolator.EASE_OUT);
-            st.setCycleCount(2);
-            st.play();
-            windArrow.setStroke(WIND_COLORS.get(colorNum));
-            prevWindColorNum = colorNum;
+            updateWindArrowColor(colorNum);
         }
 
+        updateWindArrowAngle();
+        controller.lblWindSpeed.setText(String.valueOf(speed) + "kn");
+    }
+
+    /**
+     * updates angle of wind arrow
+     */
+    public void updateWindArrowAngle() {
         double windDirection = (float)race.getCourse().getWindDirection();
         windArrow.setRotate(windDirection + getRotationOffset());
-        controller.lblWindSpeed.setText(String.valueOf(speed) + "kn");
+    }
+
+    /**
+     * calculates the number of the colour in the array best fit to wind speed
+     * @param speed True Wind Speed
+     * @return an int that relates to the corresponding color
+     */
+    public int calculateWindColor(double speed) {
+        int colorNum = (int) (speed - 15) / 5;
+        if(speed > 45) colorNum = 7;
+        return colorNum;
+    }
+
+    /**
+     * updates the colour of the wind arrow with a transition
+     * @param colorNum the num for related color value
+     */
+    public void updateWindArrowColor(int colorNum){
+        double scale = 0.6;
+        if(colorNum > prevWindColorNum) scale = 1.4;
+
+        ScaleTransition st = new ScaleTransition(Duration.millis(100), windArrow);
+        st.setFromX(1);
+        st.setFromY(1);
+        st.setToX(scale);
+        st.setToY(scale);
+        st.setAutoReverse(true);
+        st.setInterpolator(Interpolator.EASE_OUT);
+        st.setCycleCount(2);
+
+        windArrow.setStroke(WIND_COLORS.get(colorNum));
+        prevWindColorNum = colorNum;
+
+        if(!windTransitionPlaying){
+            st.play();
+            windTransitionPlaying = true;
+            st.setOnFinished(new EventHandler<ActionEvent>(){
+                public void handle(ActionEvent AE){
+                    windTransitionPlaying = false;
+                }});
+        }
     }
 
     public BoatDisplay getTrackingBoat() {
