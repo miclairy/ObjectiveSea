@@ -156,33 +156,7 @@ public class BoatDisplay implements Observer {
         this.color = color;
     }
 
-    public String getTimeSinceLastMark(long currTime){
-        String timeSincePassed;
-        if(boat.getLastRoundedMarkTime() == 0){
-            timeSincePassed = "...";
-        }else{
-            long timeElapsed = currTime - boat.getLastRoundedMarkTime();
-            Instant instant = Instant.ofEpochMilli(timeElapsed);
-            ZonedDateTime zdt = ZonedDateTime.ofInstant (instant , ZoneOffset.UTC );
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern ("mm:ss");
-            timeSincePassed = formatter.format(zdt);
-        }
-        return timeSincePassed;
-    }
 
-    public String getTimeToNextMark(long timeAtMark, long currTime){
-        String timeTillMark;
-        if (timeAtMark > 0) {
-            long ConvertedTime = (timeAtMark - currTime);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("mm:ss");
-            Instant instant = Instant.ofEpochMilli(ConvertedTime);
-            ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
-            timeTillMark = formatter.format(zdt);
-        } else {
-            timeTillMark = "...";
-        }
-        return timeTillMark;
-    }
 
     /**
      * A getter for the start timing annotation
