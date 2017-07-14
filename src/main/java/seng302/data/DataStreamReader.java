@@ -175,66 +175,6 @@ public class DataStreamReader implements Runnable{
     }
 
     /**
-     * Parses portions of the boat location message byte array to their corresponding values.
-     * @param body the byte array containing the boat location message
-     */
-    private void parseBoatLocationMessage(byte[] body) {
-        int sourceID = byteArrayRangeToInt(body, BOAT_SOURCE_ID.getStartIndex(), BOAT_SOURCE_ID.getEndIndex());
-        int latScaled = byteArrayRangeToInt(body, LATITUDE.getStartIndex(), LATITUDE.getEndIndex());
-        int lonScaled = byteArrayRangeToInt(body, LONGITUDE.getStartIndex(), LONGITUDE.getEndIndex());
-        int headingScaled = byteArrayRangeToInt(body, HEADING.getStartIndex(), HEADING.getEndIndex());
-        int boatSpeed = byteArrayRangeToInt(body, SPEED_OVER_GROUND.getStartIndex(), SPEED_OVER_GROUND.getEndIndex());
-
-        int deviceType = byteArrayRangeToInt(body, DEVICE_TYPE.getStartIndex(), DEVICE_TYPE.getEndIndex());
-        int trueWindDirectionScaled = byteArrayRangeToInt(body, TRUE_WIND_DIRECTION.getStartIndex(), TRUE_WIND_DIRECTION.getEndIndex());
-        int trueWindAngleScaled = byteArrayRangeToInt(body, TRUE_WIND_ANGLE.getStartIndex(), TRUE_WIND_ANGLE.getEndIndex());
-        double trueWindAngle = intToTrueWindAngle(trueWindAngleScaled);
-        //unused as we believe this is always sent as 0 from the AC35 feed
-        double trueWindDirection = intToHeading(trueWindDirectionScaled);
-        double lat = intToLatLon(latScaled);
-        double lon = intToLatLon(lonScaled);
-        double heading = intToHeading(headingScaled);
-        double speedInKnots = TimeUtils.convertMmPerSecondToKnots(boatSpeed);
-
-        if(deviceType == BOAT_DEVICE_TYPE){
-            race.updateBoat(sourceID, lat, lon, heading, speedInKnots, trueWindAngle);
-        } else if(deviceType == MARK_DEVICE_TYPE){
-            race.getCourse().updateMark(sourceID, lat, lon);
-        }
-    }
-
-    /**
-     * parses body of the boat action message that is incoming from the client.
-     * @param body currently a single number that corresponds to a control from the client
-     */
-    private void parseBoatActionMessage(byte[] body){
-        int action = byteArrayRangeToInt(body, 0, 1); // boat action messages should always be 1 length
-        // TODO add boat action message to enum field
-        switch (action){
-            case 1:
-                // Autopilot VMG
-                break;
-            case 2:
-                // Sails in
-                break;
-            case 3:
-                // Sails out
-                break;
-            case 4:
-                // Tack / gybe
-                break;
-            case 5:
-                // Upwind
-                break;
-            case 6:
-                // Downwind
-                break;
-            default:
-                break;
-        }
-    }
-
-    /**
      * Calculates the CRC from header + body and checks if it is equal to the value from the expected CRC byte array
      * @param header The header of the message
      * @param body The body of the message
@@ -263,7 +203,7 @@ public class DataStreamReader implements Runnable{
                 int messageLength = byteArrayRangeToInt(header, MESSAGE_LENGTH.getStartIndex(), MESSAGE_LENGTH.getEndIndex());
                 int messageTypeValue = byteArrayRangeToInt(header, MESSAGE_TYPE.getStartIndex(), MESSAGE_TYPE.getEndIndex());
                 AC35StreamMessage messageType = AC35StreamMessage.fromInteger(messageTypeValue);
-
+                int sourceID = byteArrayRangeToInt(header, HEADER_SOURCE_ID.getStartIndex(), HEADER_SOURCE_ID.getEndIndex());
                 byte[] body = new byte[messageLength];
                 dataInput.readFully(body);
                 byte[] crc = new byte[CRC_LENGTH];
@@ -283,7 +223,7 @@ public class DataStreamReader implements Runnable{
                                         parseRaceStatusMessage(body);
                                         break;
                                     case BOAT_ACTION_MESSAGE:
-                                        parseBoatActionMessage(body);
+                                        parseBoatActionMessage(body, sourceID);
                                         break;
                                     case MARK_ROUNDING_MESSAGE:
                                         parseMarkRoundingMessage(body);
@@ -298,6 +238,35 @@ public class DataStreamReader implements Runnable{
                 System.err.println("Error occurred when reading data from stream:");
                 System.err.println(e);
             }
+        }
+    }
+
+    /**
+     * Parses portions of the boat location message byte array to their corresponding values.
+     * @param body the byte array containing the boat location message
+     */
+    private void parseBoatLocationMessage(byte[] body) {
+        int sourceID = byteArrayRangeToInt(body, BOAT_SOURCE_ID.getStartIndex(), BOAT_SOURCE_ID.getEndIndex());
+        int latScaled = byteArrayRangeToInt(body, LATITUDE.getStartIndex(), LATITUDE.getEndIndex());
+        int lonScaled = byteArrayRangeToInt(body, LONGITUDE.getStartIndex(), LONGITUDE.getEndIndex());
+        int headingScaled = byteArrayRangeToInt(body, HEADING.getStartIndex(), HEADING.getEndIndex());
+        int boatSpeed = byteArrayRangeToInt(body, SPEED_OVER_GROUND.getStartIndex(), SPEED_OVER_GROUND.getEndIndex());
+
+        int deviceType = byteArrayRangeToInt(body, DEVICE_TYPE.getStartIndex(), DEVICE_TYPE.getEndIndex());
+        int trueWindDirectionScaled = byteArrayRangeToInt(body, TRUE_WIND_DIRECTION.getStartIndex(), TRUE_WIND_DIRECTION.getEndIndex());
+        int trueWindAngleScaled = byteArrayRangeToInt(body, TRUE_WIND_ANGLE.getStartIndex(), TRUE_WIND_ANGLE.getEndIndex());
+        double trueWindAngle = intToTrueWindAngle(trueWindAngleScaled);
+        //unused as we believe this is always sent as 0 from the AC35 feed
+        double trueWindDirection = intToHeading(trueWindDirectionScaled);
+        double lat = intToLatLon(latScaled);
+        double lon = intToLatLon(lonScaled);
+        double heading = intToHeading(headingScaled);
+        double speedInKnots = TimeUtils.convertMmPerSecondToKnots(boatSpeed);
+
+        if(deviceType == BOAT_DEVICE_TYPE){
+            race.updateBoat(sourceID, lat, lon, heading, speedInKnots, trueWindAngle);
+        } else if(deviceType == MARK_DEVICE_TYPE){
+            race.getCourse().updateMark(sourceID, lat, lon);
         }
     }
 
@@ -344,6 +313,37 @@ public class DataStreamReader implements Runnable{
         race.updateRaceStatus(RaceStatus.fromInteger(raceStatus));
         race.setStartTimeInEpochMs(expectedStartTime);
         race.setCurrentTimeInEpochMs(currentTime);
+    }
+
+    /**
+     * parses body of the boat action message that is incoming from the client.
+     * @param body currently a single number that corresponds to a control from the client
+     */
+    private void parseBoatActionMessage(byte[] body, int sourceID){
+        int action = byteArrayRangeToInt(body, BOAT_ACTION_BODY.getStartIndex(), BOAT_ACTION_BODY.getEndIndex());
+        Boat boat = race.getBoatById(sourceID); // Assuming this field has been set and can be used to distinguish a boat
+        switch (action){
+            case 1:
+                boat.autoPilot();
+                break;
+            case 2:
+                boat.sailsIn();
+                break;
+            case 3:
+                boat.sailsOut();
+                break;
+            case 4:
+                boat.tackOrGybe();
+                break;
+            case 5:
+                boat.upWind(race.getCourse().getWindDirection());
+                break;
+            case 6:
+                boat.downWind(race.getCourse().getWindDirection());
+                break;
+            default:
+                break;
+        }
     }
 
     /**

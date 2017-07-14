@@ -20,9 +20,7 @@ public class DisplayTimeUtils {
     public void setUp(){
         Boat boat = new Boat(-1, "New Zealand", "NZ",  20.00);
         boatDisplay = new BoatDisplay(boat, null);
-
     }
-
 
     @Test
     public void TestTimeTill(){

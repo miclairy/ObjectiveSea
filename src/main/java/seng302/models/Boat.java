@@ -46,7 +46,6 @@ public class Boat extends Observable implements Comparable<Boat>{
     private long timeTillFinish;
     private Integer id;
 
-    private boolean isTacking;
     private double TWAofBoat;
 
     public Boat(Integer id, String name, String nickName, double speed) {
@@ -265,7 +264,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     /**
      * Calculates boat's VMG
      * @param course the course the boat is on
-     * @return the VMG of the boat (in direction of next mark
+     * @return the VMG of the boat (in direction of next mark)
      */
     public double calculateVMG(Course course){
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
@@ -279,7 +278,32 @@ public class Boat extends Observable implements Comparable<Boat>{
         double lineBearing = currentPosition.headingToCoordinate(markLocation);
         double angle = Math.abs(heading - lineBearing);
 
-        double VMG = Math.cos(Math.toRadians(angle)) * speed;
-        return VMG;
+        return Math.cos(Math.toRadians(angle)) * speed;
+    }
+
+    public void autoPilot(){
+        //Optimal heading and speed
+    }
+
+    public void sailsIn(){
+        speed = 0;
+    }
+
+    public void sailsOut(){
+        speed = getCurrentVMG();
+    }
+
+    public void tackOrGybe(){
+        //tack of gybe
+    }
+
+    public void upWind(double windAngle){
+        // change heading to go into the wind
+        heading = (int) windAngle;
+    }
+
+    public void downWind(double windAngle){
+        // change heading to go with the wind
+        heading = (int) windAngle + 180;
     }
 }
