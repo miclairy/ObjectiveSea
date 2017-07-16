@@ -193,7 +193,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     /**
      * inits drawing of the boat paths
      */
-    public void initBoatPaths(){
+    void initBoatPaths(){
         for (BoatDisplay boat : displayBoats){
             initBoatPath(boat);
         }
@@ -203,7 +203,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * Initalises a Path for a boat
      * @param boatDisplay the boatDisplay to create a path for
      */
-    public void initBoatPath(BoatDisplay boatDisplay){
+    private void initBoatPath(BoatDisplay boatDisplay){
         Path path = raceView.createBoatPath(boatDisplay.getColor());
         Boat boat = boatDisplay.getBoat();
         CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
