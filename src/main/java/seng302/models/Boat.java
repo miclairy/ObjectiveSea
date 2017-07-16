@@ -154,10 +154,7 @@ public class Boat extends Observable implements Comparable<Boat>{
      * @param heading the new heading
      * */
     public void setHeading(double heading) {
-        if (this.heading != heading) {
-            this.heading = heading;
-            addPathCoord(new Coordinate(getCurrentLat(), getCurrentLon()));
-        }
+        this.heading = heading;
     }
 
     public List getPathCoords() {
