@@ -30,17 +30,16 @@ public class DisplayTimeUtils {
         String formattedTime = DisplayUtils.getTimeToNextMark(timeAtMark, currentTime);
         assert(formattedTime.matches(regex));
 
-        String time = DisplayUtils.getTimeToNextMark(2000000,0);
+        String time = DisplayUtils.getTimeToNextMark(4000000,0);
         String time1 = DisplayUtils.getTimeToNextMark(2000,0);
 
-        Assert.assertTrue(time == "...");
-        Assert.assertTrue(time1 != "...");
+        Assert.assertTrue(Objects.equals(time, "..."));
+        Assert.assertTrue(!Objects.equals(time1, "..."));
     }
 
     @Test
     public void TestTimeAfter(){
         long currentTime = Instant.now().toEpochMilli();
-        long timeAtMark = Instant.now().toEpochMilli() + 1000000;
         String formattedTime = DisplayUtils.getTimeSinceLastMark(currentTime, boatDisplay.getBoat());
         assert(Objects.equals(formattedTime, "..."));
     }

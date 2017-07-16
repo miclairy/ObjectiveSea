@@ -13,6 +13,7 @@ import java.util.zip.CRC32;
 
 import static seng302.data.AC35StreamField.*;
 import static seng302.data.AC35StreamXMLMessage.*;
+import static seng302.data.BoatAction.BOAT_AUTOPILOT;
 
 /**
  * Created on 13/04/17.
@@ -322,23 +323,24 @@ public class DataStreamReader implements Runnable{
     private void parseBoatActionMessage(byte[] body, int sourceID){
         int action = byteArrayRangeToInt(body, BOAT_ACTION_BODY.getStartIndex(), BOAT_ACTION_BODY.getEndIndex());
         Boat boat = race.getBoatById(sourceID); // Assuming this field has been set and can be used to distinguish a boat
-        switch (action){
-            case 1:
+        BoatAction boatAction = BoatAction.values()[action];
+        switch (boatAction){
+            case BOAT_AUTOPILOT:
                 boat.autoPilot();
                 break;
-            case 2:
+            case SAILS_IN:
                 boat.sailsIn();
                 break;
-            case 3:
+            case SAILS_OUT:
                 boat.sailsOut();
                 break;
-            case 4:
+            case TACK_GYBE:
                 boat.tackOrGybe();
                 break;
-            case 5:
+            case UPWIND:
                 boat.upWind(race.getCourse().getWindDirection());
                 break;
-            case 6:
+            case DOWNWIND:
                 boat.downWind(race.getCourse().getWindDirection());
                 break;
             default:
