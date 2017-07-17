@@ -1,6 +1,11 @@
 package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
+import javafx.animation.FillTransition;
+import javafx.animation.Interpolator;
+import javafx.animation.ScaleTransition;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.collections.ObservableList;
 import javafx.scene.Cursor;
@@ -12,6 +17,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
@@ -21,6 +27,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.*;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
+import javafx.util.Duration;
 import seng302.data.BoatStatus;
 import seng302.data.StartTimingStatus;
 import seng302.utilities.DisplayUtils;
@@ -49,9 +56,16 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private enum AnnotationLevel {
         NO_ANNOTATION, IMPORTANT_ANNOTATIONS, ALL_ANNOTATIONS
     }
+
+    private final ArrayList<Paint> WIND_COLORS = new ArrayList<>((Arrays.asList(Paint.valueOf("#92c9ff"), Paint.valueOf("#77b9f6"),
+            Paint.valueOf("#5aa4d8"), Paint.valueOf("#668ecb"), Paint.valueOf("#a57da3"), Paint.valueOf("#cb7387"),
+            Paint.valueOf("#e6666e"), Paint.valueOf("#ea4849"))));
+
     private final double WAKE_SCALE_FACTOR = 17;
     private final double SOG_SCALE_FACTOR = 200.0;
     private final int ANNOTATION_HANDLE_OFFSET = 8;
+    private final double WIND_ARROW_X_PADDING = 40;
+    private final double WIND_ARROW_Y_PADDING = 50;
 
     private Race race;
     private Group root;
@@ -61,6 +75,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private ArrayList<BoatDisplay> displayBoats = new ArrayList<>();
     private double previousTime = 0;
     private Polygon boundary;
+    private Circle windCircle;
+    private Polyline windArrow;
+    private boolean windTransitionPlaying = false;
     private double currentTimeInSeconds;
     private AnnotationLevel currentAnnotationsLevel;
     private boolean courseNeedsRedraw = false;
@@ -77,6 +94,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private double rotationOffset = 0;
     private boolean isRotationEnabled = false;
     private int flickercounter = 0;
+    private int prevWindColorNum = 0;
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController) {
         this.root = root;
@@ -167,7 +185,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
-        controller.setWindDirection();
+        updateWindArrow();
         flickercounter++;
         distanceLine.getAnnotation().toFront();
     }
@@ -281,6 +299,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawMarks();
         drawRaceLines();
         drawMap();
+        drawWindArrow();
     }
 
     /**
@@ -789,6 +808,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         resizeMap();
         redrawRaceLines();
         redrawBoatPaths();
+        redrawWindArrow();
     }
 
     /**
@@ -882,6 +902,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
             root.getChildren().add(annotation);
         }
+    }
+
+    private void redrawWindArrow() {
+        windArrow.setLayoutX(Controller.getAnchorWidth() - WIND_ARROW_X_PADDING);
+        windCircle.setCenterX(Controller.getAnchorWidth() - WIND_ARROW_X_PADDING);
     }
 
     private void removeDistanceLines(){
@@ -1010,6 +1035,88 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 counter += 1;
             }
             updateDistanceMark();
+        }
+    }
+
+    /**
+     * draws a wind arrow on the course view
+     */
+    public void drawWindArrow() {
+        windArrow = raceView.drawWindArrow();
+        windArrow.setLayoutX(Controller.getAnchorWidth() - WIND_ARROW_X_PADDING);
+        windArrow.setLayoutY(WIND_ARROW_Y_PADDING);
+
+        windCircle = new Circle();
+        windCircle.setRadius(25);
+        windCircle.setLayoutX(Controller.getAnchorWidth());
+        windCircle.setLayoutY(WIND_ARROW_Y_PADDING - 15);
+        windCircle.setId("windCircle");
+
+        root.getChildren().add(windCircle);
+        root.getChildren().add(windArrow);
+    }
+
+    /**
+     * checks if wind arrow needs updating
+     */
+    public void updateWindArrow() {
+        double speed = race.getCourse().getTrueWindSpeed();
+        int colorNum = calculateWindColor(speed);
+
+        if(windArrow.getStroke().hashCode() != WIND_COLORS.get(colorNum).hashCode()){
+            updateWindArrowColor(colorNum);
+        }
+
+        updateWindArrowAngle();
+        controller.lblWindSpeed.setText(String.valueOf(speed) + "kn");
+    }
+
+    /**
+     * updates angle of wind arrow
+     */
+    public void updateWindArrowAngle() {
+        double windDirection = (float)race.getCourse().getWindDirection();
+        windArrow.setRotate(windDirection + getRotationOffset());
+    }
+
+    /**
+     * calculates the number of the colour in the array best fit to wind speed
+     * @param speed True Wind Speed
+     * @return an int that relates to the corresponding color
+     */
+    public int calculateWindColor(double speed) {
+        int colorNum = (int) (speed - 15) / 5;
+        if(speed > 45) colorNum = 7;
+        return colorNum;
+    }
+
+    /**
+     * updates the colour of the wind arrow with a transition
+     * @param colorNum the num for related color value
+     */
+    public void updateWindArrowColor(int colorNum){
+        double scale = 0.6;
+        if(colorNum > prevWindColorNum) scale = 1.4;
+
+        ScaleTransition st = new ScaleTransition(Duration.millis(100), windArrow);
+        st.setFromX(1);
+        st.setFromY(1);
+        st.setToX(scale);
+        st.setToY(scale);
+        st.setAutoReverse(true);
+        st.setInterpolator(Interpolator.EASE_OUT);
+        st.setCycleCount(2);
+
+        windArrow.setStroke(WIND_COLORS.get(colorNum));
+        prevWindColorNum = colorNum;
+
+        if(!windTransitionPlaying){
+            st.play();
+            windTransitionPlaying = true;
+            st.setOnFinished(new EventHandler<ActionEvent>(){
+                public void handle(ActionEvent AE){
+                    windTransitionPlaying = false;
+                }});
         }
     }
 
