@@ -35,6 +35,7 @@ public class MockStream implements Runnable {
     public MockStream(MockRaceRunner raceRunner, ConnectionManager connectionManager){
         this.raceRunner = raceRunner;
         this.connectionManager = connectionManager;
+
     }
 
     /**
@@ -94,6 +95,13 @@ public class MockStream implements Runnable {
         sendXmlMessage(RACE_XML_MESSAGE, "Race.xml");
         sendXmlMessage(BOAT_XML_MESSAGE, "Boat.xml");
         sendXmlMessage(REGATTA_XML_MESSAGE, "Regatta.xml");
+    }
+
+    public void sendKeyPressPacket(BoatAction action) throws IOException {
+        byte[] header = createHeader(BOAT_ACTION_MESSAGE);
+        byte[] body = new byte[1];
+        body[0] = (byte) action.getType();
+        sendPacket(header, body); //TODO
     }
 
     /**
