@@ -32,11 +32,11 @@ public class DisplayTimeUtils {
         String formattedTime = DisplayUtils.getTimeToNextMark(timeAtMark, currentTime);
         assert(formattedTime.matches(regex));
 
-        String time = DisplayUtils.getTimeToNextMark(2000000,0);
+        String time = DisplayUtils.getTimeToNextMark(4000000,0);
         String time1 = DisplayUtils.getTimeToNextMark(2000,0);
 
-        Assert.assertTrue(time == "...");
-        Assert.assertTrue(time1 != "...");
+        Assert.assertTrue(time.equals("..."));
+        Assert.assertTrue(!time1.equals("..."));
     }
 
     @Test
