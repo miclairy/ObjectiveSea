@@ -52,7 +52,7 @@ public class MockRaceRunner implements Runnable {
     }
 
     public void initialize(){
-        this.raceId = generateRaceId();
+        race.setId(generateRaceId());
         //for now we assume all boats racing are AC35 class yachts such that we can use the polars we have for them
         this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
         setStartingPositions();
