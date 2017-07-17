@@ -68,7 +68,10 @@ public class SelectionController extends Observable {
         }
     }
 
-
+    /**
+     * If the user is tracking a course feature, this method deals with when and what to rotate and the zooming level
+     * along with notifying the observers of the changes
+     */
     void zoomTracking() {
         if (isTrackingPoint && selectedMark != null){
             DisplayUtils.moveToPoint(selectedMark.getPosition());
@@ -107,6 +110,9 @@ public class SelectionController extends Observable {
         });
     }
 
+    /**
+     * Controls the users ability to deselect the boat if the boat is currently selected
+     */
     private void deselectBoat() {
         for(BoatDisplay boat : displayBoats){
             boat.focus();
@@ -117,7 +123,7 @@ public class SelectionController extends Observable {
             trackingBoat = null;
             selectedMark = null;
             isTrackingPoint = false;
-            rotationOffset =0;
+            rotationOffset = 0;
             updateRotation();
 
         }
@@ -177,6 +183,9 @@ public class SelectionController extends Observable {
         root.getTransforms().add(new Rotate(rotationOffset, controller.getCanvasWidth()/2, controller.getCanvasHeight()/2));
     }
 
+    /**
+     * controls the display of showing the track button
+     */
     private void setBoatFocus(){
         scoreBoardController.btnTrack.setVisible(true);
         for (BoatDisplay boatDisplay : selectedBoats) {
