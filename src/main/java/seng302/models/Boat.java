@@ -7,11 +7,14 @@ import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.XYChart.Data;
 
 import seng302.data.BoatStatus;
+import seng302.utilities.MathUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
+
+import static java.lang.StrictMath.abs;
 
 /**
  * Class to encapsulate properties associated with a boat.
@@ -293,17 +296,25 @@ public class Boat extends Observable implements Comparable<Boat>{
         speed = getCurrentVMG();
     }
 
+    /**
+     * If true wind angle of boat is less than 90, boat is heading downwind. The heading is set to the true wind angle.
+     * Otherwise the boat is heading upwind. The heading is set to the true wind angle - 90 degrees.
+     */
     public void tackOrGybe(){
-        //tack of gybe
+        if(abs(getTWAofBoat()) < 90) {
+            heading = getTWAofBoat();
+        } else {
+            heading = getTWAofBoat() - 90;
+        }
     }
 
     public void upWind(double windAngle){
         // change heading to go into the wind
-        heading = (int) windAngle;
+        heading +=3;
     }
 
     public void downWind(double windAngle){
         // change heading to go with the wind
-        heading = (int) windAngle + 180;
+        heading -=3;
     }
 }

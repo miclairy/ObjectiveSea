@@ -42,8 +42,6 @@ public class Controller implements Initializable, Observer {
     @FXML private Slider zoomSlider;
     @FXML public Label lblUserHelp;
 
-    //number of from right edge of canvas that the wind arrow will be drawn
-    private final int WIND_ARROW_OFFSET = 60;
 
     //FPS Counter
     private SimpleStringProperty fpsString = new SimpleStringProperty();

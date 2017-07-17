@@ -132,14 +132,14 @@ public class MockRaceRunner implements Runnable {
 
         if(MathUtils.pointBetweenTwoAngle(windDirection, polarTable.getOptimumTWA(true), headingBetweenMarks)){
             onTack = true;
-            double optimumTackingVMG = polarTable.getOptimumVMG(true);
+            double optimumTackingVMG = polarTable.getOptimumVMG(onTack);
             boat.setCurrentVMG(optimumTackingVMG);
-            boat.setCurrentSpeed(optimumTackingVMG / Math.cos(Math.toRadians(polarTable.getOptimumTWA(true))));
+            boat.setCurrentSpeed(optimumTackingVMG / Math.cos(Math.toRadians(polarTable.getOptimumTWA(onTack))));
         } else if(MathUtils.pointBetweenTwoAngle((windDirection + 180) % 360, 180 - polarTable.getOptimumTWA(false), headingBetweenMarks)) {
             onGybe = true;
-            double optimumGybingVMG = polarTable.getOptimumVMG(false);
+            double optimumGybingVMG = polarTable.getOptimumVMG(onTack);
             boat.setCurrentVMG(optimumGybingVMG * (-1.0));
-            boat.setCurrentSpeed(optimumGybingVMG/ Math.cos(Math.toRadians(polarTable.getOptimumTWA(false))));
+            boat.setCurrentSpeed(optimumGybingVMG/ Math.cos(Math.toRadians(polarTable.getOptimumTWA(onTack))));
         } else {
             boat.maximiseSpeed();
             boat.setCurrentVMG(boat.getSpeed());
@@ -174,7 +174,7 @@ public class MockRaceRunner implements Runnable {
         if (!onGybe) boat.setLastGybeMarkPassed(0);
 
         if(onTack || onGybe) {
-            double alphaAngle = getAlphaAngle(windDirection, headingBetweenMarks, onTack);
+            double alphaAngle = getAlphaAngle(windDirection - 180, headingBetweenMarks, onTack);
             Coordinate tackingPosition = tackingUpdateLocation(distanceGained, courseOrder, onTack, alphaAngle, boat);
             boatPosition.update(tackingPosition.getLat(), tackingPosition.getLon());
         } else {
