@@ -113,6 +113,7 @@ public class MockStreamTest {
         }
     }
 
+    @Ignore
     @Test
     public void sendBoatLocationTest(){
 
