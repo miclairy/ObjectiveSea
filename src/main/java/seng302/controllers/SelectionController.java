@@ -1,6 +1,5 @@
 package seng302.controllers;
 
-import com.sun.javafx.UnmodifiableArrayList;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -26,6 +25,7 @@ import static seng302.utilities.DisplayUtils.zoomLevel;
 
 /**
  * Created by clbmi on 10/07/2017.
+ *
  */
 public class SelectionController extends Observable {
 
@@ -48,6 +48,9 @@ public class SelectionController extends Observable {
         this.controller = controller;
     }
 
+    /**
+     * Gets the current selected boat and changes the tracking boolean. Also notify observers of this change
+     */
     void trackBoat() {
         BoatDisplay selectedBoat = getTrackingBoat();
         if (selectedBoat != null) {
