@@ -12,9 +12,11 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
+import seng302.data.BoatAction;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -110,6 +112,12 @@ public class Controller implements Initializable, Observer {
 
         initDisplayDrag();
         initZoom();
+    }
+
+    @FXML
+    private void handleKeyPress(KeyEvent key){
+        System.out.println(key.getCode() + " " + key.getCode().ordinal());
+        //Todo
     }
 
     /**

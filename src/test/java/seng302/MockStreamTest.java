@@ -57,41 +57,6 @@ public class MockStreamTest {
     }
 
     @Test
-    public void sendRaceXmlTest(){
-        try {
-
-            InputStream stream = connectionSocket.getInputStream();
-            DataInputStream dataInputStream = new DataInputStream(stream);
-            byte[] header = new byte[15];
-            dataInputStream.readFully(header);
-            int length = ((header[14] & 0xFF) << 8) + (header[13] & 0xFF);
-            byte[] body = new byte[length];
-            dataInputStream.readFully(body);
-            FileWriter outputFileWriter = new FileWriter("testRace.xml");
-
-            BufferedWriter bufferedWriter = new BufferedWriter(outputFileWriter);
-            bufferedWriter.write(new String(Arrays.copyOfRange(body, 14, body.length)));
-            bufferedWriter.close();
-
-            String receivedStrPath = new File("testRace.xml").getAbsolutePath();
-            Path receivedPath = Paths.get(receivedStrPath);
-            List<String> receivedContent = Files.readAllLines(receivedPath);
-
-            String raceStrPath = new File("src/main/resources/defaultFiles/Race.xml").getAbsolutePath();
-            Path racePath = Paths.get(raceStrPath);
-            List<String> raceBodyContent = Files.readAllLines(racePath);
-            for (int i = 0; i < receivedContent.size(); i++){
-                assertEquals(receivedContent.get(i).trim(), raceBodyContent.get(i).trim());
-            }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    @Test
     public void sendBodyXmlTest(){
         try {
 

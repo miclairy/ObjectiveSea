@@ -15,7 +15,7 @@ import java.util.*;
 public class Race extends Observable{
 
     public static final int UPDATED_STATUS_SIGNAL = 1;
-
+    private String id;
     private String regattaName;
     private Course course;
     private List<Boat> competitors = new ArrayList<>();
@@ -89,6 +89,9 @@ public class Race extends Observable{
         if(boatIdMap.containsKey(sourceID)){
             Boat boat = boatIdMap.get(sourceID);
             boat.setPosition(lat, lon);
+            if ((raceStatus.equals(STARTED) && !raceStatus.equals(TERMINATED)) && (boat.getHeading() != heading)){
+                boat.addPathCoord(new Coordinate(boat.getCurrentLat(), boat.getCurrentLon()));
+            }
             boat.setHeading(heading);
             boat.setCurrentSpeed(speed);
             boat.setTWAofBoat(twa);
@@ -222,6 +225,10 @@ public class Race extends Observable{
         this.course = course;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public boolean isFirstMessage() {
         return firstMessage;
     }
@@ -253,6 +260,10 @@ public class Race extends Observable{
 
     public void setCompetitorIds(Set<Integer> competitorIds) {
         this.competitorIds = competitorIds;
+    }
+
+    public String getId() {
+        return id;
     }
 }
 
