@@ -1040,6 +1040,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
+    /**
+     * draws a wind arrow on the course view
+     */
     public void drawWindArrow() {
         windArrow = raceView.drawWindArrow();
         windArrow.setLayoutX(Controller.getAnchorWidth() - WIND_ARROW_X_PADDING);
