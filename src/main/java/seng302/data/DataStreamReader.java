@@ -149,7 +149,6 @@ public class DataStreamReader implements Runnable{
         xmlBody = xmlBody.trim();
         InputStream xmlInputStream = new ByteArrayInputStream(xmlBody.getBytes());
 
-
         //Taken out since the new stream sends xmls not in order
 //        if (xmlSequenceNumbers.get(xmlSubtype) < xmlSequenceNumber) {
             xmlSequenceNumbers.put(xmlSubtype, xmlSequenceNumber);
@@ -158,12 +157,10 @@ public class DataStreamReader implements Runnable{
                 RaceVisionXMLParser.importRegatta(xmlInputStream, race);
             } else if (xmlSubtype == RACE_XML_MESSAGE) {
                 System.out.printf("New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
-                if (race.getCourse() != null) {
+                if (race != null) {
                     race.getCourse().mergeWithOtherCourse(RaceVisionXMLParser.importCourse(xmlInputStream));
                 } else {
-                    race.setCourse(RaceVisionXMLParser.importCourse(xmlInputStream));
-                    xmlInputStream = new ByteArrayInputStream(xmlBody.getBytes());
-                    race.setCompetitorIds(RaceVisionXMLParser.importCompetitorIds(xmlInputStream));
+                    setRace(RaceVisionXMLParser.importRace(xmlInputStream));
                 }
             } else if (xmlSubtype == BOAT_XML_MESSAGE) {
                 System.out.printf("New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
@@ -224,7 +221,7 @@ public class DataStreamReader implements Runnable{
      */
     private void readData(){
         DataInput dataInput = new DataInputStream(dataStream);
-        while(!race.getRaceStatus().isRaceEndedStatus()) {
+        while(race == null || !race.getRaceStatus().isRaceEndedStatus()) {
             try {
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
@@ -342,5 +339,7 @@ public class DataStreamReader implements Runnable{
         this.race = race;
     }
 
-
+    public Race getRace() {
+        return race;
+    }
 }

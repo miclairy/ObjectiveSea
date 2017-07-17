@@ -67,8 +67,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private final double WIND_ARROW_X_PADDING = 40;
     private final double WIND_ARROW_Y_PADDING = 50;
 
-
-
     private Race race;
     private Group root;
     private Controller controller;
@@ -274,7 +272,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     /**
      * inits drawing of the boat paths
      */
-    public void initBoatPaths(){
+    void initBoatPaths(){
         for (BoatDisplay boat : displayBoats){
             initBoatPath(boat);
         }
@@ -284,7 +282,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * Initalises a Path for a boat
      * @param boatDisplay the boatDisplay to create a path for
      */
-    public void initBoatPath(BoatDisplay boatDisplay){
+    private void initBoatPath(BoatDisplay boatDisplay){
         Path path = raceView.createBoatPath(boatDisplay.getColor());
         Boat boat = boatDisplay.getBoat();
         CanvasCoordinate point = DisplayUtils.convertFromLatLon(boat.getCurrentLat(), boat.getCurrentLon());
@@ -599,10 +597,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
                         annotations.add(displayBoat.getSpeed());
                     }
                     if(scoreBoardController.isTimePassedSelected()){
-                        annotations.add(displayBoat.getTimeSinceLastMark(currTime));
+                        annotations.add(DisplayUtils.getTimeSinceLastMark(currTime, displayBoat.getBoat()));
                     }
                     if(scoreBoardController.isEstSelected()){
-                        annotations.add(displayBoat.getTimeToNextMark(displayBoat.getBoat().getTimeAtNextMark(), currTime));
+                        annotations.add(DisplayUtils.getTimeToNextMark(displayBoat.getBoat().getTimeAtNextMark(), currTime));
                     }
                     if(scoreBoardController.isStartTimeSelected()){
                         if(displayBoat.getStartTimingAnnotation() != null){
@@ -623,8 +621,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     annotations.clear();
                     annotations.add(boatName);
                     annotations.add(displayBoat.getSpeed());
-                    annotations.add(displayBoat.getTimeSinceLastMark(currTime));
-                    annotations.add(displayBoat.getTimeToNextMark(displayBoat.getBoat().getTimeAtNextMark(), currTime));
+                    annotations.add(DisplayUtils.getTimeSinceLastMark(currTime, displayBoat.getBoat()));
+                    annotations.add(DisplayUtils.getTimeToNextMark(displayBoat.getBoat().getTimeAtNextMark(), currTime));
                     if(displayBoat.getStartTimingAnnotation() != null){
                         annotations.add(displayBoat.getStartTimingAnnotation());
                     }

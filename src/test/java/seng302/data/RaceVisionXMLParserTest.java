@@ -6,6 +6,7 @@ import org.junit.Test;
 import seng302.models.*;
 
 import java.io.InputStream;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -167,5 +168,17 @@ public class RaceVisionXMLParserTest {
         RaceVisionXMLParser.importRegatta(regattaInputStream, race);
         Assert.assertEquals(2, race.getUTCOffset(), 0);
         Assert.assertEquals("Gothenburg World Series 2015", race.getRegattaName());
+    }
+
+    @Test
+    public void updateRaceTest(){
+        InputStream raceStream = RaceVisionXMLParserTest.class.getResourceAsStream("/data/testFiles/testRace.xml");
+        long currentTime = Instant.now().toEpochMilli();
+        InputStream result = RaceVisionXMLParser.injectRaceXMLFields(raceStream,"11", currentTime);
+
+        Race race = RaceVisionXMLParser.importRace(result);
+
+        Assert.assertEquals("11", race.getId());
+        Assert.assertEquals(currentTime - (currentTime % 1000),race.getStartTimeInEpochMs());
     }
 }
