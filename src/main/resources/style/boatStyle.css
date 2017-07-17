@@ -4,7 +4,6 @@
 }
 
 #boatPath{
-
     -fx-stroke-dash-array: 0.4 7.0 0.4 7.0;
     -fx-border-style: dotted;
     -fx-stroke-line-cap: round;
@@ -38,4 +37,9 @@
     -fx-opacity: 0.6;
     -fx-background-color: #3F3F3F;
     -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
+}
+
+#usersBoatHighlight {
+    -fx-opacity: 0.4;
+    -fx-fill: #4DC58B;
 }

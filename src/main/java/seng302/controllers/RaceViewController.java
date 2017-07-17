@@ -2,6 +2,8 @@ package seng302.controllers;
 
 import com.sun.javafx.geom.*;
 import javafx.animation.AnimationTimer;
+import javafx.animation.ScaleTransition;
+import javafx.animation.TranslateTransition;
 import javafx.fxml.FXML;
 import javafx.collections.ObservableList;
 import javafx.scene.Cursor;
@@ -23,6 +25,7 @@ import javafx.scene.shape.*;
 import javafx.scene.shape.Shape;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
+import javafx.util.Duration;
 import seng302.data.BoatStatus;
 import seng302.data.StartTimingStatus;
 import seng302.utilities.DisplayUtils;
@@ -76,6 +79,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean firstTime = true;
 
     private BoatDisplay trackingBoat = null;
+    private User user = new User(); //TODO: pass in actual user ConnectionManager
     private Mark selectedMark = null;
     private boolean isTrackingPoint = false;
     private double rotationOffset = 0;
@@ -177,6 +181,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
         controller.setWindDirection();
         flickercounter++;
         distanceLine.getAnnotation().toFront();
+        if(currentUserBoatDisplay != null){
+            currentUserBoatDisplay.getIcon().toFront();
+            currentUserBoatDisplay.getAnnotation().toFront();
+        }
+        if(trackingBoat != null){
+            trackingBoat.getAnnotation().toFront();
+        }
     }
 
     /**
@@ -204,8 +215,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
         initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);
-
-        currentUserBoatDisplay = displayBoats.get(0); //TODO: implement this into a User Model
+        user.setBoat(displayBoats.get(0)); //TODO: remove once actual user is added via connectionManager
+        currentUserBoatDisplay = user.getBoat();
     }
 
     /**
@@ -261,9 +272,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     public void initBoatHighlight(){
-        boatHighlight = new Circle(0,0,10, Color.DARKBLUE);
-        boatHighlight.setOpacity(0.05);
-        boatHighlight.setStrokeWidth(0);
+        boatHighlight = new Circle(0,0,10);
+        boatHighlight.setId("usersBoatHighlight");
         root.getChildren().add(boatHighlight);
     }
 
@@ -780,12 +790,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             boatHighlight.setScaleX(zoomLevel*1.5);
             boatHighlight.setScaleY(zoomLevel*1.5);
             boatHighlight.toFront();
-
         }
-
         icon.toFront();
-
-
     }
 
 
