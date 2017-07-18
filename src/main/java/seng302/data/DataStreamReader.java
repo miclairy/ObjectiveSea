@@ -93,7 +93,7 @@ public class DataStreamReader implements Runnable{
      * @param endIndex The ending index (exclusive) of the range of bytes to be converted
      * @return The long converted from the range of bytes in little endian order
      */
-    public static long byteArrayRangeToLong(byte[] array, int beginIndex, int endIndex){
+    private static long byteArrayRangeToLong(byte[] array, int beginIndex, int endIndex){
         int length = endIndex - beginIndex;
         if(length <= 0 || length > 8){
             throw new IllegalArgumentException("The length of the range must be between 1 and 8 inclusive");
@@ -240,7 +240,7 @@ public class DataStreamReader implements Runnable{
                             convertXMLMessage(body);
                             break;
                         default:
-                            if (race.isInitialized()) {
+                            if (race != null && race.isInitialized()) {
                                 switch (messageType) {
                                     case BOAT_LOCATION_MESSAGE:
                                         parseBoatLocationMessage(body);

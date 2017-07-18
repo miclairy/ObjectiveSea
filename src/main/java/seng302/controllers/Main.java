@@ -15,12 +15,9 @@ import javafx.geometry.Rectangle2D;
 import javafx.stage.WindowEvent;
 import javafx.event.EventHandler;
 import javafx.application.Platform;
-import seng302.data.ConnectionManager;
 import seng302.data.DataStreamReader;
-import seng302.data.MockStream;
 import seng302.utilities.Config;
 import seng302.models.Race;
-import seng302.utilities.PolarReader;
 
 import java.io.IOException;
 
@@ -34,7 +31,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Config.initializeConfig();
-        setupMockStream();
+        setupServer();
         setUpDataStreamReader();
         waitForRace();
 
@@ -76,24 +73,22 @@ public class Main extends Application {
     /**
      * Creates a MockStream object, puts it in it's own thread and starts the thread
      */
-    private static void setupMockStream() throws IOException {
-        ConnectionManager connectionManager = new ConnectionManager(2828);
-        MockRaceRunner runner = new MockRaceRunner();
+    private static void setupServer() throws IOException {
+        RaceUpdater runner = new RaceUpdater();
         runner.setScaleFactor(Config.MOCK_SPEED_SCALE);
         Thread runnerThread = new Thread(runner);
         runnerThread.start();
-        MockStream mockStream;
-        mockStream = new MockStream(runner, connectionManager);
-        mockStream.setScaleFactor(Config.MOCK_SPEED_SCALE);
-        Thread upStream = new Thread(mockStream);
-        upStream.start();
+        Server server;
+        server = new Server(2828, runner);
+        server.setScaleFactor(Config.MOCK_SPEED_SCALE);
+        Thread serverThread = new Thread(server);
+        serverThread.start();
     }
 
     private static void setUpDataStreamReader(){
         dataStreamReader = new DataStreamReader(Config.SOURCE_ADDRESS, Config.SOURCE_PORT);
         Thread dataStreamReaderThread = new Thread(dataStreamReader);
         dataStreamReaderThread.start();
-
     }
 
     public static Race getRace() {
