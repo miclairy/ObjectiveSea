@@ -69,6 +69,7 @@ public class Controller implements Initializable, Observer {
     // Controllers
     @FXML private RaceViewController raceViewController;
     @FXML private ScoreBoardController scoreBoardController = new ScoreBoardController();
+    @FXML private SelectionController selectionController;
 
     public boolean raceBegun;
     private boolean raceStatusChanged = true;
@@ -92,11 +93,13 @@ public class Controller implements Initializable, Observer {
         startersOverlayTitle.setText(race.getRegattaName());
         course.initCourseLatLon();
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
-        raceViewController = new RaceViewController(root, race, this, scoreBoardController);
+        selectionController = new SelectionController(root, scoreBoardController, this);
+        raceViewController = new RaceViewController(root, race, this, scoreBoardController, selectionController);
+        selectionController.addObserver(raceViewController);
         course.addObserver(raceViewController);
 
         createCanvasAnchorListeners();
-        scoreBoardController.setControllers(this, raceViewController, race);
+        scoreBoardController.setControllers(this, raceViewController, race, selectionController);
         scoreBoardController.setUp();
         fpsString.set("..."); //set to "..." while fps count loads
         fpsLabel.textProperty().bind(fpsString);
@@ -137,10 +140,10 @@ public class Controller implements Initializable, Observer {
                 mapImageView.setVisible(false);
             }else{
                 //Zoom out full, reset everything
-                raceViewController.setRotationOffset(0);
+                selectionController.setRotationOffset(0);
                 root.getTransforms().clear();
                 mapImageView.setVisible(true);
-                raceViewController.setTrackingPoint(false);
+                selectionController.setTrackingPoint(false);
                 DisplayUtils.resetOffsets();
             }
             raceViewController.redrawCourse();
