@@ -669,11 +669,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
-    private void redrawWindArrow() {
-        windArrow.setLayoutX(Controller.getAnchorWidth() - WIND_ARROW_X_PADDING);
-        windCircle.setCenterX(Controller.getAnchorWidth() - WIND_ARROW_X_PADDING);
-    }
-
     private void removeDistanceLines(){
         for(Line line : distanceLine.getLines()){
             root.getChildren().remove(line);
@@ -782,18 +777,24 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * draws a wind arrow on the course view
      */
     public void drawWindArrow() {
+
+        if (root.getChildren().contains(windArrow)){
+            root.getChildren().remove(windArrow);
+            root.getChildren().remove(windCircle);
+        }
         windArrow = raceView.drawWindArrow();
         windArrow.setLayoutX(Controller.getAnchorWidth() - WIND_ARROW_X_PADDING);
         windArrow.setLayoutY(WIND_ARROW_Y_PADDING);
 
         windCircle = new Circle();
         windCircle.setRadius(25);
-        windCircle.setLayoutX(Controller.getAnchorWidth());
+        windCircle.setLayoutX(Controller.getAnchorWidth()- WIND_ARROW_X_PADDING);
         windCircle.setLayoutY(WIND_ARROW_Y_PADDING - 15);
         windCircle.setId("windCircle");
 
         root.getChildren().add(windCircle);
         root.getChildren().add(windArrow);
+
     }
 
     /**
