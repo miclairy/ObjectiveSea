@@ -26,4 +26,14 @@ public enum BoatAction {
     public KeyCode getKeycode() {
         return keycode;
     }
+
+    public static int getEnumByInt(KeyCode code){
+        int returnCode = -1;
+        for (BoatAction action : BoatAction.values()){
+            if (action.keycode.equals(code)){
+                returnCode = action.type;
+            }
+        }
+        return returnCode;
+    }
 }

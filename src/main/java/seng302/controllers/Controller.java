@@ -14,7 +14,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.TextAlignment;
 import seng302.data.BoatAction;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
@@ -117,8 +116,11 @@ public class Controller implements Initializable, Observer {
 
     @FXML
     private void handleKeyPress(KeyEvent key){
-        System.out.println(key.getCode() + " " + key.getCode().ordinal());
-        //Todo
+        int commandInt = BoatAction.getEnumByInt(key.getCode());
+        if (commandInt != -1) {
+            System.out.println("The player wants their boat to: " + commandInt);
+        }
+        //todo actually using the key code to trigger an event
     }
 
     /**
@@ -238,15 +240,6 @@ public class Controller implements Initializable, Observer {
                 break;
         }
     }
-
-//    /**
-//     * Sets the wind direction image to the correct rotation and position
-//     * Scales rotation value to be in degrees (a value between 0 and 360)
-//     */
-//    public void setWindDirection(){
-//        double windDirection = (float)race.getCourse().getWindDirection();
-//        windDirectionImage.setRotate(windDirection + raceViewController.getRotationOffset());
-//    }
 
     /**
      * Populate the starters overlay list with boats that are competing
