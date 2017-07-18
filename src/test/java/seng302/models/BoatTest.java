@@ -52,4 +52,29 @@ public class BoatTest
         //Check BSp
         assertEquals(36.0, (gybeTest.getWindAngle()/Math.cos(Math.toRadians(gybeTest.getSpeed()))), DELTA);
     }
+
+    @Test
+    public void tackAndGybeTest(){
+        boat.setHeading(95);
+        boat.tackOrGybe(0);
+        assertEquals(265.0,boat.getHeading(),DELTA); //downwind
+        boat.setHeading(200);
+        boat.tackOrGybe(10);
+        assertEquals(180.0,boat.getHeading(),DELTA); //downwind
+        boat.setHeading(50);
+        boat.tackOrGybe(180);
+        assertEquals(310.0,boat.getHeading(),DELTA); //downwind
+        boat.setHeading(30);
+        boat.tackOrGybe(310);
+        assertEquals(230.0,boat.getHeading(),DELTA); //upwind
+        boat.setHeading(70);
+        boat.tackOrGybe(350);
+        assertEquals(270.0,boat.getHeading(),DELTA); //upwind
+        boat.setHeading(30);
+        boat.tackOrGybe(0);
+        assertEquals(330.0,boat.getHeading(),DELTA); //upwind
+
+    }
+
+
 }

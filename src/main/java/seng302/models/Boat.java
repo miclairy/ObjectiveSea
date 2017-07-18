@@ -283,6 +283,9 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void autoPilot(){
         //Optimal heading and speed
+        //first should check if going up or down wind
+        //then should make boat go to optimum angle, if needed
+        //else should head directly towards the next mark
     }
 
     public void sailsIn(){
@@ -297,12 +300,23 @@ public class Boat extends Observable implements Comparable<Boat>{
      * If true wind angle of boat is less than 90, boat is heading downwind. The heading is set to the true wind angle.
      * Otherwise the boat is heading upwind. The heading is set to the true wind angle - 90 degrees.
      */
-    public void tackOrGybe(){
-        if(abs(getTWAofBoat()) < 90) {
-            heading = getTWAofBoat();
-        } else {
-            heading = getTWAofBoat() - 90;
+    public void tackOrGybe(double windAngle){
+        double TWA = Math.abs(((windAngle - heading)));
+        if(TWA > 180) {
+            TWA = 360 - TWA;
         }
+
+        double downwindBuffer = 0;
+        if(TWA > 90){
+            downwindBuffer = 270;
+        }
+
+        if(MathUtils.pointBetweenTwoAngle((windAngle - 45 + downwindBuffer)%360,45,heading)){ //side on wind boat is on
+            heading += 2 * TWA;
+        } else {
+            heading -= 2 *TWA;
+        }
+        heading = (heading + 360) % 360;
     }
 
     public void upWind(double windAngle){
@@ -313,5 +327,9 @@ public class Boat extends Observable implements Comparable<Boat>{
     public void downWind(double windAngle){
         // change heading to go with the wind
         heading -=3;
+    }
+
+    public void updateBoatSpeed(){
+        //update the boats speed when the heading of the boat is changed
     }
 }

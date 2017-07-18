@@ -332,7 +332,7 @@ public class DataStreamReader implements Runnable{
                 boat.sailsOut();
                 break;
             case TACK_GYBE:
-                boat.tackOrGybe();
+                boat.tackOrGybe(race.getCourse().getWindDirection());
                 break;
             case UPWIND:
                 boat.upWind(race.getCourse().getWindDirection());
