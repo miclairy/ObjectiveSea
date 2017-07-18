@@ -816,7 +816,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     public void updateWindArrowAngle() {
         double windDirection = (float)race.getCourse().getWindDirection();
-        windArrow.setRotate(windDirection + getRotationOffset());
+        windArrow.setRotate(windDirection + selectionController.getRotationOffset());
     }
 
     /**
@@ -858,31 +858,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     windTransitionPlaying = false;
                 }});
         }
-    }
-
-    public BoatDisplay getTrackingBoat() {
-        return trackingBoat;
-    }
-
-
-    public boolean isTrackingPoint() {
-        return isTrackingPoint;
-    }
-
-    public void setTrackingPoint(boolean trackingPoint) {
-        this.isTrackingPoint = trackingPoint;
-    }
-
-    public void setMapVisibility(boolean visible){
-        controller.mapImageView.setVisible(visible);
-    }
-
-    public double getRotationOffset() {
-        return rotationOffset;
-    }
-
-    public void setRotationOffset(double rotationOffset) {
-        this.rotationOffset = rotationOffset;
     }
 
     private void updateDistanceMark(){
