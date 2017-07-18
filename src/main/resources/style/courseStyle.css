@@ -21,3 +21,28 @@
     -fx-text-fill: white;
     -fx-font-weight: 700;
 }
+
+#windArrow{
+
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-stroke-width: 4px;
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 3);
+}
+
+#windCircle {
+    -fx-stroke-width: 4px;
+    -fx-fill: transparent;
+    -fx-stroke: white;
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 3);
+}
+
+#lblWindSpeed {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: White;
+}
+
+#imvSpeedScale {
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 0);
+}

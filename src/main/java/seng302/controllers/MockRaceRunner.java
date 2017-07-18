@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static seng302.data.RaceStatus.*;
 
@@ -85,6 +86,7 @@ public class MockRaceRunner implements Runnable {
             double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
 
             race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs() + (long)(raceSecondsPassed * 1000));
+            generateWind();
             for (Boat boat : race.getCompetitors()) {
                 if(race.getRaceStatus().equals(RaceStatus.STARTED)){
                     updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), race.getCourse(), boat);
@@ -339,6 +341,24 @@ public class MockRaceRunner implements Runnable {
             } catch (NumberFormatException ignored){ // Throws error at start when trying to convert ∞ to a double
             }
         }
+    }
+
+    /**
+     * generates a random windspeed and wind angle within a range of the current speed and angle
+     */
+    public void generateWind(){
+        double range = 0.05;
+        double maxSpeed = race.getCourse().getTrueWindSpeed() + range;
+        double minSpeed = race.getCourse().getTrueWindSpeed() - range;
+
+        double maxAngle = race.getCourse().getWindDirection() + range;
+        double minAngle = race.getCourse().getWindDirection() - range;
+
+        double speed = ThreadLocalRandom.current().nextDouble(minSpeed, maxSpeed);
+        double angle = ThreadLocalRandom.current().nextDouble(minAngle, maxAngle);
+
+        race.getCourse().setTrueWindSpeed(speed);
+        race.getCourse().setWindDirection(angle);
     }
 
     public String getRaceId() {
