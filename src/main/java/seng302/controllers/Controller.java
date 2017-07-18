@@ -239,14 +239,14 @@ public class Controller implements Initializable, Observer {
         }
     }
 
-    /**
-     * Sets the wind direction image to the correct rotation and position
-     * Scales rotation value to be in degrees (a value between 0 and 360)
-     */
-    public void setWindDirection(){
-        double windDirection = (float)race.getCourse().getWindDirection();
-        windDirectionImage.setRotate(windDirection + raceViewController.getRotationOffset());
-    }
+//    /**
+//     * Sets the wind direction image to the correct rotation and position
+//     * Scales rotation value to be in degrees (a value between 0 and 360)
+//     */
+//    public void setWindDirection(){
+//        double windDirection = (float)race.getCourse().getWindDirection();
+//        windDirectionImage.setRotate(windDirection + raceViewController.getRotationOffset());
+//    }
 
     /**
      * Populate the starters overlay list with boats that are competing

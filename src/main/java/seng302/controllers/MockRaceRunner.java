@@ -153,10 +153,8 @@ public class MockRaceRunner implements Runnable {
         double distanceGained = timePassed * boat.getSpeed();
         double distanceLeftInLeg = boatPosition.greaterCircleDistance(nextMark.getPosition());
 
-        //If boat moves more than the remaining distance in the leg
         while(distanceGained > distanceLeftInLeg && boat.getLastRoundedMarkIndex() < courseOrder.size()-1) {
             distanceGained -= distanceLeftInLeg;
-            //Set boat position to next mark
             boatPosition.update(nextMarkPosition.getLat(), nextMarkPosition.getLon());
             boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
 

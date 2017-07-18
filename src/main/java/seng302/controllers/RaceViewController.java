@@ -157,7 +157,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 displayBoat.getLaylines().removeDrawnLines(root);
             }
         }
-        redrawMarks();
+        drawMarks();
         redrawRaceLines();
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
