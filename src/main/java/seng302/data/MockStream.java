@@ -212,7 +212,7 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, EXPECTED_START_TIME, race.getStartTimeInEpochMs());
         addFieldToByteArray(body, CURRENT_TIME, race.getCurrentTimeInEpochMs());
         addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, convertHeadingToInt(race.getCourse().getWindDirection()));
-        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, 20); //left at 10knots for now
+        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, (long)raceRunner.getRace().getCourse().getTrueWindSpeed()); //left at 10knots for now
         addFieldToByteArray(body, NUMBER_OF_BOATS_IN_RACE, numBoats);
         addFieldToByteArray(body, RACE_TYPE, 2); //fleet race
 
