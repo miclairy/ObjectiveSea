@@ -2,6 +2,7 @@ package seng302.data;
 
 import seng302.controllers.MockRaceRunner;
 import seng302.models.*;
+import seng302.utilities.TimeUtils;
 
 import java.io.*;
 import java.net.*;
@@ -212,7 +213,7 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, EXPECTED_START_TIME, race.getStartTimeInEpochMs());
         addFieldToByteArray(body, CURRENT_TIME, race.getCurrentTimeInEpochMs());
         addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, convertHeadingToInt(race.getCourse().getWindDirection()));
-        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, (long)raceRunner.getRace().getCourse().getTrueWindSpeed()); //left at 10knots for now
+        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, TimeUtils.convertKnotsToMmPerSecond(raceRunner.getRace().getCourse().getTrueWindSpeed()));
         addFieldToByteArray(body, NUMBER_OF_BOATS_IN_RACE, numBoats);
         addFieldToByteArray(body, RACE_TYPE, 2); //fleet race
 

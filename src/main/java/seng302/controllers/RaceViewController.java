@@ -809,7 +809,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
 
         updateWindArrowAngle();
-        controller.lblWindSpeed.setText(String.valueOf(speed) + "kn");
+        controller.lblWindSpeed.setText(String.format("%.2fkn", speed));
     }
 
     /**
@@ -826,8 +826,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @return an int that relates to the corresponding color
      */
     public int calculateWindColor(double speed) {
-        int colorNum = (int) (speed - 15) / 5;
+        int colorNum = (int) ((speed - 15) / 5) + 1;
         if(speed > 45) colorNum = 7;
+        if (speed < 15) colorNum = 1;
         return colorNum;
     }
 

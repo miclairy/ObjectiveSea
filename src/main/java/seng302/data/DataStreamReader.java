@@ -303,8 +303,7 @@ public class DataStreamReader implements Runnable{
             race.setFirstMessage(false);
         }
         race.getCourse().setWindDirection(windDirectionInDegrees);
-        //race.getCourse().setTrueWindSpeed(TimeUtils.convertMmPerSecondToKnots(windSpeed)); sending speed in knots on mockstream
-        race.getCourse().setTrueWindSpeed(windSpeed);
+        race.getCourse().setTrueWindSpeed(TimeUtils.convertMmPerSecondToKnots(windSpeed));
         race.updateRaceStatus(RaceStatus.fromInteger(raceStatus));
         race.setStartTimeInEpochMs(expectedStartTime);
         race.setCurrentTimeInEpochMs(currentTime);
