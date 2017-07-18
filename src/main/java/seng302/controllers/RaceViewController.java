@@ -92,7 +92,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         this.selectionController = selectionController;
-        drawCourse();
+        redrawCourse();
     }
 
     @Override
@@ -232,35 +232,58 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     /**
-     * Handles getting the drawings for and setting up of these course images onscreen.
+     * Handles redrawing of the course at the correct scale and position after a window resize
      */
-    private void drawCourse(){
-        drawBoundary();
+    void redrawCourse(){
+        courseNeedsRedraw = false;
         drawMarks();
-        drawRaceLines();
+        drawBoundary();
         drawMap();
         drawWindArrow();
+        redrawRaceLines();
+        redrawBoatPaths();
     }
-
-
 
     /**
      * Draws both the start end and the finish line
      */
-    private void drawRaceLines() {
+    private void redrawRaceLines() {
         redrawRaceLine(race.getCourse().getStartLine());
         redrawRaceLine(race.getCourse().getFinishLine());
     }
+
+    /**
+     * Redraws a raceline on the visual
+     * @param raceLine
+     */
+    private void redrawRaceLine(RaceLine raceLine) {
+        if (root.getChildren().contains(raceLine.getLine())) {
+            root.getChildren().remove(raceLine.getLine());
+        }
+        Line line = raceView.createRaceLine(raceLine.getMark1().getPosition(), raceLine.getMark2().getPosition());
+        root.getChildren().add(line);
+        raceLine.setLine(line);
+        raceLine.getLine().toBack();
+    }
+
 
     /**
      * Handles drawing of all of the marks from the course
      */
     public void drawMarks() {
         for (Mark mark : race.getCourse().getAllMarks().values()) {
+            if (mark.getIcon() != null && root.getChildren().contains(mark.getIcon())){
+                root.getChildren().remove(mark.getIcon());
+            }
             Circle circle = raceView.createMark(mark.getPosition());
             root.getChildren().add(circle);
             mark.setIcon(circle);
             selectionController.addMarkSelectionHandlers(mark);
+            Circle icon = mark.getIcon();
+            icon.toFront();
+            icon.setScaleX(zoomLevel);
+            icon.setScaleY(zoomLevel);
+            icon.toBack();
         }
     }
 
@@ -602,57 +625,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         wake.getTransforms().add(new Rotate(boat.getBoat().getHeading(), 0, 0));
     }
 
-
-    /**
-     * Handles redrawing of the course at the correct scale and position after a window resize
-     */
-    public void redrawCourse(){
-        courseNeedsRedraw = false;
-        redrawMarks();
-        drawBoundary();
-        resizeMap();
-        redrawRaceLines();
-        redrawBoatPaths();
-        redrawWindArrow();
-    }
-
-    /**
-     * Updates the positions of both the start and finish lines
-     */
-    private void redrawRaceLines() {
-        redrawRaceLine(race.getCourse().getStartLine());
-        redrawRaceLine(race.getCourse().getFinishLine());
-    }
-
-    /**
-     * Redraws a raceline on the visual
-     * @param raceLine
-     */
-    private void redrawRaceLine(RaceLine raceLine) {
-        if (root.getChildren().contains(raceLine.getLine())) {
-            root.getChildren().remove(raceLine.getLine());
-        }
-        Line line = raceView.createRaceLine(raceLine.getMark1().getPosition(), raceLine.getMark2().getPosition());
-        root.getChildren().add(line);
-        raceLine.setLine(line);
-        raceLine.getLine().toBack();
-    }
-
-    /**
-     * Handles moving of all marks, including redrawing race lines
-     */
-    private void redrawMarks(){
-        for (Mark mark : race.getCourse().getAllMarks().values()){
-            CanvasCoordinate convertedPoint = DisplayUtils.convertFromLatLon(mark.getPosition());
-            Circle icon = mark.getIcon();
-            icon.toFront();
-            icon.setScaleX(zoomLevel);
-            icon.setScaleY(zoomLevel);
-            icon.setCenterX(convertedPoint.getX());
-            icon.setCenterY(convertedPoint.getY());
-            icon.toBack();
-        }
-    }
 
     /**
      * Redraws all the boat paths by reconverting all the coordinates a boat has been to and recreates the

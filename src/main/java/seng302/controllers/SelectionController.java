@@ -1,6 +1,5 @@
 package seng302.controllers;
 
-import com.sun.javafx.UnmodifiableArrayList;
 import javafx.fxml.FXML;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
@@ -26,6 +25,7 @@ import static seng302.utilities.DisplayUtils.zoomLevel;
 
 /**
  * Created by clbmi on 10/07/2017.
+ *
  */
 public class SelectionController extends Observable {
 
@@ -48,6 +48,9 @@ public class SelectionController extends Observable {
         this.controller = controller;
     }
 
+    /**
+     * Gets the current selected boat and changes the tracking boolean. Also notify observers of this change
+     */
     void trackBoat() {
         BoatDisplay selectedBoat = getTrackingBoat();
         if (selectedBoat != null) {
@@ -65,7 +68,10 @@ public class SelectionController extends Observable {
         }
     }
 
-
+    /**
+     * If the user is tracking a course feature, this method deals with when and what to rotate and the zooming level
+     * along with notifying the observers of the changes
+     */
     void zoomTracking() {
         if (isTrackingPoint && selectedMark != null){
             DisplayUtils.moveToPoint(selectedMark.getPosition());
@@ -104,6 +110,9 @@ public class SelectionController extends Observable {
         });
     }
 
+    /**
+     * Controls the users ability to deselect the boat if the boat is currently selected
+     */
     private void deselectBoat() {
         for(BoatDisplay boat : displayBoats){
             boat.focus();
@@ -114,7 +123,7 @@ public class SelectionController extends Observable {
             trackingBoat = null;
             selectedMark = null;
             isTrackingPoint = false;
-            rotationOffset =0;
+            rotationOffset = 0;
             updateRotation();
 
         }
@@ -174,6 +183,9 @@ public class SelectionController extends Observable {
         root.getTransforms().add(new Rotate(rotationOffset, controller.getCanvasWidth()/2, controller.getCanvasHeight()/2));
     }
 
+    /**
+     * controls the display of showing the track button
+     */
     private void setBoatFocus(){
         scoreBoardController.btnTrack.setVisible(true);
         for (BoatDisplay boatDisplay : selectedBoats) {
