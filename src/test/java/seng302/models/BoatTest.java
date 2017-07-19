@@ -76,5 +76,24 @@ public class BoatTest
 
     }
 
+    @Test
+    public void updateBoatSpeedTest(){
+        Course course = new Course();
+
+        boat.setHeading(80);
+        double TWS = 10;
+        double windDirection = 40;
+        course.setTrueWindSpeed(10);
+        boat.updateBoatSpeed(TWS, course, windDirection);
+        assertEquals(10.25, boat.getSpeed(), DELTA);
+
+        boat.setHeading(0);
+        TWS = 25;
+        windDirection = 90;
+        course.setTrueWindSpeed(25);
+        boat.updateBoatSpeed(TWS, course, windDirection);
+        assertEquals(41.125,boat.getSpeed() , DELTA);
+    }
+
 
 }
