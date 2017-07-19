@@ -94,7 +94,6 @@ public class Main extends Application {
         Thread dataStreamReaderThread = new Thread(dataStreamReader);
         dataStreamReaderThread.start();
         Client client = new Client(dataStreamReader);
-
     }
 
     public static Race getRace() {
