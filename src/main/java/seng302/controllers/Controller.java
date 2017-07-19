@@ -76,12 +76,12 @@ public class Controller implements Initializable, Observer {
     private Race race;
 
 
-    private final double FOCUSED_ZOOMSLIDER_OPACITY =0.8;
+    private final double FOCUSED_ZOOMSLIDER_OPACITY = 0.8;
     private final double IDLE_ZOOMSLIDER_OPACITY = 0.4;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        canvasAnchor.getStylesheets().addAll(BOAT_CSS, COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, DISTANCELINE_CSS);
+        canvasAnchor.getStylesheets().addAll(COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, BOAT_CSS, DISTANCELINE_CSS);
         canvasWidth = canvas.getWidth();
         canvasHeight = canvas.getHeight();
         anchorWidth = canvasAnchor.getWidth();
