@@ -74,6 +74,15 @@ public class Boat extends Observable implements Comparable<Boat>{
         currentPosition.setLon(lon);
     }
 
+    /**
+     * Overload for the set position method taking a Coordinate
+     * @param coord a Coordinate object to copy position from
+     */
+    public void setPosition(Coordinate coord) {
+        currentPosition.setLat(coord.getLat());
+        currentPosition.setLon(coord.getLon());
+    }
+
     public void setStatus(BoatStatus status) {
         this.status = status;
     }
