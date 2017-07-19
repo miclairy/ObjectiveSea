@@ -380,12 +380,11 @@ public class Boat extends Observable implements Comparable<Boat>{
         heading -=3;
     }
 
-    /**\
+    /**
      * A function to update the boat speed whenever the windspeed or boat heading is changed
      * @param TWS
      * @param course
      * @param windDirection
-     * @return the updated boat speed
      */
     public void updateBoatSpeed(double TWS, Course course, double windDirection){
         double TWA = Math.abs(((windDirection - heading)));
