@@ -22,6 +22,8 @@ public class Server implements Runnable, Observer {
     private final double SECONDS_PER_UPDATE = 0.2;
     private double scaleFactor = 1;
 
+    private int nextViewerID = 0;
+
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumber = new HashMap<>();
     private Map<Boat, Integer> boatSequenceNumbers = new HashMap<>();
     private Map<Boat, Integer> lastMarkRoundingSent = new HashMap<>();
@@ -158,14 +160,29 @@ public class Server implements Runnable, Observer {
     }
 
     @Override
-    public void update(Observable o, Object socket) {
+    public void update(Observable o, Object arg) {
         if (o.equals(this.connectionManager)) {
-            int newId = this.raceUpdater.addCompetitor();
-            Boat boat = this.raceUpdater.getRace().getBoatById(newId);
-            boatSequenceNumbers.put(boat, newId);
-            lastMarkRoundingSent.put(boat, -1);
-            this.connectionManager.addConnection(newId, (Socket) socket);
+            Socket socket = (Socket) arg;
+            ServerListener serverListener = new ServerListener(socket);
+            Thread serverListenerThread = new Thread(serverListener);
+            serverListenerThread.start();
+            serverListener.addObserver(this);
+        } else if(o instanceof ServerListener){
+            ServerListener serverListener = (ServerListener) o;
+            Integer registrationType = (Integer) arg;
+            if(registrationType == 1){
+                int newId = this.raceUpdater.addCompetitor();
+                Boat boat = this.raceUpdater.getRace().getBoatById(newId);
+                boatSequenceNumbers.put(boat, newId);
+                lastMarkRoundingSent.put(boat, -1);
+                connectionManager.addConnection(newId, serverListener.getSocket());
 
+                byte[] packet = packetBuilder.createRegistrationAcceptancePacket(newId);
+                connectionManager.sendToClient(newId, packet);
+            } else{
+                connectionManager.addConnection(nextViewerID, serverListener.getSocket());
+                nextViewerID++;
+            }
         }
     }
 }

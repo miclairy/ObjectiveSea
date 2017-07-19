@@ -11,7 +11,7 @@ import java.util.TreeMap;
 
 /**
  * Created by Gemma Lamont on 10/07/17.
- * Class to manage multiple clients
+ * Class to manage multiple players
  */
 public class ConnectionManager extends Observable implements Runnable {
 
@@ -48,7 +48,7 @@ public class ConnectionManager extends Observable implements Runnable {
     }
 
     /**
-     * Sends byte array information to multiple clients
+     * Sends byte array information to multiple players
      * @param packet the information packet to be sent
      * @throws IOException
      */
@@ -60,7 +60,7 @@ public class ConnectionManager extends Observable implements Runnable {
 
     /**
      * Send a packet to a single client.
-     * If the client is no longer connected, remove it from our map of clients
+     * If the client is no longer connected, remove it from our map of players
      * @param id the id of the client to send to
      * @param packet the packet to send
      */

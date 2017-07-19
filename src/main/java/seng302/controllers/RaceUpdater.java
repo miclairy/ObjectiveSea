@@ -58,7 +58,6 @@ public class RaceUpdater implements Runnable {
         long currentTime = Instant.now().toEpochMilli();
         race.setCurrentTimeInEpochMs(currentTime);
         race.setStartTimeInEpochMs(currentTime + (1000 * 60 * 3)); //3 minutes from now
-        //race.getCompetitors().forEach(b -> b.setStatus(BoatStatus.PRERACE));
     }
 
     public int addCompetitor() {

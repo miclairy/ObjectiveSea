@@ -4,7 +4,8 @@ package seng302.data;
  * Created by Michael Trotter on 4/29/2017.
  */
 public enum AC35StreamMessage {
-    XML_MESSAGE(26), BOAT_LOCATION_MESSAGE(37, 56), MARK_ROUNDING_MESSAGE(38, 21), RACE_STATUS_MESSAGE(12),
+    REGISTRATION_REQUEST(55, 4), REGISTRATION_ACCEPT(56, 4), XML_MESSAGE(26), BOAT_LOCATION_MESSAGE(37, 56),
+    MARK_ROUNDING_MESSAGE(38, 21), RACE_STATUS_MESSAGE(12),
     UNKNOWN(0);
 
     private final int type, length;
@@ -37,6 +38,10 @@ public enum AC35StreamMessage {
                 return BOAT_LOCATION_MESSAGE;
             case 38:
                 return MARK_ROUNDING_MESSAGE;
+            case 55:
+                return REGISTRATION_REQUEST;
+            case 56:
+                return REGISTRATION_ACCEPT;
             default:
                 return UNKNOWN;
         }

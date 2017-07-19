@@ -25,6 +25,9 @@ import java.io.IOException;
 public class Main extends Application {
 
     private static Race race;
+    /**
+     *
+     */
     private static DataStreamReader dataStreamReader;
 
 
@@ -89,6 +92,8 @@ public class Main extends Application {
         dataStreamReader = new DataStreamReader(Config.SOURCE_ADDRESS, Config.SOURCE_PORT);
         Thread dataStreamReaderThread = new Thread(dataStreamReader);
         dataStreamReaderThread.start();
+        Client client = new Client(dataStreamReader);
+
     }
 
     public static Race getRace() {

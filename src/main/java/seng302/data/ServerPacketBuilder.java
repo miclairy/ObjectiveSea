@@ -226,4 +226,12 @@ public class ServerPacketBuilder extends PacketBuilder {
 
         return body;
     }
+
+    public byte[] createRegistrationAcceptancePacket(Integer sourceID){
+        byte[] header = createHeader(REGISTRATION_ACCEPT);
+        byte[] body = new byte[REGISTRATION_ACCEPT.getLength()];
+        addFieldToByteArray(body, REGISTRATION_SOURCE_ID, sourceID);
+        return generatePacket(header, body);
+    }
+
 }
