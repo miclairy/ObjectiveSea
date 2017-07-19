@@ -247,7 +247,8 @@ public class RaceVisionXMLParser {
                             course.setWindDirection(Double.parseDouble(element.getTextContent()));
                             break;
                         case XMLTags.Course.COURSE_LIMIT:
-                            if (element.getAttribute(XMLTags.Course.COURSE_LIMIT_NAME_ATTR).equals(XMLTags.Course.BOUNDARY)) {
+                            String nameAttr = element.getAttribute(XMLTags.Course.COURSE_LIMIT_NAME_ATTR);
+                            if (nameAttr.isEmpty() || nameAttr.equals(XMLTags.Course.BOUNDARY)) {
                                 NodeList courseLimits = element.getElementsByTagName(XMLTags.Course.LIMIT);
                                 for (int k = 0; k < courseLimits.getLength(); k++) {
                                     Coordinate coord = parseCourseLimitCoord((Element) courseLimits.item(k));

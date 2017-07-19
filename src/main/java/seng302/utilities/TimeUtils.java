@@ -138,12 +138,19 @@ public class TimeUtils {
         return seconds * SECONDS_IN_MINUTE;
     }
 
-    public static Double convertMmPerSecondToKnots(Integer mmPerSecond){
+    public static Double convertMmPerSecondToKnots(long mmPerSecond){
         Double kilometersInNauticalMile = (double) CONVERSION_RATE_NAUTICALM_TO_METRES / 1000;
         Double kilometersPerSecond = mmPerSecond / 1e6;
         Double kilometersPerHour = kilometersPerSecond * SECONDS_IN_MINUTE * MINUTES_IN_HOUR;
         Double knots = kilometersPerHour / kilometersInNauticalMile;
         return knots;
+    }
+
+    public static long convertKnotsToMmPerSecond(double knots){
+        Double kilometersInNauticalMile = (double) CONVERSION_RATE_NAUTICALM_TO_METRES / 1000;
+        double converted = knots * kilometersInNauticalMile * 1e6;
+        converted = converted / (SECONDS_IN_MINUTE * MINUTES_IN_HOUR);
+        return (long) converted;
     }
 
     public static String getFormatUTCOffset(double UTCOffset) {

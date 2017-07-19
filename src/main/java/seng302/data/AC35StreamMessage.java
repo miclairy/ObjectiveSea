@@ -2,6 +2,7 @@ package seng302.data;
 
 /**
  * Created by Michael Trotter on 4/29/2017.
+ *
  */
 public enum AC35StreamMessage {
     REGISTRATION_REQUEST(55, 4), REGISTRATION_ACCEPT(56, 4), XML_MESSAGE(26), BOAT_LOCATION_MESSAGE(37, 56),
