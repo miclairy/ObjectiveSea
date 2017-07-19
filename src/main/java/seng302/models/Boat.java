@@ -5,6 +5,7 @@ import seng302.data.StartTimingStatus;
 
 import seng302.data.BoatStatus;
 import seng302.utilities.MathUtils;
+import seng302.utilities.PolarReader;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,6 +30,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private int leg;
 
     private Coordinate currentPosition;
+    private PolarTable polarTable;
 
     private int lastRoundedMarkIndex;
     private long lastRoundedMarkTime;
@@ -378,7 +380,35 @@ public class Boat extends Observable implements Comparable<Boat>{
         heading -=3;
     }
 
-    public void updateBoatSpeed(){
-        //update the boats speed when the heading of the boat is changed
+    /**\
+     * A function to update the boat speed whenever the windspeed or boat heading is changed
+     * @param TWS
+     * @param course
+     * @param windDirection
+     * @return the updated boat speed
+     */
+    public void updateBoatSpeed(double TWS, Course course, double windDirection){
+        double TWA = Math.abs(((windDirection - heading)));
+        if(TWA > 180) {
+            TWA = 360 - TWA;
+        }
+        this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), course);
+        ArrayList<Polar> interpPolars = polarTable.TWSForInterp((int) TWS, PolarReader.getPolarsForAC35Yachts());
+
+        Polar polar1 = interpPolars.get(0);
+        Polar polar3 = interpPolars.get(2);
+        ArrayList<WindAngleAndSpeed> windAngleAndSpeeds1 = polarTable.TWAForInterp((int) TWA, polar1);
+        ArrayList<WindAngleAndSpeed> windAngleAndSpeeds2 = polarTable.TWAForInterp((int) TWA, polar3);
+
+        double TWS0 = polar1.getTWS();
+        double TWS1 = polar3.getTWS();
+        double TWA0 = windAngleAndSpeeds1.get(0).getWindAngle();
+        double TWA1 = windAngleAndSpeeds2.get(2).getWindAngle();
+        double z00 = windAngleAndSpeeds1.get(0).getSpeed();
+        double z10 = windAngleAndSpeeds1.get(2).getSpeed();
+        double z01 = windAngleAndSpeeds2.get(0).getSpeed();
+        double z11 = windAngleAndSpeeds2.get(2).getSpeed();
+
+        setCurrentSpeed(MathUtils.bilinearInterpolation(TWS0,TWS1,TWA0,TWA1,z00,z01,z10,z11,TWS,TWA));
     }
 }

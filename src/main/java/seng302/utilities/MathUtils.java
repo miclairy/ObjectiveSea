@@ -174,5 +174,28 @@ public class MathUtils {
 
     }
 
+    /**
+     * A function for calculating the bilinear interpolation of a third variable (e.g if windspeed and heading are
+     * known this function will calculate the boat speed at those values
+     * @param x0 first value in x axis
+     * @param x1 second value in x axis
+     * @param y0 first value in y axis
+     * @param y1 second value in y axis
+     * @param z00 the z value at (x0,y0)
+     * @param z01 the z value at (x0,y1)
+     * @param z10 the z value at (x1,y0)
+     * @param z11 the z value at (x1,y1)
+     * @param x the x value you want to compute z at (e.g the current windspeed)
+     * @param y the y value you want to compute z at (e.g the current boat heading)
+     * @return the interpolated z value (e.g the new boat speed at current heading and wind speed)
+     */
+    public static double bilinearInterpolation(double x0, double x1, double y0, double y1, double z00, double z01, double z10, double z11, double x, double y){
+
+        double r1 = (((x1 - x)/(x1 - x0)) * z00 + ((x - x0)/(x1 - x0)) * z10);
+        double r2 = (((x1 - x)/(x1 - x0)) * z01 + ((x - x0)/(x1 - x0)) * z11);
+
+        return (((y1 - y)/(y1 - y0)) * r1 + ((y - y0)/ (y1 - y0)) * r2);
+    }
+
 
 }

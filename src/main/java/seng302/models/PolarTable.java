@@ -53,6 +53,33 @@ public class PolarTable {
         return interpPolars;
     }
 
+    public ArrayList<WindAngleAndSpeed> TWAForInterp(int TWA, Polar polar){
+        ArrayList<WindAngleAndSpeed> interpPolars = new ArrayList<>();
+        ArrayList<WindAngleAndSpeed> windAngleAndSpeeds = polar.getTWAandBSP();
+        int index = 0;
+        double TWADiff = 1000000000;
+        //Find the 3 values closest to the TWS to interpolate with
+
+        for(int i = 0; i < windAngleAndSpeeds.size(); i++){
+            if(Math.abs(TWA - windAngleAndSpeeds.get(i).getWindAngle()) < TWADiff){
+                index = i;
+                TWADiff = Math.abs(TWA - windAngleAndSpeeds.get(i).getWindAngle());
+            }
+        }
+        //Check that these values aren't 0 or the size of the list as this will cause an error
+        if(index == 0){index ++;}
+        if(index == windAngleAndSpeeds.size() - 1){index -= 1;}
+
+        WindAngleAndSpeed windAngleAndSpeed1 = windAngleAndSpeeds.get(index - 1);
+        WindAngleAndSpeed windAngleAndSpeed2 = windAngleAndSpeeds.get(index);
+        WindAngleAndSpeed windAngleAndSpeed3 = windAngleAndSpeeds.get(index + 1);
+
+        interpPolars.add(windAngleAndSpeed1);
+        interpPolars.add(windAngleAndSpeed2);
+        interpPolars.add(windAngleAndSpeed3);
+        return interpPolars;
+    }
+
 
     /**
      * This function calculates the optimum calculateOptimumGybe angle and speed based on a polar table
