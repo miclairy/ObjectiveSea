@@ -248,7 +248,7 @@ public class BoatDisplay implements Observer {
 
     public void focus(){
         fadeNodeTransition(icon, 1.0);
-        fadeNodeTransition(wake, 1.0);
+        fadeNodeTransition(wake, 0.5);
         fadeNodeTransition(annotation, 0.8);
         if(path != null){
             fadeNodeTransition(path, 1.0);

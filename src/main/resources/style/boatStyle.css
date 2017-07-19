@@ -8,7 +8,7 @@
     -fx-border-style: dotted;
     -fx-stroke-line-cap: round;
     -fx-stroke-line-join: round;
-    -fx-stroke-width: 3px;
+    //-fx-stroke-width: 3px;
 }
 
 #annotationLabel {
@@ -42,4 +42,20 @@
 #usersBoatHighlight {
     -fx-opacity: 0.4;
     -fx-fill: #4DC58B;
+}
+
+#vectorLine {
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 0);
+}
+
+#sogVector {
+     -fx-stroke-line-cap: round;
+     -fx-stroke-line-join: round;
+     -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 0);
+}
+
+#layline {
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 6, 0, 0, 0);
 }

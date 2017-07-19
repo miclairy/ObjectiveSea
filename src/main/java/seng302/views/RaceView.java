@@ -126,6 +126,8 @@ public class RaceView {
         double boatBearing = boat.getHeading();
         Coordinate end2 = boatPosition.coordAt(lengthOfVector, boatBearing);
         Polyline vector = drawVectorArrow(boatPosition, end2, boatBearing, color);
+        vector.setId("sogVector");
+        vector.setStrokeWidth(2.8);
         return vector;
     }
 
@@ -152,6 +154,8 @@ public class RaceView {
         }
         Coordinate end2 = boatPosition.coordAt(lengthOfVector, lineBearing);
         Polyline vector = drawVectorArrow(boatPosition, end2, lineBearing, color);
+        vector.setId("vmgVector");
+        vector.setStrokeWidth(2.8);
         return vector;
     }
 
@@ -201,6 +205,7 @@ public class RaceView {
 
         line.setStroke(boatColor);
         line.setStrokeWidth(2.0);
+        line.setId("layline");
 
         return line;
     }

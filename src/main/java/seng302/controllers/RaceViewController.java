@@ -333,7 +333,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             trackingBoat = null;
             selectedMark = null;
             isTrackingPoint = false;
-            rotationOffset =0;
+            rotationOffset = 0;
             updateRotation();
             updateDistanceLine(false);
         }
