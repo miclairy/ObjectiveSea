@@ -215,34 +215,6 @@ public class DataStreamReader extends Receiver implements Runnable{
         System.out.println("My id is: " + id);
     }
 
-    /**
-     * Parses portions of the boat location message byte array to their corresponding values.
-     * @param body the byte array containing the boat location message
-     */
-    private void parseBoatLocationMessage(byte[] body) {
-        int sourceID = byteArrayRangeToInt(body, BOAT_SOURCE_ID.getStartIndex(), BOAT_SOURCE_ID.getEndIndex());
-        int latScaled = byteArrayRangeToInt(body, LATITUDE.getStartIndex(), LATITUDE.getEndIndex());
-        int lonScaled = byteArrayRangeToInt(body, LONGITUDE.getStartIndex(), LONGITUDE.getEndIndex());
-        int headingScaled = byteArrayRangeToInt(body, HEADING.getStartIndex(), HEADING.getEndIndex());
-        int boatSpeed = byteArrayRangeToInt(body, SPEED_OVER_GROUND.getStartIndex(), SPEED_OVER_GROUND.getEndIndex());
-
-        int deviceType = byteArrayRangeToInt(body, DEVICE_TYPE.getStartIndex(), DEVICE_TYPE.getEndIndex());
-        int trueWindDirectionScaled = byteArrayRangeToInt(body, TRUE_WIND_DIRECTION.getStartIndex(), TRUE_WIND_DIRECTION.getEndIndex());
-        int trueWindAngleScaled = byteArrayRangeToInt(body, TRUE_WIND_ANGLE.getStartIndex(), TRUE_WIND_ANGLE.getEndIndex());
-        double trueWindAngle = intToTrueWindAngle(trueWindAngleScaled);
-        //unused as we believe this is always sent as 0 from the AC35 feed
-        double trueWindDirection = intToHeading(trueWindDirectionScaled);
-        double lat = intToLatLon(latScaled);
-        double lon = intToLatLon(lonScaled);
-        double heading = intToHeading(headingScaled);
-        double speedInKnots = TimeUtils.convertMmPerSecondToKnots(boatSpeed);
-
-        if(deviceType == BOAT_DEVICE_TYPE){
-            race.updateBoat(sourceID, lat, lon, heading, speedInKnots, trueWindAngle);
-        } else if(deviceType == MARK_DEVICE_TYPE){
-            race.getCourse().updateMark(sourceID, lat, lon);
-        }
-    }
 
     /**
      * Parses the body of Race Status message, and updates race status, race times and wind direction
