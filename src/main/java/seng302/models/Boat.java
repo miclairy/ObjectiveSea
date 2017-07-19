@@ -37,6 +37,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private boolean finished;
     private double heading;
     private double maxSpeed;
+    private double playerHeading = -1;
 
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
@@ -137,7 +138,11 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public double getHeading() {
-        return heading;
+        if(playerHeading == -1) {
+            return heading;
+        } else {
+            return playerHeading;
+        }
     }
 
     public int getCurrPlacing(){return currPlacing;}
@@ -297,13 +302,44 @@ public class Boat extends Observable implements Comparable<Boat>{
         //tack of gybe
     }
 
+    private void headingChange(double windAngle) {
+
+        if(playerHeading == -1) {
+            playerHeading = heading;
+        }
+        playerHeading += 360;
+        double windAngleCheck = windAngle + 360;
+        if(windAngleCheck > playerHeading && windAngleCheck-180<playerHeading) {
+            playerHeading += 3;
+            if(playerHeading > 359) {
+                playerHeading -= 360;
+            }
+        } else if(windAngleCheck < playerHeading && windAngleCheck+180>playerHeading) {
+            playerHeading -= 3;
+            if(playerHeading < 0) {
+                playerHeading += 360;
+            }
+        }
+        playerHeading -= 360;
+
+    }
+
     public void upWind(double windAngle){
         // change heading to go into the wind
-        heading = (int) windAngle;
+
+        headingChange(windAngle);
+
+        //heading = (int) windAngle;
     }
 
     public void downWind(double windAngle){
         // change heading to go with the wind
-        heading = (int) windAngle + 180;
+        double newWindAngle = windAngle;
+        if(newWindAngle > 180) {
+            newWindAngle -= 360;
+        }
+        headingChange(newWindAngle + 180);
+
+        //heading = (int) windAngle + 180;
     }
 }
