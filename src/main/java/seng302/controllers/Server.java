@@ -4,8 +4,11 @@ import seng302.data.*;
 import seng302.models.Boat;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 import static seng302.data.AC35StreamXMLMessage.BOAT_XML_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.RACE_XML_MESSAGE;
@@ -14,7 +17,7 @@ import static seng302.data.AC35StreamXMLMessage.REGATTA_XML_MESSAGE;
 /**
  * Created by mjt169 on 18/07/17.
  */
-public class Server implements Runnable {
+public class Server implements Runnable, Observer {
 
     private final double SECONDS_PER_UPDATE = 0.2;
     private double scaleFactor = 1;
@@ -31,6 +34,7 @@ public class Server implements Runnable {
         this.raceUpdater = raceUpdater;
         this.packetBuilder = new ServerPacketBuilder();
         this.connectionManager = new ConnectionManager(port);
+        this.connectionManager.addObserver(this);
     }
 
     /**
@@ -44,10 +48,10 @@ public class Server implements Runnable {
         xmlSequenceNumber.put(BOAT_XML_MESSAGE, 0);
 
         //testing
-        raceUpdater.addCompetitor();
-        raceUpdater.addCompetitor();
-        raceUpdater.addCompetitor();
-        raceUpdater.addCompetitor();
+//        raceUpdater.addCompetitor();
+//        raceUpdater.addCompetitor();
+//        raceUpdater.addCompetitor();
+//        raceUpdater.addCompetitor();
 
         for (Boat boat: raceUpdater.getRace().getCompetitors()){
             boatSequenceNumbers.put(boat, boat.getId());
@@ -113,15 +117,11 @@ public class Server implements Runnable {
         sendBoatMessagesForAllBoats();
     }
 
-    private void sendBoatMessagesForAllBoats(){
-        try {
-            for (Boat boat : raceUpdater.getRace().getCompetitors()) {
-                if (!boat.isFinished()) {
-                    sendBoatMessages(boat);
-                }
+    private void sendBoatMessagesForAllBoats() throws IOException {
+        for (Boat boat : raceUpdater.getRace().getCompetitors()) {
+            if (!boat.isFinished()) {
+                sendBoatMessages(boat);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -157,4 +157,15 @@ public class Server implements Runnable {
         this.scaleFactor = scaleFactor;
     }
 
+    @Override
+    public void update(Observable o, Object socket) {
+        if (o.equals(this.connectionManager)) {
+            int newId = this.raceUpdater.addCompetitor();
+            Boat boat = this.raceUpdater.getRace().getBoatById(newId);
+            boatSequenceNumbers.put(boat, newId);
+            lastMarkRoundingSent.put(boat, -1);
+            this.connectionManager.addConnection(newId, (Socket) socket);
+
+        }
+    }
 }
