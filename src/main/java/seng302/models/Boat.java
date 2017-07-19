@@ -1,10 +1,7 @@
 package seng302.models;
 
 
-import javafx.util.Pair;
 import seng302.data.StartTimingStatus;
-import javafx.scene.chart.XYChart.Series;
-import javafx.scene.chart.XYChart.Data;
 
 import seng302.data.BoatStatus;
 import seng302.utilities.MathUtils;
@@ -290,11 +287,54 @@ public class Boat extends Observable implements Comparable<Boat>{
         return Math.cos(Math.toRadians(angle)) * speed;
     }
 
-    public void autoPilot(){
-        //Optimal heading and speed
-        //first should check if going up or down wind
-        //then should make boat go to optimum angle, if needed
-        //else should head directly towards the next mark
+    /**
+     * Function to calculate boats optimum heading using the course wind direction and polar table.
+     * Checks if boat is heading upwind or downwind, then finds the optimal headings rightOfTWDAngle and leftOfTWDAngle.
+     * Then returns the optimum heading that is closest to the boat's heading.
+     * @param course
+     * @param polarTable
+     * @return optimum heading
+     */
+    public double getOptimumHeading(Course course, PolarTable polarTable) {
+        double TWD = course.getWindDirection();
+        ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
+        CompoundMark lastMark = courseOrder.get(getLastRoundedMarkIndex());
+        CompoundMark nextMark = courseOrder.get(getLastRoundedMarkIndex() + 1);
+
+        double TWDTo = TWD; //shows wind as TO not FROM
+        Coordinate lastMarkPosition = lastMark.getPosition();
+        Coordinate nextMarkPosition = nextMark.getPosition();
+        double markBearing = lastMarkPosition.headingToCoordinate(nextMarkPosition);
+        boolean upwind = MathUtils.pointBetweenTwoAngle(TWD, 90, markBearing);
+        double TWA = polarTable.getOptimumTWA(upwind);
+        double rightOptimumHeading;
+        double leftOptimumHeading;
+
+        if (upwind) {
+            rightOptimumHeading = (TWDTo - TWA + 360) % 360;
+            leftOptimumHeading = (TWDTo + TWA + 360) % 360;
+        } else {
+            rightOptimumHeading = (TWDTo - TWA + 540) % 360;
+            leftOptimumHeading = (TWDTo + TWA + 540) % 360;
+        }
+
+        double angleToLeft = abs( heading - leftOptimumHeading);
+        double angleToRight = abs( heading - rightOptimumHeading);
+
+        if (angleToLeft < angleToRight) {
+            return leftOptimumHeading;
+        } else {
+            return rightOptimumHeading;
+        }
+    }
+
+    //Optimal heading and speed
+    //first should check if going up or down wind
+    //then should make boat go to optimum angle, if needed
+    //else should head directly towards the next mark
+    public void autoPilot(Course course, PolarTable polarTable){
+        double optimumHeading = getOptimumHeading(course, polarTable);
+        heading = optimumHeading;
     }
 
     public void sailsIn(){
@@ -309,8 +349,8 @@ public class Boat extends Observable implements Comparable<Boat>{
      * If true wind angle of boat is less than 90, boat is heading downwind. The heading is set to the true wind angle.
      * Otherwise the boat is heading upwind. The heading is set to the true wind angle - 90 degrees.
      */
-    public void tackOrGybe(double windAngle){
-        double TWA = Math.abs(((windAngle - heading)));
+    public void tackOrGybe(double TWD){
+        double TWA = Math.abs(((TWD - heading)));
         if(TWA > 180) {
             TWA = 360 - TWA;
         }
@@ -320,7 +360,7 @@ public class Boat extends Observable implements Comparable<Boat>{
             downwindBuffer = 270;
         }
 
-        if(MathUtils.pointBetweenTwoAngle((windAngle - 45 + downwindBuffer)%360,45,heading)){ //side on wind boat is on
+        if(MathUtils.pointBetweenTwoAngle((TWD - 45 + downwindBuffer)%360,45,heading)){ //side on wind boat is on
             heading += 2 * TWA;
         } else {
             heading -= 2 *TWA;
@@ -328,12 +368,12 @@ public class Boat extends Observable implements Comparable<Boat>{
         heading = (heading + 360) % 360;
     }
 
-    public void upWind(double windAngle){
+    public void upWind(){
         // change heading to go into the wind
         heading +=3;
     }
 
-    public void downWind(double windAngle){
+    public void downWind(){
         // change heading to go with the wind
         heading -=3;
     }

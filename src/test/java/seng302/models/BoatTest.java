@@ -76,5 +76,39 @@ public class BoatTest
 
     }
 
+    @Test
+    public void getOptimumHeadingTest() {
+        Boat boat = new Boat(0, "TestBoat", "testNickname", 10);
+        boat.setLastRoundedMarkIndex(0);
+
+        Mark startLine1 = new Mark(0, "Start Line 1", new Coordinate(50, 30));
+        Mark startLine2 = new Mark(1, "Start Line 2", new Coordinate(51, 30));
+        RaceLine start = new RaceLine(1, "Start Line",startLine1, startLine2);
+        Mark mark1 = new Mark(2, "Mark 1", new Coordinate(60, 60));
+        CompoundMark windwardGate = new CompoundMark(2, "Mark", mark1);
+
+        Course course = new Course();
+        course.addNewCompoundMark(start);
+        course.addNewCompoundMark(windwardGate);
+        course.addMarkInOrder(1);
+        course.addMarkInOrder(2);
+        course.setStartLine(start);
+        course.setTrueWindSpeed(25);
+
+        PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), course);
+
+        double optimum;
+
+        boat.setHeading(0);
+        course.setWindDirection(45);
+        optimum = boat.getOptimumHeading(course, polarTable);
+        assertEquals(5, optimum, DELTA);
+
+        boat.setHeading(195);
+        course.setWindDirection(250);
+        optimum = boat.getOptimumHeading(course, polarTable);
+        assertEquals(221.0, optimum, DELTA);
+    }
+
 
 }

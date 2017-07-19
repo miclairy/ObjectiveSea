@@ -1,7 +1,9 @@
 package seng302.data;
 
 import seng302.models.Boat;
+import seng302.models.PolarTable;
 import seng302.models.Race;
+import seng302.utilities.PolarReader;
 import seng302.utilities.TimeUtils;
 
 import java.io.*;
@@ -268,10 +270,12 @@ public class DataStreamReader extends Receiver implements Runnable{
     private void parseBoatActionMessage(byte[] body, int sourceID){
         int action = byteArrayRangeToInt(body, BOAT_ACTION_BODY.getStartIndex(), BOAT_ACTION_BODY.getEndIndex());
         Boat boat = race.getBoatById(sourceID); // Assuming this field has been set and can be used to distinguish a boat
+        //for now we assume all boats racing are AC35 class yachts such that we can use the polars we have for them
+        PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
         BoatAction boatAction = BoatAction.values()[action];
         switch (boatAction){
             case BOAT_AUTOPILOT:
-                boat.autoPilot();
+                boat.autoPilot(race.getCourse(), polarTable);
                 break;
             case SAILS_IN:
                 boat.sailsIn();
@@ -283,10 +287,10 @@ public class DataStreamReader extends Receiver implements Runnable{
                 boat.tackOrGybe(race.getCourse().getWindDirection());
                 break;
             case UPWIND:
-                boat.upWind(race.getCourse().getWindDirection());
+                boat.upWind();
                 break;
             case DOWNWIND:
-                boat.downWind(race.getCourse().getWindDirection());
+                boat.downWind();
                 break;
             default:
                 break;
