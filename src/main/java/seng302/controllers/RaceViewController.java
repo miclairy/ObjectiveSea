@@ -186,10 +186,15 @@ public class RaceViewController extends AnimationTimer implements Observer {
             grabHandle.setId("annoGrabHandle");
             grabHandle.setCenterX(0);
             grabHandle.setCenterY(0);
-
             displayBoat.setAnnoGrabHandle(grabHandle);
             root.getChildren().add(grabHandle);
+
             selectionController.makeDraggable(grabHandle, displayBoat);
+
+            Line sail = new Line(0,0,20*zoomLevel,0);
+            displayBoat.setSail(sail);
+            root.getChildren().add(sail);
+
         }
         initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);
@@ -397,6 +402,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
         grabHandle.setCenterX(point.getX() + boatDisplay.getAnnoOffsetX() * zoomLevel - ANNOTATION_HANDLE_OFFSET);
         grabHandle.setCenterY(point.getY() + boatDisplay.getAnnoOffsetY() * zoomLevel - ANNOTATION_HANDLE_OFFSET);
         grabHandle.toFront();
+
+        Line sail = boatDisplay.getSail();
+        sail.setLayoutX(point.getX());
+        sail.setLayoutY(point.getY());
+        sail.setEndX(20*zoomLevel);
+        sail.toFront();
     }
 
     /**

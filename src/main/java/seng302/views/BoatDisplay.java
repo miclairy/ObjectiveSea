@@ -50,6 +50,7 @@ public class BoatDisplay implements Observer {
     private Series series;
     private final double FADEDBOAT = 0.3;
     public Circle annoGrabHandle;
+    public Line sail;
 
     private Laylines laylines;
     private PolarTable polarTable;
@@ -150,6 +151,15 @@ public class BoatDisplay implements Observer {
 
     public void setAnnoGrabHandle(Circle annoGrabHandle) {
         this.annoGrabHandle = annoGrabHandle;
+    }
+
+
+    public Line getSail() {
+        return sail;
+    }
+
+    public void setSail(Line sail) {
+        this.sail = sail;
     }
 
     public void setColor(Color color) {
