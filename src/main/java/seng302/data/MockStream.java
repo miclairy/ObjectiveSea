@@ -22,6 +22,7 @@ public class MockStream implements Runnable {
     private final int GATE_TYPE = 2;
     private final String DEFAULT_RESOURCES_FOLDER = "/defaultFiles/";
 
+
     private final double SECONDS_PER_UPDATE = 0.2;
     private double scaleFactor = 1;
 
@@ -207,13 +208,13 @@ public class MockStream implements Runnable {
         byte[] body = new byte[24 + (20 * numBoats)];
         Race race = raceRunner.getRace();
         addFieldToByteArray(body, STATUS_MESSAGE_VERSION_NUMBER, 2);
-        addFieldToByteArray(body, BOAT_TIMESTAMP, race.getCurrentTimeInEpochMs());
+        addFieldToByteArray(body, BOAT_TIMESTAMP, raceRunner.getRace().getCurrentTimeInEpochMs());
         addFieldToByteArray(body, STATUS_RACE_ID, Integer.parseInt(race.getId()));
         addFieldToByteArray(body, RACE_STATUS, race.getRaceStatus().getValue());
         addFieldToByteArray(body, EXPECTED_START_TIME, race.getStartTimeInEpochMs());
         addFieldToByteArray(body, CURRENT_TIME, race.getCurrentTimeInEpochMs());
         addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, convertHeadingToInt(race.getCourse().getWindDirection()));
-        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, TimeUtils.convertKnotsToMmPerSecond(raceRunner.getRace().getCourse().getTrueWindSpeed()));
+        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, TimeUtils.convertKnotsToMmPerSecond(race.getCourse().getTrueWindSpeed()));
         addFieldToByteArray(body, NUMBER_OF_BOATS_IN_RACE, numBoats);
         addFieldToByteArray(body, RACE_TYPE, 2); //fleet race
 
@@ -432,4 +433,6 @@ public class MockStream implements Runnable {
     public void setScaleFactor(double scaleFactor) {
         this.scaleFactor = scaleFactor;
     }
+
+
 }
