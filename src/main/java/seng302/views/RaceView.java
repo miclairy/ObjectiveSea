@@ -1,19 +1,13 @@
 package seng302.views;
 
-import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
 import seng302.controllers.Controller;
 import seng302.models.*;
-import javafx.util.Pair;
-import seng302.controllers.MockRaceRunner;
-import seng302.controllers.RaceViewController;
-import seng302.models.*;
 import seng302.utilities.DisplayUtils;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

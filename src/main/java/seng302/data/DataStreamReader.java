@@ -18,7 +18,7 @@ import static seng302.data.BoatAction.BOAT_AUTOPILOT;
 /**
  * Created on 13/04/17.
  */
-public class DataStreamReader implements Runnable{
+public class DataStreamReader extends Receiver implements Runnable{
 
     private Socket clientSocket;
     private InputStream dataStream;
@@ -27,10 +27,6 @@ public class DataStreamReader implements Runnable{
     private Race race;
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumbers = new HashMap<>();
 
-    private final int HEADER_LENGTH = 15;
-    private final int CRC_LENGTH = 4;
-    private final int BOAT_DEVICE_TYPE = 1;
-    private final int MARK_DEVICE_TYPE = 3;
 
     public DataStreamReader(String sourceAddress, int sourcePort){
         this.sourceAddress = sourceAddress;
@@ -63,49 +59,6 @@ public class DataStreamReader implements Runnable{
         }
     }
 
-    /**
-     * Converts a range of bytes in an array from beginIndex to endIndex - 1 to an integer in little endian order.
-     * Range excludes endIndex to be consistent with similar Java methods (e.g. String.subString).
-     * Range Length must be greater than 0 and less than or equal to 4 (to fit within a 4 byte int).
-     * @param array The byte array containing the bytes to be converted
-     * @param beginIndex The starting index of range of bytes to be converted
-     * @param endIndex The ending index (exclusive) of the range of bytes to be converted
-     * @return The integer converted from the range of bytes in little endian order
-     */
-    static int byteArrayRangeToInt(byte[] array, int beginIndex, int endIndex){
-        int length = endIndex - beginIndex;
-        if(length <= 0 || length > 4){
-            throw new IllegalArgumentException("The length of the range must be between 1 and 4 inclusive");
-        }
-
-        int total = 0;
-        for(int i = endIndex - 1; i >= beginIndex; i--){
-            total = (total << 8) + (array[i] & 0xFF);
-        }
-        return total;
-    }
-
-    /**
-     * Converts a range of bytes in an array from beginIndex to endIndex - 1 to an integer in little endian order.
-     * Range excludes endIndex to be consistent with similar Java methods (e.g. String.subString).
-     * Range Length must be greater than 0 and less than or equal to 8 (to fit within a 8 byte long).
-     * @param array The byte array containing the bytes to be converted
-     * @param beginIndex The starting index of range of bytes to be converted
-     * @param endIndex The ending index (exclusive) of the range of bytes to be converted
-     * @return The long converted from the range of bytes in little endian order
-     */
-    public static long byteArrayRangeToLong(byte[] array, int beginIndex, int endIndex){
-        int length = endIndex - beginIndex;
-        if(length <= 0 || length > 8){
-            throw new IllegalArgumentException("The length of the range must be between 1 and 8 inclusive");
-        }
-
-        long total = 0;
-        for(int i = endIndex - 1; i >= beginIndex; i--){
-            total = (total << 8) + (array[i] & 0xFF);
-        }
-        return total;
-    }
 
     /**
      * Converts an integer to a latitude/longitude angle as per specification.
@@ -173,19 +126,34 @@ public class DataStreamReader implements Runnable{
     }
 
     /**
-     * Calculates the CRC from header + body and checks if it is equal to the value from the expected CRC byte array
-     * @param header The header of the message
-     * @param body The body of the message
-     * @param crc The expected CRC of the header and body combined
-     * @return True if the calculated CRC is equal to the expected CRC, False otherwise
+     * Parses portions of the boat location message byte array to their corresponding values.
+     * @param body the byte array containing the boat location message
      */
-    private boolean checkCRC(byte[] header, byte[] body, byte[] crc) {
-        CRC32 actualCRC = new CRC32();
-        actualCRC.update(header);
-        actualCRC.update(body);
-        long expectedCRCValue = Integer.toUnsignedLong(byteArrayRangeToInt(crc, 0, 4));
-        return expectedCRCValue == actualCRC.getValue();
+    private void parseBoatLocationMessage(byte[] body) {
+        int sourceID = byteArrayRangeToInt(body, BOAT_SOURCE_ID.getStartIndex(), BOAT_SOURCE_ID.getEndIndex());
+        int latScaled = byteArrayRangeToInt(body, LATITUDE.getStartIndex(), LATITUDE.getEndIndex());
+        int lonScaled = byteArrayRangeToInt(body, LONGITUDE.getStartIndex(), LONGITUDE.getEndIndex());
+        int headingScaled = byteArrayRangeToInt(body, HEADING.getStartIndex(), HEADING.getEndIndex());
+        int boatSpeed = byteArrayRangeToInt(body, SPEED_OVER_GROUND.getStartIndex(), SPEED_OVER_GROUND.getEndIndex());
+
+        int deviceType = byteArrayRangeToInt(body, DEVICE_TYPE.getStartIndex(), DEVICE_TYPE.getEndIndex());
+        int trueWindDirectionScaled = byteArrayRangeToInt(body, TRUE_WIND_DIRECTION.getStartIndex(), TRUE_WIND_DIRECTION.getEndIndex());
+        int trueWindAngleScaled = byteArrayRangeToInt(body, TRUE_WIND_ANGLE.getStartIndex(), TRUE_WIND_ANGLE.getEndIndex());
+        double trueWindAngle = intToTrueWindAngle(trueWindAngleScaled);
+        //unused as we believe this is always sent as 0 from the AC35 feed
+        double trueWindDirection = intToHeading(trueWindDirectionScaled);
+        double lat = intToLatLon(latScaled);
+        double lon = intToLatLon(lonScaled);
+        double heading = intToHeading(headingScaled);
+        double speedInKnots = TimeUtils.convertMmPerSecondToKnots(boatSpeed);
+
+        if(deviceType == BOAT_DEVICE_TYPE){
+            race.updateBoat(sourceID, lat, lon, heading, speedInKnots, trueWindAngle);
+        } else if(deviceType == MARK_DEVICE_TYPE){
+            race.getCourse().updateMark(sourceID, lat, lon);
+        }
     }
+
 
     /**
      * Keeps reading in from the data stream and parses each message header and hands off the payload to the
@@ -212,7 +180,7 @@ public class DataStreamReader implements Runnable{
                             convertXMLMessage(body);
                             break;
                         default:
-                            if (race.isInitialized()) {
+                            if (race != null && race.isInitialized()) {
                                 switch (messageType) {
                                     case BOAT_LOCATION_MESSAGE:
                                         parseBoatLocationMessage(body);
@@ -225,6 +193,9 @@ public class DataStreamReader implements Runnable{
                                         break;
                                     case MARK_ROUNDING_MESSAGE:
                                         parseMarkRoundingMessage(body);
+                                        break;
+                                    case REGISTRATION_ACCEPT:
+                                        parseRegistrationAcceptMessage(body);
                                 }
                             }
                     }
@@ -237,6 +208,11 @@ public class DataStreamReader implements Runnable{
                 System.err.println(e);
             }
         }
+    }
+
+    private void parseRegistrationAcceptMessage(byte[] body) {
+        Integer id = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());
+        System.out.println("My id is: " + id);
     }
 
     /**
