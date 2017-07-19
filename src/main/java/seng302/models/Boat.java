@@ -302,6 +302,15 @@ public class Boat extends Observable implements Comparable<Boat>{
         //tack of gybe
     }
 
+    public void resetPlayerHeading() {
+        playerHeading = -1;
+    }
+
+    /**
+     * This method takes the current wind angle and checks to see what side of the compass the players boat is on,
+     * as to turn the boat the right direction towards the appropriate upWind or downWind.
+     * @param windAngle
+     */
     private void headingChange(double windAngle) {
 
         if(playerHeading == -1) {
@@ -309,16 +318,19 @@ public class Boat extends Observable implements Comparable<Boat>{
         }
         playerHeading += 360;
         double windAngleCheck = windAngle + 360;
-        if(windAngleCheck > playerHeading && windAngleCheck-180<playerHeading) {
+        if(windAngleCheck > playerHeading && windAngleCheck-180 < playerHeading) {
             playerHeading += 3;
-            if(playerHeading > 359) {
+            if(playerHeading >= 720) {
                 playerHeading -= 360;
             }
-        } else if(windAngleCheck < playerHeading && windAngleCheck+180>playerHeading) {
+        } else if(windAngleCheck < playerHeading && windAngleCheck+180 > playerHeading) {
             playerHeading -= 3;
-            if(playerHeading < 0) {
+            if(playerHeading < 360) {
                 playerHeading += 360;
             }
+        } else if(windAngleCheck == playerHeading) {
+            //Add how to get the angle to next mark here
+            //Currently not sure how to do this.
         }
         playerHeading -= 360;
 
@@ -328,8 +340,6 @@ public class Boat extends Observable implements Comparable<Boat>{
         // change heading to go into the wind
 
         headingChange(windAngle);
-
-        //heading = (int) windAngle;
     }
 
     public void downWind(double windAngle){
@@ -339,7 +349,5 @@ public class Boat extends Observable implements Comparable<Boat>{
             newWindAngle -= 360;
         }
         headingChange(newWindAngle + 180);
-
-        //heading = (int) windAngle + 180;
     }
 }
