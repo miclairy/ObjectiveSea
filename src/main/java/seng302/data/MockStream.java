@@ -209,12 +209,12 @@ public class MockStream implements Runnable {
         Race race = raceRunner.getRace();
         addFieldToByteArray(body, STATUS_MESSAGE_VERSION_NUMBER, 2);
         addFieldToByteArray(body, BOAT_TIMESTAMP, raceRunner.getRace().getCurrentTimeInEpochMs());
-        addFieldToByteArray(body, STATUS_RACE_ID, Integer.parseInt(raceRunner.getRaceId()));
-        addFieldToByteArray(body, RACE_STATUS, raceRunner.getRace().getRaceStatus().getValue());
-        addFieldToByteArray(body, EXPECTED_START_TIME, raceRunner.getRace().getStartTimeInEpochMs());
-        addFieldToByteArray(body, CURRENT_TIME, raceRunner.getRace().getCurrentTimeInEpochMs());
-        addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, convertHeadingToInt(raceRunner.getRace().getCourse().getWindDirection()));
-        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, TimeUtils.convertKnotsToMmPerSecond(raceRunner.getRace().getCourse().getTrueWindSpeed()));
+        addFieldToByteArray(body, STATUS_RACE_ID, Integer.parseInt(race.getId()));
+        addFieldToByteArray(body, RACE_STATUS, race.getRaceStatus().getValue());
+        addFieldToByteArray(body, EXPECTED_START_TIME, race.getStartTimeInEpochMs());
+        addFieldToByteArray(body, CURRENT_TIME, race.getCurrentTimeInEpochMs());
+        addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, convertHeadingToInt(race.getCourse().getWindDirection()));
+        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, TimeUtils.convertKnotsToMmPerSecond(race.getCourse().getTrueWindSpeed()));
         addFieldToByteArray(body, NUMBER_OF_BOATS_IN_RACE, numBoats);
         addFieldToByteArray(body, RACE_TYPE, 2); //fleet race
 

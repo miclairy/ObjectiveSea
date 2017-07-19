@@ -34,7 +34,6 @@ public class MockRaceRunner implements Runnable {
     private final double MAX_WIND_SPEED = 24.0;
     private double initialWindSpeed;
 
-    private String raceId;
     private Race race;
     private PolarTable polarTable;
 
@@ -359,10 +358,6 @@ public class MockRaceRunner implements Runnable {
 
         race.getCourse().setTrueWindSpeed(speed);
         race.getCourse().setWindDirection(angle);
-    }
-
-    public String getRaceId() {
-        return raceId;
     }
 
     public Race getRace() {
