@@ -7,7 +7,7 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Arrays;
+import java.net.SocketException;
 
 import static seng302.data.AC35StreamField.*;
 
@@ -38,12 +38,14 @@ public class ServerListener extends Receiver implements Runnable{
                 byte[] crc = new byte[CRC_LENGTH];
                 dataInput.readFully(crc);
                 if (checkCRC(header, body, crc)) {
-                    switch(messageType){
+                    switch (messageType) {
 
                         case REGISTRATION_REQUEST:
                             parseRegistrationRequestMessage(body);
                     }
                 }
+            } catch (SocketException e) {
+                break;
             } catch (IOException e) {
                 e.printStackTrace();
             }

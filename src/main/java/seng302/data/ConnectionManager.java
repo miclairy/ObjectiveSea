@@ -34,13 +34,9 @@ public class ConnectionManager extends Observable implements Runnable {
             try {
                 socket = serverSocket.accept();
                 DataOutputStream clientOutput = new DataOutputStream(socket.getOutputStream());
-
+                System.out.println("Server: Accepted Connection");
                 setChanged();
                 notifyObservers(socket);
-
-                for(AC35StreamXMLMessage type: xmlMessages.keySet()){
-                    clientOutput.write(xmlMessages.get(type));
-                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
