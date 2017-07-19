@@ -1,5 +1,6 @@
 package seng302.utilities;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import seng302.models.Boat;
@@ -28,15 +29,21 @@ public class DisplayTimeUtils {
     public void TestTimeTill(){
         long currentTime = Instant.now().toEpochMilli();
         long timeAtMark = Instant.now().toEpochMilli() + 1000000;
-        String formattedTime = boatDisplay.getTimeToNextMark(timeAtMark, currentTime);
+        String formattedTime = DisplayUtils.getTimeToNextMark(timeAtMark, currentTime);
         assert(formattedTime.matches(regex));
+
+        String time = DisplayUtils.getTimeToNextMark(4000000,0);
+        String time1 = DisplayUtils.getTimeToNextMark(2000,0);
+
+        Assert.assertTrue(time.equals("..."));
+        Assert.assertTrue(!time1.equals("..."));
     }
 
     @Test
     public void TestTimeAfter(){
         long currentTime = Instant.now().toEpochMilli();
         long timeAtMark = Instant.now().toEpochMilli() + 1000000;
-        String formattedTime = boatDisplay.getTimeSinceLastMark(currentTime);
+        String formattedTime = DisplayUtils.getTimeSinceLastMark(currentTime, boatDisplay.getBoat());
         assert(Objects.equals(formattedTime, "..."));
     }
 }

@@ -2,6 +2,7 @@ package seng302.data;
 
 import seng302.controllers.MockRaceRunner;
 import seng302.models.*;
+import seng302.utilities.TimeUtils;
 
 import java.io.*;
 import java.net.*;
@@ -176,7 +177,7 @@ public class MockStream implements Runnable {
         body[0] = 1;
         addFieldToByteArray(body, BOAT_TIMESTAMP, raceRunner.getRace().getCurrentTimeInEpochMs());
         addFieldToByteArray(body, MARK_ACK, 0); //todo make proper ack
-        addFieldToByteArray(body, MARK_RACE_ID, Integer.parseInt(raceRunner.getRaceId()));
+        addFieldToByteArray(body, MARK_RACE_ID, Integer.parseInt(raceRunner.getRace().getId()));
         addFieldToByteArray(body, ROUNDING_SOURCE_ID, boat.getId());
         addFieldToByteArray(body, MARK_BOAT_STATUS, boat.getStatus().getValue());
         addFieldToByteArray(body, ROUNDING_SIDE, 0); //todo present correct side
@@ -205,6 +206,7 @@ public class MockStream implements Runnable {
      */
     private byte[] initialiseRaceStatusMessage(int numBoats) {
         byte[] body = new byte[24 + (20 * numBoats)];
+        Race race = raceRunner.getRace();
         addFieldToByteArray(body, STATUS_MESSAGE_VERSION_NUMBER, 2);
         addFieldToByteArray(body, BOAT_TIMESTAMP, raceRunner.getRace().getCurrentTimeInEpochMs());
         addFieldToByteArray(body, STATUS_RACE_ID, Integer.parseInt(raceRunner.getRaceId()));
@@ -212,7 +214,7 @@ public class MockStream implements Runnable {
         addFieldToByteArray(body, EXPECTED_START_TIME, raceRunner.getRace().getStartTimeInEpochMs());
         addFieldToByteArray(body, CURRENT_TIME, raceRunner.getRace().getCurrentTimeInEpochMs());
         addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, convertHeadingToInt(raceRunner.getRace().getCourse().getWindDirection()));
-        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, (long) raceRunner.getRace().getCourse().getTrueWindSpeed()); //left at 10knots for now
+        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, TimeUtils.convertKnotsToMmPerSecond(raceRunner.getRace().getCourse().getTrueWindSpeed()));
         addFieldToByteArray(body, NUMBER_OF_BOATS_IN_RACE, numBoats);
         addFieldToByteArray(body, RACE_TYPE, 2); //fleet race
 
@@ -298,7 +300,7 @@ public class MockStream implements Runnable {
      */
     private byte[] generateXmlBody(AC35StreamXMLMessage subType, String fileName) {
         try {
-            byte[] bodyContent = readXMLIntoByteArray(DEFAULT_RESOURCES_FOLDER + fileName);
+            byte[] bodyContent = readXMLIntoByteArray(DEFAULT_RESOURCES_FOLDER, fileName);
             byte[] body = new byte[XML_BODY.getStartIndex() + bodyContent.length];
 
             int sequenceNumber = xmlSequenceNumber.get(subType) + 1; //increment sequence number
@@ -327,8 +329,12 @@ public class MockStream implements Runnable {
      * @return a byte array containing the data from the file
      * @throws IOException
      */
-    private byte[] readXMLIntoByteArray(String fileName) throws IOException {
-        InputStream resourceStream = MockStream.class.getResourceAsStream(fileName);
+    private byte[] readXMLIntoByteArray(String filePath, String fileName) throws IOException {
+        InputStream resourceStream = MockStream.class.getResourceAsStream(filePath + fileName);
+        if(fileName.equals(RaceVisionXMLParser.COURSE_FILE)){
+            Race race = raceRunner.getRace();
+            resourceStream = RaceVisionXMLParser.injectRaceXMLFields(resourceStream, race.getId(), race.getStartTimeInEpochMs());
+        }
         ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
         int read = resourceStream.read();
         while (read != -1){

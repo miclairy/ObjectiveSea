@@ -7,11 +7,16 @@ import javafx.animation.SequentialTransition;
 import javafx.scene.Node;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
+import seng302.models.Boat;
 import seng302.models.CanvasCoordinate;
 import seng302.models.Coordinate;
 import seng302.models.Mark;
 
 import java.io.File;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 import static java.lang.Math.abs;
@@ -27,14 +32,13 @@ public class DisplayUtils {
     public static final String GOOGLE_API_KEY = "AIzaSyAQ8WSXVS1gXdhy5v9IpjeQL842wsMU1VQ";
     public static boolean externalDragEvent = false;
     public static final int DRAG_TOLERANCE = 45;
-
+    private static final int FIFTY_NINE_MINUTES_MS = 3540000;
 
     public static double zoomLevel = 1;
     private static int prevDragX=0;
     private static int prevDragY=0;
     private static int offsetX=0;
     private static int offsetY=0;
-
 
 
     /**
@@ -309,5 +313,44 @@ public class DisplayUtils {
         fadeTransition.setAutoReverse(true);
         fadeTransition.setCycleCount(2);
         fadeTransition.play();
+    }
+
+    /**
+     * Computes the time since the previous mark label
+     * @param currTime current time in epoch ms
+     * @return time since last mark in mm:ss or .. if invalid
+     */
+    public static String getTimeSinceLastMark(long currTime, Boat boat){
+        String timeSincePassed;
+        if(boat.getLastRoundedMarkTime() == 0){
+            timeSincePassed = "...";
+        }else{
+            long timeElapsed = currTime - boat.getLastRoundedMarkTime();
+            Instant instant = Instant.ofEpochMilli(timeElapsed);
+            ZonedDateTime zdt = ZonedDateTime.ofInstant (instant , ZoneOffset.UTC );
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern ("mm:ss");
+            timeSincePassed = formatter.format(zdt);
+        }
+        return timeSincePassed;
+    }
+
+    /**
+     * Computes the time until the next mark label
+     * @param timeAtMark time to the next mark in epoch ms
+     * @param currTime current time in epoch ms
+     * @return the time to next mark in mm:ss or ... if invalid
+     */
+    public static String getTimeToNextMark(long timeAtMark, long currTime){
+        String timeTillMark;
+        long convertedTime = (timeAtMark - currTime);
+        if (timeAtMark > 0 && convertedTime < FIFTY_NINE_MINUTES_MS) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("mm:ss");
+            Instant instant = Instant.ofEpochMilli(convertedTime);
+            ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
+            timeTillMark = formatter.format(zdt);
+        } else {
+            timeTillMark = "...";
+        }
+        return timeTillMark;
     }
 }

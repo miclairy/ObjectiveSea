@@ -24,6 +24,15 @@ public class XMLTags {
         public static final String SOURCE_ID = "SourceID";
     }
 
+    public class Race{
+        public static final String RACE_ID = "RaceID";
+        public static final String CREATION_TIME = "CreationTimeDate";
+        public static final String START_TIME = "RaceStartTime";
+
+        //Time Attributes
+        public static final String START = "Start";
+    }
+
     public class Course {
         public static final String RACE = "Race";
         public static final String COURSE = "Course";
@@ -56,6 +65,8 @@ public class XMLTags {
         //course limit
         public static final String COURSE_LIMIT = "CourseLimit";
         public static final String LIMIT = "Limit";
+        public static final String COURSE_LIMIT_NAME_ATTR = "name";
+        public static final String BOUNDARY = "Boundary";
 
     }
 }

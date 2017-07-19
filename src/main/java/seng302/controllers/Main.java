@@ -26,6 +26,7 @@ import seng302.utilities.PolarReader;
 public class Main extends Application {
 
     private static Race race;
+    private static DataStreamReader dataStreamReader;
 
 
     @Override
@@ -33,13 +34,8 @@ public class Main extends Application {
         Config.initializeConfig();
         setupMockStream();
         setUpDataStreamReader();
-        while(race.getCourse() == null){
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        waitForRace();
+
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
         primaryStage.setTitle("Race Vision");
         primaryStage.getIcons().add(new Image("graphics/icon.png"));
@@ -56,6 +52,21 @@ public class Main extends Application {
                 System.exit(0);
             }
         });
+    }
+
+    /**
+     * Waits for the race to be able to be read in
+     */
+    public void waitForRace(){
+        while(dataStreamReader.getRace() == null){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        race = dataStreamReader.getRace();
     }
 
     public static void main( String[] args ) {launch(args); }
@@ -76,10 +87,8 @@ public class Main extends Application {
     }
 
     private static void setUpDataStreamReader(){
-        DataStreamReader dataStreamReader = new DataStreamReader(Config.SOURCE_ADDRESS, Config.SOURCE_PORT);
+        dataStreamReader = new DataStreamReader(Config.SOURCE_ADDRESS, Config.SOURCE_PORT);
         Thread dataStreamReaderThread = new Thread(dataStreamReader);
-        race = new Race();
-        dataStreamReader.setRace(race);
         dataStreamReaderThread.start();
 
     }
