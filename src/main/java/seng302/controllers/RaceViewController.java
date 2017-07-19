@@ -157,6 +157,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 displayBoat.getLaylines().removeDrawnLines(root);
             }
         }
+        drawMarks();
+        redrawRaceLines();
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
@@ -817,7 +819,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     public void updateWindArrowAngle() {
         double windDirection = (float)race.getCourse().getWindDirection();
-        windArrow.setRotate(windDirection + selectionController.getRotationOffset());
+        windArrow.setRotate(180 + windDirection + selectionController.getRotationOffset());
     }
 
     /**

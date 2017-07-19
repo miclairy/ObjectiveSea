@@ -27,19 +27,22 @@ public class RaceUpdater implements Runnable {
     private double scaleFactor = 1;
     private final double WARNING_SIGNAL_TIME_IN_MS = (1000 * 60 * 3);
     private final double PREPATORY_SIGNAL_TIME_IN_MS = (1000 * 60 * 1);
+    private final double MIN_WIND_SPEED = 6.0;
+    private final double MAX_WIND_SPEED = 24.0;
+    private double initialWindSpeed;
 
-    private String raceId;
     private Race race;
     private PolarTable polarTable;
     private Collection<Boat> potentialCompetitors;
 
     public RaceUpdater(){
         //set race up with default files
+        intialWindSpeedGenerator();
         List<Boat> boatsInRace = new ArrayList<>();
         potentialCompetitors = RaceVisionXMLParser.importDefaultStarters();
         Course course = RaceVisionXMLParser.importCourse();
-        course.setTrueWindSpeed(20);
-        course.setWindDirection(26);
+        course.setTrueWindSpeed(initialWindSpeed);
+        course.setWindDirection(course.getWindDirectionBasedOnGates());
         race = new Race("Mock Runner Race", course, boatsInRace);
         setRandomBoatSpeeds();
 
@@ -81,6 +84,7 @@ public class RaceUpdater implements Runnable {
 
     @Override
     public void run() {
+
         while (!race.getRaceStatus().isRaceEndedStatus()) {
             boolean atLeastOneBoatNotFinished = false;
             double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
@@ -347,10 +351,6 @@ public class RaceUpdater implements Runnable {
         race.getCourse().setWindDirection(angle);
     }
 
-    public String getRaceId() {
-        return raceId;
-    }
-
     public Race getRace() {
         return race;
     }
@@ -369,4 +369,14 @@ public class RaceUpdater implements Runnable {
     public void setRace(Race race) {
         this.race = race;
     }
+
+    /**
+     * Randomly generates an initial wind speed between race regulations of 6-24 knots
+     */
+    private void intialWindSpeedGenerator(){
+        Random random = new Random();
+        initialWindSpeed = MIN_WIND_SPEED + (MAX_WIND_SPEED - MIN_WIND_SPEED) * random.nextDouble();
+    }
+
+
 }
