@@ -330,10 +330,7 @@ public class Boat extends Observable implements Comparable<Boat>{
         }
     }
 
-    //Optimal heading and speed
-    //first should check if going up or down wind
-    //then should make boat go to optimum angle, if needed
-    //else should head directly towards the next mark
+
     public void autoPilot(Course course, PolarTable polarTable){
         double optimumHeading = getOptimumHeading(course, polarTable);
         heading = optimumHeading;

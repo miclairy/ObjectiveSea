@@ -45,6 +45,7 @@ public class RaceUpdater implements Runnable {
         course.setWindDirection(course.getWindDirectionBasedOnGates());
         race = new Race("Mock Runner Race", course, boatsInRace);
         setRandomBoatSpeeds();
+        setInitialBoatSpeeds();
         initialize();
     }
 
@@ -122,12 +123,33 @@ public class RaceUpdater implements Runnable {
             }
         }
     }
+
+
+    public void updateLocation(double timePassed, Course course, Boat boat) {
+        double boatHeading = boat.getHeading();
+        Coordinate boatPosition = boat.getCurrentPosition();
+        double boatSpeed = boat.getSpeed();
+
+        double distanceGained = timePassed * boat.getSpeed();
+        System.out.println(distanceGained);
+        CompoundMark nextMark = course.getCourseOrder().get(boat.getLastRoundedMarkIndex()+1);
+        double distanceLeftInLeg = boatPosition.greaterCircleDistance(nextMark.getPosition());
+
+
+        double percentGained = (distanceGained / distanceLeftInLeg);
+//        double newLat = boat.getCurrentLat() + 0.000001; //(percentGained * boat.getCurrentLat());
+//        double newLon = boat.getCurrentLon() + 0.000001; //(percentGained * boat.getCurrentLon());
+//        boatPosition.update(newLat, newLon);
+
+    }
+
+
     /**
      * Updates the boat's coordinates by how much it moved in timePassed hours on the course
      * @param timePassed the amount of race hours since the last update
      * @param course the course the boat is racing on
      */
-    public void updateLocation(double timePassed, Course course, Boat boat) {
+    public void autoUpdateLocation(double timePassed, Course course, Boat boat) {
         if(boat.isFinished()) return;
 
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
@@ -306,6 +328,16 @@ public class RaceUpdater implements Runnable {
             boat.maximiseSpeed();
         }
     }
+
+    /**
+     * Sets boat speeds to zero
+     */
+    private void setInitialBoatSpeeds(){
+        for (Boat boat : potentialCompetitors) {
+            boat.setCurrentSpeed(0);
+        }
+    }
+
 
     /**
      * Updates the boats time to the next mark
