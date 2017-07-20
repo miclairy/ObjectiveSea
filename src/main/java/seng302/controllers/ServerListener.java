@@ -1,7 +1,12 @@
 package seng302.controllers;
 
 import seng302.data.AC35StreamMessage;
+import seng302.data.BoatAction;
 import seng302.data.Receiver;
+import seng302.models.Boat;
+import seng302.models.PolarTable;
+import seng302.models.Race;
+import seng302.utilities.PolarReader;
 
 import java.io.DataInput;
 import java.io.DataInputStream;
@@ -15,7 +20,9 @@ import static seng302.data.AC35StreamField.*;
  * Created by mjt169 on 19/07/17.
  */
 public class ServerListener extends Receiver implements Runnable{
+    
     private Socket socket;
+    private Race race;
 
     ServerListener(Socket socket){
         this.socket = socket;
@@ -42,6 +49,8 @@ public class ServerListener extends Receiver implements Runnable{
 
                         case REGISTRATION_REQUEST:
                             parseRegistrationRequestMessage(body);
+                        case BOAT_ACTION_MESSAGE:
+                            parseBoatActionMessage(body, 101);
                     }
                 }
             } catch (SocketException e) {
@@ -58,7 +67,45 @@ public class ServerListener extends Receiver implements Runnable{
         notifyObservers(registrationType);
     }
 
+    /**
+     * parses body of the boat action message that is incoming from the client.
+     * @param body currently a single number that corresponds to a control from the client
+     */
+    private void parseBoatActionMessage(byte[] body, int sourceID){
+        int action = byteArrayRangeToInt(body, BOAT_ACTION_BODY.getStartIndex(), BOAT_ACTION_BODY.getEndIndex());
+        Boat boat = race.getBoatById(sourceID); // Assuming this field has been set and can be used to distinguish a boat
+        //for now we assume all boats racing are AC35 class yachts such that we can use the polars we have for them
+        PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
+        BoatAction boatAction = BoatAction.getBoatActionFromInt(action);
+        switch (boatAction){
+            case BOAT_AUTOPILOT:
+                boat.autoPilot(race.getCourse(), polarTable);
+                break;
+            case SAILS_IN:
+                boat.sailsIn();
+                break;
+            case SAILS_OUT:
+                boat.sailsOut();
+                break;
+            case TACK_GYBE:
+                boat.tackOrGybe(race.getCourse().getWindDirection());
+                break;
+            case UPWIND:
+                boat.upWind();
+                break;
+            case DOWNWIND:
+                boat.downWind();
+                break;
+            default:
+                break;
+        }
+    }
+
     public Socket getSocket() {
         return socket;
+    }
+
+    public void setRace(Race race) {
+        this.race = race;
     }
 }

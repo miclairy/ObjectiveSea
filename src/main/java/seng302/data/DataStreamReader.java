@@ -190,9 +190,6 @@ public class DataStreamReader extends Receiver implements Runnable{
                                     case RACE_STATUS_MESSAGE:
                                         parseRaceStatusMessage(body);
                                         break;
-                                    case BOAT_ACTION_MESSAGE:
-                                        parseBoatActionMessage(body, sourceID);
-                                        break;
                                     case MARK_ROUNDING_MESSAGE:
                                         parseMarkRoundingMessage(body);
                                         break;
@@ -261,40 +258,6 @@ public class DataStreamReader extends Receiver implements Runnable{
         race.updateRaceStatus(RaceStatus.fromInteger(raceStatus));
         race.setStartTimeInEpochMs(expectedStartTime);
         race.setCurrentTimeInEpochMs(currentTime);
-    }
-
-    /**
-     * parses body of the boat action message that is incoming from the client.
-     * @param body currently a single number that corresponds to a control from the client
-     */
-    private void parseBoatActionMessage(byte[] body, int sourceID){
-        int action = byteArrayRangeToInt(body, BOAT_ACTION_BODY.getStartIndex(), BOAT_ACTION_BODY.getEndIndex());
-        Boat boat = race.getBoatById(sourceID); // Assuming this field has been set and can be used to distinguish a boat
-        //for now we assume all boats racing are AC35 class yachts such that we can use the polars we have for them
-        PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
-        BoatAction boatAction = BoatAction.values()[action];
-        switch (boatAction){
-            case BOAT_AUTOPILOT:
-                boat.autoPilot(race.getCourse(), polarTable);
-                break;
-            case SAILS_IN:
-                boat.sailsIn();
-                break;
-            case SAILS_OUT:
-                boat.sailsOut();
-                break;
-            case TACK_GYBE:
-                boat.tackOrGybe(race.getCourse().getWindDirection());
-                break;
-            case UPWIND:
-                boat.upWind();
-                break;
-            case DOWNWIND:
-                boat.downWind();
-                break;
-            default:
-                break;
-        }
     }
 
     /**

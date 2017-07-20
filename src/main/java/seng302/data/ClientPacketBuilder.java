@@ -19,12 +19,10 @@ public class ClientPacketBuilder extends PacketBuilder {
         return generatePacket(header, body);
     }
 
-    public byte[] createKeyPressPacket(BoatAction action) throws IOException {
+    public byte[] createBoatCommandPacket(int commandInt) {
         byte[] header = createHeader(BOAT_ACTION_MESSAGE);
         byte[] body = new byte[1];
-        body[0] = (byte) action.getType();
-        return generatePacket(header, body); //TODO
+        body[0] = (byte) commandInt;
+        return generatePacket(header, body);
     }
-
-
 }
