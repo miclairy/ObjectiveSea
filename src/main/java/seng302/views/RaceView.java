@@ -1,18 +1,13 @@
 package seng302.views;
 
-import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
-import seng302.models.*;
-import javafx.util.Pair;
-import seng302.controllers.MockRaceRunner;
-import seng302.controllers.RaceViewController;
+import seng302.controllers.Controller;
 import seng302.models.*;
 import seng302.utilities.DisplayUtils;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -181,6 +176,22 @@ public class RaceView {
         line.setLayoutY(arrowEnd1.getY());
         line.setStroke(color);
         return line;
+    }
+
+    public Polyline drawWindArrow() {
+        double arrowHeadLength = 8;
+        double arrowLength = 30;
+
+        Polyline windArrow = new Polyline(
+                0, 0,
+                0, -arrowLength,
+                -arrowHeadLength, -arrowLength+arrowHeadLength,
+                0, -arrowLength,
+                arrowHeadLength, -arrowLength+arrowHeadLength
+        );
+        windArrow.setId("windArrow");
+        windArrow.setStroke(Color.WHITE);
+        return windArrow;
     }
 
     /**

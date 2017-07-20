@@ -52,4 +52,82 @@ public class BoatTest
         //Check BSp
         assertEquals(36.0, (gybeTest.getWindAngle()/Math.cos(Math.toRadians(gybeTest.getSpeed()))), DELTA);
     }
+
+    @Test
+    public void tackAndGybeTest(){
+        boat.setHeading(95);
+        boat.tackOrGybe(0);
+        assertEquals(265.0,boat.getHeading(),DELTA); //downwind
+        boat.setHeading(200);
+        boat.tackOrGybe(10);
+        assertEquals(180.0,boat.getHeading(),DELTA); //downwind
+        boat.setHeading(50);
+        boat.tackOrGybe(180);
+        assertEquals(310.0,boat.getHeading(),DELTA); //downwind
+        boat.setHeading(30);
+        boat.tackOrGybe(310);
+        assertEquals(230.0,boat.getHeading(),DELTA); //upwind
+        boat.setHeading(70);
+        boat.tackOrGybe(350);
+        assertEquals(270.0,boat.getHeading(),DELTA); //upwind
+        boat.setHeading(30);
+        boat.tackOrGybe(0);
+        assertEquals(330.0,boat.getHeading(),DELTA); //upwind
+
+    }
+
+    @Test
+    public void getOptimumHeadingTest() {
+        Boat boat = new Boat(0, "TestBoat", "testNickname", 10);
+        boat.setLastRoundedMarkIndex(0);
+
+        Mark startLine1 = new Mark(0, "Start Line 1", new Coordinate(50, 30));
+        Mark startLine2 = new Mark(1, "Start Line 2", new Coordinate(51, 30));
+        RaceLine start = new RaceLine(1, "Start Line",startLine1, startLine2);
+        Mark mark1 = new Mark(2, "Mark 1", new Coordinate(60, 60));
+        CompoundMark windwardGate = new CompoundMark(2, "Mark", mark1);
+
+        Course course = new Course();
+        course.addNewCompoundMark(start);
+        course.addNewCompoundMark(windwardGate);
+        course.addMarkInOrder(1);
+        course.addMarkInOrder(2);
+        course.setStartLine(start);
+        course.setTrueWindSpeed(25);
+
+        PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), course);
+
+        double optimum;
+
+        boat.setHeading(0);
+        course.setWindDirection(45);
+        optimum = boat.getOptimumHeading(course, polarTable);
+        assertEquals(5, optimum, DELTA);
+
+        boat.setHeading(195);
+        course.setWindDirection(250);
+        optimum = boat.getOptimumHeading(course, polarTable);
+        assertEquals(221.0, optimum, DELTA);
+    }
+
+    @Test
+    public void updateBoatSpeedTest(){
+        Course course = new Course();
+
+        boat.setHeading(80);
+        double TWS = 10;
+        double windDirection = 40;
+        course.setTrueWindSpeed(10);
+        boat.updateBoatSpeed(TWS, course, windDirection);
+        assertEquals(10.25, boat.getSpeed(), DELTA);
+
+        boat.setHeading(0);
+        TWS = 25;
+        windDirection = 90;
+        course.setTrueWindSpeed(25);
+        boat.updateBoatSpeed(TWS, course, windDirection);
+        assertEquals(41.125,boat.getSpeed() , DELTA);
+    }
+
+
 }

@@ -33,8 +33,8 @@ public class DisplayTimeUtils {
         String time = DisplayUtils.getTimeToNextMark(4000000,0);
         String time1 = DisplayUtils.getTimeToNextMark(2000,0);
 
-        Assert.assertTrue(Objects.equals(time, "..."));
-        Assert.assertTrue(!Objects.equals(time1, "..."));
+        Assert.assertTrue(time.equals("..."));
+        Assert.assertTrue(!time1.equals("..."));
     }
 
     @Test

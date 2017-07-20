@@ -1,7 +1,9 @@
 package seng302.data;
 
 import seng302.models.Boat;
+import seng302.models.PolarTable;
 import seng302.models.Race;
+import seng302.utilities.PolarReader;
 import seng302.utilities.TimeUtils;
 
 import java.io.*;
@@ -9,6 +11,7 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observable;
 import java.util.zip.CRC32;
 
 import static seng302.data.AC35StreamField.*;
@@ -18,7 +21,7 @@ import static seng302.data.BoatAction.BOAT_AUTOPILOT;
 /**
  * Created on 13/04/17.
  */
-public class DataStreamReader implements Runnable{
+public class DataStreamReader extends Receiver implements Runnable{
 
     private Socket clientSocket;
     private InputStream dataStream;
@@ -27,10 +30,6 @@ public class DataStreamReader implements Runnable{
     private Race race;
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumbers = new HashMap<>();
 
-    private final int HEADER_LENGTH = 15;
-    private final int CRC_LENGTH = 4;
-    private final int BOAT_DEVICE_TYPE = 1;
-    private final int MARK_DEVICE_TYPE = 3;
 
     public DataStreamReader(String sourceAddress, int sourcePort){
         this.sourceAddress = sourceAddress;
@@ -63,49 +62,6 @@ public class DataStreamReader implements Runnable{
         }
     }
 
-    /**
-     * Converts a range of bytes in an array from beginIndex to endIndex - 1 to an integer in little endian order.
-     * Range excludes endIndex to be consistent with similar Java methods (e.g. String.subString).
-     * Range Length must be greater than 0 and less than or equal to 4 (to fit within a 4 byte int).
-     * @param array The byte array containing the bytes to be converted
-     * @param beginIndex The starting index of range of bytes to be converted
-     * @param endIndex The ending index (exclusive) of the range of bytes to be converted
-     * @return The integer converted from the range of bytes in little endian order
-     */
-    static int byteArrayRangeToInt(byte[] array, int beginIndex, int endIndex){
-        int length = endIndex - beginIndex;
-        if(length <= 0 || length > 4){
-            throw new IllegalArgumentException("The length of the range must be between 1 and 4 inclusive");
-        }
-
-        int total = 0;
-        for(int i = endIndex - 1; i >= beginIndex; i--){
-            total = (total << 8) + (array[i] & 0xFF);
-        }
-        return total;
-    }
-
-    /**
-     * Converts a range of bytes in an array from beginIndex to endIndex - 1 to an integer in little endian order.
-     * Range excludes endIndex to be consistent with similar Java methods (e.g. String.subString).
-     * Range Length must be greater than 0 and less than or equal to 8 (to fit within a 8 byte long).
-     * @param array The byte array containing the bytes to be converted
-     * @param beginIndex The starting index of range of bytes to be converted
-     * @param endIndex The ending index (exclusive) of the range of bytes to be converted
-     * @return The long converted from the range of bytes in little endian order
-     */
-    public static long byteArrayRangeToLong(byte[] array, int beginIndex, int endIndex){
-        int length = endIndex - beginIndex;
-        if(length <= 0 || length > 8){
-            throw new IllegalArgumentException("The length of the range must be between 1 and 8 inclusive");
-        }
-
-        long total = 0;
-        for(int i = endIndex - 1; i >= beginIndex; i--){
-            total = (total << 8) + (array[i] & 0xFF);
-        }
-        return total;
-    }
 
     /**
      * Converts an integer to a latitude/longitude angle as per specification.
@@ -150,7 +106,6 @@ public class DataStreamReader implements Runnable{
         xmlBody = xmlBody.trim();
         InputStream xmlInputStream = new ByteArrayInputStream(xmlBody.getBytes());
 
-
         //Taken out since the new stream sends xmls not in order
 //        if (xmlSequenceNumbers.get(xmlSubtype) < xmlSequenceNumber) {
             xmlSequenceNumbers.put(xmlSubtype, xmlSequenceNumber);
@@ -159,12 +114,10 @@ public class DataStreamReader implements Runnable{
                 RaceVisionXMLParser.importRegatta(xmlInputStream, race);
             } else if (xmlSubtype == RACE_XML_MESSAGE) {
                 System.out.printf("New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
-                if (race.getCourse() != null) {
+                if (race != null) {
                     race.getCourse().mergeWithOtherCourse(RaceVisionXMLParser.importCourse(xmlInputStream));
                 } else {
-                    race.setCourse(RaceVisionXMLParser.importCourse(xmlInputStream));
-                    xmlInputStream = new ByteArrayInputStream(xmlBody.getBytes());
-                    race.setCompetitorIds(RaceVisionXMLParser.importCompetitorIds(xmlInputStream));
+                    setRace(RaceVisionXMLParser.importRace(xmlInputStream));
                 }
             } else if (xmlSubtype == BOAT_XML_MESSAGE) {
                 System.out.printf("New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
@@ -173,73 +126,6 @@ public class DataStreamReader implements Runnable{
                 }
             }
 //        }
-    }
-
-    /**
-     * Calculates the CRC from header + body and checks if it is equal to the value from the expected CRC byte array
-     * @param header The header of the message
-     * @param body The body of the message
-     * @param crc The expected CRC of the header and body combined
-     * @return True if the calculated CRC is equal to the expected CRC, False otherwise
-     */
-    private boolean checkCRC(byte[] header, byte[] body, byte[] crc) {
-        CRC32 actualCRC = new CRC32();
-        actualCRC.update(header);
-        actualCRC.update(body);
-        long expectedCRCValue = Integer.toUnsignedLong(byteArrayRangeToInt(crc, 0, 4));
-        return expectedCRCValue == actualCRC.getValue();
-    }
-
-    /**
-     * Keeps reading in from the data stream and parses each message header and hands off the payload to the
-     * corresponding method. Ignores the message if the message type is not needed.
-     */
-    private void readData(){
-        DataInput dataInput = new DataInputStream(dataStream);
-        while(!race.getRaceStatus().isRaceEndedStatus()) {
-            try {
-                byte[] header = new byte[HEADER_LENGTH];
-                dataInput.readFully(header);
-
-                int messageLength = byteArrayRangeToInt(header, MESSAGE_LENGTH.getStartIndex(), MESSAGE_LENGTH.getEndIndex());
-                int messageTypeValue = byteArrayRangeToInt(header, MESSAGE_TYPE.getStartIndex(), MESSAGE_TYPE.getEndIndex());
-                AC35StreamMessage messageType = AC35StreamMessage.fromInteger(messageTypeValue);
-                int sourceID = byteArrayRangeToInt(header, HEADER_SOURCE_ID.getStartIndex(), HEADER_SOURCE_ID.getEndIndex());
-                byte[] body = new byte[messageLength];
-                dataInput.readFully(body);
-                byte[] crc = new byte[CRC_LENGTH];
-                dataInput.readFully(crc);
-                if (checkCRC(header, body, crc)) {
-                    switch (messageType) {
-                        case XML_MESSAGE:
-                            convertXMLMessage(body);
-                            break;
-                        default:
-                            if (race.isInitialized()) {
-                                switch (messageType) {
-                                    case BOAT_LOCATION_MESSAGE:
-                                        parseBoatLocationMessage(body);
-                                        break;
-                                    case RACE_STATUS_MESSAGE:
-                                        parseRaceStatusMessage(body);
-                                        break;
-                                    case BOAT_ACTION_MESSAGE:
-                                        parseBoatActionMessage(body, sourceID);
-                                        break;
-                                    case MARK_ROUNDING_MESSAGE:
-                                        parseMarkRoundingMessage(body);
-                                }
-                            }
-                    }
-                } else {
-                    System.err.println("Incorrect CRC. Message Ignored.");
-                }
-
-            } catch (IOException e) {
-                System.err.println("Error occurred when reading data from stream:");
-                System.err.println(e);
-            }
-        }
     }
 
     /**
@@ -271,6 +157,66 @@ public class DataStreamReader implements Runnable{
         }
     }
 
+
+    /**
+     * Keeps reading in from the data stream and parses each message header and hands off the payload to the
+     * corresponding method. Ignores the message if the message type is not needed.
+     */
+    private void readData(){
+        DataInput dataInput = new DataInputStream(dataStream);
+        while(race == null || !race.getRaceStatus().isRaceEndedStatus()) {
+            try {
+                byte[] header = new byte[HEADER_LENGTH];
+                dataInput.readFully(header);
+
+                int messageLength = byteArrayRangeToInt(header, MESSAGE_LENGTH.getStartIndex(), MESSAGE_LENGTH.getEndIndex());
+                int messageTypeValue = byteArrayRangeToInt(header, MESSAGE_TYPE.getStartIndex(), MESSAGE_TYPE.getEndIndex());
+                AC35StreamMessage messageType = AC35StreamMessage.fromInteger(messageTypeValue);
+                int sourceID = byteArrayRangeToInt(header, HEADER_SOURCE_ID.getStartIndex(), HEADER_SOURCE_ID.getEndIndex());
+                byte[] body = new byte[messageLength];
+                dataInput.readFully(body);
+                byte[] crc = new byte[CRC_LENGTH];
+                dataInput.readFully(crc);
+                if (checkCRC(header, body, crc)) {
+                    switch (messageType) {
+                        case XML_MESSAGE:
+                            convertXMLMessage(body);
+                            break;
+                        default:
+                            if (race != null && race.isInitialized()) {
+                                switch (messageType) {
+                                    case BOAT_LOCATION_MESSAGE:
+                                        parseBoatLocationMessage(body);
+                                        break;
+                                    case RACE_STATUS_MESSAGE:
+                                        parseRaceStatusMessage(body);
+                                        break;
+                                    case MARK_ROUNDING_MESSAGE:
+                                        parseMarkRoundingMessage(body);
+                                        break;
+                                    case REGISTRATION_ACCEPT:
+                                        parseRegistrationAcceptMessage(body);
+                                }
+                            }
+                    }
+                } else {
+                    System.err.println("Incorrect CRC. Message Ignored.");
+                }
+
+            } catch (IOException e) {
+                System.err.println("Error occurred when reading data from stream:");
+                System.err.println(e);
+            }
+        }
+    }
+
+    private void parseRegistrationAcceptMessage(byte[] body) {
+        int clientID = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());
+        setChanged();
+        notifyObservers(clientID);
+    }
+
+
     /**
      * Parses the body of Race Status message, and updates race status, race times and wind direction
      * based on values received
@@ -281,7 +227,7 @@ public class DataStreamReader implements Runnable{
         int raceCourseWindDirection = byteArrayRangeToInt(body, WIND_DIRECTION.getStartIndex(), WIND_DIRECTION.getEndIndex());
         long currentTime = byteArrayRangeToLong(body, CURRENT_TIME.getStartIndex(), CURRENT_TIME.getEndIndex());
         long expectedStartTime = byteArrayRangeToLong(body, START_TIME.getStartIndex(), START_TIME.getEndIndex());
-        int windSpeed = byteArrayRangeToInt(body, WIND_SPEED.getStartIndex(), WIND_SPEED.getEndIndex());
+        long windSpeed = byteArrayRangeToInt(body, WIND_SPEED.getStartIndex(), WIND_SPEED.getEndIndex());
 
         double windDirectionInDegrees = intToHeading(raceCourseWindDirection);
 
@@ -317,38 +263,6 @@ public class DataStreamReader implements Runnable{
     }
 
     /**
-     * parses body of the boat action message that is incoming from the client.
-     * @param body currently a single number that corresponds to a control from the client
-     */
-    private void parseBoatActionMessage(byte[] body, int sourceID){
-        int action = byteArrayRangeToInt(body, BOAT_ACTION_BODY.getStartIndex(), BOAT_ACTION_BODY.getEndIndex());
-        Boat boat = race.getBoatById(sourceID); // Assuming this field has been set and can be used to distinguish a boat
-        BoatAction boatAction = BoatAction.values()[action];
-        switch (boatAction){
-            case BOAT_AUTOPILOT:
-                boat.autoPilot();
-                break;
-            case SAILS_IN:
-                boat.sailsIn();
-                break;
-            case SAILS_OUT:
-                boat.sailsOut();
-                break;
-            case TACK_GYBE:
-                boat.tackOrGybe();
-                break;
-            case UPWIND:
-                boat.upWind(race.getCourse().getWindDirection());
-                break;
-            case DOWNWIND:
-                boat.downWind(race.getCourse().getWindDirection());
-                break;
-            default:
-                break;
-        }
-    }
-
-    /**
      * Parses the body of Mark Rounding message, and updates the race based on values received
      * @param body the body of the mark rounding message
      */
@@ -377,5 +291,7 @@ public class DataStreamReader implements Runnable{
         this.race = race;
     }
 
-
+    public Race getRace() {
+        return race;
+    }
 }

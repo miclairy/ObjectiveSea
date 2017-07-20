@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.canvas.Canvas?>
@@ -13,7 +21,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<SplitPane dividerPositions="0.99" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/generalStyle.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.Controller">
+<SplitPane dividerPositions="0.99" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/generalStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.Controller">
     <items>
         <AnchorPane fx:id="canvasAnchor" minHeight="200.0" minWidth="200.0" prefHeight="160.0" prefWidth="Infinity" style="-fx-background-color: #aae7df;">
             <children>
@@ -48,13 +56,14 @@
                     </children>
                 </Group>
                 <ImageView fx:id="mapImageView1" fitHeight="88.0" fitWidth="100.0" layoutX="10.0" layoutY="10.0" pickOnBounds="true" />
-                  <Slider fx:id="zoomSlider" blockIncrement="0.05" layoutX="1431.0" layoutY="70.0" majorTickUnit="0.1" max="5.0" min="1.0" minorTickCount="1" onMouseEntered="#zoomCursorHover" onMouseExited="#zoomCursorExitHover" opacity="0.4" orientation="VERTICAL" prefHeight="250.0" prefWidth="16.0" value="1.0" AnchorPane.rightAnchor="31.0" AnchorPane.topAnchor="70.0" />
+            <Label fx:id="lblWindSpeed" layoutX="1422.0" layoutY="79.0" text="Speed" AnchorPane.rightAnchor="17.0" AnchorPane.topAnchor="79.0" />
+            <ImageView fx:id="imvSpeedScale" fitHeight="9.0" fitWidth="82.0" layoutX="1394.0" layoutY="67.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="67.0">
+               <image>
+                  <Image url="@graphics/windScale.png" />
+               </image>
+            </ImageView>
+                  <Slider fx:id="zoomSlider" blockIncrement="0.05" layoutX="1431.0" layoutY="110.0" majorTickUnit="0.1" max="5.0" min="1.0" minorTickCount="1" onMouseEntered="#zoomCursorHover" onMouseExited="#zoomCursorExitHover" opacity="0.4" orientation="VERTICAL" prefHeight="250.0" prefWidth="16.0" value="1.0" AnchorPane.rightAnchor="31.0" AnchorPane.topAnchor="110.0" />
             <Label id="userHelp" fx:id="lblUserHelp" alignment="CENTER" contentDisplay="CENTER" layoutX="3.0" layoutY="1018.0" textAlignment="CENTER" wrapText="true" AnchorPane.topAnchor="30.0" />
-                  <ImageView fx:id="windDirectionImage" fitHeight="40.0" fitWidth="40.0" layoutX="1009.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true" x="410.0" y="15.0" AnchorPane.rightAnchor="19.0" AnchorPane.topAnchor="19.0">
-                      <image>
-                          <Image url="@graphics/arrow.png" />
-                      </image>
-                  </ImageView>
                   <Label fx:id="fpsLabel" alignment="CENTER" centerShape="false" contentDisplay="BOTTOM" layoutX="352.0" layoutY="21.0" prefHeight="36.0" prefWidth="64.0" textAlignment="CENTER" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
             </children>
         </AnchorPane>
