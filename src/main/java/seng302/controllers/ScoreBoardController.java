@@ -61,7 +61,7 @@ public class ScoreBoardController {
     }
 
     public void setUp(){
-        race = Main.getRace();
+        race = Client.getRace();
         placings.setItems(parent.getFormattedDisplayOrder());
         raceTimerLabel.textProperty().bind(parent.raceTimerString);
         setupAnnotationControl();

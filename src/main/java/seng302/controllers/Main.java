@@ -24,19 +24,11 @@ import java.io.IOException;
 
 public class Main extends Application {
 
-    private static Race race;
-    /**
-     *
-     */
-    private static DataStreamReader dataStreamReader;
-
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         Config.initializeConfig();
         setupServer();
-        setUpDataStreamReader();
-        waitForRace();
+        setupClient();
 
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
         primaryStage.setTitle("Race Vision");
@@ -56,25 +48,19 @@ public class Main extends Application {
         });
     }
 
-    /**
-     * Waits for the race to be able to be read in
-     */
-    public void waitForRace(){
-        while(dataStreamReader.getRace() == null){
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        race = dataStreamReader.getRace();
-    }
-
     public static void main( String[] args ) {launch(args); }
 
     /**
-     * Creates a MockStream object, puts it in it's own thread and starts the thread
+     * Initializes the client on it's own thread.
+     */
+    private static void setupClient() {
+        Client client = new Client();
+        Thread clientThread = new Thread(client);
+        clientThread.start();
+    }
+
+    /**
+     * Creates a Server object, puts it in it's own thread and starts the thread
      */
     private static void setupServer() throws IOException {
         RaceUpdater runner = new RaceUpdater();
@@ -87,18 +73,5 @@ public class Main extends Application {
         Thread serverThread = new Thread(server);
         serverThread.start();
     }
-
-    private static void setUpDataStreamReader(){
-        dataStreamReader = new DataStreamReader(Config.SOURCE_ADDRESS, Config.SOURCE_PORT);
-        Thread dataStreamReaderThread = new Thread(dataStreamReader);
-        dataStreamReaderThread.start();
-        Client client = new Client(dataStreamReader);
-
-    }
-
-    public static Race getRace() {
-        return Main.race;
-    }
-
 }
 

@@ -87,7 +87,7 @@ public class Controller implements Initializable, Observer {
         anchorWidth = canvasAnchor.getWidth();
         anchorHeight = canvasAnchor.getHeight();
 
-        race = Main.getRace();
+        race = Client.getRace();
         race.addObserver(this);
         Course course = race.getCourse();
         startersOverlayTitle.setText(race.getRegattaName());
@@ -237,7 +237,7 @@ public class Controller implements Initializable, Observer {
      */
     public void displayStarters(){
         ObservableList<String> starters = observableArrayList();
-        for (Boat boat : Main.getRace().getCompetitors()){
+        for (Boat boat : race.getCompetitors()){
             starters.add(String.format("%s - %s", boat.getNickName(), boat.getName()));
         }
         startersList.setItems(starters);
@@ -247,7 +247,7 @@ public class Controller implements Initializable, Observer {
      * Keep the placings list up to date based on last past marked of boats
      */
     public void updatePlacings(){
-        List<Boat> raceOrder = Main.getRace().getRaceOrder();
+        List<Boat> raceOrder = race.getRaceOrder();
         formattedDisplayOrder.clear();
         for (int i = 0; i < raceOrder.size(); i++){
             Boat boat = raceOrder.get(i);

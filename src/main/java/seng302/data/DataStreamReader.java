@@ -110,7 +110,6 @@ public class DataStreamReader extends Receiver implements Runnable{
                 RaceVisionXMLParser.importRegatta(xmlInputStream, race);
             } else if (xmlSubtype == RACE_XML_MESSAGE) {
                 System.out.printf("New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
-                System.out.println(xmlBody);
                 if (race != null) {
                     setChanged();
                     Race newRace = RaceVisionXMLParser.importRace(xmlInputStream);

@@ -5,6 +5,7 @@ import seng302.data.ClientSender;
 import seng302.data.DataStreamReader;
 import seng302.models.Boat;
 import seng302.models.Race;
+import seng302.utilities.Config;
 
 import java.util.*;
 
@@ -13,26 +14,47 @@ import java.util.*;
  */
 public class Client implements Runnable, Observer {
 
+    private static Race race;
     private DataStreamReader dataStreamReader;
     private ClientPacketBuilder packetBuilder;
     private ClientSender sender;
     private Map<Integer, Boat> potentialCompetitors;
 
-    public Client(DataStreamReader dataStreamReader) {
+    public Client() {
         this.packetBuilder = new ClientPacketBuilder();
-        this.dataStreamReader = dataStreamReader;
-        dataStreamReader.addObserver(this);
+        setUpDataStreamReader();
         while(dataStreamReader.getClientSocket() == null) {}
         this.sender = new ClientSender(dataStreamReader.getClientSocket());
-
         this.sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(true));
     }
 
+    private void setUpDataStreamReader(){
+        this.dataStreamReader = new DataStreamReader(Config.SOURCE_ADDRESS, Config.SOURCE_PORT);
+        Thread dataStreamReaderThread = new Thread(dataStreamReader);
+        dataStreamReaderThread.start();
+        dataStreamReader.addObserver(this);
+    }
 
     @Override
     public void run() {
-
+        waitForRace();
     }
+
+    /**
+     * Waits for the race to be able to be read in
+     */
+    public void waitForRace(){
+        while(dataStreamReader.getRace() == null){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        race = dataStreamReader.getRace();
+    }
+
 
     @Override
     public void update(Observable o, Object arg) {
@@ -55,4 +77,10 @@ public class Client implements Runnable, Observer {
             }
         }
     }
+
+    public static Race getRace() {
+        return race;
+    }
+
+
 }

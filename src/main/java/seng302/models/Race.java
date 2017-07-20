@@ -15,6 +15,8 @@ import java.util.*;
 public class Race extends Observable{
 
     public static final int UPDATED_STATUS_SIGNAL = 1;
+    public static final int UPDATED_COURSE_SIGNAL = 2;
+    public static final int UPDATED_COMPETITORS_SIGNAL = 3;
     private String id;
     private String regattaName;
     private Course course;
@@ -237,6 +239,8 @@ public class Race extends Observable{
         this.boatIdMap.put(newCompetitor.getId(), newCompetitor);
         this.competitors.add(newCompetitor);
         this.raceOrder.add(newCompetitor);
+        setChanged();
+        notifyObservers(UPDATED_COMPETITORS_SIGNAL);
     }
 
     public Set<Integer> getCompetitorIds() {
