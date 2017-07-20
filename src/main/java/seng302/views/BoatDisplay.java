@@ -7,28 +7,16 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
-import javafx.util.Pair;
 import seng302.data.StartTimingStatus;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.XYChart.Data;
-import javafx.scene.Node;
-import javafx.animation.FadeTransition;
-import javafx.util.Duration;
-import seng302.data.BoatStatus;
 import seng302.models.*;
 import seng302.utilities.MathUtils;
-import seng302.utilities.DisplayUtils;
 
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.ZoneOffset;
 import java.util.Observable;
 import java.util.Observer;
 
 import static seng302.utilities.DisplayUtils.fadeNodeTransition;
-
-import static seng302.utilities.MathUtils.pointBetweenTwoAngle;
 
 
 /**
@@ -138,7 +126,7 @@ public class BoatDisplay implements Observer {
             path;}
 
     public String getSpeed(){
-        return String.format("%.1fkn", boat.getSpeed());
+        return String.format("%.1fkn", boat.getCurrentSpeed());
     }
 
     public Color getColor() {
@@ -217,10 +205,10 @@ public class BoatDisplay implements Observer {
         //If the boat is on the correct side of the start and heading towards it
 
         if(correctSideOfStart && boatHeadingToStart){
-            timeToStart = distanceToStart/boat.getSpeed() * 60 * 60; //converted to seconds (nautical miles/knots = hours)
+            timeToStart = distanceToStart/boat.getCurrentSpeed() * 60 * 60; //converted to seconds (nautical miles/knots = hours)
             timeToCrossStartLine = timeToStart + secondsElapsed;
         } else if(!correctSideOfStart && !boatHeadingToStart){ // If boat is on the wrong side of the line but heading to the mark (from wrong direction), this checks if it is possible for the boat to even get there in time
-            timeToStart = distanceToStart/boat.getSpeed() * 60 * 60; //converted to seconds (nautical miles/knots = hours)
+            timeToStart = distanceToStart/boat.getCurrentSpeed() * 60 * 60; //converted to seconds (nautical miles/knots = hours)
             timeToCrossStartLine = timeToStart + secondsElapsed;
             if(timeToCrossStartLine < 5.0){ //if it is possible for the boat to get to the other side then we can't tell much else about it
                 timeToCrossStartLine = 0.0;

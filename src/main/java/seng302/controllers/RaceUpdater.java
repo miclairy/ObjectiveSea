@@ -45,7 +45,6 @@ public class RaceUpdater implements Runnable {
         course.setWindDirection(course.getWindDirectionBasedOnGates());
         race = new Race("Mock Runner Race", course, boatsInRace);
         setRandomBoatSpeeds();
-
         initialize();
     }
 
@@ -93,6 +92,17 @@ public class RaceUpdater implements Runnable {
             generateWind();
             for (Boat boat : race.getCompetitors()) {
                 if(race.getRaceStatus().equals(RaceStatus.STARTED)){
+                    if(boat.isSailsIn() && boat.getCurrentSpeed() > 0){
+                        double newSpeed = boat.getCurrentSpeed() - 0.1;
+                        boat.setCurrentSpeed(newSpeed);
+                        if(boat.getCurrentSpeed() < 0) boat.setCurrentSpeed(0);
+                    } else if(!boat.isSailsIn()){
+                        boat.setMaxSpeed(boat.updateBoatSpeed(race.getCourse()));
+                        if(boat.getCurrentSpeed() < boat.getMaxSpeed()){
+                            double newSpeed = boat.getCurrentSpeed() + 0.1;
+                            boat.setCurrentSpeed(newSpeed);
+                        } if(boat.getCurrentSpeed() > boat.getMaxSpeed() + 1)boat.setCurrentSpeed(boat.getMaxSpeed());
+                    }
                     updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), race.getCourse(), boat);
                     calculateTimeAtNextMark(boat);
                 } else {
@@ -137,6 +147,7 @@ public class RaceUpdater implements Runnable {
         boolean onTack = false;
         boolean onGybe = false;
 
+        if(!boat.isSailsIn()){
         if(MathUtils.pointBetweenTwoAngle(windDirection, polarTable.getOptimumTWA(true), headingBetweenMarks)){
             onTack = true;
             double optimumTackingVMG = polarTable.getOptimumVMG(onTack);
@@ -148,14 +159,16 @@ public class RaceUpdater implements Runnable {
             boat.setCurrentVMG(optimumGybingVMG * (-1.0));
             boat.setCurrentSpeed(optimumGybingVMG/ Math.cos(Math.toRadians(polarTable.getOptimumTWA(onTack))));
         } else {
-            boat.maximiseSpeed();
-            boat.setCurrentVMG(boat.getSpeed());
+            boat.setCurrentSpeed(boat.updateBoatSpeed(course));
+            boat.setCurrentVMG(boat.getCurrentSpeed());
+        }} else {
+            boat.setCurrentVMG(boat.getCurrentSpeed());
         }
 
         CompoundMark nextMark = courseOrder.get(boat.getLastRoundedMarkIndex()+1);
         Coordinate nextMarkPosition = nextMark.getPosition();
         Coordinate boatPosition = boat.getCurrentPosition();
-        double distanceGained = timePassed * boat.getSpeed();
+        double distanceGained = timePassed * boat.getCurrentSpeed();
         double distanceLeftInLeg = boatPosition.greaterCircleDistance(nextMark.getPosition());
 
         while(distanceGained > distanceLeftInLeg && boat.getLastRoundedMarkIndex() < courseOrder.size()-1) {

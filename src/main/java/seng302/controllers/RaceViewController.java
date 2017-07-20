@@ -1,7 +1,6 @@
 package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
-import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;
@@ -532,7 +531,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param boat to attach the vector to
      */
     private void drawSOGVector(BoatDisplay boat){
-        double scale = boat.getBoat().getSpeed() / SOG_SCALE_FACTOR;
+        double scale = boat.getBoat().getCurrentSpeed() / SOG_SCALE_FACTOR;
         Color color = boat.getColor();
         Polyline line = raceView.createSOGVector(boat.getBoat(), scale, color);
         root.getChildren().add(line);
@@ -544,7 +543,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param boat the boatDisplay who's SOGVector should move
      */
     private void moveSOGVector(BoatDisplay boat){
-        double scale = boat.getBoat().getSpeed() / SOG_SCALE_FACTOR;
+        double scale = boat.getBoat().getCurrentSpeed() / SOG_SCALE_FACTOR;
         Color color = boat.getColor();
         root.getChildren().remove(boat.getSOGVector());
         Polyline oldLine = boat.getSOGVector();
@@ -671,7 +670,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void moveWake(BoatDisplay boat, CanvasCoordinate point){
 
         Shape wake = boat.getWake();
-        double scale = boat.getBoat().getSpeed() / WAKE_SCALE_FACTOR;
+        double scale = boat.getBoat().getCurrentSpeed() / WAKE_SCALE_FACTOR;
         scale *= zoomLevel;
         wake.getTransforms().clear();
         wake.getTransforms().add(new Scale(scale, scale,0, 0));

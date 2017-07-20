@@ -115,18 +115,16 @@ public class BoatTest
         Course course = new Course();
 
         boat.setHeading(80);
-        double TWS = 10;
-        double windDirection = 40;
+        course.setWindDirection(40);
         course.setTrueWindSpeed(10);
-        boat.updateBoatSpeed(TWS, course, windDirection);
-        assertEquals(10.25, boat.getSpeed(), DELTA);
+        double newSpeed = boat.updateBoatSpeed(course);
+        assertEquals(10.25, newSpeed, DELTA);
 
         boat.setHeading(0);
-        TWS = 25;
-        windDirection = 90;
         course.setTrueWindSpeed(25);
-        boat.updateBoatSpeed(TWS, course, windDirection);
-        assertEquals(41.125,boat.getSpeed() , DELTA);
+        course.setWindDirection(90);
+        newSpeed = boat.updateBoatSpeed(course);
+        assertEquals(41.125,newSpeed , DELTA);
     }
 
 

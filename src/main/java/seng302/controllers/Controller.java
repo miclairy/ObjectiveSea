@@ -114,15 +114,6 @@ public class Controller implements Initializable, Observer {
         initZoom();
     }
 
-    @FXML
-    private void handleKeyPress(KeyEvent key){
-        int commandInt = BoatAction.getEnumByInt(key.getCode());
-        if (commandInt != -1) {
-            System.out.println("The player wants their boat to: " + commandInt);
-        }
-        //todo actually using the key code to trigger an event
-    }
-
     /**
      * initilizes display listeners to detect dragging on display. Calls DisplayUtils to move display
      * and redraw course and paths as appropriate.
@@ -266,7 +257,7 @@ public class Controller implements Initializable, Observer {
                 if (raceOrder.get(i).isFinished()) {
                     displayString += "Finished!";
                 } else {
-                    displayString += String.format("%.3f knots", boat.getSpeed());
+                    displayString += String.format("%.3f knots", boat.getCurrentSpeed());
                 }
             }
             formattedDisplayOrder.add(displayString);

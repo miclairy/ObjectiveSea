@@ -24,7 +24,7 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     private String name;
     private String nickName;
-    private double speed;
+    private double currentSpeed;
     private double currentVMG;
     private int currPlacing;
     private int leg;
@@ -53,6 +53,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private long timeTillMark;
     private long timeTillFinish;
     private Integer id;
+    private boolean sailsIn = false;
 
     private double TWAofBoat;
 
@@ -119,10 +120,10 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public String getNickName() {return nickName;}
 
-    public double getSpeed() { return this.speed; }
+    public double getCurrentSpeed() { return this.currentSpeed; }
 
     public int getSpeedInMMS(){
-        return (int) (this.speed * KNOTS_TO_MMS_MULTIPLIER);
+        return (int) (this.currentSpeed * KNOTS_TO_MMS_MULTIPLIER);
     }
 
     public int getLastRoundedMarkIndex() {
@@ -183,10 +184,10 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     /**
-     * Make speed be the max speed.
+     * Make currentSpeed be the max currentSpeed.
      */
     public void maximiseSpeed(){
-        this.speed = maxSpeed;
+        this.currentSpeed = maxSpeed;
     }
 
     public double getMaxSpeed() {
@@ -202,7 +203,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void setCurrentSpeed(double speed) {
-        this.speed = speed;
+        this.currentSpeed = speed;
     }
 
     public long getTimeAtNextMark() {
@@ -261,6 +262,10 @@ public class Boat extends Observable implements Comparable<Boat>{
         return lastGybeMarkPassed;
     }
 
+    public boolean isSailsIn() {
+        return sailsIn;
+    }
+
     public void setLeg(int leg){
         if(lastRoundedMarkIndex == -1){
             if(status.equals(BoatStatus.FINISHED)){
@@ -292,7 +297,7 @@ public class Boat extends Observable implements Comparable<Boat>{
         double lineBearing = currentPosition.headingToCoordinate(markLocation);
         double angle = Math.abs(heading - lineBearing);
 
-        return Math.cos(Math.toRadians(angle)) * speed;
+        return Math.cos(Math.toRadians(angle)) * currentSpeed;
     }
 
     /**
@@ -336,21 +341,15 @@ public class Boat extends Observable implements Comparable<Boat>{
         }
     }
 
-    //Optimal heading and speed
-    //first should check if going up or down wind
-    //then should make boat go to optimum angle, if needed
-    //else should head directly towards the next mark
+    /**
+     * sets the optimal heading and currentSpeed
+     * @param course the current course
+     * @param polarTable the relevant polar table
+     */
     public void autoPilot(Course course, PolarTable polarTable){
         double optimumHeading = getOptimumHeading(course, polarTable);
+        currentSpeed = updateBoatSpeed(course);
         heading = optimumHeading;
-    }
-
-    public void sailsIn(){
-        speed = 0;
-    }
-
-    public void sailsOut(){
-        speed = getCurrentVMG();
     }
 
     /**
@@ -376,6 +375,11 @@ public class Boat extends Observable implements Comparable<Boat>{
         heading = (heading + 360) % 360;
     }
 
+    public void changeSails() {
+        sailsIn = !sailsIn;
+        System.out.println(sailsIn);
+    }
+
     public void upWind(){
         // change heading to go into the wind
         heading +=3;
@@ -387,12 +391,13 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     /**
-     * A function to update the boat speed whenever the windspeed or boat heading is changed
-     * @param TWS
+     * A function to update the boat currentSpeed whenever the windspeed or boat heading is changed
      * @param course
-     * @param windDirection
+     * @return the new speed for the boat
      */
-    public void updateBoatSpeed(double TWS, Course course, double windDirection){
+    public double updateBoatSpeed(Course course){
+        double TWS = course.getTrueWindSpeed();
+        double windDirection = course.getWindDirection();
         double TWA = Math.abs(((windDirection - heading)));
         if(TWA > 180) {
             TWA = 360 - TWA;
@@ -414,7 +419,7 @@ public class Boat extends Observable implements Comparable<Boat>{
         double z01 = windAngleAndSpeeds2.get(0).getSpeed();
         double z11 = windAngleAndSpeeds2.get(2).getSpeed();
 
-        setCurrentSpeed(MathUtils.bilinearInterpolation(TWS0,TWS1,TWA0,TWA1,z00,z01,z10,z11,TWS,TWA));
+        return MathUtils.bilinearInterpolation(TWS0,TWS1,TWA0,TWA1,z00,z01,z10,z11,TWS,TWA);
     }
 
     public double getSailAngle(double windDirection){
@@ -434,4 +439,5 @@ public class Boat extends Observable implements Comparable<Boat>{
         }
         return sailAngle;
     }
+
 }
