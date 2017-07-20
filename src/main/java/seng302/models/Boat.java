@@ -40,12 +40,6 @@ public class Boat extends Observable implements Comparable<Boat>{
     private double heading;
     private double maxSpeed;
 
-    public boolean isSailsIn() {
-        return sailsIn;
-    }
-
-    private boolean sailsIn = false;
-
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
 
