@@ -85,10 +85,10 @@ public class ServerListener extends Receiver implements Runnable{
                 boat.autoPilot(race.getCourse(), polarTable);
                 break;
             case SAILS_IN:
-                boat.sailsIn();
+                boat.changeSails();
                 break;
             case SAILS_OUT:
-                boat.sailsOut();
+                boat.changeSails();
                 break;
             case TACK_GYBE:
                 boat.tackOrGybe(race.getCourse().getWindDirection());

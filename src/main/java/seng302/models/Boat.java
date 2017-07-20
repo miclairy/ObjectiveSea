@@ -346,14 +346,6 @@ public class Boat extends Observable implements Comparable<Boat>{
         heading = optimumHeading;
     }
 
-    public void sailsIn(){
-        sailsIn = true;
-    }
-
-    public void sailsOut(){
-        sailsIn = false;
-    }
-
     /**
      * If true wind angle of boat is less than 90, boat is heading downwind. The heading is set to the true wind angle.
      * Otherwise the boat is heading upwind. The heading is set to the true wind angle - 90 degrees.
@@ -375,6 +367,11 @@ public class Boat extends Observable implements Comparable<Boat>{
             heading -= 2 *TWA;
         }
         heading = (heading + 360) % 360;
+    }
+
+    public void changeSails() {
+        sailsIn = !sailsIn;
+        System.out.println(sailsIn);
     }
 
     public void upWind(){
@@ -418,4 +415,5 @@ public class Boat extends Observable implements Comparable<Boat>{
 
         return MathUtils.bilinearInterpolation(TWS0,TWS1,TWA0,TWA1,z00,z01,z10,z11,TWS,TWA);
     }
+
 }
