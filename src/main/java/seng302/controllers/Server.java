@@ -161,7 +161,7 @@ public class Server implements Runnable, Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        if (o.equals(this.connectionManager)) {
+        if (o.equals(connectionManager)) {
             Socket socket = (Socket) arg;
             ServerListener serverListener = new ServerListener(socket);
             Thread serverListenerThread = new Thread(serverListener);
@@ -171,14 +171,15 @@ public class Server implements Runnable, Observer {
             ServerListener serverListener = (ServerListener) o;
             Integer registrationType = (Integer) arg;
             if(registrationType == 1){
-                int newId = this.raceUpdater.addCompetitor();
-                Boat boat = this.raceUpdater.getRace().getBoatById(newId);
+                int newId = raceUpdater.addCompetitor();
+                Boat boat = raceUpdater.getRace().getBoatById(newId);
                 boatSequenceNumbers.put(boat, newId);
                 lastMarkRoundingSent.put(boat, -1);
                 connectionManager.addConnection(newId, serverListener.getSocket());
 
                 byte[] packet = packetBuilder.createRegistrationAcceptancePacket(newId);
                 connectionManager.sendToClient(newId, packet);
+                sendXmlMessage(RACE_XML_MESSAGE, "Race.xml");
             } else{
                 connectionManager.addConnection(nextViewerID, serverListener.getSocket());
                 nextViewerID++;

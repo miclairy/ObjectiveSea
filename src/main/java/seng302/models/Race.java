@@ -18,7 +18,7 @@ public class Race extends Observable{
     private String id;
     private String regattaName;
     private Course course;
-    private List<Boat> competitors = new ArrayList<>();
+    private List<Boat> competitors = Collections.synchronizedList(new ArrayList<>());
     private List<Boat> raceOrder = new ArrayList<>();
     private Map<Integer, Boat> boatIdMap;
     private double totalRaceTime;
@@ -219,7 +219,7 @@ public class Race extends Observable{
 
         raceOrder.addAll(actualCompetitors);
         boatIdMap = new HashMap<>();
-        for(Boat competitor : actualCompetitors){
+        for (Boat competitor : actualCompetitors) {
             boatIdMap.put(competitor.getId(), competitor);
         }
     }
@@ -237,6 +237,10 @@ public class Race extends Observable{
         this.boatIdMap.put(newCompetitor.getId(), newCompetitor);
         this.competitors.add(newCompetitor);
         this.raceOrder.add(newCompetitor);
+    }
+
+    public Set<Integer> getCompetitorIds() {
+        return competitorIds;
     }
 }
 

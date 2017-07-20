@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.CRC32;
 
@@ -101,7 +102,6 @@ public class DataStreamReader extends Receiver implements Runnable{
         String xmlBody = new String(Arrays.copyOfRange(body, XML_BODY.getStartIndex(), XML_BODY.getStartIndex()+xmlLength));
         xmlBody = xmlBody.trim();
         InputStream xmlInputStream = new ByteArrayInputStream(xmlBody.getBytes());
-
         //Taken out since the new stream sends xmls not in order
 //        if (xmlSequenceNumbers.get(xmlSubtype) < xmlSequenceNumber) {
             xmlSequenceNumbers.put(xmlSubtype, xmlSequenceNumber);
@@ -110,15 +110,22 @@ public class DataStreamReader extends Receiver implements Runnable{
                 RaceVisionXMLParser.importRegatta(xmlInputStream, race);
             } else if (xmlSubtype == RACE_XML_MESSAGE) {
                 System.out.printf("New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
+                System.out.println(xmlBody);
                 if (race != null) {
-                    race.getCourse().mergeWithOtherCourse(RaceVisionXMLParser.importCourse(xmlInputStream));
+                    setChanged();
+                    Race newRace = RaceVisionXMLParser.importRace(xmlInputStream);
+                    notifyObservers(newRace);
+                    race.getCourse().mergeWithOtherCourse(newRace.getCourse());
                 } else {
                     setRace(RaceVisionXMLParser.importRace(xmlInputStream));
                 }
             } else if (xmlSubtype == BOAT_XML_MESSAGE) {
                 System.out.printf("New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 if(race.getCompetitors().size() == 0){
-                    race.setCompetitors(RaceVisionXMLParser.importStarters(xmlInputStream));
+                    List<Boat> competitors = RaceVisionXMLParser.importStarters(xmlInputStream);
+                    race.setCompetitors(competitors);
+                    setChanged();
+                    notifyObservers(competitors);
                 }
             }
 //        }

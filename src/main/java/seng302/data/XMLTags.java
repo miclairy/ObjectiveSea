@@ -22,6 +22,8 @@ public class XMLTags {
         public static final String BOAT_NAME = "BoatName";
         public static final String NICKNAME = "ShorterName";
         public static final String SOURCE_ID = "SourceID";
+
+        public static final String YACHT = "Yacht";
     }
 
     public class Race{
