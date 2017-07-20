@@ -40,6 +40,12 @@ public class Boat extends Observable implements Comparable<Boat>{
     private double heading;
     private double maxSpeed;
 
+    public boolean isSailsIn() {
+        return sailsIn;
+    }
+
+    private boolean sailsIn = false;
+
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
 
@@ -409,5 +415,23 @@ public class Boat extends Observable implements Comparable<Boat>{
         double z11 = windAngleAndSpeeds2.get(2).getSpeed();
 
         setCurrentSpeed(MathUtils.bilinearInterpolation(TWS0,TWS1,TWA0,TWA1,z00,z01,z10,z11,TWS,TWA));
+    }
+
+    public double getSailAngle(double windDirection){
+        double sailAngle;
+        if(!sailsIn){
+            sailAngle = windDirection;
+        } else {
+            double TWA = Math.abs(((windDirection - heading)));
+            if(TWA > 180) {
+                TWA = 360 - TWA;
+            }
+            if(TWA > 90) {
+                sailAngle = windDirection - 90;
+            } else {
+                sailAngle = windDirection + 90;
+            }
+        }
+        return sailAngle;
     }
 }

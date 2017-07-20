@@ -405,12 +405,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         grabHandle.setCenterX(point.getX() + boatDisplay.getAnnoOffsetX() * zoomLevel - ANNOTATION_HANDLE_OFFSET);
         grabHandle.setCenterY(point.getY() + boatDisplay.getAnnoOffsetY() * zoomLevel - ANNOTATION_HANDLE_OFFSET);
         grabHandle.toFront();
-
-        CubicCurve sail = boatDisplay.getSail();
-        sail.setLayoutX(point.getX());
-        sail.setLayoutY(point.getY());
-        sail.setEndX(20*zoomLevel);
-        sail.toFront();
     }
 
     /**
@@ -621,8 +615,15 @@ public class RaceViewController extends AnimationTimer implements Observer {
         icon.getTransforms().clear();
         icon.getTransforms().add(new Rotate(boat.getBoat().getHeading()));
         icon.toFront();
-    }
 
+        CubicCurve sail = boat.getSail();
+        sail.setLayoutX(point.getX());
+        sail.setLayoutY(point.getY());
+        sail.setEndX(20*zoomLevel);
+        sail.getTransforms().clear();
+        sail.getTransforms().add(new Rotate(boat.getBoat().getSailAngle(race.getCourse().getWindDirection()), 0, 0));
+        sail.toFront();
+    }
 
     /**
      * Moves the wake of a boat to the correct position
