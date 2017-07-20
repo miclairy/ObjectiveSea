@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.collections.ObservableList;
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -81,6 +82,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean drawDistanceLine = false;
     private boolean firstTime = true;
     private SelectionController selectionController;
+
+    private boolean sailIn = false;
+    private double sailWidth = 5;
+    private boolean isSailWidthChanging = false;
 
     private int flickercounter = 0;
     private int prevWindColorNum = 0;
@@ -616,14 +621,44 @@ public class RaceViewController extends AnimationTimer implements Observer {
         icon.getTransforms().add(new Rotate(boat.getBoat().getHeading()));
         icon.toFront();
 
-        CubicCurve sail = boat.getSail();
-        sail.setLayoutX(point.getX());
-        sail.setLayoutY(point.getY());
-        sail.setEndX(20*zoomLevel);
-        sail.getTransforms().clear();
-        sail.getTransforms().add(new Rotate(boat.getBoat().getSailAngle(race.getCourse().getWindDirection()), 0, 0));
-        sail.toFront();
+
+
+        if(sailIn){
+            //TODO rotate sail
+            CubicCurve sail = boat.getSail();
+            sail.setLayoutX(point.getX());
+            sail.setLayoutY(point.getY());
+            sail.setEndX(20*zoomLevel);
+            sail.toFront();
+        }else{
+            //TODO rotate sail
+            CubicCurve sail = boat.getSail();
+
+            if(isSailWidthChanging){
+                sailWidth += 0.5;
+            }else{
+                sailWidth-= 0.5;
+            }
+
+            if(sailWidth > 5 || sailWidth < -5){
+                isSailWidthChanging = !isSailWidthChanging;
+            }
+
+            double length  = 20*zoomLevel;
+            sail.setLayoutX(point.getX());
+            sail.setLayoutY(point.getY());
+            sail.setControlX1(length/4);
+            sail.setControlX2(3*length/4);
+            sail.setControlY1(sailWidth);
+            sail.setControlY2(-sailWidth);
+
+
+
+            sail.setEndX(length);
+            sail.toFront();
+        }
     }
+
 
     /**
      * Moves the wake of a boat to the correct position
