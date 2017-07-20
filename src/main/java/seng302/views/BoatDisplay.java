@@ -50,7 +50,7 @@ public class BoatDisplay implements Observer {
     private Series series;
     private final double FADEDBOAT = 0.3;
     public Circle annoGrabHandle;
-    public Line sail;
+    public CubicCurve sail;
 
     private Laylines laylines;
     private PolarTable polarTable;
@@ -154,11 +154,11 @@ public class BoatDisplay implements Observer {
     }
 
 
-    public Line getSail() {
+    public CubicCurve getSail() {
         return sail;
     }
 
-    public void setSail(Line sail) {
+    public void setSail(CubicCurve sail) {
         this.sail = sail;
     }
 
