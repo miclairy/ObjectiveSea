@@ -83,7 +83,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean firstTime = true;
     private SelectionController selectionController;
 
-    private boolean sailIn = false;
     private double sailWidth = 5;
     private boolean isSailWidthChanging = false;
 
@@ -623,12 +622,17 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
 
 
-        if(sailIn){
+        if(boat.getBoat().isSailsIn()){
             //TODO rotate sail
             CubicCurve sail = boat.getSail();
             sail.setLayoutX(point.getX());
             sail.setLayoutY(point.getY());
             sail.setEndX(20*zoomLevel);
+            sail.setControlX1(0);
+            sail.setControlX2(0);
+            sail.setControlY1(0);
+            sail.setControlY2(0);
+            sail.setRotate(boat.getBoat().getSailAngle(race.getCourse().getWindDirection()));
             sail.toFront();
         }else{
             //TODO rotate sail
@@ -651,8 +655,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             sail.setControlX2(3*length/4);
             sail.setControlY1(sailWidth);
             sail.setControlY2(-sailWidth);
-
-
+            sail.setRotate(boat.getBoat().getSailAngle(race.getCourse().getWindDirection()));
 
             sail.setEndX(length);
             sail.toFront();
