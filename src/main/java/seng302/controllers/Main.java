@@ -56,8 +56,8 @@ public class Main extends Application {
             }
         });
         UserInputController userInputController = new UserInputController(scene);
-        userInputController.addObserver(client);
         client.setUserInputController(userInputController);
+        userInputController.addObserver(client);
     }
 
     /**

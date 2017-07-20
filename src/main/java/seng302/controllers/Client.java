@@ -17,9 +17,11 @@ public class Client implements Runnable, Observer {
     private ClientPacketBuilder packetBuilder;
     private ClientSender sender;
     private UserInputController userInputController;
+    private int clientID;
 
     public Client(DataStreamReader dataStreamReader) {
         packetBuilder = new ClientPacketBuilder();
+        dataStreamReader.addObserver(this);
         while(dataStreamReader.getClientSocket() == null) {}
         sender = new ClientSender(dataStreamReader.getClientSocket());
         sender.sendToServer(packetBuilder.createRegistrationRequestPacket(true));
@@ -31,10 +33,24 @@ public class Client implements Runnable, Observer {
 
     }
 
+
+    /**
+     * observing UserInputController and dataStreamReader
+     * @param o
+     * @param clientID clients id
+     */
     @Override
-    public void update(Observable o, Object arg) {
-        sender.sendToServer(packetBuilder.createBoatCommandPacket(userInputController.getCommandInt()));
+    public void update(Observable o, Object clientID) {
+        if (clientID == null){
+            sender.sendToServer(packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID));
+        } else {
+            this.clientID = (int) clientID;
+        }
     }
+
+
+
+
 
     public void setUserInputController(UserInputController userInputController) {
         this.userInputController = userInputController;

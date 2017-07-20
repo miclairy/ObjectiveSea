@@ -38,6 +38,8 @@ public class ServerListener extends Receiver implements Runnable{
                 dataInput.readFully(header);
                 int messageLength = byteArrayRangeToInt(header, MESSAGE_LENGTH.getStartIndex(), MESSAGE_LENGTH.getEndIndex());
                 int messageTypeValue = byteArrayRangeToInt(header, MESSAGE_TYPE.getStartIndex(), MESSAGE_TYPE.getEndIndex());
+                int sourceId = byteArrayRangeToInt(header, HEADER_SOURCE_ID.getStartIndex(), HEADER_SOURCE_ID.getEndIndex());
+                System.out.println(sourceId);
                 AC35StreamMessage messageType = AC35StreamMessage.fromInteger(messageTypeValue);
 
                 byte[] body = new byte[messageLength];
@@ -46,7 +48,6 @@ public class ServerListener extends Receiver implements Runnable{
                 dataInput.readFully(crc);
                 if (checkCRC(header, body, crc)) {
                     switch (messageType) {
-
                         case REGISTRATION_REQUEST:
                             parseRegistrationRequestMessage(body);
                         case BOAT_ACTION_MESSAGE:
@@ -73,6 +74,7 @@ public class ServerListener extends Receiver implements Runnable{
      */
     private void parseBoatActionMessage(byte[] body, int sourceID){
         int action = byteArrayRangeToInt(body, BOAT_ACTION_BODY.getStartIndex(), BOAT_ACTION_BODY.getEndIndex());
+        System.out.println("this is the action " + action);
         Boat boat = race.getBoatById(sourceID); // Assuming this field has been set and can be used to distinguish a boat
         //for now we assume all boats racing are AC35 class yachts such that we can use the polars we have for them
         PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());

@@ -11,6 +11,7 @@ import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observable;
 import java.util.zip.CRC32;
 
 import static seng302.data.AC35StreamField.*;
@@ -210,8 +211,9 @@ public class DataStreamReader extends Receiver implements Runnable{
     }
 
     private void parseRegistrationAcceptMessage(byte[] body) {
-        Integer id = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());
-        System.out.println("My id is: " + id);
+        int clientID = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());
+        setChanged();
+        notifyObservers(clientID);
     }
 
 
