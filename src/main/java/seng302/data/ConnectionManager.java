@@ -19,6 +19,7 @@ public class ConnectionManager extends Observable implements Runnable {
     private ServerSocket serverSocket;
     private HashMap<Integer, Socket> clients =  new HashMap<>();
     private TreeMap<AC35StreamXMLMessage, byte[]> xmlMessages = new TreeMap<>();
+    private boolean running;
 
 
     public ConnectionManager(int port) throws IOException {;
@@ -31,7 +32,8 @@ public class ConnectionManager extends Observable implements Runnable {
     @Override
     public void run() {
         Socket socket = null;
-        while (true) {
+        running = true;
+        while (running) {
             try {
                 socket = serverSocket.accept();
                 DataOutputStream clientOutput = new DataOutputStream(socket.getOutputStream());
@@ -95,5 +97,18 @@ public class ConnectionManager extends Observable implements Runnable {
         for (byte[] xmlMessage : xmlMessages.values()) {
             sendToClient(id, xmlMessage);
         }
+    }
+
+    public void stop() {
+        try {
+            serverSocket.close();
+            for (Socket socket : clients.values()){
+                socket.close();
+            }
+            running = false;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

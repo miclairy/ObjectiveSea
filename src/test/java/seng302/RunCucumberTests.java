@@ -6,7 +6,7 @@ import cucumber.api.junit.Cucumber ;
 import cucumber.api.SnippetType ;
 
 @RunWith (Cucumber.class)
-@CucumberOptions(features="features",
+@CucumberOptions(features="src/test/java/seng302/features",
         format = {"pretty"  ,
                 "html:target/site/cucumber-pretty" ,
                 "json:target/cucumber.json"} ,

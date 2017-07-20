@@ -24,7 +24,7 @@ public class ServerListener extends Receiver implements Runnable{
     private Socket socket;
     private Race race;
 
-    ServerListener(Socket socket){
+    public ServerListener(Socket socket){
         this.socket = socket;
     }
 

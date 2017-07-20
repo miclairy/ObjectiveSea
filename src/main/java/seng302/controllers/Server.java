@@ -101,6 +101,7 @@ public class Server implements Runnable, Observer {
      */
     public void stop(){
         raceUpdater.getRace().updateRaceStatus(RaceStatus.FINISHED);
+        connectionManager.stop();
     }
 
     /**
