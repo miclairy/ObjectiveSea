@@ -45,7 +45,7 @@ public class RaceUpdater implements Runnable {
         course.setWindDirection(course.getWindDirectionBasedOnGates());
         race = new Race("Mock Runner Race", course, boatsInRace);
         setRandomBoatSpeeds();
-        setInitialBoatSpeeds();
+//        setInitialBoatSpeeds();
         initialize();
     }
 
@@ -128,19 +128,10 @@ public class RaceUpdater implements Runnable {
     public void updateLocation(double timePassed, Course course, Boat boat) {
         double boatHeading = boat.getHeading();
         Coordinate boatPosition = boat.getCurrentPosition();
-        double boatSpeed = boat.getSpeed();
-
         double distanceGained = timePassed * boat.getSpeed();
-        System.out.println(distanceGained);
-        CompoundMark nextMark = course.getCourseOrder().get(boat.getLastRoundedMarkIndex()+1);
-        double distanceLeftInLeg = boatPosition.greaterCircleDistance(nextMark.getPosition());
 
-
-        double percentGained = (distanceGained / distanceLeftInLeg);
-//        double newLat = boat.getCurrentLat() + 0.000001; //(percentGained * boat.getCurrentLat());
-//        double newLon = boat.getCurrentLon() + 0.000001; //(percentGained * boat.getCurrentLon());
-//        boatPosition.update(newLat, newLon);
-
+        Coordinate newPos = boatPosition.coordAt(distanceGained, boatHeading);
+        boatPosition.update(newPos.getLat(), newPos.getLon());
     }
 
 
@@ -209,6 +200,7 @@ public class RaceUpdater implements Runnable {
             double newLat = boat.getCurrentLat() + percentGained * (nextMarkPosition.getLat() - boat.getCurrentLat());
             double newLon = boat.getCurrentLon() + percentGained * (nextMarkPosition.getLon() - boat.getCurrentLon());
             boatPosition.update(newLat, newLon);
+            System.out.println(distanceGained);
         }
     }
 
