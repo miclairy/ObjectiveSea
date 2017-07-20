@@ -39,7 +39,6 @@ public class ServerListener extends Receiver implements Runnable{
                 int messageLength = byteArrayRangeToInt(header, MESSAGE_LENGTH.getStartIndex(), MESSAGE_LENGTH.getEndIndex());
                 int messageTypeValue = byteArrayRangeToInt(header, MESSAGE_TYPE.getStartIndex(), MESSAGE_TYPE.getEndIndex());
                 int sourceId = byteArrayRangeToInt(header, HEADER_SOURCE_ID.getStartIndex(), HEADER_SOURCE_ID.getEndIndex());
-                System.out.println(sourceId);
                 AC35StreamMessage messageType = AC35StreamMessage.fromInteger(messageTypeValue);
 
                 byte[] body = new byte[messageLength];
@@ -51,7 +50,9 @@ public class ServerListener extends Receiver implements Runnable{
                         case REGISTRATION_REQUEST:
                             parseRegistrationRequestMessage(body);
                         case BOAT_ACTION_MESSAGE:
-                            parseBoatActionMessage(body, sourceId);
+                            if (sourceId != -1) {
+                                parseBoatActionMessage(body, sourceId);
+                            }
                     }
                 }
             } catch (SocketException e) {
@@ -72,12 +73,13 @@ public class ServerListener extends Receiver implements Runnable{
      * parses body of the boat action message that is incoming from the client.
      * @param body currently a single number that corresponds to a control from the client
      */
-    private void parseBoatActionMessage(byte[] body, int sourceID){
+    private void parseBoatActionMessage(byte[] body, int sourceId){
         int action = byteArrayRangeToInt(body, BOAT_ACTION_BODY.getStartIndex(), BOAT_ACTION_BODY.getEndIndex());
-        Boat boat = race.getBoatById(sourceID); // Assuming this field has been set and can be used to distinguish a boat
+        Boat boat = race.getBoatById(sourceId); // Assuming this field has been set and can be used to distinguish a boat
         //for now we assume all boats racing are AC35 class yachts such that we can use the polars we have for them
         PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
         BoatAction boatAction = BoatAction.getBoatActionFromInt(action);
+        System.out.println("Boat doing a " + action);
         switch (boatAction){
             case BOAT_AUTOPILOT:
                 boat.autoPilot(race.getCourse(), polarTable);
