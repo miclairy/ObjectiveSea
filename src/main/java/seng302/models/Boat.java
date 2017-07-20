@@ -109,6 +109,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public double getSpeed() {
+        /*
         if(boatCheck < 2 ) {
             collisionPenalty();
             boatCheck += 1;
@@ -116,7 +117,9 @@ public class Boat extends Observable implements Comparable<Boat>{
         checkPenaltySpeed();
         System.out.println("Actual Speed: " + speed);
 
-        return this.penaltySpeed;
+        return this.penaltySpeed;*/
+
+        return speed;
     }
 
     private void checkPenaltySpeed() {
