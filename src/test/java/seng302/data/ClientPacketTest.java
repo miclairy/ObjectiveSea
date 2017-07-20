@@ -12,7 +12,7 @@ import static seng302.data.Receiver.byteArrayRangeToInt;
  */
 public class ClientPacketTest {
 
-    private ClientPacketBuilder clientPacketBuilder;
+    private ClientPacketBuilder clientPacketBuilder = new ClientPacketBuilder();;
 
 
     public byte[] fillByteArray(byte[] fullPacket, byte[] packetPart, int startIndex, int endIndex){
@@ -27,7 +27,6 @@ public class ClientPacketTest {
 
     @Test
     public void testClientActionPacket(){
-        clientPacketBuilder = new ClientPacketBuilder();
         byte[] packet = clientPacketBuilder.createBoatCommandPacket(6, 101);
         byte[] header = new byte[15];
         byte[] body = new byte[1];
@@ -40,6 +39,19 @@ public class ClientPacketTest {
 
         int sourceId = byteArrayRangeToInt(body, HEADER_SOURCE_ID.getStartIndex(), HEADER_SOURCE_ID.getEndIndex());
         assertEquals(101, sourceId);
+    }
 
+    @Test
+    public void testClientActionPacketIsIgnored(){
+
+        byte[] packet = clientPacketBuilder.createBoatCommandPacket(12, 101);
+        byte[] header = new byte[15];
+        byte[] body = new byte[1];
+
+        header = fillByteArray(packet, header, 0, 14);
+        body = fillByteArray(packet, header, 15, 16);
+
+        int action = byteArrayRangeToInt(body, BOAT_ACTION_BODY.getStartIndex(), BOAT_ACTION_BODY.getEndIndex());
+        assertEquals(12, action);
     }
 }

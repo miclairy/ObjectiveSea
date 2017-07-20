@@ -22,4 +22,10 @@ public class BoatActionEnumTest {
         BoatAction action = BoatAction.getBoatActionFromInt(1);
         assertEquals(action, BoatAction.BOAT_AUTOPILOT);
     }
+
+    @Test
+    public void getTypeFromRandomKeyCodeTest(){
+        int type = BoatAction.getTypeFromKeyCode(KeyCode.P);
+        assertEquals(-1, type);
+    }
 }
