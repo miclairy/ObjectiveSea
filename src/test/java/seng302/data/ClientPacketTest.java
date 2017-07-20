@@ -12,12 +12,12 @@ import static seng302.data.Receiver.byteArrayRangeToInt;
  */
 public class ClientPacketTest {
 
-    private ClientPacketBuilder clientPacketBuilder = new ClientPacketBuilder();;
+    private ClientPacketBuilder clientPacketBuilder = new ClientPacketBuilder();
 
 
     public byte[] fillByteArray(byte[] fullPacket, byte[] packetPart, int startIndex, int endIndex){
         int packetIndex = 0;
-        for (int i = startIndex; i <= endIndex; i++){
+        for (int i = startIndex; i < endIndex; i++){
             packetPart[packetIndex] = fullPacket[i];
             packetIndex ++;
         }

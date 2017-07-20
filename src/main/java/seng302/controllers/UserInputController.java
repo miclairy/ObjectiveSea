@@ -29,6 +29,7 @@ public class UserInputController extends Observable {
             @Override
             public void handle(KeyEvent key) {
                 commandInt = BoatAction.getTypeFromKeyCode(key.getCode());
+
                 checkKeyPressed(commandInt);
             }
         });
