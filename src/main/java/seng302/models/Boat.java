@@ -37,6 +37,9 @@ public class Boat extends Observable implements Comparable<Boat>{
     private boolean finished;
     private double heading;
     private double maxSpeed;
+    private double boatHealth = 100;
+    private double penaltySpeed;
+    private double boatCheck = 0;
 
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
@@ -101,9 +104,29 @@ public class Boat extends Observable implements Comparable<Boat>{
         return this.name;
     }
 
-    public String getNickName() {return nickName;}
+    public String getNickName() {
+        return nickName;
+    }
 
-    public double getSpeed() { return this.speed; }
+    public double getSpeed() {
+        if(boatCheck < 2 ) {
+            collisionPenalty();
+            boatCheck += 1;
+        }
+        checkPenaltySpeed();
+        System.out.println("Actual Speed: " + speed);
+
+        return this.penaltySpeed;
+    }
+
+    private void checkPenaltySpeed() {
+        double boatPenalty = 100 - boatHealth;
+        if(boatPenalty != 0) {
+            penaltySpeed = speed - boatPenalty / 10;
+        } else {
+            penaltySpeed = speed;
+        }
+    }
 
     public int getSpeedInMMS(){
         return (int) (this.speed * KNOTS_TO_MMS_MULTIPLIER);
@@ -279,4 +302,14 @@ public class Boat extends Observable implements Comparable<Boat>{
         double VMG = Math.cos(Math.toRadians(angle)) * speed;
         return VMG;
     }
+
+
+    public void collisionPenalty() {
+        if(boatHealth > 0) {
+            boatHealth -= penaltySpeed;
+        } else {
+            boatHealth = 0;
+        }
+    }
+
 }
