@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.StrictMath.abs;
 
@@ -47,7 +48,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private long timeTillMark;
     private long timeTillFinish;
     private Integer id;
-    private boolean sailsIn = false;
+    private AtomicBoolean sailsIn = new AtomicBoolean();
 
     private double TWAofBoat;
 
@@ -256,8 +257,8 @@ public class Boat extends Observable implements Comparable<Boat>{
         return lastGybeMarkPassed;
     }
 
-    public boolean isSailsIn() {
-        return sailsIn;
+    public synchronized Boolean isSailsIn() {
+        return sailsIn.get();
     }
 
     public void setLeg(int leg){
@@ -369,9 +370,8 @@ public class Boat extends Observable implements Comparable<Boat>{
         heading = (heading + 360) % 360;
     }
 
-    public void changeSails() {
-        sailsIn = !sailsIn;
-        System.out.println(sailsIn);
+    public synchronized void changeSails() {
+        sailsIn.set(!sailsIn.get());
     }
 
     public void upWind(){
@@ -416,9 +416,9 @@ public class Boat extends Observable implements Comparable<Boat>{
         return MathUtils.bilinearInterpolation(TWS0,TWS1,TWA0,TWA1,z00,z01,z10,z11,TWS,TWA);
     }
 
-    public double getSailAngle(double windDirection){
+    public synchronized double getSailAngle(double windDirection){
         double sailAngle;
-        if(!sailsIn){
+        if(!sailsIn.get()){
             sailAngle = windDirection;
         } else {
             double TWA = Math.abs(((windDirection - heading)));
