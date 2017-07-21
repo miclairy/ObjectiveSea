@@ -20,7 +20,7 @@ public class BoatActionEnumTest {
     @Test
     public void getBoatActionFromIntTest(){
         BoatAction action = BoatAction.getBoatActionFromInt(1);
-        assertEquals(action, BoatAction.BOAT_AUTOPILOT);
+        assertEquals(action, BoatAction.BOAT_VMG);
     }
 
     @Test

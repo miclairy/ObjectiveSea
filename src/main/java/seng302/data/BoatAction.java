@@ -9,7 +9,7 @@ import seng302.models.Boat;
  */
 public enum BoatAction {
 
-    BOAT_AUTOPILOT(1, KeyCode.SPACE), SAILS_IN(2, KeyCode.SHIFT), SAILS_OUT(3, KeyCode.SHIFT), TACK_GYBE(4, KeyCode.ENTER),
+    BOAT_VMG(1, KeyCode.SPACE), SAILS_IN(2, KeyCode.SHIFT), SAILS_OUT(3, KeyCode.SHIFT), TACK_GYBE(4, KeyCode.ENTER),
     UPWIND(5, KeyCode.PAGE_UP), DOWNWIND(6, KeyCode.PAGE_DOWN);
 
     private final int type;

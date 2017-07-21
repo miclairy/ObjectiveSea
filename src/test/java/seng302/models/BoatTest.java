@@ -99,15 +99,29 @@ public class BoatTest
 
         double optimum;
 
+        // Tacking
         boat.setHeading(0);
         course.setWindDirection(45);
         optimum = boat.getOptimumHeading(course, polarTable);
         assertEquals(5, optimum, DELTA);
 
-        boat.setHeading(195);
-        course.setWindDirection(250);
+        // Tacking
+        boat.setHeading(275);
+        course.setWindDirection(0);
         optimum = boat.getOptimumHeading(course, polarTable);
-        assertEquals(221.0, optimum, DELTA);
+        assertEquals(5, optimum, DELTA);
+
+        // Gybing
+        boat.setHeading(0);
+        course.setWindDirection(225);
+        optimum = boat.getOptimumHeading(course, polarTable);
+        assertEquals(16, optimum, DELTA);
+
+        // Dead zone
+        boat.setHeading(0);
+        course.setWindDirection(90);
+        optimum = boat.getOptimumHeading(course, polarTable);
+        assertEquals(0, optimum, DELTA);
     }
 
     @Test

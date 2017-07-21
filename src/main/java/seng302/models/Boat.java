@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Observable;
 
 import static java.lang.StrictMath.abs;
+import static seng302.utilities.MathUtils.pointBetweenTwoAngle;
 
 /**
  * Class to encapsulate properties associated with a boat.
@@ -299,31 +300,26 @@ public class Boat extends Observable implements Comparable<Boat>{
      */
     public double getOptimumHeading(Course course, PolarTable polarTable) {
         double TWD = course.getWindDirection();
-        ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
-        CompoundMark lastMark = courseOrder.get(getLastRoundedMarkIndex());
-        CompoundMark nextMark = courseOrder.get(getLastRoundedMarkIndex() + 1);
+        double TWA = Math.abs(((TWD - heading)));
 
-        double TWDTo = TWD; //shows wind as TO not FROM
-        Coordinate lastMarkPosition = lastMark.getPosition();
-        Coordinate nextMarkPosition = nextMark.getPosition();
-        double markBearing = lastMarkPosition.headingToCoordinate(nextMarkPosition);
-        boolean upwind = MathUtils.pointBetweenTwoAngle(TWD, 90, markBearing);
-        double TWA = polarTable.getOptimumTWA(upwind);
-        double rightOptimumHeading;
-        double leftOptimumHeading;
-
-        if (upwind) {
-            rightOptimumHeading = (TWDTo - TWA + 360) % 360;
-            leftOptimumHeading = (TWDTo + TWA + 360) % 360;
+        double windDirectionOffset = ((TWA - TWD) + 360) % 360;
+        double optimumTWA;
+        if(TWA < 89 || TWA > 271) {
+            optimumTWA = polarTable.getOptimumTWA(true);
+            //another check if heading is in no sail zone
+        } else if (TWA > 91 && TWA < 269) {
+            optimumTWA = polarTable.getOptimumTWA(false);
         } else {
-            rightOptimumHeading = (TWDTo - TWA + 540) % 360;
-            leftOptimumHeading = (TWDTo + TWA + 540) % 360;
+            return heading;
         }
 
-        double angleToLeft = abs( heading - leftOptimumHeading);
-        double angleToRight = abs( heading - rightOptimumHeading);
+        double rightOptimumHeading = (TWD - optimumTWA + 360) % 360;
+        double leftOptimumHeading = (TWD + optimumTWA + 360) % 360;
 
-        if (angleToLeft < angleToRight) {
+        double angleToLeftOptimum = abs( heading - leftOptimumHeading);
+        double angleToRightOptimum = abs( heading - rightOptimumHeading);
+
+        if ( angleToLeftOptimum < angleToRightOptimum) {
             return leftOptimumHeading;
         } else {
             return rightOptimumHeading;
@@ -331,7 +327,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
 
-    public void autoPilot(Course course, PolarTable polarTable){
+    public void VMG(Course course, PolarTable polarTable){
         double optimumHeading = getOptimumHeading(course, polarTable);
         heading = optimumHeading;
     }
@@ -359,7 +355,7 @@ public class Boat extends Observable implements Comparable<Boat>{
             downwindBuffer = 270;
         }
 
-        if(MathUtils.pointBetweenTwoAngle((TWD - 45 + downwindBuffer)%360,45,heading)){ //side on wind boat is on
+        if(pointBetweenTwoAngle((TWD - 45 + downwindBuffer)%360,45,heading)){ //side on wind boat is on
             heading += 2 * TWA;
         } else {
             heading -= 2 *TWA;
