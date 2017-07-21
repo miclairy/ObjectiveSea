@@ -631,7 +631,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             sail.setControlX2(0);
             sail.setControlY1(0);
             sail.setControlY2(0);
-            sail.setRotate(boat.getBoat().getSailAngle(race.getCourse().getWindDirection()));
+            sail.getTransforms().clear();
+            sail.getTransforms().add(new Rotate(boat.getBoat().getSailAngle(race.getCourse().getWindDirection()), 0,0 ));
             sail.toFront();
         }else{
             //TODO rotate sail
@@ -654,8 +655,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             sail.setControlX2(3*length/4);
             sail.setControlY1(sailWidth);
             sail.setControlY2(-sailWidth);
-            sail.setRotate(boat.getBoat().getSailAngle(race.getCourse().getWindDirection()));
-
+            sail.getTransforms().clear();
+            sail.getTransforms().add(new Rotate(boat.getBoat().getSailAngle(race.getCourse().getWindDirection()), 0,0 ));
             sail.setEndX(length);
             sail.toFront();
         }

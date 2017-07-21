@@ -48,7 +48,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private long timeTillMark;
     private long timeTillFinish;
     private Integer id;
-    private AtomicBoolean sailsIn = new AtomicBoolean();
+    private AtomicBoolean sailsIn = new AtomicBoolean(false);
 
     private double TWAofBoat;
 
@@ -418,7 +418,7 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public synchronized double getSailAngle(double windDirection){
         double sailAngle;
-        if(!sailsIn.get()){
+        if(sailsIn.get()){
             sailAngle = windDirection;
         } else {
             double TWA = Math.abs(((windDirection - heading)));
