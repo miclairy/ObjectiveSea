@@ -55,23 +55,26 @@ public class BoatTest
 
     @Test
     public void tackAndGybeTest(){
+        Course course = new Course();
+        course.setTrueWindSpeed(20);
+        course.setWindDirection(0);
         boat.setHeading(95);
-        boat.tackOrGybe(0);
+        boat.tackOrGybe(0,course);
         assertEquals(265.0,boat.getHeading(),DELTA); //downwind
         boat.setHeading(200);
-        boat.tackOrGybe(10);
+        boat.tackOrGybe(10,course);
         assertEquals(180.0,boat.getHeading(),DELTA); //downwind
         boat.setHeading(50);
-        boat.tackOrGybe(180);
+        boat.tackOrGybe(180,course);
         assertEquals(310.0,boat.getHeading(),DELTA); //downwind
         boat.setHeading(30);
-        boat.tackOrGybe(310);
+        boat.tackOrGybe(310,course);
         assertEquals(230.0,boat.getHeading(),DELTA); //upwind
         boat.setHeading(70);
-        boat.tackOrGybe(350);
+        boat.tackOrGybe(350,course);
         assertEquals(270.0,boat.getHeading(),DELTA); //upwind
         boat.setHeading(30);
-        boat.tackOrGybe(0);
+        boat.tackOrGybe(0,course);
         assertEquals(330.0,boat.getHeading(),DELTA); //upwind
 
     }
@@ -115,17 +118,15 @@ public class BoatTest
         Course course = new Course();
 
         boat.setHeading(80);
-        double TWS = 10;
-        double windDirection = 40;
         course.setTrueWindSpeed(10);
-        boat.updateBoatSpeed(TWS, course, windDirection);
+        course.setWindDirection(40);
+        boat.updateBoatSpeed(course);
         assertEquals(10.25, boat.getSpeed(), DELTA);
 
         boat.setHeading(0);
-        TWS = 25;
-        windDirection = 90;
         course.setTrueWindSpeed(25);
-        boat.updateBoatSpeed(TWS, course, windDirection);
+        course.setWindDirection(90);
+        boat.updateBoatSpeed(course);
         assertEquals(41.125,boat.getSpeed() , DELTA);
     }
 

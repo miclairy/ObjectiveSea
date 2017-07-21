@@ -91,13 +91,13 @@ public class ServerListener extends Receiver implements Runnable{
                 boat.sailsOut();
                 break;
             case TACK_GYBE:
-                boat.tackOrGybe(race.getCourse().getWindDirection());
+                boat.tackOrGybe(race.getCourse().getWindDirection(), race.getCourse());
                 break;
             case UPWIND:
-                boat.upWind();
+                boat.upWind(race.getCourse());
                 break;
             case DOWNWIND:
-                boat.downWind();
+                boat.downWind(race.getCourse());
                 break;
             default:
                 break;

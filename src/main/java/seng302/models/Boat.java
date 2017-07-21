@@ -165,7 +165,7 @@ public class Boat extends Observable implements Comparable<Boat>{
      * @param heading the new heading
      * */
     public void setHeading(double heading) {
-        this.heading = heading;
+        this.heading = ((heading + 360)%360);
     }
 
     public List getPathCoords() {
@@ -334,6 +334,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     public void autoPilot(Course course, PolarTable polarTable){
         double optimumHeading = getOptimumHeading(course, polarTable);
         heading = optimumHeading;
+        updateBoatSpeed(course);
     }
 
     public void sailsIn(){
@@ -348,7 +349,7 @@ public class Boat extends Observable implements Comparable<Boat>{
      * If true wind angle of boat is less than 90, boat is heading downwind. The heading is set to the true wind angle.
      * Otherwise the boat is heading upwind. The heading is set to the true wind angle - 90 degrees.
      */
-    public void tackOrGybe(double TWD){
+    public void tackOrGybe(double TWD, Course course){
         double TWA = Math.abs(((TWD - heading)));
         if(TWA > 180) {
             TWA = 360 - TWA;
@@ -365,31 +366,32 @@ public class Boat extends Observable implements Comparable<Boat>{
             heading -= 2 *TWA;
         }
         heading = (heading + 360) % 360;
+        updateBoatSpeed(course);
     }
 
-    public void upWind(){
+    public void upWind(Course course){
         // change heading to go into the wind
         heading +=3;
+        updateBoatSpeed(course);
     }
 
-    public void downWind(){
+    public void downWind(Course course){
         // change heading to go with the wind
         heading -=3;
+        updateBoatSpeed(course);
     }
 
     /**
      * A function to update the boat speed whenever the windspeed or boat heading is changed
-     * @param TWS
      * @param course
-     * @param windDirection
      */
-    public void updateBoatSpeed(double TWS, Course course, double windDirection){
-        double TWA = Math.abs(((windDirection - heading)));
+    public void updateBoatSpeed(Course course){
+        double TWA = Math.abs(((course.getWindDirection() - ((heading + 360)%360))));
         if(TWA > 180) {
             TWA = 360 - TWA;
         }
         this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), course);
-        ArrayList<Polar> interpPolars = polarTable.TWSForInterp((int) TWS, PolarReader.getPolarsForAC35Yachts());
+        ArrayList<Polar> interpPolars = polarTable.TWSForInterp((int) course.getTrueWindSpeed(), PolarReader.getPolarsForAC35Yachts());
 
         Polar polar1 = interpPolars.get(0);
         Polar polar3 = interpPolars.get(2);
@@ -405,6 +407,11 @@ public class Boat extends Observable implements Comparable<Boat>{
         double z01 = windAngleAndSpeeds2.get(0).getSpeed();
         double z11 = windAngleAndSpeeds2.get(2).getSpeed();
 
-        setCurrentSpeed(MathUtils.bilinearInterpolation(TWS0,TWS1,TWA0,TWA1,z00,z01,z10,z11,TWS,TWA));
+        double newSpeed = MathUtils.bilinearInterpolation(TWS0,TWS1,TWA0,TWA1,z00,z01,z10,z11,course.getTrueWindSpeed(),TWA);
+        if(newSpeed > 0) {
+            setCurrentSpeed(MathUtils.bilinearInterpolation(TWS0, TWS1, TWA0, TWA1, z00, z01, z10, z11, course.getTrueWindSpeed(), TWA));
+        } else {
+            setCurrentSpeed(0);
+        }
     }
 }
