@@ -10,6 +10,7 @@ import seng302.utilities.PolarReader;
 
 import java.io.DataInput;
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
@@ -57,7 +58,9 @@ public class ServerListener extends Receiver implements Runnable{
                 }
             } catch (SocketException e) {
                 break;
-            } catch (IOException e) {
+            } catch (EOFException e) {
+                //No client input
+            }catch (IOException e) {
                 e.printStackTrace();
             }
         }

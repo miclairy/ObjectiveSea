@@ -371,12 +371,10 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void upWind(){
-        // change heading to go into the wind
         heading +=3;
     }
 
     public void downWind(){
-        // change heading to go with the wind
         heading -=3;
     }
 

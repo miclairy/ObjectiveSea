@@ -1,12 +1,9 @@
 package seng302.data;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import javafx.scene.input.KeyCode;
-import seng302.data.BoatAction;
-import seng302.data.ClientPacketBuilder;
 
 
 import static org.junit.Assert.assertEquals;
@@ -17,6 +14,7 @@ import static seng302.data.Receiver.byteArrayRangeToInt;
 
 /**
  * Created by gla42 on 21/07/17.
+ *
  */
 public class ReceivingCorrectButtonPressTest {
 

@@ -50,13 +50,6 @@ public class Server implements Runnable, Observer {
         xmlSequenceNumber.put(REGATTA_XML_MESSAGE, 0);
         xmlSequenceNumber.put(RACE_XML_MESSAGE, 0);
         xmlSequenceNumber.put(BOAT_XML_MESSAGE, 0);
-
-        //testing
-//        raceUpdater.addCompetitor();
-//        raceUpdater.addCompetitor();
-//        raceUpdater.addCompetitor();
-//        raceUpdater.addCompetitor();
-
         for (Boat boat: raceUpdater.getRace().getCompetitors()){
             boatSequenceNumbers.put(boat, boat.getId());
             lastMarkRoundingSent.put(boat, -1);
@@ -188,5 +181,9 @@ public class Server implements Runnable, Observer {
                 nextViewerID++;
             }
         }
+    }
+
+    public ConnectionManager getConnectionManager() {
+        return connectionManager;
     }
 }
