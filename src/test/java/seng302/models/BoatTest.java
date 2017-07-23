@@ -54,91 +54,113 @@ public class BoatTest
     }
 
     @Test
-    public void tackAndGybeTest(){
+    public void oldTackAndGybeTest(){
         boat.setHeading(95);
-        boat.tackOrGybe(0);
+        boat.oldTackOrGybe(0);
         assertEquals(265.0,boat.getHeading(),DELTA); //downwind
         boat.setHeading(200);
-        boat.tackOrGybe(10);
+        boat.oldTackOrGybe(10);
         assertEquals(180.0,boat.getHeading(),DELTA); //downwind
         boat.setHeading(50);
-        boat.tackOrGybe(180);
+        boat.oldTackOrGybe(180);
         assertEquals(310.0,boat.getHeading(),DELTA); //downwind
         boat.setHeading(30);
-        boat.tackOrGybe(310);
+        boat.oldTackOrGybe(310);
         assertEquals(230.0,boat.getHeading(),DELTA); //upwind
         boat.setHeading(70);
-        boat.tackOrGybe(350);
+        boat.oldTackOrGybe(350);
         assertEquals(270.0,boat.getHeading(),DELTA); //upwind
         boat.setHeading(30);
-        boat.tackOrGybe(0);
+        boat.oldTackOrGybe(0);
         assertEquals(330.0,boat.getHeading(),DELTA); //upwind
 
     }
 
     @Test
-    public void getOptimumHeadingTest() {
-        Boat boat = new Boat(0, "TestBoat", "testNickname", 10);
-        boat.setLastRoundedMarkIndex(0);
-
-        Mark startLine1 = new Mark(0, "Start Line 1", new Coordinate(50, 30));
-        Mark startLine2 = new Mark(1, "Start Line 2", new Coordinate(51, 30));
-        RaceLine start = new RaceLine(1, "Start Line",startLine1, startLine2);
-        Mark mark1 = new Mark(2, "Mark 1", new Coordinate(60, 60));
-        CompoundMark windwardGate = new CompoundMark(2, "Mark", mark1);
-
+    public void getVMGHeadingTest() {
         Course course = new Course();
-        course.addNewCompoundMark(start);
-        course.addNewCompoundMark(windwardGate);
-        course.addMarkInOrder(1);
-        course.addMarkInOrder(2);
-        course.setStartLine(start);
         course.setTrueWindSpeed(25);
-
         PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), course);
-
         double optimum;
-
-        // Tacking
-        boat.setHeading(1);
-        course.setWindDirection(180);
-        optimum = boat.getOptimumHeading(course, polarTable);
-        assertEquals(1, optimum, DELTA);
 
         // Tacking
         boat.setHeading(45);
         course.setWindDirection(0);
-        optimum = boat.getOptimumHeading(course, polarTable);
+        optimum = boat.getVMGHeading(course, polarTable);
         assertEquals(40, optimum, DELTA);
 
         // Tacking
         boat.setHeading(280);
         course.setWindDirection(0);
-        optimum = boat.getOptimumHeading(course, polarTable);
+        optimum = boat.getVMGHeading(course, polarTable);
         assertEquals(320, optimum, DELTA);
 
         // Gybing
         boat.setHeading(105);
         course.setWindDirection(0);
-        optimum = boat.getOptimumHeading(course, polarTable);
+        optimum = boat.getVMGHeading(course, polarTable);
         assertEquals(151, optimum, DELTA);
 
         // Gybing
         boat.setHeading(250);
         course.setWindDirection(0);
-        optimum = boat.getOptimumHeading(course, polarTable);
+        optimum = boat.getVMGHeading(course, polarTable);
         assertEquals(209, optimum, DELTA);
 
         // No Sail zone
         boat.setHeading(10);
         course.setWindDirection(0);
-        optimum = boat.getOptimumHeading(course, polarTable);
+        optimum = boat.getVMGHeading(course, polarTable);
         assertEquals(10, optimum, DELTA);
 
         // Dead zone
         boat.setHeading(90);
         course.setWindDirection(0);
-        optimum = boat.getOptimumHeading(course, polarTable);
+        optimum = boat.getVMGHeading(course, polarTable);
+        assertEquals(90, optimum, DELTA);
+    }
+
+    @Test
+    public void tackOrGybeTest() {
+        Course course = new Course();
+        course.setTrueWindSpeed(25);
+        PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), course);
+        double optimum;
+
+        // Tacking
+        boat.setHeading(45);
+        course.setWindDirection(0);
+        optimum = boat.tackingFunction(course, polarTable);
+        assertEquals(320, optimum, DELTA);
+
+        // Tacking
+        boat.setHeading(280);
+        course.setWindDirection(0);
+        optimum = boat.tackingFunction(course, polarTable);
+        assertEquals(40, optimum, DELTA);
+
+        // Gybing
+        boat.setHeading(105);
+        course.setWindDirection(0);
+        optimum = boat.tackingFunction(course, polarTable);
+        assertEquals(209, optimum, DELTA);
+
+        // Gybing
+        boat.setHeading(250);
+        course.setWindDirection(0);
+        optimum = boat.tackingFunction(course, polarTable);
+        assertEquals(151, optimum, DELTA);
+
+        // No Sail zone
+        boat.setHeading(10);
+        course.setWindDirection(0);
+        optimum = boat.tackingFunction(course, polarTable);
+        assertEquals(10, optimum, DELTA);
+
+        // Dead zone
+        boat.setHeading(90);
+        course.setWindDirection(0);
+        optimum = boat.tackingFunction(course, polarTable);
         assertEquals(90, optimum, DELTA);
     }
 
