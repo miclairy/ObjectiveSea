@@ -39,7 +39,8 @@ public class Boat extends Observable implements Comparable<Boat>{
     private boolean finished;
     private double heading;
     private double maxSpeed;
-    private double playerHeading = -1;
+    private int playerHeading = -1;
+    private double lastPlayerDirection = 0; //0 = Clockwise / 1 = AntiClockwise
 
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
@@ -388,25 +389,42 @@ public class Boat extends Observable implements Comparable<Boat>{
     private void headingChange(double windAngle) {
 
         if(playerHeading == -1) {
-            playerHeading = heading;
+            playerHeading = (int) heading;
         }
         playerHeading += 360;
-        double windAngleCheck = windAngle + 360;
+        double windAngleCheck = (int) windAngle + 360;
         if(windAngleCheck > playerHeading && windAngleCheck-180 < playerHeading) {
             playerHeading += 3;
+            lastPlayerDirection = 0;
             if(playerHeading >= 720) {
                 playerHeading -= 360;
             }
         } else if(windAngleCheck < playerHeading && windAngleCheck+180 > playerHeading) {
             playerHeading -= 3;
+            lastPlayerDirection = 1;
             if(playerHeading < 360) {
                 playerHeading += 360;
             }
         } else if(windAngleCheck == playerHeading) {
-            //Add how to get the angle to next mark here
-            //Currently not sure how to do this.
+            if(lastPlayerDirection == 0) {
+                playerHeading += 3;
+                if(playerHeading >= 720) {
+                    playerHeading -= 360;
+                }
+            } else if(lastPlayerDirection == 1) {
+                playerHeading -= 3;
+                if(playerHeading < 360) {
+                    playerHeading += 360;
+                }
+            }
+            /**This 'windAngleCheck == playerHeading' statement, takes the last direction the boat was turning,
+             * either clockwise or anti clockwise, and turns the boat again in that direction, as the boat will
+             * sometimes be facing the exact wind direction and not know which way to turn.
+             */
         }
         playerHeading -= 360;
+        System.out.println("Player heading: " + playerHeading);
+        System.out.println("Wind Angle: " + (int) windAngle);
 
     }
 
