@@ -1,7 +1,7 @@
 package seng302.controllers;
 
 /**
- * Main class. Loads data and starts GUI.
+ * Main class. Sets up server and client and starts GUI.
  */
 import javafx.application.Application;
 import javafx.application.Preloader;

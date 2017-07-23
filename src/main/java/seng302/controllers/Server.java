@@ -40,7 +40,7 @@ public class Server implements Runnable, Observer {
     }
 
     /**
-     *
+     * Initializes the sequence numbers for the boats and xml messages
      * @throws IOException
      */
     private void initialize() throws IOException  {
@@ -154,28 +154,51 @@ public class Server implements Runnable, Observer {
         this.scaleFactor = scaleFactor;
     }
 
+    /**
+     * Starts a new server listener on new thread for which listens to a client
+     * @param socket the socket for the client
+     */
+    private void startServerListener(Socket socket){
+        ServerListener serverListener = new ServerListener(socket);
+        Thread serverListenerThread = new Thread(serverListener);
+        serverListenerThread.setName("Server Listener");
+        serverListenerThread.start();
+        serverListener.addObserver(this);
+    }
+
+    /**
+     * Adds a competing client to the race model and sends new xml messages out to all clients
+     * @param serverListener the listener for the client
+     */
+    private void addClientToRace(ServerListener serverListener){
+        int newId = raceUpdater.addCompetitor();
+        Boat boat = raceUpdater.getRace().getBoatById(newId);
+        boatSequenceNumbers.put(boat, newId);
+        lastMarkRoundingSent.put(boat, -1);
+        connectionManager.addConnection(newId, serverListener.getSocket());
+
+        byte[] packet = packetBuilder.createRegistrationAcceptancePacket(newId);
+        connectionManager.sendToClient(newId, packet);
+        sendXmlMessage(RACE_XML_MESSAGE, "Race.xml");
+    }
+
+    /**
+     * Method that gets called when Server is notified as an observer
+     * If the observable is a ConnectionManager then a new client has connected and a server listener
+     * is started for the client
+     * If the observable is a ServerListener then a registration message is received
+     * @param observable The observable either a ConnectionManager or ServerListener
+     * @param arg A Socket if observable is a ConnectionManager else it is the registration type of the client
+     */
     @Override
-    public void update(Observable o, Object arg) {
-        if (o.equals(connectionManager)) {
-            Socket socket = (Socket) arg;
-            ServerListener serverListener = new ServerListener(socket);
-            Thread serverListenerThread = new Thread(serverListener);
-            serverListenerThread.setName("Server Listener");
-            serverListenerThread.start();
-            serverListener.addObserver(this);
-        } else if(o instanceof ServerListener){
-            ServerListener serverListener = (ServerListener) o;
+    public void update(Observable observable, Object arg) {
+        if (observable.equals(connectionManager)) {
+            startServerListener((Socket) arg);
+        } else if(observable instanceof ServerListener){
+            ServerListener serverListener = (ServerListener) observable;
             Integer registrationType = (Integer) arg;
             if(registrationType == 1){
-                int newId = raceUpdater.addCompetitor();
-                Boat boat = raceUpdater.getRace().getBoatById(newId);
-                boatSequenceNumbers.put(boat, newId);
-                lastMarkRoundingSent.put(boat, -1);
-                connectionManager.addConnection(newId, serverListener.getSocket());
-
-                byte[] packet = packetBuilder.createRegistrationAcceptancePacket(newId);
-                connectionManager.sendToClient(newId, packet);
-                sendXmlMessage(RACE_XML_MESSAGE, "Race.xml");
+                addClientToRace(serverListener);
             } else{
                 connectionManager.addConnection(nextViewerID, serverListener.getSocket());
                 nextViewerID++;

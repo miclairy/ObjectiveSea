@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 /**
- * Created by mjt169 on 19/07/17.
+ * Sends data out on the client side
  */
 public class ClientSender {
 
