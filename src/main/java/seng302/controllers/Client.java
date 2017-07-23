@@ -23,20 +23,30 @@ public class Client implements Runnable, Observer {
     public Client() {
         this.packetBuilder = new ClientPacketBuilder();
         setUpDataStreamReader();
-        while(dataStreamReader.getClientSocket() == null) {}
+        System.out.println("Client: Waiting for connection to Server");
+        while(dataStreamReader.getClientSocket() == null) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("Client: Connected to Server");
         this.sender = new ClientSender(dataStreamReader.getClientSocket());
-        this.sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(true));
     }
 
     private void setUpDataStreamReader(){
         this.dataStreamReader = new DataStreamReader(Config.SOURCE_ADDRESS, Config.SOURCE_PORT);
         Thread dataStreamReaderThread = new Thread(dataStreamReader);
+        dataStreamReaderThread.setName("DataStreamReader");
         dataStreamReaderThread.start();
         dataStreamReader.addObserver(this);
     }
 
     @Override
     public void run() {
+        sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(true));
+        System.out.println("Client: Sent Registration Request");
         waitForRace();
     }
 
@@ -51,7 +61,6 @@ public class Client implements Runnable, Observer {
                 e.printStackTrace();
             }
         }
-
         race = dataStreamReader.getRace();
     }
 

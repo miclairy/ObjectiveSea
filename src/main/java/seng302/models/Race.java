@@ -22,7 +22,7 @@ public class Race extends Observable{
     private Course course;
     private List<Boat> competitors = Collections.synchronizedList(new ArrayList<>());
     private List<Boat> raceOrder = new ArrayList<>();
-    private Map<Integer, Boat> boatIdMap;
+    private Map<Integer, Boat> boatIdMap = new HashMap<>();
     private double totalRaceTime;
     private RaceStatus raceStatus = NOT_ACTIVE;
     private long startTimeInEpochMs, currentTimeInEpochMs;
@@ -35,7 +35,6 @@ public class Race extends Observable{
         this.course = course;
         this.competitors = competitors;
         raceOrder.addAll(competitors);
-        boatIdMap = new HashMap<>();
         for(Boat competitor : competitors){
             boatIdMap.put(competitor.getId(), competitor);
         }
@@ -178,6 +177,9 @@ public class Race extends Observable{
     public void setUTCOffset(double UTCOffset) { this.UTCOffset = UTCOffset; }
 
     public Boat getBoatById(Integer id){
+        if(boatIdMap == null){
+            return null;
+        }
         if(boatIdMap.containsKey(id)){
             return boatIdMap.get(id);
         } else{

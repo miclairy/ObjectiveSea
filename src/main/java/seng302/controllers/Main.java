@@ -56,6 +56,7 @@ public class Main extends Application {
     private static void setupClient() {
         Client client = new Client();
         Thread clientThread = new Thread(client);
+        clientThread.setName("Client");
         clientThread.start();
     }
 
@@ -66,11 +67,13 @@ public class Main extends Application {
         RaceUpdater runner = new RaceUpdater();
         runner.setScaleFactor(Config.MOCK_SPEED_SCALE);
         Thread runnerThread = new Thread(runner);
+        runnerThread.setName("Race Updater");
         runnerThread.start();
         Server server;
         server = new Server(2828, runner);
         server.setScaleFactor(Config.MOCK_SPEED_SCALE);
         Thread serverThread = new Thread(server);
+        serverThread.setName("Server");
         serverThread.start();
     }
 }

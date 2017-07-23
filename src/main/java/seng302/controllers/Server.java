@@ -49,12 +49,6 @@ public class Server implements Runnable, Observer {
         xmlSequenceNumber.put(RACE_XML_MESSAGE, 0);
         xmlSequenceNumber.put(BOAT_XML_MESSAGE, 0);
 
-        //testing
-//        raceUpdater.addCompetitor();
-//        raceUpdater.addCompetitor();
-//        raceUpdater.addCompetitor();
-//        raceUpdater.addCompetitor();
-
         for (Boat boat: raceUpdater.getRace().getCompetitors()){
             boatSequenceNumbers.put(boat, boat.getId());
             lastMarkRoundingSent.put(boat, -1);
@@ -69,6 +63,7 @@ public class Server implements Runnable, Observer {
             initialize();
             sendInitialRaceMessages();
             Thread managerThread = new Thread(connectionManager);
+            managerThread.setName("Connection Manager");
             managerThread.start();
             while (!raceUpdater.raceHasEnded()) {
                 sendRaceUpdates();
@@ -165,6 +160,7 @@ public class Server implements Runnable, Observer {
             Socket socket = (Socket) arg;
             ServerListener serverListener = new ServerListener(socket);
             Thread serverListenerThread = new Thread(serverListener);
+            serverListenerThread.setName("Server Listener");
             serverListenerThread.start();
             serverListener.addObserver(this);
         } else if(o instanceof ServerListener){

@@ -106,10 +106,10 @@ public class DataStreamReader extends Receiver implements Runnable{
 //        if (xmlSequenceNumbers.get(xmlSubtype) < xmlSequenceNumber) {
             xmlSequenceNumbers.put(xmlSubtype, xmlSequenceNumber);
             if (xmlSubtype == REGATTA_XML_MESSAGE) {
-                System.out.printf("New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
+                System.out.printf("Client: New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 RaceVisionXMLParser.importRegatta(xmlInputStream, race);
             } else if (xmlSubtype == RACE_XML_MESSAGE) {
-                System.out.printf("New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
+                System.out.printf("Client: New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 if (race != null) {
                     setChanged();
                     Race newRace = RaceVisionXMLParser.importRace(xmlInputStream);
@@ -119,7 +119,7 @@ public class DataStreamReader extends Receiver implements Runnable{
                     setRace(RaceVisionXMLParser.importRace(xmlInputStream));
                 }
             } else if (xmlSubtype == BOAT_XML_MESSAGE) {
-                System.out.printf("New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
+                System.out.printf("Client: New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 if(race.getCompetitors().size() == 0){
                     List<Boat> competitors = RaceVisionXMLParser.importStarters(xmlInputStream);
                     race.setCompetitors(competitors);
@@ -214,7 +214,7 @@ public class DataStreamReader extends Receiver implements Runnable{
 
     private void parseRegistrationAcceptMessage(byte[] body) {
         Integer id = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());
-        System.out.println("My id is: " + id);
+        System.out.println("Client: Received ID of " + id);
     }
 
     /**

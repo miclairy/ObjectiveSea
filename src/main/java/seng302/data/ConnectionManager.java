@@ -33,7 +33,6 @@ public class ConnectionManager extends Observable implements Runnable {
         while (true) {
             try {
                 socket = serverSocket.accept();
-                DataOutputStream clientOutput = new DataOutputStream(socket.getOutputStream());
                 System.out.println("Server: Accepted Connection");
                 setChanged();
                 notifyObservers(socket);
@@ -65,6 +64,7 @@ public class ConnectionManager extends Observable implements Runnable {
             DataOutputStream clientOutput = new DataOutputStream(clients.get(id).getOutputStream());
             clientOutput.write(packet);
         } catch (java.net.SocketException e){
+            System.out.printf("Server: Client %d Disconnected\n", id);
             clients.remove(id);
         } catch (IOException ioe) {
             ioe.printStackTrace();

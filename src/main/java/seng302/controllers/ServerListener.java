@@ -39,7 +39,6 @@ public class ServerListener extends Receiver implements Runnable{
                 dataInput.readFully(crc);
                 if (checkCRC(header, body, crc)) {
                     switch (messageType) {
-
                         case REGISTRATION_REQUEST:
                             parseRegistrationRequestMessage(body);
                     }
@@ -53,6 +52,7 @@ public class ServerListener extends Receiver implements Runnable{
     }
 
     private void parseRegistrationRequestMessage(byte[] body) {
+        System.out.println("Server: Received Registration Request");
         Integer registrationType = byteArrayRangeToInt(body, REGISTRATION_REQUEST_TYPE.getStartIndex(), REGISTRATION_REQUEST_TYPE.getEndIndex());
         setChanged();
         notifyObservers(registrationType);
