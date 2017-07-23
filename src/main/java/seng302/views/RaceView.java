@@ -197,6 +197,7 @@ public class RaceView {
         );
         windArrow.setId("windArrow");
         windArrow.setStroke(Color.WHITE);
+        windArrow.setVisible(false);
         return windArrow;
     }
 

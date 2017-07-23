@@ -779,6 +779,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     public void drawWindArrow() {
 
+        windCircle = controller.getWindCircle();
+
         if (root.getChildren().contains(windArrow)){
             root.getChildren().remove(windArrow);
             root.getChildren().remove(windCircle);
@@ -787,7 +789,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         windArrow.setLayoutX(Controller.getAnchorWidth() - WIND_ARROW_X_PADDING);
         windArrow.setLayoutY(WIND_ARROW_Y_PADDING);
 
-        windCircle = new Circle();
+
         windCircle.setRadius(25);
         windCircle.setLayoutX(Controller.getAnchorWidth()- WIND_ARROW_X_PADDING);
         windCircle.setLayoutY(WIND_ARROW_Y_PADDING - 15);
@@ -802,6 +804,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * checks if wind arrow needs updating
      */
     public void updateWindArrow() {
+        windArrow.setVisible(true);
         double speed = race.getCourse().getTrueWindSpeed();
         int colorNum = calculateWindColor(speed);
 
