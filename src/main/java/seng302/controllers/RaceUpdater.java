@@ -370,7 +370,7 @@ public class RaceUpdater implements Runnable {
         double angle = ThreadLocalRandom.current().nextDouble(minAngle, maxAngle);
 
         race.getCourse().setTrueWindSpeed(speed);
-        race.getCourse().setWindDirection(angle);
+        race.getCourse().setWindDirection(287);
     }
 
     public Race getRace() {

@@ -302,28 +302,33 @@ public class Boat extends Observable implements Comparable<Boat>{
         double TWD = course.getWindDirection();
         double TWA = Math.abs(((TWD - heading)));
 
-        double windDirectionOffset = ((TWA - TWD) + 360) % 360;
         double optimumTWA;
-        if(TWA < 89 || TWA > 271) {
+        double optimumHeading;
+        if(TWA < 89 && TWA > 0) {
             optimumTWA = polarTable.getOptimumTWA(true);
-            //another check if heading is in no sail zone
-        } else if (TWA > 91 && TWA < 269) {
+            optimumHeading = (TWD + optimumTWA + 360) % 360;
+            //another check if heading is in no sail zone (heading into wind)
+            if(heading <= optimumHeading) {
+                return heading;
+            }
+        } else if (TWA > 271 && TWA < 360) {
+            optimumTWA = polarTable.getOptimumTWA(true);
+            optimumHeading = (TWD - optimumTWA + 360) % 360;
+            //another check if heading is in no sail zone (heading into wind)
+            if(heading >= optimumHeading) {
+                return heading;
+            }
+        } else if (TWA > 91 && TWA < 180) {
             optimumTWA = polarTable.getOptimumTWA(false);
+            optimumHeading = (TWD + optimumTWA + 360) % 360;
+        } else if (TWA < 269 && TWA > 180) {
+            optimumTWA = polarTable.getOptimumTWA(false);
+            optimumHeading = (TWD - optimumTWA + 360) % 360;
         } else {
             return heading;
         }
 
-        double rightOptimumHeading = (TWD - optimumTWA + 360) % 360;
-        double leftOptimumHeading = (TWD + optimumTWA + 360) % 360;
-
-        double angleToLeftOptimum = abs( heading - leftOptimumHeading);
-        double angleToRightOptimum = abs( heading - rightOptimumHeading);
-
-        if ( angleToLeftOptimum < angleToRightOptimum) {
-            return leftOptimumHeading;
-        } else {
-            return rightOptimumHeading;
-        }
+        return optimumHeading;
     }
 
 
@@ -365,12 +370,20 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void upWind(){
         // change heading to go into the wind
-        heading +=3;
+        if(heading <=360) {
+            heading +=3;
+        } else {
+            heading = 0;
+        }
     }
 
     public void downWind(){
         // change heading to go with the wind
-        heading -=3;
+        if(heading >=0) {
+            heading -=3;
+        } else {
+            heading = 360;
+        }
     }
 
     /**
