@@ -290,18 +290,17 @@ public class Boat extends Observable implements Comparable<Boat>{
         return Math.cos(Math.toRadians(angle)) * speed;
     }
 
+
     /**
-     * Function to calculate boats closest VMG heading using the course wind direction and polar table.
-     * Checks if boat is heading upwind or downwind, then finds the optimal headings rightOfTWDAngle and leftOfTWDAngle.
-     * Then returns the optimum heading that is closest to the boat's heading.
+     * Determines boat's heading (upwind or downwind0 and calculates optimum headings
+     * Returns optimum headings as a pair. if boat is in deadzone (not tacking or gybing) the heading is returned
      * @param course
      * @param polarTable
-     * @return optimum heading
+     * @return OptimumHeadings
      */
-    public double getVMGHeading(Course course, PolarTable polarTable) {
+    public OptimumHeadings getOptimumHeadings(Course course, PolarTable polarTable) {
+        double TWA = Math.abs(((course.getWindDirection() - heading)));
         double TWD = course.getWindDirection();
-        double TWA = Math.abs(((TWD - heading)));
-
         double optimumTWA;
         boolean tacking = isTacking(TWA);
         boolean gybing = isGybing(TWA);
@@ -311,26 +310,60 @@ public class Boat extends Observable implements Comparable<Boat>{
         } else if (gybing) {
             optimumTWA = polarTable.getOptimumTWA(false);
         } else {
-            return heading;
+            return new OptimumHeadings(heading, heading);
         }
 
         double optimumHeadingA = (TWD - optimumTWA + 360) % 360;
         double optimumHeadingB = (TWD + optimumTWA + 360) % 360;
 
-        //deadzone
-        if(tacking) {
-            if(inRange(optimumHeadingA, optimumHeadingB, heading)) {
+        return new OptimumHeadings(optimumHeadingA, optimumHeadingB);
+    }
+
+
+    /**
+     * Class to store optimum headings as a pair
+     */
+    private class OptimumHeadings {
+
+        public double headingA;
+        public double headingB;
+
+
+        public OptimumHeadings(double headingA, double headingB) {
+            this.headingA = headingA;
+            this.headingB = headingB;
+        }
+    }
+
+    /**
+     * Function to calculate boats closest VMG heading using the course wind direction and polar table.
+     * Checks if boat is heading upwind or downwind, then finds the optimal headings rightOfTWDAngle and leftOfTWDAngle.
+     * Then returns the optimum heading that is closest to the boat's heading.
+     * @param course
+     * @param polarTable
+     * @return optimum heading
+     */
+    public double getVMGHeading(Course course, PolarTable polarTable) {
+        OptimumHeadings optimumHeadings = getOptimumHeadings(course, polarTable);
+        double TWA = Math.abs(((course.getWindDirection() - heading)));
+        //no sail zone
+        if(isTacking(TWA)) {
+            if(inRange(optimumHeadings.headingA, optimumHeadings.headingB, heading)) {
                 return heading;
             }
         }
 
-        double angleToOptimumA = abs( heading - optimumHeadingA);
-        double angleToOptimumB = abs( heading - optimumHeadingB);
+        if (optimumHeadings.headingA == heading && optimumHeadings.headingB == heading){
+            return heading;
+        }
+
+        double angleToOptimumA = abs( heading - optimumHeadings.headingA);
+        double angleToOptimumB = abs( heading - optimumHeadings.headingB);
 
         if (angleToOptimumA < angleToOptimumB) {
-            return optimumHeadingA;
+            return optimumHeadings.headingA;
         } else {
-            return optimumHeadingB;
+            return optimumHeadings.headingB;
         }
     }
 
@@ -359,36 +392,29 @@ public class Boat extends Observable implements Comparable<Boat>{
      * @return new tack/gybe heading
      */
     public double tackingFunction(Course course, PolarTable polarTable) {
-        double TWD = course.getWindDirection();
-        double TWA = Math.abs(((TWD - heading)));
+        OptimumHeadings optimumHeadings = getOptimumHeadings(course, polarTable);
+        double TWA = Math.abs(((course.getWindDirection() - heading)));
 
-        double optimumTWA;
-        boolean tacking = isTacking(TWA);
-        boolean gybing = isGybing(TWA);
+        double optimumHeadingA = optimumHeadings.headingA;
+        double optimumHeadingB = optimumHeadings.headingB;
 
-        if(tacking) {
-            optimumTWA = polarTable.getOptimumTWA(true);
-        } else if (gybing) {
-            optimumTWA = polarTable.getOptimumTWA(false);
-        } else {
-            return heading;
-        }
-
-        double optimumHeadingA = (TWD - optimumTWA + 360) % 360;
-        double optimumHeadingB = (TWD + optimumTWA + 360) % 360;
-
-        if(heading == optimumHeadingA) {
+        if(heading == (optimumHeadingA)) {
             return optimumHeadingB;
         } else if (heading == optimumHeadingB) {
             return optimumHeadingA;
         }
 
-        //deadzone
-        if(tacking) {
-            if(inRange(optimumHeadingA, optimumHeadingB, heading)) {
+        //no sail zone
+        if(isTacking(TWA)) {
+            if(inRange(optimumHeadings.headingA, optimumHeadings.headingB, heading)) {
                 return heading;
             }
         }
+
+        if (optimumHeadings.headingA == heading && optimumHeadings.headingB == heading){
+            return heading;
+        }
+
 
         double angleToOptimumA = abs( heading - optimumHeadingA);
         double angleToOptimumB = abs( heading - optimumHeadingB);
@@ -400,6 +426,13 @@ public class Boat extends Observable implements Comparable<Boat>{
         }
     }
 
+    /**
+     * Checks if point is in range of start and end
+     * @param start
+     * @param end
+     * @param point
+     * @return true if in range
+     */
     private boolean inRange(double start, double end, double point){
         return (point + 360 - start) % 360 <= (end + 360 - start) % 360;
     }
@@ -438,7 +471,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     public void upWind(){
         // change heading to go into the wind
         if(heading <= 360) {
-            heading +=3;
+            heading += 3;
         } else {
             heading = 0;
         }
