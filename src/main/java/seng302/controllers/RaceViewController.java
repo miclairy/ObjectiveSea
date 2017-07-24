@@ -243,7 +243,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawMap();
         drawWindArrow();
         redrawRaceLines();
-        redrawBoatPaths();
+        //redrawBoatPaths();
     }
 
     /**
@@ -721,7 +721,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param course
      */
     @Override
-    public void update(Observable course, Object arg) {
+    public void update(Observable course, Object tracking) {
         courseNeedsRedraw = selectionController.isCourseNeedsRedraw();
         if (course == race.getCourse()){
             courseNeedsRedraw = true;
@@ -734,6 +734,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 updateDistanceLine(scoreBoardController.isDistanceLineSelected());
                 drawLayline(boat);
             }
+        }
+        if (tracking != null){
+            redrawBoatPaths();
         }
         selectedBoats = selectionController.getSelectedBoats();
 
