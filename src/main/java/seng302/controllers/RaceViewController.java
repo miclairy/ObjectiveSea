@@ -305,7 +305,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             icon.toFront();
             icon.setScaleX(zoomLevel);
             icon.setScaleY(zoomLevel);
-            icon.toBack();
         }
     }
 

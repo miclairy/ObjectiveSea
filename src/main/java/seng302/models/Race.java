@@ -56,6 +56,11 @@ public class Race extends Observable{
         if(boatIdMap.containsKey(sourceID)){
             Boat boat = boatIdMap.get(sourceID);
             boat.setPosition(lat, lon);
+
+            if(boat.getPathCoords().size() == 0){
+                boat.addPathCoord(new Coordinate(lat, lon));
+            }
+
             if ((raceStatus.equals(STARTED) && !raceStatus.equals(TERMINATED)) && (boat.getHeading() != heading)){
                 boat.addPathCoord(new Coordinate(boat.getCurrentLat(), boat.getCurrentLon()));
             }
