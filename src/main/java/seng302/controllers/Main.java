@@ -26,10 +26,9 @@ import java.io.IOException;
 public class Main extends Application {
 
     private static Race race;
-    /**
-     *
-     */
+    private static Scene scene;
     private static DataStreamReader dataStreamReader;
+    private static Client client;
 
 
     @Override
@@ -42,7 +41,8 @@ public class Main extends Application {
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
         primaryStage.setTitle("Race Vision");
         primaryStage.getIcons().add(new Image("graphics/icon.png"));
-        primaryStage.setScene(new Scene(parent));
+        scene = new Scene(parent);
+        primaryStage.setScene(scene);
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         primaryStage.setHeight(primaryScreenBounds.getHeight());
         primaryStage.setWidth(primaryScreenBounds.getWidth());
@@ -55,6 +55,9 @@ public class Main extends Application {
                 System.exit(0);
             }
         });
+        UserInputController userInputController = new UserInputController(scene);
+        client.setUserInputController(userInputController);
+        userInputController.addObserver(client);
     }
 
     /**
@@ -93,7 +96,7 @@ public class Main extends Application {
         dataStreamReader = new DataStreamReader(Config.SOURCE_ADDRESS, Config.SOURCE_PORT);
         Thread dataStreamReaderThread = new Thread(dataStreamReader);
         dataStreamReaderThread.start();
-        Client client = new Client(dataStreamReader);
+        client = new Client(dataStreamReader);
     }
 
     public static Race getRace() {
