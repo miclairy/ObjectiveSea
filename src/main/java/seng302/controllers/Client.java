@@ -74,7 +74,6 @@ public class Client implements Runnable, Observer {
     /**
      * observing UserInputController and dataStreamReader
      * @param o
-     * @param clientID clients id
      */
     @Override
     public void update(Observable o, Object arg) {
@@ -85,8 +84,7 @@ public class Client implements Runnable, Observer {
                 for (Boat boat : boats) {
                     potentialCompetitors.put(boat.getId(), boat);
                 }
-            }
-            if (arg instanceof Race) {
+            } else if (arg instanceof Race) {
                 Race newRace = (Race) arg;
                 Race oldRace = dataStreamReader.getRace();
                 for (int newId : newRace.getCompetitorIds()) {
@@ -94,13 +92,12 @@ public class Client implements Runnable, Observer {
                         oldRace.addCompetitor(potentialCompetitors.get(newId));
                     }
                 }
+            } else if (arg instanceof Integer){
+                this.clientID = (Integer) arg;
             }
         } else if (o == userInputController){
-            if (arg == null){
-                sender.sendToServer(packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID));
-            } else {
-                this.clientID = (int) arg;
-            }
+            byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
+            sender.sendToServer(boatCommandPacket);
         }
     }
 

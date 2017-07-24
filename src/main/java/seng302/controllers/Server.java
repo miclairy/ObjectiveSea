@@ -161,6 +161,7 @@ public class Server implements Runnable, Observer {
      */
     private void startServerListener(Socket socket){
         ServerListener serverListener = new ServerListener(socket);
+        serverListener.setRace(raceUpdater.getRace());
         Thread serverListenerThread = new Thread(serverListener);
         serverListenerThread.setName("Server Listener");
         serverListenerThread.start();

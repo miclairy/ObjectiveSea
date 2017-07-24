@@ -25,11 +25,8 @@ import java.io.IOException;
 
 public class Main extends Application {
 
-    private static Race race;
     private static Scene scene;
-    private static DataStreamReader dataStreamReader;
     private static Client client;
-
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -54,6 +51,7 @@ public class Main extends Application {
                 System.exit(0);
             }
         });
+
         UserInputController userInputController = new UserInputController(scene);
         client.setUserInputController(userInputController);
         userInputController.addObserver(client);
@@ -65,7 +63,7 @@ public class Main extends Application {
      * Initializes the client on it's own thread.
      */
     private static void setupClient() {
-        Client client = new Client();
+        client = new Client();
         Thread clientThread = new Thread(client);
         clientThread.setName("Client");
         clientThread.start();
@@ -87,10 +85,5 @@ public class Main extends Application {
         serverThread.setName("Server");
         serverThread.start();
     }
-
-    public static Race getRace() {
-        return Main.race;
-    }
-
 }
 

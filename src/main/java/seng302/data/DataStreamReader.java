@@ -214,7 +214,7 @@ public class DataStreamReader extends Receiver implements Runnable{
         Integer id = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());
         System.out.println("Client: Received ID of " + id);
         setChanged();
-        notifyObservers(clientID);
+        notifyObservers(id);
     }
 
 
