@@ -241,7 +241,9 @@ public class BoatDisplay implements Observer {
         if(path != null){
             fadeNodeTransition(path, 1.0);
         }
-        annotationLine.setOpacity(1);
+        if(annotationLine != null){
+            annotationLine.setOpacity(1);
+        }
         SOGVector.setOpacity(1);
         VMGVector.setOpacity(1);
     }

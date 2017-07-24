@@ -81,8 +81,8 @@ public class ServerListener extends Receiver implements Runnable{
         BoatAction boatAction = BoatAction.getBoatActionFromInt(action);
         System.out.println("Boat doing a " + action);
         switch (boatAction){
-            case BOAT_AUTOPILOT:
-                boat.autoPilot(race.getCourse(), polarTable);
+            case BOAT_VMG:
+                boat.VMG(race.getCourse(), polarTable);
                 break;
             case SAILS_IN:
                 boat.changeSails();
@@ -91,7 +91,7 @@ public class ServerListener extends Receiver implements Runnable{
                 boat.changeSails();
                 break;
             case TACK_GYBE:
-                boat.tackOrGybe(race.getCourse().getWindDirection());
+                boat.tackOrGybe(race.getCourse(), polarTable);
                 break;
             case UPWIND:
                 boat.upWind();

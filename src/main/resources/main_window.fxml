@@ -19,6 +19,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
 <SplitPane dividerPositions="0.99" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/generalStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.Controller">
@@ -65,6 +66,7 @@
                   <Slider fx:id="zoomSlider" blockIncrement="0.05" layoutX="1431.0" layoutY="110.0" majorTickUnit="0.1" max="5.0" min="1.0" minorTickCount="1" onMouseEntered="#zoomCursorHover" onMouseExited="#zoomCursorExitHover" opacity="0.4" orientation="VERTICAL" prefHeight="250.0" prefWidth="16.0" value="1.0" AnchorPane.rightAnchor="31.0" AnchorPane.topAnchor="110.0" />
             <Label id="userHelp" fx:id="lblUserHelp" alignment="CENTER" contentDisplay="CENTER" layoutX="3.0" layoutY="1018.0" textAlignment="CENTER" wrapText="true" AnchorPane.topAnchor="30.0" />
                   <Label fx:id="fpsLabel" alignment="CENTER" centerShape="false" contentDisplay="BOTTOM" layoutX="352.0" layoutY="21.0" prefHeight="36.0" prefWidth="64.0" textAlignment="CENTER" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+            <Circle fx:id="windCircle" fill="WHITE" radius="25.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="0.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
             </children>
         </AnchorPane>
         <AnchorPane fx:id="rightHandSide" minWidth="440">
