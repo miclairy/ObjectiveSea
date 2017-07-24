@@ -5,6 +5,9 @@ import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.collections.ObservableList;
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -79,6 +82,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean firstTime = true;
     private SelectionController selectionController;
 
+    private double sailWidth = 5;
+    private boolean isSailWidthChanging = false;
+
     private int flickercounter = 0;
     private int prevWindColorNum = 0;
 
@@ -125,6 +131,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(displayBoat.getBoat().getCurrentLat(), displayBoat.getBoat().getCurrentLon());
             moveBoat(displayBoat, point);
             moveWake(displayBoat, point);
+            moveSail(displayBoat, point);
             Boat boat = displayBoat.getBoat();
             if (boat.getTimeStatus() != StartTimingStatus.INRACE &&
                     race.getCourse().getCourseOrder().get(boat.getLeg()).isStartLine()) {
@@ -183,10 +190,16 @@ public class RaceViewController extends AnimationTimer implements Observer {
             grabHandle.setId("annoGrabHandle");
             grabHandle.setCenterX(0);
             grabHandle.setCenterY(0);
-
             displayBoat.setAnnoGrabHandle(grabHandle);
             root.getChildren().add(grabHandle);
+
             selectionController.makeDraggable(grabHandle, displayBoat);
+
+            CubicCurve sail = new CubicCurve(0,0, 0,0,0,0, 20*zoomLevel,0);
+            sail.setId("boatSail");
+            displayBoat.setSail(sail);
+            root.getChildren().add(sail);
+
         }
         initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);
@@ -603,6 +616,30 @@ public class RaceViewController extends AnimationTimer implements Observer {
         icon.getTransforms().clear();
         icon.getTransforms().add(new Rotate(boat.getBoat().getHeading()));
         icon.toFront();
+    }
+
+    /**
+     * Updates the location of the sail of a particular boat onscreen
+     * @param point location of the sail to move to
+     * @param boat display boat with sail to move
+     */
+    private void moveSail(BoatDisplay boat, CanvasCoordinate point){
+        if(!boat.getBoat().isSailsIn()){
+            boat.moveSail(point, 0,0,0,0, boat.getBoat().getSailAngle(race.getCourse().getWindDirection()));
+        }else{
+            if(isSailWidthChanging){
+                sailWidth += 0.5;
+            }else{
+                sailWidth-= 0.5;
+            }
+
+            if(sailWidth > 5 || sailWidth < -5){
+                isSailWidthChanging = !isSailWidthChanging;
+            }
+
+            double length  = 14 * zoomLevel;
+            boat.moveSail(point, length/4,3 * length / 4,sailWidth,-sailWidth, boat.getBoat().getSailAngle(race.getCourse().getWindDirection()));
+        }
     }
 
 
