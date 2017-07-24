@@ -32,6 +32,9 @@ public class RaceView {
     private final String BOUNDARY_COLOR = "#99DEDB";
     private final String BOUNDARY_STROKE_COLOR = "#98D4D2";
 
+    private final String MARK_COLOR = "#fff";
+    private final String MARK_STROKE_COLOR = "#cdfaf4";
+
     /**
      * Creates a boat image, which is a triangle with a line through the middle, parallel to the direction the image
      * is facing
@@ -107,6 +110,9 @@ public class RaceView {
         CanvasCoordinate point = DisplayUtils.convertFromLatLon(coordinate);
         Circle circle = new Circle(point.getX(), point.getY(), 4f);
         circle.setId("mark");
+        circle.setFill(Color.web(MARK_COLOR));
+        circle.setStroke(Color.web(MARK_STROKE_COLOR));
+        circle.setStrokeWidth(2);
         return circle;
     }
 
