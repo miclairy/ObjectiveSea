@@ -152,11 +152,11 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public double getHeading() {
-        if(playerHeading == -1) {
+/*        if(playerHeading == -1) {*/
             return heading;
-        } else {
+/*        } else {
             return playerHeading;
-        }
+        }*/
     }
 
     public int getCurrPlacing(){return currPlacing;}
@@ -484,9 +484,9 @@ public class Boat extends Observable implements Comparable<Boat>{
         System.out.println(sailsIn);
     }
 
-    public void resetPlayerHeading() {
+/*    public void resetPlayerHeading() {
         playerHeading = -1;
-    }
+    }*/
 
     /**
      * This method takes the current wind angle and checks to see what side of the compass the players boat is on,
@@ -495,31 +495,31 @@ public class Boat extends Observable implements Comparable<Boat>{
      */
     private void headingChange(double windAngle) {
 
-        if(playerHeading == -1) {
+/*        if(playerHeading == -1) {
             playerHeading = (int) heading;
-        }
+        }*/
 
-        playerHeading += 360;
+        heading += 360;
         int windAngleCheck = (int) windAngle + 360;
 
-        if((windAngleCheck > playerHeading && windAngleCheck-180 < playerHeading) ||
-           (windAngleCheck < playerHeading && windAngleCheck+180 < playerHeading)) {
-            playerHeading += 3;
+        if((windAngleCheck > heading && windAngleCheck-180 < heading) ||
+           (windAngleCheck < heading && windAngleCheck+180 < heading)) {
+            heading += 3;
             lastPlayerDirection = 0;
 
-        } else if((windAngleCheck < playerHeading && windAngleCheck+180 > playerHeading) ||
-                  (windAngleCheck > playerHeading && windAngleCheck-180 > playerHeading)) {
-            playerHeading -= 3;
+        } else if((windAngleCheck < heading && windAngleCheck+180 > heading) ||
+                  (windAngleCheck > heading && windAngleCheck-180 > heading)) {
+            heading -= 3;
             lastPlayerDirection = 1;
 
-        } else if(windAngleCheck == playerHeading ||
-                  windAngleCheck-180 == playerHeading ||
-                  windAngleCheck+180 == playerHeading) {
+        } else if(windAngleCheck == heading ||
+                  windAngleCheck-180 == heading ||
+                  windAngleCheck+180 == heading) {
             if(lastPlayerDirection == 0) {
-                playerHeading += 3;
+                heading += 3;
 
             } else if(lastPlayerDirection == 1) {
-                playerHeading -= 3;
+                heading -= 3;
             }
             /**This 'windAngleCheck == playerHeading' statement, takes the last direction the boat was turning,
              * either clockwise or anti clockwise, and turns the boat again in that direction, as the boat will
@@ -527,10 +527,10 @@ public class Boat extends Observable implements Comparable<Boat>{
              */
         }
 
-        if(playerHeading >= 720) {
-            playerHeading -= 720;
-        } else if(playerHeading >= 360) {
-            playerHeading -= 360;
+        if(heading >= 720) {
+            heading -= 720;
+        } else if(heading >= 360) {
+            heading -= 360;
         }
 
 
@@ -549,7 +549,6 @@ public class Boat extends Observable implements Comparable<Boat>{
         if(newWindAngle > 180) {
             newWindAngle -= 360;
         }
-        headingChange(newWindAngle + 180);
     }
 
     /**
