@@ -400,10 +400,8 @@ public class Boat extends Observable implements Comparable<Boat>{
 
 
         if(heading-1 <= optimumHeadingA && optimumHeadingA <= heading+1) {
-            System.out.println("Switch heading 1");
             return optimumHeadingB;
         } else if (heading-1 <= optimumHeadingB && optimumHeadingB <= heading+1) {
-            System.out.println("Switch heading 2");
             return optimumHeadingA;
         }
 
@@ -422,7 +420,7 @@ public class Boat extends Observable implements Comparable<Boat>{
         double angleToOptimumA = abs( heading - optimumHeadingA);
         double angleToOptimumB = abs( heading - optimumHeadingB);
 
-        if (angleToOptimumA < angleToOptimumB) {
+        if (angleToOptimumA <= angleToOptimumB) {
             return optimumHeadingB;
         } else {
             return optimumHeadingA;
