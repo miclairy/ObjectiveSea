@@ -114,7 +114,6 @@ public class DataStreamReader extends Receiver implements Runnable{
                     setChanged();
                     Race newRace = RaceVisionXMLParser.importRace(xmlInputStream);
                     notifyObservers(newRace);
-                    race.getCourse().mergeWithOtherCourse(newRace.getCourse());
                 } else {
                     setRace(RaceVisionXMLParser.importRace(xmlInputStream));
                 }

@@ -263,7 +263,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawMap();
         drawWindArrow();
         redrawRaceLines();
-        redrawBoatPaths();
+        //redrawBoatPaths();
     }
 
     /**
@@ -305,7 +305,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             icon.toFront();
             icon.setScaleX(zoomLevel);
             icon.setScaleY(zoomLevel);
-            icon.toBack();
         }
     }
 
@@ -738,45 +737,35 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
 
     /**
-     * This is currently called when the Course gets updated, and will redraw the course to reflect these changes
-     * @param obs
+     * Notified by either the race or the selection controller and updates the race view accordingly
+     * @param obs the observed object
      */
     @Override
-    public void update(Observable obs, Object signal) {
-        if (obs == race && signal instanceof Integer) {
-            Integer sig = (Integer) signal;
+    public void update(Observable obs, Object object) {
+        if (obs == race && object instanceof Integer) {
+            Integer sig = (Integer) object;
             switch(sig) {
-                case Race.UPDATED_COURSE_SIGNAL:
-                    updateCourse(race.getCourse());
-                    break;
                 case Race.UPDATED_COMPETITORS_SIGNAL:
                     Platform.runLater(() -> updateCompetitors(race.getCompetitors()));
                     break;
             }
-
-        }
-
-    }
-
-    /**
-     * Redraws course to deal with update boundaries
-     * @param course
-     */
-    private void updateCourse(Course course) {
-        courseNeedsRedraw = selectionController.isCourseNeedsRedraw();
-        if (course == race.getCourse()) {
-            courseNeedsRedraw = true;
-        }
-        for (BoatDisplay boat : displayBoats) {
-            if (selectedBoats.contains(boat) && !selectionController.getSelectedBoats().contains(boat)) {
-                updateDistanceLine(false);
+        } else if (obs == selectionController){
+            Boolean tracking = (Boolean) object;
+            courseNeedsRedraw = selectionController.isCourseNeedsRedraw();
+            for(BoatDisplay boat : displayBoats){
+                if (selectedBoats.contains(boat) && !selectionController.getSelectedBoats().contains(boat)) {
+                    updateDistanceLine(false);
+                }
+                if (selectedBoats.contains(boat)){
+                    updateDistanceLine(scoreBoardController.isDistanceLineSelected());
+                    drawLayline(boat);
+                }
             }
-            if (selectedBoats.contains(boat)) {
-                updateDistanceLine(scoreBoardController.isDistanceLineSelected());
-                drawLayline(boat);
+            if (tracking){
+                redrawBoatPaths();
             }
+            selectedBoats = selectionController.getSelectedBoats();
         }
-        selectedBoats = selectionController.getSelectedBoats();
     }
 
     /**
@@ -838,6 +827,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     public void drawWindArrow() {
 
+        windCircle = controller.getWindCircle();
+
         if (root.getChildren().contains(windArrow)){
             root.getChildren().remove(windArrow);
             root.getChildren().remove(windCircle);
@@ -846,7 +837,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         windArrow.setLayoutX(Controller.getAnchorWidth() - WIND_ARROW_X_PADDING);
         windArrow.setLayoutY(WIND_ARROW_Y_PADDING);
 
-        windCircle = new Circle();
+
         windCircle.setRadius(25);
         windCircle.setLayoutX(Controller.getAnchorWidth()- WIND_ARROW_X_PADDING);
         windCircle.setLayoutY(WIND_ARROW_Y_PADDING - 15);
@@ -861,6 +852,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * checks if wind arrow needs updating
      */
     public void updateWindArrow() {
+        windArrow.setVisible(true);
         double speed = race.getCourse().getTrueWindSpeed();
         int colorNum = calculateWindColor(speed);
 
