@@ -195,9 +195,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             selectionController.makeDraggable(grabHandle, displayBoat);
 
             CubicCurve sail = new CubicCurve(0,0, 0,0,0,0, 20*zoomLevel,0);
-            sail.setFill(null);
-            sail.setStroke(Color.BLACK);
-            sail.setStrokeWidth(1);
+            sail.setId("boatSail");
             displayBoat.setSail(sail);
             root.getChildren().add(sail);
 
@@ -624,7 +622,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             CubicCurve sail = boat.getSail();
             sail.setLayoutX(point.getX());
             sail.setLayoutY(point.getY());
-            sail.setEndX(20*zoomLevel);
+            sail.setEndX(14 * zoomLevel);
             sail.setControlX1(0);
             sail.setControlX2(0);
             sail.setControlY1(0);
@@ -645,11 +643,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 isSailWidthChanging = !isSailWidthChanging;
             }
 
-            double length  = 20*zoomLevel;
+            double length  = 14 * zoomLevel;
             sail.setLayoutX(point.getX());
             sail.setLayoutY(point.getY());
-            sail.setControlX1(length/4);
-            sail.setControlX2(3*length/4);
+            sail.setControlX1(length / 4);
+            sail.setControlX2(3 * length / 4);
             sail.setControlY1(sailWidth);
             sail.setControlY2(-sailWidth);
             sail.getTransforms().clear();
