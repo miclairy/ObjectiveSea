@@ -391,41 +391,41 @@ public class Boat extends Observable implements Comparable<Boat>{
         if(playerHeading == -1) {
             playerHeading = (int) heading;
         }
+
         playerHeading += 360;
         int windAngleCheck = (int) windAngle + 360;
+
         if((windAngleCheck > playerHeading && windAngleCheck-180 < playerHeading) ||
            (windAngleCheck < playerHeading && windAngleCheck+180 < playerHeading)) {
             playerHeading += 3;
             lastPlayerDirection = 0;
-            if(playerHeading >= 720) {
-                playerHeading -= 360;
-            }
+
         } else if((windAngleCheck < playerHeading && windAngleCheck+180 > playerHeading) ||
                   (windAngleCheck > playerHeading && windAngleCheck-180 > playerHeading)) {
             playerHeading -= 3;
             lastPlayerDirection = 1;
-            if(playerHeading < 360) {
-                playerHeading += 360;
-            }
-        } else if((windAngleCheck-180 <= playerHeading+2 && windAngleCheck-180 >= playerHeading-2) ||
-                  (windAngleCheck+180 <= playerHeading+2 && windAngleCheck+180 >= playerHeading-2)) {
+
+        } else if(windAngleCheck == playerHeading ||
+                  windAngleCheck-180 == playerHeading ||
+                  windAngleCheck+180 == playerHeading) {
             if(lastPlayerDirection == 0) {
                 playerHeading += 3;
-                if(playerHeading >= 720) {
-                    playerHeading -= 360;
-                }
+
             } else if(lastPlayerDirection == 1) {
                 playerHeading -= 3;
-                if(playerHeading < 360) {
-                    playerHeading += 360;
-                }
             }
             /**This 'windAngleCheck == playerHeading' statement, takes the last direction the boat was turning,
              * either clockwise or anti clockwise, and turns the boat again in that direction, as the boat will
              * sometimes be facing the exact wind direction and not know which way to turn.
              */
         }
-        playerHeading -= 360;
+
+        if(playerHeading >= 720) {
+            playerHeading -= 720;
+        } else if(playerHeading >= 360) {
+            playerHeading -= 360;
+        }
+
 
     }
 
