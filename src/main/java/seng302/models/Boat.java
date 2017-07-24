@@ -377,14 +377,6 @@ public class Boat extends Observable implements Comparable<Boat>{
         heading = getVMGHeading(course, polarTable);
     }
 
-    public void sailsIn(){
-        currentSpeed = 0;
-    }
-
-    public void sailsOut(){
-        currentSpeed = getCurrentVMG();
-    }
-
     public void tackOrGybe(Course course, PolarTable polarTable) {
         heading = tackingFunction(course, polarTable);
     }
@@ -530,7 +522,7 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public synchronized double getSailAngle(double windDirection){
         double sailAngle;
-        if(sailsIn.get()){
+        if(!sailsIn.get()){
             sailAngle = windDirection;
         } else {
             double TWA = Math.abs(((windDirection - heading)));
