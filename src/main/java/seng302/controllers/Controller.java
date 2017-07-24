@@ -13,6 +13,7 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -39,6 +40,7 @@ public class Controller implements Initializable, Observer {
     @FXML private Slider zoomSlider;
     @FXML public Label lblUserHelp;
     @FXML public Label lblWindSpeed;
+    @FXML public Circle windCircle;
 
     //number of from right edge of canvas that the wind arrow will be drawn
     private final int WIND_ARROW_OFFSET = 60;
@@ -383,6 +385,12 @@ public class Controller implements Initializable, Observer {
     public void setZoomSliderValue(int level){
         zoomSlider.setValue(level);
     }
+
+
+    public Circle getWindCircle() {
+        return windCircle;
+    }
+
 
     @FXML private void zoomCursorHover(){
         DisplayUtils.fadeNodeTransition(zoomSlider, FOCUSED_ZOOMSLIDER_OPACITY);
