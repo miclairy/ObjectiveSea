@@ -173,7 +173,9 @@ public class Course extends Observable {
 
     public double getTrueWindSpeed() {return trueWindSpeed;}
 
-    public void setTrueWindSpeed(double trueWindSpeed) {this.trueWindSpeed = trueWindSpeed;}
+    public void setTrueWindSpeed(double trueWindSpeed) {
+        this.trueWindSpeed = trueWindSpeed;
+    }
 
     public ArrayList<Coordinate> getBoundary() {
         return boundary;
@@ -216,6 +218,7 @@ public class Course extends Observable {
         setChanged();
         notifyObservers();
     }
+
 
     public void removeCompoundMark(CompoundMark mark) {
         if(compoundMarks.containsKey(mark.getCompoundMarkID())){

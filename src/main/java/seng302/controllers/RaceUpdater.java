@@ -11,10 +11,8 @@ import seng302.utilities.TimeUtils;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static seng302.data.RaceStatus.*;
 
@@ -23,7 +21,7 @@ import static seng302.data.RaceStatus.*;
  * Creates and runs a mock race to be sent out over the MockStream
  */
 
-public class MockRaceRunner implements Runnable {
+public class RaceUpdater implements Runnable {
 
     private final double SECONDS_PER_UPDATE = 0.02;
     private double scaleFactor = 1;
@@ -33,38 +31,45 @@ public class MockRaceRunner implements Runnable {
     private final double MAX_WIND_SPEED = 24.0;
     private double initialWindSpeed;
 
-    private String raceId;
     private Race race;
     private PolarTable polarTable;
+    private Collection<Boat> potentialCompetitors;
 
-    public MockRaceRunner(){
+    public RaceUpdater(){
         //set race up with default files
         intialWindSpeedGenerator();
-        List<Boat> boatsInRace = RaceVisionXMLParser.importDefaultStarters();
+        List<Boat> boatsInRace = new ArrayList<>();
+        potentialCompetitors = RaceVisionXMLParser.importDefaultStarters();
         Course course = RaceVisionXMLParser.importCourse();
         course.setTrueWindSpeed(initialWindSpeed);
         course.setWindDirection(course.getWindDirectionBasedOnGates());
         race = new Race("Mock Runner Race", course, boatsInRace);
         setRandomBoatSpeeds();
-
+//        setInitialBoatSpeeds();
         initialize();
     }
 
-    public MockRaceRunner(Race race) {
+    public RaceUpdater(Race race) {
         this.race = race;
         initialize();
     }
 
     public void initialize(){
-        this.raceId = generateRaceId();
+        race.setId(generateRaceId());
         //for now we assume all boats racing are AC35 class yachts such that we can use the polars we have for them
         this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
-        setStartingPositions();
         race.updateRaceStatus(RaceStatus.PRESTART);
         long currentTime = Instant.now().toEpochMilli();
         race.setCurrentTimeInEpochMs(currentTime);
         race.setStartTimeInEpochMs(currentTime + (1000 * 60 * 3)); //3 minutes from now
-        race.getCompetitors().forEach(b -> b.setStatus(BoatStatus.PRERACE));
+    }
+
+    public int addCompetitor() {
+        Boat newCompetitor = potentialCompetitors.iterator().next();
+        potentialCompetitors.remove(newCompetitor);
+        race.addCompetitor(newCompetitor);
+        prepareBoatForRace(newCompetitor);
+        return newCompetitor.getId();
     }
 
     /**
@@ -85,6 +90,8 @@ public class MockRaceRunner implements Runnable {
             double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
 
             race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs() + (long)(raceSecondsPassed * 1000));
+            generateWind();
+
             for (Boat boat : race.getCompetitors()) {
                 if(race.getRaceStatus().equals(RaceStatus.STARTED)){
                     updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), race.getCourse(), boat);
@@ -105,8 +112,9 @@ public class MockRaceRunner implements Runnable {
                 }
 
             }
+            //TODO fix so that race doesn't immediately end when no boats have yet registered for race
             if (!atLeastOneBoatNotFinished) {
-                race.updateRaceStatus(RaceStatus.TERMINATED);
+                //race.updateRaceStatus(RaceStatus.TERMINATED);
             }
 
             try{
@@ -116,12 +124,24 @@ public class MockRaceRunner implements Runnable {
             }
         }
     }
+
+
+    public void updateLocation(double timePassed, Course course, Boat boat) {
+        double boatHeading = boat.getHeading();
+        Coordinate boatPosition = boat.getCurrentPosition();
+        double distanceGained = timePassed * boat.getSpeed();
+
+        Coordinate newPos = boatPosition.coordAt(distanceGained, boatHeading);
+        boatPosition.update(newPos.getLat(), newPos.getLon());
+    }
+
+
     /**
      * Updates the boat's coordinates by how much it moved in timePassed hours on the course
      * @param timePassed the amount of race hours since the last update
      * @param course the course the boat is racing on
      */
-    public void updateLocation(double timePassed, Course course, Boat boat) {
+    public void autoUpdateLocation(double timePassed, Course course, Boat boat) {
         if(boat.isFinished()) return;
 
         ArrayList<CompoundMark> courseOrder = course.getCourseOrder();
@@ -132,14 +152,14 @@ public class MockRaceRunner implements Runnable {
 
         if(MathUtils.pointBetweenTwoAngle(windDirection, polarTable.getOptimumTWA(true), headingBetweenMarks)){
             onTack = true;
-            double optimumTackingVMG = polarTable.getOptimumVMG(true);
+            double optimumTackingVMG = polarTable.getOptimumVMG(onTack);
             boat.setCurrentVMG(optimumTackingVMG);
-            boat.setCurrentSpeed(optimumTackingVMG / Math.cos(Math.toRadians(polarTable.getOptimumTWA(true))));
+            boat.setCurrentSpeed(optimumTackingVMG / Math.cos(Math.toRadians(polarTable.getOptimumTWA(onTack))));
         } else if(MathUtils.pointBetweenTwoAngle((windDirection + 180) % 360, 180 - polarTable.getOptimumTWA(false), headingBetweenMarks)) {
             onGybe = true;
-            double optimumGybingVMG = polarTable.getOptimumVMG(false);
+            double optimumGybingVMG = polarTable.getOptimumVMG(onTack);
             boat.setCurrentVMG(optimumGybingVMG * (-1.0));
-            boat.setCurrentSpeed(optimumGybingVMG/ Math.cos(Math.toRadians(polarTable.getOptimumTWA(false))));
+            boat.setCurrentSpeed(optimumGybingVMG/ Math.cos(Math.toRadians(polarTable.getOptimumTWA(onTack))));
         } else {
             boat.maximiseSpeed();
             boat.setCurrentVMG(boat.getSpeed());
@@ -151,10 +171,8 @@ public class MockRaceRunner implements Runnable {
         double distanceGained = timePassed * boat.getSpeed();
         double distanceLeftInLeg = boatPosition.greaterCircleDistance(nextMark.getPosition());
 
-        //If boat moves more than the remaining distance in the leg
         while(distanceGained > distanceLeftInLeg && boat.getLastRoundedMarkIndex() < courseOrder.size()-1) {
             distanceGained -= distanceLeftInLeg;
-            //Set boat position to next mark
             boatPosition.update(nextMarkPosition.getLat(), nextMarkPosition.getLon());
             boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
 
@@ -174,7 +192,7 @@ public class MockRaceRunner implements Runnable {
         if (!onGybe) boat.setLastGybeMarkPassed(0);
 
         if(onTack || onGybe) {
-            double alphaAngle = getAlphaAngle(windDirection, headingBetweenMarks, onTack);
+            double alphaAngle = getAlphaAngle(windDirection - 180, headingBetweenMarks, onTack);
             Coordinate tackingPosition = tackingUpdateLocation(distanceGained, courseOrder, onTack, alphaAngle, boat);
             boatPosition.update(tackingPosition.getLat(), tackingPosition.getLon());
         } else {
@@ -183,6 +201,7 @@ public class MockRaceRunner implements Runnable {
             double newLat = boat.getCurrentLat() + percentGained * (nextMarkPosition.getLat() - boat.getCurrentLat());
             double newLon = boat.getCurrentLon() + percentGained * (nextMarkPosition.getLon() - boat.getCurrentLon());
             boatPosition.update(newLat, newLon);
+            System.out.println(distanceGained);
         }
     }
 
@@ -281,34 +300,19 @@ public class MockRaceRunner implements Runnable {
         return lengthOfTack;
     }
 
-    /**
-     * Spreads the starting positions of the boats over the start line
-     */
-    public void setStartingPositions(){
+    private void prepareBoatForRace(Boat boat) {
         RaceLine startingLine = race.getCourse().getStartLine();
-        Coordinate startingEnd1 = startingLine.getMark1().getPosition();
-        Coordinate startingEnd2 = startingLine.getMark2().getPosition();
-        Integer spaces = race.getCompetitors().size();
-        Double dLat = (startingEnd2.getLat() - startingEnd1.getLat()) / spaces;
-        Double dLon = (startingEnd2.getLon() - startingEnd1.getLon()) / spaces;
-
-        Double curLat = startingEnd1.getLat() + dLat;
-        Double curLon = startingEnd1.getLon() + dLon;
-        for (Boat boat : race.getCompetitors()){
-            boat.setPosition(curLat, curLon);
-            boat.setHeading(race.getCourse().headingsBetweenMarks(0, 1));
-            boat.addPathCoord(new Coordinate(curLat, curLon));
-            boat.setLastRoundedMarkIndex(0);
-            curLat += dLat;
-            curLon += dLon;
-        }
+        boat.setPosition(startingLine.getPosition());
+        boat.setHeading(race.getCourse().headingsBetweenMarks(0, 1));
+        boat.setLastRoundedMarkIndex(0);
+        boat.setStatus(BoatStatus.PRERACE);
     }
 
     /**
      * Gives each boat in the race a randomized speed so that each race is a bit different.
      */
     private void setRandomBoatSpeeds(){
-        for (Boat boat : race.getCompetitors()) {
+        for (Boat boat : potentialCompetitors) {
             Random random = new Random();
             double rangeMin = 15.0;
             double rangeMax = 25.0;
@@ -317,6 +321,16 @@ public class MockRaceRunner implements Runnable {
             boat.maximiseSpeed();
         }
     }
+
+    /**
+     * Sets boat speeds to zero
+     */
+    private void setInitialBoatSpeeds(){
+        for (Boat boat : potentialCompetitors) {
+            boat.setCurrentSpeed(0);
+        }
+    }
+
 
     /**
      * Updates the boats time to the next mark
@@ -341,8 +355,22 @@ public class MockRaceRunner implements Runnable {
         }
     }
 
-    public String getRaceId() {
-        return raceId;
+    /**
+     * generates a random windspeed and wind angle within a range of the current speed and angle
+     */
+    public void generateWind(){
+        double range = 0.05;
+        double maxSpeed = race.getCourse().getTrueWindSpeed() + range;
+        double minSpeed = race.getCourse().getTrueWindSpeed() - range;
+
+        double maxAngle = race.getCourse().getWindDirection() + range;
+        double minAngle = race.getCourse().getWindDirection() - range;
+
+        double speed = ThreadLocalRandom.current().nextDouble(minSpeed, maxSpeed);
+        double angle = ThreadLocalRandom.current().nextDouble(minAngle, maxAngle);
+
+        race.getCourse().setTrueWindSpeed(speed);
+        race.getCourse().setWindDirection(287);
     }
 
     public Race getRace() {

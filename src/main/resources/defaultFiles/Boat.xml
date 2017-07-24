@@ -10,29 +10,6 @@
         <ZoneLimits Limit1="200" Limit2="100" Limit3="53.796" Limit4="0" Limit5="-100"/>
     </Settings>
     <BoatShapes>
-        <BoatShape ShapeID="0">
-            <Vertices>
-                <Vtx Seq="3" Y="25" X="0"/>
-            </Vertices>
-        </BoatShape>
-        <BoatShape ShapeID="14">
-            <Vertices>
-                <Vtx Seq="1" Y="0" X="-1"/>
-                <Vtx Seq="2" Y="0.75" X="-1"/>
-                <Vtx Seq="3" Y="0.75" X="-0.25"/>
-                <Vtx Seq="4" Y="3.5" X="-0.25"/>
-                <Vtx Seq="5" Y="4.5" X="-1"/>
-                <Vtx Seq="6" Y="6.5" X="-1"/>
-                <Vtx Seq="7" Y="7" X="-0.5"/>
-                <Vtx Seq="8" Y="7" X="0.5"/>
-                <Vtx Seq="9" Y="6.5" X="1"/>
-                <Vtx Seq="10" Y="4.5" X="1"/>
-                <Vtx Seq="11" Y="3.5" X="0.25"/>
-                <Vtx Seq="12" Y="0.75" X="0.25"/>
-                <Vtx Seq="13" Y="0.75" X="1"/>
-                <Vtx Seq="14" Y="0" X="1"/>
-            </Vertices>
-        </BoatShape>
         <BoatShape ShapeID="15">
             <Vertices>
                 <Vtx Seq="1" Y="0" X="-3.46"/>
@@ -73,39 +50,6 @@
                 <Vtx Seq="4" Y="2" X="2.699"/>
             </Trampoline>
         </BoatShape>
-        <BoatShape ShapeID="18">
-            <Vertices>
-                <Vtx Seq="1" Y="0" X="-1.04"/>
-                <Vtx Seq="2" Y="0.11" X="-1.18"/>
-                <Vtx Seq="3" Y="0.42" X="-1.28"/>
-                <Vtx Seq="4" Y="3.74" X="-1.29"/>
-                <Vtx Seq="5" Y="5.36" X="-1.21"/>
-                <Vtx Seq="6" Y="6.29" X="-1.08"/>
-                <Vtx Seq="7" Y="7.15" X="-0.84"/>
-                <Vtx Seq="8" Y="7.63" X="-0.62"/>
-                <Vtx Seq="9" Y="7.94" X="-0.34"/>
-                <Vtx Seq="10" Y="8.06" X="0"/>
-                <Vtx Seq="11" Y="7.94" X="0.34"/>
-                <Vtx Seq="12" Y="7.63" X="0.62"/>
-                <Vtx Seq="13" Y="7.15" X="0.84"/>
-                <Vtx Seq="14" Y="6.29" X="1.08"/>
-                <Vtx Seq="15" Y="5.36" X="1.21"/>
-                <Vtx Seq="16" Y="3.74" X="1.29"/>
-                <Vtx Seq="17" Y="0.42" X="1.28"/>
-                <Vtx Seq="18" Y="0.11" X="1.18"/>
-                <Vtx Seq="19" Y="0" X="1.04"/>
-            </Vertices>
-        </BoatShape>
-        <BoatShape ShapeID="24">
-            <Vertices>
-                <Vtx Seq="1" Y="0" X="-2.5"/>
-                <Vtx Seq="2" Y="7" X="-2.5"/>
-                <Vtx Seq="3" Y="12.6" X="-2.2"/>
-                <Vtx Seq="4" Y="12.6" X="2.2"/>
-                <Vtx Seq="5" Y="7" X="2.5"/>
-                <Vtx Seq="6" Y="0" X="2.5"/>
-            </Vertices>
-        </BoatShape>
         <BoatShape ShapeID="34">
             <Vertices>
                 <Vtx Seq="1" Y="0" X="-1.16"/>
@@ -116,31 +60,8 @@
                 <Vtx Seq="6" Y="0" X="1.16"/>
             </Vertices>
         </BoatShape>
-        <BoatShape ShapeID="35">
-            <Vertices>
-                <Vtx Seq="1" Y="0" X="-1.461"/>
-                <Vtx Seq="2" Y="6" X="-1.461"/>
-                <Vtx Seq="3" Y="7" X="-1.44"/>
-                <Vtx Seq="4" Y="8" X="-1.38"/>
-                <Vtx Seq="5" Y="9" X="-1.17"/>
-                <Vtx Seq="6" Y="10" X="-0.76"/>
-                <Vtx Seq="7" Y="10.6" X="-0.34"/>
-                <Vtx Seq="8" Y="10.61" X="0"/>
-                <Vtx Seq="9" Y="10.6" X="0.34"/>
-                <Vtx Seq="10" Y="10" X="0.76"/>
-                <Vtx Seq="11" Y="9" X="1.17"/>
-                <Vtx Seq="12" Y="8" X="1.38"/>
-                <Vtx Seq="13" Y="7" X="1.44"/>
-                <Vtx Seq="14" Y="6" X="1.461"/>
-                <Vtx Seq="15" Y="0" X="1.461"/>
-            </Vertices>
-        </BoatShape>
     </BoatShapes>
     <Boats>
-        <Boat Type="RC" SourceID="121" ShapeID="35" StoweName="PRO" ShortName="PRO" ShorterName="PRO" BoatName="REGARDLESS" HullNum="RG02" Skipper="Iain Murray" Helmsman="Iain Murray" PeliID="121" RadioIP="172.20.2.121">
-            <GPSposition Z="3.8" Y="4.15" X="0"/>
-            <FlagPosition Z="0" Y="3.77" X="0"/>
-        </Boat>
         <Boat Type="Mark" SourceID="122" ShapeID="34" StoweName="SL1" ShortName="SL1" ShorterName="SL1" BoatName="Start Line 1" HullNum="Mark-02" Skipper="" PeliID="122" RadioIP="172.20.2.122">
             <GPSposition Z="5.445" Y="1.12" X="0"/>
             <FlagPosition Z="0" Y="0.74" X="0"/>
@@ -211,24 +132,5 @@
             <MastTop Z="21.496" Y="3.7" X="0"/>
             <FlagPosition Z="0" Y="6.2" X="0"/>
         </Boat>
-        <Boat Type="Marshall" SourceID="109" ShapeID="24" StoweName="CAM" ShortName="CAM" ShorterName="CAM" BoatName="Cambria" HullNum="TV01" Skipper=" " Helmsman=" " PeliID="109" RadioIP="172.20.2.109">
-            <GPSposition Z="0" Y="0" X="0"/>
-            <FlagPosition Z="0" Y="0" X="0"/>
-        </Boat>
-        <Boat Type="Marshall" SourceID="110" ShapeID="18" StoweName="BYS" ShortName="BYSTANDER" ShorterName="BYS" BoatName="BYSTANDER" HullNum="XR09" Skipper="Stan Gibbs" PeliID="110" RadioIP="172.20.2.110">
-            <GPSposition Z="5.334" Y="3.804" X="0"/>
-            <FlagPosition Z="0" Y="3.426" X="0"/>
-        </Boat>
-        <Boat Type="Marshall" SourceID="111" ShapeID="18" StoweName="SHA" ShortName="SHA" ShorterName="SHA" BoatName="SHAMROCK" HullNum="XR01" Skipper="" PeliID="111" RadioIP="172.20.2.111">
-            <GPSposition Z="5.334" Y="3.804" X="0"/>
-            <FlagPosition Z="0" Y="3.426" X="0"/>
-        </Boat>
-        <Boat Type="Umpire" SourceID="113" ShapeID="18" StoweName="U1" ShortName="U1" ShorterName="U1" BoatName="VIGILENT" HullNum="XR02" Skipper="" PeliID="113" RadioIP="172.20.2.113">
-            <GPSposition Z="5.334" Y="3.804" X="0"/>
-        </Boat>
-        <Boat Type="Umpire" SourceID="114" ShapeID="18" StoweName="U2" ShortName="U2" ShorterName="U2" BoatName="RESOLUTE" HullNum="XR03" Skipper="" PeliID="114" RadioIP="172.20.2.114">
-            <GPSposition Z="5.334" Y="3.804" X="0"/>
-        </Boat>
-        <Boat Type="Helicopter" SourceID="140" ShapeID="14" StoweName="HL1" ShortName="HEL1" ShorterName="HL1" BoatName="HELICOPTER" PeliID="140" RadioIP="172.20.2.140"/>
     </Boats>
 </BoatConfig>
