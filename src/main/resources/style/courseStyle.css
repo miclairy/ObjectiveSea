@@ -3,9 +3,9 @@
 }
 
 #boundary{
-    -fx-fill: rgb(136, 230, 239);
+    -fx-fill: #88e6ef;
     -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 10, 0.4, 0, 0);
-    -fx-stroke: rgb(64, 122, 151);
+    -fx-stroke: #407a97;
     -fx-stroke-width: 0.5px;
     -fx-opacity: 0.2;
 }
