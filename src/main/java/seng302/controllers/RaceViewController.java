@@ -737,26 +737,21 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
 
     /**
-     * This is currently called when the Course gets updated, and will redraw the course to reflect these changes
-     * @param obs
+     * Notified by either the race or the selection controller and updates the race view accordingly
+     * @param obs the observed object
      */
     @Override
     public void update(Observable obs, Object object) {
-        if (obs == race && signal instanceof Integer) {
-            Integer sig = (Integer) signal;
+        if (obs == race && object instanceof Integer) {
+            Integer sig = (Integer) object;
             switch(sig) {
-                case Race.UPDATED_COURSE_SIGNAL:
-                    updateCourse(race.getCourse());
-                    break;
                 case Race.UPDATED_COMPETITORS_SIGNAL:
                     Platform.runLater(() -> updateCompetitors(race.getCompetitors()));
                     break;
             }
-        } else if (obs == race.getCourse()){
+        } else if (obs == selectionController){
+            Boolean tracking = (Boolean) object;
             courseNeedsRedraw = selectionController.isCourseNeedsRedraw();
-            if (course == race.getCourse()){
-                courseNeedsRedraw = true;
-            }
             for(BoatDisplay boat : displayBoats){
                 if (selectedBoats.contains(boat) && !selectionController.getSelectedBoats().contains(boat)) {
                     updateDistanceLine(false);
@@ -766,36 +761,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     drawLayline(boat);
                 }
             }
-            if (tracking != null){
+            if (tracking){
                 redrawBoatPaths();
             }
             selectedBoats = selectionController.getSelectedBoats();
         }
-
-    }
-
-    /**
-     * Redraws course to deal with update boundaries
-     * @param course
-     */
-    private void updateCourse(Course course) {
-        courseNeedsRedraw = selectionController.isCourseNeedsRedraw();
-        if (course == race.getCourse()) {
-            courseNeedsRedraw = true;
-        }
-        for (BoatDisplay boat : displayBoats) {
-            if (selectedBoats.contains(boat) && !selectionController.getSelectedBoats().contains(boat)) {
-                updateDistanceLine(false);
-            }
-            if (selectedBoats.contains(boat)) {
-                updateDistanceLine(scoreBoardController.isDistanceLineSelected());
-                drawLayline(boat);
-            }
-        }
-        if (tracking != null){
-            redrawBoatPaths();
-        }
-        selectedBoats = selectionController.getSelectedBoats();
     }
 
     /**

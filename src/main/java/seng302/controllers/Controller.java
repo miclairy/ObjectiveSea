@@ -98,7 +98,6 @@ public class Controller implements Initializable, Observer {
         selectionController = new SelectionController(root, scoreBoardController, this);
         raceViewController = new RaceViewController(root, race, this, scoreBoardController, selectionController);
         selectionController.addObserver(raceViewController);
-        course.addObserver(raceViewController);
 
         createCanvasAnchorListeners();
         scoreBoardController.setControllers(this, raceViewController, race, selectionController);

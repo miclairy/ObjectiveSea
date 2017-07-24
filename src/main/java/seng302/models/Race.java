@@ -253,5 +253,6 @@ public class Race extends Observable{
     public Set<Integer> getCompetitorIds() {
         return competitorIds;
     }
+
 }
 
