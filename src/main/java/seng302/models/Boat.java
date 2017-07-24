@@ -530,6 +530,7 @@ public class Boat extends Observable implements Comparable<Boat>{
         // change heading to go into the wind
 
         headingChange(windAngle);
+        // change heading to go into the wind
     }
 
     public void downWind(double windAngle){

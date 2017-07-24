@@ -79,7 +79,7 @@ public class ServerListener extends Receiver implements Runnable{
         //for now we assume all boats racing are AC35 class yachts such that we can use the polars we have for them
         PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
         BoatAction boatAction = BoatAction.getBoatActionFromInt(action);
-        System.out.println("Boat doing a " + action);
+        //System.out.println("Boat doing a " + action);
         switch (boatAction){
             case BOAT_VMG:
                 boat.VMG(race.getCourse(), polarTable);
