@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.CRC32;
 
 import static seng302.data.AC35StreamField.*;
 import static seng302.data.AC35StreamXMLMessage.*;
@@ -173,7 +172,7 @@ public class DataStreamReader extends Receiver implements Runnable{
                 int messageLength = byteArrayRangeToInt(header, MESSAGE_LENGTH.getStartIndex(), MESSAGE_LENGTH.getEndIndex());
                 int messageTypeValue = byteArrayRangeToInt(header, MESSAGE_TYPE.getStartIndex(), MESSAGE_TYPE.getEndIndex());
                 AC35StreamMessage messageType = AC35StreamMessage.fromInteger(messageTypeValue);
-
+                int sourceID = byteArrayRangeToInt(header, HEADER_SOURCE_ID.getStartIndex(), HEADER_SOURCE_ID.getEndIndex());
                 byte[] body = new byte[messageLength];
                 dataInput.readFully(body);
                 byte[] crc = new byte[CRC_LENGTH];
@@ -214,7 +213,10 @@ public class DataStreamReader extends Receiver implements Runnable{
     private void parseRegistrationAcceptMessage(byte[] body) {
         Integer id = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());
         System.out.println("Client: Received ID of " + id);
+        setChanged();
+        notifyObservers(clientID);
     }
+
 
     /**
      * Parses the body of Race Status message, and updates race status, race times and wind direction

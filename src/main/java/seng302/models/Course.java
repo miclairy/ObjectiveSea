@@ -173,7 +173,9 @@ public class Course {
 
     public double getTrueWindSpeed() {return trueWindSpeed;}
 
-    public void setTrueWindSpeed(double trueWindSpeed) {this.trueWindSpeed = trueWindSpeed;}
+    public void setTrueWindSpeed(double trueWindSpeed) {
+        this.trueWindSpeed = trueWindSpeed;
+    }
 
     public ArrayList<Coordinate> getBoundary() {
         return boundary;

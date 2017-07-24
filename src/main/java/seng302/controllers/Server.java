@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
+import static seng302.data.AC35StreamMessage.BOAT_ACTION_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.BOAT_XML_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.RACE_XML_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.REGATTA_XML_MESSAGE;
@@ -129,7 +130,7 @@ public class Server implements Runnable, Observer {
      */
     private void sendBoatMessages(Boat boat) throws IOException {
         int currentSequenceNumber = boatSequenceNumbers.get(boat);
-        boatSequenceNumbers.put(boat, currentSequenceNumber + 1); //increment sequence number
+        boatSequenceNumbers.put(boat, currentSequenceNumber + 1);
 
         sendPacket(packetBuilder.createBoatLocationMessage(boat, raceUpdater.getRace(), currentSequenceNumber));
         if (lastMarkRoundingSent.get(boat) != boat.getLastRoundedMarkIndex()){
@@ -144,7 +145,7 @@ public class Server implements Runnable, Observer {
      * @param fileName name of the file to send
      */
     private void sendXmlMessage(AC35StreamXMLMessage type, String fileName){
-        int sequenceNo = xmlSequenceNumber.get(type) + 1; //increment sequence number
+        int sequenceNo = xmlSequenceNumber.get(type) + 1;
         xmlSequenceNumber.put(type, sequenceNo);
         byte[] packet = packetBuilder.buildXmlMessage(type, fileName, sequenceNo, raceUpdater.getRace());
         connectionManager.setXmlMessage(type, packet);

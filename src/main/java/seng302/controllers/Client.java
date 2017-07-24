@@ -9,8 +9,12 @@ import seng302.utilities.Config;
 
 import java.util.*;
 
+import java.util.Observable;
+import java.util.Observer;
+
 /**
  * Created by mjt169 on 18/07/17.
+ *
  */
 public class Client implements Runnable, Observer {
 
@@ -19,10 +23,13 @@ public class Client implements Runnable, Observer {
     private ClientPacketBuilder packetBuilder;
     private ClientSender sender;
     private Map<Integer, Boat> potentialCompetitors;
+    private UserInputController userInputController;
+    private int clientID;
 
     public Client() {
         this.packetBuilder = new ClientPacketBuilder();
         setUpDataStreamReader();
+
         System.out.println("Client: Waiting for connection to Server");
         while(dataStreamReader.getClientSocket() == null) {
             try {
@@ -64,7 +71,11 @@ public class Client implements Runnable, Observer {
         race = dataStreamReader.getRace();
     }
 
-
+    /**
+     * observing UserInputController and dataStreamReader
+     * @param o
+     * @param clientID clients id
+     */
     @Override
     public void update(Observable o, Object arg) {
         if (o == dataStreamReader) {
@@ -84,7 +95,17 @@ public class Client implements Runnable, Observer {
                     }
                 }
             }
+        } else if (o == userInputController){
+            if (arg == null){
+                sender.sendToServer(packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID));
+            } else {
+                this.clientID = (int) arg;
+            }
         }
+    }
+
+    public void setUserInputController(UserInputController userInputController) {
+        this.userInputController = userInputController;
     }
 
     public static Race getRace() {
