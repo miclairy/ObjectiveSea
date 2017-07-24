@@ -40,8 +40,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private boolean finished;
     private double heading;
     private double maxSpeed;
-    private int playerHeading = -1;
-    private double lastPlayerDirection = 0; //0 = Clockwise / 1 = AntiClockwise
+    private boolean lastPlayerDirection = true; //true = Clockwise / false = AntiClockwise
 
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
@@ -152,11 +151,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public double getHeading() {
-/*        if(playerHeading == -1) {*/
             return heading;
-/*        } else {
-            return playerHeading;
-        }*/
     }
 
     public int getCurrPlacing(){return currPlacing;}
@@ -364,7 +359,7 @@ public class Boat extends Observable implements Comparable<Boat>{
             }
         }
 
-        if (optimumHeadings.headingA == heading && optimumHeadings.headingB == heading){
+        if ((int) optimumHeadings.headingA == (int) heading && (int) optimumHeadings.headingB == (int) heading){
             return heading;
         }
 
@@ -380,14 +375,6 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void VMG(Course course, PolarTable polarTable){
         heading = getVMGHeading(course, polarTable);
-    }
-
-    public void sailsIn(){
-        currentSpeed = 0;
-    }
-
-    public void sailsOut(){
-        currentSpeed = getCurrentVMG();
     }
 
     public void tackOrGybe(Course course, PolarTable polarTable) {
@@ -409,9 +396,14 @@ public class Boat extends Observable implements Comparable<Boat>{
         double optimumHeadingA = optimumHeadings.headingA;
         double optimumHeadingB = optimumHeadings.headingB;
 
-        if(heading == (optimumHeadingA)) {
+
+
+
+        if(heading-1 <= optimumHeadingA && optimumHeadingA <= heading+1) {
+            System.out.println("Switch heading 1");
             return optimumHeadingB;
-        } else if (heading == optimumHeadingB) {
+        } else if (heading-1 <= optimumHeadingB && optimumHeadingB <= heading+1) {
+            System.out.println("Switch heading 2");
             return optimumHeadingA;
         }
 
@@ -422,7 +414,7 @@ public class Boat extends Observable implements Comparable<Boat>{
             }
         }
 
-        if (optimumHeadings.headingA == heading && optimumHeadings.headingB == heading){
+        if ((int) optimumHeadings.headingA == (int) heading && (int) optimumHeadings.headingB == (int) heading){
             return heading;
         }
 
@@ -456,48 +448,17 @@ public class Boat extends Observable implements Comparable<Boat>{
         return TWA > 91 && TWA < 269;
     }
 
-    /**
-     * If true wind angle of boat is less than 90, boat is heading downwind. The heading is set to the true wind angle.
-     * Otherwise the boat is heading upwind. The heading is set to the true wind angle - 90 degrees.
-     */
-    public void oldTackOrGybe(double TWD){
-        double TWA = Math.abs(((TWD - heading)));
-        if(TWA > 180) {
-            TWA = 360 - TWA;
-        }
-
-        double downwindBuffer = 0;
-        if(TWA > 90){
-            downwindBuffer = 270;
-        }
-
-        if(pointBetweenTwoAngle((TWD - 45 + downwindBuffer)%360,45,heading)){ //side on wind boat is on
-            heading += 2 * TWA;
-        } else {
-            heading -= 2 *TWA;
-        }
-        heading = (heading + 360) % 360;
-    }
-
     public void changeSails() {
         sailsIn = !sailsIn;
         System.out.println(sailsIn);
     }
-
-/*    public void resetPlayerHeading() {
-        playerHeading = -1;
-    }*/
 
     /**
      * This method takes the current wind angle and checks to see what side of the compass the players boat is on,
      * as to turn the boat the right direction towards the appropriate upWind or downWind.
      * @param windAngle
      */
-    private void headingChange(double windAngle) {
-
-/*        if(playerHeading == -1) {
-            playerHeading = (int) heading;
-        }*/
+    public void headingChange(double windAngle) {
 
         heading += 360;
         int windAngleCheck = (int) windAngle + 360;
@@ -505,20 +466,20 @@ public class Boat extends Observable implements Comparable<Boat>{
         if((windAngleCheck > heading && windAngleCheck-180 < heading) ||
            (windAngleCheck < heading && windAngleCheck+180 < heading)) {
             heading += 3;
-            lastPlayerDirection = 0;
+            lastPlayerDirection = true;
 
         } else if((windAngleCheck < heading && windAngleCheck+180 > heading) ||
                   (windAngleCheck > heading && windAngleCheck-180 > heading)) {
             heading -= 3;
-            lastPlayerDirection = 1;
+            lastPlayerDirection = false;
 
         } else if(windAngleCheck == heading ||
                   windAngleCheck-180 == heading ||
                   windAngleCheck+180 == heading) {
-            if(lastPlayerDirection == 0) {
+            if(lastPlayerDirection) {
                 heading += 3;
 
-            } else if(lastPlayerDirection == 1) {
+            } else {
                 heading -= 3;
             }
             /**This 'windAngleCheck == playerHeading' statement, takes the last direction the boat was turning,
@@ -538,9 +499,7 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void upWind(double windAngle){
         // change heading to go into the wind
-
         headingChange(windAngle);
-        // change heading to go into the wind
     }
 
     public void downWind(double windAngle){
@@ -549,6 +508,8 @@ public class Boat extends Observable implements Comparable<Boat>{
         if(newWindAngle > 180) {
             newWindAngle -= 360;
         }
+
+        headingChange(newWindAngle +180);
     }
 
     /**

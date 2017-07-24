@@ -1,5 +1,6 @@
 package seng302.models;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import seng302.utilities.PolarReader;
@@ -54,26 +55,17 @@ public class BoatTest
     }
 
     @Test
-    public void oldTackAndGybeTest(){
-        boat.setHeading(95);
-        boat.oldTackOrGybe(0);
-        assertEquals(265.0,boat.getHeading(),DELTA); //downwind
-        boat.setHeading(200);
-        boat.oldTackOrGybe(10);
-        assertEquals(180.0,boat.getHeading(),DELTA); //downwind
-        boat.setHeading(50);
-        boat.oldTackOrGybe(180);
-        assertEquals(310.0,boat.getHeading(),DELTA); //downwind
-        boat.setHeading(30);
-        boat.oldTackOrGybe(310);
-        assertEquals(230.0,boat.getHeading(),DELTA); //upwind
-        boat.setHeading(70);
-        boat.oldTackOrGybe(350);
-        assertEquals(270.0,boat.getHeading(),DELTA); //upwind
-        boat.setHeading(30);
-        boat.oldTackOrGybe(0);
-        assertEquals(330.0,boat.getHeading(),DELTA); //upwind
+    public void headingChangeTest() {
+        Course course = new Course();
+        course.setWindDirection(25);
 
+        boat.setHeading(45);
+        boat.headingChange(course.getWindDirection());
+        Assert.assertEquals(42, boat.getHeading(), DELTA);
+
+        boat.setHeading(24);
+        boat.headingChange(course.getWindDirection());
+        Assert.assertEquals(27, boat.getHeading(), DELTA);
     }
 
     @Test
