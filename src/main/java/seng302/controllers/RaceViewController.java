@@ -131,6 +131,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(displayBoat.getBoat().getCurrentLat(), displayBoat.getBoat().getCurrentLon());
             moveBoat(displayBoat, point);
             moveWake(displayBoat, point);
+            moveSail(displayBoat, point);
             Boat boat = displayBoat.getBoat();
             if (boat.getTimeStatus() != StartTimingStatus.INRACE &&
                     race.getCourse().getCourseOrder().get(boat.getLeg()).isStartLine()) {
@@ -615,24 +616,17 @@ public class RaceViewController extends AnimationTimer implements Observer {
         icon.getTransforms().clear();
         icon.getTransforms().add(new Rotate(boat.getBoat().getHeading()));
         icon.toFront();
+    }
 
-
-
+    /**
+     * Updates the location of the sail of a particular boat onscreen
+     * @param point location of the sail to move to
+     * @param boat display boat with sail to move
+     */
+    private void moveSail(BoatDisplay boat, CanvasCoordinate point){
         if(!boat.getBoat().isSailsIn()){
-            CubicCurve sail = boat.getSail();
-            sail.setLayoutX(point.getX());
-            sail.setLayoutY(point.getY());
-            sail.setEndX(14 * zoomLevel);
-            sail.setControlX1(0);
-            sail.setControlX2(0);
-            sail.setControlY1(0);
-            sail.setControlY2(0);
-            sail.getTransforms().clear();
-            sail.getTransforms().add(new Rotate(boat.getBoat().getSailAngle(race.getCourse().getWindDirection()), 0,0 ));
-            sail.toFront();
+            boat.moveSail(point, 0,0,0,0, boat.getBoat().getSailAngle(race.getCourse().getWindDirection()));
         }else{
-            CubicCurve sail = boat.getSail();
-
             if(isSailWidthChanging){
                 sailWidth += 0.5;
             }else{
@@ -644,16 +638,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
 
             double length  = 14 * zoomLevel;
-            sail.setLayoutX(point.getX());
-            sail.setLayoutY(point.getY());
-            sail.setControlX1(length / 4);
-            sail.setControlX2(3 * length / 4);
-            sail.setControlY1(sailWidth);
-            sail.setControlY2(-sailWidth);
-            sail.getTransforms().clear();
-            sail.getTransforms().add(new Rotate(boat.getBoat().getSailAngle(race.getCourse().getWindDirection()), 0,0 ));
-            sail.setEndX(length);
-            sail.toFront();
+            boat.moveSail(point, length/4,3 * length / 4,sailWidth,-sailWidth, boat.getBoat().getSailAngle(race.getCourse().getWindDirection()));
         }
     }
 
