@@ -147,6 +147,7 @@ public class Controller implements Initializable, Observer {
                 DisplayUtils.resetOffsets();
             }
             raceViewController.redrawCourse();
+            raceViewController.redrawBoatPaths();
         });
     }
 
