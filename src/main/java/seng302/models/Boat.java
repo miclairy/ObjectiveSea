@@ -392,20 +392,23 @@ public class Boat extends Observable implements Comparable<Boat>{
             playerHeading = (int) heading;
         }
         playerHeading += 360;
-        double windAngleCheck = (int) windAngle + 360;
-        if(windAngleCheck > playerHeading && windAngleCheck-180 < playerHeading) {
+        int windAngleCheck = (int) windAngle + 360;
+        if((windAngleCheck > playerHeading && windAngleCheck-180 < playerHeading) ||
+           (windAngleCheck < playerHeading && windAngleCheck+180 < playerHeading)) {
             playerHeading += 3;
             lastPlayerDirection = 0;
             if(playerHeading >= 720) {
                 playerHeading -= 360;
             }
-        } else if(windAngleCheck < playerHeading && windAngleCheck+180 > playerHeading) {
+        } else if((windAngleCheck < playerHeading && windAngleCheck+180 > playerHeading) ||
+                  (windAngleCheck > playerHeading && windAngleCheck-180 > playerHeading)) {
             playerHeading -= 3;
             lastPlayerDirection = 1;
             if(playerHeading < 360) {
                 playerHeading += 360;
             }
-        } else if(windAngleCheck == playerHeading) {
+        } else if((windAngleCheck-180 <= playerHeading+2 && windAngleCheck-180 >= playerHeading-2) ||
+                  (windAngleCheck+180 <= playerHeading+2 && windAngleCheck+180 >= playerHeading-2)) {
             if(lastPlayerDirection == 0) {
                 playerHeading += 3;
                 if(playerHeading >= 720) {
@@ -423,8 +426,6 @@ public class Boat extends Observable implements Comparable<Boat>{
              */
         }
         playerHeading -= 360;
-        System.out.println("Player heading: " + playerHeading);
-        System.out.println("Wind Angle: " + (int) windAngle);
 
     }
 
