@@ -11,9 +11,11 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import seng302.data.BoatAction;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -42,8 +44,6 @@ public class Controller implements Initializable, Observer {
     @FXML public Label lblWindSpeed;
     @FXML public Circle windCircle;
 
-    //number of from right edge of canvas that the wind arrow will be drawn
-    private final int WIND_ARROW_OFFSET = 60;
 
     //FPS Counter
     private SimpleStringProperty fpsString = new SimpleStringProperty();
@@ -259,7 +259,7 @@ public class Controller implements Initializable, Observer {
                 if (raceOrder.get(i).isFinished()) {
                     displayString += "Finished!";
                 } else {
-                    displayString += String.format("%.3f knots", boat.getSpeed());
+                    displayString += String.format("%.3f knots", boat.getCurrentSpeed());
                 }
             }
             formattedDisplayOrder.add(displayString);
