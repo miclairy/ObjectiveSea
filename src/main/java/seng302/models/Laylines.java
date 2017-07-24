@@ -56,7 +56,6 @@ public class Laylines {
         this.rightOfTWDAngle = TWDTo - TWA;
         this.leftOfTWDAngle = TWDTo + TWA;
         shouldDraw = !upwind;
-
     }
 
     public boolean shouldDraw() {

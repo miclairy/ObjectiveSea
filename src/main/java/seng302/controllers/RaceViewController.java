@@ -1,13 +1,10 @@
 package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
-import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -488,7 +485,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void drawVMGVector(BoatDisplay boat){
         Color color = boat.getColor();
         Course course = race.getCourse();
-        double VMG = boat.getBoat().calculateVMG(course);
+        double VMG = boat.getBoat().calculateVMGToMark(course);
         double scale = VMG / SOG_SCALE_FACTOR;
         Polyline line = raceView.createVMGVector(boat.getBoat(), scale, course, color);
         root.getChildren().add(line);
@@ -503,7 +500,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         Color color = boat.getColor();
         Course course = race.getCourse();
         root.getChildren().remove(boat.getVMGVector());
-        double VMG = boat.getBoat().calculateVMG(course);
+        double VMG = boat.getBoat().calculateVMGToMark(course);
         double scale = VMG / SOG_SCALE_FACTOR;
         Polyline oldLine = boat.getVMGVector();
         Polyline newLine = raceView.createVMGVector(boat.getBoat(), scale, course, color);

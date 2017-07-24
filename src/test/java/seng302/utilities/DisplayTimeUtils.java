@@ -21,9 +21,7 @@ public class DisplayTimeUtils {
     public void setUp(){
         Boat boat = new Boat(-1, "New Zealand", "NZ",  20.00);
         boatDisplay = new BoatDisplay(boat, null);
-
     }
-
 
     @Test
     public void TestTimeTill(){
@@ -42,7 +40,6 @@ public class DisplayTimeUtils {
     @Test
     public void TestTimeAfter(){
         long currentTime = Instant.now().toEpochMilli();
-        long timeAtMark = Instant.now().toEpochMilli() + 1000000;
         String formattedTime = DisplayUtils.getTimeSinceLastMark(currentTime, boatDisplay.getBoat());
         assert(Objects.equals(formattedTime, "..."));
     }
