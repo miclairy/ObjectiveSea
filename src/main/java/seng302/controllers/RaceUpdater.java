@@ -140,7 +140,7 @@ public class RaceUpdater implements Runnable {
     public void updateLocation(double timePassed, Course course, Boat boat) {
         double boatHeading = boat.getHeading();
         Coordinate boatPosition = boat.getCurrentPosition();
-        double distanceGained = timePassed * boat.getSpeed();
+        double distanceGained = timePassed * boat.getCurrentSpeed();
 
         Coordinate newPos = boatPosition.coordAt(distanceGained, boatHeading);
         boatPosition.update(newPos.getLat(), newPos.getLon());

@@ -377,11 +377,11 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void sailsIn(){
-        speed = 0;
+        currentSpeed = 0;
     }
 
     public void sailsOut(){
-        speed = getCurrentVMG();
+        currentSpeed = getCurrentVMG();
     }
 
     public void tackOrGybe(Course course, PolarTable polarTable) {
