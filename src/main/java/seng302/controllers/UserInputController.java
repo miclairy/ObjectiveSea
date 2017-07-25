@@ -33,10 +33,10 @@ public class UserInputController extends Observable {
     }
 
     private void keyEventListener() {
-        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent key) {
-                checkKeyPressed(key.getCode());
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, k -> {
+            checkKeyPressed(k.getCode());
+            if ( k.getCode() == KeyCode.SPACE){
+                k.consume();
             }
         });
     }
