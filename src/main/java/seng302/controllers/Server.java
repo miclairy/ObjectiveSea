@@ -52,7 +52,7 @@ public class Server implements Runnable, Observer {
         xmlSequenceNumber.put(BOAT_XML_MESSAGE, 0);
 
         //testing
-        raceUpdater.addCompetitor();
+//        raceUpdater.addCompetitor();
 //        raceUpdater.addCompetitor();
 //        raceUpdater.addCompetitor();
 //        raceUpdater.addCompetitor();

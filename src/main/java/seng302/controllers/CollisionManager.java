@@ -31,7 +31,7 @@ public class CollisionManager {
         boats.addAll(race.getCompetitors());
         for (int i = 0; i < boats.size(); i++) {
             Boat boat = boats.get(i);
-            for (int j = i; j < boats.size(); j++) {
+            for (int j = i + 1; j < boats.size(); j++) {
                 Boat otherBoat = boats.get(j);
                 checkForCollisionBetweenBoats(boat, otherBoat);
             }

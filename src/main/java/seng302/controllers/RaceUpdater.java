@@ -103,7 +103,7 @@ public class RaceUpdater implements Runnable {
                 if(race.getRaceStatus().equals(RaceStatus.STARTED)){
                     //if (collisionManager.boatIsInCollision(boat)) {
                     if (collisionManager.boatIsCollidingWithMark(boat)) {
-                        System.out.println("Boat is colliding with mark");
+                        //System.out.println("Boat is colliding with mark");
                         collisionAvoider(boat);
                     }
                     if(boat.isSailsIn() && boat.getCurrentSpeed() > 0){
