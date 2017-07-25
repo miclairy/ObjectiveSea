@@ -4,6 +4,7 @@ import seng302.data.BoatStatus;
 import seng302.data.RaceStatus;
 import seng302.data.RaceVisionXMLParser;
 import seng302.models.*;
+import seng302.utilities.DisplayUtils;
 import seng302.utilities.MathUtils;
 import seng302.utilities.PolarReader;
 import seng302.utilities.TimeUtils;
@@ -94,6 +95,7 @@ public class RaceUpdater implements Runnable {
 
             for (Boat boat : race.getCompetitors()) {
                 if(race.getRaceStatus().equals(RaceStatus.STARTED)){
+                    checkForCollision(boat);
                     if(boat.isSailsIn() && boat.getCurrentSpeed() > 0){
                         boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.2);
                         if(boat.getCurrentSpeed() < 0) boat.setCurrentSpeed(0);
@@ -385,6 +387,58 @@ public class RaceUpdater implements Runnable {
 
         race.getCourse().setTrueWindSpeed(speed);
         race.getCourse().setWindDirection(angle);
+    }
+
+    /**
+     * checks a boat to see if is colliding with another boat or mark
+     * @param boat
+     * @return boolean of collision
+     */
+    private boolean checkForCollision(Boat boat){
+        boolean collision = false;
+        for(Boat otherBoat : race.getCompetitors()){
+            if(collisionOfBounds(boat.getCurrentPosition(), otherBoat.getCurrentPosition(), 16) && boat != otherBoat){
+                collision = true;
+                boat.setColliding(true);
+                otherBoat.setColliding(true);
+                //System.out.println("EXPLOSION!!!!!!!!!!!!! YOUR BOAT IS SINKING, ABORT!!!!! !@#$%@*&^#$@ Collision of boat");
+            }
+        }
+        for(Mark mark : race.getCourse().getAllMarks().values()){
+            if(collisionOfBounds(boat.getCurrentPosition(), mark.getPosition(), 10)){
+                collision = true;
+                boat.setColliding(true);
+                //System.out.println("HOLLY HECK YOU HIT A MARK, GET YOUR RUBBER DINGY READY, YOU'VE LOST THIS RACE FOR SURE Collision of mark");
+                markAvoider(boat);
+            }
+        }
+        return collision;
+    }
+
+    private void markAvoider(Boat boat){
+        boat.setHeading(boat.getHeading() - 5);
+        boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
+        if(boat.getCurrentSpeed() < 0){
+            boat.setCurrentSpeed(0);
+        }
+        Coordinate currPos = boat.getCurrentPosition();
+        Coordinate newPos = currPos.coordAt(0.01, (boat.getHeading() + 180) % 360);
+        boat.setPosition(newPos);
+    }
+
+    /**
+     * takes two circles and calculates if there is a collision
+     * @param object1LatLon
+     * @param object2LatLon
+     * @return boolean of collision
+     */
+    private boolean collisionOfBounds(Coordinate object1LatLon, Coordinate object2LatLon, double sensitivity){
+        CanvasCoordinate object1 = DisplayUtils.convertFromLatLon(object1LatLon);
+        CanvasCoordinate object2 = DisplayUtils.convertFromLatLon(object2LatLon);
+        double dx = object1.getX() - object2.getX();
+        double dy = object2.getY() - object1.getY();
+        double distance = Math.sqrt(dx * dx + dy * dy);
+        return distance < sensitivity;
     }
 
     public Race getRace() {

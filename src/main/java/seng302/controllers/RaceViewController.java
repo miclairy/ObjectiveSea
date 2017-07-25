@@ -1,13 +1,8 @@
 package seng302.controllers;
 
-import javafx.animation.AnimationTimer;
-import javafx.animation.Interpolator;
-import javafx.animation.ScaleTransition;
+import javafx.animation.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.collections.ObservableList;
-import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -26,6 +21,7 @@ import javafx.scene.transform.Scale;
 import javafx.util.Duration;
 import seng302.data.BoatStatus;
 import seng302.data.StartTimingStatus;
+import seng302.utilities.AnimationUtils;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.PolarReader;
 import seng302.utilities.TimeUtils;
@@ -133,6 +129,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
             moveWake(displayBoat, point);
             moveSail(displayBoat, point);
             Boat boat = displayBoat.getBoat();
+            if(boat.isColliding()){
+                boat.setColliding(false);
+                if(!displayBoat.collisionInProgress){
+                    collisionAnimation(point, displayBoat);
+                    displayBoat.setCollisionInProgress(true);
+                }
+            }
+
             if (boat.getTimeStatus() != StartTimingStatus.INRACE &&
                     race.getCourse().getCourseOrder().get(boat.getLeg()).isStartLine()) {
                 if (flickercounter % 300 == 0) {
@@ -229,6 +233,49 @@ public class RaceViewController extends AnimationTimer implements Observer {
             initBoatPath(boat);
         }
     }
+
+    /**
+     * creates an animation to visual a collision
+     * @param point the point where the collision iss
+     */
+    void collisionAnimation(CanvasCoordinate point, BoatDisplay boat){
+        Circle collisionCircle1 = createCollisionCircle(point);
+        Circle collisionCircle2 = createCollisionCircle(point);
+
+        ScaleTransition st1 = AnimationUtils.scaleTransitionCollision(collisionCircle1, 700, 30);
+        st1.setOnFinished(new EventHandler<ActionEvent>(){
+            public void handle(ActionEvent AE) {
+                root.getChildren().remove(collisionCircle1);
+            }});
+
+        ScaleTransition st2 = AnimationUtils.scaleTransitionCollision(collisionCircle2, 400, 40);
+        st2.setOnFinished(new EventHandler<ActionEvent>(){
+            public void handle(ActionEvent AE) {
+                root.getChildren().remove(collisionCircle2);
+            }});
+
+        FadeTransition ft1 = AnimationUtils.fadeOutTransition(collisionCircle1, 400);
+        FadeTransition ft2 = AnimationUtils.fadeOutTransition(collisionCircle2, 600);
+        ft2.setOnFinished(new EventHandler<ActionEvent>(){
+            public void handle(ActionEvent AE) {
+                boat.setCollisionInProgress(false);
+            }});
+
+        ParallelTransition pt = new ParallelTransition(st1, st2, ft1, ft2);
+        pt.play();
+    }
+
+    private Circle createCollisionCircle(CanvasCoordinate point){
+        Circle circle = new Circle();
+        circle.setRadius(1);
+        circle.setId("collisionCircle");
+        circle.setCenterX(point.getX());
+        circle.setCenterY(point.getY());
+        root.getChildren().add(circle);
+        return circle;
+    }
+
+
 
     /**
      * Initalises a Path for a boat

@@ -2,13 +2,11 @@ package seng302.controllers;
 
 import seng302.data.*;
 import seng302.models.Boat;
+import seng302.models.Race;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
 import static seng302.data.AC35StreamMessage.BOAT_ACTION_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.BOAT_XML_MESSAGE;
@@ -119,6 +117,10 @@ public class Server implements Runnable, Observer {
             if (!boat.isFinished()) {
                 sendBoatMessages(boat);
             }
+            if(boat.isColliding()){
+                sendYachEventMessage(boat, raceUpdater.getRace(), 0, 1); //TODO generate unique incidentID
+                boat.setColliding(false);
+            }
         }
     }
 
@@ -136,6 +138,16 @@ public class Server implements Runnable, Observer {
             lastMarkRoundingSent.put(boat, boat.getLastRoundedMarkIndex());
             sendPacket(packetBuilder.createMarkRoundingMessage(boat, raceUpdater.getRace()));
         }
+    }
+
+    /**
+     * sends a Yacht Event message
+     * @param boat
+     * @param race
+     * @throws IOException
+     */
+    private void sendYachEventMessage(Boat boat, Race race, int incidentID, int eventID) throws IOException {
+        sendPacket(packetBuilder.createYachtEventMessage(boat, race, incidentID, eventID));
     }
 
     /**
