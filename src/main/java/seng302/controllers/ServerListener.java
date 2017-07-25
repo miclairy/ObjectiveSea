@@ -82,8 +82,7 @@ public class ServerListener extends Receiver implements Runnable{
     private void parseBoatActionMessage(byte[] body){
         int sourceId = byteArrayRangeToInt(body, BOAT_ACTION_SOURCE_ID.getStartIndex(), BOAT_ACTION_SOURCE_ID.getEndIndex());
         int action = byteArrayRangeToInt(body, BOAT_ACTION_BODY.getStartIndex(), BOAT_ACTION_BODY.getEndIndex());
-        Boat boat = race.getBoatById(sourceId); // Assuming this field has been set and can be used to distinguish a boat
-        //for now we assume all boats racing are AC35 class yachts such that we can use the polars we have for them
+        Boat boat = race.getBoatById(sourceId);
         PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
         BoatAction boatAction = BoatAction.getBoatActionFromInt(action);
         switch (boatAction){
@@ -100,10 +99,10 @@ public class ServerListener extends Receiver implements Runnable{
                 boat.tackOrGybe(race.getCourse(), polarTable);
                 break;
             case UPWIND:
-                boat.upWind();
+                boat.upWind(race.getCourse().getWindDirection());
                 break;
             case DOWNWIND:
-                boat.downWind();
+                boat.downWind(race.getCourse().getWindDirection());
                 break;
             default:
                 break;
