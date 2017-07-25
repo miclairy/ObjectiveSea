@@ -44,8 +44,6 @@ public class RaceUpdater implements Runnable {
         course.setTrueWindSpeed(initialWindSpeed);
         course.setWindDirection(course.getWindDirectionBasedOnGates());
         race = new Race("Mock Runner Race", course, boatsInRace);
-        setRandomBoatSpeeds();
-//        setInitialBoatSpeeds();
         initialize();
     }
 
@@ -319,22 +317,9 @@ public class RaceUpdater implements Runnable {
         RaceLine startingLine = race.getCourse().getStartLine();
         boat.setPosition(startingLine.getPosition());
         boat.setHeading(race.getCourse().headingsBetweenMarks(0, 1));
+        boat.updateBoatSpeed(race.getCourse());
         boat.setLastRoundedMarkIndex(0);
         boat.setStatus(BoatStatus.PRERACE);
-    }
-
-    /**
-     * Gives each boat in the race a randomized speed so that each race is a bit different.
-     */
-    private void setRandomBoatSpeeds(){
-        for (Boat boat : potentialCompetitors) {
-            Random random = new Random();
-            double rangeMin = 15.0;
-            double rangeMax = 25.0;
-            double speed = rangeMin + (rangeMax - rangeMin) * random.nextDouble();
-            boat.setMaxSpeed(speed);
-            boat.maximiseSpeed();
-        }
     }
 
     /**
@@ -342,7 +327,7 @@ public class RaceUpdater implements Runnable {
      */
     private void setInitialBoatSpeeds(){
         for (Boat boat : potentialCompetitors) {
-            boat.setCurrentSpeed(0);
+            boat.updateBoatSpeed(race.getCourse());
         }
     }
 
