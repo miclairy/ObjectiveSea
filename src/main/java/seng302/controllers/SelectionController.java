@@ -90,7 +90,7 @@ public class SelectionController extends Observable {
                 }
             }
             setChanged();
-            notifyObservers();
+            notifyObservers(true);
         }
 
     }

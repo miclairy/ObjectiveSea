@@ -1,19 +1,13 @@
 package seng302.views;
 
-import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
 import seng302.controllers.Controller;
 import seng302.models.*;
-import javafx.util.Pair;
-import seng302.controllers.MockRaceRunner;
-import seng302.controllers.RaceViewController;
-import seng302.models.*;
 import seng302.utilities.DisplayUtils;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +22,12 @@ public class RaceView {
 
     private final ArrayList<Color> COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#A0D468"), Color.web("#FC6E51"),
             Color.web("#FFCE54"), Color.web("#48CFAD"), Color.web("#4FC1E9"), Color.web("#656D78"))));
+
+    private final String BOUNDARY_COLOR = "#99DEDB";
+    private final String BOUNDARY_STROKE_COLOR = "#98D4D2";
+
+    private final String MARK_COLOR = "#fff";
+    private final String MARK_STROKE_COLOR = "#cdfaf4";
 
     /**
      * Creates a boat image, which is a triangle with a line through the middle, parallel to the direction the image
@@ -84,6 +84,9 @@ public class RaceView {
     public Polygon createCourseBoundary(List<Coordinate> boundaryCoordinates){
         Polygon boundary = new Polygon();
         boundary.setId("boundary");
+        boundary.setFill(Color.web(BOUNDARY_COLOR));
+        boundary.setStroke(Color.web(BOUNDARY_STROKE_COLOR));
+        boundary.setStrokeWidth(0.5);
         for(Coordinate coord : boundaryCoordinates){
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(coord);
             boundary.getPoints().add(point.getX());
@@ -101,6 +104,9 @@ public class RaceView {
         CanvasCoordinate point = DisplayUtils.convertFromLatLon(coordinate);
         Circle circle = new Circle(point.getX(), point.getY(), 4f);
         circle.setId("mark");
+        circle.setFill(Color.web(MARK_COLOR));
+        circle.setStroke(Color.web(MARK_STROKE_COLOR));
+        circle.setStrokeWidth(2);
         return circle;
     }
 
@@ -197,6 +203,7 @@ public class RaceView {
         );
         windArrow.setId("windArrow");
         windArrow.setStroke(Color.WHITE);
+        windArrow.setVisible(false);
         return windArrow;
     }
 

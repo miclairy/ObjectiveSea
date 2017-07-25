@@ -1,13 +1,13 @@
 package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
-import javafx.animation.FillTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.collections.ObservableList;
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -82,6 +82,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean firstTime = true;
     private SelectionController selectionController;
 
+    private double sailWidth = 5;
+    private boolean isSailWidthChanging = false;
+
     private int flickercounter = 0;
     private int prevWindColorNum = 0;
 
@@ -128,6 +131,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(displayBoat.getBoat().getCurrentLat(), displayBoat.getBoat().getCurrentLon());
             moveBoat(displayBoat, point);
             moveWake(displayBoat, point);
+            moveSail(displayBoat, point);
             Boat boat = displayBoat.getBoat();
             if (boat.getTimeStatus() != StartTimingStatus.INRACE &&
                     race.getCourse().getCourseOrder().get(boat.getLeg()).isStartLine()) {
@@ -186,10 +190,16 @@ public class RaceViewController extends AnimationTimer implements Observer {
             grabHandle.setId("annoGrabHandle");
             grabHandle.setCenterX(0);
             grabHandle.setCenterY(0);
-
             displayBoat.setAnnoGrabHandle(grabHandle);
             root.getChildren().add(grabHandle);
+
             selectionController.makeDraggable(grabHandle, displayBoat);
+
+            CubicCurve sail = new CubicCurve(0,0, 0,0,0,0, 20*zoomLevel,0);
+            sail.setId("boatSail");
+            displayBoat.setSail(sail);
+            root.getChildren().add(sail);
+
         }
         initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);
@@ -243,7 +253,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawMap();
         drawWindArrow();
         redrawRaceLines();
-        redrawBoatPaths();
+        //redrawBoatPaths();
     }
 
     /**
@@ -488,7 +498,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void drawVMGVector(BoatDisplay boat){
         Color color = boat.getColor();
         Course course = race.getCourse();
-        double VMG = boat.getBoat().calculateVMG(course);
+        double VMG = boat.getBoat().calculateVMGToMark(course);
         double scale = VMG / SOG_SCALE_FACTOR;
         Polyline line = raceView.createVMGVector(boat.getBoat(), scale, course, color);
         root.getChildren().add(line);
@@ -503,7 +513,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         Color color = boat.getColor();
         Course course = race.getCourse();
         root.getChildren().remove(boat.getVMGVector());
-        double VMG = boat.getBoat().calculateVMG(course);
+        double VMG = boat.getBoat().calculateVMGToMark(course);
         double scale = VMG / SOG_SCALE_FACTOR;
         Polyline oldLine = boat.getVMGVector();
         Polyline newLine = raceView.createVMGVector(boat.getBoat(), scale, course, color);
@@ -519,7 +529,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param boat to attach the vector to
      */
     private void drawSOGVector(BoatDisplay boat){
-        double scale = boat.getBoat().getSpeed() / SOG_SCALE_FACTOR;
+        double scale = boat.getBoat().getCurrentSpeed() / SOG_SCALE_FACTOR;
         Color color = boat.getColor();
         Polyline line = raceView.createSOGVector(boat.getBoat(), scale, color);
         root.getChildren().add(line);
@@ -531,7 +541,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param boat the boatDisplay who's SOGVector should move
      */
     private void moveSOGVector(BoatDisplay boat){
-        double scale = boat.getBoat().getSpeed() / SOG_SCALE_FACTOR;
+        double scale = boat.getBoat().getCurrentSpeed() / SOG_SCALE_FACTOR;
         Color color = boat.getColor();
         root.getChildren().remove(boat.getSOGVector());
         Polyline oldLine = boat.getSOGVector();
@@ -608,6 +618,30 @@ public class RaceViewController extends AnimationTimer implements Observer {
         icon.toFront();
     }
 
+    /**
+     * Updates the location of the sail of a particular boat onscreen
+     * @param point location of the sail to move to
+     * @param boat display boat with sail to move
+     */
+    private void moveSail(BoatDisplay boat, CanvasCoordinate point){
+        if(!boat.getBoat().isSailsIn()){
+            boat.moveSail(point, 0,0,0,0, boat.getBoat().getSailAngle(race.getCourse().getWindDirection()));
+        }else{
+            if(isSailWidthChanging){
+                sailWidth += 0.5;
+            }else{
+                sailWidth-= 0.5;
+            }
+
+            if(sailWidth > 5 || sailWidth < -5){
+                isSailWidthChanging = !isSailWidthChanging;
+            }
+
+            double length  = 14 * zoomLevel;
+            boat.moveSail(point, length/4,3 * length / 4,sailWidth,-sailWidth, boat.getBoat().getSailAngle(race.getCourse().getWindDirection()));
+        }
+    }
+
 
     /**
      * Moves the wake of a boat to the correct position
@@ -617,7 +651,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void moveWake(BoatDisplay boat, CanvasCoordinate point){
 
         Shape wake = boat.getWake();
-        double scale = boat.getBoat().getSpeed() / WAKE_SCALE_FACTOR;
+        double scale = boat.getBoat().getCurrentSpeed() / WAKE_SCALE_FACTOR;
         scale *= zoomLevel;
         wake.getTransforms().clear();
         wake.getTransforms().add(new Scale(scale, scale,0, 0));
@@ -721,7 +755,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param course
      */
     @Override
-    public void update(Observable course, Object arg) {
+    public void update(Observable course, Object tracking) {
         courseNeedsRedraw = selectionController.isCourseNeedsRedraw();
         if (course == race.getCourse()){
             courseNeedsRedraw = true;
@@ -734,6 +768,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 updateDistanceLine(scoreBoardController.isDistanceLineSelected());
                 drawLayline(boat);
             }
+        }
+        if (tracking != null){
+            redrawBoatPaths();
         }
         selectedBoats = selectionController.getSelectedBoats();
 
@@ -779,6 +816,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     public void drawWindArrow() {
 
+        windCircle = controller.getWindCircle();
+
         if (root.getChildren().contains(windArrow)){
             root.getChildren().remove(windArrow);
             root.getChildren().remove(windCircle);
@@ -787,7 +826,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         windArrow.setLayoutX(Controller.getAnchorWidth() - WIND_ARROW_X_PADDING);
         windArrow.setLayoutY(WIND_ARROW_Y_PADDING);
 
-        windCircle = new Circle();
+
         windCircle.setRadius(25);
         windCircle.setLayoutX(Controller.getAnchorWidth()- WIND_ARROW_X_PADDING);
         windCircle.setLayoutY(WIND_ARROW_Y_PADDING - 15);
@@ -802,6 +841,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * checks if wind arrow needs updating
      */
     public void updateWindArrow() {
+        windArrow.setVisible(true);
         double speed = race.getCourse().getTrueWindSpeed();
         int colorNum = calculateWindColor(speed);
 

@@ -395,7 +395,7 @@ public class RaceVisionXMLParser {
      * Boats defined as:
      *     BoatName, NickName and location
      *
-     * @return starters - ArrayList of Boat objects defined in file
+     * @return starters - Set of Boat objects defined in file
      */
     private static List<Boat> importStartersFromXML(){
         List<Boat> starters = new ArrayList<>();
