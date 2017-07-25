@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.StrictMath.abs;
 import static seng302.utilities.MathUtils.pointBetweenTwoAngle;
@@ -48,7 +49,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private long timeTillMark;
     private long timeTillFinish;
     private Integer id;
-    private boolean sailsIn = false;
+    private AtomicBoolean sailsIn = new AtomicBoolean(false);
 
     private double TWAofBoat;
 
@@ -167,7 +168,7 @@ public class Boat extends Observable implements Comparable<Boat>{
      * @param heading the new heading
      * */
     public void setHeading(double heading) {
-        this.heading = heading;
+        this.heading = ((heading + 360)%360);
     }
 
     public List getPathCoords() {
@@ -257,8 +258,8 @@ public class Boat extends Observable implements Comparable<Boat>{
         return lastGybeMarkPassed;
     }
 
-    public boolean isSailsIn() {
-        return sailsIn;
+    public synchronized Boolean isSailsIn() {
+        return sailsIn.get();
     }
 
     public void setLeg(int leg){
@@ -376,16 +377,8 @@ public class Boat extends Observable implements Comparable<Boat>{
         heading = getVMGHeading(course, polarTable);
     }
 
-    public void sailsIn(){
-        currentSpeed = 0;
-    }
-
-    public void sailsOut(){
-        currentSpeed = getCurrentVMG();
-    }
-
     public void tackOrGybe(Course course, PolarTable polarTable) {
-        heading = tackingFunction(course, polarTable);
+        heading = getTackOrGybeHeading(course, polarTable);
     }
 
     /**
@@ -396,7 +389,7 @@ public class Boat extends Observable implements Comparable<Boat>{
      * @param polarTable
      * @return new tack/gybe heading
      */
-    public double tackingFunction(Course course, PolarTable polarTable) {
+    public double getTackOrGybeHeading(Course course, PolarTable polarTable) {
         OptimumHeadings optimumHeadings = getOptimumHeadings(course, polarTable);
         double TWA = Math.abs(((course.getWindDirection() - heading)));
 
@@ -419,7 +412,6 @@ public class Boat extends Observable implements Comparable<Boat>{
         if (optimumHeadings.headingA == heading && optimumHeadings.headingB == heading){
             return heading;
         }
-
 
         double angleToOptimumA = abs( heading - optimumHeadingA);
         double angleToOptimumB = abs( heading - optimumHeadingB);
@@ -454,7 +446,7 @@ public class Boat extends Observable implements Comparable<Boat>{
      * If true wind angle of boat is less than 90, boat is heading downwind. The heading is set to the true wind angle.
      * Otherwise the boat is heading upwind. The heading is set to the true wind angle - 90 degrees.
      */
-    public void oldTackOrGybe(double TWD){
+    public void oldTackOrGybe(double TWD, Course course){
         double TWA = Math.abs(((TWD - heading)));
         if(TWA > 180) {
             TWA = 360 - TWA;
@@ -471,11 +463,11 @@ public class Boat extends Observable implements Comparable<Boat>{
             heading -= 2 *TWA;
         }
         heading = (heading + 360) % 360;
+        updateBoatSpeed(course);
     }
 
-    public void changeSails() {
-        sailsIn = !sailsIn;
-        System.out.println(sailsIn);
+    public synchronized void changeSails() {
+        sailsIn.set(!sailsIn.get());
     }
 
     public void upWind(){
@@ -509,7 +501,7 @@ public class Boat extends Observable implements Comparable<Boat>{
             TWA = 360 - TWA;
         }
         this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), course);
-        ArrayList<Polar> interpPolars = polarTable.TWSForInterp((int) TWS, PolarReader.getPolarsForAC35Yachts());
+        ArrayList<Polar> interpPolars = polarTable.TWSForInterp((int) course.getTrueWindSpeed(), PolarReader.getPolarsForAC35Yachts());
 
         Polar polar1 = interpPolars.get(0);
         Polar polar3 = interpPolars.get(2);
@@ -526,6 +518,24 @@ public class Boat extends Observable implements Comparable<Boat>{
         double z11 = windAngleAndSpeeds2.get(2).getSpeed();
 
         return MathUtils.bilinearInterpolation(TWS0,TWS1,TWA0,TWA1,z00,z01,z10,z11,TWS,TWA);
+    }
+
+    public synchronized double getSailAngle(double windDirection){
+        double sailAngle;
+        if(!sailsIn.get()){
+            sailAngle = windDirection;
+        } else {
+            double TWA = Math.abs(((windDirection - heading)));
+            if(TWA > 180) {
+                TWA = 360 - TWA;
+            }
+            if(TWA > 90) {
+                sailAngle = windDirection - 90;
+            } else {
+                sailAngle = windDirection + 90;
+            }
+        }
+        return sailAngle;
     }
 
 }
