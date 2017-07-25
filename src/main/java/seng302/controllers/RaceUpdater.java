@@ -105,7 +105,7 @@ public class RaceUpdater implements Runnable {
                             boat.setCurrentSpeed(boat.getCurrentSpeed() + 0.1);
                         } if(boat.getCurrentSpeed() > boat.getMaxSpeed() + 1)boat.setCurrentSpeed(boat.getMaxSpeed());
                     }
-                    updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), race.getCourse(), boat);
+                    updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
                     calculateTimeAtNextMark(boat);
                 } else {
                     long millisBeforeStart = race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs();
@@ -136,12 +136,15 @@ public class RaceUpdater implements Runnable {
         }
     }
 
-
-    public void updateLocation(double timePassed, Course course, Boat boat) {
+    /**
+     * Updates the location of a given boat to be displayed to the clients
+     * @param timePassed time passed since last update
+     * @param boat boat that needs location update
+     */
+    public void updateLocation(double timePassed, Boat boat) {
         double boatHeading = boat.getHeading();
         Coordinate boatPosition = boat.getCurrentPosition();
         double distanceGained = timePassed * boat.getCurrentSpeed();
-
         Coordinate newPos = boatPosition.coordAt(distanceGained, boatHeading);
         boatPosition.update(newPos.getLat(), newPos.getLon());
     }
@@ -379,12 +382,11 @@ public class RaceUpdater implements Runnable {
 
         double maxAngle = race.getCourse().getWindDirection() + range;
         double minAngle = race.getCourse().getWindDirection() - range;
-
         double speed = ThreadLocalRandom.current().nextDouble(minSpeed, maxSpeed);
         double angle = ThreadLocalRandom.current().nextDouble(minAngle, maxAngle);
 
         race.getCourse().setTrueWindSpeed(speed);
-        race.getCourse().setWindDirection(287);
+        race.getCourse().setWindDirection(angle);
     }
 
     /**

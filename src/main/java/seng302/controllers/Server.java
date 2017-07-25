@@ -48,13 +48,6 @@ public class Server implements Runnable, Observer {
         xmlSequenceNumber.put(REGATTA_XML_MESSAGE, 0);
         xmlSequenceNumber.put(RACE_XML_MESSAGE, 0);
         xmlSequenceNumber.put(BOAT_XML_MESSAGE, 0);
-
-        //testing
-        //raceUpdater.addCompetitor();
-//        raceUpdater.addCompetitor();
-//        raceUpdater.addCompetitor();
-//        raceUpdater.addCompetitor();
-
         for (Boat boat: raceUpdater.getRace().getCompetitors()){
             boatSequenceNumbers.put(boat, boat.getId());
             lastMarkRoundingSent.put(boat, -1);
@@ -78,7 +71,7 @@ public class Server implements Runnable, Observer {
                     e.printStackTrace();
                 }
             }
-            sendRaceUpdates(); //send one last message block with ending data
+            sendRaceUpdates();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -138,7 +131,7 @@ public class Server implements Runnable, Observer {
      */
     private void sendBoatMessages(Boat boat) throws IOException {
         int currentSequenceNumber = boatSequenceNumbers.get(boat);
-        boatSequenceNumbers.put(boat, currentSequenceNumber + 1); //increment sequence number
+        boatSequenceNumbers.put(boat, currentSequenceNumber + 1);
 
         sendPacket(packetBuilder.createBoatLocationMessage(boat, raceUpdater.getRace(), currentSequenceNumber));
         if (lastMarkRoundingSent.get(boat) != boat.getLastRoundedMarkIndex()){
@@ -163,7 +156,7 @@ public class Server implements Runnable, Observer {
      * @param fileName name of the file to send
      */
     private void sendXmlMessage(AC35StreamXMLMessage type, String fileName){
-        int sequenceNo = xmlSequenceNumber.get(type) + 1; //increment sequence number
+        int sequenceNo = xmlSequenceNumber.get(type) + 1;
         xmlSequenceNumber.put(type, sequenceNo);
         byte[] packet = packetBuilder.buildXmlMessage(type, fileName, sequenceNo, raceUpdater.getRace());
         connectionManager.setXmlMessage(type, packet);
@@ -173,6 +166,13 @@ public class Server implements Runnable, Observer {
         this.scaleFactor = scaleFactor;
     }
 
+
+    /**
+     * Observer updater, that deals with the connection manager. Setting up race for each competitor that joins and
+     * adding new boats when needed.
+     * @param o connection manager instance or serverListener
+     * @param arg socket of server
+     */
     @Override
     public void update(Observable o, Object arg) {
         if (o.equals(this.connectionManager)) {
