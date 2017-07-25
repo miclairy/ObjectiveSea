@@ -103,6 +103,7 @@ public class Client implements Runnable, Observer {
 
     public void setUserInputController(UserInputController userInputController) {
         this.userInputController = userInputController;
+        userInputController.setClientID(clientID);
     }
 
     public static Race getRace() {

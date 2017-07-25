@@ -52,7 +52,7 @@ public class Main extends Application {
             }
         });
 
-        UserInputController userInputController = new UserInputController(scene);
+        UserInputController userInputController = new UserInputController(scene, Client.getRace());
         client.setUserInputController(userInputController);
         userInputController.addObserver(client);
     }
