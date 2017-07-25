@@ -189,6 +189,9 @@ public class DataStreamReader extends Receiver implements Runnable{
                                     case MARK_ROUNDING_MESSAGE:
                                         parseMarkRoundingMessage(body);
                                         break;
+                                    case YACHT_EVENT_CODE:
+                                        parseYachtEventMessage(body);
+                                        break;
                                     case REGISTRATION_ACCEPT:
                                         parseRegistrationAcceptMessage(body);
                                 }
@@ -255,6 +258,16 @@ public class DataStreamReader extends Receiver implements Runnable{
         race.updateRaceStatus(RaceStatus.fromInteger(raceStatus));
         race.setStartTimeInEpochMs(expectedStartTime);
         race.setCurrentTimeInEpochMs(currentTime);
+    }
+
+    private void parseYachtEventMessage(byte[] body){
+        int eventID = byteArrayRangeToInt(body, EVENT_ID.getStartIndex(), EVENT_ID.getEndIndex());
+        int boatID = byteArrayRangeToInt(body, DESTINATION_SOURCE_ID.getStartIndex(), DESTINATION_SOURCE_ID.getEndIndex());
+        for(Boat boat : race.getCompetitors()){
+            if(boat.getId() == (boatID)){
+                boat.setColliding(true);
+            }
+        }
     }
 
     /**

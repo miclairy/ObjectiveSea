@@ -42,6 +42,9 @@ public class Boat extends Observable implements Comparable<Boat>{
     private double heading;
     private double maxSpeed;
 
+    private int penaltyCount;
+    private boolean isColliding;
+
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
 
@@ -221,6 +224,14 @@ public class Boat extends Observable implements Comparable<Boat>{
     public void setMaxSpeed(double maxSpeed) {
         this.maxSpeed = maxSpeed;
     }
+
+    public int getPenaltyCount(){return penaltyCount;}
+
+    public void addPenalty(int penaltyCount) {this.penaltyCount = penaltyCount;}
+
+    public boolean isColliding() {return isColliding;}
+
+    public void setColliding(boolean colliding) {isColliding = colliding;}
 
     public long getTimeTillFinish() {
         return timeTillFinish;

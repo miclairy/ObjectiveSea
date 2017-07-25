@@ -132,6 +132,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
             moveBoat(displayBoat, point);
             moveWake(displayBoat, point);
             Boat boat = displayBoat.getBoat();
+            if(boat.isColliding()){
+               displayBoat.getIcon().setFill(Color.RED);
+            }
+
             if (boat.getTimeStatus() != StartTimingStatus.INRACE &&
                     race.getCourse().getCourseOrder().get(boat.getLeg()).isStartLine()) {
                 if (flickercounter % 300 == 0) {

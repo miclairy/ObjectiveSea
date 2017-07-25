@@ -387,7 +387,6 @@ public class RaceUpdater implements Runnable {
         race.getCourse().setWindDirection(287);
     }
 
-    int count = 0;
     /**
      * checks a boat to see if is colliding with another boat or mark
      * @param boat
@@ -398,15 +397,16 @@ public class RaceUpdater implements Runnable {
         for(Boat otherBoat : race.getCompetitors()){
             if(collisionOfBounds(boat.getCurrentPosition(), otherBoat.getCurrentPosition(), 16) && boat != otherBoat){
                 collision = true;
-                count ++;
-                System.out.println("EXPLOSION!!!!!!!!!!!!! YOUR BOAT IS SINKING, ABORT!!!!! !@#$%@*&^#$@ Collision of boat " + count);
+                boat.setColliding(true);
+                otherBoat.setColliding(true);
+                //System.out.println("EXPLOSION!!!!!!!!!!!!! YOUR BOAT IS SINKING, ABORT!!!!! !@#$%@*&^#$@ Collision of boat");
             }
         }
         for(Mark mark : race.getCourse().getAllMarks().values()){
             if(collisionOfBounds(boat.getCurrentPosition(), mark.getPosition(), 10)){
                 collision = true;
-                count++;
-                System.out.println("HOLLY HECK YOU HIT A MARK, GET YOUR RUBBER DINGY READY, YOU'VE LOST THIS RACE FOR SURE Collision of mark " + count);
+                boat.setColliding(true);
+                //System.out.println("HOLLY HECK YOU HIT A MARK, GET YOUR RUBBER DINGY READY, YOU'VE LOST THIS RACE FOR SURE Collision of mark");
                 markAvoider(boat);
             }
         }
