@@ -56,7 +56,7 @@ public class ServerListener extends Receiver implements Runnable{
                             parseRegistrationRequestMessage(body);
                         case BOAT_ACTION_MESSAGE:
                             if (sourceId != -1) {
-                                parseBoatActionMessage(body, sourceId);
+                                parseBoatActionMessage(body);
                             }
                     }
                 }
@@ -79,13 +79,13 @@ public class ServerListener extends Receiver implements Runnable{
      * parses body of the boat action message that is incoming from the client.
      * @param body currently a single number that corresponds to a control from the client
      */
-    private void parseBoatActionMessage(byte[] body, int sourceId){
+    private void parseBoatActionMessage(byte[] body){
+        int sourceId = byteArrayRangeToInt(body, BOAT_ACTION_SOURCE_ID.getStartIndex(), BOAT_ACTION_SOURCE_ID.getEndIndex());
         int action = byteArrayRangeToInt(body, BOAT_ACTION_BODY.getStartIndex(), BOAT_ACTION_BODY.getEndIndex());
         Boat boat = race.getBoatById(sourceId); // Assuming this field has been set and can be used to distinguish a boat
         //for now we assume all boats racing are AC35 class yachts such that we can use the polars we have for them
         PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
         BoatAction boatAction = BoatAction.getBoatActionFromInt(action);
-        System.out.println("Boat doing a " + action);
         switch (boatAction){
             case BOAT_VMG:
                 boat.VMG(race.getCourse(), polarTable);

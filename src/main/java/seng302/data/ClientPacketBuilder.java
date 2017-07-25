@@ -1,10 +1,6 @@
 package seng302.data;
 
-import java.io.IOException;
-import java.time.Instant;
-
 import static seng302.data.AC35StreamField.*;
-import static seng302.data.AC35StreamField.MESSAGE_LENGTH;
 import static seng302.data.AC35StreamMessage.BOAT_ACTION_MESSAGE;
 import static seng302.data.AC35StreamMessage.REGISTRATION_REQUEST;
 
@@ -27,8 +23,9 @@ public class ClientPacketBuilder extends PacketBuilder {
 
     public byte[] createBoatCommandPacket(int commandInt, int clientId) {
         byte[] header = createHeader(BOAT_ACTION_MESSAGE, clientId);
-        byte[] body = new byte[1];
-        body[0] = (byte) commandInt;
+        byte[] body = new byte[5];
+        addFieldToByteArray(body, BOAT_ACTION_SOURCE_ID, clientId);
+        addFieldToByteArray(body, BOAT_ACTION_BODY, commandInt);
         return generatePacket(header, body);
     }
 
