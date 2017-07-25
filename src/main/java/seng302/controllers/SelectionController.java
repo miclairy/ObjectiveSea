@@ -40,7 +40,6 @@ public class SelectionController extends Observable {
     private boolean isTrackingPoint = false;
     private double rotationOffset = 0;
     private boolean isRotationEnabled = false;
-    private boolean courseNeedsRedraw = false;
 
     public SelectionController(Group root, ScoreBoardController scoreBoardController, Controller controller) {
         this.root = root;
@@ -62,9 +61,8 @@ public class SelectionController extends Observable {
                 setTrackingPoint(true);
                 setMapVisibility(false);
             }
-            courseNeedsRedraw = true;
             setChanged();
-            notifyObservers();
+            notifyObservers(true);
         }
     }
 
@@ -75,14 +73,12 @@ public class SelectionController extends Observable {
     void zoomTracking() {
         if (isTrackingPoint && selectedMark != null){
             DisplayUtils.moveToPoint(selectedMark.getPosition());
-            courseNeedsRedraw = true;
             setChanged();
-            notifyObservers();
+            notifyObservers(selectedMark);
        }
         if (isTrackingPoint && trackingBoat != null) {
             trackingBoat.getIcon().toFront();
             DisplayUtils.moveToPoint(trackingBoat.getBoat().getCurrentPosition());
-            courseNeedsRedraw = true;
            if(isRotationEnabled){
                 if(zoomLevel > 1){
                     rotationOffset = -trackingBoat.getBoat().getHeading();
@@ -90,7 +86,7 @@ public class SelectionController extends Observable {
                 }
             }
             setChanged();
-            notifyObservers(true);
+            notifyObservers(trackingBoat);
         }
 
     }
@@ -150,7 +146,6 @@ public class SelectionController extends Observable {
                 selectedMark = mark;
                 isTrackingPoint = true;
                 trackingBoat = null;
-                courseNeedsRedraw = true;
                 setMapVisibility(false);
             }else{
                 controller.setZoomSliderValue(1);
@@ -158,12 +153,11 @@ public class SelectionController extends Observable {
                 isTrackingPoint = false;
 
                 DisplayUtils.resetOffsets();
-                courseNeedsRedraw = true;
                 setMapVisibility(true);
 
             }
             setChanged();
-            notifyObservers();
+            notifyObservers(true);
         });
 
         circle.addEventHandler(MouseEvent.MOUSE_ENTERED, e -> {
@@ -171,6 +165,7 @@ public class SelectionController extends Observable {
         });
 
         circle.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
+            System.out.println("deselected");
             root.setCursor(Cursor.DEFAULT);
         });
     }
@@ -333,10 +328,6 @@ public class SelectionController extends Observable {
 
     public boolean isRotationEnabled() {
         return isRotationEnabled;
-    }
-
-    public boolean isCourseNeedsRedraw() {
-        return courseNeedsRedraw;
     }
 
     public void setRotationOffset(double rotationOffset) {

@@ -157,7 +157,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 displayBoat.getLaylines().removeDrawnLines(root);
             }
         }
-        drawMarks();
+        //drawMarks();
         redrawRaceLines();
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
@@ -273,6 +273,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * Handles drawing of all of the marks from the course
      */
     public void drawMarks() {
+        System.out.println("redrawing");
         for (Mark mark : race.getCourse().getAllMarks().values()) {
             if (mark.getIcon() != null && root.getChildren().contains(mark.getIcon())){
                 root.getChildren().remove(mark.getIcon());
@@ -721,8 +722,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param course
      */
     @Override
-    public void update(Observable course, Object tracking) {
-        courseNeedsRedraw = selectionController.isCourseNeedsRedraw();
+    public void update(Observable course, Object courseNeedsRedraw) {
+        if(courseNeedsRedraw != null && courseNeedsRedraw.equals(true)){
+            this.courseNeedsRedraw = true;
+        }
         if (course == race.getCourse()){
             courseNeedsRedraw = true;
         }
@@ -735,7 +738,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 drawLayline(boat);
             }
         }
-        if (tracking != null){
+        if (courseNeedsRedraw != null &&
+                courseNeedsRedraw instanceof BoatDisplay ||
+                courseNeedsRedraw instanceof Mark){
             redrawBoatPaths();
         }
         selectedBoats = selectionController.getSelectedBoats();
