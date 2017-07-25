@@ -39,3 +39,13 @@
     -fx-background-color: #3F3F3F;
     -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
 }
+
+#collisionCircle1{
+    -fx-fill: #ff5b5b;
+    -fx-opacity: 0.6;
+}
+
+#collisionCircle2{
+    -fx-fill: #ff5b5b;
+    -fx-opacity: 0.6;
+}

@@ -1,8 +1,6 @@
 package seng302.controllers;
 
-import javafx.animation.AnimationTimer;
-import javafx.animation.Interpolator;
-import javafx.animation.ScaleTransition;
+import javafx.animation.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -133,7 +131,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             moveWake(displayBoat, point);
             Boat boat = displayBoat.getBoat();
             if(boat.isColliding()){
-               displayBoat.getIcon().setFill(Color.RED);
+               collisionAnimation(point);
+                boat.setColliding(false);
             }
 
             if (boat.getTimeStatus() != StartTimingStatus.INRACE &&
@@ -234,6 +233,59 @@ public class RaceViewController extends AnimationTimer implements Observer {
             initBoatPath(boat);
         }
     }
+
+    void collisionAnimation(CanvasCoordinate point){
+        Circle collisionCircle1 = new Circle();
+        collisionCircle1.setRadius(1);
+        collisionCircle1.setId("collisionCircle1");
+        collisionCircle1.setCenterX(point.getX());
+        collisionCircle1.setCenterY(point.getY());
+        root.getChildren().add(collisionCircle1);
+
+        Circle collisionCircle2 = new Circle();
+        collisionCircle2.setRadius(1);
+        collisionCircle2.setId("collisionCircle2");
+        collisionCircle2.setCenterX(point.getX());
+        collisionCircle2.setCenterY(point.getY());
+        root.getChildren().add(collisionCircle2);
+
+        ScaleTransition st1 = new ScaleTransition(new Duration(500), collisionCircle1);
+        st1.setByY(30);
+        st1.setByX(30);
+        st1.setAutoReverse(true);
+        st1.setCycleCount(2);
+        st1.setInterpolator(Interpolator.EASE_OUT);
+        st1.setOnFinished(new EventHandler<ActionEvent>(){
+            public void handle(ActionEvent AE){
+                root.getChildren().remove(collisionCircle2);
+            }});
+
+        FadeTransition ft = new FadeTransition(new Duration(500), collisionCircle1);
+        ft.setFromValue(collisionCircle1.getOpacity());
+        ft.setToValue(0);
+        ft.setInterpolator(Interpolator.EASE_OUT);
+
+        FadeTransition ft1 = new FadeTransition(new Duration(500), collisionCircle2);
+        ft.setFromValue(collisionCircle1.getOpacity());
+        ft.setToValue(0);
+        ft.setInterpolator(Interpolator.EASE_OUT);
+
+
+        ScaleTransition st = new ScaleTransition(new Duration(200), collisionCircle1);
+        st.setByY(30);
+        st.setByX(30);
+        st.setAutoReverse(true);
+        st.setCycleCount(2);
+        st.setInterpolator(Interpolator.EASE_OUT);
+        st.setOnFinished(new EventHandler<ActionEvent>(){
+            public void handle(ActionEvent AE){
+                root.getChildren().remove(collisionCircle1);
+            }});
+        ParallelTransition pt = new ParallelTransition(st, st1, ft, ft1);
+        pt.play();
+    }
+
+
 
     /**
      * Initalises a Path for a boat
