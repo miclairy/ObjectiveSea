@@ -8,7 +8,7 @@ import java.util.*;
  * Class to figure out the mark locations and degrees.
  */
 
-public class Course extends Observable {
+public class Course {
 
     private final String LEEWARD_GATE_NAME = "Leeward Gate";
     private final String WINDWARD_GATE_NAME = "Windward Gate";
@@ -173,7 +173,9 @@ public class Course extends Observable {
 
     public double getTrueWindSpeed() {return trueWindSpeed;}
 
-    public void setTrueWindSpeed(double trueWindSpeed) {this.trueWindSpeed = trueWindSpeed;}
+    public void setTrueWindSpeed(double trueWindSpeed) {
+        this.trueWindSpeed = trueWindSpeed;
+    }
 
     public ArrayList<Coordinate> getBoundary() {
         return boundary;
@@ -202,20 +204,6 @@ public class Course extends Observable {
     public boolean hasEntryMark() {return hasEntryMark;}
 
     public void setHasEntryMark(boolean hasEntryMark) {this.hasEntryMark = hasEntryMark;}
-
-    /**
-     * This method takes another Course and attempts to merge the differences in it into this one.
-     * Assumes that the other course has the desired changes, and overwrites it's self with these changes.
-     * The other course is not changed.
-     * For now, all it does is merge the boundary (as this is currently the only changing thing in the race XML file
-     * that we care about). In future we may look at merging changed marks as well.
-     * @param otherCourse the course to merge into this one
-     */
-    public void mergeWithOtherCourse(Course otherCourse) {
-        this.boundary = new ArrayList<>(otherCourse.getBoundary());
-        setChanged();
-        notifyObservers();
-    }
 
     public void removeCompoundMark(CompoundMark mark) {
         if(compoundMarks.containsKey(mark.getCompoundMarkID())){

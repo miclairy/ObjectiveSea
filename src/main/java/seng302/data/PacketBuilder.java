@@ -8,6 +8,7 @@ import static seng302.data.AC35StreamField.*;
 
 /**
  * Created by mjt169 on 18/07/17.
+ *
  */
 public abstract class PacketBuilder {
 
@@ -58,6 +59,8 @@ public abstract class PacketBuilder {
         }
         return header;
     }
+
+
 
     /**
      * Computes and sends the CRC checksum to the socket

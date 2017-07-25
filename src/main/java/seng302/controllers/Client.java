@@ -9,8 +9,12 @@ import seng302.utilities.Config;
 
 import java.util.*;
 
+import java.util.Observable;
+import java.util.Observer;
+
 /**
  * Created by mjt169 on 18/07/17.
+ *
  */
 public class Client implements Runnable, Observer {
 
@@ -19,10 +23,13 @@ public class Client implements Runnable, Observer {
     private ClientPacketBuilder packetBuilder;
     private ClientSender sender;
     private Map<Integer, Boat> potentialCompetitors;
+    private UserInputController userInputController;
+    private int clientID;
 
     public Client() {
         this.packetBuilder = new ClientPacketBuilder();
         setUpDataStreamReader();
+
         System.out.println("Client: Waiting for connection to Server");
         while(dataStreamReader.getClientSocket() == null) {
             try {
@@ -64,7 +71,10 @@ public class Client implements Runnable, Observer {
         race = dataStreamReader.getRace();
     }
 
-
+    /**
+     * observing UserInputController and dataStreamReader
+     * @param o
+     */
     @Override
     public void update(Observable o, Object arg) {
         if (o == dataStreamReader) {
@@ -74,8 +84,7 @@ public class Client implements Runnable, Observer {
                 for (Boat boat : boats) {
                     potentialCompetitors.put(boat.getId(), boat);
                 }
-            }
-            if (arg instanceof Race) {
+            } else if (arg instanceof Race) {
                 Race newRace = (Race) arg;
                 Race oldRace = dataStreamReader.getRace();
                 for (int newId : newRace.getCompetitorIds()) {
@@ -83,8 +92,17 @@ public class Client implements Runnable, Observer {
                         oldRace.addCompetitor(potentialCompetitors.get(newId));
                     }
                 }
+            } else if (arg instanceof Integer){
+                this.clientID = (Integer) arg;
             }
+        } else if (o == userInputController){
+            byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
+            sender.sendToServer(boatCommandPacket);
         }
+    }
+
+    public void setUserInputController(UserInputController userInputController) {
+        this.userInputController = userInputController;
     }
 
     public static Race getRace() {

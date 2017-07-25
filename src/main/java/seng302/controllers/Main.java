@@ -15,6 +15,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.stage.WindowEvent;
 import javafx.event.EventHandler;
 import javafx.application.Platform;
+import seng302.data.ConnectionManager;
 import seng302.data.DataStreamReader;
 import seng302.utilities.Config;
 import seng302.models.Race;
@@ -23,6 +24,9 @@ import java.io.IOException;
 
 
 public class Main extends Application {
+
+    private static Scene scene;
+    private static Client client;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -33,7 +37,8 @@ public class Main extends Application {
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
         primaryStage.setTitle("Race Vision");
         primaryStage.getIcons().add(new Image("graphics/icon.png"));
-        primaryStage.setScene(new Scene(parent));
+        scene = new Scene(parent);
+        primaryStage.setScene(scene);
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         primaryStage.setHeight(primaryScreenBounds.getHeight());
         primaryStage.setWidth(primaryScreenBounds.getWidth());
@@ -46,6 +51,10 @@ public class Main extends Application {
                 System.exit(0);
             }
         });
+
+        UserInputController userInputController = new UserInputController(scene);
+        client.setUserInputController(userInputController);
+        userInputController.addObserver(client);
     }
 
     public static void main( String[] args ) {launch(args); }
@@ -54,7 +63,7 @@ public class Main extends Application {
      * Initializes the client on it's own thread.
      */
     private static void setupClient() {
-        Client client = new Client();
+        client = new Client();
         Thread clientThread = new Thread(client);
         clientThread.setName("Client");
         clientThread.start();
