@@ -130,8 +130,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
             moveSail(displayBoat, point);
             Boat boat = displayBoat.getBoat();
             if(boat.isColliding()){
-               collisionAnimation(point);
                 boat.setColliding(false);
+                if(!displayBoat.collisionInProgress){
+                    collisionAnimation(point, displayBoat);
+                    displayBoat.setCollisionInProgress(true);
+                }
             }
 
             if (boat.getTimeStatus() != StartTimingStatus.INRACE &&
@@ -235,7 +238,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * creates an animation to visual a collision
      * @param point the point where the collision iss
      */
-    void collisionAnimation(CanvasCoordinate point){
+    void collisionAnimation(CanvasCoordinate point, BoatDisplay boat){
         Circle collisionCircle1 = createCollisionCircle(point);
         Circle collisionCircle2 = createCollisionCircle(point);
 
@@ -253,6 +256,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         FadeTransition ft1 = AnimationUtils.fadeOutTransition(collisionCircle1, 400);
         FadeTransition ft2 = AnimationUtils.fadeOutTransition(collisionCircle2, 600);
+        ft2.setOnFinished(new EventHandler<ActionEvent>(){
+            public void handle(ActionEvent AE) {
+                boat.setCollisionInProgress(false);
+            }});
 
         ParallelTransition pt = new ParallelTransition(st1, st2, ft1, ft2);
         pt.play();
