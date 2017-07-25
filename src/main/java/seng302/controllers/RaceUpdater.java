@@ -98,7 +98,7 @@ public class RaceUpdater implements Runnable {
                         boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.2);
                         if(boat.getCurrentSpeed() < 0) boat.setCurrentSpeed(0);
                     } else if(!boat.isSailsIn()){
-                        boat.setMaxSpeed(boat.updateBoatSpeed(race.getCourse()));
+                        boat.setMaxSpeed(boat.updateBoatSpeed(race.getCourse())-boat.getDamageSpeed());
                         if(boat.getCurrentSpeed() < boat.getMaxSpeed()){
                             boat.setCurrentSpeed(boat.getCurrentSpeed() + 0.1);
                         } if(boat.getCurrentSpeed() > boat.getMaxSpeed() + 1)boat.setCurrentSpeed(boat.getMaxSpeed());

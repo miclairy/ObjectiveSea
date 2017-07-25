@@ -42,8 +42,10 @@ public class Boat extends Observable implements Comparable<Boat>{
     private double heading;
     private double maxSpeed;
     private double boatHealth = 100;
-    private double penaltySpeed;
-    private double boatCheck = 0;
+    private double damageSpeed;
+    private boolean boatCheck = false;
+    private double boatPenalty;
+
 
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
@@ -122,26 +124,33 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public double getCurrentSpeed() {
-        /*
-        if(boatCheck < 2 ) {
-            collisionPenalty();
-            boatCheck += 1;
-        }
-        checkPenaltySpeed();
-        System.out.println("Actual Speed: " + currentSpeed);
-
-        return this.penaltySpeed;*/
-
         return currentSpeed;
     }
 
     private void checkPenaltySpeed() {
         double boatPenalty = 100 - boatHealth;
         if(boatPenalty != 0) {
-            penaltySpeed = currentSpeed - boatPenalty / 10;
+            damageSpeed = currentSpeed - boatPenalty / 10;
         } else {
-            penaltySpeed = currentSpeed;
+            damageSpeed = currentSpeed;
         }
+    }
+
+    public void addDamage(int damage) {
+        boatHealth -= damage;
+    }
+
+/*  This function will be improved in a later date when boat damage is decided on speed of boat.
+    public void collisionPenalty() {
+        if(boatHealth > 0) {
+            boatHealth -= damageSpeed;
+        } else {
+            boatHealth = 0;
+        }
+    }*/
+
+    public double getDamageSpeed() {
+        return damageSpeed;
     }
 
     public int getSpeedInMMS(){
@@ -245,6 +254,10 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void setMaxSpeed(double maxSpeed) {
+        if(maxSpeed <= 0) {
+            maxSpeed = 0;
+            this.boatCheck = true;
+        }
         this.maxSpeed = maxSpeed;
     }
 
@@ -563,15 +576,4 @@ public class Boat extends Observable implements Comparable<Boat>{
         }
         return sailAngle;
     }
-
-
-
-    public void collisionPenalty() {
-        if(boatHealth > 0) {
-            boatHealth -= penaltySpeed;
-        } else {
-            boatHealth = 0;
-        }
-    }
-
 }
