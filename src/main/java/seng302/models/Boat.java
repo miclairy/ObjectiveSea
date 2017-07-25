@@ -152,7 +152,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public double getHeading() {
-            return heading;
+        return heading;
     }
 
     public int getCurrPlacing(){return currPlacing;}
@@ -178,13 +178,6 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void addPathCoord(Coordinate newCoord){
         this.pathCoords.add(newCoord);
-    }
-
-    /**
-     * Make currentSpeed be the max currentSpeed.
-     */
-    public void maximiseSpeed(){
-        this.currentSpeed = maxSpeed;
     }
 
     public double getMaxSpeed() {
@@ -319,7 +312,6 @@ public class Boat extends Observable implements Comparable<Boat>{
         } else {
             return new OptimumHeadings(heading, heading);
         }
-
         double optimumHeadingA = (TWD - optimumTWA + 360) % 360;
         double optimumHeadingB = (TWD + optimumTWA + 360) % 360;
 
@@ -331,16 +323,15 @@ public class Boat extends Observable implements Comparable<Boat>{
      * Class to store optimum headings as a pair
      */
     private class OptimumHeadings {
-
         public double headingA;
         public double headingB;
-
 
         public OptimumHeadings(double headingA, double headingB) {
             this.headingA = headingA;
             this.headingB = headingB;
         }
     }
+
 
     /**
      * Function to calculate boats closest VMG heading using the course wind direction and polar table.
@@ -353,17 +344,14 @@ public class Boat extends Observable implements Comparable<Boat>{
     public double getVMGHeading(Course course, PolarTable polarTable) {
         OptimumHeadings optimumHeadings = getOptimumHeadings(course, polarTable);
         double TWA = Math.abs(((course.getWindDirection() - heading)));
-        //no sail zone
         if(isTacking(TWA)) {
             if(inRange(optimumHeadings.headingA, optimumHeadings.headingB, heading)) {
                 return heading;
             }
         }
-
         if ((int) optimumHeadings.headingA == (int) heading && (int) optimumHeadings.headingB == (int) heading){
             return heading;
         }
-
         double angleToOptimumA = abs( heading - optimumHeadings.headingA);
         double angleToOptimumB = abs( heading - optimumHeadings.headingB);
 
@@ -393,12 +381,8 @@ public class Boat extends Observable implements Comparable<Boat>{
     public double getTackOrGybeHeading(Course course, PolarTable polarTable) {
         OptimumHeadings optimumHeadings = getOptimumHeadings(course, polarTable);
         double TWA = Math.abs(((course.getWindDirection() - heading)));
-
         double optimumHeadingA = optimumHeadings.headingA;
         double optimumHeadingB = optimumHeadings.headingB;
-
-
-
 
         if(heading-1 <= optimumHeadingA && optimumHeadingA <= heading+1) {
             return optimumHeadingB;
@@ -483,27 +467,22 @@ public class Boat extends Observable implements Comparable<Boat>{
         } else if (heading >= 360) {
             heading -= 360;
         }
-
     }
 
 
     public synchronized void changeSails() {
         sailsIn.set(!sailsIn.get());
-
     }
 
     public void upWind(double windAngle){
-        // change heading to go into the wind
         headingChange(windAngle);
     }
 
     public void downWind(double windAngle){
-        // change heading to go with the wind
         double newWindAngle = windAngle;
         if(newWindAngle > 180) {
             newWindAngle -= 360;
         }
-
         headingChange(newWindAngle +180);
     }
 
@@ -556,5 +535,4 @@ public class Boat extends Observable implements Comparable<Boat>{
         }
         return sailAngle;
     }
-
 }

@@ -80,11 +80,9 @@ public class ServerListener extends Receiver implements Runnable{
      */
     private void parseBoatActionMessage(byte[] body, int sourceId){
         int action = byteArrayRangeToInt(body, BOAT_ACTION_BODY.getStartIndex(), BOAT_ACTION_BODY.getEndIndex());
-        Boat boat = race.getBoatById(sourceId); // Assuming this field has been set and can be used to distinguish a boat
-        //for now we assume all boats racing are AC35 class yachts such that we can use the polars we have for them
+        Boat boat = race.getBoatById(sourceId);
         PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
         BoatAction boatAction = BoatAction.getBoatActionFromInt(action);
-        //System.out.println("Boat doing a " + action);
         switch (boatAction){
             case BOAT_VMG:
                 boat.VMG(race.getCourse(), polarTable);

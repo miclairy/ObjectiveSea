@@ -54,38 +54,40 @@ public class BoatTest
         assertEquals(36.0, (gybeTest.getWindAngle()/Math.cos(Math.toRadians(gybeTest.getSpeed()))), DELTA);
     }
 
-//    @Test
-//    public void tackAndGybeTest(){
-//        Course course = new Course();
-//        course.setTrueWindSpeed(20);
-//        course.setWindDirection(0);
-//        boat.setHeading(95);
-//        boat.oldTackOrGybe(0,course);
-//        assertEquals(265.0,boat.getHeading(),DELTA); //downwind
-//        boat.setHeading(200);
-//        boat.oldTackOrGybe(10,course);
-//        assertEquals(180.0,boat.getHeading(),DELTA); //downwind
-//        boat.setHeading(50);
-//        boat.oldTackOrGybe(180,course);
-//        assertEquals(310.0,boat.getHeading(),DELTA); //downwind
-//        boat.setHeading(30);
-//        boat.oldTackOrGybe(310,course);
-//        assertEquals(230.0,boat.getHeading(),DELTA); //upwind
-//        boat.setHeading(70);
-//        boat.oldTackOrGybe(350,course);
-//        assertEquals(270.0,boat.getHeading(),DELTA); //upwind
-//        boat.setHeading(30);
-//        boat.oldTackOrGybe(0,course);
-//        assertEquals(330.0,boat.getHeading(),DELTA); //upwind
-//
-//        boat.setHeading(45);
-//        boat.headingChange(course.getWindDirection());
-//        Assert.assertEquals(42, boat.getHeading(), DELTA);
-//
-//        boat.setHeading(24);
-//        boat.headingChange(course.getWindDirection());
-//        Assert.assertEquals(27, boat.getHeading(), DELTA);
-//    }
+    @Test
+    public void tackAndGybeTest(){
+        Course course = new Course();
+        ArrayList<Polar> polars = PolarReader.getPolarsForAC35Yachts();
+        course.setTrueWindSpeed(20);
+        course.setWindDirection(0);
+        PolarTable table = new PolarTable(polars, course);
+        boat.setHeading(95);
+        boat.tackOrGybe(course, table);
+        assertEquals(207.0,boat.getHeading(),DELTA); //downwind
+        boat.setHeading(200);
+        boat.tackOrGybe(course, table);
+        assertEquals(153.0,boat.getHeading(),DELTA); //downwind
+        boat.setHeading(50);
+        boat.tackOrGybe(course, table);
+        assertEquals(319.0,boat.getHeading(),DELTA); //downwind
+        boat.setHeading(30);
+        boat.tackOrGybe(course, table);
+        assertEquals(30.0,boat.getHeading(),DELTA); //upwind
+        boat.setHeading(70);
+        boat.tackOrGybe(course, table);
+        assertEquals(319.0 ,boat.getHeading(),DELTA); //upwind
+        boat.setHeading(30);
+        boat.tackOrGybe(course, table);
+        assertEquals(30.0,boat.getHeading(),DELTA); //upwind
+
+        boat.setHeading(45);
+        boat.headingChange(course.getWindDirection());
+        Assert.assertEquals(42, boat.getHeading(), DELTA);
+
+        boat.setHeading(24);
+        boat.headingChange(course.getWindDirection());
+        Assert.assertEquals(21, boat.getHeading(), DELTA);
+    }
 
     @Test
     public void getVMGHeadingTest() {
