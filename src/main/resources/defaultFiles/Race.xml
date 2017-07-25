@@ -5,12 +5,6 @@
   <RaceID>282828</RaceID>
   <RaceType>Fleet</RaceType>
   <Participants>
-    <Yacht SourceID="101" />
-    <Yacht SourceID="102" />
-    <Yacht SourceID="103" />
-    <Yacht SourceID="104" />
-    <Yacht SourceID="105" />
-    <Yacht SourceID="106" />
   </Participants>
   <Course>
     <CompoundMark CompoundMarkID="1" Name="Start">

@@ -3,6 +3,7 @@ package seng302.controllers;
 import javafx.animation.AnimationTimer;
 import javafx.animation.Interpolator;
 import javafx.animation.ScaleTransition;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -96,6 +97,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.scoreBoardController = scoreBoardController;
         this.selectionController = selectionController;
         redrawCourse();
+        race.addObserver(this);
     }
 
     @Override
@@ -133,14 +135,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             moveWake(displayBoat, point);
             moveSail(displayBoat, point);
             Boat boat = displayBoat.getBoat();
-            if (boat.getTimeStatus() != StartTimingStatus.INRACE &&
-                    race.getCourse().getCourseOrder().get(boat.getLeg()).isStartLine()) {
-                if (flickercounter % 300 == 0) {
-                    displayBoat.getStartTiming(race);
-                }
-            } else {
-                boat.setTimeStatus(StartTimingStatus.INRACE);
-            }
+            manageStartTiming(displayBoat);
             moveSOGVector(displayBoat);
             moveVMGVector(displayBoat);
             if(race.getRaceStatus() == STARTED) {
@@ -171,6 +166,23 @@ public class RaceViewController extends AnimationTimer implements Observer {
         distanceLine.getAnnotation().toFront();
     }
 
+    /**
+     * Manages the +/- start timing indicator for a boat
+     * @param displayBoat the display boat to manage
+     */
+    private void manageStartTiming(BoatDisplay displayBoat) {
+        Boat boat = displayBoat.getBoat();
+        int leg = boat.getLeg();
+        ArrayList<CompoundMark> courseOrder = race.getCourse().getCourseOrder();
+        if (boat.getTimeStatus() != StartTimingStatus.INRACE && leg < courseOrder.size() && courseOrder.get(leg).isStartLine()) {
+            if (flickercounter % 300 == 0) {
+                displayBoat.getStartTiming(race);
+            }
+        } else {
+            boat.setTimeStatus(StartTimingStatus.INRACE);
+        }
+    }
+
 
     /**
      * Draws and sets up BoatDisplay objects onscreen
@@ -178,35 +190,41 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public void initializeBoats() {
         PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
         for (Boat boat : race.getCompetitors()){
-            BoatDisplay displayBoat = new BoatDisplay(boat, polarTable);
-            boat.addObserver(displayBoat);
-            scoreBoardController.addBoatToSparkLine(displayBoat.getSeries());
-            raceView.assignColor(displayBoat);
-            displayBoats.add(displayBoat);
-            drawBoat(displayBoat);
-            selectionController.addBoatSelectionHandler(displayBoat);
-
-            Circle grabHandle = new Circle(5);
-            grabHandle.setId("annoGrabHandle");
-            grabHandle.setCenterX(0);
-            grabHandle.setCenterY(0);
-            displayBoat.setAnnoGrabHandle(grabHandle);
-            root.getChildren().add(grabHandle);
-
-            selectionController.makeDraggable(grabHandle, displayBoat);
-
-            CubicCurve sail = new CubicCurve(0,0, 0,0,0,0, 20*zoomLevel,0);
-            sail.setId("boatSail");
-            displayBoat.setSail(sail);
-            root.getChildren().add(sail);
-
+            initializeBoat(polarTable, boat);
         }
         initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);
         selectionController.setDisplayBoats(Collections.unmodifiableList(displayBoats));
     }
 
+    /**
+     * Draw and set up a single BoatDisplay
+     * @param polarTable
+     * @param boat
+     */
+    private void initializeBoat(PolarTable polarTable, Boat boat) {
+        BoatDisplay displayBoat = new BoatDisplay(boat, polarTable);
+        boat.addObserver(displayBoat);
+        scoreBoardController.addBoatToSparkLine(displayBoat.getSeries());
+        raceView.assignColor(displayBoat);
+        drawBoat(displayBoat);
+        displayBoats.add(displayBoat);
+        selectionController.addBoatSelectionHandler(displayBoat);
 
+        Circle grabHandle = new Circle(5);
+        grabHandle.setId("annoGrabHandle");
+        grabHandle.setCenterX(0);
+        grabHandle.setCenterY(0);
+        displayBoat.setAnnoGrabHandle(grabHandle);
+        root.getChildren().add(grabHandle);
+
+        selectionController.makeDraggable(grabHandle, displayBoat);
+
+        CubicCurve sail = new CubicCurve(0,0, 0,0,0,0, 20*zoomLevel,0);
+        sail.setId("boatSail");
+        displayBoat.setSail(sail);
+        root.getChildren().add(sail);
+    }
 
     /**
      * Gets a drawing of a boat icon and sets it up onscreen
@@ -751,29 +769,54 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
 
     /**
-     * This is currently called when the Course gets updated, and will redraw the course to reflect these changes
-     * @param course
+     * Notified by either the race or the selection controller and updates the race view accordingly
+     * @param obs the observed object
      */
     @Override
-    public void update(Observable course, Object tracking) {
-        courseNeedsRedraw = selectionController.isCourseNeedsRedraw();
-        if (course == race.getCourse()){
-            courseNeedsRedraw = true;
-        }
-        for(BoatDisplay boat : displayBoats){
-            if (selectedBoats.contains(boat) && !selectionController.getSelectedBoats().contains(boat)) {
-                updateDistanceLine(false);
+    public void update(Observable obs, Object object) {
+        if (obs == race && object instanceof Integer) {
+            Integer sig = (Integer) object;
+            switch(sig) {
+                case Race.UPDATED_COMPETITORS_SIGNAL:
+                    Platform.runLater(() -> updateCompetitors(race.getCompetitors()));
+                    break;
             }
-            if (selectedBoats.contains(boat)){
-                updateDistanceLine(scoreBoardController.isDistanceLineSelected());
-                drawLayline(boat);
+        } else if (obs == selectionController){
+            Boolean tracking = (Boolean) object;
+            courseNeedsRedraw = selectionController.isCourseNeedsRedraw();
+            for(BoatDisplay boat : displayBoats){
+                if (selectedBoats.contains(boat) && !selectionController.getSelectedBoats().contains(boat)) {
+                    updateDistanceLine(false);
+                }
+                if (selectedBoats.contains(boat)){
+                    updateDistanceLine(scoreBoardController.isDistanceLineSelected());
+                    drawLayline(boat);
+                }
             }
+            if (tracking){
+                redrawBoatPaths();
+            }
+            selectedBoats = selectionController.getSelectedBoats();
         }
-        if (tracking != null){
-            redrawBoatPaths();
-        }
-        selectedBoats = selectionController.getSelectedBoats();
+    }
 
+    /**
+     * Called when a new competitor has been added to the race to deal with adding in a BoatDisplay object
+     * @param competitors
+     */
+    private void updateCompetitors(List<Boat> competitors) {
+        for (Boat boat : competitors) {
+            boolean needsToBeAdded = true;
+            for (BoatDisplay displayBoat : displayBoats) {
+                if (displayBoat.getBoat() == boat) {
+                    needsToBeAdded = false;
+                }
+            }
+            if (needsToBeAdded) {
+                PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
+                initializeBoat(polarTable, boat);
+            }
+        }
     }
 
 
