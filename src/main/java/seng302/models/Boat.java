@@ -406,7 +406,6 @@ public class Boat extends Observable implements Comparable<Boat>{
             return optimumHeadingA;
         }
 
-        //no sail zone
         if(isTacking(TWA)) {
             if(inRange(optimumHeadings.headingA, optimumHeadings.headingB, heading)) {
                 return heading;
@@ -449,13 +448,12 @@ public class Boat extends Observable implements Comparable<Boat>{
     /**
      * This method takes the current wind angle and checks to see what side of the compass the players boat is on,
      * as to turn the boat the right direction towards the appropriate upWind or downWind.
-     * @param windAngle
+     * This 'windAngleCheck == playerHeading' statement, takes the last direction the boat was turning,
+     * either clockwise or anti clockwise, and turns the boat again in that direction, as the boat will
+     * sometimes be facing the exact wind direction and not know which way to turn.
+     * @param windAngle windangle of the course
      */
-    public void oldTackOrGybe(double TWD, Course course){
-        double TWA = Math.abs(((TWD - heading)));
-        if(TWA > 180) {
-            TWA = 360 - TWA;
-        }
+    public void headingChange(double windAngle) {
 
         heading += 360;
         int windAngleCheck = (int) windAngle + 360;
@@ -479,18 +477,13 @@ public class Boat extends Observable implements Comparable<Boat>{
             } else {
                 heading -= 3;
             }
-            /**This 'windAngleCheck == playerHeading' statement, takes the last direction the boat was turning,
-             * either clockwise or anti clockwise, and turns the boat again in that direction, as the boat will
-             * sometimes be facing the exact wind direction and not know which way to turn.
-             */
         }
-
         if (heading >= 720) {
             heading -= 720;
         } else if (heading >= 360) {
             heading -= 360;
         }
-        updateBoatSpeed(course);
+
     }
 
 
