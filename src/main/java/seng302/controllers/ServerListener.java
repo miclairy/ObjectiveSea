@@ -99,10 +99,10 @@ public class ServerListener extends Receiver implements Runnable{
                 boat.tackOrGybe(race.getCourse(), polarTable);
                 break;
             case UPWIND:
-                boat.upWind(race.getCourse());
+                boat.upWind();
                 break;
             case DOWNWIND:
-                boat.downWind(race.getCourse());
+                boat.downWind();
                 break;
             default:
                 break;
