@@ -168,7 +168,7 @@ public class Boat extends Observable implements Comparable<Boat>{
      * @param heading the new heading
      * */
     public void setHeading(double heading) {
-        this.heading = heading;
+        this.heading = ((heading + 360)%360);
     }
 
     public List getPathCoords() {
@@ -378,7 +378,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void tackOrGybe(Course course, PolarTable polarTable) {
-        heading = tackingFunction(course, polarTable);
+        heading = getTackOrGybeHeading(course, polarTable);
     }
 
     /**
@@ -389,7 +389,7 @@ public class Boat extends Observable implements Comparable<Boat>{
      * @param polarTable
      * @return new tack/gybe heading
      */
-    public double tackingFunction(Course course, PolarTable polarTable) {
+    public double getTackOrGybeHeading(Course course, PolarTable polarTable) {
         OptimumHeadings optimumHeadings = getOptimumHeadings(course, polarTable);
         double TWA = Math.abs(((course.getWindDirection() - heading)));
 
@@ -412,7 +412,6 @@ public class Boat extends Observable implements Comparable<Boat>{
         if (optimumHeadings.headingA == heading && optimumHeadings.headingB == heading){
             return heading;
         }
-
 
         double angleToOptimumA = abs( heading - optimumHeadingA);
         double angleToOptimumB = abs( heading - optimumHeadingB);
@@ -447,7 +446,7 @@ public class Boat extends Observable implements Comparable<Boat>{
      * If true wind angle of boat is less than 90, boat is heading downwind. The heading is set to the true wind angle.
      * Otherwise the boat is heading upwind. The heading is set to the true wind angle - 90 degrees.
      */
-    public void oldTackOrGybe(double TWD){
+    public void oldTackOrGybe(double TWD, Course course){
         double TWA = Math.abs(((TWD - heading)));
         if(TWA > 180) {
             TWA = 360 - TWA;
@@ -464,6 +463,7 @@ public class Boat extends Observable implements Comparable<Boat>{
             heading -= 2 *TWA;
         }
         heading = (heading + 360) % 360;
+        updateBoatSpeed(course);
     }
 
     public synchronized void changeSails() {
@@ -501,7 +501,7 @@ public class Boat extends Observable implements Comparable<Boat>{
             TWA = 360 - TWA;
         }
         this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), course);
-        ArrayList<Polar> interpPolars = polarTable.TWSForInterp((int) TWS, PolarReader.getPolarsForAC35Yachts());
+        ArrayList<Polar> interpPolars = polarTable.TWSForInterp((int) course.getTrueWindSpeed(), PolarReader.getPolarsForAC35Yachts());
 
         Polar polar1 = interpPolars.get(0);
         Polar polar3 = interpPolars.get(2);
