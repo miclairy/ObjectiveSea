@@ -15,6 +15,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import seng302.data.BoatAction;
+import javafx.scene.shape.Circle;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -41,6 +42,7 @@ public class Controller implements Initializable, Observer {
     @FXML private Slider zoomSlider;
     @FXML public Label lblUserHelp;
     @FXML public Label lblWindSpeed;
+    @FXML public Circle windCircle;
 
 
     //FPS Counter
@@ -76,12 +78,12 @@ public class Controller implements Initializable, Observer {
     private Race race;
 
 
-    private final double FOCUSED_ZOOMSLIDER_OPACITY =0.8;
+    private final double FOCUSED_ZOOMSLIDER_OPACITY = 0.8;
     private final double IDLE_ZOOMSLIDER_OPACITY = 0.4;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        canvasAnchor.getStylesheets().addAll(BOAT_CSS, COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, DISTANCELINE_CSS);
+        canvasAnchor.getStylesheets().addAll(COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, BOAT_CSS, DISTANCELINE_CSS);
         canvasWidth = canvas.getWidth();
         canvasHeight = canvas.getHeight();
         anchorWidth = canvasAnchor.getWidth();
@@ -383,6 +385,12 @@ public class Controller implements Initializable, Observer {
     public void setZoomSliderValue(int level){
         zoomSlider.setValue(level);
     }
+
+
+    public Circle getWindCircle() {
+        return windCircle;
+    }
+
 
     @FXML private void zoomCursorHover(){
         DisplayUtils.fadeNodeTransition(zoomSlider, FOCUSED_ZOOMSLIDER_OPACITY);
