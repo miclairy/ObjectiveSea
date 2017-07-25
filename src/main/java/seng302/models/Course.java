@@ -123,7 +123,6 @@ public class Course extends Observable {
         for(Coordinate coord : boundary){
             updateMinMaxLatLon(coord.getLat(), coord.getLon());
         }
-        //Adding padding of 0.004 to each coordinate to make sure the visual area is large enough
         minLat -= 0.004; minLon -= 0.004; maxLat += 0.004; maxLon += 0.004;
     }
 
