@@ -89,9 +89,19 @@ public class RaceUpdater implements Runnable {
 
             race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs() + (long)(raceSecondsPassed * 1000));
             generateWind();
+
             for (Boat boat : race.getCompetitors()) {
                 if(race.getRaceStatus().equals(RaceStatus.STARTED)){
-                    updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), race.getCourse(), boat);
+                    if(boat.isSailsIn() && boat.getCurrentSpeed() > 0){
+                        boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.2);
+                        if(boat.getCurrentSpeed() < 0) boat.setCurrentSpeed(0);
+                    } else if(!boat.isSailsIn()){
+                        boat.setMaxSpeed(boat.updateBoatSpeed(race.getCourse()));
+                        if(boat.getCurrentSpeed() < boat.getMaxSpeed()){
+                            boat.setCurrentSpeed(boat.getCurrentSpeed() + 0.1);
+                        } if(boat.getCurrentSpeed() > boat.getMaxSpeed() + 1)boat.setCurrentSpeed(boat.getMaxSpeed());
+                    }
+                    updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
                     calculateTimeAtNextMark(boat);
                 } else {
                     long millisBeforeStart = race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs();
@@ -122,12 +132,15 @@ public class RaceUpdater implements Runnable {
         }
     }
 
-
-    public void updateLocation(double timePassed, Course course, Boat boat) {
+    /**
+     * Updates the location of a given boat to be displayed to the clients
+     * @param timePassed time passed since last update
+     * @param boat boat that needs location update
+     */
+    public void updateLocation(double timePassed, Boat boat) {
         double boatHeading = boat.getHeading();
         Coordinate boatPosition = boat.getCurrentPosition();
-        double distanceGained = timePassed * boat.getSpeed();
-
+        double distanceGained = timePassed * boat.getCurrentSpeed();
         Coordinate newPos = boatPosition.coordAt(distanceGained, boatHeading);
         boatPosition.update(newPos.getLat(), newPos.getLon());
     }
@@ -147,6 +160,7 @@ public class RaceUpdater implements Runnable {
         boolean onTack = false;
         boolean onGybe = false;
 
+        if(!boat.isSailsIn()){
         if(MathUtils.pointBetweenTwoAngle(windDirection, polarTable.getOptimumTWA(true), headingBetweenMarks)){
             onTack = true;
             double optimumTackingVMG = polarTable.getOptimumVMG(onTack);
@@ -158,14 +172,16 @@ public class RaceUpdater implements Runnable {
             boat.setCurrentVMG(optimumGybingVMG * (-1.0));
             boat.setCurrentSpeed(optimumGybingVMG/ Math.cos(Math.toRadians(polarTable.getOptimumTWA(onTack))));
         } else {
-            boat.maximiseSpeed();
-            boat.setCurrentVMG(boat.getSpeed());
+            boat.setCurrentSpeed(boat.updateBoatSpeed(course));
+            boat.setCurrentVMG(boat.getCurrentSpeed());
+        }} else {
+            boat.setCurrentVMG(boat.getCurrentSpeed());
         }
 
         CompoundMark nextMark = courseOrder.get(boat.getLastRoundedMarkIndex()+1);
         Coordinate nextMarkPosition = nextMark.getPosition();
         Coordinate boatPosition = boat.getCurrentPosition();
-        double distanceGained = timePassed * boat.getSpeed();
+        double distanceGained = timePassed * boat.getCurrentSpeed();
         double distanceLeftInLeg = boatPosition.greaterCircleDistance(nextMark.getPosition());
 
         while(distanceGained > distanceLeftInLeg && boat.getLastRoundedMarkIndex() < courseOrder.size()-1) {
@@ -349,7 +365,6 @@ public class RaceUpdater implements Runnable {
 
         double maxAngle = race.getCourse().getWindDirection() + range;
         double minAngle = race.getCourse().getWindDirection() - range;
-
         double speed = ThreadLocalRandom.current().nextDouble(minSpeed, maxSpeed);
         double angle = ThreadLocalRandom.current().nextDouble(minAngle, maxAngle);
 

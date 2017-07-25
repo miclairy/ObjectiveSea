@@ -18,6 +18,7 @@ import static seng302.data.AC35StreamField.*;
 
 /**
  * Created by mjt169 on 19/07/17.
+ *
  */
 public class ServerListener extends Receiver implements Runnable{
     
@@ -28,6 +29,10 @@ public class ServerListener extends Receiver implements Runnable{
         this.socket = socket;
     }
 
+    /**
+     * The main run method of the serverListener. Continuously loops listening on a socket and then decoding it
+     * and calling the needed method. Deals with client registration
+     */
     @Override
     public void run() {
         while(true){
@@ -81,17 +86,17 @@ public class ServerListener extends Receiver implements Runnable{
         BoatAction boatAction = BoatAction.getBoatActionFromInt(action);
         System.out.println("Boat doing a " + action);
         switch (boatAction){
-            case BOAT_AUTOPILOT:
-                boat.autoPilot(race.getCourse(), polarTable);
+            case BOAT_VMG:
+                boat.VMG(race.getCourse(), polarTable);
                 break;
             case SAILS_IN:
-                boat.sailsIn();
+                boat.changeSails();
                 break;
             case SAILS_OUT:
-                boat.sailsOut();
+                boat.changeSails();
                 break;
             case TACK_GYBE:
-                boat.tackOrGybe(race.getCourse().getWindDirection(), race.getCourse());
+                boat.tackOrGybe(race.getCourse(), polarTable);
                 break;
             case UPWIND:
                 boat.upWind(race.getCourse());

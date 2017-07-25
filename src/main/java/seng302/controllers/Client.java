@@ -45,14 +45,12 @@ public class Client implements Runnable, Observer {
             sender.sendToServer(packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID));
         } else {
             this.clientID = (int) clientID;
+
         }
     }
 
-
-
-
-
     public void setUserInputController(UserInputController userInputController) {
         this.userInputController = userInputController;
+        userInputController.setClientID((int) clientID);
     }
 }

@@ -259,7 +259,7 @@ public class Controller implements Initializable, Observer {
                 if (raceOrder.get(i).isFinished()) {
                     displayString += "Finished!";
                 } else {
-                    displayString += String.format("%.3f knots", boat.getSpeed());
+                    displayString += String.format("%.3f knots", boat.getCurrentSpeed());
                 }
             }
             formattedDisplayOrder.add(displayString);
