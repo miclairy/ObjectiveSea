@@ -126,6 +126,7 @@ public class Controller implements Initializable, Observer {
                 DisplayUtils.dragDisplay((int)event.getX(),(int) event.getY());
                 raceViewController.redrawCourse();
                 raceViewController.redrawBoatPaths();
+                selectionController.deselectBoat();
             }
         });
     }

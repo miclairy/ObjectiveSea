@@ -101,15 +101,25 @@ public class SelectionController extends Observable {
             deselectBoat();
         });
 
+        boundary.addEventHandler(MouseEvent.MOUSE_DRAGGED, e -> {
+            deselectBoat();
+        });
+
         controller.mapImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             deselectBoat();
         });
+
+        controller.mapImageView.addEventHandler(MouseEvent.MOUSE_DRAGGED, e -> {
+            deselectBoat();
+        });
+
+
     }
 
     /**
      * Controls the users ability to deselect the boat if the boat is currently selected
      */
-    private void deselectBoat() {
+    void deselectBoat() {
         for(BoatDisplay boat : displayBoats){
             boat.focus();
             scoreBoardController.btnTrack.setVisible(false);

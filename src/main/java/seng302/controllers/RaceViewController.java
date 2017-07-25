@@ -741,6 +741,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if (courseNeedsRedraw != null &&
                 courseNeedsRedraw instanceof BoatDisplay ||
                 courseNeedsRedraw instanceof Mark){
+            redrawCourse();
             redrawBoatPaths();
         }
         selectedBoats = selectionController.getSelectedBoats();
