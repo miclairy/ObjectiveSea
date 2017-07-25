@@ -7,6 +7,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
+import javafx.scene.transform.Rotate;
 import seng302.data.StartTimingStatus;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.XYChart.Data;
@@ -17,6 +18,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import static seng302.utilities.DisplayUtils.fadeNodeTransition;
+import static seng302.utilities.DisplayUtils.zoomLevel;
 
 
 /**
@@ -39,6 +41,7 @@ public class BoatDisplay implements Observer {
     private final double FADEDBOAT = 0.3;
     public Circle annoGrabHandle;
     public CubicCurve sail;
+    public boolean collisionInProgress;
 
     private Laylines laylines;
     private PolarTable polarTable;
@@ -141,6 +144,13 @@ public class BoatDisplay implements Observer {
         this.annoGrabHandle = annoGrabHandle;
     }
 
+    public boolean isCollisionInProgress() {
+        return collisionInProgress;
+    }
+
+    public void setCollisionInProgress(boolean collisionInProgress) {
+        this.collisionInProgress = collisionInProgress;
+    }
 
     public CubicCurve getSail() {
         return sail;
@@ -269,6 +279,29 @@ public class BoatDisplay implements Observer {
     public void update(Observable boatObservable, Object arg) {
         Boat boat = (Boat) boatObservable;
         series.getData().add(new Data(boat.getLastRoundedMarkIndex(), boat.getCurrPlacing()));
+    }
+
+
+    /**
+     * moves the sail location and sets its cubic shape and rotation
+     * @param point  location
+     * @param controlX1 cubic x bend
+     * @param controlX2 cubic x bend
+     * @param controlY1 cubic y bend
+     * @param controlY2 cubic y bend
+     * @param rotation angle of rotation from 0,0 pivot
+     */
+    public void moveSail(CanvasCoordinate point, double controlX1, double controlX2, double controlY1, double controlY2, double rotation){
+        sail.setLayoutX(point.getX());
+        sail.setLayoutY(point.getY());
+        sail.setEndX(14 * zoomLevel);
+        sail.setControlX1(controlX1);
+        sail.setControlX2(controlX2);
+        sail.setControlY1(controlY1);
+        sail.setControlY2(controlY2);
+        sail.getTransforms().clear();
+        sail.getTransforms().add(new Rotate(rotation, 0,0 ));
+        sail.toFront();
     }
 
 

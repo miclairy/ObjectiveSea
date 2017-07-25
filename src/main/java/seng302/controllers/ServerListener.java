@@ -18,6 +18,7 @@ import static seng302.data.AC35StreamField.*;
 
 /**
  * Created by mjt169 on 19/07/17.
+ *
  */
 public class ServerListener extends Receiver implements Runnable{
     
@@ -28,6 +29,10 @@ public class ServerListener extends Receiver implements Runnable{
         this.socket = socket;
     }
 
+    /**
+     * The main run method of the serverListener. Continuously loops listening on a socket and then decoding it
+     * and calling the needed method. Deals with client registration
+     */
     @Override
     public void run() {
         while(true){

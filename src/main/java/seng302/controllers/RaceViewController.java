@@ -127,10 +127,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
             CanvasCoordinate point = DisplayUtils.convertFromLatLon(displayBoat.getBoat().getCurrentLat(), displayBoat.getBoat().getCurrentLon());
             moveBoat(displayBoat, point);
             moveWake(displayBoat, point);
+            moveSail(displayBoat, point);
             Boat boat = displayBoat.getBoat();
             if(boat.isColliding()){
-               collisionAnimation(point);
                 boat.setColliding(false);
+                if(!displayBoat.collisionInProgress){
+                    collisionAnimation(point, displayBoat);
+                    displayBoat.setCollisionInProgress(true);
+                }
             }
 
             if (boat.getTimeStatus() != StartTimingStatus.INRACE &&
@@ -196,9 +200,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             selectionController.makeDraggable(grabHandle, displayBoat);
 
             CubicCurve sail = new CubicCurve(0,0, 0,0,0,0, 20*zoomLevel,0);
-            sail.setFill(null);
-            sail.setStroke(Color.BLACK);
-            sail.setStrokeWidth(1);
+            sail.setId("boatSail");
             displayBoat.setSail(sail);
             root.getChildren().add(sail);
 
@@ -236,24 +238,28 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * creates an animation to visual a collision
      * @param point the point where the collision iss
      */
-    void collisionAnimation(CanvasCoordinate point){
+    void collisionAnimation(CanvasCoordinate point, BoatDisplay boat){
         Circle collisionCircle1 = createCollisionCircle(point);
         Circle collisionCircle2 = createCollisionCircle(point);
 
-        ScaleTransition st1 = AnimationUtils.scaleTransitionCollision(collisionCircle1, 200, 40);
+        ScaleTransition st1 = AnimationUtils.scaleTransitionCollision(collisionCircle1, 700, 30);
         st1.setOnFinished(new EventHandler<ActionEvent>(){
             public void handle(ActionEvent AE) {
                 root.getChildren().remove(collisionCircle1);
             }});
 
-        ScaleTransition st2 = AnimationUtils.scaleTransitionCollision(collisionCircle2, 600, 50);
+        ScaleTransition st2 = AnimationUtils.scaleTransitionCollision(collisionCircle2, 400, 40);
         st2.setOnFinished(new EventHandler<ActionEvent>(){
             public void handle(ActionEvent AE) {
                 root.getChildren().remove(collisionCircle2);
             }});
 
-        FadeTransition ft1 = AnimationUtils.fadeOutTransition(collisionCircle1, 200);
+        FadeTransition ft1 = AnimationUtils.fadeOutTransition(collisionCircle1, 400);
         FadeTransition ft2 = AnimationUtils.fadeOutTransition(collisionCircle2, 600);
+        ft2.setOnFinished(new EventHandler<ActionEvent>(){
+            public void handle(ActionEvent AE) {
+                boat.setCollisionInProgress(false);
+            }});
 
         ParallelTransition pt = new ParallelTransition(st1, st2, ft1, ft2);
         pt.play();
@@ -657,24 +663,17 @@ public class RaceViewController extends AnimationTimer implements Observer {
         icon.getTransforms().clear();
         icon.getTransforms().add(new Rotate(boat.getBoat().getHeading()));
         icon.toFront();
+    }
 
-
-
+    /**
+     * Updates the location of the sail of a particular boat onscreen
+     * @param point location of the sail to move to
+     * @param boat display boat with sail to move
+     */
+    private void moveSail(BoatDisplay boat, CanvasCoordinate point){
         if(!boat.getBoat().isSailsIn()){
-            CubicCurve sail = boat.getSail();
-            sail.setLayoutX(point.getX());
-            sail.setLayoutY(point.getY());
-            sail.setEndX(20*zoomLevel);
-            sail.setControlX1(0);
-            sail.setControlX2(0);
-            sail.setControlY1(0);
-            sail.setControlY2(0);
-            sail.getTransforms().clear();
-            sail.getTransforms().add(new Rotate(boat.getBoat().getSailAngle(race.getCourse().getWindDirection()), 0,0 ));
-            sail.toFront();
+            boat.moveSail(point, 0,0,0,0, boat.getBoat().getSailAngle(race.getCourse().getWindDirection()));
         }else{
-            CubicCurve sail = boat.getSail();
-
             if(isSailWidthChanging){
                 sailWidth += 0.5;
             }else{
@@ -685,17 +684,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 isSailWidthChanging = !isSailWidthChanging;
             }
 
-            double length  = 20*zoomLevel;
-            sail.setLayoutX(point.getX());
-            sail.setLayoutY(point.getY());
-            sail.setControlX1(length/4);
-            sail.setControlX2(3*length/4);
-            sail.setControlY1(sailWidth);
-            sail.setControlY2(-sailWidth);
-            sail.getTransforms().clear();
-            sail.getTransforms().add(new Rotate(boat.getBoat().getSailAngle(race.getCourse().getWindDirection()), 0,0 ));
-            sail.setEndX(length);
-            sail.toFront();
+            double length  = 14 * zoomLevel;
+            boat.moveSail(point, length/4,3 * length / 4,sailWidth,-sailWidth, boat.getBoat().getSailAngle(race.getCourse().getWindDirection()));
         }
     }
 
