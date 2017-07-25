@@ -70,7 +70,7 @@ public class Race extends Observable{
     }
 
     public List<Boat> getCompetitors() {
-        return competitors;
+        return Collections.unmodifiableList(this.competitors);
     }
 
     public String getRegattaName() {

@@ -13,25 +13,24 @@ import seng302.models.WindAngleAndSpeed;
 public class MathUtils {
 
     /**
-     * A function to determine whether a boat's heading is within an angle of a direction
-     * @param TWD True wind direction
-     * @param deltaAngle the change in angle from the TWD
-     * @param bearing the boats heading
+     * A function to determine whether a given direction is within an angle of a target direction
+     * @param targetDirection the direction to check against
+     * @param deltaAngle the maximum allowed variance of directions
+     * @param actualDirection the direction to test
      * @return true if he boat is within angle
      */
-    public static boolean pointBetweenTwoAngle(double TWD, double deltaAngle, double bearing){
+    public static boolean pointBetweenTwoAngle(double targetDirection, double deltaAngle, double actualDirection){
         double diff;
         double middle;
-        if(TWD > 180){
-            diff = 0;
-            bearing -= 180;
-            middle = TWD - 180;
+        if(targetDirection > 180){
+            actualDirection -= 180;
+            middle = targetDirection - 180;
         } else {
             middle = 90;
-            diff = Math.abs(90 - TWD);
-            bearing += diff;
-            bearing = (bearing + 360) % 360;}
-        return (middle - deltaAngle) <= bearing && bearing <= (middle + deltaAngle);
+            diff = Math.abs(90 - targetDirection);
+            actualDirection += diff;
+            actualDirection = (actualDirection + 360) % 360;}
+        return (middle - deltaAngle) <= actualDirection && actualDirection <= (middle + deltaAngle);
     }
 
     /**
