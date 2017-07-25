@@ -140,6 +140,11 @@ public class Boat extends Observable implements Comparable<Boat>{
         boatHealth -= damage;
     }
 
+    public void addPenalty(double penalty) {
+        boatPenalty += penalty;
+    }
+
+
 /*  This function will be improved in a later date when boat damage is decided on speed of boat.
     public void collisionPenalty() {
         if(boatHealth > 0) {
