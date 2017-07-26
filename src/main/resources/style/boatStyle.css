@@ -17,9 +17,9 @@
 }
 
 #wake{
-    -fx-stroke: #eaf2ff;
-    -fx-fill: rgb(132, 218, 255);
-    -fx-opacity: 0.5;
+    -fx-stroke: linear-gradient(#eaf2ff, transparent);
+        -fx-fill: linear-gradient(rgb(132, 218, 255), transparent);
+    -fx-opacity: 1;
     -fx-stroke-line-cap: round;
     -fx-stroke-line-join: round;
     -fx-stroke-width: 1px;
