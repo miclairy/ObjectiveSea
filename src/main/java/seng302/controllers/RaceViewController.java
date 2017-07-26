@@ -153,31 +153,31 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param boatDisplay the boat to be moved
      */
     private void moveBoatDisplay(BoatDisplay boatDisplay){
-        CanvasCoordinate point = DisplayUtils.convertFromLatLon(displayBoat.getBoat().getCurrentLat(), displayBoat.getBoat().getCurrentLon());
-        moveBoat(displayBoat, point);
-        moveWake(displayBoat, point);
-        moveSail(displayBoat, point);
-        displayCollisions(displayBoat, point);
+        CanvasCoordinate point = DisplayUtils.convertFromLatLon(boatDisplay.getBoat().getCurrentLat(), boatDisplay.getBoat().getCurrentLon());
+        moveBoat(boatDisplay, point);
+        moveWake(boatDisplay, point);
+        moveSail(boatDisplay, point);
+        displayCollisions(boatDisplay, point);
 
-        manageStartTiming(displayBoat);
-        moveSOGVector(displayBoat);
-        moveVMGVector(displayBoat);
+        manageStartTiming(boatDisplay);
+        moveSOGVector(boatDisplay);
+        moveVMGVector(boatDisplay);
         if(race.getRaceStatus() == STARTED) {
-            addToBoatPath(displayBoat, point);
+            addToBoatPath(boatDisplay, point);
         }
-        moveBoatAnnotation(displayBoat.getAnnotation(), point, displayBoat);
+        moveBoatAnnotation(boatDisplay.getAnnotation(), point, boatDisplay);
         if(scoreBoardController.areVectorsSelected()){
-            displayBoat.showVectors();
+            boatDisplay.showVectors();
         } else {
-            displayBoat.hideVectors();
+            boatDisplay.hideVectors();
         }
         if (scoreBoardController.isLayLinesSelected()){
-            displayBoat.getLaylines().removeDrawnLines(root);
-            if (selectedBoats.contains(displayBoat)) {
-                drawLayline(displayBoat);
+            boatDisplay.getLaylines().removeDrawnLines(root);
+            if (selectedBoats.contains(boatDisplay)) {
+                drawLayline(boatDisplay);
             }
         } else {
-            displayBoat.getLaylines().removeDrawnLines(root);
+            boatDisplay.getLaylines().removeDrawnLines(root);
         }
     }
 
