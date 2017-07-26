@@ -363,7 +363,31 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void VMG(Course course, PolarTable polarTable){
-        heading = getVMGHeading(course, polarTable);
+        System.out.println(getVMGHeading(course, polarTable) + "     " + heading);
+        double vmgHeadingDifference = heading - getVMGHeading(course, polarTable);
+        System.out.println(vmgHeadingDifference);
+
+        if (vmgHeadingDifference > 0){
+            // Anti clockwise rotation
+            for (double i = 0; i < vmgHeadingDifference; i += -5){
+                heading += i;
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            // Clockwise rotation
+            for (double i = 0; i < vmgHeadingDifference; i += 5){
+                heading += i;
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public void tackOrGybe(Course course, PolarTable polarTable) {
