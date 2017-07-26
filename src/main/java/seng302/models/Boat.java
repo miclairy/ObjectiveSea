@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.lang.Double.max;
 import static java.lang.StrictMath.abs;
 import static seng302.utilities.MathUtils.pointBetweenTwoAngle;
 
@@ -196,7 +197,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void setCurrentSpeed(double speed) {
-        this.currentSpeed = speed;
+        this.currentSpeed = max(0.0, speed);
     }
 
     public long getTimeAtNextMark() {

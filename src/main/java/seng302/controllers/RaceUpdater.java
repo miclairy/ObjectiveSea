@@ -99,10 +99,11 @@ public class RaceUpdater implements Runnable {
             collisionManager.checkForCollisions(race);
             for (Boat boat : race.getCompetitors()) {
                 if(race.getRaceStatus().equals(RaceStatus.STARTED)){
-                    //if (collisionManager.boatIsInCollision(boat)) {
-                    if (collisionManager.boatIsCollidingWithMark(boat)) {
-                        //System.out.println("Boat is colliding with mark");
-                        collisionAvoider(boat);
+                    if (collisionManager.boatIsInCollision(boat)) {
+                    //if (collisionManager.boatIsCollidingWithMark(boat)) {
+                        //revert the last location update as it was a collision
+                        updateLocation(-TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
+                        boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
                     }
                     if(boat.isSailsIn() && boat.getCurrentSpeed() > 0){
                         boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.2);
@@ -131,6 +132,7 @@ public class RaceUpdater implements Runnable {
                 }
 
             }
+
             //TODO fix so that race doesn't immediately end when no boats have yet registered for race
             if (!atLeastOneBoatNotFinished) {
                 //race.updateRaceStatus(RaceStatus.TERMINATED);
@@ -385,7 +387,7 @@ public class RaceUpdater implements Runnable {
     }
 
     private void collisionAvoider(Boat boat){
-        boat.setHeading(boat.getHeading() - 5);
+        //boat.setHeading(boat.getHeading() - 5);
         boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
         if(boat.getCurrentSpeed() < 0){
             boat.setCurrentSpeed(0);
