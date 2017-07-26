@@ -219,6 +219,7 @@ public class Controller implements Initializable, Observer {
                 break;
             case PREPARATORY:
                 hideStarterOverlay();
+                raceViewController.initBoatHighlight();
                 raceViewController.initializeBoats();
                 break;
             case STARTED:
@@ -226,6 +227,7 @@ public class Controller implements Initializable, Observer {
                     hideStarterOverlay();
                 }
                 if(!raceViewController.hasInitializedBoats()){
+                    raceViewController.initBoatHighlight();
                     raceViewController.initializeBoats();
                 }
                 raceViewController.initBoatPaths();
