@@ -8,7 +8,10 @@ import seng302.data.BoatAction;
 import seng302.models.Boat;
 import seng302.models.Race;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Observable;
+import java.util.Set;
 
 import static javafx.scene.input.KeyCode.SHIFT;
 
@@ -21,6 +24,7 @@ public class UserInputController extends Observable {
     private int commandInt;
     private int clientID;
     private Race race;
+    private final Set<KeyCode> cosumedKeyCodes = new HashSet<>(Arrays.asList(KeyCode.SPACE, KeyCode.UP, KeyCode.DOWN));
 
     /**
      * Sets up user key press handler.
@@ -35,7 +39,7 @@ public class UserInputController extends Observable {
     private void keyEventListener() {
         scene.addEventFilter(KeyEvent.KEY_PRESSED, key -> {
             checkKeyPressed(key.getCode());
-            if ( key.getCode() == KeyCode.SPACE){
+            if ( cosumedKeyCodes.contains(key.getCode()) ){
                 key.consume();
             }
         });
