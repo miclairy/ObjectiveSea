@@ -130,23 +130,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             moveBoat(displayBoat, point);
             moveWake(displayBoat, point);
             moveSail(displayBoat, point);
-            Boat boat = displayBoat.getBoat();
-            if(boat.isColliding()){
-                boat.setColliding(false);
-                if(!displayBoat.collisionInProgress){
-                    collisionAnimation(point, displayBoat);
-                    displayBoat.setCollisionInProgress(true);
-                }
-            }
+            displayCollisions(displayBoat, point);
 
-            if (boat.getTimeStatus() != StartTimingStatus.INRACE &&
-                    race.getCourse().getCourseOrder().get(boat.getLeg()).isStartLine()) {
-                if (flickercounter % 300 == 0) {
-                    displayBoat.getStartTiming(race);
-                }
-            } else {
-                boat.setTimeStatus(StartTimingStatus.INRACE);
-            }
             manageStartTiming(displayBoat);
             moveSOGVector(displayBoat);
             moveVMGVector(displayBoat);
@@ -176,6 +161,22 @@ public class RaceViewController extends AnimationTimer implements Observer {
         updateWindArrow();
         flickercounter++;
         distanceLine.getAnnotation().toFront();
+    }
+
+    /**
+     * Checks if a boat is colliding and displays the animation if so
+     * @param displayBoat the displayBoat to check and display collisions for
+     * @param point the canvas position of the display boat where we will display the collision animation
+     */
+    private void displayCollisions(BoatDisplay displayBoat, CanvasCoordinate point) {
+        Boat boat = displayBoat.getBoat();
+        if(boat.isColliding()){
+            boat.setColliding(false);
+            if(!displayBoat.collisionInProgress){
+                collisionAnimation(point, displayBoat);
+                displayBoat.setCollisionInProgress(true);
+            }
+        }
     }
 
     /**

@@ -98,9 +98,11 @@ public class RaceUpdater implements Runnable {
 
             race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs() + (long)(raceSecondsPassed * 1000));
             generateWind();
-            collisionManager.checkForCollisions(race);
+            if (race.hasStarted()) {
+                collisionManager.checkForCollisions(race);
+            }
             for (Boat boat : race.getCompetitors()) {
-                if(race.getRaceStatus().equals(RaceStatus.STARTED)){
+                if(race.hasStarted()){
                     if (collisionManager.boatIsInCollision(boat)) {
                         //revert the last location update as it was a collision
                         updateLocation(-TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
