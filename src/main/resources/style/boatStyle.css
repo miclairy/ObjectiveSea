@@ -44,6 +44,14 @@
     -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
 }
 
+#boatSail {
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-fill: transparent;
+    -fx-stroke: #565656;
+    -fx-opacity: 0.7;
+}
+
 #usersBoatHighlight {
     -fx-opacity: 0.4;
     -fx-fill: #4DC58B;

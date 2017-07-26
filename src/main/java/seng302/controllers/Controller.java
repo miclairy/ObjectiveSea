@@ -6,15 +6,16 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.TextAlignment;
+import seng302.data.BoatAction;
+import javafx.scene.shape.Circle;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -37,13 +38,12 @@ public class Controller implements Initializable, Observer {
     @FXML private Label clockLabel;
     @FXML public VBox startersOverlay;
     @FXML private Label startersOverlayTitle;
-    @FXML private ImageView windDirectionImage;
     @FXML public ImageView mapImageView;
     @FXML private Slider zoomSlider;
     @FXML public Label lblUserHelp;
+    @FXML public Label lblWindSpeed;
+    @FXML public Circle windCircle;
 
-    //number of from right edge of canvas that the wind arrow will be drawn
-    private final int WIND_ARROW_OFFSET = 60;
 
     //FPS Counter
     private SimpleStringProperty fpsString = new SimpleStringProperty();
@@ -71,18 +71,19 @@ public class Controller implements Initializable, Observer {
     // Controllers
     @FXML private RaceViewController raceViewController;
     @FXML private ScoreBoardController scoreBoardController = new ScoreBoardController();
+    @FXML private SelectionController selectionController;
 
     public boolean raceBegun;
     private boolean raceStatusChanged = true;
     private Race race;
 
 
-    private final double FOCUSED_ZOOMSLIDER_OPACITY =0.8;
+    private final double FOCUSED_ZOOMSLIDER_OPACITY = 0.8;
     private final double IDLE_ZOOMSLIDER_OPACITY = 0.4;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        canvasAnchor.getStylesheets().addAll(BOAT_CSS, COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, DISTANCELINE_CSS);
+        canvasAnchor.getStylesheets().addAll(COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, BOAT_CSS, DISTANCELINE_CSS);
         canvasWidth = canvas.getWidth();
         canvasHeight = canvas.getHeight();
         anchorWidth = canvasAnchor.getWidth();
@@ -94,22 +95,23 @@ public class Controller implements Initializable, Observer {
         startersOverlayTitle.setText(race.getRegattaName());
         course.initCourseLatLon();
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
-        raceViewController = new RaceViewController(root, race, this, scoreBoardController);
+        selectionController = new SelectionController(root, scoreBoardController, this);
+        raceViewController = new RaceViewController(root, race, this, scoreBoardController, selectionController);
+        selectionController.addObserver(raceViewController);
         course.addObserver(raceViewController);
 
         createCanvasAnchorListeners();
-        scoreBoardController.setControllers(this, raceViewController, race);
+        scoreBoardController.setControllers(this, raceViewController, race, selectionController);
         scoreBoardController.setUp();
         fpsString.set("..."); //set to "..." while fps count loads
         fpsLabel.textProperty().bind(fpsString);
         clockLabel.textProperty().bind(clockString);
         hideStarterOverlay();
-        setWindDirection();
+        raceViewController.updateWindArrow();
 
         displayStarters();
         startersOverlay.toFront();
         raceViewController.start();
-
         initDisplayDrag();
         initZoom();
     }
@@ -140,10 +142,10 @@ public class Controller implements Initializable, Observer {
                 mapImageView.setVisible(false);
             }else{
                 //Zoom out full, reset everything
-                raceViewController.setRotationOffset(0);
+                selectionController.setRotationOffset(0);
                 root.getTransforms().clear();
                 mapImageView.setVisible(true);
-                raceViewController.setTrackingPoint(false);
+                selectionController.setTrackingPoint(false);
                 DisplayUtils.resetOffsets();
             }
             raceViewController.redrawCourse();
@@ -204,7 +206,6 @@ public class Controller implements Initializable, Observer {
             raceViewController.redrawCourse();
             raceViewController.redrawBoatPaths();
         });
-
     }
 
 
@@ -236,15 +237,6 @@ public class Controller implements Initializable, Observer {
     }
 
     /**
-     * Sets the wind direction image to the correct rotation and position
-     * Scales rotation value to be in degrees (a value between 0 and 360)
-     */
-    public void setWindDirection(){
-        double windDirection = (float)race.getCourse().getWindDirection();
-        windDirectionImage.setRotate(windDirection + raceViewController.getRotationOffset());
-    }
-
-    /**
      * Populate the starters overlay list with boats that are competing
      */
     public void displayStarters(){
@@ -269,7 +261,7 @@ public class Controller implements Initializable, Observer {
                 if (raceOrder.get(i).isFinished()) {
                     displayString += "Finished!";
                 } else {
-                    displayString += String.format("%.3f knots", boat.getSpeed());
+                    displayString += String.format("%.3f knots", boat.getCurrentSpeed());
                 }
             }
             formattedDisplayOrder.add(displayString);
@@ -395,6 +387,12 @@ public class Controller implements Initializable, Observer {
     public void setZoomSliderValue(int level){
         zoomSlider.setValue(level);
     }
+
+
+    public Circle getWindCircle() {
+        return windCircle;
+    }
+
 
     @FXML private void zoomCursorHover(){
         DisplayUtils.fadeNodeTransition(zoomSlider, FOCUSED_ZOOMSLIDER_OPACITY);

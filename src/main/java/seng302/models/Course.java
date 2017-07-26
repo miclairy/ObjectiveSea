@@ -10,6 +10,9 @@ import java.util.*;
 
 public class Course extends Observable {
 
+    private final String LEEWARD_GATE_NAME = "Leeward Gate";
+    private final String WINDWARD_GATE_NAME = "Windward Gate";
+
     private ArrayList<CompoundMark> courseOrder;
     private ArrayList<Coordinate> boundary;
     private double minLat, minLon, maxLat, maxLon;
@@ -120,7 +123,6 @@ public class Course extends Observable {
         for(Coordinate coord : boundary){
             updateMinMaxLatLon(coord.getLat(), coord.getLon());
         }
-        //Adding padding of 0.004 to each coordinate to make sure the visual area is large enough
         minLat -= 0.004; minLon -= 0.004; maxLat += 0.004; maxLon += 0.004;
     }
 
@@ -170,7 +172,9 @@ public class Course extends Observable {
 
     public double getTrueWindSpeed() {return trueWindSpeed;}
 
-    public void setTrueWindSpeed(double trueWindSpeed) {this.trueWindSpeed = trueWindSpeed;}
+    public void setTrueWindSpeed(double trueWindSpeed) {
+        this.trueWindSpeed = trueWindSpeed;
+    }
 
     public ArrayList<Coordinate> getBoundary() {
         return boundary;
@@ -214,6 +218,7 @@ public class Course extends Observable {
         notifyObservers();
     }
 
+
     public void removeCompoundMark(CompoundMark mark) {
         if(compoundMarks.containsKey(mark.getCompoundMarkID())){
             compoundMarks.remove(mark.getCompoundMarkID());
@@ -223,4 +228,30 @@ public class Course extends Observable {
     public CompoundMark getCompoundMarkByID(int id) {
         return compoundMarks.get(id);
     }
+
+    /**
+     * Returns a CompoundMark with the given name
+     * @param name The name of the CompoundMark to find
+     * @return The CompoundMark with the given name if present, else null
+     */
+    private CompoundMark findCompoundMarkByName(String name){
+        for(Integer compoundMarkId : compoundMarks.keySet()){
+            CompoundMark compoundMark = compoundMarks.get(compoundMarkId);
+            if(compoundMark.getName().equals(name)){
+                return compoundMark;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets the wind direction based on the coordinates of the Leeward and Windward gates.
+     * @return the wind direction in degrees
+     */
+    public Double getWindDirectionBasedOnGates(){
+        CompoundMark leewardGate = findCompoundMarkByName(LEEWARD_GATE_NAME);
+        CompoundMark windwardGate = findCompoundMarkByName(WINDWARD_GATE_NAME);
+        return leewardGate.getPosition().headingToCoordinate(windwardGate.getPosition());
+    }
+
 }

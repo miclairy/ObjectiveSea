@@ -3,9 +3,9 @@
 }
 
 #boundary{
-    -fx-fill: rgb(136, 230, 239);
+    -fx-fill: #88e6ef;
     -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 10, 0.4, 0, 0);
-    -fx-stroke: rgb(64, 122, 151);
+    -fx-stroke: #407a97;
     -fx-stroke-width: 0.5px;
     -fx-opacity: 0.2;
 }
@@ -20,4 +20,29 @@
 #userHelp{
     -fx-text-fill: white;
     -fx-font-weight: 700;
+}
+
+#windArrow{
+
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-stroke-width: 4px;
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 3);
+}
+
+#windCircle {
+    -fx-stroke-width: 4px;
+    -fx-fill: transparent;
+    -fx-stroke: white;
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 3);
+}
+
+#lblWindSpeed {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: White;
+}
+
+#imvSpeedScale {
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 0);
 }
