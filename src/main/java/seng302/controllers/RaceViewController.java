@@ -131,14 +131,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             moveWake(displayBoat, point);
             moveSail(displayBoat, point);
             Boat boat = displayBoat.getBoat();
-            if(boat.isColliding()){
-                boat.setColliding(false);
-                if(!displayBoat.collisionInProgress){
-                    collisionAnimation(point, displayBoat);
-                    displayBoat.setCollisionInProgress(true);
-                }
-            }
-
+            checkForCollisions(displayBoat, point);
             if (boat.getTimeStatus() != StartTimingStatus.INRACE &&
                     race.getCourse().getCourseOrder().get(boat.getLeg()).isStartLine()) {
                 if (flickercounter % 300 == 0) {
@@ -436,6 +429,17 @@ public class RaceViewController extends AnimationTimer implements Observer {
         displayBoat.setAnnotation(annotationFrame);
         displayBoat.getAnnotation().toFront();
         displayBoat.getAnnotationLine().toBack();
+    }
+
+    private void checkForCollisions(BoatDisplay displayBoat, CanvasCoordinate point){
+        Boat boat = displayBoat.getBoat();
+        if(boat.isColliding()){
+            boat.setColliding(false);
+            if(!displayBoat.collisionInProgress){
+                collisionAnimation(point, displayBoat);
+                displayBoat.setCollisionInProgress(true);
+            }
+        }
     }
 
 
