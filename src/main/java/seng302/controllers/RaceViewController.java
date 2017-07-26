@@ -675,6 +675,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param boat display boat with sail to move
      */
     private void moveSail(BoatDisplay boat, CanvasCoordinate point){
+        boat.getSail().setStrokeWidth(1.5 * zoomLevel);
         if(!boat.getBoat().isSailsIn()){
             boat.moveSail(point, 0,0,0,0, boat.getBoat().getSailAngle(race.getCourse().getWindDirection()));
         }else{
