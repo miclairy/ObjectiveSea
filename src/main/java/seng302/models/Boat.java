@@ -40,6 +40,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private int lastGybeMarkPassed;
     private boolean finished;
     private double heading;
+    private double targetHeading;
     private double maxSpeed;
     private boolean lastPlayerDirection = true; //true = Clockwise / false = AntiClockwise
 
@@ -53,6 +54,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private AtomicBoolean sailsIn = new AtomicBoolean(false);
 
     private double TWAofBoat;
+    private boolean rotate;
 
     public Boat(Integer id, String name, String nickName, double speed) {
         this.id = id;
@@ -363,35 +365,14 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void VMG(Course course, PolarTable polarTable){
-        System.out.println(getVMGHeading(course, polarTable) + "     " + heading);
-        double vmgHeadingDifference = heading - getVMGHeading(course, polarTable);
-        System.out.println(vmgHeadingDifference);
-
-        if (vmgHeadingDifference > 0){
-            // Anti clockwise rotation
-            for (double i = 0; i < vmgHeadingDifference; i += -5){
-                heading += i;
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            // Clockwise rotation
-            for (double i = 0; i < vmgHeadingDifference; i += 5){
-                heading += i;
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+        targetHeading = getVMGHeading(course, polarTable);
+        rotate = true;
     }
 
+
     public void tackOrGybe(Course course, PolarTable polarTable) {
-        heading = getTackOrGybeHeading(course, polarTable);
+        targetHeading = getTackOrGybeHeading(course, polarTable);
+        rotate = true;
     }
 
     /**
@@ -499,10 +480,12 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void upWind(double windAngle){
+        rotate = false;
         headingChange(windAngle);
     }
 
     public void downWind(double windAngle){
+        rotate = false;
         double newWindAngle = windAngle;
         if(newWindAngle > 180) {
             newWindAngle -= 360;
@@ -558,5 +541,21 @@ public class Boat extends Observable implements Comparable<Boat>{
             }
         }
         return sailAngle;
+    }
+
+    public void updateBoatHeading(double time){
+        if (rotate) {
+            double angleOfRotation = 3 * time;
+            double headingDiff = targetHeading - heading;
+            if (headingDiff > 0) {
+                heading += angleOfRotation;
+            } else {
+                heading -= angleOfRotation;
+            }
+            if(abs(headingDiff) < 0.5) {
+                heading = targetHeading;
+                rotate = false;
+            }
+        }
     }
 }
