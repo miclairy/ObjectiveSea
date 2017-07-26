@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static seng302.data.AC35StreamField.*;
@@ -100,24 +101,28 @@ public class DataStreamReader extends Receiver implements Runnable{
         String xmlBody = new String(Arrays.copyOfRange(body, XML_BODY.getStartIndex(), XML_BODY.getStartIndex()+xmlLength));
         xmlBody = xmlBody.trim();
         InputStream xmlInputStream = new ByteArrayInputStream(xmlBody.getBytes());
-
         //Taken out since the new stream sends xmls not in order
 //        if (xmlSequenceNumbers.get(xmlSubtype) < xmlSequenceNumber) {
             xmlSequenceNumbers.put(xmlSubtype, xmlSequenceNumber);
             if (xmlSubtype == REGATTA_XML_MESSAGE) {
-                System.out.printf("New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
+                System.out.printf("Client: New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 RaceVisionXMLParser.importRegatta(xmlInputStream, race);
             } else if (xmlSubtype == RACE_XML_MESSAGE) {
-                System.out.printf("New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
+                System.out.printf("Client: New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 if (race != null) {
-                    race.getCourse().mergeWithOtherCourse(RaceVisionXMLParser.importCourse(xmlInputStream));
+                    setChanged();
+                    Race newRace = RaceVisionXMLParser.importRace(xmlInputStream);
+                    notifyObservers(newRace);
                 } else {
                     setRace(RaceVisionXMLParser.importRace(xmlInputStream));
                 }
             } else if (xmlSubtype == BOAT_XML_MESSAGE) {
-                System.out.printf("New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
+                System.out.printf("Client: New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 if(race.getCompetitors().size() == 0){
-                    race.setCompetitors(RaceVisionXMLParser.importStarters(xmlInputStream));
+                    List<Boat> competitors = RaceVisionXMLParser.importStarters(xmlInputStream);
+                    race.setCompetitors(competitors);
+                    setChanged();
+                    notifyObservers(competitors);
                 }
             }
 //        }
@@ -206,9 +211,10 @@ public class DataStreamReader extends Receiver implements Runnable{
     }
 
     private void parseRegistrationAcceptMessage(byte[] body) {
-        int clientID = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());
+        Integer id = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());
+        System.out.println("Client: Received ID of " + id);
         setChanged();
-        notifyObservers(clientID);
+        notifyObservers(id);
     }
 
 

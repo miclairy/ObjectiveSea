@@ -56,7 +56,7 @@ public class ServerListener extends Receiver implements Runnable{
                             parseRegistrationRequestMessage(body);
                         case BOAT_ACTION_MESSAGE:
                             if (sourceId != -1) {
-                                parseBoatActionMessage(body, sourceId);
+                                parseBoatActionMessage(body);
                             }
                     }
                 }
@@ -69,6 +69,7 @@ public class ServerListener extends Receiver implements Runnable{
     }
 
     private void parseRegistrationRequestMessage(byte[] body) {
+        System.out.println("Server: Received Registration Request");
         Integer registrationType = byteArrayRangeToInt(body, REGISTRATION_REQUEST_TYPE.getStartIndex(), REGISTRATION_REQUEST_TYPE.getEndIndex());
         setChanged();
         notifyObservers(registrationType);
@@ -78,7 +79,8 @@ public class ServerListener extends Receiver implements Runnable{
      * parses body of the boat action message that is incoming from the client.
      * @param body currently a single number that corresponds to a control from the client
      */
-    private void parseBoatActionMessage(byte[] body, int sourceId){
+    private void parseBoatActionMessage(byte[] body){
+        int sourceId = byteArrayRangeToInt(body, BOAT_ACTION_SOURCE_ID.getStartIndex(), BOAT_ACTION_SOURCE_ID.getEndIndex());
         int action = byteArrayRangeToInt(body, BOAT_ACTION_BODY.getStartIndex(), BOAT_ACTION_BODY.getEndIndex());
         Boat boat = race.getBoatById(sourceId);
         PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());

@@ -80,6 +80,7 @@ public class ScoreBoardController {
     }
 
     public void setUp(){
+        race = Client.getRace();
 
         placings.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
             @Override
@@ -89,7 +90,7 @@ public class ScoreBoardController {
         });
 
 
-        race = Main.getRace();
+        race = Client.getRace();
         placings.setItems(parent.getFormattedDisplayOrder());
         raceTimerLabel.textProperty().bind(parent.raceTimerString);
         setupAnnotationControl();
