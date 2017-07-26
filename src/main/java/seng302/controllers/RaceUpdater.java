@@ -101,7 +101,7 @@ public class RaceUpdater implements Runnable {
                         } if(boat.getCurrentSpeed() > boat.getMaxSpeed() + 1)boat.setCurrentSpeed(boat.getMaxSpeed());
                     }
                     updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
-                    boat.updateBoatHeading(raceSecondsPassed, race.getCourse());
+                    boat.updateBoatHeading(raceSecondsPassed);
                     calculateTimeAtNextMark(boat);
                 } else {
                     long millisBeforeStart = race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs();

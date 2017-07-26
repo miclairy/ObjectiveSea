@@ -565,7 +565,12 @@ public class Boat extends Observable implements Comparable<Boat>{
         return sailAngle;
     }
 
-    public void updateBoatHeading(double time, Course course){
+    /**
+     * Updates the boat heading every loop the race updated run method makes.
+     * Calculating how much rotation should occur at each run
+     * @param time the time since last calculation
+     */
+    public void updateBoatHeading(double time){
         double angleOfRotation = 3 * time;
         double headingDiff = targetHeading - heading;
         if (rotate) {
