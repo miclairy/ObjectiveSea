@@ -50,12 +50,6 @@ public class Server implements Runnable, Observer {
         xmlSequenceNumber.put(RACE_XML_MESSAGE, 0);
         xmlSequenceNumber.put(BOAT_XML_MESSAGE, 0);
 
-        //testing
-//        raceUpdater.addCompetitor();
-//        raceUpdater.addCompetitor();
-//        raceUpdater.addCompetitor();
-//        raceUpdater.addCompetitor();
-
         for (Boat boat: raceUpdater.getRace().getCompetitors()){
             boatSequenceNumbers.put(boat, boat.getId());
             lastMarkRoundingSent.put(boat, -1);
@@ -129,7 +123,6 @@ public class Server implements Runnable, Observer {
                 sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION);
                 if (collision.boatIsAtFault(boatId)) {
                     sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION_PENALTY);
-                    System.out.println("Sending penalty to boat " + boatId);
                 }
             }
             collisionManager.removeCollision(collision);
