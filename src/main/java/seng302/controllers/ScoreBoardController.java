@@ -11,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
 import javafx.scene.paint.Color;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import seng302.views.BoatDisplay;
 import javafx.scene.chart.NumberAxis;
@@ -51,6 +52,9 @@ public class ScoreBoardController {
     @FXML private NumberAxis yAxis ;
     @FXML private CheckBox DistanceLinesToggle;
 
+    private final Color UNSELECTED_BOAT_COLOR = Color.WHITE;
+    private final Color SELECTED_BOAT_COLOR = Color.rgb(77, 197, 138);
+
 
 
     public void setControllers(Controller parent, RaceViewController raceViewController, Race race, SelectionController selectionController){
@@ -60,8 +64,33 @@ public class ScoreBoardController {
         this.race = race;
     }
 
+    public class ColoredTextListCell extends ListCell<String> {
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            setText(item);
+            setTextFill(UNSELECTED_BOAT_COLOR);
+
+            BoatDisplay userBoat = raceViewController.getCurrentUserBoatDisplay();
+            if(userBoat != null && item != null){
+                if(item.contains(userBoat.getBoat().getName())){
+                    setTextFill(SELECTED_BOAT_COLOR);
+                }
+            }
+
+        }
+    }
+
     public void setUp(){
-        race = Main.getRace();
+        race = Client.getRace();
+
+        placings.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+            @Override
+            public ListCell<String> call(ListView<String> list) {
+                return new ColoredTextListCell();
+            }
+        });
+
         placings.setItems(parent.getFormattedDisplayOrder());
         raceTimerLabel.textProperty().bind(parent.raceTimerString);
         setupAnnotationControl();

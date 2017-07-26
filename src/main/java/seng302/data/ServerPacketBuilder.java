@@ -169,7 +169,7 @@ public class ServerPacketBuilder extends PacketBuilder {
      * @param race the current race
      * @return a byte array representing a Yacht Event message
      */
-    public byte[] createYachtEventMessage(Boat boat, Race race, int incidentID, int eventID){
+    public byte[] createYachtEventMessage(Boat boat, Race race, int incidentID, YachtEventCode eventCode){
         byte[] header = createHeader(YACHT_EVENT_CODE);
         byte[] body = initialiseYachtEventPacket();
         addFieldToByteArray(body, EVENT_TIME, race.getCurrentTimeInEpochMs());
@@ -177,7 +177,7 @@ public class ServerPacketBuilder extends PacketBuilder {
         addFieldToByteArray(body, RACE_ID, Integer.parseInt(race.getId()));
         addFieldToByteArray(body, DESTINATION_SOURCE_ID, boat.getId());
         addFieldToByteArray(body, INCIDENT_ID, incidentID);
-        addFieldToByteArray(body, EVENT_ID, eventID);
+        addFieldToByteArray(body, EVENT_ID, eventCode.code());
 
         return generatePacket(header, body);
     }
@@ -220,7 +220,11 @@ public class ServerPacketBuilder extends PacketBuilder {
     private byte[] readXMLIntoByteArray(String filePath, String fileName, Race race) throws IOException {
         InputStream resourceStream = ServerPacketBuilder.class.getResourceAsStream(filePath + fileName);
         if(fileName.equals(RaceVisionXMLParser.COURSE_FILE)){
-            resourceStream = RaceVisionXMLParser.injectRaceXMLFields(resourceStream, race.getId(), race.getStartTimeInEpochMs());
+            ArrayList<Integer> participantIds = new ArrayList<>();
+            for (Boat boat : race.getCompetitors()){
+                participantIds.add(boat.getId());
+            }
+            resourceStream = RaceVisionXMLParser.injectRaceXMLFields(resourceStream, race.getId(), race.getStartTimeInEpochMs(), participantIds);
         }
         ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
         int read = resourceStream.read();

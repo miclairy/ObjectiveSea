@@ -24,6 +24,7 @@ public class ServerListener extends Receiver implements Runnable{
     
     private Socket socket;
     private Race race;
+    private Integer clientId;
 
     ServerListener(Socket socket){
         this.socket = socket;
@@ -56,7 +57,7 @@ public class ServerListener extends Receiver implements Runnable{
                             parseRegistrationRequestMessage(body);
                         case BOAT_ACTION_MESSAGE:
                             if (sourceId != -1) {
-                                parseBoatActionMessage(body, sourceId);
+                                parseBoatActionMessage(body);
                             }
                     }
                 }
@@ -69,6 +70,7 @@ public class ServerListener extends Receiver implements Runnable{
     }
 
     private void parseRegistrationRequestMessage(byte[] body) {
+        System.out.println("Server: Received Registration Request");
         Integer registrationType = byteArrayRangeToInt(body, REGISTRATION_REQUEST_TYPE.getStartIndex(), REGISTRATION_REQUEST_TYPE.getEndIndex());
         setChanged();
         notifyObservers(registrationType);
@@ -78,13 +80,16 @@ public class ServerListener extends Receiver implements Runnable{
      * parses body of the boat action message that is incoming from the client.
      * @param body currently a single number that corresponds to a control from the client
      */
-    private void parseBoatActionMessage(byte[] body, int sourceId){
+    private void parseBoatActionMessage(byte[] body){
+        int sourceId = byteArrayRangeToInt(body, BOAT_ACTION_SOURCE_ID.getStartIndex(), BOAT_ACTION_SOURCE_ID.getEndIndex());
+        if(sourceId != clientId){
+            System.out.printf("Incorrect Client Id Received: Expected: %d Actual: %d\n", clientId, sourceId);
+            return;
+        }
         int action = byteArrayRangeToInt(body, BOAT_ACTION_BODY.getStartIndex(), BOAT_ACTION_BODY.getEndIndex());
-        Boat boat = race.getBoatById(sourceId); // Assuming this field has been set and can be used to distinguish a boat
-        //for now we assume all boats racing are AC35 class yachts such that we can use the polars we have for them
+        Boat boat = race.getBoatById(sourceId);
         PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
         BoatAction boatAction = BoatAction.getBoatActionFromInt(action);
-        System.out.println("Boat doing a " + action);
         switch (boatAction){
             case BOAT_VMG:
                 boat.VMG(race.getCourse(), polarTable);
@@ -99,10 +104,10 @@ public class ServerListener extends Receiver implements Runnable{
                 boat.tackOrGybe(race.getCourse(), polarTable);
                 break;
             case UPWIND:
-                boat.upWind();
+                boat.upWind(race.getCourse().getWindDirection());
                 break;
             case DOWNWIND:
-                boat.downWind();
+                boat.downWind(race.getCourse().getWindDirection());
                 break;
             default:
                 break;
@@ -115,5 +120,9 @@ public class ServerListener extends Receiver implements Runnable{
 
     public void setRace(Race race) {
         this.race = race;
+    }
+
+    public void setClientId(Integer clientId) {
+        this.clientId = clientId;
     }
 }

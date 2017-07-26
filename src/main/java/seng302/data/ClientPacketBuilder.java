@@ -1,19 +1,19 @@
 package seng302.data;
 
-import java.io.IOException;
-import java.time.Instant;
-
 import static seng302.data.AC35StreamField.*;
-import static seng302.data.AC35StreamField.MESSAGE_LENGTH;
 import static seng302.data.AC35StreamMessage.BOAT_ACTION_MESSAGE;
 import static seng302.data.AC35StreamMessage.REGISTRATION_REQUEST;
 
 /**
- * Created by mjt169 on 19/07/17.
- *
+ * Builds packets specific to the client
  */
 public class ClientPacketBuilder extends PacketBuilder {
 
+    /**
+     * Builds a byte array for the registration request message.
+     * @param participate 1 if client wants to compete in the race. 0 if client just wants to observe
+     * @return the registration request byte array
+     */
     public byte[] createRegistrationRequestPacket(boolean participate){
         byte[] header = createHeader(REGISTRATION_REQUEST);
         byte[] body = new byte[REGISTRATION_REQUEST.getLength()];
@@ -23,8 +23,9 @@ public class ClientPacketBuilder extends PacketBuilder {
 
     public byte[] createBoatCommandPacket(int commandInt, int clientId) {
         byte[] header = createHeader(BOAT_ACTION_MESSAGE, clientId);
-        byte[] body = new byte[1];
-        body[0] = (byte) commandInt;
+        byte[] body = new byte[5];
+        addFieldToByteArray(body, BOAT_ACTION_SOURCE_ID, clientId);
+        addFieldToByteArray(body, BOAT_ACTION_BODY, commandInt);
         return generatePacket(header, body);
     }
 

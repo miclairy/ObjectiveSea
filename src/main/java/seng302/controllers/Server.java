@@ -2,13 +2,13 @@ package seng302.controllers;
 
 import seng302.data.*;
 import seng302.models.Boat;
+import seng302.models.Collision;
 import seng302.models.Race;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.util.*;
 
-import static seng302.data.AC35StreamMessage.BOAT_ACTION_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.BOAT_XML_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.RACE_XML_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.REGATTA_XML_MESSAGE;
@@ -30,17 +30,18 @@ public class Server implements Runnable, Observer {
     private RaceUpdater raceUpdater;
     private ConnectionManager connectionManager;
     private ServerPacketBuilder packetBuilder;
+    private CollisionManager collisionManager;
 
     public Server(int port, RaceUpdater raceUpdater) throws IOException {
         this.raceUpdater = raceUpdater;
+        this.collisionManager = raceUpdater.getCollisionManager();
         this.packetBuilder = new ServerPacketBuilder();
         this.connectionManager = new ConnectionManager(port);
         this.connectionManager.addObserver(this);
     }
 
-
     /**
-     *
+     * Initializes the sequence numbers for the boats and xml messages
      * @throws IOException
      */
     private void initialize() throws IOException  {
@@ -48,6 +49,7 @@ public class Server implements Runnable, Observer {
         xmlSequenceNumber.put(REGATTA_XML_MESSAGE, 0);
         xmlSequenceNumber.put(RACE_XML_MESSAGE, 0);
         xmlSequenceNumber.put(BOAT_XML_MESSAGE, 0);
+
         for (Boat boat: raceUpdater.getRace().getCompetitors()){
             boatSequenceNumbers.put(boat, boat.getId());
             lastMarkRoundingSent.put(boat, -1);
@@ -62,6 +64,7 @@ public class Server implements Runnable, Observer {
             initialize();
             sendInitialRaceMessages();
             Thread managerThread = new Thread(connectionManager);
+            managerThread.setName("Connection Manager");
             managerThread.start();
             while (!raceUpdater.raceHasEnded()) {
                 sendRaceUpdates();
@@ -71,7 +74,7 @@ public class Server implements Runnable, Observer {
                     e.printStackTrace();
                 }
             }
-            sendRaceUpdates();
+            sendRaceUpdates(); //send one last message block with ending data
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -110,6 +113,20 @@ public class Server implements Runnable, Observer {
     private void sendRaceUpdates() throws IOException {
         sendPacket(packetBuilder.createRaceUpdateMessage(raceUpdater.getRace()));
         sendBoatMessagesForAllBoats();
+        sendYachtEventMessages();
+    }
+
+    private void sendYachtEventMessages() throws IOException {
+        for (Collision collision : collisionManager.getCollisions()) {
+            for (Integer boatId : collision.getInvolvedBoats()) {
+                Boat boat = raceUpdater.getRace().getBoatById(boatId);
+                sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION);
+                if (collision.boatIsAtFault(boatId)) {
+                    sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION_PENALTY);
+                }
+            }
+            collisionManager.removeCollision(collision);
+        }
     }
 
     private void sendBoatMessagesForAllBoats() throws IOException {
@@ -147,8 +164,8 @@ public class Server implements Runnable, Observer {
      * @param race
      * @throws IOException
      */
-    private void sendYachEventMessage(Boat boat, Race race, int incidentID, int eventID) throws IOException {
-        sendPacket(packetBuilder.createYachtEventMessage(boat, race, incidentID, eventID));
+    private void sendYachtEventMessage(Boat boat, Race race, int incidentID, YachtEventCode eventCode) throws IOException {
+        sendPacket(packetBuilder.createYachtEventMessage(boat, race, incidentID, eventCode));
     }
 
     /**
@@ -167,34 +184,53 @@ public class Server implements Runnable, Observer {
         this.scaleFactor = scaleFactor;
     }
 
+    /**
+     * Starts a new server listener on new thread for which listens to a client
+     * @param socket the socket for the client
+     */
+    private void startServerListener(Socket socket){
+        ServerListener serverListener = new ServerListener(socket);
+        serverListener.setRace(raceUpdater.getRace());
+        Thread serverListenerThread = new Thread(serverListener);
+        serverListenerThread.setName("Server Listener");
+        serverListenerThread.start();
+        serverListener.addObserver(this);
+    }
 
     /**
-     * Observer updater, that deals with the connection manager. Setting up race for each competitor that joins and
-     * adding new boats when needed.
-     * @param o connection manager instance or serverListener
-     * @param arg socket of server
+     * Adds a competing client to the race model and sends new xml messages out to all clients
+     * @param serverListener the listener for the client
+     */
+    private void addClientToRace(ServerListener serverListener){
+        int newId = raceUpdater.addCompetitor();
+        Boat boat = raceUpdater.getRace().getBoatById(newId);
+        boatSequenceNumbers.put(boat, newId);
+        lastMarkRoundingSent.put(boat, -1);
+        connectionManager.addConnection(newId, serverListener.getSocket());
+        serverListener.setClientId(newId);
+
+        byte[] packet = packetBuilder.createRegistrationAcceptancePacket(newId);
+        connectionManager.sendToClient(newId, packet);
+        sendXmlMessage(RACE_XML_MESSAGE, "Race.xml");
+    }
+
+    /**
+     * Method that gets called when Server is notified as an observer
+     * If the observable is a ConnectionManager then a new client has connected and a server listener
+     * is started for the client
+     * If the observable is a ServerListener then a registration message is received
+     * @param observable The observable either a ConnectionManager or ServerListener
+     * @param arg A Socket if observable is a ConnectionManager else it is the registration type of the client
      */
     @Override
-    public void update(Observable o, Object arg) {
-        if (o.equals(this.connectionManager)) {
-            Socket socket = (Socket) arg;
-            ServerListener serverListener = new ServerListener(socket);
-            serverListener.setRace(raceUpdater.getRace());
-            Thread serverListenerThread = new Thread(serverListener);
-            serverListenerThread.start();
-            serverListener.addObserver(this);
-        } else if(o instanceof ServerListener){
-            ServerListener serverListener = (ServerListener) o;
+    public void update(Observable observable, Object arg) {
+        if (observable.equals(connectionManager)) {
+            startServerListener((Socket) arg);
+        } else if(observable instanceof ServerListener){
+            ServerListener serverListener = (ServerListener) observable;
             Integer registrationType = (Integer) arg;
             if(registrationType == 1){
-                int newId = this.raceUpdater.addCompetitor();
-                Boat boat = this.raceUpdater.getRace().getBoatById(newId);
-                boatSequenceNumbers.put(boat, newId);
-                lastMarkRoundingSent.put(boat, -1);
-                connectionManager.addConnection(newId, serverListener.getSocket());
-
-                byte[] packet = packetBuilder.createRegistrationAcceptancePacket(newId);
-                connectionManager.sendToClient(newId, packet);
+                addClientToRace(serverListener);
             } else{
                 connectionManager.addConnection(nextViewerID, serverListener.getSocket());
                 nextViewerID++;
