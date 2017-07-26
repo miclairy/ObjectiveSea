@@ -269,10 +269,9 @@ public class DataStreamReader extends Receiver implements Runnable{
     private void parseYachtEventMessage(byte[] body){
         int eventID = byteArrayRangeToInt(body, EVENT_ID.getStartIndex(), EVENT_ID.getEndIndex());
         int boatID = byteArrayRangeToInt(body, DESTINATION_SOURCE_ID.getStartIndex(), DESTINATION_SOURCE_ID.getEndIndex());
-        for(Boat boat : race.getCompetitors()){
-            if(boat.getId() == (boatID)){
-                boat.setColliding(true);
-            }
+        if (eventID == YachtEventCode.COLLISION.code()) {
+            Boat boat = race.getBoatById(boatID);
+            boat.setColliding(true);
         }
     }
 

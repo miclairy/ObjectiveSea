@@ -172,7 +172,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         Boat boat = displayBoat.getBoat();
         if(boat.isColliding()){
             boat.setColliding(false);
-            if(!displayBoat.collisionInProgress){
+            if(!displayBoat.collisionInProgress()){
                 collisionAnimation(point, displayBoat);
                 displayBoat.setCollisionInProgress(true);
             }
