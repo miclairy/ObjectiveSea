@@ -19,16 +19,22 @@ import static seng302.data.AC35StreamField.*;
 
 /**
  * Created by mjt169 on 19/07/17.
+ *
  */
 public class ServerListener extends Receiver implements Runnable{
     
     private Socket socket;
     private Race race;
+    private Integer clientId;
 
     public ServerListener(Socket socket){
         this.socket = socket;
     }
 
+    /**
+     * The main run method of the serverListener. Continuously loops listening on a socket and then decoding it
+     * and calling the needed method. Deals with client registration
+     */
     @Override
     public void run() {
         while(true){
@@ -52,7 +58,7 @@ public class ServerListener extends Receiver implements Runnable{
                             parseRegistrationRequestMessage(body);
                         case BOAT_ACTION_MESSAGE:
                             if (sourceId != -1) {
-                                parseBoatActionMessage(body, sourceId);
+                                parseBoatActionMessage(body);
                             }
                     }
                 }
@@ -67,6 +73,7 @@ public class ServerListener extends Receiver implements Runnable{
     }
 
     private void parseRegistrationRequestMessage(byte[] body) {
+        System.out.println("Server: Received Registration Request");
         Integer registrationType = byteArrayRangeToInt(body, REGISTRATION_REQUEST_TYPE.getStartIndex(), REGISTRATION_REQUEST_TYPE.getEndIndex());
         setChanged();
         notifyObservers(registrationType);
@@ -76,31 +83,34 @@ public class ServerListener extends Receiver implements Runnable{
      * parses body of the boat action message that is incoming from the client.
      * @param body currently a single number that corresponds to a control from the client
      */
-    private void parseBoatActionMessage(byte[] body, int sourceId){
+    private void parseBoatActionMessage(byte[] body){
+        int sourceId = byteArrayRangeToInt(body, BOAT_ACTION_SOURCE_ID.getStartIndex(), BOAT_ACTION_SOURCE_ID.getEndIndex());
+        if(sourceId != clientId){
+            System.out.printf("Incorrect Client Id Received: Expected: %d Actual: %d\n", clientId, sourceId);
+            return;
+        }
         int action = byteArrayRangeToInt(body, BOAT_ACTION_BODY.getStartIndex(), BOAT_ACTION_BODY.getEndIndex());
-        Boat boat = race.getBoatById(sourceId); // Assuming this field has been set and can be used to distinguish a boat
-        //for now we assume all boats racing are AC35 class yachts such that we can use the polars we have for them
+        Boat boat = race.getBoatById(sourceId);
         PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
         BoatAction boatAction = BoatAction.getBoatActionFromInt(action);
-        System.out.println("Boat doing a " + action);
         switch (boatAction){
-            case BOAT_AUTOPILOT:
-                boat.autoPilot(race.getCourse(), polarTable);
+            case BOAT_VMG:
+                boat.VMG(race.getCourse(), polarTable);
                 break;
             case SAILS_IN:
-                boat.sailsIn();
+                boat.changeSails();
                 break;
             case SAILS_OUT:
-                boat.sailsOut();
+                boat.changeSails();
                 break;
             case TACK_GYBE:
-                boat.tackOrGybe(race.getCourse().getWindDirection());
+                boat.tackOrGybe(race.getCourse(), polarTable);
                 break;
             case UPWIND:
-                boat.upWind();
+                boat.upWind(race.getCourse().getWindDirection());
                 break;
             case DOWNWIND:
-                boat.downWind();
+                boat.downWind(race.getCourse().getWindDirection());
                 break;
             default:
                 break;
@@ -113,5 +123,9 @@ public class ServerListener extends Receiver implements Runnable{
 
     public void setRace(Race race) {
         this.race = race;
+    }
+
+    public void setClientId(Integer clientId) {
+        this.clientId = clientId;
     }
 }

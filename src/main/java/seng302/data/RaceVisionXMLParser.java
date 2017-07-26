@@ -124,13 +124,27 @@ public class RaceVisionXMLParser {
     }
 
     /**
-     * Updates the race.xml in race id, race creation time and race start time fields.
+     * Injects the correct participants into the raceXML field
+     * @param root The root tag ("Race") of the dom
+     * @param participantIds participant Ids to inject
+     */
+    private static void setParticipants(Element root, ArrayList<Integer> participantIds) {
+        NodeList participants = root.getElementsByTagName(XMLTags.Course.PARTICIPANTS);
+        for (Integer id : participantIds) {
+            Element participant = dom.createElement(XMLTags.Boats.YACHT);
+            participant.setAttribute(XMLTags.Boats.SOURCE_ID, id.toString());
+            participants.item(0).appendChild(participant);
+        }
+    }
+
+    /**
+     * Updates the race.xml in race id, race creation time, race start time fields and participants fields.
      * @param raceXML The InputStream-ed race xml file
      * @param raceId The race id of the race
      * @param expectStartTimeEpochMs The expected start time of the race
      * @return A InputStream with the race xml containing the update fields
      */
-    static InputStream injectRaceXMLFields(InputStream raceXML, String raceId, Long expectStartTimeEpochMs){
+    static InputStream injectRaceXMLFields(InputStream raceXML, String raceId, Long expectStartTimeEpochMs, ArrayList<Integer> participantIds){
         try {
             parseXMLStream(raceXML);
             Element root = dom.getDocumentElement();
@@ -138,6 +152,7 @@ public class RaceVisionXMLParser {
             setRaceId(root, raceId);
             setCreationTime(root);
             setStartTime(root, expectStartTimeEpochMs);
+            setParticipants(root, participantIds);
 
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             StringWriter writer = new StringWriter();
@@ -146,11 +161,7 @@ public class RaceVisionXMLParser {
             String output = writer.getBuffer().toString();
 
             return new ByteArrayInputStream(output.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (TransformerConfigurationException e) {
-            e.printStackTrace();
-        } catch (TransformerException e) {
+        } catch (IOException | TransformerException e) {
             e.printStackTrace();
         }
         return null;

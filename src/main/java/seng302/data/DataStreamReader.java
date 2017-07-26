@@ -1,22 +1,18 @@
 package seng302.data;
 
 import seng302.models.Boat;
-import seng302.models.PolarTable;
 import seng302.models.Race;
-import seng302.utilities.PolarReader;
 import seng302.utilities.TimeUtils;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Observable;
-import java.util.zip.CRC32;
 
 import static seng302.data.AC35StreamField.*;
 import static seng302.data.AC35StreamXMLMessage.*;
-import static seng302.data.BoatAction.BOAT_AUTOPILOT;
 
 /**
  * Created on 13/04/17.
@@ -105,24 +101,28 @@ public class DataStreamReader extends Receiver implements Runnable{
         String xmlBody = new String(Arrays.copyOfRange(body, XML_BODY.getStartIndex(), XML_BODY.getStartIndex()+xmlLength));
         xmlBody = xmlBody.trim();
         InputStream xmlInputStream = new ByteArrayInputStream(xmlBody.getBytes());
-
         //Taken out since the new stream sends xmls not in order
 //        if (xmlSequenceNumbers.get(xmlSubtype) < xmlSequenceNumber) {
             xmlSequenceNumbers.put(xmlSubtype, xmlSequenceNumber);
             if (xmlSubtype == REGATTA_XML_MESSAGE) {
-                System.out.printf("New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
+                System.out.printf("Client: New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 RaceVisionXMLParser.importRegatta(xmlInputStream, race);
             } else if (xmlSubtype == RACE_XML_MESSAGE) {
-                System.out.printf("New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
+                System.out.printf("Client: New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 if (race != null) {
-                    race.getCourse().mergeWithOtherCourse(RaceVisionXMLParser.importCourse(xmlInputStream));
+                    setChanged();
+                    Race newRace = RaceVisionXMLParser.importRace(xmlInputStream);
+                    notifyObservers(newRace);
                 } else {
                     setRace(RaceVisionXMLParser.importRace(xmlInputStream));
                 }
             } else if (xmlSubtype == BOAT_XML_MESSAGE) {
-                System.out.printf("New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
+                System.out.printf("Client: New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
                 if(race.getCompetitors().size() == 0){
-                    race.setCompetitors(RaceVisionXMLParser.importStarters(xmlInputStream));
+                    List<Boat> competitors = RaceVisionXMLParser.importStarters(xmlInputStream);
+                    race.setCompetitors(competitors);
+                    setChanged();
+                    notifyObservers(competitors);
                 }
             }
 //        }
@@ -194,6 +194,9 @@ public class DataStreamReader extends Receiver implements Runnable{
                                     case MARK_ROUNDING_MESSAGE:
                                         parseMarkRoundingMessage(body);
                                         break;
+                                    case YACHT_EVENT_CODE:
+                                        parseYachtEventMessage(body);
+                                        break;
                                     case REGISTRATION_ACCEPT:
                                         parseRegistrationAcceptMessage(body);
                                 }
@@ -211,9 +214,10 @@ public class DataStreamReader extends Receiver implements Runnable{
     }
 
     private void parseRegistrationAcceptMessage(byte[] body) {
-        int clientID = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());
+        Integer id = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());
+        System.out.println("Client: Received ID of " + id);
         setChanged();
-        notifyObservers(clientID);
+        notifyObservers(id);
     }
 
 
@@ -260,6 +264,15 @@ public class DataStreamReader extends Receiver implements Runnable{
         race.updateRaceStatus(RaceStatus.fromInteger(raceStatus));
         race.setStartTimeInEpochMs(expectedStartTime);
         race.setCurrentTimeInEpochMs(currentTime);
+    }
+
+    private void parseYachtEventMessage(byte[] body){
+        int eventID = byteArrayRangeToInt(body, EVENT_ID.getStartIndex(), EVENT_ID.getEndIndex());
+        int boatID = byteArrayRangeToInt(body, DESTINATION_SOURCE_ID.getStartIndex(), DESTINATION_SOURCE_ID.getEndIndex());
+        if (eventID == YachtEventCode.COLLISION.code()) {
+            Boat boat = race.getBoatById(boatID);
+            boat.setColliding(true);
+        }
     }
 
     /**

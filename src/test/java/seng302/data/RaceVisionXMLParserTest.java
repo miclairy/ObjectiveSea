@@ -174,7 +174,7 @@ public class RaceVisionXMLParserTest {
     public void updateRaceTest(){
         InputStream raceStream = RaceVisionXMLParserTest.class.getResourceAsStream("/data/testFiles/testRace.xml");
         long currentTime = Instant.now().toEpochMilli();
-        InputStream result = RaceVisionXMLParser.injectRaceXMLFields(raceStream,"11", currentTime);
+        InputStream result = RaceVisionXMLParser.injectRaceXMLFields(raceStream,"11", currentTime, new ArrayList<>());
 
         Race race = RaceVisionXMLParser.importRace(result);
 

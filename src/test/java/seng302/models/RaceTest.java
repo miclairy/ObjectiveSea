@@ -60,7 +60,7 @@ public class RaceTest {
         Assert.assertEquals(2.5, boat.getCurrentLat(), DELTA);
         Assert.assertEquals(3.2, boat.getCurrentLon(), DELTA);
         Assert.assertEquals(178.1, boat.getHeading(), DELTA);
-        Assert.assertEquals(28.1, boat.getSpeed(), DELTA);
+        Assert.assertEquals(28.1, boat.getCurrentSpeed(), DELTA);
         Assert.assertEquals(97, boat.getTWAofBoat(), DELTA);
     }
 

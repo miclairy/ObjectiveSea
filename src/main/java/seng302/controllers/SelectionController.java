@@ -64,7 +64,7 @@ public class SelectionController extends Observable {
             }
             courseNeedsRedraw = true;
             setChanged();
-            notifyObservers();
+            notifyObservers(false);
         }
     }
 
@@ -77,7 +77,7 @@ public class SelectionController extends Observable {
             DisplayUtils.moveToPoint(selectedMark.getPosition());
             courseNeedsRedraw = true;
             setChanged();
-            notifyObservers();
+            notifyObservers(false);
        }
         if (isTrackingPoint && trackingBoat != null) {
             trackingBoat.getIcon().toFront();
@@ -90,7 +90,7 @@ public class SelectionController extends Observable {
                 }
             }
             setChanged();
-            notifyObservers();
+            notifyObservers(true);
         }
 
     }
@@ -128,7 +128,7 @@ public class SelectionController extends Observable {
 
         }
         setChanged();
-        notifyObservers();
+        notifyObservers(false);
     }
 
     /**
@@ -291,7 +291,7 @@ public class SelectionController extends Observable {
             }
             selectedMark = null;
             setChanged();
-            notifyObservers();
+            notifyObservers(false);
 
         });
 
