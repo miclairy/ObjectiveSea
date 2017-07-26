@@ -86,7 +86,6 @@ public class RaceUpdater implements Runnable {
         while (!race.getRaceStatus().isRaceEndedStatus()) {
             boolean atLeastOneBoatNotFinished = false;
             double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
-
             race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs() + (long)(raceSecondsPassed * 1000));
             generateWind();
 
@@ -359,14 +358,15 @@ public class RaceUpdater implements Runnable {
      * generates a random windspeed and wind angle within a range of the current speed and angle
      */
     public void generateWind(){
+        //TODO: wind angle has been changed to a hard coded number.
         double range = 0.05;
         double maxSpeed = race.getCourse().getTrueWindSpeed() + range;
         double minSpeed = race.getCourse().getTrueWindSpeed() - range;
 
-        double maxAngle = race.getCourse().getWindDirection() + range;
-        double minAngle = race.getCourse().getWindDirection() - range;
+        //double maxAngle = race.getCourse().getWindDirection() + range;
+        //double minAngle = race.getCourse().getWindDirection() - range;
         double speed = ThreadLocalRandom.current().nextDouble(minSpeed, maxSpeed);
-        double angle = ThreadLocalRandom.current().nextDouble(minAngle, maxAngle);
+        double angle = race.getCourse().getWindDirection();//ThreadLocalRandom.current().nextDouble(minAngle, maxAngle);
 
         race.getCourse().setTrueWindSpeed(speed);
         race.getCourse().setWindDirection(angle);

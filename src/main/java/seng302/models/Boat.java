@@ -439,29 +439,36 @@ public class Boat extends Observable implements Comparable<Boat>{
      */
     public void headingChange(double windAngle) {
 
+        double DELTA = 0.00001;
         heading += 360;
-        int windAngleCheck = (int) windAngle + 360;
+        double windAngleCheck = windAngle + 360;
 
-        if ((windAngleCheck > heading && windAngleCheck - 180 < heading) ||
-                (windAngleCheck < heading && windAngleCheck + 180 < heading)) {
+        if(heading <= windAngleCheck && heading >= windAngleCheck-2) {
+            heading = windAngleCheck;
+
+        } else if(heading >= windAngleCheck && heading <= windAngleCheck+2) {
+            heading = windAngleCheck;
+
+        } else if ((windAngleCheck > heading && windAngleCheck - 180 < heading && abs(windAngleCheck - 180 - heading) > DELTA) ||           //1
+                (windAngleCheck < heading && windAngleCheck + 180 < heading && abs(windAngleCheck + 180 - heading) > DELTA)) {       //2
             heading += 3;
             lastPlayerDirection = true;
 
-        } else if ((windAngleCheck < heading && windAngleCheck + 180 > heading) ||
-                (windAngleCheck > heading && windAngleCheck - 180 > heading)) {
+        } else if ((windAngleCheck > heading && windAngleCheck - 180 > heading && abs(windAngleCheck - 180 - heading) > DELTA) ||    //3
+                (windAngleCheck < heading && windAngleCheck + 180 > heading && abs(windAngleCheck + 180 - heading) > DELTA)) {       //4
             heading -= 3;
             lastPlayerDirection = false;
 
-        } else if (windAngleCheck == heading ||
-                windAngleCheck - 180 == heading ||
-                windAngleCheck + 180 == heading) {
+        } else if (abs(windAngleCheck - heading) < DELTA ||
+                abs((windAngleCheck - 180) - heading) < DELTA ||
+                abs((windAngleCheck + 180) - heading) < DELTA) {
             if (lastPlayerDirection) {
                 heading += 3;
-
             } else {
                 heading -= 3;
             }
         }
+
         if (heading >= 720) {
             heading -= 720;
         } else if (heading >= 360) {
