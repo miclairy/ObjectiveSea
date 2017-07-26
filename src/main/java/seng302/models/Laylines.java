@@ -47,16 +47,14 @@ public class Laylines {
      * @param polarTable a polar table for the boat defining the optimum TWA
      */
     public void calculateLaylineAngle(double TWD, CompoundMark lastMark, CompoundMark nextMark, PolarTable polarTable) {
-        double TWDTo = TWD + 180; //shows wind as TO not FROM
         Coordinate lastMarkPosition = lastMark.getPosition();
         Coordinate nextMarkPosition = nextMark.getPosition();
         double markBearing = lastMarkPosition.headingToCoordinate(nextMarkPosition);
         boolean upwind = MathUtils.pointBetweenTwoAngle(TWD, 90, markBearing);
         double TWA = polarTable.getOptimumTWA(upwind);
-        this.rightOfTWDAngle = TWDTo - TWA;
-        this.leftOfTWDAngle = TWDTo + TWA;
+        this.rightOfTWDAngle = TWD + TWA;
+        this.leftOfTWDAngle = TWD - TWA;
         shouldDraw = !upwind;
-
     }
 
     public boolean shouldDraw() {
