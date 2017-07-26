@@ -220,7 +220,11 @@ public class ServerPacketBuilder extends PacketBuilder {
     private byte[] readXMLIntoByteArray(String filePath, String fileName, Race race) throws IOException {
         InputStream resourceStream = ServerPacketBuilder.class.getResourceAsStream(filePath + fileName);
         if(fileName.equals(RaceVisionXMLParser.COURSE_FILE)){
-            resourceStream = RaceVisionXMLParser.injectRaceXMLFields(resourceStream, race.getId(), race.getStartTimeInEpochMs());
+            ArrayList<Integer> participantIds = new ArrayList<>();
+            for (Boat boat : race.getCompetitors()){
+                participantIds.add(boat.getId());
+            }
+            resourceStream = RaceVisionXMLParser.injectRaceXMLFields(resourceStream, race.getId(), race.getStartTimeInEpochMs(), participantIds);
         }
         ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
         int read = resourceStream.read();

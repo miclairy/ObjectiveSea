@@ -14,8 +14,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Circle;
 import seng302.data.BoatAction;
+import javafx.scene.shape.Circle;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -89,7 +89,7 @@ public class Controller implements Initializable, Observer {
         anchorWidth = canvasAnchor.getWidth();
         anchorHeight = canvasAnchor.getHeight();
 
-        race = Main.getRace();
+        race = Client.getRace();
         race.addObserver(this);
         Course course = race.getCourse();
         startersOverlayTitle.setText(race.getRegattaName());
@@ -98,7 +98,6 @@ public class Controller implements Initializable, Observer {
         selectionController = new SelectionController(root, scoreBoardController, this);
         raceViewController = new RaceViewController(root, race, this, scoreBoardController, selectionController);
         selectionController.addObserver(raceViewController);
-        course.addObserver(raceViewController);
 
         createCanvasAnchorListeners();
         scoreBoardController.setControllers(this, raceViewController, race, selectionController);
@@ -239,7 +238,7 @@ public class Controller implements Initializable, Observer {
      */
     public void displayStarters(){
         ObservableList<String> starters = observableArrayList();
-        for (Boat boat : Main.getRace().getCompetitors()){
+        for (Boat boat : race.getCompetitors()){
             starters.add(String.format("%s - %s", boat.getNickName(), boat.getName()));
         }
         startersList.setItems(starters);
@@ -249,7 +248,7 @@ public class Controller implements Initializable, Observer {
      * Keep the placings list up to date based on last past marked of boats
      */
     public void updatePlacings(){
-        List<Boat> raceOrder = Main.getRace().getRaceOrder();
+        List<Boat> raceOrder = race.getRaceOrder();
         formattedDisplayOrder.clear();
         for (int i = 0; i < raceOrder.size(); i++){
             Boat boat = raceOrder.get(i);
