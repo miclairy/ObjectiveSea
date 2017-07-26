@@ -88,6 +88,8 @@ public class RaceUpdater implements Runnable {
 
         Course course = race.getCourse();
         course.initCourseLatLon();
+        //TODO make DisplayUtils not static as we need it in both the client and the server
+        //have to set this here as the client controller won't have done it yet
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
 
         while (!race.getRaceStatus().isRaceEndedStatus()) {
@@ -100,7 +102,6 @@ public class RaceUpdater implements Runnable {
             for (Boat boat : race.getCompetitors()) {
                 if(race.getRaceStatus().equals(RaceStatus.STARTED)){
                     if (collisionManager.boatIsInCollision(boat)) {
-                    //if (collisionManager.boatIsCollidingWithMark(boat)) {
                         //revert the last location update as it was a collision
                         updateLocation(-TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
                         boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
@@ -337,16 +338,6 @@ public class RaceUpdater implements Runnable {
     }
 
     /**
-     * Sets boat speeds to zero
-     */
-    private void setInitialBoatSpeeds(){
-        for (Boat boat : potentialCompetitors) {
-            boat.updateBoatSpeed(race.getCourse());
-        }
-    }
-
-
-    /**
      * Updates the boats time to the next mark
      * @param boat the current boat that is being updated.
      */
@@ -385,18 +376,6 @@ public class RaceUpdater implements Runnable {
         race.getCourse().setTrueWindSpeed(speed);
         race.getCourse().setWindDirection(angle);
     }
-
-    private void collisionAvoider(Boat boat){
-        //boat.setHeading(boat.getHeading() - 5);
-        boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
-        if(boat.getCurrentSpeed() < 0){
-            boat.setCurrentSpeed(0);
-        }
-        Coordinate currPos = boat.getCurrentPosition();
-        Coordinate newPos = currPos.coordAt(0.01, (boat.getHeading() + 180) % 360);
-        boat.setPosition(newPos);
-    }
-
 
     public Race getRace() {
         return race;
