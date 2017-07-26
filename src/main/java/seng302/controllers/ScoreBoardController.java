@@ -52,6 +52,9 @@ public class ScoreBoardController {
     @FXML private NumberAxis yAxis ;
     @FXML private CheckBox DistanceLinesToggle;
 
+    private final Color UNSELECTED_BOAT_COLOR = Color.WHITE;
+    private final Color SELECTED_BOAT_COLOR = Color.rgb(77, 197, 138);
+
 
 
     public void setControllers(Controller parent, RaceViewController raceViewController, Race race, SelectionController selectionController){
@@ -61,18 +64,17 @@ public class ScoreBoardController {
         this.race = race;
     }
 
-    public class YourFormatCell extends ListCell<String> {
+    public class ColoredTextListCell extends ListCell<String> {
         @Override
         protected void updateItem(String item, boolean empty) {
             super.updateItem(item, empty);
             setText(item);
-            setTextFill(Color.WHITE);
+            setTextFill(UNSELECTED_BOAT_COLOR);
 
             BoatDisplay userBoat = raceViewController.getCurrentUserBoatDisplay();
             if(userBoat != null && item != null){
                 if(item.contains(userBoat.getBoat().getName())){
-                    setTextFill(Color.rgb(77, 197, 138));
-
+                    setTextFill(SELECTED_BOAT_COLOR);
                 }
             }
 
@@ -85,7 +87,7 @@ public class ScoreBoardController {
         placings.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
             @Override
             public ListCell<String> call(ListView<String> list) {
-                return new YourFormatCell();
+                return new ColoredTextListCell();
             }
         });
 
