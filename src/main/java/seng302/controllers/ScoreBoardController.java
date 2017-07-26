@@ -89,8 +89,6 @@ public class ScoreBoardController {
             }
         });
 
-
-        race = Client.getRace();
         placings.setItems(parent.getFormattedDisplayOrder());
         raceTimerLabel.textProperty().bind(parent.raceTimerString);
         setupAnnotationControl();

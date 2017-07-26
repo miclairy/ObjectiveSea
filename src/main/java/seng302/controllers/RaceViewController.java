@@ -87,12 +87,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean firstTime = true;
     private SelectionController selectionController;
 
-    private BoatDisplay trackingBoat = null;
-    private User user = new User(); //TODO: pass in actual user ConnectionManager
-    private Mark selectedMark = null;
-    private boolean isTrackingPoint = false;
-    private double rotationOffset = 0;
-    private boolean isRotationEnabled = false;
     private double sailWidth = 5;
     private boolean isSailWidthChanging = false;
 
@@ -179,10 +173,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
         distanceLine.getAnnotation().toFront();
         if(currentUserBoatDisplay != null){
             currentUserBoatDisplay.getIcon().toFront();
+            currentUserBoatDisplay.getSail().toFront();
             currentUserBoatDisplay.getAnnotation().toFront();
         }
-        if(trackingBoat != null){
-            trackingBoat.getAnnotation().toFront();
+        if(selectionController.getTrackingBoat() != null){
+            selectionController.getTrackingBoat().getAnnotation().toFront();
         }
     }
 
@@ -215,8 +210,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
         initializedBoats = true;
         changeAnnotations(currentAnnotationsLevel, true);
         selectionController.setDisplayBoats(Collections.unmodifiableList(displayBoats));
-        user.setBoat(displayBoats.get(0)); //TODO: remove once actual user is added via connectionManager
-        currentUserBoatDisplay = user.getBoat();
+        for(BoatDisplay boatDisplay : displayBoats ){
+            if(boatDisplay.getBoat().getId() == Main.getClient().getClientID()){
+                currentUserBoatDisplay = boatDisplay;
+            }
+        }
     }
 
     /**
@@ -299,7 +297,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawMap();
         drawWindArrow();
         redrawRaceLines();
-        //redrawBoatPaths();
     }
 
     /**
