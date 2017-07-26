@@ -77,6 +77,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean drawDistanceLine = false;
     private boolean firstTime = true;
     private SelectionController selectionController;
+    private Penalties penalties = new Penalties();
 
     private double sailWidth = 5;
     private boolean isSailWidthChanging = false;
@@ -129,13 +130,28 @@ public class RaceViewController extends AnimationTimer implements Observer {
             moveWake(displayBoat, point);
             moveSail(displayBoat, point);
             Boat boat = displayBoat.getBoat();
-            if(boat.isColliding()){
-                boat.setColliding(false);
+
+            if(boat.isMarkColliding() || boat.isBoatColliding()){
                 if(!displayBoat.collisionInProgress){
                     collisionAnimation(point, displayBoat);
                     displayBoat.setCollisionInProgress(true);
+                    if(boat.isMarkColliding()){
+                        penalties.markCollision(boat);
+                    } else {
+                        //TODO: Figure out who hit who
+                    }
                 }
+                boat.setMarkColliding(false);
+                boat.setBoatColliding(false);
             }
+
+            if (boat.isFinished() && boat.isJustFinished()){
+                boat.setJustFinished(false);
+                long finishTime = race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs();
+                boat.setFinishTime(finishTime);
+            }
+
+
 
             if (boat.getTimeStatus() != StartTimingStatus.INRACE &&
                     race.getCourse().getCourseOrder().get(boat.getLeg()).isStartLine()) {
@@ -165,6 +181,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 displayBoat.getLaylines().removeDrawnLines(root);
             }
         }
+
+
         drawMarks();
         redrawRaceLines();
         if (courseNeedsRedraw) redrawCourse();

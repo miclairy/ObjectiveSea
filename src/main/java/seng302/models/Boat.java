@@ -6,6 +6,7 @@ import seng302.data.StartTimingStatus;
 import seng302.data.BoatStatus;
 import seng302.utilities.MathUtils;
 import seng302.utilities.PolarReader;
+import seng302.utilities.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,10 +46,16 @@ public class Boat extends Observable implements Comparable<Boat>{
     private double damageSpeed;
     private boolean boatCheck = false;
     private double boatPenalty;
+    private boolean justFinished = true;
 
+
+    private double finishTime;
+    private double finalTime;
 
     private int penaltyCount;
     private boolean isColliding;
+    private boolean markColliding;
+    private boolean boatColliding;
 
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
@@ -58,6 +65,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private long timeTillFinish;
     private Integer id;
     private AtomicBoolean sailsIn = new AtomicBoolean(false);
+
 
     private double TWAofBoat;
 
@@ -273,9 +281,15 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void addPenalty(int penaltyCount) {this.penaltyCount = penaltyCount;}
 
-    public boolean isColliding() {return isColliding;}
+    public boolean isMarkColliding() {return markColliding;}
+
+    public boolean isBoatColliding() {return  boatColliding;}
 
     public void setColliding(boolean colliding) {isColliding = colliding;}
+
+    public void setMarkColliding(boolean colliding) {markColliding = colliding;}
+
+    public void setBoatColliding(boolean colliding) {boatColliding = colliding;}
 
     public long getTimeTillFinish() {
         return timeTillFinish;
@@ -592,4 +606,23 @@ public class Boat extends Observable implements Comparable<Boat>{
         }
         return sailAngle;
     }
+
+    public void setFinishTime(double finishTime) {
+        this.finishTime = finishTime;
+        finalTime = (finishTime / 1000.0) - TimeUtils.convertHoursToSeconds(boatPenalty);
+    }
+
+    public double getFinalTime() {
+        return finalTime;
+    }
+
+    public boolean isJustFinished() {
+        return justFinished;
+    }
+
+    public void setJustFinished(boolean justFinished) {
+        this.justFinished = justFinished;
+    }
+
+
 }

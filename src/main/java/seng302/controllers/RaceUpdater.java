@@ -400,14 +400,14 @@ public class RaceUpdater implements Runnable {
             if(collisionOfBounds(boat.getCurrentPosition(), otherBoat.getCurrentPosition(), 16) && boat != otherBoat){
                 collision = true;
                 boat.setColliding(true);
-                otherBoat.setColliding(true);
+                otherBoat.setBoatColliding(true);
                 //System.out.println("EXPLOSION!!!!!!!!!!!!! YOUR BOAT IS SINKING, ABORT!!!!! !@#$%@*&^#$@ Collision of boat");
             }
         }
         for(Mark mark : race.getCourse().getAllMarks().values()){
             if(collisionOfBounds(boat.getCurrentPosition(), mark.getPosition(), 10)){
                 collision = true;
-                boat.setColliding(true);
+                boat.setMarkColliding(true);
                 //System.out.println("HOLLY HECK YOU HIT A MARK, GET YOUR RUBBER DINGY READY, YOU'VE LOST THIS RACE FOR SURE Collision of mark");
                 markAvoider(boat);
             }
