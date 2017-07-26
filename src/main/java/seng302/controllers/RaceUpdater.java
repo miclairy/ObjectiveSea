@@ -4,6 +4,7 @@ import seng302.data.BoatStatus;
 import seng302.data.RaceStatus;
 import seng302.data.RaceVisionXMLParser;
 import seng302.models.*;
+import seng302.utilities.DisplayUtils;
 import seng302.utilities.MathUtils;
 import seng302.utilities.PolarReader;
 import seng302.utilities.TimeUtils;
@@ -34,8 +35,10 @@ public class RaceUpdater implements Runnable {
     private Race race;
     private PolarTable polarTable;
     private Collection<Boat> potentialCompetitors;
+    private CollisionManager collisionManager;
 
     public RaceUpdater(){
+        collisionManager = new CollisionManager();
         //set race up with default files
         intialWindSpeedGenerator();
         List<Boat> boatsInRace = new ArrayList<>();
@@ -83,15 +86,27 @@ public class RaceUpdater implements Runnable {
     @Override
     public void run() {
 
+        Course course = race.getCourse();
+        course.initCourseLatLon();
+        //TODO make DisplayUtils not static as we need it in both the client and the server
+        //have to set this here as the client controller won't have done it yet
+        DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
+
         while (!race.getRaceStatus().isRaceEndedStatus()) {
             boolean atLeastOneBoatNotFinished = false;
             double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
-
             race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs() + (long)(raceSecondsPassed * 1000));
             generateWind();
-
+            if (race.hasStarted()) {
+                collisionManager.checkForCollisions(race);
+            }
             for (Boat boat : race.getCompetitors()) {
-                if(race.getRaceStatus().equals(RaceStatus.STARTED)){
+                if(race.hasStarted()){
+                    if (collisionManager.boatIsInCollision(boat)) {
+                        //revert the last location update as it was a collision
+                        updateLocation(-TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
+                        boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
+                    }
                     if(boat.isSailsIn() && boat.getCurrentSpeed() > 0){
                         boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.2);
                         if(boat.getCurrentSpeed() < 0) boat.setCurrentSpeed(0);
@@ -119,6 +134,7 @@ public class RaceUpdater implements Runnable {
                 }
 
             }
+
             //TODO fix so that race doesn't immediately end when no boats have yet registered for race
             if (!atLeastOneBoatNotFinished) {
                 //race.updateRaceStatus(RaceStatus.TERMINATED);
@@ -323,16 +339,6 @@ public class RaceUpdater implements Runnable {
     }
 
     /**
-     * Sets boat speeds to zero
-     */
-    private void setInitialBoatSpeeds(){
-        for (Boat boat : potentialCompetitors) {
-            boat.updateBoatSpeed(race.getCourse());
-        }
-    }
-
-
-    /**
      * Updates the boats time to the next mark
      * @param boat the current boat that is being updated.
      */
@@ -359,14 +365,15 @@ public class RaceUpdater implements Runnable {
      * generates a random windspeed and wind angle within a range of the current speed and angle
      */
     public void generateWind(){
+        //TODO: wind angle has been changed to a hard coded number.
         double range = 0.05;
         double maxSpeed = race.getCourse().getTrueWindSpeed() + range;
         double minSpeed = race.getCourse().getTrueWindSpeed() - range;
 
-        double maxAngle = race.getCourse().getWindDirection() + range;
-        double minAngle = race.getCourse().getWindDirection() - range;
+        //double maxAngle = race.getCourse().getWindDirection() + range;
+        //double minAngle = race.getCourse().getWindDirection() - range;
         double speed = ThreadLocalRandom.current().nextDouble(minSpeed, maxSpeed);
-        double angle = ThreadLocalRandom.current().nextDouble(minAngle, maxAngle);
+        double angle = race.getCourse().getWindDirection();//ThreadLocalRandom.current().nextDouble(minAngle, maxAngle);
 
         race.getCourse().setTrueWindSpeed(speed);
         race.getCourse().setWindDirection(angle);
@@ -399,5 +406,7 @@ public class RaceUpdater implements Runnable {
         initialWindSpeed = MIN_WIND_SPEED + (MAX_WIND_SPEED - MIN_WIND_SPEED) * random.nextDouble();
     }
 
-
+    public CollisionManager getCollisionManager() {
+        return collisionManager;
+    }
 }

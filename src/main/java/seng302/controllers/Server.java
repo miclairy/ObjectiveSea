@@ -2,15 +2,13 @@ package seng302.controllers;
 
 import seng302.data.*;
 import seng302.models.Boat;
+import seng302.models.Collision;
+import seng302.models.Race;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.*;
 
-import static seng302.data.AC35StreamMessage.BOAT_ACTION_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.BOAT_XML_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.RACE_XML_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.REGATTA_XML_MESSAGE;
@@ -32,9 +30,11 @@ public class Server implements Runnable, Observer {
     private RaceUpdater raceUpdater;
     private ConnectionManager connectionManager;
     private ServerPacketBuilder packetBuilder;
+    private CollisionManager collisionManager;
 
     public Server(int port, RaceUpdater raceUpdater) throws IOException {
         this.raceUpdater = raceUpdater;
+        this.collisionManager = raceUpdater.getCollisionManager();
         this.packetBuilder = new ServerPacketBuilder();
         this.connectionManager = new ConnectionManager(port);
         this.connectionManager.addObserver(this);
@@ -113,6 +113,20 @@ public class Server implements Runnable, Observer {
     private void sendRaceUpdates() throws IOException {
         sendPacket(packetBuilder.createRaceUpdateMessage(raceUpdater.getRace()));
         sendBoatMessagesForAllBoats();
+        sendYachtEventMessages();
+    }
+
+    private void sendYachtEventMessages() throws IOException {
+        for (Collision collision : collisionManager.getCollisions()) {
+            for (Integer boatId : collision.getInvolvedBoats()) {
+                Boat boat = raceUpdater.getRace().getBoatById(boatId);
+                sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION);
+                if (collision.boatIsAtFault(boatId)) {
+                    sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION_PENALTY);
+                }
+            }
+            collisionManager.removeCollision(collision);
+        }
     }
 
     private void sendBoatMessagesForAllBoats() throws IOException {
@@ -137,6 +151,16 @@ public class Server implements Runnable, Observer {
             lastMarkRoundingSent.put(boat, boat.getLastRoundedMarkIndex());
             sendPacket(packetBuilder.createMarkRoundingMessage(boat, raceUpdater.getRace()));
         }
+    }
+
+    /**
+     * sends a Yacht Event message
+     * @param boat
+     * @param race
+     * @throws IOException
+     */
+    private void sendYachtEventMessage(Boat boat, Race race, int incidentID, YachtEventCode eventCode) throws IOException {
+        sendPacket(packetBuilder.createYachtEventMessage(boat, race, incidentID, eventCode));
     }
 
     /**
@@ -178,6 +202,7 @@ public class Server implements Runnable, Observer {
         boatSequenceNumbers.put(boat, newId);
         lastMarkRoundingSent.put(boat, -1);
         connectionManager.addConnection(newId, serverListener.getSocket());
+        serverListener.setClientId(newId);
 
         byte[] packet = packetBuilder.createRegistrationAcceptancePacket(newId);
         connectionManager.sendToClient(newId, packet);

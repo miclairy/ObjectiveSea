@@ -3,6 +3,7 @@ package seng302.controllers;
 import javafx.animation.AnimationTimer;
 import javafx.animation.ScaleTransition;
 import javafx.animation.Interpolator;
+import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -25,6 +26,7 @@ import javafx.scene.transform.Scale;
 import javafx.util.Duration;
 import seng302.data.BoatStatus;
 import seng302.data.StartTimingStatus;
+import seng302.utilities.AnimationUtils;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.PolarReader;
 import seng302.utilities.TimeUtils;
@@ -151,29 +153,31 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param boatDisplay the boat to be moved
      */
     private void moveBoatDisplay(BoatDisplay boatDisplay){
-        CanvasCoordinate point = DisplayUtils.convertFromLatLon(boatDisplay.getBoat().getCurrentLat(), boatDisplay.getBoat().getCurrentLon());
-        moveBoat(boatDisplay, point);
-        moveWake(boatDisplay, point);
-        moveSail(boatDisplay, point);
-        manageStartTiming(boatDisplay);
-        moveSOGVector(boatDisplay);
-        moveVMGVector(boatDisplay);
+        CanvasCoordinate point = DisplayUtils.convertFromLatLon(displayBoat.getBoat().getCurrentLat(), displayBoat.getBoat().getCurrentLon());
+        moveBoat(displayBoat, point);
+        moveWake(displayBoat, point);
+        moveSail(displayBoat, point);
+        displayCollisions(displayBoat, point);
+
+        manageStartTiming(displayBoat);
+        moveSOGVector(displayBoat);
+        moveVMGVector(displayBoat);
         if(race.getRaceStatus() == STARTED) {
-            addToBoatPath(boatDisplay, point);
+            addToBoatPath(displayBoat, point);
         }
-        moveBoatAnnotation(boatDisplay.getAnnotation(), point, boatDisplay);
+        moveBoatAnnotation(displayBoat.getAnnotation(), point, displayBoat);
         if(scoreBoardController.areVectorsSelected()){
-            boatDisplay.showVectors();
+            displayBoat.showVectors();
         } else {
-            boatDisplay.hideVectors();
+            displayBoat.hideVectors();
         }
         if (scoreBoardController.isLayLinesSelected()){
-            boatDisplay.getLaylines().removeDrawnLines(root);
-            if (selectedBoats.contains(boatDisplay)) {
-                drawLayline(boatDisplay);
+            displayBoat.getLaylines().removeDrawnLines(root);
+            if (selectedBoats.contains(displayBoat)) {
+                drawLayline(displayBoat);
             }
         } else {
-            boatDisplay.getLaylines().removeDrawnLines(root);
+            displayBoat.getLaylines().removeDrawnLines(root);
         }
     }
 
@@ -189,6 +193,22 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
         if(selectionController.getTrackingBoat() != null){
             selectionController.getTrackingBoat().getAnnotation().toFront();
+        }
+    }
+
+    /**
+     * Checks if a boat is colliding and displays the animation if so
+     * @param displayBoat the displayBoat to check and display collisions for
+     * @param point the canvas position of the display boat where we will display the collision animation
+     */
+    private void displayCollisions(BoatDisplay displayBoat, CanvasCoordinate point) {
+        Boat boat = displayBoat.getBoat();
+        if(boat.isColliding()){
+            boat.setColliding(false);
+            if(!displayBoat.collisionInProgress()){
+                collisionAnimation(point, displayBoat);
+                displayBoat.setCollisionInProgress(true);
+            }
         }
     }
 
@@ -284,6 +304,49 @@ public class RaceViewController extends AnimationTimer implements Observer {
             initBoatPath(boat);
         }
     }
+
+    /**
+     * creates an animation to visual a collision
+     * @param point the point where the collision iss
+     */
+    void collisionAnimation(CanvasCoordinate point, BoatDisplay boat){
+        Circle collisionCircle1 = createCollisionCircle(point);
+        Circle collisionCircle2 = createCollisionCircle(point);
+
+        ScaleTransition st1 = AnimationUtils.scaleTransitionCollision(collisionCircle1, 500, 20 * zoomLevel);
+        st1.setOnFinished(new EventHandler<ActionEvent>(){
+            public void handle(ActionEvent AE) {
+                root.getChildren().remove(collisionCircle1);
+            }});
+
+        ScaleTransition st2 = AnimationUtils.scaleTransitionCollision(collisionCircle2, 300, 30 * zoomLevel);
+        st2.setOnFinished(new EventHandler<ActionEvent>(){
+            public void handle(ActionEvent AE) {
+                root.getChildren().remove(collisionCircle2);
+            }});
+
+        FadeTransition ft1 = AnimationUtils.fadeOutTransition(collisionCircle1, 800);
+        FadeTransition ft2 = AnimationUtils.fadeOutTransition(collisionCircle2, 600);
+        ft2.setOnFinished(new EventHandler<ActionEvent>(){
+            public void handle(ActionEvent AE) {
+                boat.setCollisionInProgress(false);
+            }});
+
+        ParallelTransition pt = new ParallelTransition(st1, st2, ft1, ft2);
+        pt.play();
+    }
+
+    private Circle createCollisionCircle(CanvasCoordinate point){
+        Circle circle = new Circle();
+        circle.setRadius(1);
+        circle.setId("collisionCircle");
+        circle.setCenterX(point.getX());
+        circle.setCenterY(point.getY());
+        root.getChildren().add(circle);
+        return circle;
+    }
+
+
 
     /**
      * Initalises a Path for a boat
@@ -418,7 +481,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         displayBoat.getAnnotation().toFront();
         displayBoat.getAnnotationLine().toBack();
     }
-
 
     /**
      * Move's the annotation to where the boat is now.

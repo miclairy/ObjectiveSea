@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.lang.Double.max;
 import static java.lang.StrictMath.abs;
 import static seng302.utilities.MathUtils.pointBetweenTwoAngle;
 
@@ -42,6 +43,9 @@ public class Boat extends Observable implements Comparable<Boat>{
     private double heading;
     private double maxSpeed;
     private boolean lastPlayerDirection = true; //true = Clockwise / false = AntiClockwise
+
+    private int penaltyCount;
+    private boolean isColliding = false;
 
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
@@ -193,7 +197,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void setCurrentSpeed(double speed) {
-        this.currentSpeed = speed;
+        this.currentSpeed = max(0.0, speed);
     }
 
     public long getTimeAtNextMark() {
@@ -215,6 +219,14 @@ public class Boat extends Observable implements Comparable<Boat>{
     public void setMaxSpeed(double maxSpeed) {
         this.maxSpeed = maxSpeed;
     }
+
+    public int getPenaltyCount(){return penaltyCount;}
+
+    public void addPenalty(int penaltyCount) {this.penaltyCount = penaltyCount;}
+
+    public boolean isColliding() {return isColliding;}
+
+    public void setColliding(boolean colliding) {isColliding = colliding;}
 
     public long getTimeTillFinish() {
         return timeTillFinish;
@@ -439,29 +451,36 @@ public class Boat extends Observable implements Comparable<Boat>{
      */
     public void headingChange(double windAngle) {
 
+        double DELTA = 0.00001;
         heading += 360;
-        int windAngleCheck = (int) windAngle + 360;
+        double windAngleCheck = windAngle + 360;
 
-        if ((windAngleCheck > heading && windAngleCheck - 180 < heading) ||
-                (windAngleCheck < heading && windAngleCheck + 180 < heading)) {
+        if(heading <= windAngleCheck && heading >= windAngleCheck-2) {
+            heading = windAngleCheck;
+
+        } else if(heading >= windAngleCheck && heading <= windAngleCheck+2) {
+            heading = windAngleCheck;
+
+        } else if ((windAngleCheck > heading && windAngleCheck - 180 < heading && abs(windAngleCheck - 180 - heading) > DELTA) ||           //1
+                (windAngleCheck < heading && windAngleCheck + 180 < heading && abs(windAngleCheck + 180 - heading) > DELTA)) {       //2
             heading += 3;
             lastPlayerDirection = true;
 
-        } else if ((windAngleCheck < heading && windAngleCheck + 180 > heading) ||
-                (windAngleCheck > heading && windAngleCheck - 180 > heading)) {
+        } else if ((windAngleCheck > heading && windAngleCheck - 180 > heading && abs(windAngleCheck - 180 - heading) > DELTA) ||    //3
+                (windAngleCheck < heading && windAngleCheck + 180 > heading && abs(windAngleCheck + 180 - heading) > DELTA)) {       //4
             heading -= 3;
             lastPlayerDirection = false;
 
-        } else if (windAngleCheck == heading ||
-                windAngleCheck - 180 == heading ||
-                windAngleCheck + 180 == heading) {
+        } else if (abs(windAngleCheck - heading) < DELTA ||
+                abs((windAngleCheck - 180) - heading) < DELTA ||
+                abs((windAngleCheck + 180) - heading) < DELTA) {
             if (lastPlayerDirection) {
                 heading += 3;
-
             } else {
                 heading -= 3;
             }
         }
+
         if (heading >= 720) {
             heading -= 720;
         } else if (heading >= 360) {
