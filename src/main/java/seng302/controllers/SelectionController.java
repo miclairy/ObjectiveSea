@@ -175,7 +175,6 @@ public class SelectionController extends Observable {
         });
 
         circle.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
-            System.out.println("deselected");
             root.setCursor(Cursor.DEFAULT);
         });
     }

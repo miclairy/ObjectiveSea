@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -157,7 +158,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 displayBoat.getLaylines().removeDrawnLines(root);
             }
         }
-        //drawMarks();
         redrawRaceLines();
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
@@ -243,7 +243,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawMap();
         drawWindArrow();
         redrawRaceLines();
-        //redrawBoatPaths();
     }
 
     /**
@@ -273,19 +272,21 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * Handles drawing of all of the marks from the course
      */
     public void drawMarks() {
-        System.out.println("redrawing");
         for (Mark mark : race.getCourse().getAllMarks().values()) {
             if (mark.getIcon() != null && root.getChildren().contains(mark.getIcon())){
-                root.getChildren().remove(mark.getIcon());
+                CanvasCoordinate point = DisplayUtils.convertFromLatLon(mark.getPosition());
+                mark.getIcon().setCenterX(point.getX());
+                mark.getIcon().setCenterY(point.getY());
+            }else{
+                Circle circle = raceView.createMark(mark.getPosition());
+                root.getChildren().add(circle);
+                mark.setIcon(circle);
+                selectionController.addMarkSelectionHandlers(mark);
             }
-            Circle circle = raceView.createMark(mark.getPosition());
-            root.getChildren().add(circle);
-            mark.setIcon(circle);
-            selectionController.addMarkSelectionHandlers(mark);
-            Circle icon = mark.getIcon();
-            icon.toFront();
-            icon.setScaleX(zoomLevel);
-            icon.setScaleY(zoomLevel);
+
+            mark.getIcon().toFront();
+            mark.getIcon().setScaleX(zoomLevel);
+            mark.getIcon().setScaleY(zoomLevel);
         }
     }
 
@@ -789,6 +790,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public void drawWindArrow() {
 
         windCircle = controller.getWindCircle();
+        AnchorPane canvasAnchor = controller.getCanvasAnchor();
 
         if (root.getChildren().contains(windArrow)){
             root.getChildren().remove(windArrow);
@@ -799,9 +801,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
         windArrow.setLayoutY(WIND_ARROW_Y_PADDING);
 
 
+
         windCircle.setRadius(25);
         windCircle.setLayoutX(Controller.getAnchorWidth()- WIND_ARROW_X_PADDING);
         windCircle.setLayoutY(WIND_ARROW_Y_PADDING - 15);
+//        canvasAnchor.setRightAnchor(windCircle, 50.0);
+//        canvasAnchor.setTopAnchor(windCircle, 50.0);
+
         windCircle.setId("windCircle");
 
         root.getChildren().add(windCircle);
