@@ -41,7 +41,7 @@ public class BoatDisplay implements Observer {
     private final double FADEDBOAT = 0.3;
     public Circle annoGrabHandle;
     public CubicCurve sail;
-    public boolean collisionInProgress;
+    public boolean collisionInProgress = false;
 
     private Laylines laylines;
     private PolarTable polarTable;
