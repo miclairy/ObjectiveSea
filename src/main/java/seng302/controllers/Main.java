@@ -85,5 +85,9 @@ public class Main extends Application {
         serverThread.setName("Server");
         serverThread.start();
     }
+
+    public static Client getClient() {
+        return client;
+    }
 }
 

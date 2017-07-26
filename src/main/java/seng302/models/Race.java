@@ -71,7 +71,7 @@ public class Race extends Observable{
     }
 
     public List<Boat> getCompetitors() {
-        return Collections.unmodifiableList(competitors);
+        return Collections.unmodifiableList(this.competitors);
     }
 
     public String getRegattaName() {
@@ -254,5 +254,11 @@ public class Race extends Observable{
         return competitorIds;
     }
 
+    /**
+     * @return true if the race status is STARTED
+     */
+    public boolean hasStarted() {
+        return this.raceStatus.equals(RaceStatus.STARTED);
+    }
 }
 

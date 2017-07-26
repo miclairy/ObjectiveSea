@@ -14,6 +14,7 @@ import java.util.Observable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Math.min;
+import static java.lang.Double.max;
 import static java.lang.StrictMath.abs;
 import static seng302.utilities.MathUtils.pointBetweenTwoAngle;
 
@@ -44,6 +45,9 @@ public class Boat extends Observable implements Comparable<Boat>{
     private double targetHeading;
     private double maxSpeed;
     private boolean lastPlayerDirection = true; //true = Clockwise / false = AntiClockwise
+
+    private int penaltyCount;
+    private boolean isColliding = false;
 
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
@@ -200,7 +204,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void setCurrentSpeed(double speed) {
-        this.currentSpeed = speed;
+        this.currentSpeed = max(0.0, speed);
     }
 
     public long getTimeAtNextMark() {
@@ -222,6 +226,14 @@ public class Boat extends Observable implements Comparable<Boat>{
     public void setMaxSpeed(double maxSpeed) {
         this.maxSpeed = maxSpeed;
     }
+
+    public int getPenaltyCount(){return penaltyCount;}
+
+    public void addPenalty(int penaltyCount) {this.penaltyCount = penaltyCount;}
+
+    public boolean isColliding() {return isColliding;}
+
+    public void setColliding(boolean colliding) {isColliding = colliding;}
 
     public long getTimeTillFinish() {
         return timeTillFinish;

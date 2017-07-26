@@ -110,5 +110,7 @@ public class Client implements Runnable, Observer {
         return race;
     }
 
-
+    public int getClientID() {
+        return clientID;
+    }
 }

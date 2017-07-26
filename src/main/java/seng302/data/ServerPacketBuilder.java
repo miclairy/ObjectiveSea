@@ -164,6 +164,25 @@ public class ServerPacketBuilder extends PacketBuilder {
     }
 
     /**
+     * Builds a byte array representing a Yacht Event message
+     * @param boat the boat involved in the collision
+     * @param race the current race
+     * @return a byte array representing a Yacht Event message
+     */
+    public byte[] createYachtEventMessage(Boat boat, Race race, int incidentID, YachtEventCode eventCode){
+        byte[] header = createHeader(YACHT_EVENT_CODE);
+        byte[] body = initialiseYachtEventPacket();
+        addFieldToByteArray(body, EVENT_TIME, race.getCurrentTimeInEpochMs());
+        addFieldToByteArray(body, EVENT_ACK_NUM, 0);
+        addFieldToByteArray(body, RACE_ID, Integer.parseInt(race.getId()));
+        addFieldToByteArray(body, DESTINATION_SOURCE_ID, boat.getId());
+        addFieldToByteArray(body, INCIDENT_ID, incidentID);
+        addFieldToByteArray(body, EVENT_ID, eventCode.code());
+
+        return generatePacket(header, body);
+    }
+
+    /**
      * Reads a file as bytes and adds the information about the version, sequence number set to 1, subtype, timestamp,
      * xml sequence number and length then
      * @param subType the integer number of the subtype of the xml message
@@ -228,6 +247,12 @@ public class ServerPacketBuilder extends PacketBuilder {
         body[15] = (byte) 1;
         body[24] = (byte) 0;
         addFieldToByteArray(body, TRUE_WIND_DIRECTION, windDirection);
+
+        return body;
+    }
+
+    private byte[] initialiseYachtEventPacket(){
+        byte[] body = new byte[YACHT_EVENT_CODE.getLength()];
 
         return body;
     }
