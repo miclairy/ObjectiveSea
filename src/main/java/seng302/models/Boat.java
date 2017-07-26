@@ -53,7 +53,6 @@ public class Boat extends Observable implements Comparable<Boat>{
     private double finalTime;
 
     private int penaltyCount;
-    private boolean isColliding;
     private boolean markColliding;
     private boolean boatColliding;
 
@@ -284,8 +283,6 @@ public class Boat extends Observable implements Comparable<Boat>{
     public boolean isMarkColliding() {return markColliding;}
 
     public boolean isBoatColliding() {return  boatColliding;}
-
-    public void setColliding(boolean colliding) {isColliding = colliding;}
 
     public void setMarkColliding(boolean colliding) {markColliding = colliding;}
 

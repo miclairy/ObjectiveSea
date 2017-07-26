@@ -399,7 +399,6 @@ public class RaceUpdater implements Runnable {
         for(Boat otherBoat : race.getCompetitors()){
             if(collisionOfBounds(boat.getCurrentPosition(), otherBoat.getCurrentPosition(), 16) && boat != otherBoat){
                 collision = true;
-                boat.setColliding(true);
                 otherBoat.setBoatColliding(true);
                 //System.out.println("EXPLOSION!!!!!!!!!!!!! YOUR BOAT IS SINKING, ABORT!!!!! !@#$%@*&^#$@ Collision of boat");
             }
