@@ -24,6 +24,7 @@ public class ServerListener extends Receiver implements Runnable{
     
     private Socket socket;
     private Race race;
+    private Integer clientId;
 
     ServerListener(Socket socket){
         this.socket = socket;
@@ -81,6 +82,10 @@ public class ServerListener extends Receiver implements Runnable{
      */
     private void parseBoatActionMessage(byte[] body){
         int sourceId = byteArrayRangeToInt(body, BOAT_ACTION_SOURCE_ID.getStartIndex(), BOAT_ACTION_SOURCE_ID.getEndIndex());
+        if(sourceId != clientId){
+            System.out.printf("Incorrect Client Id Received: Expected: %d Actual: %d\n", clientId, sourceId);
+            return;
+        }
         int action = byteArrayRangeToInt(body, BOAT_ACTION_BODY.getStartIndex(), BOAT_ACTION_BODY.getEndIndex());
         Boat boat = race.getBoatById(sourceId);
         PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
@@ -115,5 +120,9 @@ public class ServerListener extends Receiver implements Runnable{
 
     public void setRace(Race race) {
         this.race = race;
+    }
+
+    public void setClientId(Integer clientId) {
+        this.clientId = clientId;
     }
 }

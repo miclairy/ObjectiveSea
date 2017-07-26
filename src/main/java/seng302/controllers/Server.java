@@ -178,6 +178,7 @@ public class Server implements Runnable, Observer {
         boatSequenceNumbers.put(boat, newId);
         lastMarkRoundingSent.put(boat, -1);
         connectionManager.addConnection(newId, serverListener.getSocket());
+        serverListener.setClientId(newId);
 
         byte[] packet = packetBuilder.createRegistrationAcceptancePacket(newId);
         connectionManager.sendToClient(newId, packet);
