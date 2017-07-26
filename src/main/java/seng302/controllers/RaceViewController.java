@@ -268,13 +268,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
         Circle collisionCircle1 = createCollisionCircle(point);
         Circle collisionCircle2 = createCollisionCircle(point);
 
-        ScaleTransition st1 = AnimationUtils.scaleTransitionCollision(collisionCircle1, 500, 20);
+        ScaleTransition st1 = AnimationUtils.scaleTransitionCollision(collisionCircle1, 500, 20 * zoomLevel);
         st1.setOnFinished(new EventHandler<ActionEvent>(){
             public void handle(ActionEvent AE) {
                 root.getChildren().remove(collisionCircle1);
             }});
 
-        ScaleTransition st2 = AnimationUtils.scaleTransitionCollision(collisionCircle2, 300, 30);
+        ScaleTransition st2 = AnimationUtils.scaleTransitionCollision(collisionCircle2, 300, 30 * zoomLevel);
         st2.setOnFinished(new EventHandler<ActionEvent>(){
             public void handle(ActionEvent AE) {
                 root.getChildren().remove(collisionCircle2);

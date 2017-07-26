@@ -45,7 +45,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private boolean lastPlayerDirection = true; //true = Clockwise / false = AntiClockwise
 
     private int penaltyCount;
-    private boolean isColliding;
+    private boolean isColliding = false;
 
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;

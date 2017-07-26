@@ -13,7 +13,7 @@ import javafx.util.Duration;
  */
 public class AnimationUtils {
 
-    public static ScaleTransition scaleTransitionCollision(Node node, int duration, int amount){
+    public static ScaleTransition scaleTransitionCollision(Node node, int duration, double amount){
         ScaleTransition scaleTransition = new ScaleTransition(new Duration(duration), node);
         scaleTransition.setByY(amount);
         scaleTransition.setByX(amount);
