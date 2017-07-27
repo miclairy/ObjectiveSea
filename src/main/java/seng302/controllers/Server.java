@@ -143,13 +143,15 @@ public class Server implements Runnable, Observer {
      * @throws IOException
      */
     private void sendBoatMessages(Boat boat) throws IOException {
-        int currentSequenceNumber = boatSequenceNumbers.get(boat);
-        boatSequenceNumbers.put(boat, currentSequenceNumber + 1);
+        Integer currentSequenceNumber = boatSequenceNumbers.get(boat);
+        if (currentSequenceNumber != null) { //check required as a race condition can sometimes cause a NullPointerException
+            boatSequenceNumbers.put(boat, currentSequenceNumber + 1);
 
-        sendPacket(packetBuilder.createBoatLocationMessage(boat, raceUpdater.getRace(), currentSequenceNumber));
-        if (lastMarkRoundingSent.get(boat) != boat.getLastRoundedMarkIndex()){
-            lastMarkRoundingSent.put(boat, boat.getLastRoundedMarkIndex());
-            sendPacket(packetBuilder.createMarkRoundingMessage(boat, raceUpdater.getRace()));
+            sendPacket(packetBuilder.createBoatLocationMessage(boat, raceUpdater.getRace(), currentSequenceNumber));
+            if (lastMarkRoundingSent.get(boat) != boat.getLastRoundedMarkIndex()) {
+                lastMarkRoundingSent.put(boat, boat.getLastRoundedMarkIndex());
+                sendPacket(packetBuilder.createMarkRoundingMessage(boat, raceUpdater.getRace()));
+            }
         }
     }
 
