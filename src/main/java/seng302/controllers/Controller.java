@@ -263,6 +263,7 @@ public class Controller implements Initializable, Observer {
                     displayString += String.format("%.3f knots", boat.getCurrentSpeed());
                 }
             }
+            displayStarters();
             formattedDisplayOrder.add(displayString);
         }
     }
