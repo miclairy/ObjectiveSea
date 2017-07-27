@@ -13,7 +13,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class CollisionManager {
 
-    private Double BOAT_SENSITIVITY = 30.0;
+    private Double BOAT_SENSITIVITY = 18.0;
     private Double MARK_SENSITIVITY = 10.0;
     private Double AT_FAULT_DELTA = 30.0;
     private Double COLLISION_DELTA = 70.0;
