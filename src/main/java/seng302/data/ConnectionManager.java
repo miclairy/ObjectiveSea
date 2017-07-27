@@ -22,7 +22,7 @@ public class ConnectionManager extends Observable implements Runnable {
     private boolean running;
 
 
-    public ConnectionManager(int port) throws IOException {;
+    public ConnectionManager(int port) throws IOException {
         serverSocket = new ServerSocket(port);
     }
 

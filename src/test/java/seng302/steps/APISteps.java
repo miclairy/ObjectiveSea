@@ -13,11 +13,15 @@ import seng302.data.ClientSender;
 import seng302.data.RaceStatus;
 import seng302.models.Boat;
 import seng302.models.Course;
+import seng302.models.PolarTable;
 import seng302.models.Race;
+import seng302.utilities.MathUtils;
+import seng302.utilities.PolarReader;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,24 +38,29 @@ public class APISteps {
     private Boat sallysBoat;
     private Race race;
     private Set<Socket> sockets = new HashSet<>();
-    private ServerSocket serverSocket;
+    private Socket serverSocket;
     private static int port = 1234;
+    private double VMGHeading;
 
     @Given("^Sally has a boat$")
     public void sallyHasABoat() throws Throwable {
-        RaceUpdater mockRaceRunner = mock(RaceUpdater.class);
-        sallysBoat = new Boat(102, "Sally's Boat", "SB", 12);
-        sallysBoat.setHeading(30.0);
-        sallysBoat.setCurrentSpeed(10);
-        race = mock(Race.class);
+        RaceUpdater raceRunner = new RaceUpdater();
+        sallysBoat = new Boat(102, "Sally's Boat", "SB", 15.0);
+        sallysBoat.setHeading(100.0);
+        sallysBoat.setCurrentSpeed(15.0);
         Course course = mock(Course.class);
+        when(course.getTrueWindSpeed()).thenReturn(10.0);
+        race = new Race("test", course, Arrays.asList(sallysBoat));
+        race.setId("1");
+        race.updateRaceStatus(RaceStatus.STARTED);
+        PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
+        VMGHeading = sallysBoat.getVMGHeading(course, polarTable);
         when(course.getWindDirection()).thenReturn(0.0);
-        when(race.getId()).thenReturn("1");
-        when(race.getRaceStatus()).thenReturn(RaceStatus.STARTED);
-        when(race.getCourse()).thenReturn(course);
-        when(race.getBoatById(102)).thenReturn(sallysBoat);
-        when(mockRaceRunner.getRace()).thenReturn(race);
-        server = new Server(port++, mockRaceRunner);
+        raceRunner.setRace(race);
+        Thread runnerThread = new Thread(raceRunner);
+        runnerThread.setName("Race Updater");
+        runnerThread.start();
+        server = mock(Server.class);
         Thread serverThread = new Thread(server);
         serverThread.start();
     }
@@ -59,56 +68,52 @@ public class APISteps {
     @When("^Sally presses the \"([^\"]*)\" key$")
     public void sallyPressesTheKey(String key) throws Throwable {
         ClientPacketBuilder packetBuilder = new ClientPacketBuilder();
-        serverSocket = new ServerSocket(port);
-        Socket socket = new Socket("localhost", port++);
-        Socket yetAnotherSocket = serverSocket.accept();
-        ServerListener listener = new ServerListener(yetAnotherSocket);
+        serverSocket = mock(Socket.class);
+
+        ServerListener listener = new ServerListener(serverSocket);
+        listener.setClientId(102);
         listener.setRace(race);
-        listener.addObserver(server);
-        Thread serverListenerThread = new Thread(listener);
-        serverListenerThread.start();
-        ClientSender sender = new ClientSender(socket);
         KeyCode keyCode = KeyCode.valueOf(key.toUpperCase());
         byte[] packet = packetBuilder.createBoatCommandPacket(BoatAction.getTypeFromKeyCode(keyCode), 102);
-        sender.sendToServer(packet);
-        sockets.add(socket);
-        sockets.add(yetAnotherSocket);
+        when(serverSocket.getInputStream()).thenReturn(new ByteArrayInputStream(packet));
+        Thread serverListenerThread = new Thread(listener);
+        serverListenerThread.start();
+
     }
 
     @Then("^the heading of Sally's boat has been changed$")
     public void theHeadingOfSallySBoatHasBeenChanged() throws Throwable {
-        Thread.sleep(100);
-        assertEquals(330.0, sallysBoat.getHeading(), 0);
+        Thread.sleep(10);
+        assertEquals(209.16, sallysBoat.getHeading(), 0.01);
         tearDown();
     }
 
     @Then("^the sails should be brought in so that the speed becomes (\\d+)$")
     public void theSailsShouldBeBroughtInSoThatTheSpeedBecomes(int speed) throws Throwable {
-        Thread.sleep(10);
-        assertEquals(0.0, sallysBoat.getSpeed());
-        //TODO check sails are actually brought in
+        Thread.sleep(100);
+        assert(sallysBoat.getCurrentSpeed() < 15);
+        assert(sallysBoat.isSailsIn());
         tearDown();
     }
 
-    @Then("^the boats speed should be the same as the vmg speed$")
-    public void theBoatsSpeedShouldBeTheSameAsTheVmgSpeed() throws Throwable {
-        Thread.sleep(10);
-        assertEquals(10.0, sallysBoat.getSpeed(), 0.0);
-        //TODO changed the expected to the sallysboat.getVMGSpeed() when it is available
-        tearDown();
+    @Then("^the boats heading should move towards the optimal angle$")
+    public void theBoatsHeadingShouldMoveTowardsTheOptimalAngle() throws Throwable {
+        double headingDifference = sallysBoat.getHeading() - VMGHeading;
+
+        assert(Math.abs(headingDifference) < Math.abs(100 - VMGHeading));
     }
 
     @Then("^the boats heading should be increased$")
     public void theBoatsHeadingShouldBeIncreased() throws Throwable {
         Thread.sleep(10);
-        assertEquals(33.0, sallysBoat.getHeading(), 0.0);
+        assertEquals(103.0, sallysBoat.getHeading(), 0.0);
         tearDown();
     }
 
     @Then("^the boats heading should be decreased$")
     public void theBoatsHeadingShouldBeDecreased() throws Throwable {
         Thread.sleep(10);
-        assertEquals(27.0, sallysBoat.getHeading(), 0.0);
+        assertEquals(97.0, sallysBoat.getHeading(), 0.0);
         tearDown();
     }
 
