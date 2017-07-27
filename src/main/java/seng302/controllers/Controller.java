@@ -125,6 +125,7 @@ public class Controller implements Initializable, Observer {
                 DisplayUtils.dragDisplay((int)event.getX(),(int) event.getY());
                 raceViewController.redrawCourse();
                 raceViewController.redrawBoatPaths();
+                selectionController.deselectBoat();
             }
         });
     }
@@ -392,6 +393,9 @@ public class Controller implements Initializable, Observer {
         return windCircle;
     }
 
+    public AnchorPane getCanvasAnchor() {
+        return canvasAnchor;
+    }
 
     @FXML private void zoomCursorHover(){
         DisplayUtils.fadeNodeTransition(zoomSlider, FOCUSED_ZOOMSLIDER_OPACITY);
