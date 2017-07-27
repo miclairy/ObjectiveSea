@@ -74,7 +74,7 @@ public class SelectionController extends Observable {
         if (isTrackingPoint && selectedMark != null){
             DisplayUtils.moveToPoint(selectedMark.getPosition());
             setChanged();
-            notifyObservers(selectedMark);
+            notifyObservers(true);
        }
         if (isTrackingPoint && trackingBoat != null) {
             trackingBoat.getIcon().toFront();
@@ -86,7 +86,7 @@ public class SelectionController extends Observable {
                 }
             }
             setChanged();
-            notifyObservers(trackingBoat);
+            notifyObservers(true);
         }
 
     }
@@ -134,7 +134,7 @@ public class SelectionController extends Observable {
 
         }
         setChanged();
-        notifyObservers();
+        notifyObservers(false);
     }
 
     /**
@@ -276,7 +276,7 @@ public class SelectionController extends Observable {
         Shape boatImage = boat.getIcon();
         boatImage.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             trackingBoat = boat;
-            if (selectedBoats.isEmpty() || event.isShiftDown()) {
+            if (selectedBoats.isEmpty() || event.isControlDown()) {
                 if (selectedBoats.contains(boat)){
                     selectedBoats.remove(boat);
                 } else {
@@ -295,7 +295,7 @@ public class SelectionController extends Observable {
             }
             selectedMark = null;
             setChanged();
-            notifyObservers();
+            notifyObservers(false);
 
         });
 

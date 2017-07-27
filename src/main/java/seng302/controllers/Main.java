@@ -1,7 +1,7 @@
 package seng302.controllers;
 
 /**
- * Main class. Loads data and starts GUI.
+ * Main class. Sets up server and client and starts GUI.
  */
 import javafx.application.Application;
 import javafx.application.Preloader;
@@ -15,31 +15,30 @@ import javafx.geometry.Rectangle2D;
 import javafx.stage.WindowEvent;
 import javafx.event.EventHandler;
 import javafx.application.Platform;
+import seng302.data.ConnectionManager;
 import seng302.data.DataStreamReader;
-import seng302.data.MockStream;
 import seng302.utilities.Config;
 import seng302.models.Race;
-import seng302.utilities.PolarReader;
 
+import java.io.IOException;
 
 
 public class Main extends Application {
 
-    private static Race race;
-    private static DataStreamReader dataStreamReader;
-
+    private static Scene scene;
+    private static Client client;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         Config.initializeConfig();
-        setupMockStream();
-        setUpDataStreamReader();
-        waitForRace();
+        setupServer();
+        setupClient();
 
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
         primaryStage.setTitle("Race Vision");
         primaryStage.getIcons().add(new Image("graphics/icon.png"));
-        primaryStage.setScene(new Scene(parent));
+        scene = new Scene(parent);
+        primaryStage.setScene(scene);
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         primaryStage.setHeight(primaryScreenBounds.getHeight());
         primaryStage.setWidth(primaryScreenBounds.getWidth());
@@ -52,50 +51,43 @@ public class Main extends Application {
                 System.exit(0);
             }
         });
-    }
 
-    /**
-     * Waits for the race to be able to be read in
-     */
-    public void waitForRace(){
-        while(dataStreamReader.getRace() == null){
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        race = dataStreamReader.getRace();
+        UserInputController userInputController = new UserInputController(scene, Client.getRace());
+        client.setUserInputController(userInputController);
+        userInputController.addObserver(client);
     }
 
     public static void main( String[] args ) {launch(args); }
 
     /**
-     * Creates a MockStream object, puts it in it's own thread and starts the thread
+     * Initializes the client on it's own thread.
      */
-    private static void setupMockStream() {
-        MockRaceRunner runner = new MockRaceRunner();
+    private static void setupClient() {
+        client = new Client();
+        Thread clientThread = new Thread(client);
+        clientThread.setName("Client");
+        clientThread.start();
+    }
+
+    /**
+     * Creates a Server object, puts it in it's own thread and starts the thread
+     */
+    private static void setupServer() throws IOException {
+        RaceUpdater runner = new RaceUpdater();
         runner.setScaleFactor(Config.MOCK_SPEED_SCALE);
         Thread runnerThread = new Thread(runner);
+        runnerThread.setName("Race Updater");
         runnerThread.start();
-        MockStream mockStream;
-        mockStream = new MockStream(2828, runner);
-        mockStream.setScaleFactor(Config.MOCK_SPEED_SCALE);
-        Thread upStream = new Thread(mockStream);
-        upStream.start();
+        Server server;
+        server = new Server(2828, runner);
+        server.setScaleFactor(Config.MOCK_SPEED_SCALE);
+        Thread serverThread = new Thread(server);
+        serverThread.setName("Server");
+        serverThread.start();
     }
 
-    private static void setUpDataStreamReader(){
-        dataStreamReader = new DataStreamReader(Config.SOURCE_ADDRESS, Config.SOURCE_PORT);
-        Thread dataStreamReaderThread = new Thread(dataStreamReader);
-        dataStreamReaderThread.start();
-
+    public static Client getClient() {
+        return client;
     }
-
-    public static Race getRace() {
-        return Main.race;
-    }
-
 }
 

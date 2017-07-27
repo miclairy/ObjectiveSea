@@ -7,28 +7,18 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.shape.Shape;
-import javafx.util.Pair;
+import javafx.scene.transform.Rotate;
 import seng302.data.StartTimingStatus;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.XYChart.Data;
-import javafx.scene.Node;
-import javafx.animation.FadeTransition;
-import javafx.util.Duration;
-import seng302.data.BoatStatus;
 import seng302.models.*;
 import seng302.utilities.MathUtils;
-import seng302.utilities.DisplayUtils;
 
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.ZoneOffset;
 import java.util.Observable;
 import java.util.Observer;
 
 import static seng302.utilities.DisplayUtils.fadeNodeTransition;
-
-import static seng302.utilities.MathUtils.pointBetweenTwoAngle;
+import static seng302.utilities.DisplayUtils.zoomLevel;
 
 
 /**
@@ -50,6 +40,8 @@ public class BoatDisplay implements Observer {
     private Series series;
     private final double FADEDBOAT = 0.3;
     public Circle annoGrabHandle;
+    public CubicCurve sail;
+    private boolean collisionInProgress = false;
 
     private Laylines laylines;
     private PolarTable polarTable;
@@ -137,7 +129,7 @@ public class BoatDisplay implements Observer {
             path;}
 
     public String getSpeed(){
-        return String.format("%.1fkn", boat.getSpeed());
+        return String.format("%.1fkn", boat.getCurrentSpeed());
     }
 
     public Color getColor() {
@@ -150,6 +142,22 @@ public class BoatDisplay implements Observer {
 
     public void setAnnoGrabHandle(Circle annoGrabHandle) {
         this.annoGrabHandle = annoGrabHandle;
+    }
+
+    public boolean isCollisionInProgress() {
+        return collisionInProgress;
+    }
+
+    public void setCollisionInProgress(boolean collisionInProgress) {
+        this.collisionInProgress = collisionInProgress;
+    }
+
+    public CubicCurve getSail() {
+        return sail;
+    }
+
+    public void setSail(CubicCurve sail) {
+        this.sail = sail;
     }
 
     public void setColor(Color color) {
@@ -207,10 +215,10 @@ public class BoatDisplay implements Observer {
         //If the boat is on the correct side of the start and heading towards it
 
         if(correctSideOfStart && boatHeadingToStart){
-            timeToStart = distanceToStart/boat.getSpeed() * 60 * 60; //converted to seconds (nautical miles/knots = hours)
+            timeToStart = distanceToStart/boat.getCurrentSpeed() * 60 * 60; //converted to seconds (nautical miles/knots = hours)
             timeToCrossStartLine = timeToStart + secondsElapsed;
         } else if(!correctSideOfStart && !boatHeadingToStart){ // If boat is on the wrong side of the line but heading to the mark (from wrong direction), this checks if it is possible for the boat to even get there in time
-            timeToStart = distanceToStart/boat.getSpeed() * 60 * 60; //converted to seconds (nautical miles/knots = hours)
+            timeToStart = distanceToStart/boat.getCurrentSpeed() * 60 * 60; //converted to seconds (nautical miles/knots = hours)
             timeToCrossStartLine = timeToStart + secondsElapsed;
             if(timeToCrossStartLine < 5.0){ //if it is possible for the boat to get to the other side then we can't tell much else about it
                 timeToCrossStartLine = 0.0;
@@ -274,6 +282,29 @@ public class BoatDisplay implements Observer {
     }
 
 
+    /**
+     * moves the sail location and sets its cubic shape and rotation
+     * @param point  location
+     * @param controlX1 cubic x bend
+     * @param controlX2 cubic x bend
+     * @param controlY1 cubic y bend
+     * @param controlY2 cubic y bend
+     * @param rotation angle of rotation from 0,0 pivot
+     */
+    public void moveSail(CanvasCoordinate point, double controlX1, double controlX2, double controlY1, double controlY2, double rotation){
+        sail.setLayoutX(point.getX());
+        sail.setLayoutY(point.getY());
+        sail.setEndX(14 * zoomLevel);
+        sail.setControlX1(controlX1);
+        sail.setControlX2(controlX2);
+        sail.setControlY1(controlY1);
+        sail.setControlY2(controlY2);
+        sail.getTransforms().clear();
+        sail.getTransforms().add(new Rotate(rotation, 0,0 ));
+        sail.toFront();
+    }
+
+
     public Laylines getLaylines() {
         return laylines;
     }
@@ -284,6 +315,10 @@ public class BoatDisplay implements Observer {
 
     public PolarTable getPolarTable() {
         return polarTable;
+    }
+
+    public boolean collisionInProgress() {
+        return collisionInProgress;
     }
 }
 

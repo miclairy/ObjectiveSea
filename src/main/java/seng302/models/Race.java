@@ -15,12 +15,14 @@ import java.util.*;
 public class Race extends Observable{
 
     public static final int UPDATED_STATUS_SIGNAL = 1;
+    public static final int UPDATED_COURSE_SIGNAL = 2;
+    public static final int UPDATED_COMPETITORS_SIGNAL = 3;
     private String id;
     private String regattaName;
     private Course course;
-    private List<Boat> competitors = new ArrayList<>();
+    private List<Boat> competitors = Collections.synchronizedList(new ArrayList<>());
     private List<Boat> raceOrder = new ArrayList<>();
-    private Map<Integer, Boat> boatIdMap;
+    private Map<Integer, Boat> boatIdMap = new HashMap<>();
     private double totalRaceTime;
     private RaceStatus raceStatus = NOT_ACTIVE;
     private long startTimeInEpochMs, currentTimeInEpochMs;
@@ -29,25 +31,10 @@ public class Race extends Observable{
     private Set<Integer> competitorIds = new HashSet<>();
 
     public Race(String name, Course course, List<Boat> competitors) {
-        initialize(name, course, competitors);
-    }
-
-    public Race(){
-
-    }
-
-    /**
-     * Used for tests
-     * @param name
-     * @param course
-     * @param competitors
-     */
-    public void initialize(String name, Course course, List<Boat> competitors) {
         this.regattaName = name;
         this.course = course;
         this.competitors = competitors;
         raceOrder.addAll(competitors);
-        boatIdMap = new HashMap<>();
         for(Boat competitor : competitors){
             boatIdMap.put(competitor.getId(), competitor);
         }
@@ -55,27 +42,7 @@ public class Race extends Observable{
         raceStatus = NOT_ACTIVE;
     }
 
-    /**
-     * Spreads the starting positions of the boats over the start line
-     */
-    public void setStartingPositions(){
-        RaceLine startingLine = course.getStartLine();
-        Coordinate startingEnd1 = startingLine.getMark1().getPosition();
-        Coordinate startingEnd2 = startingLine.getMark2().getPosition();
-        Integer spaces = competitors.size();
-        Double dLat = (startingEnd2.getLat() - startingEnd1.getLat()) / spaces;
-        Double dLon = (startingEnd2.getLon() - startingEnd1.getLon()) / spaces;
-
-        Double curLat = startingEnd1.getLat() + dLat;
-        Double curLon = startingEnd1.getLon() + dLon;
-        for (Boat boat : competitors){
-            boat.setPosition(curLat, curLon);
-            boat.setHeading(course.headingsBetweenMarks(0, 1));
-            boat.addPathCoord(new Coordinate(curLat, curLon));
-            curLat += dLat;
-            curLon += dLon;
-        }
-    }
+    public Race(){}
 
     /**
      * Updates the position, speed and heading of the a boat with a given source id
@@ -104,7 +71,7 @@ public class Race extends Observable{
     }
 
     public List<Boat> getCompetitors() {
-        return competitors;
+        return Collections.unmodifiableList(this.competitors);
     }
 
     public String getRegattaName() {
@@ -215,6 +182,9 @@ public class Race extends Observable{
     public void setUTCOffset(double UTCOffset) { this.UTCOffset = UTCOffset; }
 
     public Boat getBoatById(Integer id){
+        if(boatIdMap == null){
+            return null;
+        }
         if(boatIdMap.containsKey(id)){
             return boatIdMap.get(id);
         } else{
@@ -258,7 +228,7 @@ public class Race extends Observable{
 
         raceOrder.addAll(actualCompetitors);
         boatIdMap = new HashMap<>();
-        for(Boat competitor : actualCompetitors){
+        for (Boat competitor : actualCompetitors) {
             boatIdMap.put(competitor.getId(), competitor);
         }
     }
@@ -269,6 +239,26 @@ public class Race extends Observable{
 
     public String getId() {
         return id;
+    }
+
+    public void addCompetitor(Boat newCompetitor) {
+        this.competitorIds.add(newCompetitor.getId());
+        this.boatIdMap.put(newCompetitor.getId(), newCompetitor);
+        this.competitors.add(newCompetitor);
+        this.raceOrder.add(newCompetitor);
+        setChanged();
+        notifyObservers(UPDATED_COMPETITORS_SIGNAL);
+    }
+
+    public Set<Integer> getCompetitorIds() {
+        return competitorIds;
+    }
+
+    /**
+     * @return true if the race status is STARTED
+     */
+    public boolean hasStarted() {
+        return this.raceStatus.equals(RaceStatus.STARTED);
     }
 }
 

@@ -1,19 +1,13 @@
 package seng302.views;
 
-import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import javafx.scene.shape.Polygon;
 import javafx.scene.transform.Rotate;
 import seng302.controllers.Controller;
 import seng302.models.*;
-import javafx.util.Pair;
-import seng302.controllers.MockRaceRunner;
-import seng302.controllers.RaceViewController;
-import seng302.models.*;
 import seng302.utilities.DisplayUtils;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -139,6 +133,8 @@ public class RaceView {
         double boatBearing = boat.getHeading();
         Coordinate end2 = boatPosition.coordAt(lengthOfVector, boatBearing);
         Polyline vector = drawVectorArrow(boatPosition, end2, boatBearing, color);
+        vector.setId("sogVector");
+        vector.setStrokeWidth(2.8);
         return vector;
     }
 
@@ -165,6 +161,8 @@ public class RaceView {
         }
         Coordinate end2 = boatPosition.coordAt(lengthOfVector, lineBearing);
         Polyline vector = drawVectorArrow(boatPosition, end2, lineBearing, color);
+        vector.setId("vmgVector");
+        vector.setStrokeWidth(2.8);
         return vector;
     }
 
@@ -231,6 +229,7 @@ public class RaceView {
 
         line.setStroke(boatColor);
         line.setStrokeWidth(2.0);
+        line.setId("layline");
 
         return line;
     }

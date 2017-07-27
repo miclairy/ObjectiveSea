@@ -13,25 +13,24 @@ import seng302.models.WindAngleAndSpeed;
 public class MathUtils {
 
     /**
-     * A function to determine whether a boat's heading is within an angle of a direction
-     * @param TWD True wind direction
-     * @param deltaAngle the change in angle from the TWD
-     * @param bearing the boats heading
+     * A function to determine whether a given direction is within an angle of a target direction
+     * @param targetDirection the direction to check against
+     * @param deltaAngle the maximum allowed variance of directions
+     * @param actualDirection the direction to test
      * @return true if he boat is within angle
      */
-    public static boolean pointBetweenTwoAngle(double TWD, double deltaAngle, double bearing){
+    public static boolean pointBetweenTwoAngle(double targetDirection, double deltaAngle, double actualDirection){
         double diff;
         double middle;
-        if(TWD > 180){
-            diff = 0;
-            bearing -= 180;
-            middle = TWD - 180;
+        if(targetDirection > 180){
+            actualDirection -= 180;
+            middle = targetDirection - 180;
         } else {
             middle = 90;
-            diff = Math.abs(90 - TWD);
-            bearing += diff;
-            bearing = (bearing + 360) % 360;}
-        return (middle - deltaAngle) <= bearing && bearing <= (middle + deltaAngle);
+            diff = Math.abs(90 - targetDirection);
+            actualDirection += diff;
+            actualDirection = (actualDirection + 360) % 360;}
+        return (middle - deltaAngle) <= actualDirection && actualDirection <= (middle + deltaAngle);
     }
 
     /**
@@ -172,6 +171,29 @@ public class MathUtils {
 
         return (Math.toDegrees(Math.atan2(y, x))+360)%360;
 
+    }
+
+    /**
+     * A function for calculating the bilinear interpolation of a third variable (e.g if windspeed and heading are
+     * known this function will calculate the boat speed at those values
+     * @param x0 first value in x axis
+     * @param x1 second value in x axis
+     * @param y0 first value in y axis
+     * @param y1 second value in y axis
+     * @param z00 the z value at (x0,y0)
+     * @param z01 the z value at (x0,y1)
+     * @param z10 the z value at (x1,y0)
+     * @param z11 the z value at (x1,y1)
+     * @param x the x value you want to compute z at (e.g the current windspeed)
+     * @param y the y value you want to compute z at (e.g the current boat heading)
+     * @return the interpolated z value (e.g the new boat speed at current heading and wind speed)
+     */
+    public static double bilinearInterpolation(double x0, double x1, double y0, double y1, double z00, double z01, double z10, double z11, double x, double y){
+
+        double r1 = (((x1 - x)/(x1 - x0)) * z00 + ((x - x0)/(x1 - x0)) * z10);
+        double r2 = (((x1 - x)/(x1 - x0)) * z01 + ((x - x0)/(x1 - x0)) * z11);
+
+        return (((y1 - y)/(y1 - y0)) * r1 + ((y - y0)/ (y1 - y0)) * r2);
     }
 
 

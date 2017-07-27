@@ -5,7 +5,7 @@ package seng302.data;
  */
 public enum AC35StreamXMLMessage {
 
-    REGATTA_XML_MESSAGE(5), RACE_XML_MESSAGE(6), BOAT_XML_MESSAGE(7);
+    RACE_XML_MESSAGE(6), BOAT_XML_MESSAGE(7), REGATTA_XML_MESSAGE(5);
 
     private final int type;
 
