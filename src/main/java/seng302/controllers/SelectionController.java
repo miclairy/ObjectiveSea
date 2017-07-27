@@ -276,7 +276,7 @@ public class SelectionController extends Observable {
         Shape boatImage = boat.getIcon();
         boatImage.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             trackingBoat = boat;
-            if (selectedBoats.isEmpty() || event.isShiftDown()) {
+            if (selectedBoats.isEmpty() || event.isControlDown()) {
                 if (selectedBoats.contains(boat)){
                     selectedBoats.remove(boat);
                 } else {
