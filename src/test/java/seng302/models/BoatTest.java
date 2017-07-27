@@ -55,30 +55,10 @@ public class BoatTest
     }
 
     @Test
-    public void tackAndGybeTest(){
+    public void headingChangeTest(){
         Course course = new Course();
-        ArrayList<Polar> polars = PolarReader.getPolarsForAC35Yachts();
         course.setTrueWindSpeed(20);
         course.setWindDirection(0);
-        PolarTable table = new PolarTable(polars, course);
-        boat.setHeading(95);
-        boat.tackOrGybe(course, table);
-        assertEquals(207.0,boat.getHeading(),DELTA); //downwind
-        boat.setHeading(200);
-        boat.tackOrGybe(course, table);
-        assertEquals(153.0,boat.getHeading(),DELTA); //downwind
-        boat.setHeading(50);
-        boat.tackOrGybe(course, table);
-        assertEquals(319.0,boat.getHeading(),DELTA); //downwind
-        boat.setHeading(30);
-        boat.tackOrGybe(course, table);
-        assertEquals(30.0,boat.getHeading(),DELTA); //upwind
-        boat.setHeading(70);
-        boat.tackOrGybe(course, table);
-        assertEquals(319.0 ,boat.getHeading(),DELTA); //upwind
-        boat.setHeading(30);
-        boat.tackOrGybe(course, table);
-        assertEquals(30.0,boat.getHeading(),DELTA); //upwind
 
         boat.setHeading(45);
         boat.headingChange(course.getWindDirection());

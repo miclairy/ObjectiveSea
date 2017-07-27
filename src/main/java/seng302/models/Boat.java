@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.lang.Math.min;
 import static java.lang.Double.max;
 import static java.lang.StrictMath.abs;
 import static seng302.utilities.MathUtils.pointBetweenTwoAngle;
@@ -41,6 +42,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private int lastGybeMarkPassed;
     private boolean finished;
     private double heading;
+    private double targetHeading;
     private double maxSpeed;
     private boolean lastPlayerDirection = true; //true = Clockwise / false = AntiClockwise
 
@@ -57,6 +59,11 @@ public class Boat extends Observable implements Comparable<Boat>{
     private AtomicBoolean sailsIn = new AtomicBoolean(false);
 
     private double TWAofBoat;
+    private boolean rotate;
+    private boolean tackOrGybe;
+    private double totalRotatedAmount;
+    private double currRotationAmount;
+    private int rotateDirection;
 
     public Boat(Integer id, String name, String nickName, double speed) {
         this.id = id;
@@ -375,11 +382,23 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void VMG(Course course, PolarTable polarTable){
-        heading = getVMGHeading(course, polarTable);
+        targetHeading = getVMGHeading(course, polarTable);
+        rotate = true;
     }
 
+
     public void tackOrGybe(Course course, PolarTable polarTable) {
-        heading = getTackOrGybeHeading(course, polarTable);
+        targetHeading = getTackOrGybeHeading(course, polarTable);
+        totalRotatedAmount = min(360 - abs(targetHeading - heading), abs(targetHeading - heading));
+//        totalRotatedAmount += 2;
+        currRotationAmount = 0;
+        double TWA = Math.abs(((course.getWindDirection() - heading)));
+        if (TWA < 89 || TWA < 270 && TWA > 180){
+            rotateDirection = -1;
+        } else {
+            rotateDirection = 1;
+        }
+        tackOrGybe = true;
     }
 
     /**
@@ -396,9 +415,9 @@ public class Boat extends Observable implements Comparable<Boat>{
         double optimumHeadingA = optimumHeadings.headingA;
         double optimumHeadingB = optimumHeadings.headingB;
 
-        if(heading-1 <= optimumHeadingA && optimumHeadingA <= heading+1) {
+        if(heading - 1 <= optimumHeadingA && optimumHeadingA <= heading + 1) {
             return optimumHeadingB;
-        } else if (heading-1 <= optimumHeadingB && optimumHeadingB <= heading+1) {
+        } else if (heading - 1 <= optimumHeadingB && optimumHeadingB <= heading + 1) {
             return optimumHeadingA;
         }
 
@@ -494,10 +513,14 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void upWind(double windAngle){
+        rotate = false;
+        tackOrGybe = false;
         headingChange(windAngle);
     }
 
     public void downWind(double windAngle){
+        rotate = false;
+        tackOrGybe = false;
         double newWindAngle = windAngle;
         if(newWindAngle > 180) {
             newWindAngle -= 360;
@@ -553,5 +576,41 @@ public class Boat extends Observable implements Comparable<Boat>{
             }
         }
         return sailAngle;
+    }
+
+    /**
+     * Updates the boat heading every loop the race updated run method makes.
+     * Calculating how much rotation should occur at each run
+     * @param time the time since last calculation
+     */
+    public void updateBoatHeading(double time){
+        double angleOfRotation = 3 * time;
+        double headingDiff = targetHeading - heading;
+        if (rotate) {
+            if (headingDiff > 0) {
+                heading += angleOfRotation;
+            } else {
+                heading -= angleOfRotation;
+            }
+            if(abs(headingDiff) <= angleOfRotation) {
+                heading = targetHeading;
+                rotate = false;
+            }
+        }
+        if (tackOrGybe) {
+            if (currRotationAmount < totalRotatedAmount){
+                heading += angleOfRotation * rotateDirection;
+                if (heading < 0){
+                    heading = 360;
+                } else if (heading > 360){
+                    heading = 0;
+                }
+                currRotationAmount += angleOfRotation;
+            }
+            if(abs(headingDiff) <= angleOfRotation) {
+                heading = targetHeading;
+                tackOrGybe = false;
+            }
+        }
     }
 }
