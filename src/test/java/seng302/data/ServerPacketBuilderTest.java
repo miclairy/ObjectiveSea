@@ -25,7 +25,7 @@ public class ServerPacketBuilderTest {
     private int HEADER_LENGTH = 15;
 
     @Test
-    public void createRaceUpdateMessage() {
+    public void createRaceUpdateMessage() throws Exception {
         ServerPacketBuilder builder = new ServerPacketBuilder();
         Course course = new Course();
         course.setWindDirection(10);
