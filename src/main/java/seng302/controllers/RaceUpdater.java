@@ -394,6 +394,10 @@ public class RaceUpdater implements Runnable {
         race.getCourse().setWindDirection(angle);
     }
 
+    /**
+     * changes a boat's heading and speed when it collides into a mark
+     * @param boat the boat that has collided
+     */
     private void markAvoider(Boat boat){
         boat.setHeading(boat.getHeading() - 5);
         boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
