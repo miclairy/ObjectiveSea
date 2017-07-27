@@ -895,7 +895,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
         } else if (obs == selectionController){
             Boolean tracking = (Boolean) object;
-            courseNeedsRedraw = selectionController.isCourseNeedsRedraw();
             for(BoatDisplay boat : displayBoats){
                 if (selectedBoats.contains(boat) && !selectionController.getSelectedBoats().contains(boat)) {
                     updateDistanceLine(false);
