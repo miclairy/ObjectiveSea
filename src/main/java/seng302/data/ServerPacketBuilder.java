@@ -224,7 +224,8 @@ public class ServerPacketBuilder extends PacketBuilder {
             for (Boat boat : race.getCompetitors()){
                 participantIds.add(boat.getId());
             }
-            resourceStream = RaceVisionXMLParser.injectRaceXMLFields(resourceStream, race.getId(), race.getStartTimeInEpochMs(), participantIds);
+            RaceVisionXMLParser raceVisionXMLParser = new RaceVisionXMLParser();
+            resourceStream = raceVisionXMLParser.injectRaceXMLFields(resourceStream, race.getId(), race.getStartTimeInEpochMs(), participantIds);
         }
         ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
         int read = resourceStream.read();

@@ -21,7 +21,7 @@ public class CollisionManager {
 
     private Set<Collision> currentCollisions = new CopyOnWriteArraySet<>();
 
-    public CollisionManager() {};
+    public CollisionManager() {}
 
     /**
      * Checks all boats in the race to see if they are colliding with each other or course marks

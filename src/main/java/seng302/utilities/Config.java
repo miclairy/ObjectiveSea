@@ -28,7 +28,8 @@ public class Config {
             try {
                 br = new BufferedReader(new FileReader(EXPECTED_CONFIG_PATH));
             } catch (FileNotFoundException e){
-                RaceVisionXMLParser.exportResource(DEFAULT_CONFIG_PATH, EXPECTED_CONFIG_PATH);
+                RaceVisionXMLParser raceVisionXMLParser = new RaceVisionXMLParser();
+                raceVisionXMLParser.exportResource(DEFAULT_CONFIG_PATH, EXPECTED_CONFIG_PATH);
                 br = new BufferedReader(new FileReader(EXPECTED_CONFIG_PATH));
             }
             String line = br.readLine();
