@@ -42,8 +42,9 @@ public class RaceUpdater implements Runnable {
         //set race up with default files
         intialWindSpeedGenerator();
         List<Boat> boatsInRace = new ArrayList<>();
-        potentialCompetitors = RaceVisionXMLParser.importDefaultStarters();
-        Course course = RaceVisionXMLParser.importCourse();
+        RaceVisionXMLParser raceVisionXMLParser = new RaceVisionXMLParser();
+        potentialCompetitors = raceVisionXMLParser.importDefaultStarters();
+        Course course = raceVisionXMLParser.importCourse();
         course.setTrueWindSpeed(initialWindSpeed);
         course.setWindDirection(course.getWindDirectionBasedOnGates());
         race = new Race("Mock Runner Race", course, boatsInRace);
