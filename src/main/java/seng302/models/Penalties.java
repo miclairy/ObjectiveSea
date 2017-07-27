@@ -12,16 +12,20 @@ public class Penalties {
      * @param boatCollidee The boat that was hit
      */
     public void boatCollision(Boat boatCollider, Boat boatCollidee) {
-        boatCollider.addDamage(20);
-        boatCollidee.addDamage(5);
+        if (System.currentTimeMillis() - boatCollider.getTimeSinceLastCollision() > 2500) {
+            boatCollider.addDamage(20);
+            boatCollidee.addDamage(5);
+            boatCollider.setTimeSinceLastCollision(System.currentTimeMillis());
+        }
     }
 
     /**
      * The accrued boat penalty for obstructing another boat, the penalty is minus two boat lengths
-     * @param boat the bad boat
+     * @param boatCollider the bad boat
      */
-    public void boatPenalty(Boat boat) {
-        boat.addPenalty(boat.getCurrentSpeed()/0.02); //lose two boat lengths of time
+    public void boatPenalty(Boat boatCollider) {
+        boatCollider.addPenalty(boatCollider.getCurrentSpeed() / 0.02); //lose two boat lengths of time
+
     }
 
     /**
@@ -29,23 +33,26 @@ public class Penalties {
      * @param boatCollider the boat which hit the mark
      */
     public void markCollision(Boat boatCollider) {
-        boatCollider.addDamage(5);
+        if (System.currentTimeMillis() - boatCollider.getTimeSinceLastCollision() > 2500) {
+            boatCollider.addDamage(5);
+            boatCollider.setTimeSinceLastCollision(System.currentTimeMillis());
+        }
     }
 
     /**
      * When a boat goes out of bounds, the penalty is minus two boat lengths
-     * @param boat the bad boat
+     * @param boatCollider the bad boat
      */
-    public void boundaryPenalty(Boat boat) {
-        boat.addPenalty(boat.getCurrentSpeed()/0.02);
+    public void boundaryPenalty(Boat boatCollider) {
+        boatCollider.addPenalty(boatCollider.getCurrentSpeed() / 0.02);
     }
 
     /**
      * A penalty for starting a race too early, the penalty is minus two boat lengths
-     * @param boat the bad boat
+     * @param boatCollider the bad boat
      */
-    public void earlyStartPenalty(Boat boat) {
-        boat.addPenalty(boat.getCurrentSpeed()/0.02);
+    public void earlyStartPenalty(Boat boatCollider) {
+        boatCollider.addPenalty(boatCollider.getCurrentSpeed()/0.02);
     }
 
 }

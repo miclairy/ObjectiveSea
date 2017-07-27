@@ -379,31 +379,6 @@ public class RaceUpdater implements Runnable {
         race.getCourse().setWindDirection(angle);
     }
 
-    /**
-     * checks a boat to see if is colliding with another boat or mark
-     * @param boat
-     * @return boolean of collision
-     */
-    private boolean checkForCollision(Boat boat){
-        boolean collision = false;
-        for(Boat otherBoat : race.getCompetitors()){
-            if(collisionOfBounds(boat.getCurrentPosition(), otherBoat.getCurrentPosition(), 16) && boat != otherBoat){
-                collision = true;
-                otherBoat.setBoatColliding(true);
-                //System.out.println("EXPLOSION!!!!!!!!!!!!! YOUR BOAT IS SINKING, ABORT!!!!! !@#$%@*&^#$@ Collision of boat");
-            }
-        }
-        for(Mark mark : race.getCourse().getAllMarks().values()){
-            if(collisionOfBounds(boat.getCurrentPosition(), mark.getPosition(), 10)){
-                collision = true;
-                boat.setMarkColliding(true);
-                //System.out.println("HOLLY HECK YOU HIT A MARK, GET YOUR RUBBER DINGY READY, YOU'VE LOST THIS RACE FOR SURE Collision of mark");
-                markAvoider(boat);
-            }
-        }
-        return collision;
-    }
-
     private void markAvoider(Boat boat){
         boat.setHeading(boat.getHeading() - 5);
         boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
@@ -415,20 +390,6 @@ public class RaceUpdater implements Runnable {
         boat.setPosition(newPos);
     }
 
-    /**
-     * takes two circles and calculates if there is a collision
-     * @param object1LatLon
-     * @param object2LatLon
-     * @return boolean of collision
-     */
-    private boolean collisionOfBounds(Coordinate object1LatLon, Coordinate object2LatLon, double sensitivity){
-        CanvasCoordinate object1 = DisplayUtils.convertFromLatLon(object1LatLon);
-        CanvasCoordinate object2 = DisplayUtils.convertFromLatLon(object2LatLon);
-        double dx = object1.getX() - object2.getX();
-        double dy = object2.getY() - object1.getY();
-        double distance = Math.sqrt(dx * dx + dy * dy);
-        return distance < sensitivity;
-    }
 
     public Race getRace() {
         return race;

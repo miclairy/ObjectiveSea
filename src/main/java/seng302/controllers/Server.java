@@ -134,11 +134,6 @@ public class Server implements Runnable, Observer {
             if (!boat.isFinished()) {
                 sendBoatMessages(boat);
             }
-            if(boat.isBoatColliding() || boat.isMarkColliding()){
-                sendYachEventMessage(boat, raceUpdater.getRace(), 0, 1); //TODO generate unique incidentID
-                boat.setMarkColliding(false);
-                boat.setBoatColliding(false);
-            }
         }
     }
 

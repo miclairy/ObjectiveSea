@@ -15,8 +15,9 @@ public class CollisionManager {
 
     private Double BOAT_SENSITIVITY = 16.0;
     private Double MARK_SENSITIVITY = 10.0;
-    private Double AT_FAULT_DELTA = 60.0;
+    private Double AT_FAULT_DELTA = 20.0;
     private Double COLLISION_DELTA = 70.0;
+    private Penalties penalties = new Penalties();
 
     private Set<Collision> currentCollisions = new CopyOnWriteArraySet<>();
 
@@ -53,6 +54,7 @@ public class CollisionManager {
                 Collision collision = new Collision();
                 collision.addBoat(boat.getId());
                 currentCollisions.add(collision);
+                penalties.markCollision(boat);
             }
         }
     }
@@ -69,9 +71,11 @@ public class CollisionManager {
             collision.addBoat(boat2.getId());
             if (boatHeadingTowardsCoordinate(boat1, boat2.getCurrentPosition(), AT_FAULT_DELTA)) {
                 collision.addAtFaultBoat(boat1.getId());
+                penalties.boatCollision(boat1,boat2);
             }
             if (boatHeadingTowardsCoordinate(boat2, boat1.getCurrentPosition(), AT_FAULT_DELTA)) {
                 collision.addAtFaultBoat(boat2.getId());
+                penalties.boatCollision(boat2,boat1);
             }
             currentCollisions.add(collision);
         }

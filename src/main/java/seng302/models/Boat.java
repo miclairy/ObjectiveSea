@@ -48,6 +48,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private boolean boatCheck = false;
     private double boatPenalty;
     private boolean justFinished = true;
+    private double timeSinceLastCollision = 0;
 
 
     private double finishTime;
@@ -142,14 +143,15 @@ public class Boat extends Observable implements Comparable<Boat>{
     private void checkPenaltySpeed() {
         double boatPenalty = 100 - boatHealth;
         if(boatPenalty != 0) {
-            damageSpeed = currentSpeed - boatPenalty / 10;
+            damageSpeed = boatPenalty / 10;
         } else {
-            damageSpeed = currentSpeed;
+            damageSpeed = 0;
         }
     }
 
     public void addDamage(int damage) {
         boatHealth -= damage;
+        checkPenaltySpeed();
     }
 
     public void addPenalty(double penalty) {
@@ -625,6 +627,15 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void setJustFinished(boolean justFinished) {
         this.justFinished = justFinished;
+    }
+
+
+    public double getTimeSinceLastCollision() {
+        return timeSinceLastCollision;
+    }
+
+    public void setTimeSinceLastCollision(double timeSinceLastCollision) {
+        this.timeSinceLastCollision = timeSinceLastCollision;
     }
 
 

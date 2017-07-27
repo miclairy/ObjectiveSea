@@ -274,6 +274,9 @@ public class DataStreamReader extends Receiver implements Runnable{
             boat.setBoatColliding(true);
             boat.setMarkColliding(true);
         }
+        if (eventID == YachtEventCode.COLLISION_PENALTY.code()) {
+
+        }
     }
 
     /**
