@@ -3,7 +3,7 @@ package seng302.models;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import src.main.java.utilities.PolarReader;
+import seng302.utilities.PolarReader;
 
 import java.util.ArrayList;
 

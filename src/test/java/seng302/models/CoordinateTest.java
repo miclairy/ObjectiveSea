@@ -1,7 +1,7 @@
 package seng302.models;
 
 import org.junit.Test;
-import src.main.java.models.Coordinate;
+import seng302.models.Coordinate;
 
 import static org.junit.Assert.assertEquals;
 

@@ -39,7 +39,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<TabPane fx:id="scoreBoard" prefHeight="674.0" prefWidth="379.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="src.main.java.controllers.ScoreBoardController">
+<TabPane fx:id="scoreBoard" prefHeight="674.0" prefWidth="379.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.ScoreBoardController">
       <tabs>
          <Tab text="Race Leaderboard">
             <content>

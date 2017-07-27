@@ -2,10 +2,10 @@ package seng302.utilities;
 
 import org.junit.Before;
 import org.junit.Test;
-import src.main.java.controllers.Controller;
-import src.main.java.models.CanvasCoordinate;
-import src.main.java.models.Coordinate;
-import src.main.java.utilities.DisplayUtils;
+import seng302.controllers.Controller;
+import seng302.models.CanvasCoordinate;
+import seng302.models.Coordinate;
+import seng302.utilities.DisplayUtils;
 
 import static org.junit.Assert.assertEquals;
 

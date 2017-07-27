@@ -3,8 +3,8 @@ package seng302.utilities;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import src.main.java.models.Boat;
-import src.main.java.views.BoatDisplay;
+import seng302.models.Boat;
+import seng302.views.BoatDisplay;
 import java.time.Instant;
 import java.util.Objects;
 
