@@ -28,14 +28,14 @@ public class ServerPacketBuilder extends PacketBuilder {
         return header;
     }
 
-    public byte[] createRaceUpdateMessage(Race race) {
+    public byte[] createRaceUpdateMessage(Race race) throws Exception {
         Collection<Boat> boatsInRace = race.getCompetitors();
         byte[] raceStatusBody = initialiseRaceStatusMessage(boatsInRace.size(), race);
         int offset = 24;
 
         for (Boat boat : boatsInRace) {
             byte[] boatStatus = createBoatStatus(boat);
-            for (int i = 0; i < boatStatus.length; i++){
+            for (int i = 0; i < boatStatus.length; i++) {
                 raceStatusBody[i + offset] = boatStatus[i];
             }
             offset += 20;
@@ -125,7 +125,7 @@ public class ServerPacketBuilder extends PacketBuilder {
      * @return new boatStatus message
      */
     private byte[] createBoatStatus(Boat boat){
-        byte[] boatStatus = new byte[20]; // make constant
+        byte[] boatStatus = new byte[20];
         addFieldToByteArray(boatStatus, STATUS_SOURCE_ID, boat.getId());
         addFieldToByteArray(boatStatus, BOAT_STATUS, boat.getStatus().getValue());
         addFieldToByteArray(boatStatus, LEG_NUMBER, boat.getLastRoundedMarkIndex() + 1);

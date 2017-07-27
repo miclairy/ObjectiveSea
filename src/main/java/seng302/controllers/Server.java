@@ -110,7 +110,12 @@ public class Server implements Runnable, Observer {
      * @throws IOException
      */
     private void sendRaceUpdates() throws IOException {
-        sendPacket(packetBuilder.createRaceUpdateMessage(raceUpdater.getRace()));
+        try {
+            byte[] raceUpdateMessage = packetBuilder.createRaceUpdateMessage(raceUpdater.getRace());
+            sendPacket(raceUpdateMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         sendBoatMessagesForAllBoats();
         sendYachtEventMessages();
     }
