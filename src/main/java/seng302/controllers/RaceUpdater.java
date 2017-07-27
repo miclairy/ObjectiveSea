@@ -31,7 +31,7 @@ public class RaceUpdater implements Runnable {
     private final double MIN_WIND_SPEED = 6.0;
     private final double MAX_WIND_SPEED = 24.0;
     private double initialWindSpeed;
-
+    private final int MAX_BOATS_IN_RACE = 6;
     private Race race;
     private PolarTable polarTable;
     private Collection<Boat> potentialCompetitors;
@@ -48,6 +48,13 @@ public class RaceUpdater implements Runnable {
         course.setWindDirection(course.getWindDirectionBasedOnGates());
         race = new Race("Mock Runner Race", course, boatsInRace);
         initialize();
+
+        addCompetitor();
+        addCompetitor();
+        addCompetitor();
+        addCompetitor();
+        addCompetitor();
+
     }
 
     public RaceUpdater(Race race) {
@@ -231,7 +238,6 @@ public class RaceUpdater implements Runnable {
             double newLat = boat.getCurrentLat() + percentGained * (nextMarkPosition.getLat() - boat.getCurrentLat());
             double newLon = boat.getCurrentLon() + percentGained * (nextMarkPosition.getLon() - boat.getCurrentLon());
             boatPosition.update(newLat, newLon);
-            System.out.println(distanceGained);
         }
     }
 
@@ -331,12 +337,26 @@ public class RaceUpdater implements Runnable {
     }
 
     private void prepareBoatForRace(Boat boat) {
-        RaceLine startingLine = race.getCourse().getStartLine();
-        boat.setPosition(startingLine.getPosition());
+        setStartingPosition(boat);
         boat.setHeading(race.getCourse().headingsBetweenMarks(0, 1));
         boat.updateBoatSpeed(race.getCourse());
         boat.setLastRoundedMarkIndex(0);
         boat.setStatus(BoatStatus.PRERACE);
+    }
+
+    /**
+     * Spreads the starting positions of the boats over the start line
+     */
+    private void setStartingPosition(Boat boat){
+        RaceLine startingLine = race.getCourse().getStartLine();
+        Coordinate startingEnd1 = startingLine.getMark1().getPosition();
+        Coordinate startingEnd2 = startingLine.getMark2().getPosition();
+        Double dLat = (startingEnd2.getLat() - startingEnd1.getLat()) / (MAX_BOATS_IN_RACE + 1);
+        Double dLon = (startingEnd2.getLon() - startingEnd1.getLon()) / (MAX_BOATS_IN_RACE + 1);
+        Double curLat = startingEnd1.getLat() + (dLat * race.getCompetitors().size());
+        Double curLon = startingEnd1.getLon() + (dLon * race.getCompetitors().size());
+
+        boat.setPosition(curLat, curLon);
     }
 
     /**

@@ -390,7 +390,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     public void tackOrGybe(Course course, PolarTable polarTable) {
         targetHeading = getTackOrGybeHeading(course, polarTable);
         totalRotatedAmount = min(360 - abs(targetHeading - heading), abs(targetHeading - heading));
-        totalRotatedAmount += 1;
+//        totalRotatedAmount += 2;
         currRotationAmount = 0;
         double TWA = Math.abs(((course.getWindDirection() - heading)));
         if (TWA < 89 || TWA < 270 && TWA > 180){
