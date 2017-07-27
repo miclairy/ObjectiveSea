@@ -263,7 +263,6 @@ public class Controller implements Initializable, Observer {
                     displayString += String.format("%.3f knots", boat.getCurrentSpeed());
                 }
             }
-            displayStarters();
             formattedDisplayOrder.add(displayString);
         }
     }
@@ -362,6 +361,9 @@ public class Controller implements Initializable, Observer {
             switch(sig){
                 case Race.UPDATED_STATUS_SIGNAL:
                     raceStatusChanged = true;
+                    break;
+                case Race.UPDATED_COMPETITORS_SIGNAL:
+                    displayStarters();
                     break;
             }
         }
