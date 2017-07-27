@@ -1,12 +1,7 @@
 package seng302.controllers;
 
 import org.junit.Test;
-import seng302.data.RaceStatus;
 import seng302.models.*;
-import seng302.utilities.PolarReader;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.*;
 

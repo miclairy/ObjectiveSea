@@ -1,16 +1,15 @@
 package seng302.utilities;
 
-import javafx.util.Pair;
 import org.junit.Assert;
 import org.junit.Test;
-import seng302.models.CompoundMark;
-import seng302.models.Coordinate;
-import seng302.models.Mark;
-import seng302.models.WindAngleAndSpeed;
+import src.main.java.models.CompoundMark;
+import src.main.java.models.Coordinate;
+import src.main.java.models.Mark;
+import src.main.java.models.WindAngleAndSpeed;
 import seng302.models.*;
 
 import static junit.framework.TestCase.assertEquals;
-import static seng302.utilities.MathUtils.*;
+import static src.main.java.utilities.MathUtils.*;
 
 /**
  * Created by gla42 on 11/05/17.

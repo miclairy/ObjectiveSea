@@ -1,20 +1,20 @@
 package seng302.data;
 
 import org.junit.Test;
-import seng302.models.Boat;
-import seng302.models.Course;
-import seng302.models.Race;
+import src.main.java.models.Boat;
+import src.main.java.models.Course;
+import src.main.java.models.Race;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static seng302.data.AC35StreamField.*;
-import static seng302.data.AC35StreamField.START_TIME;
-import static seng302.data.AC35StreamField.WIND_SPEED;
-import static seng302.data.Receiver.byteArrayRangeToInt;
-import static seng302.data.Receiver.byteArrayRangeToLong;
+import static src.main.java.data.AC35StreamField.*;
+import static src.main.java.data.AC35StreamField.START_TIME;
+import static src.main.java.data.AC35StreamField.WIND_SPEED;
+import static src.main.java.data.Receiver.byteArrayRangeToInt;
+import static src.main.java.data.Receiver.byteArrayRangeToLong;
 
 /**
  * Created by Michael Trotter on 7/24/2017.

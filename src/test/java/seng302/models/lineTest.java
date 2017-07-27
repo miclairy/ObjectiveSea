@@ -3,8 +3,8 @@ package seng302.models;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import seng302.controllers.Controller;
-import seng302.utilities.DisplayUtils;
+import src.main.java.controllers.Controller;
+import src.main.java.utilities.DisplayUtils;
 import static org.junit.Assert.*;
 
 /**

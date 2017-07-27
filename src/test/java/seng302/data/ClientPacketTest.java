@@ -3,11 +3,10 @@ package seng302.data;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static seng302.data.AC35StreamField.BOAT_ACTION_BODY;
-import static seng302.data.AC35StreamField.BOAT_ACTION_SOURCE_ID;
-import static seng302.data.AC35StreamField.HEADER_SOURCE_ID;
-import static seng302.data.AC35StreamMessage.BOAT_ACTION_MESSAGE;
-import static seng302.data.Receiver.byteArrayRangeToInt;
+import static src.main.java.data.AC35StreamField.BOAT_ACTION_BODY;
+import static src.main.java.data.AC35StreamField.BOAT_ACTION_SOURCE_ID;
+import static src.main.java.data.AC35StreamMessage.BOAT_ACTION_MESSAGE;
+import static src.main.java.data.Receiver.byteArrayRangeToInt;
 
 /**
  * Created by dhl25 on 20/07/17.
