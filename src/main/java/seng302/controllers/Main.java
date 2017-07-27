@@ -21,6 +21,7 @@ import seng302.utilities.Config;
 import seng302.models.Race;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 
 public class Main extends Application {
@@ -33,7 +34,7 @@ public class Main extends Application {
         Config.initializeConfig();
         setupServer();
         setupClient();
-
+        System.out.println("asd");
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
         primaryStage.setTitle("Race Vision");
         primaryStage.getIcons().add(new Image("graphics/icon.png"));
@@ -57,7 +58,9 @@ public class Main extends Application {
         userInputController.addObserver(client);
     }
 
-    public static void main( String[] args ) {launch(args); }
+    public static void main( String[] args ) throws IOException {
+        launch(args);
+    }
 
     /**
      * Initializes the client on it's own thread.
