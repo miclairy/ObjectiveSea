@@ -6,6 +6,7 @@ import seng302.data.StartTimingStatus;
 import seng302.data.BoatStatus;
 import seng302.utilities.MathUtils;
 import seng302.utilities.PolarReader;
+import seng302.utilities.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,10 +45,21 @@ public class Boat extends Observable implements Comparable<Boat>{
     private double heading;
     private double targetHeading;
     private double maxSpeed;
+    private double boatHealth = 100;
+    private double damageSpeed;
+    private boolean boatCheck = false;
+    private double boatPenalty;
+    private boolean justFinished = true;
+    private double timeSinceLastCollision = 0;
+
+
+    private double finishTime;
+    private double finalTime;
     private boolean lastPlayerDirection = true; //true = Clockwise / false = AntiClockwise
 
     private int penaltyCount;
-    private boolean isColliding = false;
+    private boolean markColliding;
+    private boolean boatColliding;
 
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
@@ -57,6 +69,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private long timeTillFinish;
     private Integer id;
     private AtomicBoolean sailsIn = new AtomicBoolean(false);
+
 
     private double TWAofBoat;
     private boolean rotate;
@@ -126,9 +139,40 @@ public class Boat extends Observable implements Comparable<Boat>{
         return this.name;
     }
 
-    public String getNickName() {return nickName;}
+    public String getNickName() {
+        return nickName;
+    }
 
-    public double getCurrentSpeed() { return this.currentSpeed; }
+    public double getCurrentSpeed() {
+        return currentSpeed;
+    }
+
+    private void checkPenaltySpeed() {
+        double boatPenalty = 100 - boatHealth;
+        if(boatPenalty > 0 && boatPenalty < 100) {
+            damageSpeed = boatPenalty / 10;
+        } else if(boatPenalty == 0) {
+            damageSpeed = 0;
+        }
+    }
+
+    public void addDamage(int damage) {
+        if((boatHealth - damage) > 0) {
+            boatHealth -= damage;
+        } else {
+            boatHealth = 0;
+            status = BoatStatus.DNF;
+        }
+        checkPenaltySpeed();
+    }
+
+    public void addPenalty(double penalty) {
+        boatPenalty += penalty;
+    }
+
+    public double getDamageSpeed() {
+        return damageSpeed;
+    }
 
     public int getSpeedInMMS(){
         return (int) (this.currentSpeed * KNOTS_TO_MMS_MULTIPLIER);
@@ -224,6 +268,10 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void setMaxSpeed(double maxSpeed) {
+        if(maxSpeed <= 0) {
+            maxSpeed = 0;
+            this.boatCheck = true;
+        }
         this.maxSpeed = maxSpeed;
     }
 
@@ -231,9 +279,13 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void addPenalty(int penaltyCount) {this.penaltyCount = penaltyCount;}
 
-    public boolean isColliding() {return isColliding;}
+    public boolean isMarkColliding() {return markColliding;}
 
-    public void setColliding(boolean colliding) {isColliding = colliding;}
+    public boolean isBoatColliding() {return  boatColliding;}
+
+    public void setMarkColliding(boolean colliding) {markColliding = colliding;}
+
+    public void setBoatColliding(boolean colliding) {boatColliding = colliding;}
 
     public long getTimeTillFinish() {
         return timeTillFinish;
@@ -577,6 +629,34 @@ public class Boat extends Observable implements Comparable<Boat>{
         }
         return sailAngle;
     }
+
+    public void setFinishTime(double finishTime) {
+        this.finishTime = finishTime;
+        finalTime = (finishTime / 1000.0) - TimeUtils.convertHoursToSeconds(boatPenalty);
+    }
+
+    public double getFinalTime() {
+        return finalTime;
+    }
+
+    public boolean isJustFinished() {
+        return justFinished;
+    }
+
+    public void setJustFinished(boolean justFinished) {
+        this.justFinished = justFinished;
+    }
+
+
+    public double getTimeSinceLastCollision() {
+        return timeSinceLastCollision;
+    }
+
+    public void setTimeSinceLastCollision(double timeSinceLastCollision) {
+        this.timeSinceLastCollision = timeSinceLastCollision;
+    }
+
+
 
     /**
      * Updates the boat heading every loop the race updated run method makes.

@@ -85,6 +85,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean drawDistanceLine = false;
     private boolean firstTime = true;
     private SelectionController selectionController;
+    private Penalties penalties = new Penalties();
 
     private double sailWidth = 5;
     private boolean isSailWidthChanging = false;
@@ -205,12 +206,20 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void displayCollisions(BoatDisplay displayBoat, CanvasCoordinate point) {
         Boat boat = displayBoat.getBoat();
-        if(boat.isColliding()){
-            boat.setColliding(false);
-            if(!displayBoat.collisionInProgress()){
+
+        if(boat.isMarkColliding() || boat.isBoatColliding()){
+            if(!displayBoat.collisionInProgress){
                 collisionAnimation(point, displayBoat);
                 displayBoat.setCollisionInProgress(true);
             }
+            boat.setMarkColliding(false);
+            boat.setBoatColliding(false);
+        }
+
+        if (boat.isFinished() && boat.isJustFinished()){
+            boat.setJustFinished(false);
+            long finishTime = race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs();
+            boat.setFinishTime(finishTime);
         }
     }
 

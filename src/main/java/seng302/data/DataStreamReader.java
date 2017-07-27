@@ -272,7 +272,11 @@ public class DataStreamReader extends Receiver implements Runnable{
         int boatID = byteArrayRangeToInt(body, DESTINATION_SOURCE_ID.getStartIndex(), DESTINATION_SOURCE_ID.getEndIndex());
         if (eventID == YachtEventCode.COLLISION.code()) {
             Boat boat = race.getBoatById(boatID);
-            boat.setColliding(true);
+            boat.setBoatColliding(true);
+            boat.setMarkColliding(true);
+        }
+        if (eventID == YachtEventCode.COLLISION_PENALTY.code()) {
+
         }
     }
 

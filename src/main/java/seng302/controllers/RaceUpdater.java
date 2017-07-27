@@ -112,10 +112,13 @@ public class RaceUpdater implements Runnable {
                         boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.2);
                         if(boat.getCurrentSpeed() < 0) boat.setCurrentSpeed(0);
                     } else if(!boat.isSailsIn()){
-                        boat.setMaxSpeed(boat.updateBoatSpeed(race.getCourse()));
+                        boat.setMaxSpeed(boat.updateBoatSpeed(race.getCourse())-boat.getDamageSpeed());
                         if(boat.getCurrentSpeed() < boat.getMaxSpeed()){
                             boat.setCurrentSpeed(boat.getCurrentSpeed() + 0.1);
                         } if(boat.getCurrentSpeed() > boat.getMaxSpeed() + 1)boat.setCurrentSpeed(boat.getMaxSpeed());
+                    }
+                    if (boat.getCurrentSpeed() < 0){
+                        boat.setCurrentSpeed(0);
                     }
                     updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
                     boat.updateBoatHeading(raceSecondsPassed);
@@ -133,6 +136,9 @@ public class RaceUpdater implements Runnable {
                 }
                 if (!boat.getStatus().equals(BoatStatus.FINISHED)) {
                     atLeastOneBoatNotFinished = true;
+                }
+                if (boat.getStatus().equals(BoatStatus.DNF)) {
+                    boat.setCurrentSpeed(0);
                 }
 
             }
@@ -393,6 +399,22 @@ public class RaceUpdater implements Runnable {
         race.getCourse().setTrueWindSpeed(speed);
         race.getCourse().setWindDirection(angle);
     }
+
+    /**
+     * changes a boat's heading and speed when it collides into a mark
+     * @param boat the boat that has collided
+     */
+    private void markAvoider(Boat boat){
+        boat.setHeading(boat.getHeading() - 5);
+        boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
+        if(boat.getCurrentSpeed() < 0){
+            boat.setCurrentSpeed(0);
+        }
+        Coordinate currPos = boat.getCurrentPosition();
+        Coordinate newPos = currPos.coordAt(0.01, (boat.getHeading() + 180) % 360);
+        boat.setPosition(newPos);
+    }
+
 
     public Race getRace() {
         return race;
