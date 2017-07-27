@@ -149,15 +149,20 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     private void checkPenaltySpeed() {
         double boatPenalty = 100 - boatHealth;
-        if(boatPenalty != 0) {
+        if(boatPenalty > 0 && boatPenalty < 100) {
             damageSpeed = boatPenalty / 10;
-        } else {
+        } else if(boatPenalty == 0) {
             damageSpeed = 0;
         }
     }
 
     public void addDamage(int damage) {
-        boatHealth -= damage;
+        if((boatHealth - damage) > 0) {
+            boatHealth -= damage;
+        } else {
+            boatHealth = 0;
+            status = BoatStatus.DNF;
+        }
         checkPenaltySpeed();
     }
 

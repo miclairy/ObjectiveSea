@@ -137,6 +137,9 @@ public class RaceUpdater implements Runnable {
                 if (!boat.getStatus().equals(BoatStatus.FINISHED)) {
                     atLeastOneBoatNotFinished = true;
                 }
+                if (boat.getStatus().equals(BoatStatus.DNF)) {
+                    boat.setCurrentSpeed(0);
+                }
 
             }
 
