@@ -363,6 +363,9 @@ public class Controller implements Initializable, Observer {
                 case Race.UPDATED_STATUS_SIGNAL:
                     raceStatusChanged = true;
                     break;
+                case Race.UPDATED_COMPETITORS_SIGNAL:
+                    displayStarters();
+                    break;
             }
         }
     }
