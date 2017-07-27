@@ -49,13 +49,6 @@ public class RaceUpdater implements Runnable {
         course.setWindDirection(course.getWindDirectionBasedOnGates());
         race = new Race("Mock Runner Race", course, boatsInRace);
         initialize();
-
-        addCompetitor();
-        addCompetitor();
-        addCompetitor();
-        addCompetitor();
-        addCompetitor();
-
     }
 
     public RaceUpdater(Race race) {
