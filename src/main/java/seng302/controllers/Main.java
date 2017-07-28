@@ -19,6 +19,7 @@ import seng302.data.ConnectionManager;
 import seng302.data.DataStreamReader;
 import seng302.utilities.Config;
 import seng302.models.Race;
+import seng302.utilities.GameSounds;
 
 import java.io.IOException;
 
@@ -27,6 +28,8 @@ public class Main extends Application {
 
     private static Scene scene;
     private static Client client;
+    private GameSounds gameSounds = new GameSounds();
+
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -55,6 +58,9 @@ public class Main extends Application {
         UserInputController userInputController = new UserInputController(scene, Client.getRace());
         client.setUserInputController(userInputController);
         userInputController.addObserver(client);
+
+        //Starting Music here...
+        gameSounds.startLobbyMusic();
     }
 
     public static void main( String[] args ) {launch(args); }
