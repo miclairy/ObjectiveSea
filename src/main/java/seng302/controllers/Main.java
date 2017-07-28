@@ -59,8 +59,12 @@ public class Main extends Application {
         client.setUserInputController(userInputController);
         userInputController.addObserver(client);
 
-        //Starting Music here...
-        gameSounds.startLobbyMusic();
+        //Starts Lobby Music...
+        try {
+            gameSounds.startLobbyMusic();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
     }
 
     public static void main( String[] args ) {launch(args); }
