@@ -4,6 +4,7 @@ import javafx.animation.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.util.Duration;
 
 /**
@@ -80,5 +81,35 @@ public class AnimationUtils {
         fadeTransition.setInterpolator(Interpolator.EASE_OUT);
         ParallelTransition pt = new ParallelTransition(fadeTransition, scaleTransition);
         pt.play();
+    }
+
+    public static void shiftPromptLabel(Label label){
+        TranslateTransition translateTransition = new TranslateTransition(new Duration(80), label);
+        translateTransition.setByX(-18);
+        translateTransition.setByY(-26);
+        translateTransition.setInterpolator(Interpolator.EASE_IN);
+
+        ScaleTransition scaleTransition = new ScaleTransition(new Duration(80), label);
+        scaleTransition.setByX(-0.15);
+        scaleTransition.setByY(-0.15);
+
+        ParallelTransition pt = new ParallelTransition(translateTransition, scaleTransition);
+        pt.play();
+
+    }
+
+    public static void shiftPromptLabelBack(Label label){
+        TranslateTransition translateTransition = new TranslateTransition(new Duration(80), label);
+        translateTransition.setByX(18);
+        translateTransition.setByY(26);
+        translateTransition.setInterpolator(Interpolator.EASE_IN);
+
+        ScaleTransition scaleTransition = new ScaleTransition(new Duration(80), label);
+        scaleTransition.setByX(0.15);
+        scaleTransition.setByY(0.15);
+
+        ParallelTransition pt = new ParallelTransition(translateTransition, scaleTransition);
+        pt.play();
+
     }
 }

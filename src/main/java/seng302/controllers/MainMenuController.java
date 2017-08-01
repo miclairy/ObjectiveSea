@@ -1,10 +1,13 @@
 package seng302.controllers;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -12,6 +15,8 @@ import seng302.utilities.AnimationUtils;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainMenuController implements Initializable{
     @FXML Button btnLiveGame;
@@ -21,17 +26,23 @@ public class MainMenuController implements Initializable{
     @FXML Button btnSpectate;
     @FXML Button btnJoin;
     @FXML Button btnBack;
+    @FXML Button btnSinglePlay;
+    @FXML Button btnPractiseStart;
+    @FXML Button btnBackPrac;
     @FXML GridPane liveGameGrid;
     @FXML GridPane btnGrid;
     @FXML GridPane practiceGrid;
     @FXML TextField txtIPAddress;
     @FXML TextField txtPortNumber;
+    @FXML Label lblIP;
+    @FXML Label lblPort;
 
     private Main main;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setButtonAnimations();
+        setLabelPromptAnimations();
         btnGrid.setVisible(true);
         liveGameGrid.setVisible(false);
         practiceGrid.setVisible(false);
@@ -83,11 +94,15 @@ public class MainMenuController implements Initializable{
     }
 
     @FXML private void joinGame() throws Exception{
-        String ipAddress = txtIPAddress.getText();
-        int portNumber = Integer.parseInt(txtPortNumber.getText());
-        main.startClient(ipAddress, portNumber);
-        Thread.sleep(200);
-        main.loadRaceView();
+        validateIP();
+        validatePort();
+        if(validateIP() && validatePort()){
+            String ipAddress = txtIPAddress.getText();
+            int portNumber = Integer.parseInt(txtPortNumber.getText());
+            main.startClient(ipAddress, portNumber);
+            Thread.sleep(200);
+            main.loadRaceView();
+        }
     }
 
     private void setButtonAnimations(){
@@ -98,6 +113,28 @@ public class MainMenuController implements Initializable{
         addButtonListeners(btnSpectate);
         addButtonListeners(btnJoin);
         addButtonListeners(btnBack);
+        addButtonListeners(btnSinglePlay);
+        addButtonListeners(btnPractiseStart);
+        addButtonListeners(btnBackPrac);
+    }
+
+    private void setLabelPromptAnimations(){
+        addShiftPromptListener(txtIPAddress, lblIP);
+        addShiftPromptListener(txtPortNumber, lblPort);
+    }
+
+    private void addShiftPromptListener(TextField field, Label label){
+        field.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+            if (newValue && field.getText().isEmpty()) {
+                AnimationUtils.shiftPromptLabel(label);
+            }else if(field.getText().isEmpty()){
+                AnimationUtils.shiftPromptLabelBack(label);
+            }
+        });
+    }
+
+    private void focusState(boolean value) {
+
     }
 
     private void addButtonListeners(Button button){
@@ -116,5 +153,32 @@ public class MainMenuController implements Initializable{
                         AnimationUtils.scaleButtonHoverExit(button);
                     }
                 });
+    }
+
+    private boolean validateIP(){
+        String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
+        Pattern pattern = Pattern.compile(IPADDRESS_PATTERN);
+        Matcher matcher = pattern.matcher(txtIPAddress.getText());
+        if (matcher.find()) {
+            txtIPAddress.setStyle("-fx-text-inner-color: #2a2a2a;");
+            return true;
+        } else{
+            txtIPAddress.setStyle("-fx-text-inner-color: red;");
+            return false;
+        }
+    }
+
+    private boolean validatePort(){
+        try {
+            int port = Integer.parseInt(txtPortNumber.getText());
+            txtPortNumber.setStyle("-fx-text-inner-color: #2a2a2a;");
+            if(port > 1024 && port < 65536){
+                return true;
+            }
+            return false;
+        } catch (NumberFormatException e) {
+            txtPortNumber.setStyle("-fx-text-inner-color: red;");
+            return false;
+        }
     }
 }
