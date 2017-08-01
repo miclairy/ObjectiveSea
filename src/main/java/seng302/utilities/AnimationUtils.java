@@ -32,4 +32,24 @@ public class AnimationUtils {
 
         return fadeTransition;
     }
+
+    public static ScaleTransition scaleButtonHover(Node node){
+        ScaleTransition scaleTransition = new ScaleTransition(new Duration(200), node);
+        scaleTransition.setByY(0.1);
+        scaleTransition.setByX(0.1);
+        scaleTransition.setInterpolator(Interpolator.EASE_IN);
+        scaleTransition.play();
+        return scaleTransition;
+    }
+
+    public static ScaleTransition scaleButtonHoverExit(Node node){
+        ScaleTransition scaleTransition = new ScaleTransition(new Duration(200), node);
+        scaleTransition.setFromX(node.getScaleX());
+        scaleTransition.setFromY(node.getScaleY());
+        scaleTransition.setToX(1);
+        scaleTransition.setToY(1);
+        scaleTransition.setInterpolator(Interpolator.EASE_IN);
+        scaleTransition.play();
+        return scaleTransition;
+    }
 }

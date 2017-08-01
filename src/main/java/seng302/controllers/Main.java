@@ -102,7 +102,6 @@ public class Main extends Application {
     private void loadMainMenu() {
         try {
             MainMenuController mainMenu = (MainMenuController) replaceSceneContent("main_menu.fxml");
-            //mainMenu.setApp();
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }

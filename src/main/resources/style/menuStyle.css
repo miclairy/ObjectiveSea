@@ -1,0 +1,30 @@
+#menuAnchor{
+    -fx-effect: dropshadow(gaussian, #808080, 20, 0, 0, 0);
+    -fx-border-radius: 40 40 40 40;
+    -fx-background-radius: 40 40 40 40;
+    -fx-background-color: white;
+}
+
+.button{
+    -fx-font: 12px "Helvetica Neue Normal";
+    -fx-text-fill: #FFFFFF;
+    -fx-padding: 10 40 10 40;
+    -fx-background-color:  #8eb0b7;
+    -fx-border-radius: 70;
+    -fx-background-radius: 70;
+}
+
+.button:hover{
+    -fx-background-color: #a4c4ca;
+}
+
+.button:pressed{
+    -fx-background-color: #81a4ab;
+}
+
+#btnGrid{
+    -fx-effect: dropshadow(gaussian, #BEBEBE, 20, 0, 0, 0);
+    -fx-border-radius: 40 40 40 40;
+    -fx-background-radius: 40 40 40 40;
+    -fx-background-color: white;
+}
