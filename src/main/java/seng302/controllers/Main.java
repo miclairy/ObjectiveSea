@@ -6,8 +6,12 @@ package seng302.controllers;
 import javafx.application.Application;
 import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.fxml.JavaFXBuilderFactory;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
@@ -21,30 +25,35 @@ import seng302.utilities.Config;
 import seng302.models.Race;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class Main extends Application {
 
     private static Scene scene;
     private static Client client;
+    private static Stage primaryStage;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        this.primaryStage = primaryStage;
         Config.initializeConfig();
         setupServer();
         setupClient();
 
-        Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
-        primaryStage.setTitle("Race Vision");
-        primaryStage.getIcons().add(new Image("graphics/icon.png"));
-        scene = new Scene(parent);
-        primaryStage.setScene(scene);
+        //Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_menu.fxml"));
+        this.primaryStage.setTitle("Race Vision");
+        this.primaryStage.getIcons().add(new Image("graphics/icon.png"));
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-        primaryStage.setHeight(primaryScreenBounds.getHeight());
-        primaryStage.setWidth(primaryScreenBounds.getWidth());
+        this.primaryStage.setHeight(primaryScreenBounds.getHeight());
+        this.primaryStage.setWidth(primaryScreenBounds.getWidth());
+        loadMainMenu();
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
-        primaryStage.show();
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+        this.primaryStage.show();
+        this.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent e) {
                 Platform.exit();
@@ -52,9 +61,9 @@ public class Main extends Application {
             }
         });
 
-        UserInputController userInputController = new UserInputController(scene, Client.getRace());
-        client.setUserInputController(userInputController);
-        userInputController.addObserver(client);
+        //UserInputController userInputController = new UserInputController(scene, Client.getRace());
+        //client.setUserInputController(userInputController);
+        //userInputController.addObserver(client);
     }
 
     public static void main( String[] args ) {launch(args); }
@@ -88,6 +97,55 @@ public class Main extends Application {
 
     public static Client getClient() {
         return client;
+    }
+
+    private void loadMainMenu() {
+        try {
+            MainMenuController mainMenu = (MainMenuController) replaceSceneContent("main_menu.fxml");
+            //mainMenu.setApp();
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * takes an fxml file and replaces the current screen with it
+     * @param fxml an FXML file
+     * @return a display
+     * @throws Exception if can't find FXML
+     */
+    private Initializable replaceSceneContent(String fxml) throws Exception {
+        FXMLLoader loader = new FXMLLoader();
+        URL fxmlLocation = getClass().getClassLoader().getResource("main_menu.fxml");
+        Node node;
+        node = loader.load(fxmlLocation.openStream());
+        AnchorPane pane = new AnchorPane();
+        pane.getChildren().setAll(node);
+        scene = new Scene(pane);
+        setScene(scene);
+        primaryStage.setScene(scene);
+
+        double stageWidth = primaryStage.getWidth();
+        if (!Double.isNaN(stageWidth)) {
+            stageWidth -= (primaryStage.getWidth() - primaryStage.getScene().getWidth());
+        }
+
+        double stageHeight = primaryStage.getHeight();
+        if (!Double.isNaN(stageHeight)) {
+            stageHeight -= (primaryStage.getHeight() - primaryStage.getScene().getHeight());
+        }
+        if (!Double.isNaN(stageWidth)) {
+            pane.setPrefWidth(stageWidth);
+        }
+        if (!Double.isNaN(stageHeight)) {
+            pane.setPrefHeight(stageHeight);
+        }
+
+        return (Initializable) loader.getController();
+    }
+
+    private void setScene(Scene newScene){
+        scene = newScene;
     }
 }
 
