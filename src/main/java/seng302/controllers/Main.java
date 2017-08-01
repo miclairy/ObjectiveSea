@@ -103,6 +103,9 @@ public class Main extends Application {
     public void loadRaceView() {
         try {
             Controller race = (Controller) replaceSceneContent("main_window.fxml");
+            UserInputController userInputController = new UserInputController(scene, Client.getRace());
+            client.setUserInputController(userInputController);
+            userInputController.addObserver(client);
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -119,8 +122,6 @@ public class Main extends Application {
         URL fxmlLocation = getClass().getClassLoader().getResource(fxml);
         loader.setLocation(fxmlLocation);
         Parent root = loader.load();
-        //Pane node = new AnchorPane();
-        //node = loader.load();
         scene = new Scene(root);
         setScene(scene);
         primaryStage.setScene(scene);
@@ -132,9 +133,6 @@ public class Main extends Application {
         Config.initializeConfig();
         setupServer();
         setupClient();
-        UserInputController userInputController = new UserInputController(scene, Client.getRace());
-        client.setUserInputController(userInputController);
-        userInputController.addObserver(client);
     }
 
 
