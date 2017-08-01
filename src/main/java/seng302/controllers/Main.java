@@ -135,6 +135,13 @@ public class Main extends Application {
         setupClient();
     }
 
+    public void startClient(String ip, int port){
+        client = new Client(ip, port);
+        Thread clientThread = new Thread(client);
+        clientThread.setName("Client");
+        clientThread.start();
+    }
+
 
 
     private void setScene(Scene newScene){

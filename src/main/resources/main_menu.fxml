@@ -56,7 +56,7 @@
                   <RowConstraints maxHeight="240.01153564453125" minHeight="10.0" prefHeight="140.72796630859375" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <Button fx:id="btnHost" mnemonicParsing="false" text="HOST" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
+                  <Button fx:id="btnHost" mnemonicParsing="false" onAction="#hostGame" text="HOST" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
                      <GridPane.margin>
                         <Insets right="10.0" />
                      </GridPane.margin></Button>
@@ -64,7 +64,7 @@
                      <GridPane.margin>
                         <Insets right="10.0" />
                      </GridPane.margin></Button>
-                  <Button fx:id="btnJoin" mnemonicParsing="false" text="JOIN" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
+                  <Button fx:id="btnJoin" mnemonicParsing="false" onAction="#joinGame" text="JOIN" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
                      <GridPane.margin>
                         <Insets right="10.0" />
                      </GridPane.margin></Button>

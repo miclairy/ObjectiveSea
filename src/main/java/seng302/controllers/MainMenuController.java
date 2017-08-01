@@ -3,6 +3,7 @@ package seng302.controllers;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -69,9 +70,24 @@ public class MainMenuController implements Initializable{
         main.startPrivateRace();
         while(!Client.isConnected()){
         }
-        Thread.sleep(100);
+        Thread.sleep(200);
         main.loadRaceView();
+    }
 
+    @FXML private void hostGame() throws Exception{
+        main.startPrivateRace();
+        while(!Client.isConnected()){
+        }
+        Thread.sleep(200);
+        main.loadRaceView();
+    }
+
+    @FXML private void joinGame() throws Exception{
+        String ipAddress = txtIPAddress.getText();
+        int portNumber = Integer.parseInt(txtPortNumber.getText());
+        main.startClient(ipAddress, portNumber);
+        Thread.sleep(200);
+        main.loadRaceView();
     }
 
     private void setButtonAnimations(){
