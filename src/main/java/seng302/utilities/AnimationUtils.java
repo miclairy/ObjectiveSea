@@ -1,8 +1,6 @@
 package seng302.utilities;
 
-import javafx.animation.FadeTransition;
-import javafx.animation.Interpolator;
-import javafx.animation.ScaleTransition;
+import javafx.animation.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -51,5 +49,36 @@ public class AnimationUtils {
         scaleTransition.setInterpolator(Interpolator.EASE_IN);
         scaleTransition.play();
         return scaleTransition;
+    }
+
+    public static void slideOutTransition(Node node){
+        ScaleTransition scaleTransition = new ScaleTransition(new Duration(200), node);
+        scaleTransition.setByY(-1);
+        scaleTransition.setByX(-1);
+        scaleTransition.setInterpolator(Interpolator.EASE_OUT);
+
+        FadeTransition fadeTransition = new FadeTransition(new Duration(100), node);
+        fadeTransition.setFromValue(node.getOpacity());
+        fadeTransition.setToValue(0);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        ParallelTransition pt = new ParallelTransition(fadeTransition, scaleTransition);
+        pt.play();
+        fadeTransition.setOnFinished(new EventHandler<ActionEvent>(){public void handle(ActionEvent AE){node.setVisible(false); }});
+    }
+
+    public static void slideInTransition(Node node){
+        ScaleTransition scaleTransition = new ScaleTransition(new Duration(200), node);
+        scaleTransition.setFromX(node.getScaleX());
+        scaleTransition.setFromY(node.getScaleY());
+        scaleTransition.setToX(1);
+        scaleTransition.setToY(1);
+        scaleTransition.setInterpolator(Interpolator.EASE_OUT);
+
+        FadeTransition fadeTransition = new FadeTransition(new Duration(100), node);
+        fadeTransition.setFromValue(0);
+        fadeTransition.setToValue(1);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        ParallelTransition pt = new ParallelTransition(fadeTransition, scaleTransition);
+        pt.play();
     }
 }

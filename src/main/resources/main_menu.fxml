@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -16,46 +15,57 @@
       <ImageView fitHeight="1080.0" fitWidth="1920.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <image>
             <Image url="@graphics/menuBackground.png" />
-         </image>
-      </ImageView>
-      <AnchorPane fx:id="menuAnchor" maxHeight="200.0" maxWidth="200.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="500.0" StackPane.alignment="CENTER">
+         </image></ImageView>
+      <AnchorPane fx:id="menuAnchor" prefHeight="769.0" prefWidth="1605.0" AnchorPane.bottomAnchor="150.0" AnchorPane.leftAnchor="500.0" AnchorPane.rightAnchor="500.0" AnchorPane.topAnchor="150.0">
          <children>
-            <StackPane layoutX="-20.0" layoutY="-20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="-0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="175.0">
+            <ImageView fitHeight="182.0" fitWidth="312.0" layoutX="456.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="352.0" AnchorPane.rightAnchor="352.0" AnchorPane.topAnchor="58.0">
+               <image>
+                  <Image url="@graphics/menuTitle.png" />
+               </image>
+            </ImageView>
+            <GridPane fx:id="btnGrid" layoutX="182.0" layoutY="277.0" prefHeight="439.0" prefWidth="482.0" visible="false" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" AnchorPane.topAnchor="250.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
                <children>
-                  <GridPane fx:id="btnGrid" maxHeight="350.0" maxWidth="250.0" minWidth="-Infinity" prefHeight="350.0" prefWidth="250.0">
-                    <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
-                     <children>
-                        <Button fx:id="btnLiveGame" mnemonicParsing="false" text="LIVE GAME" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" />
-                        <Button fx:id="btnPractise" mnemonicParsing="false" text="PRACTISE" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                        <Button fx:id="btnTutorial" mnemonicParsing="false" text="TUTORIAL" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
-                     </children>
-                  </GridPane>
+                  <Button fx:id="btnLiveGame" mnemonicParsing="false" onAction="#loadLiveGameGrid" text="LIVE GAME" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" />
+                  <Button fx:id="btnPractise" mnemonicParsing="false" text="PRACTISE" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                  <Button fx:id="btnTutorial" mnemonicParsing="false" text="TUTORIAL" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
                </children>
-            </StackPane>
-            <StackPane layoutX="360.0" layoutY="39.0" prefHeight="150.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="20.0">
+            </GridPane>
+            <GridPane fx:id="liveGameGrid" layoutX="112.0" layoutY="266.0" prefHeight="433.0" prefWidth="673.0" AnchorPane.bottomAnchor="81.0" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="266.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints />
+                  <ColumnConstraints />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
                <children>
-                  <ImageView fitHeight="149.0" fitWidth="325.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@graphics/menuTitle.png" />
-                     </image>
-                     <cursor>
-                        <Cursor fx:constant="S_RESIZE" />
-                     </cursor>
-                  </ImageView>
+                  <Button fx:id="btnHost" mnemonicParsing="false" text="HOST" GridPane.columnIndex="4" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+                  <Button fx:id="btnSpectate" mnemonicParsing="false" text="SPECTATE" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+                  <Button fx:id="btnJoin" mnemonicParsing="false" text="JOIN" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+                  <Button fx:id="btnBack" mnemonicParsing="false" onAction="#backToMainMenu" text="BACK" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
                </children>
-            </StackPane>
+            </GridPane>
          </children>
          <StackPane.margin>
-            <Insets bottom="100.0" left="100.0" right="100.0" top="100.0" />
+            <Insets bottom="100.0" left="400.0" right="400.0" top="100.0" />
          </StackPane.margin>
       </AnchorPane>
    </children>
