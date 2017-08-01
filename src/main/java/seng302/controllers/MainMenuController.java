@@ -4,6 +4,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import seng302.utilities.AnimationUtils;
@@ -22,6 +23,8 @@ public class MainMenuController implements Initializable{
     @FXML GridPane liveGameGrid;
     @FXML GridPane btnGrid;
     @FXML GridPane practiceGrid;
+    @FXML TextField txtIPAddress;
+    @FXML TextField txtPortNumber;
 
     private Main main;
 

@@ -43,3 +43,29 @@
     -fx-background-radius: 40 40 40 40;
     -fx-background-color: white;
 }
+
+#txtIPAddress{
+
+}
+
+#txtPortNumber{
+    -fx-font: 18px "Helvetica Neue Normal";
+    -fx-text-fill: #2a2a2a;
+    -fx-background-color: transparent;
+    -fx-border-width: 0 0 3 0;
+    -fx-border-color: #2a2a2a #2a2a2a #f4654b #2a2a2a;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+
+#txtIPAddress{
+    -fx-font: 18px "Helvetica Neue Normal";
+    -fx-text-fill: #2a2a2a;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-background-color: transparent;
+    -fx-border-width: 0 0 3 0;
+    -fx-border-color: #2a2a2a #2a2a2a #f4654b #2a2a2a;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
