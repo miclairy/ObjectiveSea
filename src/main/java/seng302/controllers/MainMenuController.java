@@ -1,11 +1,9 @@
 package seng302.controllers;
 
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -82,7 +80,7 @@ public class MainMenuController implements Initializable{
         while(!Client.isConnected()){
         }
         Thread.sleep(200);
-        main.loadRaceView();
+        main.loadRaceView(true);
     }
 
     @FXML private void hostGame() throws Exception{
@@ -90,7 +88,7 @@ public class MainMenuController implements Initializable{
         while(!Client.isConnected()){
         }
         Thread.sleep(200);
-        main.loadRaceView();
+        main.loadRaceView(true);
     }
 
     @FXML private void joinGame() throws Exception{
@@ -101,7 +99,7 @@ public class MainMenuController implements Initializable{
             int portNumber = Integer.parseInt(txtPortNumber.getText());
             main.startClient(ipAddress, portNumber);
             Thread.sleep(200);
-            main.loadRaceView();
+            main.loadRaceView(false);
         }
     }
 

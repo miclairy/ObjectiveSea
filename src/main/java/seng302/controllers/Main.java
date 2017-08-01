@@ -100,9 +100,10 @@ public class Main extends Application {
         }
     }
 
-    public void loadRaceView() {
+    public void loadRaceView(boolean isHost) {
         try {
             Controller race = (Controller) replaceSceneContent("main_window.fxml");
+            race.setApp(isHost);
             UserInputController userInputController = new UserInputController(scene, Client.getRace());
             client.setUserInputController(userInputController);
             userInputController.addObserver(client);
