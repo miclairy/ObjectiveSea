@@ -12,6 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
@@ -116,7 +117,7 @@ public class Main extends Application {
     private Initializable replaceSceneContent(String fxml) throws Exception {
         FXMLLoader loader = new FXMLLoader();
         URL fxmlLocation = getClass().getClassLoader().getResource(fxml);
-        AnchorPane node = new AnchorPane();
+        Pane node = new AnchorPane();
         node = loader.load(fxmlLocation.openStream());
 
         scene = new Scene(node);
