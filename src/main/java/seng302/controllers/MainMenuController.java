@@ -21,27 +21,54 @@ public class MainMenuController implements Initializable{
     @FXML Button btnBack;
     @FXML GridPane liveGameGrid;
     @FXML GridPane btnGrid;
+    @FXML GridPane practiceGrid;
+
+    private Main main;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setButtonAnimations();
         btnGrid.setVisible(true);
         liveGameGrid.setVisible(false);
+        practiceGrid.setVisible(false);
     }
 
-    @FXML
-    public void loadLiveGameGrid(){
+    public void setApp(Main main){
+        this.main = main;
+    }
+
+    @FXML private void loadLiveGameGrid(){
         liveGameGrid.setVisible(true);
         AnimationUtils.slideOutTransition(btnGrid);
         AnimationUtils.slideInTransition(liveGameGrid);
 
     }
 
-    @FXML
-    public void backToMainMenu(){
+    @FXML private void backToMainMenu(){
         btnGrid.setVisible(true);
         AnimationUtils.slideOutTransition(liveGameGrid);
         AnimationUtils.slideInTransition(btnGrid);
+    }
+
+    @FXML private void loadPractiseGrid(){
+        practiceGrid.setVisible(true);
+        AnimationUtils.slideOutTransition(btnGrid);
+        AnimationUtils.slideInTransition(practiceGrid);
+    }
+
+    @FXML private void backToMainMenuPrac(){
+        btnGrid.setVisible(true);
+        AnimationUtils.slideOutTransition(practiceGrid);
+        AnimationUtils.slideInTransition(btnGrid);
+    }
+
+    @FXML private void loadOfflinePlay() throws Exception{
+        main.startPrivateRace();
+        while(!Client.isConnected()){
+        }
+        Thread.sleep(100);
+        main.loadRaceView();
+
     }
 
     private void setButtonAnimations(){

@@ -23,7 +23,7 @@
                   <Image url="@graphics/menuTitle.png" />
                </image>
             </ImageView>
-            <GridPane fx:id="btnGrid" layoutX="182.0" layoutY="277.0" prefHeight="439.0" prefWidth="482.0" visible="false" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" AnchorPane.topAnchor="250.0">
+            <GridPane fx:id="btnGrid" layoutX="182.0" layoutY="277.0" prefHeight="439.0" prefWidth="482.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="300.0" AnchorPane.topAnchor="250.0">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -36,11 +36,11 @@
               </rowConstraints>
                <children>
                   <Button fx:id="btnLiveGame" mnemonicParsing="false" onAction="#loadLiveGameGrid" text="LIVE GAME" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" />
-                  <Button fx:id="btnPractise" mnemonicParsing="false" text="PRACTISE" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                  <Button fx:id="btnPractise" mnemonicParsing="false" onAction="#loadPractiseGrid" text="PRACTISE" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
                   <Button fx:id="btnTutorial" mnemonicParsing="false" text="TUTORIAL" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
                </children>
             </GridPane>
-            <GridPane fx:id="liveGameGrid" layoutX="112.0" layoutY="266.0" prefHeight="433.0" prefWidth="673.0" AnchorPane.bottomAnchor="81.0" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="266.0">
+            <GridPane fx:id="liveGameGrid" layoutX="112.0" layoutY="266.0" prefHeight="433.0" prefWidth="673.0" visible="false" AnchorPane.bottomAnchor="81.0" AnchorPane.leftAnchor="112.0" AnchorPane.rightAnchor="112.0" AnchorPane.topAnchor="266.0">
                <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -57,15 +57,35 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <Button fx:id="btnHost" mnemonicParsing="false" text="HOST" GridPane.columnIndex="4" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
-                  <Button fx:id="btnSpectate" mnemonicParsing="false" text="SPECTATE" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
-                  <Button fx:id="btnJoin" mnemonicParsing="false" text="JOIN" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
-                  <Button fx:id="btnBack" mnemonicParsing="false" onAction="#backToMainMenu" text="BACK" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+                  <Button fx:id="btnHost" mnemonicParsing="false" text="HOST" GridPane.columnIndex="4" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="TOP">
+                     <GridPane.margin>
+                        <Insets />
+                     </GridPane.margin></Button>
+                  <Button fx:id="btnSpectate" mnemonicParsing="false" text="SPECTATE" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="TOP" />
+                  <Button fx:id="btnJoin" mnemonicParsing="false" text="JOIN" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="TOP" />
+                  <Button fx:id="btnBack" mnemonicParsing="false" onAction="#backToMainMenu" text="BACK" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="TOP" />
+               </children>
+            </GridPane>
+            <GridPane fx:id="practiceGrid" layoutX="344.0" layoutY="260.0" prefHeight="177.0" prefWidth="448.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="228.0" AnchorPane.rightAnchor="228.0" AnchorPane.topAnchor="250.0">
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Button fx:id="btnBackPrac" mnemonicParsing="false" onAction="#backToMainMenuPrac" text="BACK" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                  <Button fx:id="btnPractiseStart" mnemonicParsing="false" onAction="#loadLiveGameGrid" text="PRACTICE START" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                  <Button fx:id="btnSinglePlay" mnemonicParsing="false" onAction="#loadOfflinePlay" text="SINGLE PLAY" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
                </children>
             </GridPane>
          </children>
          <StackPane.margin>
-            <Insets bottom="100.0" left="400.0" right="400.0" top="100.0" />
+            <Insets bottom="100.0" left="450.0" right="450.0" top="100.0" />
          </StackPane.margin>
       </AnchorPane>
    </children>

@@ -25,6 +25,7 @@ public class Client implements Runnable, Observer {
     private Map<Integer, Boat> potentialCompetitors;
     private UserInputController userInputController;
     private int clientID;
+    private static boolean connected = false;
 
     public Client() {
         this.packetBuilder = new ClientPacketBuilder();
@@ -39,6 +40,7 @@ public class Client implements Runnable, Observer {
             }
         }
         System.out.println("Client: Connected to Server");
+        connected = true;
         this.sender = new ClientSender(dataStreamReader.getClientSocket());
     }
 
@@ -112,5 +114,9 @@ public class Client implements Runnable, Observer {
 
     public int getClientID() {
         return clientID;
+    }
+
+    public static boolean isConnected(){
+        return connected;
     }
 }

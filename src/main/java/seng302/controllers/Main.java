@@ -41,12 +41,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
-        Config.initializeConfig();
-        setupServer();
-        setupClient();
-
-        //Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_menu.fxml"));
-        this.primaryStage.setTitle("Race Vision");
+        this.primaryStage.setTitle("Objective Sea");
         this.primaryStage.getIcons().add(new Image("graphics/icon.png"));
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         this.primaryStage.setHeight(primaryScreenBounds.getHeight());
@@ -61,10 +56,6 @@ public class Main extends Application {
                 System.exit(0);
             }
         });
-
-        //UserInputController userInputController = new UserInputController(scene, Client.getRace());
-        //client.setUserInputController(userInputController);
-        //userInputController.addObserver(client);
     }
 
     public static void main( String[] args ) {launch(args); }
@@ -103,6 +94,15 @@ public class Main extends Application {
     private void loadMainMenu() {
         try {
             MainMenuController mainMenu = (MainMenuController) replaceSceneContent("main_menu.fxml");
+            mainMenu.setApp(this);
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void loadRaceView() {
+        try {
+            Controller race = (Controller) replaceSceneContent("main_window.fxml");
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -114,18 +114,30 @@ public class Main extends Application {
      * @return a display
      * @throws Exception if can't find FXML
      */
-    private Initializable replaceSceneContent(String fxml) throws Exception {
+    public Initializable replaceSceneContent(String fxml) throws Exception {
         FXMLLoader loader = new FXMLLoader();
         URL fxmlLocation = getClass().getClassLoader().getResource(fxml);
-        Pane node = new AnchorPane();
-        node = loader.load(fxmlLocation.openStream());
-
-        scene = new Scene(node);
+        loader.setLocation(fxmlLocation);
+        Parent root = loader.load();
+        //Pane node = new AnchorPane();
+        //node = loader.load();
+        scene = new Scene(root);
         setScene(scene);
         primaryStage.setScene(scene);
 
         return (Initializable) loader.getController();
     }
+
+    public void startPrivateRace() throws Exception{
+        Config.initializeConfig();
+        setupServer();
+        setupClient();
+        UserInputController userInputController = new UserInputController(scene, Client.getRace());
+        client.setUserInputController(userInputController);
+        userInputController.addObserver(client);
+    }
+
+
 
     private void setScene(Scene newScene){
         scene = newScene;
