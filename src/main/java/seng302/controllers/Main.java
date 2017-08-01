@@ -115,30 +115,13 @@ public class Main extends Application {
      */
     private Initializable replaceSceneContent(String fxml) throws Exception {
         FXMLLoader loader = new FXMLLoader();
-        URL fxmlLocation = getClass().getClassLoader().getResource("main_menu.fxml");
-        Node node;
+        URL fxmlLocation = getClass().getClassLoader().getResource(fxml);
+        AnchorPane node = new AnchorPane();
         node = loader.load(fxmlLocation.openStream());
-        AnchorPane pane = new AnchorPane();
-        pane.getChildren().setAll(node);
-        scene = new Scene(pane);
+
+        scene = new Scene(node);
         setScene(scene);
         primaryStage.setScene(scene);
-
-        double stageWidth = primaryStage.getWidth();
-        if (!Double.isNaN(stageWidth)) {
-            stageWidth -= (primaryStage.getWidth() - primaryStage.getScene().getWidth());
-        }
-
-        double stageHeight = primaryStage.getHeight();
-        if (!Double.isNaN(stageHeight)) {
-            stageHeight -= (primaryStage.getHeight() - primaryStage.getScene().getHeight());
-        }
-        if (!Double.isNaN(stageWidth)) {
-            pane.setPrefWidth(stageWidth);
-        }
-        if (!Double.isNaN(stageHeight)) {
-            pane.setPrefHeight(stageHeight);
-        }
 
         return (Initializable) loader.getController();
     }
