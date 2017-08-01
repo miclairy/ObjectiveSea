@@ -64,7 +64,7 @@ public class Main extends Application {
      * Initializes the client on it's own thread.
      */
     private static void setupClient() {
-        client = new Client();
+        client = new Client("localhost", 2828, true);
         Thread clientThread = new Thread(client);
         clientThread.setName("Client");
         clientThread.start();
@@ -137,8 +137,8 @@ public class Main extends Application {
         setupClient();
     }
 
-    public void startClient(String ip, int port){
-        client = new Client(ip, port);
+    public void startClient(String ip, int port, boolean isParticipant){
+        client = new Client(ip, port, isParticipant);
         Thread clientThread = new Thread(client);
         clientThread.setName("Client");
         clientThread.start();

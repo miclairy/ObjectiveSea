@@ -97,7 +97,19 @@ public class MainMenuController implements Initializable{
         if(validateIP() && validatePort()){
             String ipAddress = txtIPAddress.getText();
             int portNumber = Integer.parseInt(txtPortNumber.getText());
-            main.startClient(ipAddress, portNumber);
+            main.startClient(ipAddress, portNumber, true);
+            Thread.sleep(200);
+            main.loadRaceView(false);
+        }
+    }
+
+    @FXML private void spectateGame() throws Exception{
+        validateIP();
+        validatePort();
+        if(validateIP() && validatePort()){
+            String ipAddress = txtIPAddress.getText();
+            int portNumber = Integer.parseInt(txtPortNumber.getText());
+            main.startClient(ipAddress, portNumber, false);
             Thread.sleep(200);
             main.loadRaceView(false);
         }

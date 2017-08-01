@@ -28,11 +28,13 @@ public class Client implements Runnable, Observer {
     private static boolean connected = false;
     private String sourceAddress;
     private int sourcePort;
+    private boolean isParticipant;
 
-    public Client(String ip, int port) {
+    public Client(String ip, int port, boolean isParticipant) {
         this.sourcePort = port;
         this.sourceAddress = ip;
         this.packetBuilder = new ClientPacketBuilder();
+        this.isParticipant = isParticipant;
         setUpDataStreamReader();
 
         System.out.println("Client: Waiting for connection to Server");
@@ -77,7 +79,7 @@ public class Client implements Runnable, Observer {
 
     @Override
     public void run() {
-        sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(true));
+        sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(isParticipant));
         System.out.println("Client: Sent Registration Request");
         waitForRace();
     }
