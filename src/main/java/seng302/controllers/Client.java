@@ -24,7 +24,6 @@ public class Client implements Runnable, Observer {
     private Map<Integer, Boat> potentialCompetitors;
     private UserInputController userInputController;
     private int clientID;
-    private static boolean connected = false;
     private String sourceAddress;
     private int sourcePort;
     private boolean isParticipant;
@@ -41,7 +40,6 @@ public class Client implements Runnable, Observer {
         System.out.println("Client: Waiting for connection to Server");
         manageWaitingConnection();
         System.out.println("Client: Connected to Server");
-        connected = true;
         this.sender = new ClientSender(dataStreamReader.getClientSocket());
     }
 
@@ -137,9 +135,5 @@ public class Client implements Runnable, Observer {
 
     public int getClientID() {
         return clientID;
-    }
-
-    public static boolean isConnected(){
-        return connected;
     }
 }

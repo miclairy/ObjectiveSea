@@ -12,14 +12,14 @@ public class ConfigTest {
 
     @Test
     public void IPRegExMatcher() throws Exception {
-        Assert.assertTrue(Config.IPRegExMatcher("192.168.0.1"));
-        Assert.assertTrue(Config.IPRegExMatcher("0.0.0.0"));
-        Assert.assertTrue(Config.IPRegExMatcher("255.255.255.255"));
-        Assert.assertFalse(Config.IPRegExMatcher("256.1.2.32"));
-        Assert.assertFalse(Config.IPRegExMatcher("-1.0.0.0"));
-        Assert.assertFalse(Config.IPRegExMatcher("124.132.1"));
-        Assert.assertFalse(Config.IPRegExMatcher("124.674.3.2.1"));
-        Assert.assertFalse(Config.IPRegExMatcher("123...2"));
+        Assert.assertTrue(ConnectionUtils.IPRegExMatcher("192.168.0.1"));
+        Assert.assertTrue(ConnectionUtils.IPRegExMatcher("0.0.0.0"));
+        Assert.assertTrue(ConnectionUtils.IPRegExMatcher("255.255.255.255"));
+        Assert.assertFalse(ConnectionUtils.IPRegExMatcher("256.1.2.32"));
+        Assert.assertFalse(ConnectionUtils.IPRegExMatcher("-1.0.0.0"));
+        Assert.assertFalse(ConnectionUtils.IPRegExMatcher("124.132.1"));
+        Assert.assertFalse(ConnectionUtils.IPRegExMatcher("124.674.3.2.1"));
+        Assert.assertFalse(ConnectionUtils.IPRegExMatcher("123...2"));
     }
 
     @Test

@@ -5,7 +5,6 @@ import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 
 import java.io.*;
-import java.net.ConnectException;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
