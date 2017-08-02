@@ -37,6 +37,11 @@ public class MainMenuController implements Initializable{
 
     private Main main;
 
+    /**
+     * Initilizer for the Main Menu Controller. Runs upon creation
+     * @param location url locaton
+     * @param resources bundles of fun
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setButtonAnimations();
@@ -75,6 +80,10 @@ public class MainMenuController implements Initializable{
         AnimationUtils.slideInTransition(btnGrid);
     }
 
+    /**
+     * Allows user to host a game at the port 2828 and current public IP
+     * @throws Exception
+     */
     @FXML private void loadOfflinePlay() throws Exception{
         main.startPrivateRace(2828);
         while(!Client.isConnected()){
@@ -83,6 +92,10 @@ public class MainMenuController implements Initializable{
         main.loadRaceView(true);
     }
 
+    /**
+     * Allows user to host a game at the entered port and current public IP
+     * @throws Exception
+     */
     @FXML private void hostGame() throws Exception{
         validatePort();
         if(validatePort()){
@@ -94,6 +107,10 @@ public class MainMenuController implements Initializable{
         }
     }
 
+    /**
+     * Joins a race at the desired IP and Port and creates a client instance
+     * @throws Exception
+     */
     @FXML private void joinGame() throws Exception{
         validateIP();
         validatePort();
@@ -109,6 +126,10 @@ public class MainMenuController implements Initializable{
         }
     }
 
+    /**
+     * Joins a race at the desired IP and Port and creates a client instance
+     * @throws Exception
+     */
     @FXML private void spectateGame() throws Exception{
         validateIP();
         validatePort();
@@ -123,6 +144,9 @@ public class MainMenuController implements Initializable{
         }
     }
 
+    /**
+     * attaches listeners to buttons to allow for hover and click animations
+     */
     private void setButtonAnimations(){
         addButtonListeners(btnLiveGame);
         addButtonListeners(btnPractise);
@@ -141,6 +165,11 @@ public class MainMenuController implements Initializable{
         addShiftPromptListener(txtPortNumber, lblPort);
     }
 
+    /**
+     * Attaches a shift key listener to the given label
+     * @param field the text field to listen
+     * @param label the label to prompt
+     */
     private void addShiftPromptListener(TextField field, Label label){
         field.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (newValue && field.getText().isEmpty()) {
@@ -151,10 +180,10 @@ public class MainMenuController implements Initializable{
         });
     }
 
-    private void focusState(boolean value) {
-
-    }
-
+    /**
+     * attaches click and hover listeners to buttons
+     * @param button the button to attach the listener
+     */
     private void addButtonListeners(Button button){
         button.addEventHandler(MouseEvent.MOUSE_ENTERED,
                 e -> AnimationUtils.scaleButtonHover(button));
@@ -163,6 +192,10 @@ public class MainMenuController implements Initializable{
                 e -> AnimationUtils.scaleButtonHoverExit(button));
     }
 
+    /**
+     * checks to determine whether the IP is a valid regex. Colors the IP accordingly.
+     * @return whether the Ip is valid or not
+     */
     private boolean validateIP(){
         String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
         Pattern pattern = Pattern.compile(IPADDRESS_PATTERN);
@@ -176,6 +209,10 @@ public class MainMenuController implements Initializable{
         }
     }
 
+    /**
+     * checks to determine whether the port number is a valid regex. Colors the port number accordingly.
+     * @return whether the port is valid or not
+     */
     private boolean validatePort(){
         try {
             int port = Integer.parseInt(txtPortNumber.getText());

@@ -157,6 +157,15 @@ public class Main extends Application {
         alert.showAndWait();
     }
 
+    /**
+     * starts the client at the desired ip and port number
+     * ensures that the client connects
+     * throws error if connection fails
+     * @param ip the ip for the client to connect to
+     * @param port the port of the client to connect to
+     * @param isParticipant whether the user is a participant or spectator
+     * @return whether the connection was successful or times out
+     */
     public boolean startClient(String ip, int port, boolean isParticipant){
         try {
             client = new Client(ip, port, isParticipant);
