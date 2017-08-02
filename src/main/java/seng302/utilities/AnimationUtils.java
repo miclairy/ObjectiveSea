@@ -12,6 +12,13 @@ import javafx.util.Duration;
  */
 public class AnimationUtils {
 
+    /**
+     * scales a collision node shape in and out to create explosion effect
+     * @param node a circle representing the collision area
+     * @param duration the length to run the explosion for
+     * @param amount amount to scale explosion by
+     * @return
+     */
     public static ScaleTransition scaleTransitionCollision(Node node, int duration, double amount){
         ScaleTransition scaleTransition = new ScaleTransition(new Duration(duration), node);
         scaleTransition.setByY(amount);
@@ -23,6 +30,12 @@ public class AnimationUtils {
         return scaleTransition;
     }
 
+    /**
+     * fades a node out of a scene
+     * @param node the node to be faded out
+     * @param duration the length of fade
+     * @return
+     */
     public static FadeTransition fadeOutTransition(Node node, int duration){
         FadeTransition fadeTransition = new FadeTransition(new Duration(duration), node);
         fadeTransition.setFromValue(node.getOpacity());
@@ -32,6 +45,11 @@ public class AnimationUtils {
         return fadeTransition;
     }
 
+    /**
+     * scales a node up when mouse hovers over it
+     * @param node the node to be scaled
+     * @return the transition
+     */
     public static ScaleTransition scaleButtonHover(Node node){
         ScaleTransition scaleTransition = new ScaleTransition(new Duration(200), node);
         scaleTransition.setByY(0.1);
@@ -41,6 +59,11 @@ public class AnimationUtils {
         return scaleTransition;
     }
 
+    /**
+     * scales a node back to defualt size once mouse exits
+     * @param node the node to scale back
+     * @return
+     */
     public static ScaleTransition scaleButtonHoverExit(Node node){
         ScaleTransition scaleTransition = new ScaleTransition(new Duration(200), node);
         scaleTransition.setFromX(node.getScaleX());
@@ -52,6 +75,10 @@ public class AnimationUtils {
         return scaleTransition;
     }
 
+    /**
+     * scales and fades a node to remove it from the scene
+     * @param node the node to scale and fade
+     */
     public static void slideOutTransition(Node node){
         ScaleTransition scaleTransition = new ScaleTransition(new Duration(200), node);
         scaleTransition.setByY(-1);
@@ -67,6 +94,10 @@ public class AnimationUtils {
         fadeTransition.setOnFinished(new EventHandler<ActionEvent>(){public void handle(ActionEvent AE){node.setVisible(false); }});
     }
 
+    /**
+     * scales and fades in a node to the scene
+     * @param node the node to bring in
+     */
     public static void slideInTransition(Node node){
         ScaleTransition scaleTransition = new ScaleTransition(new Duration(200), node);
         scaleTransition.setFromX(node.getScaleX());
@@ -83,6 +114,10 @@ public class AnimationUtils {
         pt.play();
     }
 
+    /**
+     * shifts a label from a text field to above it for input
+     * @param label the label to slide
+     */
     public static void shiftPromptLabel(Label label){
         TranslateTransition translateTransition = new TranslateTransition(new Duration(80), label);
         translateTransition.setByX(-18);
@@ -98,6 +133,10 @@ public class AnimationUtils {
 
     }
 
+    /**
+     * shifts a label back into position after input
+     * @param label the label to shift
+     */
     public static void shiftPromptLabelBack(Label label){
         TranslateTransition translateTransition = new TranslateTransition(new Duration(80), label);
         translateTransition.setByX(18);
