@@ -26,6 +26,7 @@ public class Server implements Runnable, Observer {
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumber = new HashMap<>();
     private Map<Boat, Integer> boatSequenceNumbers = new HashMap<>();
     private Map<Boat, Integer> lastMarkRoundingSent = new HashMap<>();
+    private String courseXML = "Race.xml";
 
     private RaceUpdater raceUpdater;
     private ConnectionManager connectionManager;
@@ -100,7 +101,7 @@ public class Server implements Runnable, Observer {
      * Sends the XML messages when the client has connected
      */
     private void sendInitialRaceMessages() {
-        sendXmlMessage(RACE_XML_MESSAGE, "Race.xml");
+        sendXmlMessage(RACE_XML_MESSAGE, courseXML);
         sendXmlMessage(BOAT_XML_MESSAGE, "Boat.xml");
         sendXmlMessage(REGATTA_XML_MESSAGE, "Regatta.xml");
     }
@@ -212,7 +213,7 @@ public class Server implements Runnable, Observer {
 
         byte[] packet = packetBuilder.createRegistrationAcceptancePacket(newId);
         connectionManager.sendToClient(newId, packet);
-        sendXmlMessage(RACE_XML_MESSAGE, "Race.xml");
+        sendXmlMessage(RACE_XML_MESSAGE, courseXML);
     }
 
     /**
