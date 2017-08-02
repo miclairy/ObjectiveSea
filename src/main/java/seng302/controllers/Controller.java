@@ -220,8 +220,10 @@ public class Controller implements Initializable, Observer {
                 break;
             case PREPARATORY:
                 hideStarterOverlay();
-                raceViewController.initBoatHighlight();
-                raceViewController.initializeBoats();
+                if(!raceViewController.hasInitializedBoats()) {
+                    raceViewController.initBoatHighlight();
+                    raceViewController.initializeBoats();
+                }
                 break;
             case STARTED:
                 if(startersOverlay.isVisible()){

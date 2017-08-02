@@ -900,7 +900,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             Integer sig = (Integer) object;
             switch(sig) {
                 case Race.UPDATED_COMPETITORS_SIGNAL:
-                    Platform.runLater(() -> updateCompetitors(race.getCompetitors()));
+                    Platform.runLater(() -> { if(hasInitializedBoats()) updateCompetitors(race.getCompetitors());});
                     break;
             }
         } else if (obs == selectionController){
