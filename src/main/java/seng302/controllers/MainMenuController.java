@@ -7,9 +7,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import seng302.utilities.AnimationUtils;
 
 import java.net.URL;
@@ -43,11 +45,15 @@ public class MainMenuController implements Initializable{
     @FXML ImageView courseImage4;
 
 
+    DropShadow ds = new DropShadow( 20, Color.AQUA );
+
+
     private Main main;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setButtonAnimations();
+        setImageAnimations();
         setLabelPromptAnimations();
         btnGrid.setVisible(true);
         liveGameGrid.setVisible(false);
@@ -138,6 +144,10 @@ public class MainMenuController implements Initializable{
         addButtonListeners(btnBackHost);
     }
 
+    private void setImageAnimations(){
+        addImageListeners(courseImage1);
+    }
+
     private void setLabelPromptAnimations(){
         addShiftPromptListener(txtIPAddress, lblIP);
         addShiftPromptListener(txtPortNumber, lblPort);
@@ -173,6 +183,27 @@ public class MainMenuController implements Initializable{
                         AnimationUtils.scaleButtonHoverExit(button);
                     }
                 });
+    }
+
+    private void addImageListeners(ImageView imageView) {
+
+
+        imageView.setOnMouseClicked( ( MouseEvent event ) ->
+        {
+            imageView.requestFocus();
+        } );
+        imageView.focusedProperty().addListener(( ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue ) ->
+        {
+            if ( newValue )
+            {
+                imageView.setEffect( ds );
+            }
+            else
+            {
+                imageView.setEffect( null );
+            }
+        });
+
     }
 
     private boolean validateIP(){

@@ -32,7 +32,7 @@
                   <Image url="@graphics/menuTitle.png" />
                </image>
             </ImageView>
-            <GridPane fx:id="btnGrid" layoutX="182.0" layoutY="277.0" prefHeight="570.0" prefWidth="339.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="250.0">
+            <GridPane fx:id="btnGrid" layoutX="182.0" layoutY="277.0" prefHeight="570.0" prefWidth="339.0" visible="false" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="250.0">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                   <ColumnConstraints />
@@ -150,7 +150,7 @@
                      </GridPane.margin></Button>
                </children>
             </GridPane>
-            <GridPane fx:id="courseGrid" layoutX="160.0" layoutY="238.0" prefHeight="510.0" prefWidth="700.0" stylesheets="@style/menuStyle.css" visible="false">
+            <GridPane fx:id="courseGrid" layoutX="160.0" layoutY="238.0" prefHeight="510.0" prefWidth="700.0" stylesheets="@style/menuStyle.css">
                <children>
                   <Button fx:id="btnBackHost" mnemonicParsing="false" onAction="#backToMainMenuPrac" text="BACK" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                      <padding>
@@ -220,6 +220,11 @@
                         <Insets bottom="10.0" />
                      </GridPane.margin>
                   </Label>
+                  <ToggleButton fx:id="image1Button" maxHeight="150.0" maxWidth="150.0" minHeight="150.0" minWidth="150.0" mnemonicParsing="false" prefHeight="150.0" prefWidth="150.0" stylesheets="@style/menuStyle.css" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                     <padding>
+                        <Insets top="20.0" />
+                     </padding>
+                  </ToggleButton>
                </children>
                <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />

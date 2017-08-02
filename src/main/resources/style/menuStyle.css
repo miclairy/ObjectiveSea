@@ -57,7 +57,7 @@
     -fx-background-radius: 40 40 40 40;
 }
 
-#courseImage1, #courseImage2, #courseImage3, #courseImage4:hover{
+#selectCourseImage1, #courseImage2, #courseImage3, #courseImage4{
     -fx-effect: dropshadow(gaussian, #BEBEBE, 20, 0, 0, 0);
     -fx-border-radius: 40 40 40 40;
     -fx-background-radius: 40 40 40 40;
@@ -65,8 +65,21 @@
     -fx-border-width: 2;
 }
 
-#courseImageSelect1, #courseImageSelect2, #courseImageSelect3, #courseImageSelect4{
+.courseImageSelect1, #courseImageSelect2, #courseImageSelect3, #courseImageSelect4{
     -fx-effect: dropshadow(gaussian, #BEBEBE, 20, 0, 0, 0);
+    -fx-border-radius: 40 40 40 40;
+    -fx-background-radius: 40 40 40 40;
+    -fx-border-color: #8eb0b7;
+    -fx-border-width: 2;
+}
+
+#image1Button{
+    -fx-background-image: url('../graphics/Race-course.png');
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-size: 150 150;
+}
+#image1Button:selected{
     -fx-border-radius: 40 40 40 40;
     -fx-background-radius: 40 40 40 40;
     -fx-border-color: #8eb0b7;
