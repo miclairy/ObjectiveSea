@@ -4,6 +4,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -98,7 +99,6 @@ public class MainMenuController implements Initializable{
      * @throws Exception
      */
     @FXML private void hostGame() throws Exception{
-        validatePort();
         if(validatePort()){
             main.startPrivateRace(Integer.parseInt(txtPortNumber.getText()));
             while(!Client.isConnected()){
@@ -108,6 +108,12 @@ public class MainMenuController implements Initializable{
             txtPortNumber.setStyle("-fx-text-inner-color: 2a2a2a;");
         }else{
             txtPortNumber.setStyle("-fx-text-inner-color: red;");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Port Number ");
+            alert.setHeaderText("Invalid port number");
+            alert.setContentText("Please enter a valid port number\n");
+
+            alert.showAndWait();
         }
     }
 
@@ -131,6 +137,13 @@ public class MainMenuController implements Initializable{
             if(!validatePort()){
                 txtPortNumber.setStyle("-fx-text-inner-color: red;");
             }
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Port & IP ");
+            alert.setHeaderText("Invalid Port or IP Address");
+            alert.setContentText("The IP Address or Port Number you entered\n" +
+                    "is invalid\n");
+
+            alert.showAndWait();
         }
     }
 
@@ -154,6 +167,13 @@ public class MainMenuController implements Initializable{
             if(validatePort()){
                 txtPortNumber.setStyle("-fx-text-inner-color: red;");
             }
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Port & IP ");
+            alert.setHeaderText("Invalid Port or IP Address");
+            alert.setContentText("The IP Address or Port Number you entered\n" +
+                    "is invalid\n");
+
+            alert.showAndWait();
         }
     }
 
