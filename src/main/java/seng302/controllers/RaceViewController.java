@@ -900,8 +900,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             Integer sig = (Integer) object;
             switch(sig) {
                 case Race.UPDATED_COMPETITORS_SIGNAL:
-                    Platform.runLater(() -> { if(hasInitializedBoats()) updateCompetitors(race.getCompetitors());});
-                    break;
+                    Platform.runLater(() -> updateCompetitors(race.getCompetitors()));
+                break;
             }
         } else if (obs == selectionController){
             Boolean tracking = (Boolean) object;
@@ -935,10 +935,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 }
             }
             if (needsToBeAdded) {
-                PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
-                initializeBoat(polarTable, boat);
+                if (hasInitializedBoats()) {
+                    PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
+                    initializeBoat(polarTable, boat);
+                }
             }
         }
+        controller.displayStarters();
     }
 
 
