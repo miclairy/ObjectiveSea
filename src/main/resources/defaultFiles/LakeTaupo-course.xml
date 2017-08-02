@@ -48,5 +48,6 @@
         <Limit SeqID="3" Lat="-38.700818" Lon="176.073835" />
         <Limit SeqID="4" Lat="-38.696883" Lon="176.061744" />
         <Limit SeqID="5" Lat="-38.706831" Lon="176.042431" />
+        <Limit SeqID="6" Lat="-38.718802" Lon="176.039674" />
     </CourseLimit>
 </Race>

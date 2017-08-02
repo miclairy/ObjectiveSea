@@ -198,7 +198,7 @@ public class Controller implements Initializable, Observer {
                     public void run()
                     {
                         // resize after time is waited
-                        raceViewController.drawMap();
+                        //raceViewController.drawMap();
                         mapImageView.setEffect(null);
                     }
                 };

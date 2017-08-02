@@ -7,8 +7,11 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import seng302.utilities.AnimationUtils;
 
 import java.net.URL;
@@ -27,6 +30,8 @@ public class MainMenuController implements Initializable{
     @FXML Button btnSinglePlay;
     @FXML Button btnPractiseStart;
     @FXML Button btnBackPrac;
+    @FXML Button btnCourseStart;
+    @FXML Button btnBackHost;
     @FXML GridPane liveGameGrid;
     @FXML GridPane btnGrid;
     @FXML GridPane practiceGrid;
@@ -34,12 +39,21 @@ public class MainMenuController implements Initializable{
     @FXML TextField txtPortNumber;
     @FXML Label lblIP;
     @FXML Label lblPort;
+    @FXML ImageView courseImage1;
+    @FXML ImageView courseImage2;
+    @FXML ImageView courseImage3;
+    @FXML ImageView courseImage4;
+
+
+    DropShadow ds = new DropShadow( 20, Color.AQUA );
+
 
     private Main main;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setButtonAnimations();
+        setImageAnimations();
         setLabelPromptAnimations();
         btnGrid.setVisible(true);
         liveGameGrid.setVisible(false);
@@ -126,6 +140,12 @@ public class MainMenuController implements Initializable{
         addButtonListeners(btnSinglePlay);
         addButtonListeners(btnPractiseStart);
         addButtonListeners(btnBackPrac);
+        addButtonListeners(btnCourseStart);
+        addButtonListeners(btnBackHost);
+    }
+
+    private void setImageAnimations(){
+        addImageListeners(courseImage1);
     }
 
     private void setLabelPromptAnimations(){
@@ -165,6 +185,27 @@ public class MainMenuController implements Initializable{
                 });
     }
 
+    private void addImageListeners(ImageView imageView) {
+
+
+        imageView.setOnMouseClicked( ( MouseEvent event ) ->
+        {
+            imageView.requestFocus();
+        } );
+        imageView.focusedProperty().addListener(( ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue ) ->
+        {
+            if ( newValue )
+            {
+                imageView.setEffect( ds );
+            }
+            else
+            {
+                imageView.setEffect( null );
+            }
+        });
+
+    }
+
     private boolean validateIP(){
         String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
         Pattern pattern = Pattern.compile(IPADDRESS_PATTERN);
@@ -191,4 +232,5 @@ public class MainMenuController implements Initializable{
             return false;
         }
     }
+
 }
