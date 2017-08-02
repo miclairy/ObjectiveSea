@@ -41,7 +41,7 @@
                      <padding>
                         <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                      </padding></Button>
-                  <Button fx:id="btnPractise" mnemonicParsing="false" onAction="#loadPractiseGrid" text="PRACTISE" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                  <Button fx:id="btnPractise" mnemonicParsing="false" onAction="#loadPractiseGrid" text="PRACTICE" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                      <padding>
                         <Insets bottom="10.0" left="43.0" right="43.0" top="10.0" />
                      </padding></Button>
