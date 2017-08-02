@@ -14,6 +14,7 @@
     -fx-background-color: linear-gradient(#B9D9DA, #AAD2D2);
     -fx-font-size: 27px;
     -fx-text-fill: White;
+    -fx-font-weight: bold;
     -fx-border-radius: 10 10 0 0;
     -fx-background-radius: 10 10 0 0;
 }

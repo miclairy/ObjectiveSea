@@ -25,8 +25,34 @@ public class Client implements Runnable, Observer {
     private Map<Integer, Boat> potentialCompetitors;
     private UserInputController userInputController;
     private int clientID;
+    private static boolean connected = false;
+    private String sourceAddress;
+    private int sourcePort;
+    private boolean isParticipant;
+
+    public Client(String ip, int port, boolean isParticipant) {
+        this.sourcePort = port;
+        this.sourceAddress = ip;
+        this.packetBuilder = new ClientPacketBuilder();
+        this.isParticipant = isParticipant;
+        setUpDataStreamReader();
+
+        System.out.println("Client: Waiting for connection to Server");
+        while(dataStreamReader.getClientSocket() == null) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("Client: Connected to Server");
+        connected = true;
+        this.sender = new ClientSender(dataStreamReader.getClientSocket());
+    }
 
     public Client() {
+        this.sourceAddress = Config.SOURCE_ADDRESS;
+        this.sourcePort = Config.SOURCE_PORT;
         this.packetBuilder = new ClientPacketBuilder();
         setUpDataStreamReader();
 
@@ -39,11 +65,12 @@ public class Client implements Runnable, Observer {
             }
         }
         System.out.println("Client: Connected to Server");
+        connected = true;
         this.sender = new ClientSender(dataStreamReader.getClientSocket());
     }
 
     private void setUpDataStreamReader(){
-        this.dataStreamReader = new DataStreamReader(Config.SOURCE_ADDRESS, Config.SOURCE_PORT);
+        this.dataStreamReader = new DataStreamReader(sourceAddress, sourcePort);
         Thread dataStreamReaderThread = new Thread(dataStreamReader);
         dataStreamReaderThread.setName("DataStreamReader");
         dataStreamReaderThread.start();
@@ -52,7 +79,7 @@ public class Client implements Runnable, Observer {
 
     @Override
     public void run() {
-        sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(true));
+        sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(isParticipant));
         System.out.println("Client: Sent Registration Request");
         waitForRace();
     }
@@ -112,5 +139,9 @@ public class Client implements Runnable, Observer {
 
     public int getClientID() {
         return clientID;
+    }
+
+    public static boolean isConnected(){
+        return connected;
     }
 }
