@@ -97,9 +97,12 @@ public class MainMenuController implements Initializable{
         if(validateIP() && validatePort()){
             String ipAddress = txtIPAddress.getText();
             int portNumber = Integer.parseInt(txtPortNumber.getText());
-            main.startClient(ipAddress, portNumber, true);
-            Thread.sleep(200);
-            main.loadRaceView(false);
+            boolean clientStarted = main.startClient(ipAddress, portNumber, true);
+            if(clientStarted){
+                Thread.sleep(200);
+                main.loadRaceView(false);
+            }
+
         }
     }
 
@@ -109,9 +112,11 @@ public class MainMenuController implements Initializable{
         if(validateIP() && validatePort()){
             String ipAddress = txtIPAddress.getText();
             int portNumber = Integer.parseInt(txtPortNumber.getText());
-            main.startClient(ipAddress, portNumber, false);
-            Thread.sleep(200);
-            main.loadRaceView(false);
+            boolean clientStarted = main.startClient(ipAddress, portNumber, false);
+            if(clientStarted){
+                Thread.sleep(200);
+                main.loadRaceView(false);
+            }
         }
     }
 
@@ -149,20 +154,10 @@ public class MainMenuController implements Initializable{
 
     private void addButtonListeners(Button button){
         button.addEventHandler(MouseEvent.MOUSE_ENTERED,
-                new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent e) {
-                        AnimationUtils.scaleButtonHover(button);
-                    }
-                });
+                e -> AnimationUtils.scaleButtonHover(button));
 
         button.addEventHandler(MouseEvent.MOUSE_EXITED,
-                new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent e) {
-                        AnimationUtils.scaleButtonHoverExit(button);
-                    }
-                });
+                e -> AnimationUtils.scaleButtonHoverExit(button));
     }
 
     private boolean validateIP(){

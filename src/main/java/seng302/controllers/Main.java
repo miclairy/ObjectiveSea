@@ -11,6 +11,7 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
@@ -64,10 +65,15 @@ public class Main extends Application {
      * Initializes the client on it's own thread.
      */
     private static void setupClient() {
-        client = new Client("localhost", 2828, true);
-        Thread clientThread = new Thread(client);
-        clientThread.setName("Client");
-        clientThread.start();
+        try {
+            client = new Client("localhost", 2828, true);
+            Thread clientThread = new Thread(client);
+            clientThread.setName("Client");
+            clientThread.start();
+        } catch (Client.NoConnectionToServerException e) {
+            showServerError();
+        }
+
     }
 
     /**
@@ -137,11 +143,31 @@ public class Main extends Application {
         setupClient();
     }
 
-    public void startClient(String ip, int port, boolean isParticipant){
-        client = new Client(ip, port, isParticipant);
+    /**
+     * shows a popup informing user that connection to the server failed
+     */
+    private static void showServerError(){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Cannot Connect to Server");
+        alert.setHeaderText("Cannot Connect to Server");
+        alert.setContentText("This server may not be running.\n" +
+                "Please ensure that the IP and Port numbers \n" +
+                "you have entered are correct.");
+
+        alert.showAndWait();
+    }
+
+    public boolean startClient(String ip, int port, boolean isParticipant){
+        try {
+            client = new Client(ip, port, isParticipant);
+        } catch (Client.NoConnectionToServerException e) {
+            showServerError();
+            return false;
+        }
         Thread clientThread = new Thread(client);
         clientThread.setName("Client");
         clientThread.start();
+        return true;
     }
 
 
