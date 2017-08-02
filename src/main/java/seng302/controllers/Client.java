@@ -38,8 +38,14 @@ public class Client implements Runnable, Observer {
         this.packetBuilder = new ClientPacketBuilder();
         this.isParticipant = isParticipant;
         setUpDataStreamReader();
-
         System.out.println("Client: Waiting for connection to Server");
+        manageWaitingConnection();
+        System.out.println("Client: Connected to Server");
+        connected = true;
+        this.sender = new ClientSender(dataStreamReader.getClientSocket());
+    }
+
+    private void manageWaitingConnection() throws NoConnectionToServerException {
         while(dataStreamReader.getClientSocket() == null) {
             if(connectionAttempts < MAX_CONNECTION_ATTEMPTS){
                 try {
@@ -51,11 +57,7 @@ public class Client implements Runnable, Observer {
             }else{
                 throw new NoConnectionToServerException("Maximum connection attempts exceeded while trying to connect to server. Port or IP may not be valid.");
             }
-
         }
-        System.out.println("Client: Connected to Server");
-        connected = true;
-        this.sender = new ClientSender(dataStreamReader.getClientSocket());
     }
 
     public class NoConnectionToServerException extends Exception {

@@ -22,7 +22,9 @@ import seng302.models.Course;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 
+import javax.naming.Context;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -119,9 +121,10 @@ public class Controller implements Initializable, Observer {
 
     public void setApp(boolean host){
         this.isHost = host;
+
         if(isHost){
             try {
-                startersOverlayTitle.setText("IP: " + Inet4Address.getLocalHost().getHostAddress());
+                startersOverlayTitle.setText("IP: " + InetAddress.getLocalHost().getHostAddress());
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             }

@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import seng302.utilities.AnimationUtils;
+import seng302.utilities.Config;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -104,6 +105,9 @@ public class MainMenuController implements Initializable{
             }
             Thread.sleep(200);
             main.loadRaceView(true);
+            txtPortNumber.setStyle("-fx-text-inner-color: 2a2a2a;");
+        }else{
+            txtPortNumber.setStyle("-fx-text-inner-color: red;");
         }
     }
 
@@ -112,9 +116,7 @@ public class MainMenuController implements Initializable{
      * @throws Exception
      */
     @FXML private void joinGame() throws Exception{
-        validateIP();
-        validatePort();
-        if(validateIP() && validatePort()){
+        if(Config.IPRegExMatcher(txtIPAddress.getText()) && validatePort()){
             String ipAddress = txtIPAddress.getText();
             int portNumber = Integer.parseInt(txtPortNumber.getText());
             boolean clientStarted = main.startClient(ipAddress, portNumber, true);
@@ -122,7 +124,13 @@ public class MainMenuController implements Initializable{
                 Thread.sleep(200);
                 main.loadRaceView(false);
             }
-
+        }else{
+            if(!Config.IPRegExMatcher(txtIPAddress.getText())){
+                txtIPAddress.setStyle("-fx-text-inner-color: red;");
+            }
+            if(!validatePort()){
+                txtPortNumber.setStyle("-fx-text-inner-color: red;");
+            }
         }
     }
 
@@ -131,15 +139,20 @@ public class MainMenuController implements Initializable{
      * @throws Exception
      */
     @FXML private void spectateGame() throws Exception{
-        validateIP();
-        validatePort();
-        if(validateIP() && validatePort()){
+        if(Config.IPRegExMatcher(txtIPAddress.getText()) && validatePort()){
             String ipAddress = txtIPAddress.getText();
             int portNumber = Integer.parseInt(txtPortNumber.getText());
             boolean clientStarted = main.startClient(ipAddress, portNumber, false);
             if(clientStarted){
                 Thread.sleep(200);
                 main.loadRaceView(false);
+            }
+        }else{
+            if(Config.IPRegExMatcher(txtIPAddress.getText())){
+                txtIPAddress.setStyle("-fx-text-inner-color: red;");
+            }
+            if(validatePort()){
+                txtPortNumber.setStyle("-fx-text-inner-color: red;");
             }
         }
     }
@@ -193,23 +206,6 @@ public class MainMenuController implements Initializable{
     }
 
     /**
-     * checks to determine whether the IP is a valid regex. Colors the IP accordingly.
-     * @return whether the Ip is valid or not
-     */
-    private boolean validateIP(){
-        String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
-        Pattern pattern = Pattern.compile(IPADDRESS_PATTERN);
-        Matcher matcher = pattern.matcher(txtIPAddress.getText());
-        if (matcher.find()) {
-            txtIPAddress.setStyle("-fx-text-inner-color: #2a2a2a;");
-            return true;
-        } else{
-            txtIPAddress.setStyle("-fx-text-inner-color: red;");
-            return false;
-        }
-    }
-
-    /**
      * checks to determine whether the port number is a valid regex. Colors the port number accordingly.
      * @return whether the port is valid or not
      */
@@ -222,7 +218,6 @@ public class MainMenuController implements Initializable{
             }
             return false;
         } catch (NumberFormatException e) {
-            txtPortNumber.setStyle("-fx-text-inner-color: red;");
             return false;
         }
     }
