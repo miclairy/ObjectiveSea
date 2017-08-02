@@ -35,14 +35,17 @@ public class MainMenuController implements Initializable{
     @FXML GridPane liveGameGrid;
     @FXML GridPane btnGrid;
     @FXML GridPane practiceGrid;
+    @FXML GridPane courseGrid;
     @FXML TextField txtIPAddress;
     @FXML TextField txtPortNumber;
     @FXML Label lblIP;
     @FXML Label lblPort;
-    @FXML ImageView courseImage1;
-    @FXML ImageView courseImage2;
-    @FXML ImageView courseImage3;
-    @FXML ImageView courseImage4;
+    @FXML ImageView AC35;
+    @FXML ImageView LakeTekapo;
+    @FXML ImageView LakeTaupo;
+    @FXML ImageView AC33;
+
+    private String selectedCourse = "AC35-course.xml"; //default to the AC35
 
 
     DropShadow ds = new DropShadow( 20, Color.AQUA );
@@ -89,6 +92,12 @@ public class MainMenuController implements Initializable{
         AnimationUtils.slideInTransition(btnGrid);
     }
 
+    @FXML private void backToLiveGame(){
+        liveGameGrid.setVisible(true);
+        AnimationUtils.slideOutTransition(courseGrid);
+        AnimationUtils.slideInTransition(liveGameGrid);
+    }
+
     @FXML private void loadOfflinePlay() throws Exception{
         main.startPrivateRace();
         while(!Client.isConnected()){
@@ -97,12 +106,18 @@ public class MainMenuController implements Initializable{
         main.loadRaceView(true);
     }
 
-    @FXML private void hostGame() throws Exception{
+    @FXML private void startHostGame() throws Exception{
         main.startPrivateRace();
         while(!Client.isConnected()){
         }
         Thread.sleep(200);
         main.loadRaceView(true);
+    }
+
+    @FXML private void hostGame(){
+        courseGrid.setVisible(true);
+        AnimationUtils.slideOutTransition(liveGameGrid);
+        AnimationUtils.slideInTransition(courseGrid);
     }
 
     @FXML private void joinGame() throws Exception{
@@ -145,7 +160,10 @@ public class MainMenuController implements Initializable{
     }
 
     private void setImageAnimations(){
-        addImageListeners(courseImage1);
+        addImageListeners(AC35);
+        addImageListeners(LakeTekapo);
+        addImageListeners(LakeTaupo);
+        addImageListeners(AC33);
     }
 
     private void setLabelPromptAnimations(){
@@ -197,6 +215,8 @@ public class MainMenuController implements Initializable{
             if ( newValue )
             {
                 imageView.setEffect( ds );
+                selectedCourse = imageView.getId() + "-course.xml";
+                System.out.println(selectedCourse);
             }
             else
             {
