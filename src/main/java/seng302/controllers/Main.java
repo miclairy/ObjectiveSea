@@ -57,7 +57,22 @@ public class Main extends Application {
         userInputController.addObserver(client);
     }
 
-    public static void main( String[] args ) {launch(args); }
+    public static void main( String[] args ) {
+        if (args.length >= 1) {
+            if (args[0].equals("-s")){
+                try {
+                    Config.initializeConfig();
+                    setupServer();
+                    System.out.println("Headless server started.");
+                } catch (IOException e) {
+                    System.out.println("Failed to start headless server.");
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            launch(args);
+        }
+    }
 
     /**
      * Initializes the client on it's own thread.
@@ -73,14 +88,7 @@ public class Main extends Application {
      * Creates a Server object, puts it in it's own thread and starts the thread
      */
     private static void setupServer() throws IOException {
-        RaceUpdater runner = new RaceUpdater();
-        runner.setScaleFactor(Config.MOCK_SPEED_SCALE);
-        Thread runnerThread = new Thread(runner);
-        runnerThread.setName("Race Updater");
-        runnerThread.start();
-        Server server;
-        server = new Server(2828, runner);
-        server.setScaleFactor(Config.MOCK_SPEED_SCALE);
+        Server server = new Server(2828, Config.MOCK_SPEED_SCALE);
         Thread serverThread = new Thread(server);
         serverThread.setName("Server");
         serverThread.start();

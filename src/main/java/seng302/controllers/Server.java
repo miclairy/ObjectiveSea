@@ -28,11 +28,17 @@ public class Server implements Runnable, Observer {
     private Map<Boat, Integer> lastMarkRoundingSent = new HashMap<>();
 
     private RaceUpdater raceUpdater;
+    private Thread raceUpdaterThread;
     private ConnectionManager connectionManager;
     private ServerPacketBuilder packetBuilder;
     private CollisionManager collisionManager;
 
-    public Server(int port, RaceUpdater raceUpdater) throws IOException {
+    public Server(int port, double scaleFactor) throws IOException {
+        RaceUpdater raceUpdater = new RaceUpdater();
+        raceUpdater.setScaleFactor(scaleFactor);
+        raceUpdaterThread = new Thread(raceUpdater);
+        raceUpdaterThread.setName("Race Updater");
+        this.scaleFactor = scaleFactor;
         this.raceUpdater = raceUpdater;
         this.collisionManager = raceUpdater.getCollisionManager();
         this.packetBuilder = new ServerPacketBuilder();
@@ -66,7 +72,9 @@ public class Server implements Runnable, Observer {
             managerThread.setName("Connection Manager");
             managerThread.start();
             while (!raceUpdater.raceHasEnded()) {
-                sendRaceUpdates();
+                if (!raceUpdater.getRace().getCompetitors().isEmpty()) {
+                    sendRaceUpdates();
+                }
                 try {
                     Thread.sleep((long)(SECONDS_PER_UPDATE * 1000 / scaleFactor));
                 } catch (InterruptedException e) {
@@ -181,10 +189,6 @@ public class Server implements Runnable, Observer {
         connectionManager.setXmlMessage(type, packet);
     }
 
-    public void setScaleFactor(double scaleFactor) {
-        this.scaleFactor = scaleFactor;
-    }
-
     /**
      * Starts a new server listener on new thread for which listens to a client
      * @param socket the socket for the client
@@ -203,6 +207,9 @@ public class Server implements Runnable, Observer {
      * @param serverListener the listener for the client
      */
     private void addClientToRace(ServerListener serverListener){
+        if (!raceUpdaterThread.isAlive()) {
+            raceUpdaterThread.start();
+        }
         int newId = raceUpdater.addCompetitor();
         Boat boat = raceUpdater.getRace().getBoatById(newId);
         boatSequenceNumbers.put(boat, newId);
