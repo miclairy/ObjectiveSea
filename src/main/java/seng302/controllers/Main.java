@@ -64,9 +64,9 @@ public class Main extends Application {
     /**
      * Initializes the client on it's own thread.
      */
-    private static void setupClient() {
+    private static void setupClient(int port) {
         try {
-            client = new Client("localhost", 2828, true);
+            client = new Client("localhost", port, true);
             Thread clientThread = new Thread(client);
             clientThread.setName("Client");
             clientThread.start();
@@ -79,14 +79,14 @@ public class Main extends Application {
     /**
      * Creates a Server object, puts it in it's own thread and starts the thread
      */
-    private static void setupServer() throws IOException {
+    private static void setupServer(int port) throws IOException {
         RaceUpdater runner = new RaceUpdater();
         runner.setScaleFactor(Config.MOCK_SPEED_SCALE);
         Thread runnerThread = new Thread(runner);
         runnerThread.setName("Race Updater");
         runnerThread.start();
         Server server;
-        server = new Server(2828, runner);
+        server = new Server(port, runner);
         server.setScaleFactor(Config.MOCK_SPEED_SCALE);
         Thread serverThread = new Thread(server);
         serverThread.setName("Server");
@@ -137,10 +137,10 @@ public class Main extends Application {
         return (Initializable) loader.getController();
     }
 
-    public void startPrivateRace() throws Exception{
+    public void startPrivateRace(int port) throws Exception{
         Config.initializeConfig();
-        setupServer();
-        setupClient();
+        setupServer(port);
+        setupClient(port);
     }
 
     /**

@@ -76,7 +76,7 @@ public class MainMenuController implements Initializable{
     }
 
     @FXML private void loadOfflinePlay() throws Exception{
-        main.startPrivateRace();
+        main.startPrivateRace(2828);
         while(!Client.isConnected()){
         }
         Thread.sleep(200);
@@ -84,11 +84,14 @@ public class MainMenuController implements Initializable{
     }
 
     @FXML private void hostGame() throws Exception{
-        main.startPrivateRace();
-        while(!Client.isConnected()){
+        validatePort();
+        if(validatePort()){
+            main.startPrivateRace(Integer.parseInt(txtPortNumber.getText()));
+            while(!Client.isConnected()){
+            }
+            Thread.sleep(200);
+            main.loadRaceView(true);
         }
-        Thread.sleep(200);
-        main.loadRaceView(true);
     }
 
     @FXML private void joinGame() throws Exception{
