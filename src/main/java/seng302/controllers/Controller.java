@@ -22,7 +22,9 @@ import seng302.models.Course;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 
+import java.net.Inet4Address;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.*;
 
 import static javafx.collections.FXCollections.observableArrayList;
@@ -76,6 +78,7 @@ public class Controller implements Initializable, Observer {
     public boolean raceBegun;
     private boolean raceStatusChanged = true;
     private Race race;
+    private boolean isHost;
 
 
     private final double FOCUSED_ZOOMSLIDER_OPACITY = 0.8;
@@ -92,7 +95,6 @@ public class Controller implements Initializable, Observer {
         race = Client.getRace();
         race.addObserver(this);
         Course course = race.getCourse();
-        startersOverlayTitle.setText(race.getRegattaName());
         course.initCourseLatLon();
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
         selectionController = new SelectionController(root, scoreBoardController, this);
@@ -113,6 +115,20 @@ public class Controller implements Initializable, Observer {
         raceViewController.start();
         initDisplayDrag();
         initZoom();
+    }
+
+    public void setApp(boolean host){
+        this.isHost = host;
+        if(isHost){
+            try {
+                startersOverlayTitle.setText("IP: " + Inet4Address.getLocalHost().getHostAddress());
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+        }else{
+            startersOverlayTitle.setText(race.getRegattaName());
+        }
+
     }
 
     /**

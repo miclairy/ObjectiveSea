@@ -6,8 +6,13 @@ package seng302.controllers;
 import javafx.application.Application;
 import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.fxml.JavaFXBuilderFactory;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
@@ -21,40 +26,36 @@ import seng302.utilities.Config;
 import seng302.models.Race;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class Main extends Application {
 
     private static Scene scene;
     private static Client client;
+    private static Stage primaryStage;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Config.initializeConfig();
-        setupServer();
-        setupClient();
-
-        Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
-        primaryStage.setTitle("Race Vision");
-        primaryStage.getIcons().add(new Image("graphics/icon.png"));
-        scene = new Scene(parent);
-        primaryStage.setScene(scene);
+        this.primaryStage = primaryStage;
+        this.primaryStage.setTitle("Objective Sea");
+        this.primaryStage.getIcons().add(new Image("graphics/icon.png"));
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-        primaryStage.setHeight(primaryScreenBounds.getHeight());
-        primaryStage.setWidth(primaryScreenBounds.getWidth());
+        this.primaryStage.setHeight(primaryScreenBounds.getHeight());
+        this.primaryStage.setWidth(primaryScreenBounds.getWidth());
+        loadMainMenu();
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
-        primaryStage.show();
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+        this.primaryStage.show();
+        this.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent e) {
                 Platform.exit();
                 System.exit(0);
             }
         });
-
-        UserInputController userInputController = new UserInputController(scene, Client.getRace());
-        client.setUserInputController(userInputController);
-        userInputController.addObserver(client);
     }
 
     public static void main( String[] args ) {launch(args); }
@@ -63,7 +64,7 @@ public class Main extends Application {
      * Initializes the client on it's own thread.
      */
     private static void setupClient() {
-        client = new Client();
+        client = new Client("localhost", 2828, true);
         Thread clientThread = new Thread(client);
         clientThread.setName("Client");
         clientThread.start();
@@ -88,6 +89,65 @@ public class Main extends Application {
 
     public static Client getClient() {
         return client;
+    }
+
+    private void loadMainMenu() {
+        try {
+            MainMenuController mainMenu = (MainMenuController) replaceSceneContent("main_menu.fxml");
+            mainMenu.setApp(this);
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void loadRaceView(boolean isHost) {
+        try {
+            Controller race = (Controller) replaceSceneContent("main_window.fxml");
+            race.setApp(isHost);
+            UserInputController userInputController = new UserInputController(scene, Client.getRace());
+            client.setUserInputController(userInputController);
+            userInputController.addObserver(client);
+        } catch (Exception ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    /**
+     * takes an fxml file and replaces the current screen with it
+     * @param fxml an FXML file
+     * @return a display
+     * @throws Exception if can't find FXML
+     */
+    public Initializable replaceSceneContent(String fxml) throws Exception {
+        FXMLLoader loader = new FXMLLoader();
+        URL fxmlLocation = getClass().getClassLoader().getResource(fxml);
+        loader.setLocation(fxmlLocation);
+        Parent root = loader.load();
+        scene = new Scene(root);
+        setScene(scene);
+        primaryStage.setResizable(false);
+        primaryStage.setScene(scene);
+
+        return (Initializable) loader.getController();
+    }
+
+    public void startPrivateRace() throws Exception{
+        Config.initializeConfig();
+        setupServer();
+        setupClient();
+    }
+
+    public void startClient(String ip, int port, boolean isParticipant){
+        client = new Client(ip, port, isParticipant);
+        Thread clientThread = new Thread(client);
+        clientThread.setName("Client");
+        clientThread.start();
+    }
+
+
+
+    private void setScene(Scene newScene){
+        scene = newScene;
     }
 }
 
