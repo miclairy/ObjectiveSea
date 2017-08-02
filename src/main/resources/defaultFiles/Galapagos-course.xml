@@ -43,17 +43,12 @@
         <Corner SeqID="7" CompoundMarkID="7" Rounding="PS" ZoneSize="3" />
     </CompoundMarkSequence>
     <CourseLimit>
-        <Limit SeqID="1" Lat="-0.425015" Lon="-90.697063"/>
-        <Limit SeqID="2" Lat="-0.410231" Lon="-90.693909" />
-        <Limit SeqID="3" Lat="-0.396627" Lon="-90.702653" />
-        <Limit SeqID="4" Lat="-0.399650" Lon="-90.714949" />
-        <Limit SeqID="5" Lat="-0.411130" Lon="-90.722781" />
-        <Limit SeqID="6" Lat="-0.421172" Lon="-90.722320" />
-
-        <Limit SeqID="7" Lat="-0.421172, -90.722320" Lon="-90.722320" />
-        <Limit SeqID="7" Lat="-0.385002, -90.671118" Lon="-90.722320" />
-        <Limit SeqID="7" Lat="-0.385002, -90.671118" Lon="-90.722320" />
-        <Limit SeqID="7" Lat="-0.385002, -90.671118" Lon="-90.722320" />
-        <Limit SeqID="7" Lat="-0.439342, -90.667116" Lon="-90.722320" />
+        <Limit SeqID="1" Lat="-0.435678" Lon="-90.682842" />
+        <Limit SeqID="2" Lat="-0.388644" Lon="-90.683529" />
+        <Limit SeqID="3" Lat="-0.386927" Lon="-90.736401" />
+        <Limit SeqID="4" Lat="-0.438767" Lon="-90.746014" />
+        <Limit SeqID="5" Lat="-0.445977" Lon="-90.719235" />
+        <Limit SeqID="6" Lat="-0.396883" Lon="-90.726101" />
+        <Limit SeqID="7" Lat="-0.394651" Lon="-90.698292" />
     </CourseLimit>
 </Race>
