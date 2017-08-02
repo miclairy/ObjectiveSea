@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import seng302.utilities.AnimationUtils;
@@ -27,6 +28,8 @@ public class MainMenuController implements Initializable{
     @FXML Button btnSinglePlay;
     @FXML Button btnPractiseStart;
     @FXML Button btnBackPrac;
+    @FXML Button btnCourseStart;
+    @FXML Button btnBackHost;
     @FXML GridPane liveGameGrid;
     @FXML GridPane btnGrid;
     @FXML GridPane practiceGrid;
@@ -34,6 +37,11 @@ public class MainMenuController implements Initializable{
     @FXML TextField txtPortNumber;
     @FXML Label lblIP;
     @FXML Label lblPort;
+    @FXML ImageView courseImage1;
+    @FXML ImageView courseImage2;
+    @FXML ImageView courseImage3;
+    @FXML ImageView courseImage4;
+
 
     private Main main;
 
@@ -126,6 +134,8 @@ public class MainMenuController implements Initializable{
         addButtonListeners(btnSinglePlay);
         addButtonListeners(btnPractiseStart);
         addButtonListeners(btnBackPrac);
+        addButtonListeners(btnCourseStart);
+        addButtonListeners(btnBackHost);
     }
 
     private void setLabelPromptAnimations(){
@@ -191,4 +201,5 @@ public class MainMenuController implements Initializable{
             return false;
         }
     }
+
 }
