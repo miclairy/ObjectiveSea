@@ -99,7 +99,7 @@ public class MainMenuController implements Initializable{
     }
 
     @FXML private void loadOfflinePlay() throws Exception{
-        main.startPrivateRace();
+        main.startPrivateRace(selectedCourse);
         while(!Client.isConnected()){
         }
         Thread.sleep(200);
@@ -107,7 +107,7 @@ public class MainMenuController implements Initializable{
     }
 
     @FXML private void startHostGame() throws Exception{
-        main.startPrivateRace();
+        main.startPrivateRace(selectedCourse);
         while(!Client.isConnected()){
         }
         Thread.sleep(200);
@@ -216,7 +216,6 @@ public class MainMenuController implements Initializable{
             {
                 imageView.setEffect( ds );
                 selectedCourse = imageView.getId() + "-course.xml";
-                System.out.println(selectedCourse);
             }
             else
             {

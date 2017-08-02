@@ -33,12 +33,13 @@ public class Server implements Runnable, Observer {
     private ServerPacketBuilder packetBuilder;
     private CollisionManager collisionManager;
 
-    public Server(int port, RaceUpdater raceUpdater) throws IOException {
+    public Server(int port, RaceUpdater raceUpdater, String course) throws IOException {
         this.raceUpdater = raceUpdater;
         this.collisionManager = raceUpdater.getCollisionManager();
         this.packetBuilder = new ServerPacketBuilder();
         this.connectionManager = new ConnectionManager(port);
         this.connectionManager.addObserver(this);
+        this.courseXML = course;
     }
 
     /**
@@ -178,7 +179,7 @@ public class Server implements Runnable, Observer {
     private void sendXmlMessage(AC35StreamXMLMessage type, String fileName){
         int sequenceNo = xmlSequenceNumber.get(type) + 1;
         xmlSequenceNumber.put(type, sequenceNo);
-        byte[] packet = packetBuilder.buildXmlMessage(type, fileName, sequenceNo, raceUpdater.getRace());
+        byte[] packet = packetBuilder.buildXmlMessage(type, fileName, sequenceNo, raceUpdater.getRace(), courseXML);
         connectionManager.setXmlMessage(type, packet);
     }
 

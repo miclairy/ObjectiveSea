@@ -29,7 +29,7 @@ import java.util.*;
 public class RaceVisionXMLParser {
 
     private static final String DEFAULT_FILE_PATH = "/outputFiles/";
-    public static final String COURSE_FILE = "AC35-course.xml";
+    public static String COURSE_FILE = "AC35-course.xml";
     private static final String BOAT_FILE = "Boat.xml";
     private static final String REGATTA_FILE = "Regatta.xml";
 
@@ -590,5 +590,9 @@ public class RaceVisionXMLParser {
             e.printStackTrace();
         }
         return competitorIds;
+    }
+
+    public static void setCourseFile(String courseFile) {
+        COURSE_FILE = courseFile;
     }
 }

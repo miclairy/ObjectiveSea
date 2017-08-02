@@ -73,14 +73,14 @@ public class Main extends Application {
     /**
      * Creates a Server object, puts it in it's own thread and starts the thread
      */
-    private static void setupServer() throws IOException {
-        RaceUpdater runner = new RaceUpdater();
+    private static void setupServer(String course) throws IOException {
+        RaceUpdater runner = new RaceUpdater(course);
         runner.setScaleFactor(Config.MOCK_SPEED_SCALE);
         Thread runnerThread = new Thread(runner);
         runnerThread.setName("Race Updater");
         runnerThread.start();
         Server server;
-        server = new Server(2828, runner);
+        server = new Server(2828, runner, course);
         server.setScaleFactor(Config.MOCK_SPEED_SCALE);
         Thread serverThread = new Thread(server);
         serverThread.setName("Server");
@@ -131,9 +131,9 @@ public class Main extends Application {
         return (Initializable) loader.getController();
     }
 
-    public void startPrivateRace() throws Exception{
+    public void startPrivateRace(String course) throws Exception{
         Config.initializeConfig();
-        setupServer();
+        setupServer(course);
         setupClient();
     }
 
