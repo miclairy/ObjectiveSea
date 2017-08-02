@@ -7,10 +7,7 @@ import javafx.animation.SequentialTransition;
 import javafx.scene.Node;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
-import seng302.models.Boat;
-import seng302.models.CanvasCoordinate;
-import seng302.models.Coordinate;
-import seng302.models.Mark;
+import seng302.models.*;
 
 import java.io.File;
 import java.time.Instant;
@@ -213,6 +210,25 @@ public class DisplayUtils {
         Double halfLat = (first.getLat() + second.getLat()) / 2;
         Double halfLon = (first.getLon() + second.getLon()) / 2;
         return new Coordinate(halfLat, halfLon);
+    }
+
+
+    /**
+     *
+     * @param compoundMark
+     * @return
+     */
+    public static Coordinate midPointFromCompoundMark(CompoundMark compoundMark) {
+        Coordinate midPoint;
+        if(compoundMark.hasTwoMarks()) {
+            Coordinate firstCoordinate = compoundMark.getMark1().getPosition();
+            Coordinate secondCoordinate = compoundMark.getMark2().getPosition();
+            midPoint = midPointFromTwoCoords(firstCoordinate, secondCoordinate);
+        } else {
+            midPoint = compoundMark.getPosition();
+        }
+
+        return midPoint;
     }
 
 

@@ -123,8 +123,25 @@ public class RaceUpdater implements Runnable {
                     }
                     updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
                     boat.updateBoatHeading(raceSecondsPassed);
-                    if(RoundingMechanics.boatPassedThroughCompoundMark(boat, course.getStartLine(), startingPosition)){
+                    // Passing the start line
+                    if(RoundingMechanics.boatPassedThroughCompoundMark(boat, course.getStartLine(), startingPosition)
+                            && course.getStartLine().getCompoundMarkID() == boat.getLastRoundedMarkIndex()+1){
+                        boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
                         System.out.println("Passed start line");
+                        System.out.println(course.getCourseOrder().size());
+                    // Passing a mark
+                    } else if(!course.getCompoundMarkByID(boat.getLastRoundedMarkIndex()+1).hasTwoMarks() &&
+                            RoundingMechanics.boatPassedMark(boat, course.getCompoundMarkByID(boat.getLastRoundedMarkIndex()+1),
+                            DisplayUtils.midPointFromCompoundMark(course.getCompoundMarkByID(boat.getLastRoundedMarkIndex())),
+                            DisplayUtils.midPointFromCompoundMark(course.getCompoundMarkByID(boat.getLastRoundedMarkIndex()+2)))) {
+
+
+                    // Passing a gate
+                    } else if(false) {
+
+                    //Passing the finish line
+                    } else if(false) {
+
                     }
                     calculateTimeAtNextMark(boat);
                 } else {
