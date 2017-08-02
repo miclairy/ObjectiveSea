@@ -272,7 +272,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawBoat(displayBoat);
         displayBoats.add(displayBoat);
         selectionController.addBoatSelectionHandler(displayBoat);
-        initBoatPath(displayBoat);
+        //initBoatPath(displayBoat);
 
         Circle grabHandle = new Circle(5);
         grabHandle.setId("annoGrabHandle");
