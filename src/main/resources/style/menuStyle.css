@@ -77,3 +77,7 @@
     -fx-font: 18px "Helvetica Neue Normal";
     -fx-text-fill: #aaaaaa;
 }
+
+#joinProgressIndicator{
+    -fx-progress-color: white;
+}

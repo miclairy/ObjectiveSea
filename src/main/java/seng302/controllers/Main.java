@@ -169,13 +169,13 @@ public class Main extends Application {
     public boolean startClient(String ip, int port, boolean isParticipant){
         try {
             client = new Client(ip, port, isParticipant);
+            Thread clientThread = new Thread(client);
+            clientThread.setName("Client");
+            clientThread.start();
         } catch (Client.NoConnectionToServerException e) {
             showServerError();
             return false;
         }
-        Thread clientThread = new Thread(client);
-        clientThread.setName("Client");
-        clientThread.start();
         return true;
     }
 

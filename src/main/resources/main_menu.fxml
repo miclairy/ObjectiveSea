@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.*?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -12,7 +18,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/menuStyle.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.MainMenuController">
+<StackPane prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/menuStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.MainMenuController">
    <children>
       <ImageView fitHeight="1080.0" fitWidth="1920.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <image>
@@ -59,7 +65,8 @@
                   <ColumnConstraints />
                </columnConstraints>
                <rowConstraints>
-                  <RowConstraints maxHeight="328.369384765625" minHeight="10.0" prefHeight="328.369384765625" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="464.0" minHeight="10.0" prefHeight="320.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="328.369384765625" minHeight="10.0" prefHeight="200.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
                   <Button fx:id="btnHost" mnemonicParsing="false" onAction="#hostGame" text="HOST" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
@@ -82,7 +89,14 @@
                      </GridPane.margin>
                      <padding>
                         <Insets bottom="10.0" left="58.0" right="58.0" top="10.0" />
-                     </padding></Button>
+                     </padding>
+                     <graphic>
+                        <ProgressIndicator fx:id="joinProgressIndicator" nodeOrientation="LEFT_TO_RIGHT" prefHeight="0.0" prefWidth="0.0">
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                        </ProgressIndicator>
+                     </graphic></Button>
                   <Button fx:id="btnBack" mnemonicParsing="false" onAction="#backToMainMenu" text="BACK" GridPane.halignment="LEFT" GridPane.valignment="BOTTOM">
                      <GridPane.margin>
                         <Insets bottom="30.0" left="50.0" top="20.0" />

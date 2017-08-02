@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -34,6 +35,7 @@ public class MainMenuController implements Initializable{
     @FXML TextField txtPortNumber;
     @FXML Label lblIP;
     @FXML Label lblPort;
+    @FXML ProgressIndicator joinProgressIndicator;
 
     private Main main;
 
@@ -50,6 +52,17 @@ public class MainMenuController implements Initializable{
         liveGameGrid.setVisible(false);
         practiceGrid.setVisible(false);
     }
+
+    private void showJoinProgressIndicator(){
+        btnJoin.setText("");
+        joinProgressIndicator.setPrefSize(15.0,15.0);
+    }
+    private void hideJoinProgressIndicator(){
+        btnJoin.setText("JOIN");
+
+        joinProgressIndicator.setPrefSize(0.0,0.0);
+    }
+
 
     public void setApp(Main main){
         this.main = main;
@@ -112,6 +125,7 @@ public class MainMenuController implements Initializable{
      * @throws Exception
      */
     @FXML private void joinGame() throws Exception{
+        showJoinProgressIndicator();
         validateIP();
         validatePort();
         if(validateIP() && validatePort()){
@@ -122,8 +136,8 @@ public class MainMenuController implements Initializable{
                 Thread.sleep(200);
                 main.loadRaceView(false);
             }
-
         }
+        hideJoinProgressIndicator();
     }
 
     /**
