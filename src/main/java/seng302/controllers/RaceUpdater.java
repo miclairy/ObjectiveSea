@@ -350,14 +350,17 @@ public class RaceUpdater implements Runnable {
      */
     private void setStartingPosition(Boat boat){
         RaceLine startingLine = race.getCourse().getStartLine();
-        Coordinate startingEnd1 = startingLine.getMark1().getPosition();
-        Coordinate startingEnd2 = startingLine.getMark2().getPosition();
-        Double dLat = (startingEnd2.getLat() - startingEnd1.getLat()) / (MAX_BOATS_IN_RACE + 1);
-        Double dLon = (startingEnd2.getLon() - startingEnd1.getLon()) / (MAX_BOATS_IN_RACE + 1);
-        Double curLat = startingEnd1.getLat() + (dLat * race.getCompetitors().size());
-        Double curLon = startingEnd1.getLon() + (dLon * race.getCompetitors().size());
+        CompoundMark startingEnd2 = new CompoundMark(-2, "", new Mark(-2, "", startingLine.getMark1().getPosition()));
+        CompoundMark startingEnd1 = new CompoundMark(-1, "", new Mark(-1, "", startingLine.getMark2().getPosition()));
+        double heading1 = MathUtils.calculateBearingBetweenTwoPoints(startingEnd1, race.getCourse().getCourseOrder().get(1));
+        double heading2 = MathUtils.calculateBearingBetweenTwoPoints(startingEnd1, race.getCourse().getCourseOrder().get(1));
 
-        boat.setPosition(curLat, curLon);
+//        Double dLat = (startingEnd2.getLat() - startingEnd1.getLat()) / (MAX_BOATS_IN_RACE + 1);
+//        Double dLon = (startingEnd2.getLon() - startingEnd1.getLon()) / (MAX_BOATS_IN_RACE + 1);
+//        Double curLat = startingEnd1.getLat() + (dLat * race.getCompetitors().size());
+//        Double curLon = startingEnd1.getLon() + (dLon * race.getCompetitors().size());
+
+        //boat.setPosition(curLat, curLon);
     }
 
     /**
