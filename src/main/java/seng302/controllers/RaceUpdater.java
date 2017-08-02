@@ -36,6 +36,7 @@ public class RaceUpdater implements Runnable {
     private PolarTable polarTable;
     private Collection<Boat> potentialCompetitors;
     private CollisionManager collisionManager;
+    private Coordinate startingPosition;
 
     public RaceUpdater(){
         collisionManager = new CollisionManager();
@@ -122,6 +123,9 @@ public class RaceUpdater implements Runnable {
                     }
                     updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
                     boat.updateBoatHeading(raceSecondsPassed);
+                    if(RoundingMechanics.boatPassedThroughCompoundMark(boat, course.getStartLine(), startingPosition)){
+                        System.out.println("Passed start line");
+                    }
                     calculateTimeAtNextMark(boat);
                 } else {
                     long millisBeforeStart = race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs();
@@ -166,7 +170,7 @@ public class RaceUpdater implements Runnable {
         Coordinate boatPosition = boat.getCurrentPosition();
         double distanceGained = timePassed * boat.getCurrentSpeed();
         Coordinate newPos = boatPosition.coordAt(distanceGained, boatHeading);
-        boatPosition.update(newPos.getLat(), newPos.getLon());
+        boat.setPosition(new Coordinate(newPos.getLat(), newPos.getLon()));
     }
 
 
@@ -356,7 +360,8 @@ public class RaceUpdater implements Runnable {
         Double curLat = startingEnd1.getLat() + (dLat * race.getCompetitors().size());
         Double curLon = startingEnd1.getLon() + (dLon * race.getCompetitors().size());
 
-        boat.setPosition(curLat, curLon);
+        boat.setPosition(curLat, curLon-0.005);
+        startingPosition = new Coordinate(curLat, curLon-0.005);
     }
 
     /**
@@ -446,4 +451,9 @@ public class RaceUpdater implements Runnable {
     public CollisionManager getCollisionManager() {
         return collisionManager;
     }
+
+
+
+
+
 }

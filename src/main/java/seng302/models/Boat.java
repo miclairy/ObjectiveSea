@@ -35,6 +35,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private int leg;
 
     private Coordinate currentPosition;
+    private Coordinate previousPosition;
     private PolarTable polarTable;
 
     private int lastRoundedMarkIndex;
@@ -95,6 +96,7 @@ public class Boat extends Observable implements Comparable<Boat>{
      * @param lon the longitude of the boat
      */
     public void setPosition(double lat, double lon){
+        previousPosition = new Coordinate(currentPosition.getLat(), currentPosition.getLon());
         currentPosition.setLat(lat);
         currentPosition.setLon(lon);
     }
@@ -104,6 +106,7 @@ public class Boat extends Observable implements Comparable<Boat>{
      * @param coord a Coordinate object to copy position from
      */
     public void setPosition(Coordinate coord) {
+        previousPosition = new Coordinate(currentPosition.getLat(), currentPosition.getLon());
         currentPosition.setLat(coord.getLat());
         currentPosition.setLon(coord.getLon());
     }
@@ -114,6 +117,10 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public Coordinate getCurrentPosition() {
         return currentPosition;
+    }
+
+    public Coordinate getPreviousPosition() {
+        return previousPosition;
     }
 
     /**
