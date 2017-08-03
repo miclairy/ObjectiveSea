@@ -1,9 +1,9 @@
 package seng302.controllers;
 
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
@@ -11,11 +11,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import seng302.utilities.AnimationUtils;
+import seng302.utilities.ConnectionUtils;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class MainMenuController implements Initializable{
     @FXML Button btnLiveGame;
@@ -38,6 +37,7 @@ public class MainMenuController implements Initializable{
     @FXML ProgressIndicator joinProgressIndicator;
 
     private Main main;
+    private final int DEFAULT_PORT = 2828;
 
     /**
      * Initilizer for the Main Menu Controller. Runs upon creation
@@ -94,13 +94,11 @@ public class MainMenuController implements Initializable{
     }
 
     /**
-     * Allows user to host a game at the port 2828 and current public IP
+     * Allows user to host a game at the DEFAULT_PORT and current public IP
      * @throws Exception
      */
     @FXML private void loadOfflinePlay() throws Exception{
-        main.startPrivateRace(2828);
-        while(!Client.isConnected()){
-        }
+        main.startHostedRace(DEFAULT_PORT);
         Thread.sleep(200);
         main.loadRaceView(true);
     }
@@ -110,13 +108,19 @@ public class MainMenuController implements Initializable{
      * @throws Exception
      */
     @FXML private void hostGame() throws Exception{
-        validatePort();
         if(validatePort()){
-            main.startPrivateRace(Integer.parseInt(txtPortNumber.getText()));
-            while(!Client.isConnected()){
-            }
+            main.startHostedRace(Integer.parseInt(txtPortNumber.getText()));
             Thread.sleep(200);
             main.loadRaceView(true);
+            txtPortNumber.setStyle("-fx-text-inner-color: 2a2a2a;");
+        }else{
+            txtPortNumber.setStyle("-fx-text-inner-color: red;");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Port Number ");
+            alert.setHeaderText("Invalid port number");
+            alert.setContentText("Please enter a valid port number\n");
+
+            alert.showAndWait();
         }
     }
 
@@ -125,17 +129,26 @@ public class MainMenuController implements Initializable{
      * @throws Exception
      */
     @FXML private void joinGame() throws Exception{
-        showJoinProgressIndicator();
-        validateIP();
-        validatePort();
-        if(validateIP() && validatePort()){
+        if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && validatePort()){
             String ipAddress = txtIPAddress.getText();
             int portNumber = Integer.parseInt(txtPortNumber.getText());
-            boolean clientStarted = main.startClient(ipAddress, portNumber, true);
-            if(clientStarted){
-                Thread.sleep(200);
-                main.loadRaceView(false);
+            main.startClient(ipAddress, portNumber, true);
+            Thread.sleep(200);
+            main.loadRaceView(false);
+        }else{
+            if(!ConnectionUtils.IPRegExMatcher(txtIPAddress.getText())){
+                txtIPAddress.setStyle("-fx-text-inner-color: red;");
             }
+            if(!validatePort()){
+                txtPortNumber.setStyle("-fx-text-inner-color: red;");
+            }
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Port & IP ");
+            alert.setHeaderText("Invalid Port or IP Address");
+            alert.setContentText("The IP Address or Port Number you entered\n" +
+                    "is invalid\n");
+
+            alert.showAndWait();
         }
         hideJoinProgressIndicator();
     }
@@ -145,16 +158,26 @@ public class MainMenuController implements Initializable{
      * @throws Exception
      */
     @FXML private void spectateGame() throws Exception{
-        validateIP();
-        validatePort();
-        if(validateIP() && validatePort()){
+        if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && validatePort()){
             String ipAddress = txtIPAddress.getText();
             int portNumber = Integer.parseInt(txtPortNumber.getText());
-            boolean clientStarted = main.startClient(ipAddress, portNumber, false);
-            if(clientStarted){
-                Thread.sleep(200);
-                main.loadRaceView(false);
+            main.startClient(ipAddress, portNumber, false);
+            Thread.sleep(200);
+            main.loadRaceView(false);
+        }else{
+            if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText())){
+                txtIPAddress.setStyle("-fx-text-inner-color: red;");
             }
+            if(validatePort()){
+                txtPortNumber.setStyle("-fx-text-inner-color: red;");
+            }
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Port & IP ");
+            alert.setHeaderText("Invalid Port or IP Address");
+            alert.setContentText("The IP Address or Port Number you entered\n" +
+                    "is invalid\n");
+
+            alert.showAndWait();
         }
     }
 
@@ -207,23 +230,6 @@ public class MainMenuController implements Initializable{
     }
 
     /**
-     * checks to determine whether the IP is a valid regex. Colors the IP accordingly.
-     * @return whether the Ip is valid or not
-     */
-    private boolean validateIP(){
-        String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
-        Pattern pattern = Pattern.compile(IPADDRESS_PATTERN);
-        Matcher matcher = pattern.matcher(txtIPAddress.getText());
-        if (matcher.find()) {
-            txtIPAddress.setStyle("-fx-text-inner-color: #2a2a2a;");
-            return true;
-        } else{
-            txtIPAddress.setStyle("-fx-text-inner-color: red;");
-            return false;
-        }
-    }
-
-    /**
      * checks to determine whether the port number is a valid regex. Colors the port number accordingly.
      * @return whether the port is valid or not
      */
@@ -231,12 +237,11 @@ public class MainMenuController implements Initializable{
         try {
             int port = Integer.parseInt(txtPortNumber.getText());
             txtPortNumber.setStyle("-fx-text-inner-color: #2a2a2a;");
-            if(port > 1024 && port < 65536){
+            if(ConnectionUtils.validatePort(port)){
                 return true;
             }
             return false;
         } catch (NumberFormatException e) {
-            txtPortNumber.setStyle("-fx-text-inner-color: red;");
             return false;
         }
     }

@@ -141,7 +141,7 @@
                      <padding>
                         <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                      </padding></Button>
-                  <Button fx:id="btnPractiseStart" mnemonicParsing="false" text="PRACTICE START" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                  <Button fx:id="btnPractiseStart" mnemonicParsing="false" text="PRACTISE START" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                      <padding>
                         <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                      </padding>
