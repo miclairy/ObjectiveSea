@@ -16,6 +16,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import seng302.data.BoatAction;
 import javafx.scene.shape.Circle;
+import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -123,7 +124,7 @@ public class Controller implements Initializable, Observer {
 
     /**
      * gets users public ip address from AWS ping servers.
-     * @return the IP address or 'Not Found'
+     * @return the IP address or regatta name if not found
      */
     private String getPublicIp(){
         try {
@@ -131,9 +132,13 @@ public class Controller implements Initializable, Observer {
             BufferedReader in = new BufferedReader(new InputStreamReader(
                     ipURL.openStream()));
             String ip = in.readLine(); //you get the IP as a String
-            return ip;
+            if(ConnectionUtils.IPRegExMatcher(ip)){
+                return ("IP: " + ip);
+            }else{
+                return race.getRegattaName();
+            }
         } catch (Exception e) {
-            return "Not Found";
+            return race.getRegattaName();
         }
 
 
@@ -144,7 +149,7 @@ public class Controller implements Initializable, Observer {
         this.isHost = host;
 
         if(isHost){
-            startersOverlayTitle.setText("IP: " + getPublicIp());
+            startersOverlayTitle.setText(getPublicIp());
         }else{
             startersOverlayTitle.setText(race.getRegattaName());
         }
