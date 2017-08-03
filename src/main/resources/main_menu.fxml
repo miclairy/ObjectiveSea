@@ -104,18 +104,18 @@
                         <Insets bottom="20.0" left="50.0" top="30.0" />
                      </GridPane.margin>
                   </TextField>
-                  <TextField fx:id="txtPortNumber" GridPane.valignment="BOTTOM">
+                  <TextField fx:id="txtPortNumber" GridPane.valignment="TOP">
                      <GridPane.margin>
-                        <Insets bottom="100.0" left="50.0" />
+                        <Insets left="50.0" top="110.0" />
                      </GridPane.margin></TextField>
                   <Label fx:id="lblIP" mouseTransparent="true" text="IP Address" GridPane.valignment="TOP">
                      <GridPane.margin>
                         <Insets bottom="20.0" left="62.0" top="36.0" />
                      </GridPane.margin>
                   </Label>
-                  <Label fx:id="lblPort" mouseTransparent="true" text="Port Number" GridPane.valignment="BOTTOM">
+                  <Label fx:id="lblPort" mouseTransparent="true" text="Port Number" GridPane.valignment="TOP">
                      <GridPane.margin>
-                        <Insets bottom="109.0" left="62.0" />
+                        <Insets left="62.0" top="116.0" />
                      </GridPane.margin>
                   </Label>
                </children>
