@@ -132,9 +132,11 @@ public class MainMenuController implements Initializable{
         if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && validatePort()){
             String ipAddress = txtIPAddress.getText();
             int portNumber = Integer.parseInt(txtPortNumber.getText());
-            main.startClient(ipAddress, portNumber, true);
-            Thread.sleep(200);
-            main.loadRaceView(false);
+            boolean clientStarted = main.startClient(ipAddress, portNumber, true);
+            if(clientStarted){
+                Thread.sleep(200);
+                main.loadRaceView(false);
+            }
         }else{
             if(!ConnectionUtils.IPRegExMatcher(txtIPAddress.getText())){
                 txtIPAddress.setStyle("-fx-text-inner-color: red;");
@@ -161,9 +163,11 @@ public class MainMenuController implements Initializable{
         if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && validatePort()){
             String ipAddress = txtIPAddress.getText();
             int portNumber = Integer.parseInt(txtPortNumber.getText());
-            main.startClient(ipAddress, portNumber, false);
-            Thread.sleep(200);
-            main.loadRaceView(false);
+            boolean clientStarted = main.startClient(ipAddress, portNumber, false);
+            if(clientStarted){
+                Thread.sleep(200);
+                main.loadRaceView(false);
+            }
         }else{
             if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText())){
                 txtIPAddress.setStyle("-fx-text-inner-color: red;");
