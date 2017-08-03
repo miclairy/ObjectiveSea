@@ -66,7 +66,6 @@
                </columnConstraints>
                <rowConstraints>
                   <RowConstraints maxHeight="464.0" minHeight="10.0" prefHeight="320.0" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="328.369384765625" minHeight="10.0" prefHeight="200.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
                   <Button fx:id="btnHost" mnemonicParsing="false" onAction="#hostGame" text="HOST" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
