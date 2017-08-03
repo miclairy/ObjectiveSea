@@ -28,7 +28,7 @@
          </image></ImageView>
       <AnchorPane fx:id="menuAnchor" prefHeight="880.0" prefWidth="900.0" AnchorPane.bottomAnchor="150.0" AnchorPane.leftAnchor="500.0" AnchorPane.rightAnchor="500.0" AnchorPane.topAnchor="150.0">
          <children>
-            <ImageView fitHeight="262.0" fitWidth="424.0" layoutX="304.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="304.0" AnchorPane.rightAnchor="292.0" AnchorPane.topAnchor="25.0">
+            <ImageView fitHeight="185.0" fitWidth="400.0" layoutX="317.0" layoutY="18.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="317.0" AnchorPane.rightAnchor="316.702392578125" AnchorPane.topAnchor="18.0">
                <image>
                   <Image url="@graphics/menuTitle.png" />
                </image>
