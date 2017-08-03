@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
@@ -51,6 +52,7 @@ public class MainMenuController implements Initializable{
 
     DropShadow ds = new DropShadow( 20, Color.web("#8eb0b7"));
 
+    @FXML ProgressIndicator joinProgressIndicator;
 
     private Main main;
     private final int DEFAULT_PORT = 2828;
@@ -70,6 +72,17 @@ public class MainMenuController implements Initializable{
         practiceGrid.setVisible(false);
         courseGrid.setVisible(false);
     }
+
+    private void showJoinProgressIndicator(){
+        btnJoin.setText("");
+        joinProgressIndicator.setPrefSize(15.0,15.0);
+    }
+    private void hideJoinProgressIndicator(){
+        btnJoin.setText("JOIN");
+
+        joinProgressIndicator.setPrefSize(0.0,0.0);
+    }
+
 
     public void setApp(Main main){
         this.main = main;
@@ -132,7 +145,9 @@ public class MainMenuController implements Initializable{
             AnimationUtils.slideInTransition(courseGrid);
             txtPortNumber.setStyle("-fx-text-inner-color: #2a2a2a;");
         }else{
-            txtPortNumber.setStyle("-fx-text-inner-color: red;");
+            if(!txtPortNumber.getText().isEmpty()){
+                txtPortNumber.setStyle("-fx-text-inner-color: red;");
+            }
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Port Number ");
             alert.setHeaderText("Invalid port number");
@@ -149,14 +164,16 @@ public class MainMenuController implements Initializable{
         if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && validatePort()){
             String ipAddress = txtIPAddress.getText();
             int portNumber = Integer.parseInt(txtPortNumber.getText());
-            main.startClient(ipAddress, portNumber, true);
-            Thread.sleep(200);
-            main.loadRaceView(false);
+            boolean clientStarted = main.startClient(ipAddress, portNumber, true);
+            if(clientStarted){
+                Thread.sleep(200);
+                main.loadRaceView(false);
+            }
         }else{
-            if(!ConnectionUtils.IPRegExMatcher(txtIPAddress.getText())){
+            if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && !txtIPAddress.getText().isEmpty()){
                 txtIPAddress.setStyle("-fx-text-inner-color: red;");
             }
-            if(!validatePort()){
+            if(validatePort() && !txtPortNumber.getText().isEmpty()){
                 txtPortNumber.setStyle("-fx-text-inner-color: red;");
             }
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -167,6 +184,7 @@ public class MainMenuController implements Initializable{
 
             alert.showAndWait();
         }
+        hideJoinProgressIndicator();
     }
 
     /**
@@ -177,14 +195,16 @@ public class MainMenuController implements Initializable{
         if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && validatePort()){
             String ipAddress = txtIPAddress.getText();
             int portNumber = Integer.parseInt(txtPortNumber.getText());
-            main.startClient(ipAddress, portNumber, false);
-            Thread.sleep(200);
-            main.loadRaceView(false);
+            boolean clientStarted = main.startClient(ipAddress, portNumber, false);
+            if(clientStarted){
+                Thread.sleep(200);
+                main.loadRaceView(false);
+            }
         }else{
-            if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText())){
+            if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && !txtIPAddress.getText().isEmpty()){
                 txtIPAddress.setStyle("-fx-text-inner-color: red;");
             }
-            if(validatePort()){
+            if(validatePort() && !txtPortNumber.getText().isEmpty()){
                 txtPortNumber.setStyle("-fx-text-inner-color: red;");
             }
             Alert alert = new Alert(Alert.AlertType.ERROR);
