@@ -100,7 +100,7 @@ public class Server implements Runnable, Observer {
      * Sends the XML messages when the client has connected
      */
     private void sendInitialRaceMessages() {
-        sendXmlMessage(RACE_XML_MESSAGE, "Race.xml");
+        sendXmlMessage(RACE_XML_MESSAGE, "GuidedPractice-course.xml");
         sendXmlMessage(BOAT_XML_MESSAGE, "Boat.xml");
         sendXmlMessage(REGATTA_XML_MESSAGE, "Regatta.xml");
     }
@@ -212,7 +212,7 @@ public class Server implements Runnable, Observer {
 
         byte[] packet = packetBuilder.createRegistrationAcceptancePacket(newId);
         connectionManager.sendToClient(newId, packet);
-        sendXmlMessage(RACE_XML_MESSAGE, "Race.xml");
+        sendXmlMessage(RACE_XML_MESSAGE, "GuidedPractice-course.xml");
     }
 
     /**
