@@ -1,5 +1,9 @@
 package seng302.models;
 
+import seng302.utilities.DisplayUtils;
+import seng302.utilities.MathUtils;
+import seng302.views.Arrow;
+
 import javax.swing.plaf.ComponentUI;
 import java.util.*;
 
@@ -23,6 +27,7 @@ public class Course {
     private boolean hasEntryMark;
 
     private double trueWindSpeed;
+    private List<Arrow> arrowedRoute = new ArrayList<>();
 
     public Course() {
         this.compoundMarks = new HashMap<>();
@@ -239,4 +244,25 @@ public class Course {
         return leewardGate.getPosition().headingToCoordinate(windwardGate.getPosition());
     }
 
+    public List<Arrow> getArrowedRoute() {
+        return arrowedRoute;
+    }
+
+    private void addArrowDirection(CompoundMark mark, CompoundMark previousMark) {
+        Coordinate originLatLon = DisplayUtils.midPointFromTwoCoords(mark.getPosition(), previousMark.getPosition()) ;
+        Arrow arrow = new Arrow(10, 30, originLatLon);
+        arrow.rotate(MathUtils.calculateBearingBetweenTwoPoints(mark, previousMark) - 180);
+        arrowedRoute.add(arrow);
+    }
+
+    public void createArrowedRoute() {
+        arrowedRoute.clear();
+        CompoundMark previousMark = courseOrder.get(0);
+        for (CompoundMark mark : courseOrder){
+            if (previousMark != mark) {
+                addArrowDirection(mark, previousMark);
+            }
+            previousMark = mark;
+        }
+    }
 }

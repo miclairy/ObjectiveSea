@@ -5,6 +5,8 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.transform.Rotate;
 import seng302.models.CanvasCoordinate;
+import seng302.models.Coordinate;
+import seng302.utilities.DisplayUtils;
 
 /**
  * Polyline wrapper to make arrows easy
@@ -14,27 +16,25 @@ public class Arrow extends Group{
     private double length;
     private double width;
     private Polyline arrowLine;
-    private Line rightSide;
     private CanvasCoordinate center;
+    private Coordinate centerLatLon;
 
 
-    public Arrow(double length, double width, CanvasCoordinate center) {
+    public Arrow(double length, double width, Coordinate center) {
         this.length = length;
         this.width = width;
-        this.center = center;
-        double bottomY = center.getY() - length;
-        arrowLine = new Polyline(center.getX() - width / 2, bottomY,
-                                center.getX(), center.getY(),
-                                width / 2  + center.getX(), bottomY);
-        rightSide = new Line();
-        relocate(center);
+        this.centerLatLon = center;
+        this.center = DisplayUtils.convertFromLatLon(center);
+        double bottomY = this.center.getY() - length;
+        arrowLine = new Polyline(this.center.getX() - width / 2, bottomY,
+                                this.center.getX(), this.center.getY(),
+                                width / 2  + this.center.getX(), bottomY);
+        relocate(this.center);
         arrowLine.setStrokeWidth(10.0);
-        rightSide.setStrokeWidth(10.0);
     }
 
     public void relocate(CanvasCoordinate center) {
         this.center = center;
-        double bottomY = center.getY() - length;
         arrowLine.relocate(center.getX(), center.getY());
 
     }
@@ -45,5 +45,13 @@ public class Arrow extends Group{
 
     public void addToCanvas(Group root){
         root.getChildren().add(arrowLine);
+    }
+
+    public void removeFromCanvas(Group root){
+        root.getChildren().remove(arrowLine);
+    }
+
+    public Polyline getArrowLine() {
+        return arrowLine;
     }
 }

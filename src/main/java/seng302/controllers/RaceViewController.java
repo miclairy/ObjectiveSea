@@ -105,29 +105,18 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.scoreBoardController = scoreBoardController;
         this.selectionController = selectionController;
         redrawCourse();
-        drawRaceRoute();
         race.addObserver(this);
     }
 
     private void drawRaceRoute(){
-//        Line left = new Line();
-//        left.setStartX(100);
-//        left.setStartY(100);
-//        left.setEndY(150);
-//        left.setEndX(150);
-//        Line right = new Line();
-//        right.setStartX(100);
-//        right.setStartY(200);
-//        right.setEndY(150);
-//        right.setEndX(150);
-//        left.setStrokeWidth(10.0);
-//        right.setStrokeWidth(10.0);
-//        root.getChildren().add(left);
-//        root.getChildren().add(right);
-        Arrow arrow = new Arrow(50, 100, new CanvasCoordinate(150, 150));
-        arrow.rotate(90);
-        arrow.relocate(new CanvasCoordinate(500, 500));
-        arrow.addToCanvas(root);
+
+        for (Arrow arrow : race.getCourse().getArrowedRoute()){
+            arrow.removeFromCanvas(root);
+        }
+        race.getCourse().createArrowedRoute();
+        for (Arrow arrow : race.getCourse().getArrowedRoute()){
+            arrow.addToCanvas(root);
+        }
 
     }
 
@@ -407,6 +396,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawMap();
         drawWindArrow();
         redrawRaceLines();
+        drawRaceRoute();
     }
 
     /**
