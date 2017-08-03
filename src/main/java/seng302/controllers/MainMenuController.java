@@ -114,7 +114,9 @@ public class MainMenuController implements Initializable{
             main.loadRaceView(true);
             txtPortNumber.setStyle("-fx-text-inner-color: 2a2a2a;");
         }else{
-            txtPortNumber.setStyle("-fx-text-inner-color: red;");
+            if(!txtPortNumber.getText().isEmpty()){
+                txtPortNumber.setStyle("-fx-text-inner-color: red;");
+            }
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Port Number ");
             alert.setHeaderText("Invalid port number");
@@ -138,10 +140,10 @@ public class MainMenuController implements Initializable{
                 main.loadRaceView(false);
             }
         }else{
-            if(!ConnectionUtils.IPRegExMatcher(txtIPAddress.getText())){
+            if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && !txtIPAddress.getText().isEmpty()){
                 txtIPAddress.setStyle("-fx-text-inner-color: red;");
             }
-            if(!validatePort()){
+            if(validatePort() && !txtPortNumber.getText().isEmpty()){
                 txtPortNumber.setStyle("-fx-text-inner-color: red;");
             }
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -169,10 +171,10 @@ public class MainMenuController implements Initializable{
                 main.loadRaceView(false);
             }
         }else{
-            if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText())){
+            if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && !txtIPAddress.getText().isEmpty()){
                 txtIPAddress.setStyle("-fx-text-inner-color: red;");
             }
-            if(validatePort()){
+            if(validatePort() && !txtPortNumber.getText().isEmpty()){
                 txtPortNumber.setStyle("-fx-text-inner-color: red;");
             }
             Alert alert = new Alert(Alert.AlertType.ERROR);
