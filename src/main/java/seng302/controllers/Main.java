@@ -11,6 +11,7 @@ import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
@@ -63,24 +64,29 @@ public class Main extends Application {
     /**
      * Initializes the client on it's own thread.
      */
-    private static void setupClient() {
-        client = new Client("localhost", 2828, true);
-        Thread clientThread = new Thread(client);
-        clientThread.setName("Client");
-        clientThread.start();
+    private static void setupClient(int port) {
+        try {
+            client = new Client("localhost", port, true);
+            Thread clientThread = new Thread(client);
+            clientThread.setName("Client");
+            clientThread.start();
+        } catch (Client.NoConnectionToServerException e) {
+            showServerError();
+        }
+
     }
 
     /**
      * Creates a Server object, puts it in it's own thread and starts the thread
      */
-    private static void setupServer(String course) throws IOException {
+    private static void setupServer(String course, int port) throws IOException {
         RaceUpdater runner = new RaceUpdater(course);
         runner.setScaleFactor(Config.MOCK_SPEED_SCALE);
         Thread runnerThread = new Thread(runner);
         runnerThread.setName("Race Updater");
         runnerThread.start();
         Server server;
-        server = new Server(2828, runner, course);
+        server = new Server(port, runner, course);
         server.setScaleFactor(Config.MOCK_SPEED_SCALE);
         Thread serverThread = new Thread(server);
         serverThread.setName("Server");
@@ -131,17 +137,46 @@ public class Main extends Application {
         return (Initializable) loader.getController();
     }
 
-    public void startPrivateRace(String course) throws Exception{
+    public void startPrivateRace(String course, int port) throws Exception{
         Config.initializeConfig();
-        setupServer(course);
-        setupClient();
+        setupServer(course, port);
+        setupClient(port);
     }
 
-    public void startClient(String ip, int port, boolean isParticipant){
-        client = new Client(ip, port, isParticipant);
+    /**
+     * shows a popup informing user that connection to the server failed
+     */
+    private static void showServerError(){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Cannot Connect to Server");
+        alert.setHeaderText("Cannot Connect to Server");
+        alert.setContentText("This server may not be running.\n" +
+                "Please ensure that the IP and Port numbers \n" +
+                "you have entered are correct.");
+
+        alert.showAndWait();
+    }
+
+    /**
+     * starts the client at the desired ip and port number
+     * ensures that the client connects
+     * throws error if connection fails
+     * @param ip the ip for the client to connect to
+     * @param port the port of the client to connect to
+     * @param isParticipant whether the user is a participant or spectator
+     * @return whether the connection was successful or times out
+     */
+    public boolean startClient(String ip, int port, boolean isParticipant){
+        try {
+            client = new Client(ip, port, isParticipant);
+        } catch (Client.NoConnectionToServerException e) {
+            showServerError();
+            return false;
+        }
         Thread clientThread = new Thread(client);
         clientThread.setName("Client");
         clientThread.start();
+        return true;
     }
 
 

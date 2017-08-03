@@ -1,9 +1,9 @@
 package seng302.controllers;
 
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -13,11 +13,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import seng302.utilities.AnimationUtils;
+import seng302.utilities.ConnectionUtils;
 
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class MainMenuController implements Initializable{
     @FXML Button btnLiveGame;
@@ -52,7 +51,13 @@ public class MainMenuController implements Initializable{
 
 
     private Main main;
+    private final int DEFAULT_PORT = 2828;
 
+    /**
+     * Initilizer for the Main Menu Controller. Runs upon creation
+     * @param location url locaton
+     * @param resources bundles of fun
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setButtonAnimations();
@@ -98,20 +103,34 @@ public class MainMenuController implements Initializable{
         AnimationUtils.slideInTransition(liveGameGrid);
     }
 
+    /**
+     * Allows user to host a game at the DEFAULT_PORT and current public IP
+     * @throws Exception
+     */
     @FXML private void loadOfflinePlay() throws Exception{
-        main.startPrivateRace(selectedCourse);
-        while(!Client.isConnected()){
-        }
+        main.startPrivateRace(selectedCourse, DEFAULT_PORT);
         Thread.sleep(200);
         main.loadRaceView(true);
     }
 
+    /**
+     * Allows user to host a game at the entered port and current public IP
+     * @throws Exception
+     */
     @FXML private void startHostGame() throws Exception{
-        main.startPrivateRace(selectedCourse);
-        while(!Client.isConnected()){
+        if(validatePort()){
+            main.startHostedRace(selectedCourse, Integer.parseInt(txtPortNumber.getText()));
+            Thread.sleep(200);
+            main.loadRaceView(true);
+            txtPortNumber.setStyle("-fx-text-inner-color: 2a2a2a;");
+        }else{
+            txtPortNumber.setStyle("-fx-text-inner-color: red;");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Port Number ");
+            alert.setHeaderText("Invalid port number");
+            alert.setContentText("Please enter a valid port number\n");
+            alert.showAndWait();
         }
-        Thread.sleep(200);
-        main.loadRaceView(true);
     }
 
     @FXML private void hostGame(){
@@ -120,30 +139,65 @@ public class MainMenuController implements Initializable{
         AnimationUtils.slideInTransition(courseGrid);
     }
 
+    /**
+     * Joins a race at the desired IP and Port and creates a client instance
+     * @throws Exception
+     */
     @FXML private void joinGame() throws Exception{
-        validateIP();
-        validatePort();
-        if(validateIP() && validatePort()){
+        if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && validatePort()){
             String ipAddress = txtIPAddress.getText();
             int portNumber = Integer.parseInt(txtPortNumber.getText());
             main.startClient(ipAddress, portNumber, true);
             Thread.sleep(200);
             main.loadRaceView(false);
+        }else{
+            if(!ConnectionUtils.IPRegExMatcher(txtIPAddress.getText())){
+                txtIPAddress.setStyle("-fx-text-inner-color: red;");
+            }
+            if(!validatePort()){
+                txtPortNumber.setStyle("-fx-text-inner-color: red;");
+            }
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Port & IP ");
+            alert.setHeaderText("Invalid Port or IP Address");
+            alert.setContentText("The IP Address or Port Number you entered\n" +
+                    "is invalid\n");
+
+            alert.showAndWait();
         }
     }
 
+    /**
+     * Joins a race at the desired IP and Port and creates a client instance
+     * @throws Exception
+     */
     @FXML private void spectateGame() throws Exception{
-        validateIP();
-        validatePort();
-        if(validateIP() && validatePort()){
+        if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && validatePort()){
             String ipAddress = txtIPAddress.getText();
             int portNumber = Integer.parseInt(txtPortNumber.getText());
             main.startClient(ipAddress, portNumber, false);
             Thread.sleep(200);
             main.loadRaceView(false);
+        }else{
+            if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText())){
+                txtIPAddress.setStyle("-fx-text-inner-color: red;");
+            }
+            if(validatePort()){
+                txtPortNumber.setStyle("-fx-text-inner-color: red;");
+            }
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Port & IP ");
+            alert.setHeaderText("Invalid Port or IP Address");
+            alert.setContentText("The IP Address or Port Number you entered\n" +
+                    "is invalid\n");
+
+            alert.showAndWait();
         }
     }
 
+    /**
+     * attaches listeners to buttons to allow for hover and click animations
+     */
     private void setButtonAnimations(){
         addButtonListeners(btnLiveGame);
         addButtonListeners(btnPractise);
@@ -171,6 +225,11 @@ public class MainMenuController implements Initializable{
         addShiftPromptListener(txtPortNumber, lblPort);
     }
 
+    /**
+     * Attaches a shift key listener to the given label
+     * @param field the text field to listen
+     * @param label the label to prompt
+     */
     private void addShiftPromptListener(TextField field, Label label){
         field.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (newValue && field.getText().isEmpty()) {
@@ -181,26 +240,33 @@ public class MainMenuController implements Initializable{
         });
     }
 
-    private void focusState(boolean value) {
-
-    }
-
+    /**
+     * attaches click and hover listeners to buttons
+     * @param button the button to attach the listener
+     */
     private void addButtonListeners(Button button){
         button.addEventHandler(MouseEvent.MOUSE_ENTERED,
-                new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent e) {
-                        AnimationUtils.scaleButtonHover(button);
-                    }
-                });
+                e -> AnimationUtils.scaleButtonHover(button));
 
         button.addEventHandler(MouseEvent.MOUSE_EXITED,
-                new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent e) {
-                        AnimationUtils.scaleButtonHoverExit(button);
-                    }
-                });
+                e -> AnimationUtils.scaleButtonHoverExit(button));
+    }
+
+    /**
+     * checks to determine whether the port number is a valid regex. Colors the port number accordingly.
+     * @return whether the port is valid or not
+     */
+    private boolean validatePort(){
+        try {
+            int port = Integer.parseInt(txtPortNumber.getText());
+            txtPortNumber.setStyle("-fx-text-inner-color: #2a2a2a;");
+            if(ConnectionUtils.validatePort(port)){
+                return true;
+            }
+            return false;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     private void addImageListeners(ImageView imageView) {
@@ -223,33 +289,6 @@ public class MainMenuController implements Initializable{
             }
         });
 
-    }
-
-    private boolean validateIP(){
-        String IPADDRESS_PATTERN = "(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
-        Pattern pattern = Pattern.compile(IPADDRESS_PATTERN);
-        Matcher matcher = pattern.matcher(txtIPAddress.getText());
-        if (matcher.find()) {
-            txtIPAddress.setStyle("-fx-text-inner-color: #2a2a2a;");
-            return true;
-        } else{
-            txtIPAddress.setStyle("-fx-text-inner-color: red;");
-            return false;
-        }
-    }
-
-    private boolean validatePort(){
-        try {
-            int port = Integer.parseInt(txtPortNumber.getText());
-            txtPortNumber.setStyle("-fx-text-inner-color: #2a2a2a;");
-            if(port > 1024 && port < 65536){
-                return true;
-            }
-            return false;
-        } catch (NumberFormatException e) {
-            txtPortNumber.setStyle("-fx-text-inner-color: red;");
-            return false;
-        }
     }
 
 }

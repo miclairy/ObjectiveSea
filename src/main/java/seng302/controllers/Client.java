@@ -5,7 +5,6 @@ import seng302.data.ClientSender;
 import seng302.data.DataStreamReader;
 import seng302.models.Boat;
 import seng302.models.Race;
-import seng302.utilities.Config;
 
 import java.util.*;
 
@@ -25,48 +24,45 @@ public class Client implements Runnable, Observer {
     private Map<Integer, Boat> potentialCompetitors;
     private UserInputController userInputController;
     private int clientID;
-    private static boolean connected = false;
     private String sourceAddress;
     private int sourcePort;
     private boolean isParticipant;
 
-    public Client(String ip, int port, boolean isParticipant) {
+    private int connectionAttempts = 0;
+    private int MAX_CONNECTION_ATTEMPTS = 200;
+
+    public Client(String ip, int port, boolean isParticipant) throws NoConnectionToServerException {
         this.sourcePort = port;
         this.sourceAddress = ip;
         this.packetBuilder = new ClientPacketBuilder();
         this.isParticipant = isParticipant;
         setUpDataStreamReader();
-
         System.out.println("Client: Waiting for connection to Server");
-        while(dataStreamReader.getClientSocket() == null) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        manageWaitingConnection();
         System.out.println("Client: Connected to Server");
-        connected = true;
         this.sender = new ClientSender(dataStreamReader.getClientSocket());
     }
 
-    public Client() {
-        this.sourceAddress = Config.SOURCE_ADDRESS;
-        this.sourcePort = Config.SOURCE_PORT;
-        this.packetBuilder = new ClientPacketBuilder();
-        setUpDataStreamReader();
-
-        System.out.println("Client: Waiting for connection to Server");
+    private void manageWaitingConnection() throws NoConnectionToServerException {
         while(dataStreamReader.getClientSocket() == null) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if(connectionAttempts < MAX_CONNECTION_ATTEMPTS){
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                connectionAttempts ++;
+            }else{
+                throw new NoConnectionToServerException("Maximum connection attempts exceeded while trying to connect to server. Port or IP may not be valid.");
             }
         }
-        System.out.println("Client: Connected to Server");
-        connected = true;
-        this.sender = new ClientSender(dataStreamReader.getClientSocket());
+    }
+
+    public class NoConnectionToServerException extends Exception {
+        public NoConnectionToServerException() { super(); }
+        public NoConnectionToServerException(String message) { super(message); }
+        public NoConnectionToServerException(String message, Throwable cause) { super(message, cause); }
+        public NoConnectionToServerException(Throwable cause) { super(cause); }
     }
 
     private void setUpDataStreamReader(){
@@ -139,9 +135,5 @@ public class Client implements Runnable, Observer {
 
     public int getClientID() {
         return clientID;
-    }
-
-    public static boolean isConnected(){
-        return connected;
     }
 }
