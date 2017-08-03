@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
 import seng302.data.BoatAction;
 import javafx.scene.shape.Circle;
 import seng302.utilities.ConnectionUtils;
+import seng302.utilities.DisplaySwitcher;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
@@ -84,6 +85,7 @@ public class Controller implements Initializable, Observer {
     private boolean raceStatusChanged = true;
     private Race race;
     private boolean isHost;
+    private DisplaySwitcher displaySwitcher;
 
 
     private final double FOCUSED_ZOOMSLIDER_OPACITY = 0.8;
@@ -145,15 +147,20 @@ public class Controller implements Initializable, Observer {
 
     }
 
-    public void setApp(boolean host){
+    public void setApp(boolean host, DisplaySwitcher displaySwitcher){
+        this.displaySwitcher = displaySwitcher;
         this.isHost = host;
-
         if(isHost){
             startersOverlayTitle.setText(getPublicIp());
         }else{
             startersOverlayTitle.setText(race.getRegattaName());
         }
+    }
 
+    public void exitRace(){
+        displaySwitcher.loadMainMenu();
+        if(isHost){
+        }
     }
 
     /**

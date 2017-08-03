@@ -72,7 +72,7 @@
         </AnchorPane>
         <AnchorPane fx:id="rightHandSide" minWidth="440">
             <children>
-                <fx:include fx:id="scoreBoard" source="scoreBoard.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                <fx:include fx:id="scoreBoard" source="score_board.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
             </children>
         </AnchorPane>
     </items>

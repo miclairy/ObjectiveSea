@@ -12,21 +12,42 @@
     -fx-text-fill: white;
 }
 
-#btnTrack{
-  -fx-graphic:url('/graphics/buttonImages/track-boat-dark.png');
+#btnExit{
   -fx-background-color:  #232323;
   -fx-text-fill: #FFFFFF;
-  -fx-font-size: 16px;
-  -fx-content-display: left;
+  -fx-font-size: 15px;
+  -fx-border-radius: 70;
+  -fx-background-radius: 70;
   -fx-text-alignment: right;
+  -fx-padding: 10 40 10 40;
+}
+
+#btnTrack{
+    -fx-graphic:url('/graphics/buttonImages/track-boat-dark.png');
+    -fx-content-display: left;
+    -fx-background-color:  #232323;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15px;
+    -fx-border-radius: 70;
+    -fx-background-radius: 70;
+    -fx-text-alignment: right;
+    -fx-padding: 7 40 7 40;
 }
 
 #btnTrack:hover{
-    -fx-background-color: #1C1C1C;
+    -fx-background-color: #353535;
 }
 
 #btnTrack:pressed{
-    -fx-background-color: #0F0F0F;
+    -fx-background-color: #1d1d1d;
+}
+
+#btnExit:hover{
+    -fx-background-color: #353535;
+}
+
+#btnExit:pressed{
+    -fx-background-color: #1d1d1d;
 }
 
 #lblAnnotation{

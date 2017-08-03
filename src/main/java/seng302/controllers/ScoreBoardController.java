@@ -10,9 +10,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+import seng302.utilities.AnimationUtils;
+import seng302.utilities.DisplaySwitcher;
 import seng302.views.BoatDisplay;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
@@ -45,6 +48,7 @@ public class ScoreBoardController {
     @FXML private CheckBox chkStart;
     @FXML private CheckBox zoomToggle;
     @FXML public Button btnTrack;
+    @FXML public Button btnExit;
     @FXML private CheckBox chkLaylines;
     @FXML private CheckBox chkVectors;
     @FXML private LineChart chtSparkLine;
@@ -120,6 +124,9 @@ public class ScoreBoardController {
             }
         });
         annotationsSlider.setValue(1);
+
+        addButtonListeners(btnTrack);
+        addButtonListeners(btnExit);
     }
 
     @FXML
@@ -161,6 +168,22 @@ public class ScoreBoardController {
         chtSparkLine.getXAxis().setTickLabelsVisible(false);
         chtSparkLine.getXAxis().setTickLength(0);
         chtSparkLine.getYAxis().setTickLength(0);
+    }
+
+    /**
+     * attaches click and hover listeners to buttons
+     * @param button the button to attach the listener
+     */
+    private void addButtonListeners(Button button){
+        button.addEventHandler(MouseEvent.MOUSE_ENTERED,
+                e -> AnimationUtils.scaleButtonHover(button));
+
+        button.addEventHandler(MouseEvent.MOUSE_EXITED,
+                e -> AnimationUtils.scaleButtonHoverExit(button));
+    }
+
+    @FXML private void btnExitRacePressed(){
+        parent.exitRace();
     }
 
     @FXML

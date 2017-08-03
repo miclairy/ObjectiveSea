@@ -91,6 +91,10 @@ public class ConnectionManager extends Observable implements Runnable {
         sendAllXMLsToClient(newId);
     }
 
+    public void closeConnections() throws IOException {
+        serverSocket.close();
+    }
+
     private void sendAllXMLsToClient(int id) {
         for (byte[] xmlMessage : xmlMessages.values()) {
             sendToClient(id, xmlMessage);
