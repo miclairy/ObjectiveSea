@@ -98,6 +98,7 @@ public class MainMenuController implements Initializable{
      * @throws Exception
      */
     @FXML private void loadOfflinePlay() throws Exception{
+        btnSinglePlay.setDisable(true);
         main.startHostedRace(DEFAULT_PORT);
         Thread.sleep(200);
         main.loadRaceView(true);
