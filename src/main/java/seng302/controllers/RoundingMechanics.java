@@ -1,5 +1,6 @@
 package seng302.controllers;
 
+import com.sun.xml.internal.bind.v2.TODO;
 import seng302.models.*;
 
 import java.awt.geom.Line2D;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 
 /**
  * Created by cjd137 on 2/08/17.
+ *
  */
 public class RoundingMechanics {
 
@@ -39,6 +41,8 @@ public class RoundingMechanics {
         Coordinate boatCurrent = boat.getCurrentPosition();
 
         Line2D lineBetweenCurrentAndNextMark = new Line2D.Double(mark.getPosition().getLon(), mark.getPosition().getLat(), nextMarkCoordinate.getLon(), nextMarkCoordinate.getLat());
+        System.out.println(lineBetweenCurrentAndNextMark.getP1()); // Point at the mark that we need to use
+        // TODO create a perpendicular line to this line created above to check if the boat crosses over it
 
 
         //System.out.println("This mark was passed");
