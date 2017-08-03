@@ -108,7 +108,7 @@ public class MainMenuController implements Initializable{
      * @throws Exception
      */
     @FXML private void loadOfflinePlay() throws Exception{
-        main.startPrivateRace(selectedCourse, DEFAULT_PORT);
+        main.startHostedRace(selectedCourse, DEFAULT_PORT);
         Thread.sleep(200);
         main.loadRaceView(true);
     }
@@ -118,11 +118,17 @@ public class MainMenuController implements Initializable{
      * @throws Exception
      */
     @FXML private void startHostGame() throws Exception{
-        if(validatePort()){
-            main.startHostedRace(selectedCourse, Integer.parseInt(txtPortNumber.getText()));
-            Thread.sleep(200);
-            main.loadRaceView(true);
-            txtPortNumber.setStyle("-fx-text-inner-color: 2a2a2a;");
+        main.startHostedRace(selectedCourse, Integer.parseInt(txtPortNumber.getText()));
+        Thread.sleep(200);
+        main.loadRaceView(true);
+    }
+
+    @FXML private void hostGame(){
+        if(validatePort()) {
+            courseGrid.setVisible(true);
+            AnimationUtils.slideOutTransition(liveGameGrid);
+            AnimationUtils.slideInTransition(courseGrid);
+            txtPortNumber.setStyle("-fx-text-inner-color: #2a2a2a;");
         }else{
             txtPortNumber.setStyle("-fx-text-inner-color: red;");
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -131,12 +137,6 @@ public class MainMenuController implements Initializable{
             alert.setContentText("Please enter a valid port number\n");
             alert.showAndWait();
         }
-    }
-
-    @FXML private void hostGame(){
-        courseGrid.setVisible(true);
-        AnimationUtils.slideOutTransition(liveGameGrid);
-        AnimationUtils.slideInTransition(courseGrid);
     }
 
     /**

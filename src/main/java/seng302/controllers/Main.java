@@ -137,7 +137,7 @@ public class Main extends Application {
         return (Initializable) loader.getController();
     }
 
-    public void startPrivateRace(String course, int port) throws Exception{
+    public void startHostedRace(String course, int port) throws Exception{
         Config.initializeConfig();
         setupServer(course, port);
         setupClient(port);
