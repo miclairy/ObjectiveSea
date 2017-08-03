@@ -41,6 +41,7 @@ public class MainMenuController implements Initializable{
     @FXML Label lblIP;
     @FXML Label lblPort;
     @FXML ImageView AC35;
+    @FXML ImageView Athens;
     @FXML ImageView LakeTekapo;
     @FXML ImageView LakeTaupo;
     @FXML ImageView AC33;
@@ -220,6 +221,7 @@ public class MainMenuController implements Initializable{
         addImageListeners(LakeTekapo);
         addImageListeners(LakeTaupo);
         addImageListeners(AC33);
+        addImageListeners(Athens);
     }
 
     private void setLabelPromptAnimations(){
@@ -272,35 +274,15 @@ public class MainMenuController implements Initializable{
     }
 
     private void addImageListeners(ImageView imageView) {
-
-
-        imageView.setOnMouseClicked( ( MouseEvent event ) ->
-        {
-            imageView.requestFocus();
-        } );
-        imageView.focusedProperty().addListener(( ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue ) ->
-        {
-            if ( newValue )
-            {
+        imageView.setOnMouseClicked( ( MouseEvent event ) ->{ imageView.requestFocus();});
+        imageView.focusedProperty().addListener(( ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue ) -> {
+            if ( newValue ){
                 imageView.setEffect( ds );
                 selectedCourse = imageView.getId() + "-course.xml";
-            }
-            else
-            {
+            }else{
                 imageView.setEffect( null );
             }
         });
-
-//        imageView.setOnMouseEntered(( MouseEvent event ) ->
-//        {
-//            AnimationUtils.viewMapFocus(imageView);
-//        } );
-//
-//        imageView.setOnMouseExited(( MouseEvent event ) ->
-//        {
-//            AnimationUtils.viewMapUnFocus(imageView);
-//        } );
-
     }
 
 }

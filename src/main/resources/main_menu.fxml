@@ -214,6 +214,19 @@
                         <Insets bottom="5.0" />
                      </GridPane.margin>
                   </Label>
+                  <ImageView fx:id="Athens" fitHeight="150.0" fitWidth="180.0" pickOnBounds="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.valignment="TOP" GridPane.vgrow="NEVER">
+                     <image>
+                        <Image url="@graphics/Athens-course.png" />
+                     </image>
+                     <GridPane.margin>
+                        <Insets top="15.0" />
+                     </GridPane.margin>
+                  </ImageView>
+                  <Label text="Athens" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
+                     <GridPane.margin>
+                        <Insets bottom="10.0" />
+                     </GridPane.margin>
+                  </Label>
                </children>
                <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />

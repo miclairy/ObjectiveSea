@@ -71,7 +71,7 @@ public class RaceView {
     public Path createBoatPath(Color color) {
         Path path = new Path();
         path.setId("boatPath");
-        path.setOpacity(0);
+        path.setOpacity(1);
         path.setStroke(color);
         return path;
     }
