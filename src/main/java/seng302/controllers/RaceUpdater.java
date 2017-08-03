@@ -128,7 +128,6 @@ public class RaceUpdater implements Runnable {
                             && course.getStartLine().getCompoundMarkID() == boat.getLastRoundedMarkIndex()+1){
                         boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
                         System.out.println("Passed start line");
-                        System.out.println(course.getCourseOrder().size());
                     // Passing a mark
                     } else if(!course.getCompoundMarkByID(boat.getLastRoundedMarkIndex()+1).hasTwoMarks() &&
                             RoundingMechanics.boatPassedMark(boat, course.getCompoundMarkByID(boat.getLastRoundedMarkIndex()+1),

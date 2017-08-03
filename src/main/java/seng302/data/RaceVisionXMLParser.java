@@ -236,19 +236,21 @@ public class RaceVisionXMLParser {
                             break;
                         case XMLTags.Course.COMPOUND_MARK_SEQUENCE:
                             NodeList legs = element.getElementsByTagName(XMLTags.Course.CORNER);
-                            Map<Integer, Integer> markOrder = new TreeMap<>();
+                            Map<Integer, ArrayList<String>> markOrder = new TreeMap<>();
                             for (int k = 0; k < legs.getLength(); k++) {
                                 Element corner = (Element) legs.item(k);
+                                ArrayList<String> markRounding = new ArrayList<>();
                                 Integer seqNumber = Integer.parseInt(corner.getAttribute(XMLTags.Course.SEQ_ID));
-                                Integer compoundMarkID = Integer.parseInt(corner.getAttribute(XMLTags.Course.COMPOUND_MARK_ID));
-                                markOrder.put(seqNumber, compoundMarkID);
+                                markRounding.add(corner.getAttribute(XMLTags.Course.COMPOUND_MARK_ID));
+                                markRounding.add(corner.getAttribute(XMLTags.Course.ROUNDING));
+                                markOrder.put(seqNumber, markRounding);
                             }
                             for(Integer seqNumber : markOrder.keySet()){
-                                int markID = markOrder.get(seqNumber);
+                                int markID = Integer.parseInt(markOrder.get(seqNumber).get(0));
                                 if (seqNumber == 1) {
                                     CompoundMark mark = course.getCompoundMarkByID(markID);
                                     if (!mark.hasTwoMarks()){
-                                        continue;
+                                        throw new RuntimeException("Race xml file has a incorrectly formatted Start Line");
                                     }
                                 }
                                 course.addMarkInOrder(markID);
@@ -344,10 +346,13 @@ public class RaceVisionXMLParser {
      */
     private CompoundMark parseCompoundMark(Element compoundMarkElement, Course course) throws  XMLParseException{
         CompoundMark compoundMark;
+        Dictionary sequenceDictionary;
         Integer compoundMarkID = Integer.parseInt(compoundMarkElement.getAttribute(XMLTags.Course.COMPOUND_MARK_ID));
-
+        //Integer sequenceID = Integer.parseInt(compoundMarkElement.getAttribute(XMLTags.Course.SEQ_ID));
+        //String roundingType = compoundMarkElement.getAttribute(XMLTags.Course.ROUNDING);
         String compoundMarkName = compoundMarkElement.getAttribute(XMLTags.Course.NAME);
         NodeList markNodes = compoundMarkElement.getElementsByTagName(XMLTags.Course.MARK);
+
 
         if (markNodes.getLength() < 1) {
             throw new XMLParseException(XMLTags.Course.COMPOUND_MARK, "Required tag was not defined.");
