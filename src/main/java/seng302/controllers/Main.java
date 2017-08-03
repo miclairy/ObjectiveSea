@@ -26,6 +26,7 @@ import seng302.data.DataStreamReader;
 import seng302.utilities.Config;
 import seng302.models.Race;
 import seng302.utilities.ConnectionUtils;
+import seng302.utilities.NoConnectionToServerException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,7 +72,7 @@ public class Main extends Application {
             Thread clientThread = new Thread(client);
             clientThread.setName("Client");
             clientThread.start();
-        } catch (Client.NoConnectionToServerException e) {
+        } catch (NoConnectionToServerException e) {
             ConnectionUtils.showServerError();
         }
 
@@ -158,7 +159,7 @@ public class Main extends Application {
             Thread clientThread = new Thread(client);
             clientThread.setName("Client");
             clientThread.start();
-        } catch (Client.NoConnectionToServerException e) {
+        } catch (NoConnectionToServerException e) {
             ConnectionUtils.showServerError();
             return false;
         }
