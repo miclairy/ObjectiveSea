@@ -77,12 +77,9 @@ public class Client implements Runnable, Observer {
 
     private void stopDataStreamReader(){
         if(dataStreamReaderThread != null){
-            try {
-                dataStreamReaderThread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            dataStreamReaderThread.stop();
             this.dataStreamReader = null;
+            System.out.println("Client: Server not found");
         }
     }
 
