@@ -27,6 +27,7 @@ public class Client implements Runnable, Observer {
     private String sourceAddress;
     private int sourcePort;
     private boolean isParticipant;
+    Thread dataStreamReaderThread;
 
     private int connectionAttempts = 0;
     private int MAX_CONNECTION_ATTEMPTS = 200;
@@ -53,6 +54,7 @@ public class Client implements Runnable, Observer {
                 }
                 connectionAttempts ++;
             }else{
+                stopDataStreamReader();
                 throw new NoConnectionToServerException("Maximum connection attempts exceeded while trying to connect to server. Port or IP may not be valid.");
             }
         }
@@ -67,10 +69,21 @@ public class Client implements Runnable, Observer {
 
     private void setUpDataStreamReader(){
         this.dataStreamReader = new DataStreamReader(sourceAddress, sourcePort);
-        Thread dataStreamReaderThread = new Thread(dataStreamReader);
+        dataStreamReaderThread = new Thread(dataStreamReader);
         dataStreamReaderThread.setName("DataStreamReader");
         dataStreamReaderThread.start();
         dataStreamReader.addObserver(this);
+    }
+
+    private void stopDataStreamReader(){
+        if(dataStreamReaderThread != null){
+            try {
+                dataStreamReaderThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            this.dataStreamReader = null;
+        }
     }
 
     @Override
