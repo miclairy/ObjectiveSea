@@ -4,6 +4,7 @@ import seng302.data.*;
 import seng302.models.Boat;
 import seng302.models.Collision;
 import seng302.models.Race;
+import seng302.models.ServerOptions;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -32,18 +33,20 @@ public class Server implements Runnable, Observer {
     private ConnectionManager connectionManager;
     private ServerPacketBuilder packetBuilder;
     private CollisionManager collisionManager;
+    private Integer minParticipants;
 
-    public Server(int port, double scaleFactor) throws IOException {
+    public Server(ServerOptions options) throws IOException {
         RaceUpdater raceUpdater = new RaceUpdater();
+        this.raceUpdater = raceUpdater;
+        scaleFactor = options.getSpeedScale();
         raceUpdater.setScaleFactor(scaleFactor);
         raceUpdaterThread = new Thread(raceUpdater);
         raceUpdaterThread.setName("Race Updater");
-        this.scaleFactor = scaleFactor;
-        this.raceUpdater = raceUpdater;
-        this.collisionManager = raceUpdater.getCollisionManager();
-        this.packetBuilder = new ServerPacketBuilder();
-        this.connectionManager = new ConnectionManager(port);
-        this.connectionManager.addObserver(this);
+        collisionManager = raceUpdater.getCollisionManager();
+        packetBuilder = new ServerPacketBuilder();
+        connectionManager = new ConnectionManager(options.getPort());
+        connectionManager.addObserver(this);
+        minParticipants = options.getMinParticipants();
     }
 
     /**
@@ -207,10 +210,13 @@ public class Server implements Runnable, Observer {
      * @param serverListener the listener for the client
      */
     private void addClientToRace(ServerListener serverListener){
-        if (!raceUpdaterThread.isAlive()) {
-            raceUpdaterThread.start();
-        }
         int newId = raceUpdater.addCompetitor();
+        if (!raceUpdaterThread.isAlive()){
+            int numCompetitors = raceUpdater.getRace().getCompetitors().size();
+            if (numCompetitors >= minParticipants) {
+                raceUpdaterThread.start();
+            }
+        }
         Boat boat = raceUpdater.getRace().getBoatById(newId);
         boatSequenceNumbers.put(boat, newId);
         lastMarkRoundingSent.put(boat, -1);
