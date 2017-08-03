@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
@@ -14,7 +20,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/menuStyle.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.MainMenuController">
+<StackPane prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/menuStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.MainMenuController">
    <children>
       <ImageView fitHeight="1080.0" fitWidth="1920.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <image>
@@ -22,12 +28,12 @@
          </image></ImageView>
       <AnchorPane fx:id="menuAnchor" prefHeight="880.0" prefWidth="900.0" AnchorPane.bottomAnchor="150.0" AnchorPane.leftAnchor="500.0" AnchorPane.rightAnchor="500.0" AnchorPane.topAnchor="150.0">
          <children>
-            <ImageView fitHeight="112.0" fitWidth="312.0" layoutX="406.0" layoutY="90.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="406.0" AnchorPane.rightAnchor="380.1333312988281" AnchorPane.topAnchor="45.0">
+            <ImageView fitHeight="262.0" fitWidth="424.0" layoutX="304.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="304.0" AnchorPane.rightAnchor="292.0" AnchorPane.topAnchor="25.0">
                <image>
                   <Image url="@graphics/menuTitle.png" />
                </image>
             </ImageView>
-            <GridPane fx:id="btnGrid" layoutX="182.0" layoutY="207.0" prefHeight="613.0" prefWidth="320.0" visible="false" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="200.0">
+            <GridPane fx:id="btnGrid" layoutX="182.0" layoutY="350.0" prefHeight="370.0" prefWidth="320.0" visible="false" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="350.0">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                   <ColumnConstraints />
@@ -53,7 +59,7 @@
                      </padding></Button>
                </children>
             </GridPane>
-            <GridPane fx:id="liveGameGrid" layoutX="250.0" layoutY="367.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="200.0">
+            <GridPane fx:id="liveGameGrid" layoutX="248.0" layoutY="334.0" prefHeight="345.0" prefWidth="520.0" visible="false" AnchorPane.bottomAnchor="101.0" AnchorPane.leftAnchor="248.0" AnchorPane.rightAnchor="252.0" AnchorPane.topAnchor="334.0">
                <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="275.6846923828125" minWidth="10.0" prefWidth="275.6846923828125" />
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="239.0816650390625" minWidth="10.0" prefWidth="239.0816650390625" />
@@ -69,18 +75,18 @@
                         <Insets right="50.0" top="30.0" />
                      </GridPane.margin>
                      <padding>
-                        <Insets bottom="10.0" left="55.0" right="55.0" top="10.0" />
+                        <Insets bottom="10.0" left="56.0" right="56.0" top="10.0" />
                      </padding></Button>
-                  <Button fx:id="btnSpectate" mnemonicParsing="false" onAction="#spectateGame" text="SPECTATE" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="BOTTOM">
+                  <Button fx:id="btnSpectate" mnemonicParsing="false" onAction="#spectateGame" text="SPECTATE" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
                      <GridPane.margin>
-                        <Insets bottom="30.0" right="50.0" />
+                        <Insets bottom="30.0" right="50.0" top="130.0" />
                      </GridPane.margin>
                      <padding>
-                        <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
+                        <Insets bottom="10.0" left="41.0" right="41.0" top="10.0" />
                      </padding></Button>
-                  <Button fx:id="btnJoin" mnemonicParsing="false" onAction="#joinGame" text="JOIN" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+                  <Button fx:id="btnJoin" mnemonicParsing="false" onAction="#joinGame" text="JOIN" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
                      <GridPane.margin>
-                        <Insets right="50.0" />
+                        <Insets right="50.0" top="80.0" />
                      </GridPane.margin>
                      <padding>
                         <Insets bottom="10.0" left="58.0" right="58.0" top="10.0" />
@@ -92,9 +98,9 @@
                            </cursor>
                         </ProgressIndicator>
                      </graphic></Button>
-                  <Button fx:id="btnBack" mnemonicParsing="false" onAction="#backToMainMenu" text="BACK" GridPane.halignment="LEFT" GridPane.valignment="BOTTOM">
+                  <Button fx:id="btnBack" mnemonicParsing="false" onAction="#backToMainMenu" text="BACK" GridPane.halignment="LEFT" GridPane.valignment="TOP">
                      <GridPane.margin>
-                        <Insets bottom="30.0" left="50.0" top="20.0" />
+                        <Insets bottom="30.0" left="50.0" top="185.0" />
                      </GridPane.margin>
                      <padding>
                         <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
@@ -120,7 +126,7 @@
                   </Label>
                </children>
             </GridPane>
-            <GridPane fx:id="practiceGrid" layoutX="344.0" layoutY="260.0" prefHeight="570.0" prefWidth="399.0" visible="false" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="200.0">
+            <GridPane fx:id="practiceGrid" layoutX="344.0" layoutY="346.0" prefHeight="374.0" prefWidth="320.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="346.0">
                <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                   <ColumnConstraints />
@@ -154,7 +160,7 @@
             </GridPane>
          </children>
          <StackPane.margin>
-            <Insets bottom="100.0" left="450.0" right="450.0" top="100.0" />
+            <Insets bottom="150.0" left="450.0" right="450.0" top="150.0" />
          </StackPane.margin>
       </AnchorPane>
    </children>
