@@ -79,7 +79,6 @@ public class MainMenuController implements Initializable{
         liveGameGrid.setVisible(true);
         AnimationUtils.slideOutTransition(btnGrid);
         AnimationUtils.slideInTransition(liveGameGrid);
-
     }
 
     @FXML private void backToMainMenu(){

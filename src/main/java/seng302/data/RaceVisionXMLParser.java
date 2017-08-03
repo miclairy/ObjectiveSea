@@ -281,7 +281,6 @@ public class RaceVisionXMLParser {
         }
 
         setRaceLines(course);
-
         return course;
     }
 

@@ -74,7 +74,7 @@
 }
 
 #image1Button{
-    -fx-background-image: url('../graphics/Race-course.png');
+    -fx-background-image: url('../graphics/courseImages/AC35-course.png');
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
     -fx-background-size: 150 150;

@@ -158,7 +158,7 @@
                   </Button>
                   <ImageView fx:id="AC35" fitHeight="150.0" fitWidth="180.0" pickOnBounds="true" styleClass="imageMapView" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
                      <image>
-                        <Image url="@graphics/Race-course.png" />
+                        <Image url="@graphics/courseImages/AC35-course.png" />
                      </image>
                      <GridPane.margin>
                         <Insets bottom="20.0" />
@@ -169,7 +169,7 @@
                   </ImageView>
                   <ImageView fx:id="LakeTekapo" fitHeight="150.0" fitWidth="180.0" pickOnBounds="true" styleClass="imageMapView" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
                      <image>
-                        <Image url="@graphics/LakeTekapo-course.png" />
+                        <Image url="@graphics/courseImages/LakeTekapo-course.png" />
                      </image>
                      <GridPane.margin>
                         <Insets bottom="20.0" />
@@ -180,7 +180,7 @@
                   </ImageView>
                   <ImageView fx:id="LakeTaupo" fitHeight="150.0" fitWidth="180.0" pickOnBounds="true" styleClass="imageMapView" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
                      <image>
-                        <Image url="@graphics/LakeTaupo-course.png" />
+                        <Image url="@graphics/courseImages/LakeTaupo-course.png" />
                      </image>
                      <GridPane.margin>
                         <Insets bottom="20.0" />
@@ -188,7 +188,7 @@
                   </ImageView>
                   <ImageView fx:id="AC33" fitHeight="150.0" fitWidth="180.0" pickOnBounds="true" styleClass="imageMapView" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
                      <image>
-                        <Image url="@graphics/AC33-course.png" />
+                        <Image url="@graphics/courseImages/AC33-course.png" />
                      </image>
                      <GridPane.margin>
                         <Insets />
@@ -216,7 +216,7 @@
                   </Label>
                   <ImageView fx:id="Athens" fitHeight="150.0" fitWidth="180.0" pickOnBounds="true" styleClass="imageMapView" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
                      <image>
-                        <Image url="@graphics/Athens-course.png" />
+                        <Image url="@graphics/courseImages/Athens-course.png" />
                      </image>
                      <GridPane.margin>
                         <Insets />

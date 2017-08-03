@@ -1,22 +1,20 @@
 package seng302.utilities;
 import javafx.animation.FadeTransition;
-import javafx.animation.ScaleTransition;
-import javafx.animation.Interpolator;
-import javafx.animation.PauseTransition;
-import javafx.animation.SequentialTransition;
 import javafx.scene.Node;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
+import seng302.data.RaceVisionXMLParser;
+import seng302.data.XMLTags;
 import seng302.models.Boat;
 import seng302.models.CanvasCoordinate;
 import seng302.models.Coordinate;
-import seng302.models.Mark;
+import seng302.models.Course;
 
-import java.io.File;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Objects;
 
 import static java.lang.Math.abs;
@@ -154,23 +152,16 @@ public class DisplayUtils {
     }
 
     /**
-     * method used for getting a local image of the area for the race. Currently picks between two different pictures
-     * have stored in our resources folder
+     * method used for getting a local image of the area for the race. Relies on the course xml files being labelled
+     * the same as the map images (i.e. AC35-course.xml has AC35-map.png as it's map image name)
      * @return a string that relates to a picture
      */
     public static String getLocalMapURL(){
-        String mapURL;
-        if (Objects.equals(Config.SOURCE_ADDRESS, "livedata.americascup.com")){ // getting live data
-            mapURL = DisplayUtils.class.getResource("/graphics/liveData.png").toExternalForm();
-        } else if (Objects.equals(Config.SOURCE_ADDRESS, "csse-s302staff.canterbury.ac.nz")){
-            mapURL = DisplayUtils.class.getResource("/graphics/liveData.png").toExternalForm();
-        } else {
-            mapURL = DisplayUtils.class.getResource("/graphics/mockData.png").toExternalForm();
-        }
-        return mapURL;
+        String courseName = RaceVisionXMLParser.COURSE_FILE.replace("-course.xml", "-map.png");
+        String mapImagePath = "/graphics/mapImages/" + courseName;
+        System.out.println(getGoogleMapsURL());
+        return DisplayUtils.class.getResource(mapImagePath).toExternalForm();
     }
-
-
 
 
     /**
@@ -181,8 +172,39 @@ public class DisplayUtils {
         double canvasY = Controller.getAnchorHeight();
         double canvasX = Controller.getAnchorWidth(); //halved to keep within google size guidelines
 
-        Coordinate bottomMarker = new Coordinate(min.getLat(), min.getLon());
-        Coordinate topMarker = new Coordinate(max.getLat(), max.getLon());
+        double boundaryMinLat;
+        double boundaryMinLon;
+
+        if(min.getLat() < 0) {
+            boundaryMinLat = min.getLat() - 0.05;
+        } else {
+            boundaryMinLat = min.getLat() + 0.05;
+        }
+        if(min.getLon() < 0) {
+            boundaryMinLon = min.getLon() - 0.05;
+        } else {
+            boundaryMinLon = min.getLon() + 0.05;
+        }
+
+        double boundaryMaxLat;
+        double boundaryMaxLon;
+
+        if(max.getLat() < 0) {
+            boundaryMaxLat = max.getLat() + 0.05;
+        } else {
+            boundaryMaxLat = max.getLat() - 0.05;
+        }
+
+        if(max.getLon() < 0) {
+            boundaryMaxLon = max.getLon() + 0.05;
+        } else {
+            boundaryMaxLon = max.getLon() - 0.05;
+        }
+
+        System.out.println(boundaryMinLat + " " + boundaryMinLon);
+
+        Coordinate bottomMarker = new Coordinate(boundaryMinLat, boundaryMinLon);
+        Coordinate topMarker = new Coordinate(boundaryMaxLat, boundaryMaxLon);
 
         Coordinate middlePoint = DisplayUtils.midPointFromTwoCoords(bottomMarker, topMarker);
 
@@ -194,9 +216,9 @@ public class DisplayUtils {
                 "&style=feature:water%7Ccolor:0xaae7df" +
                 "&style=feature:all%7Celement:labels%7Cvisibility:off" +
                 "&visible=" +
-                bottomMarker.getLat() + "," + bottomMarker.getLon() +
+                boundaryMinLat + "," + boundaryMinLon +
                 "%7C" +
-                topMarker.getLat() + "," + topMarker.getLon() +
+                boundaryMaxLat + "," + boundaryMaxLon +
                 "&scale=2" +
                 "&key=" + GOOGLE_API_KEY;
         return mapURL;

@@ -380,7 +380,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         courseNeedsRedraw = false;
         drawMarks();
         drawBoundary();
-        //drawMap();
+        drawMap();
         drawWindArrow();
         redrawRaceLines();
     }
