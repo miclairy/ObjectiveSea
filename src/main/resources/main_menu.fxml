@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.*?>
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -18,7 +14,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/menuStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.MainMenuController">
+<StackPane prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/menuStyle.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.MainMenuController">
    <children>
       <ImageView fitHeight="1080.0" fitWidth="1920.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <image>
@@ -26,12 +22,12 @@
          </image></ImageView>
       <AnchorPane fx:id="menuAnchor" prefHeight="880.0" prefWidth="900.0" AnchorPane.bottomAnchor="150.0" AnchorPane.leftAnchor="500.0" AnchorPane.rightAnchor="500.0" AnchorPane.topAnchor="150.0">
          <children>
-            <ImageView fitHeight="182.0" fitWidth="312.0" layoutX="456.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="352.0" AnchorPane.rightAnchor="352.0" AnchorPane.topAnchor="58.0">
+            <ImageView fitHeight="112.0" fitWidth="312.0" layoutX="406.0" layoutY="90.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="406.0" AnchorPane.rightAnchor="380.1333312988281" AnchorPane.topAnchor="45.0">
                <image>
                   <Image url="@graphics/menuTitle.png" />
                </image>
             </ImageView>
-            <GridPane fx:id="btnGrid" layoutX="182.0" layoutY="277.0" prefHeight="570.0" prefWidth="339.0" visible="false" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="250.0">
+            <GridPane fx:id="btnGrid" layoutX="182.0" layoutY="207.0" prefHeight="613.0" prefWidth="320.0" visible="false" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="200.0">
               <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                   <ColumnConstraints />
@@ -57,7 +53,7 @@
                      </padding></Button>
                </children>
             </GridPane>
-            <GridPane fx:id="liveGameGrid" layoutX="250.0" layoutY="367.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="280.0">
+            <GridPane fx:id="liveGameGrid" layoutX="250.0" layoutY="367.0" AnchorPane.bottomAnchor="80.0" AnchorPane.leftAnchor="250.0" AnchorPane.rightAnchor="250.0" AnchorPane.topAnchor="200.0">
                <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="275.6846923828125" minWidth="10.0" prefWidth="275.6846923828125" />
                   <ColumnConstraints hgrow="SOMETIMES" maxWidth="239.0816650390625" minWidth="10.0" prefWidth="239.0816650390625" />
@@ -124,7 +120,7 @@
                   </Label>
                </children>
             </GridPane>
-            <GridPane fx:id="practiceGrid" layoutX="344.0" layoutY="260.0" prefHeight="570.0" prefWidth="399.0" visible="false" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="250.0">
+            <GridPane fx:id="practiceGrid" layoutX="344.0" layoutY="260.0" prefHeight="570.0" prefWidth="399.0" visible="false" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="200.0">
                <columnConstraints>
                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                   <ColumnConstraints />
