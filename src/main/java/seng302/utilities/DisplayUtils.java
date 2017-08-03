@@ -214,25 +214,6 @@ public class DisplayUtils {
 
 
     /**
-     *
-     * @param compoundMark
-     * @return
-     */
-    public static Coordinate midPointFromCompoundMark(CompoundMark compoundMark) {
-        Coordinate midPoint;
-        if(compoundMark.hasTwoMarks()) {
-            Coordinate firstCoordinate = compoundMark.getMark1().getPosition();
-            Coordinate secondCoordinate = compoundMark.getMark2().getPosition();
-            midPoint = midPointFromTwoCoords(firstCoordinate, secondCoordinate);
-        } else {
-            midPoint = compoundMark.getPosition();
-        }
-
-        return midPoint;
-    }
-
-
-    /**
      * finds the geographic midpoint between two lat/lng points
      * @param lat1 latitude of first point
      * @param lon1 longitude of first point

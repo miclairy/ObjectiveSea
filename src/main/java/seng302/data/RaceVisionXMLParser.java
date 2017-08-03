@@ -246,13 +246,14 @@ public class RaceVisionXMLParser {
                             }
                             for(Integer seqNumber : markOrder.keySet()){
                                 int markID = Integer.parseInt(markOrder.get(seqNumber).get(0));
+                                String roundingSide = markOrder.get(seqNumber).get(1);
                                 if (seqNumber == 1) {
                                     CompoundMark mark = course.getCompoundMarkByID(markID);
                                     if (!mark.hasTwoMarks()){
                                         throw new RuntimeException("Race xml file has a incorrectly formatted Start Line");
                                     }
                                 }
-                                course.addMarkInOrder(markID);
+                                course.addMarkInOrder(markID, roundingSide);
                             }
                             break;
                         case XMLTags.Course.WIND:

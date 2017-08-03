@@ -1,5 +1,7 @@
 package seng302.models;
 
+import seng302.utilities.DisplayUtils;
+
 /**
  * Created on 7/03/17.
  * Class to specify the marks/gates on the course.
@@ -23,7 +25,11 @@ public class CompoundMark {
         this.type = MarkType.NORMAL;
         this.mark1 = mark1;
         this.mark2 = mark2;
-        position = mark1.getPosition();
+        if (hasTwoMarks()){
+            position = DisplayUtils.midPointFromTwoCoords(mark1.getPosition(), mark2.getPosition());
+        } else{
+            position = mark1.getPosition();
+        }
     }
 
     public CompoundMark(Integer compoundMarkID, String name, Mark mark1){

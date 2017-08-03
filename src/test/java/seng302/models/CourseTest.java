@@ -44,10 +44,10 @@ public class CourseTest {
         defaultCourse.addNewCompoundMark(gate);
         defaultCourse.addNewCompoundMark(finish);
 
-        defaultCourse.addMarkInOrder(1);
-        defaultCourse.addMarkInOrder(2);
-        defaultCourse.addMarkInOrder(3);
-        defaultCourse.addMarkInOrder(4);
+        defaultCourse.addMarkInOrder(1, "Port");
+        defaultCourse.addMarkInOrder(2, "Port");
+        defaultCourse.addMarkInOrder(3, "Port");
+        defaultCourse.addMarkInOrder(4, "Port");
 
         defaultCourse.addToBoundary(new Coordinate(32.318879, -64.840291));
         defaultCourse.addToBoundary(new Coordinate(32.328879, -64.840291));
