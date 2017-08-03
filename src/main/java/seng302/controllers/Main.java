@@ -131,7 +131,7 @@ public class Main extends Application {
         Parent root = loader.load();
         scene = new Scene(root);
         setScene(scene);
-        primaryStage.setResizable(false);
+        //primaryStage.setResizable(false);
         primaryStage.setScene(scene);
 
         return (Initializable) loader.getController();
