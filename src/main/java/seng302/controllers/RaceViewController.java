@@ -32,6 +32,7 @@ import seng302.utilities.DisplayUtils;
 import seng302.utilities.PolarReader;
 import seng302.utilities.TimeUtils;
 import seng302.models.*;
+import seng302.views.Arrow;
 import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
@@ -104,7 +105,30 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.scoreBoardController = scoreBoardController;
         this.selectionController = selectionController;
         redrawCourse();
+        drawRaceRoute();
         race.addObserver(this);
+    }
+
+    private void drawRaceRoute(){
+//        Line left = new Line();
+//        left.setStartX(100);
+//        left.setStartY(100);
+//        left.setEndY(150);
+//        left.setEndX(150);
+//        Line right = new Line();
+//        right.setStartX(100);
+//        right.setStartY(200);
+//        right.setEndY(150);
+//        right.setEndX(150);
+//        left.setStrokeWidth(10.0);
+//        right.setStrokeWidth(10.0);
+//        root.getChildren().add(left);
+//        root.getChildren().add(right);
+        Arrow arrow = new Arrow(50, 100, new CanvasCoordinate(150, 150));
+        arrow.rotate(90);
+        arrow.relocate(new CanvasCoordinate(500, 500));
+        arrow.addToCanvas(root);
+
     }
 
     @Override
@@ -977,7 +1001,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     /**
-     * draws a wind arrow on the course view
+     * draws a wind Arrow on the course view
      */
     public void drawWindArrow() {
 
@@ -1004,7 +1028,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     /**
-     * checks if wind arrow needs updating
+     * checks if wind Arrow needs updating
      */
     public void updateWindArrow() {
         windArrow.setVisible(true);
@@ -1020,7 +1044,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     /**
-     * updates angle of wind arrow
+     * updates angle of wind Arrow
      */
     public void updateWindArrowAngle() {
         double windDirection = (float)race.getCourse().getWindDirection();
@@ -1040,7 +1064,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     /**
-     * updates the colour of the wind arrow with a transition
+     * updates the colour of the wind Arrow with a transition
      * @param colorNum the num for related color value
      */
     public void updateWindArrowColor(int colorNum){

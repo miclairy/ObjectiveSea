@@ -167,11 +167,11 @@ public class RaceView {
     }
 
     /**
-     * Draws a vector arrow based from fromCoord to toCoord with the given color
-     * @param fromCoord The coordinate of the base of the arrow
-     * @param toCoord The coordinate of the top (pointy-end) of the arrow
-     * @param bearing The bearing from the base to the top of the arrow
-     * @param color The color of the arrow
+     * Draws a vector Arrow based from fromCoord to toCoord with the given color
+     * @param fromCoord The coordinate of the base of the Arrow
+     * @param toCoord The coordinate of the top (pointy-end) of the Arrow
+     * @param bearing The bearing from the base to the top of the Arrow
+     * @param color The color of the Arrow
      * @return a Polyline generated starting from fromCoord to toCoord in terms of CanvasCoordinates on screen.
      */
     private Polyline drawVectorArrow(Coordinate fromCoord, Coordinate toCoord, double bearing, Color color){
