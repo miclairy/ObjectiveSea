@@ -3,6 +3,7 @@ package seng302.controllers;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -47,7 +48,7 @@ public class MainMenuController implements Initializable{
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
 
 
-    DropShadow ds = new DropShadow( 20, Color.AQUA );
+    DropShadow ds = new DropShadow( 20, Color.web("#8eb0b7"));
 
 
     private Main main;
@@ -66,6 +67,7 @@ public class MainMenuController implements Initializable{
         btnGrid.setVisible(true);
         liveGameGrid.setVisible(false);
         practiceGrid.setVisible(false);
+        courseGrid.setVisible(false);
     }
 
     public void setApp(Main main){
@@ -244,12 +246,12 @@ public class MainMenuController implements Initializable{
      * attaches click and hover listeners to buttons
      * @param button the button to attach the listener
      */
-    private void addButtonListeners(Button button){
-        button.addEventHandler(MouseEvent.MOUSE_ENTERED,
-                e -> AnimationUtils.scaleButtonHover(button));
+    private void addButtonListeners(Node node){
+        node.addEventHandler(MouseEvent.MOUSE_ENTERED,
+                e -> AnimationUtils.scaleButtonHover(node));
 
-        button.addEventHandler(MouseEvent.MOUSE_EXITED,
-                e -> AnimationUtils.scaleButtonHoverExit(button));
+        node.addEventHandler(MouseEvent.MOUSE_EXITED,
+                e -> AnimationUtils.scaleButtonHoverExit(node));
     }
 
     /**
@@ -288,6 +290,16 @@ public class MainMenuController implements Initializable{
                 imageView.setEffect( null );
             }
         });
+
+//        imageView.setOnMouseEntered(( MouseEvent event ) ->
+//        {
+//            AnimationUtils.viewMapFocus(imageView);
+//        } );
+//
+//        imageView.setOnMouseExited(( MouseEvent event ) ->
+//        {
+//            AnimationUtils.viewMapUnFocus(imageView);
+//        } );
 
     }
 
