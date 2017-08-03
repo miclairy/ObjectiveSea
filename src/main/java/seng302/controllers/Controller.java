@@ -21,6 +21,8 @@ import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
+import java.net.*;
+import java.io.*;
 
 import javax.naming.Context;
 import java.net.Inet4Address;
@@ -119,15 +121,30 @@ public class Controller implements Initializable, Observer {
         initZoom();
     }
 
+    /**
+     * gets users public ip address from AWS ping servers.
+     * @return the IP address or 'Not Found'
+     */
+    private String getPublicIp(){
+        try {
+            URL ipURL = new URL("http://checkip.amazonaws.com");
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+                    ipURL.openStream()));
+            String ip = in.readLine(); //you get the IP as a String
+            return ip;
+        } catch (Exception e) {
+            return "Not Found";
+        }
+
+
+
+    }
+
     public void setApp(boolean host){
         this.isHost = host;
 
         if(isHost){
-            try {
-                startersOverlayTitle.setText("IP: " + InetAddress.getLocalHost().getHostAddress());
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
+            startersOverlayTitle.setText("IP: " + getPublicIp());
         }else{
             startersOverlayTitle.setText(race.getRegattaName());
         }
