@@ -339,7 +339,6 @@ public class RaceUpdater implements Runnable {
 
     private void prepareBoatForRace(Boat boat) {
         setStartingPosition(boat);
-        boat.setHeading(race.getCourse().headingsBetweenMarks(0, 1));
         boat.updateBoatSpeed(race.getCourse());
         boat.setLastRoundedMarkIndex(0);
         boat.setStatus(BoatStatus.PRERACE);
@@ -362,8 +361,9 @@ public class RaceUpdater implements Runnable {
         Double dLon = (startPosition2.getLon() - startPosition1.getLon()) / (MAX_BOATS_IN_RACE + 1);
         Double curLat = startPosition1.getLat() + (dLat * race.getCompetitors().size());
         Double curLon = startPosition1.getLon() + (dLon * race.getCompetitors().size());
-
         boat.setPosition(curLat, curLon);
+
+        boat.setHeading(boat.getCurrentPosition().headingToCoordinate(startingLine.getPosition()));
     }
     /**
      * Updates the boats time to the next mark
