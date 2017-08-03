@@ -118,34 +118,15 @@ public class AnimationUtils {
      * shifts a label from a text field to above it for input
      * @param label the label to slide
      */
-    public static void shiftPromptLabel(Label label){
+    public static void shiftPromptLabel(Label label, int direction){
         TranslateTransition translateTransition = new TranslateTransition(new Duration(80), label);
-        translateTransition.setByX(-18);
-        translateTransition.setByY(-26);
+        translateTransition.setByX(18 * direction);
+        translateTransition.setByY(26 * direction);
         translateTransition.setInterpolator(Interpolator.EASE_IN);
 
         ScaleTransition scaleTransition = new ScaleTransition(new Duration(80), label);
-        scaleTransition.setByX(-0.15);
-        scaleTransition.setByY(-0.15);
-
-        ParallelTransition pt = new ParallelTransition(translateTransition, scaleTransition);
-        pt.play();
-
-    }
-
-    /**
-     * shifts a label back into position after input
-     * @param label the label to shift
-     */
-    public static void shiftPromptLabelBack(Label label){
-        TranslateTransition translateTransition = new TranslateTransition(new Duration(80), label);
-        translateTransition.setByX(18);
-        translateTransition.setByY(26);
-        translateTransition.setInterpolator(Interpolator.EASE_IN);
-
-        ScaleTransition scaleTransition = new ScaleTransition(new Duration(80), label);
-        scaleTransition.setByX(0.15);
-        scaleTransition.setByY(0.15);
+        scaleTransition.setByX(0.15 * direction);
+        scaleTransition.setByY(0.15 * direction);
 
         ParallelTransition pt = new ParallelTransition(translateTransition, scaleTransition);
         pt.play();

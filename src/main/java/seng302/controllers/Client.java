@@ -5,6 +5,7 @@ import seng302.data.ClientSender;
 import seng302.data.DataStreamReader;
 import seng302.models.Boat;
 import seng302.models.Race;
+import seng302.utilities.NoConnectionToServerException;
 
 import java.util.*;
 
@@ -58,13 +59,6 @@ public class Client implements Runnable, Observer {
                 throw new NoConnectionToServerException("Maximum connection attempts exceeded while trying to connect to server. Port or IP may not be valid.");
             }
         }
-    }
-
-    public class NoConnectionToServerException extends Exception {
-        public NoConnectionToServerException() { super(); }
-        public NoConnectionToServerException(String message) { super(message); }
-        public NoConnectionToServerException(String message, Throwable cause) { super(message, cause); }
-        public NoConnectionToServerException(Throwable cause) { super(cause); }
     }
 
     private void setUpDataStreamReader(){

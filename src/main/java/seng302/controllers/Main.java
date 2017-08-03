@@ -25,6 +25,7 @@ import seng302.data.ConnectionManager;
 import seng302.data.DataStreamReader;
 import seng302.utilities.Config;
 import seng302.models.Race;
+import seng302.utilities.ConnectionUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,7 +72,7 @@ public class Main extends Application {
             clientThread.setName("Client");
             clientThread.start();
         } catch (Client.NoConnectionToServerException e) {
-            showServerError();
+            ConnectionUtils.showServerError();
         }
 
     }
@@ -143,20 +144,6 @@ public class Main extends Application {
     }
 
     /**
-     * shows a popup informing user that connection to the server failed
-     */
-    private static void showServerError(){
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Cannot Connect to Server");
-        alert.setHeaderText("Cannot Connect to Server");
-        alert.setContentText("This server may not be running.\n" +
-                "Please ensure that the IP and Port numbers \n" +
-                "you have entered are correct.");
-
-        alert.showAndWait();
-    }
-
-    /**
      * starts the client at the desired ip and port number
      * ensures that the client connects
      * throws error if connection fails
@@ -172,7 +159,7 @@ public class Main extends Application {
             clientThread.setName("Client");
             clientThread.start();
         } catch (Client.NoConnectionToServerException e) {
-            showServerError();
+            ConnectionUtils.showServerError();
             return false;
         }
         return true;
