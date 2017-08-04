@@ -5,6 +5,7 @@ import seng302.data.ClientSender;
 import seng302.data.DataStreamReader;
 import seng302.models.Boat;
 import seng302.models.Race;
+import seng302.utilities.NoConnectionToServerException;
 
 import java.util.*;
 
@@ -27,6 +28,7 @@ public class Client implements Runnable, Observer {
     private String sourceAddress;
     private int sourcePort;
     private boolean isParticipant;
+    Thread dataStreamReaderThread;
 
     private int connectionAttempts = 0;
     private int MAX_CONNECTION_ATTEMPTS = 200;
@@ -53,24 +55,26 @@ public class Client implements Runnable, Observer {
                 }
                 connectionAttempts ++;
             }else{
+                stopDataStreamReader();
                 throw new NoConnectionToServerException("Maximum connection attempts exceeded while trying to connect to server. Port or IP may not be valid.");
             }
         }
     }
 
-    public class NoConnectionToServerException extends Exception {
-        public NoConnectionToServerException() { super(); }
-        public NoConnectionToServerException(String message) { super(message); }
-        public NoConnectionToServerException(String message, Throwable cause) { super(message, cause); }
-        public NoConnectionToServerException(Throwable cause) { super(cause); }
-    }
-
     private void setUpDataStreamReader(){
         this.dataStreamReader = new DataStreamReader(sourceAddress, sourcePort);
-        Thread dataStreamReaderThread = new Thread(dataStreamReader);
+        dataStreamReaderThread = new Thread(dataStreamReader);
         dataStreamReaderThread.setName("DataStreamReader");
         dataStreamReaderThread.start();
         dataStreamReader.addObserver(this);
+    }
+
+    private void stopDataStreamReader(){
+        if(dataStreamReaderThread != null){
+            dataStreamReaderThread.stop();
+            this.dataStreamReader = null;
+            System.out.println("Client: Server not found");
+        }
     }
 
     @Override

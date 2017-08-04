@@ -25,6 +25,8 @@ import seng302.data.ConnectionManager;
 import seng302.data.DataStreamReader;
 import seng302.utilities.Config;
 import seng302.models.Race;
+import seng302.utilities.ConnectionUtils;
+import seng302.utilities.NoConnectionToServerException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,8 +72,8 @@ public class Main extends Application {
             Thread clientThread = new Thread(client);
             clientThread.setName("Client");
             clientThread.start();
-        } catch (Client.NoConnectionToServerException e) {
-            showServerError();
+        } catch (NoConnectionToServerException e) {
+            ConnectionUtils.showServerError();
         }
 
     }
@@ -131,7 +133,6 @@ public class Main extends Application {
         Parent root = loader.load();
         scene = new Scene(root);
         setScene(scene);
-        primaryStage.setResizable(false);
         primaryStage.setScene(scene);
 
         return (Initializable) loader.getController();
@@ -141,20 +142,6 @@ public class Main extends Application {
         Config.initializeConfig();
         setupServer(course, port);
         setupClient(port);
-    }
-
-    /**
-     * shows a popup informing user that connection to the server failed
-     */
-    private static void showServerError(){
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Cannot Connect to Server");
-        alert.setHeaderText("Cannot Connect to Server");
-        alert.setContentText("This server may not be running.\n" +
-                "Please ensure that the IP and Port numbers \n" +
-                "you have entered are correct.");
-
-        alert.showAndWait();
     }
 
     /**
@@ -172,8 +159,8 @@ public class Main extends Application {
             Thread clientThread = new Thread(client);
             clientThread.setName("Client");
             clientThread.start();
-        } catch (Client.NoConnectionToServerException e) {
-            showServerError();
+        } catch (NoConnectionToServerException e) {
+            ConnectionUtils.showServerError();
             return false;
         }
         return true;

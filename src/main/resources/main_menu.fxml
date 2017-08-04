@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
@@ -20,241 +14,260 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/menuStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.MainMenuController">
+<StackPane prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/menuStyle.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.MainMenuController">
    <children>
       <ImageView fitHeight="1080.0" fitWidth="1920.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <image>
             <Image url="@graphics/menuBackground.png" />
          </image></ImageView>
-      <AnchorPane fx:id="menuAnchor" prefHeight="880.0" prefWidth="900.0" AnchorPane.bottomAnchor="150.0" AnchorPane.leftAnchor="500.0" AnchorPane.rightAnchor="500.0" AnchorPane.topAnchor="150.0">
+      <AnchorPane fx:id="menuAnchor" maxHeight="880.0" maxWidth="700.0" minWidth="700.0" prefHeight="880.0" prefWidth="700.0" AnchorPane.bottomAnchor="150.0" AnchorPane.leftAnchor="500.0" AnchorPane.rightAnchor="500.0" AnchorPane.topAnchor="150.0">
          <children>
-            <ImageView fitHeight="185.0" fitWidth="400.0" layoutX="317.0" layoutY="18.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="317.0" AnchorPane.rightAnchor="316.702392578125" AnchorPane.topAnchor="18.0">
-               <image>
-                  <Image url="@graphics/menuTitle.png" />
-               </image>
-            </ImageView>
-            <GridPane fx:id="btnGrid" layoutX="182.0" layoutY="350.0" prefHeight="370.0" prefWidth="320.0" visible="false" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="350.0">
-              <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints />
-                  <ColumnConstraints />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-              </rowConstraints>
+            <StackPane layoutX="390.0" layoutY="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
                <children>
-                  <Button fx:id="btnLiveGame" mnemonicParsing="false" onAction="#loadLiveGameGrid" text="LIVE GAME" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
-                     <padding>
-                        <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
-                     </padding></Button>
-                  <Button fx:id="btnPractise" mnemonicParsing="false" onAction="#loadPractiseGrid" text="PRACTICE" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
-                     <padding>
-                        <Insets bottom="10.0" left="43.0" right="43.0" top="10.0" />
-                     </padding></Button>
-                  <Button fx:id="btnTutorial" mnemonicParsing="false" text="TUTORIAL" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP">
-                     <padding>
-                        <Insets bottom="10.0" left="42.0" right="42.0" top="10.0" />
-                     </padding></Button>
+                  <ImageView fitHeight="123.0" fitWidth="235.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@graphics/menuTitle.png" />
+                     </image>
+                  </ImageView>
                </children>
-            </GridPane>
-            <GridPane fx:id="liveGameGrid" layoutX="248.0" layoutY="334.0" prefHeight="345.0" prefWidth="520.0" visible="false" AnchorPane.bottomAnchor="101.0" AnchorPane.leftAnchor="248.0" AnchorPane.rightAnchor="252.0" AnchorPane.topAnchor="334.0">
-               <columnConstraints>
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="275.6846923828125" minWidth="10.0" prefWidth="275.6846923828125" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="239.0816650390625" minWidth="10.0" prefWidth="239.0816650390625" />
-                  <ColumnConstraints />
-                  <ColumnConstraints />
-               </columnConstraints>
-               <rowConstraints>
-                  <RowConstraints maxHeight="464.0" minHeight="10.0" prefHeight="320.0" vgrow="SOMETIMES" />
-               </rowConstraints>
+            </StackPane>
+            <StackPane layoutX="228.0" layoutY="172.0" prefHeight="608.0" prefWidth="1020.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="150.0">
                <children>
-                  <Button fx:id="btnHost" mnemonicParsing="false" onAction="#hostGame" text="HOST" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
-                     <GridPane.margin>
-                        <Insets right="50.0" top="30.0" />
-                     </GridPane.margin>
-                     <padding>
-                        <Insets bottom="10.0" left="56.0" right="56.0" top="10.0" />
-                     </padding></Button>
-                  <Button fx:id="btnSpectate" mnemonicParsing="false" onAction="#spectateGame" text="SPECTATE" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
-                     <GridPane.margin>
-                        <Insets bottom="30.0" right="50.0" top="130.0" />
-                     </GridPane.margin>
-                     <padding>
-                        <Insets bottom="10.0" left="41.0" right="41.0" top="10.0" />
-                     </padding></Button>
-                  <Button fx:id="btnJoin" mnemonicParsing="false" onAction="#joinGame" text="JOIN" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
-                     <GridPane.margin>
-                        <Insets right="50.0" top="80.0" />
-                     </GridPane.margin>
-                     <padding>
-                        <Insets bottom="10.0" left="58.0" right="58.0" top="10.0" />
-                     </padding>
-                     <graphic>
-                        <ProgressIndicator fx:id="joinProgressIndicator" nodeOrientation="LEFT_TO_RIGHT" prefHeight="0.0" prefWidth="0.0">
-                           <cursor>
-                              <Cursor fx:constant="DEFAULT" />
-                           </cursor>
-                        </ProgressIndicator>
-                     </graphic></Button>
-                  <Button fx:id="btnBack" mnemonicParsing="false" onAction="#backToMainMenu" text="BACK" GridPane.halignment="LEFT" GridPane.valignment="TOP">
-                     <GridPane.margin>
-                        <Insets bottom="30.0" left="50.0" top="185.0" />
-                     </GridPane.margin>
-                     <padding>
-                        <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
-                     </padding></Button>
-                  <TextField fx:id="txtIPAddress" GridPane.valignment="TOP">
-                     <GridPane.margin>
-                        <Insets bottom="20.0" left="50.0" top="30.0" />
-                     </GridPane.margin>
-                  </TextField>
-                  <TextField fx:id="txtPortNumber" GridPane.valignment="TOP">
-                     <GridPane.margin>
-                        <Insets left="50.0" top="110.0" />
-                     </GridPane.margin></TextField>
-                  <Label fx:id="lblIP" mouseTransparent="true" text="IP Address" GridPane.valignment="TOP">
-                     <GridPane.margin>
-                        <Insets bottom="20.0" left="62.0" top="36.0" />
-                     </GridPane.margin>
-                  </Label>
-                  <Label fx:id="lblPort" mouseTransparent="true" text="Port Number" GridPane.valignment="TOP">
-                     <GridPane.margin>
-                        <Insets left="62.0" top="116.0" />
-                     </GridPane.margin>
-                  </Label>
+                  <GridPane fx:id="btnGrid" maxHeight="299.0" maxWidth="320.0" minHeight="299.0" minWidth="320.0" prefHeight="299.0" prefWidth="320.0" visible="false">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints />
+                        <ColumnConstraints />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Button fx:id="btnLiveGame" mnemonicParsing="false" onAction="#loadLiveGameGrid" text="LIVE GAME" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                           <padding>
+                              <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
+                           </padding>
+                        </Button>
+                        <Button fx:id="btnPractise" mnemonicParsing="false" onAction="#loadPractiseGrid" text="PRACTICE" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                           <padding>
+                              <Insets bottom="10.0" left="43.0" right="43.0" top="10.0" />
+                           </padding>
+                        </Button>
+                        <Button fx:id="btnTutorial" mnemonicParsing="false" text="TUTORIAL" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP">
+                           <padding>
+                              <Insets bottom="10.0" left="42.0" right="42.0" top="10.0" />
+                           </padding>
+                        </Button>
+                     </children>
+                  </GridPane>
+                  <GridPane fx:id="liveGameGrid" maxHeight="260.0" maxWidth="520.0" minHeight="260.0" prefHeight="260.0" prefWidth="520.0" visible="false">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="275.6846923828125" minWidth="10.0" prefWidth="275.6846923828125" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="239.0816650390625" minWidth="10.0" prefWidth="239.0816650390625" />
+                        <ColumnConstraints />
+                        <ColumnConstraints />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints maxHeight="464.0" minHeight="10.0" prefHeight="320.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <Button fx:id="btnHost" mnemonicParsing="false" onAction="#hostGame" text="HOST" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
+                           <GridPane.margin>
+                              <Insets right="50.0" top="30.0" />
+                           </GridPane.margin>
+                           <padding>
+                              <Insets bottom="10.0" left="56.0" right="56.0" top="10.0" />
+                           </padding>
+                        </Button>
+                        <Button fx:id="btnSpectate" mnemonicParsing="false" onAction="#joinAsSpectator" text="SPECTATE" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
+                           <GridPane.margin>
+                              <Insets bottom="30.0" right="50.0" top="130.0" />
+                           </GridPane.margin>
+                           <padding>
+                              <Insets bottom="10.0" left="42.0" right="42.0" top="10.0" />
+                           </padding>
+                        </Button>
+                        <Button fx:id="btnJoin" mnemonicParsing="false" onAction="#joinAsParticipant" text="JOIN" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
+                           <GridPane.margin>
+                              <Insets right="50.0" top="80.0" />
+                           </GridPane.margin>
+                           <padding>
+                              <Insets bottom="10.0" left="58.0" right="58.0" top="10.0" />
+                           </padding>
+                           <graphic>
+                              <ProgressIndicator fx:id="joinProgressIndicator" nodeOrientation="LEFT_TO_RIGHT" prefHeight="0.0" prefWidth="0.0">
+                                 <cursor>
+                                    <Cursor fx:constant="DEFAULT" />
+                                 </cursor>
+                              </ProgressIndicator>
+                           </graphic>
+                        </Button>
+                        <Button fx:id="btnBack" mnemonicParsing="false" onAction="#backToMainMenu" text="BACK" GridPane.halignment="LEFT" GridPane.valignment="TOP">
+                           <GridPane.margin>
+                              <Insets bottom="30.0" left="50.0" top="185.0" />
+                           </GridPane.margin>
+                           <padding>
+                              <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
+                           </padding>
+                        </Button>
+                        <TextField fx:id="txtIPAddress" GridPane.valignment="TOP">
+                           <GridPane.margin>
+                              <Insets bottom="20.0" left="50.0" top="30.0" />
+                           </GridPane.margin>
+                        </TextField>
+                        <TextField fx:id="txtPortNumber" GridPane.valignment="TOP">
+                           <GridPane.margin>
+                              <Insets left="50.0" top="110.0" />
+                           </GridPane.margin>
+                        </TextField>
+                        <Label fx:id="lblIP" mouseTransparent="true" text="IP Address" GridPane.valignment="TOP">
+                           <GridPane.margin>
+                              <Insets bottom="20.0" left="62.0" top="36.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Label fx:id="lblPort" mouseTransparent="true" text="Port Number" GridPane.valignment="TOP">
+                           <GridPane.margin>
+                              <Insets left="62.0" top="116.0" />
+                           </GridPane.margin>
+                        </Label>
+                     </children>
+                  </GridPane>
+                  <GridPane fx:id="practiceGrid" maxHeight="299.0" maxWidth="320.0" prefHeight="299.0" prefWidth="320.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints />
+                        <ColumnConstraints />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <Button fx:id="btnBackPrac" mnemonicParsing="false" onAction="#backToMainMenuPrac" text="BACK" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                           <padding>
+                              <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
+                           </padding>
+                        </Button>
+                        <Button fx:id="btnPractiseStart" mnemonicParsing="false" text="PRACTISE START" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                           <padding>
+                              <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
+                           </padding>
+                           <GridPane.margin>
+                              <Insets top="30.0" />
+                           </GridPane.margin>
+                        </Button>
+                        <Button fx:id="btnSinglePlay" mnemonicParsing="false" onAction="#loadOfflinePlay" text="SINGLE PLAY" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                           <padding>
+                              <Insets bottom="10.0" left="52.0" right="52.0" top="10.0" />
+                           </padding>
+                           <GridPane.margin>
+                              <Insets top="20.0" />
+                           </GridPane.margin>
+                        </Button>
+                     </children>
+                  </GridPane>
+                   <GridPane fx:id="courseGrid" layoutX="160.0" layoutY="238.0" prefHeight="510.0" prefWidth="700.0" stylesheets="@style/menuStyle.css" AnchorPane.bottomAnchor="20.0" AnchorPane.topAnchor="220.0">
+                       <children>
+                           <Button fx:id="btnBackHost" mnemonicParsing="false" onAction="#backToLiveGame" text="BACK" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                               <padding>
+                                   <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
+                               </padding>
+                           </Button>
+                           <Button fx:id="btnCourseStart" mnemonicParsing="false" onAction="#startHostGame" text="START" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                               <padding>
+                                   <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
+                               </padding>
+                           </Button>
+                           <ImageView fx:id="AC35" fitHeight="150.0" fitWidth="180.0" pickOnBounds="true" styleClass="imageMapView" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
+                               <image>
+                                   <Image url="@graphics/courseImages/AC35-course.png" />
+                               </image>
+                               <GridPane.margin>
+                                   <Insets bottom="20.0" />
+                               </GridPane.margin>
+                               <viewport>
+                                   <Rectangle2D minX="200.0" minY="150.0" />
+                               </viewport>
+                           </ImageView>
+                           <ImageView fx:id="LakeTekapo" fitHeight="150.0" fitWidth="180.0" pickOnBounds="true" styleClass="imageMapView" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
+                               <image>
+                                   <Image url="@graphics/courseImages/LakeTekapo-course.png" />
+                               </image>
+                               <GridPane.margin>
+                                   <Insets bottom="20.0" />
+                               </GridPane.margin>
+                               <viewport>
+                                   <Rectangle2D minX="200.0" minY="150.0" />
+                               </viewport>
+                           </ImageView>
+                           <ImageView fx:id="LakeTaupo" fitHeight="150.0" fitWidth="180.0" pickOnBounds="true" styleClass="imageMapView" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
+                               <image>
+                                   <Image url="@graphics/courseImages/LakeTaupo-course.png" />
+                               </image>
+                               <GridPane.margin>
+                                   <Insets bottom="20.0" />
+                               </GridPane.margin>
+                           </ImageView>
+                           <ImageView fx:id="AC33" fitHeight="150.0" fitWidth="180.0" pickOnBounds="true" styleClass="imageMapView" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
+                               <image>
+                                   <Image url="@graphics/courseImages/AC33-course.png" />
+                               </image>
+                               <GridPane.margin>
+                                   <Insets />
+                               </GridPane.margin>
+                           </ImageView>
+                           <Label id="mapTitle" text="Lake Tekapo" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                               <GridPane.margin>
+                                   <Insets bottom="5.0" />
+                               </GridPane.margin>
+                           </Label>
+                           <Label id="mapTitle" text="Lake Taupo" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                               <GridPane.margin>
+                                   <Insets bottom="5.0" />
+                               </GridPane.margin>
+                           </Label>
+                           <Label id="mapTitle" text="AC33 - San Francisco" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
+                               <GridPane.margin>
+                                   <Insets />
+                               </GridPane.margin>
+                           </Label>
+                           <Label id="mapTitle" text="AC35 - Bermuda" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                               <GridPane.margin>
+                                   <Insets bottom="5.0" />
+                               </GridPane.margin>
+                           </Label>
+                           <ImageView fx:id="Athens" fitHeight="150.0" fitWidth="180.0" pickOnBounds="true" styleClass="imageMapView" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
+                               <image>
+                                   <Image url="@graphics/courseImages/Athens-course.png" />
+                               </image>
+                               <GridPane.margin>
+                                   <Insets />
+                               </GridPane.margin>
+                           </ImageView>
+                           <Label id="mapTitle" text="Athens" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
+                               <GridPane.margin>
+                                   <Insets />
+                               </GridPane.margin>
+                           </Label>
+                       </children>
+                       <columnConstraints>
+                           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                           <ColumnConstraints />
+                           <ColumnConstraints />
+                       </columnConstraints>
+                       <rowConstraints>
+                           <RowConstraints maxHeight="273.55987548828125" minHeight="10.0" prefHeight="273.55987548828125" vgrow="SOMETIMES" />
+                           <RowConstraints maxHeight="328.8313903808594" minHeight="10.0" prefHeight="238.96624755859375" vgrow="SOMETIMES" />
+                           <RowConstraints maxHeight="271.8668212890625" minHeight="10.0" prefHeight="148.03375244140625" vgrow="SOMETIMES" />
+                       </rowConstraints>
+                   </GridPane>
                </children>
-            </GridPane>
-            <GridPane fx:id="practiceGrid" layoutX="344.0" layoutY="346.0" prefHeight="374.0" prefWidth="320.0" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="350.0" AnchorPane.rightAnchor="350.0" AnchorPane.topAnchor="346.0">
-               <columnConstraints>
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints />
-                  <ColumnConstraints />
-               </columnConstraints>
-               <rowConstraints>
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-               </rowConstraints>
-               <children>
-                  <Button fx:id="btnBackPrac" mnemonicParsing="false" onAction="#backToMainMenuPrac" text="BACK" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
-                     <padding>
-                        <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
-                     </padding></Button>
-                  <Button fx:id="btnPractiseStart" mnemonicParsing="false" text="PRACTISE START" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-                     <padding>
-                        <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
-                     </padding>
-                     <GridPane.margin>
-                        <Insets top="30.0" />
-                     </GridPane.margin></Button>
-                  <Button fx:id="btnSinglePlay" mnemonicParsing="false" onAction="#loadOfflinePlay" text="SINGLE PLAY" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
-                     <padding>
-                        <Insets bottom="10.0" left="52.0" right="52.0" top="10.0" />
-                     </padding>
-                     <GridPane.margin>
-                        <Insets top="20.0" />
-                     </GridPane.margin></Button>
-               </children>
-            </GridPane>
-            <GridPane fx:id="courseGrid" layoutX="160.0" layoutY="238.0" prefHeight="510.0" prefWidth="700.0" stylesheets="@style/menuStyle.css" AnchorPane.bottomAnchor="20.0" AnchorPane.topAnchor="220.0">
-               <children>
-                  <Button fx:id="btnBackHost" mnemonicParsing="false" onAction="#backToLiveGame" text="BACK" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
-                     <padding>
-                        <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
-                     </padding>
-                  </Button>
-                  <Button fx:id="btnCourseStart" mnemonicParsing="false" onAction="#startHostGame" text="START" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
-                     <padding>
-                        <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
-                     </padding>
-                  </Button>
-                  <ImageView fx:id="AC35" fitHeight="150.0" fitWidth="180.0" pickOnBounds="true" styleClass="imageMapView" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
-                     <image>
-                        <Image url="@graphics/courseImages/AC35-course.png" />
-                     </image>
-                     <GridPane.margin>
-                        <Insets bottom="20.0" />
-                     </GridPane.margin>
-                     <viewport>
-                        <Rectangle2D minX="200.0" minY="150.0" />
-                     </viewport>
-                  </ImageView>
-                  <ImageView fx:id="LakeTekapo" fitHeight="150.0" fitWidth="180.0" pickOnBounds="true" styleClass="imageMapView" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
-                     <image>
-                        <Image url="@graphics/courseImages/LakeTekapo-course.png" />
-                     </image>
-                     <GridPane.margin>
-                        <Insets bottom="20.0" />
-                     </GridPane.margin>
-                     <viewport>
-                        <Rectangle2D minX="200.0" minY="150.0" />
-                     </viewport>
-                  </ImageView>
-                  <ImageView fx:id="LakeTaupo" fitHeight="150.0" fitWidth="180.0" pickOnBounds="true" styleClass="imageMapView" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
-                     <image>
-                        <Image url="@graphics/courseImages/LakeTaupo-course.png" />
-                     </image>
-                     <GridPane.margin>
-                        <Insets bottom="20.0" />
-                     </GridPane.margin>
-                  </ImageView>
-                  <ImageView fx:id="AC33" fitHeight="150.0" fitWidth="180.0" pickOnBounds="true" styleClass="imageMapView" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
-                     <image>
-                        <Image url="@graphics/courseImages/AC33-course.png" />
-                     </image>
-                     <GridPane.margin>
-                        <Insets />
-                     </GridPane.margin>
-                  </ImageView>
-                  <Label id="mapTitle" text="Lake Tekapo" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
-                     <GridPane.margin>
-                        <Insets bottom="5.0" />
-                     </GridPane.margin>
-                  </Label>
-                  <Label id="mapTitle" text="Lake Taupo" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
-                     <GridPane.margin>
-                        <Insets bottom="5.0" />
-                     </GridPane.margin>
-                  </Label>
-                  <Label id="mapTitle" text="AC33 - San Francisco" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
-                     <GridPane.margin>
-                        <Insets />
-                     </GridPane.margin>
-                  </Label>
-                  <Label id="mapTitle" text="AC35 - Bermuda" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
-                     <GridPane.margin>
-                        <Insets bottom="5.0" />
-                     </GridPane.margin>
-                  </Label>
-                  <ImageView fx:id="Athens" fitHeight="150.0" fitWidth="180.0" pickOnBounds="true" styleClass="imageMapView" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
-                     <image>
-                        <Image url="@graphics/courseImages/Athens-course.png" />
-                     </image>
-                     <GridPane.margin>
-                        <Insets />
-                     </GridPane.margin>
-                  </ImageView>
-                  <Label id="mapTitle" text="Athens" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
-                     <GridPane.margin>
-                        <Insets />
-                     </GridPane.margin>
-                  </Label>
-               </children>
-               <columnConstraints>
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                  <ColumnConstraints />
-                  <ColumnConstraints />
-               </columnConstraints>
-               <rowConstraints>
-                  <RowConstraints maxHeight="273.55987548828125" minHeight="10.0" prefHeight="273.55987548828125" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="328.8313903808594" minHeight="10.0" prefHeight="238.96624755859375" vgrow="SOMETIMES" />
-                  <RowConstraints maxHeight="271.8668212890625" minHeight="10.0" prefHeight="148.03375244140625" vgrow="SOMETIMES" />
-               </rowConstraints>
-            </GridPane>
+            </StackPane>
          </children>
          <StackPane.margin>
             <Insets bottom="150.0" left="450.0" right="450.0" top="150.0" />
