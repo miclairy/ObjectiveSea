@@ -157,10 +157,9 @@ public class Controller implements Initializable, Observer {
         }
     }
 
-    public void exitRace(){
+    public void exitRace() throws IOException {
         displaySwitcher.loadMainMenu();
-        if(isHost){
-        }
+        ConnectionUtils.initiateDisconnect(isHost);
     }
 
     /**

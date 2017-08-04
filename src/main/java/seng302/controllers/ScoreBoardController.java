@@ -22,6 +22,7 @@ import javafx.scene.chart.XYChart.Series;
 import seng302.models.Race;
 import seng302.models.Boat;
 
+import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -182,7 +183,7 @@ public class ScoreBoardController {
                 e -> AnimationUtils.scaleButtonHoverExit(button));
     }
 
-    @FXML private void btnExitRacePressed(){
+    @FXML private void btnExitRacePressed() throws IOException {
         parent.exitRace();
     }
 

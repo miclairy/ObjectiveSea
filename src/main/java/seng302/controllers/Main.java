@@ -38,6 +38,7 @@ import java.util.logging.Logger;
 
 public class Main extends Application {
     private static Client client;
+    private static Server server;
     private static Stage primaryStage;
     private DisplaySwitcher displaySwitcher;
 
@@ -70,6 +71,7 @@ public class Main extends Application {
     private static void setupClient(int port) {
         try {
             client = new Client("localhost", port, true);
+            ConnectionUtils.setClient(client);
             Thread clientThread = new Thread(client);
             clientThread.setName("Client");
             clientThread.start();
@@ -88,9 +90,9 @@ public class Main extends Application {
         Thread runnerThread = new Thread(runner);
         runnerThread.setName("Race Updater");
         runnerThread.start();
-        Server server;
         server = new Server(port, runner);
         server.setScaleFactor(Config.MOCK_SPEED_SCALE);
+        ConnectionUtils.setServer(server);
         Thread serverThread = new Thread(server);
         serverThread.setName("Server");
         serverThread.start();
@@ -129,6 +131,7 @@ public class Main extends Application {
     public boolean startClient(String ip, int port, boolean isParticipant){
         try {
             client = new Client(ip, port, isParticipant);
+            ConnectionUtils.setClient(client);
             Thread clientThread = new Thread(client);
             clientThread.setName("Client");
             clientThread.start();

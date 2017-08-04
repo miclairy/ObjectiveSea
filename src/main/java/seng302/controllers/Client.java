@@ -1,5 +1,6 @@
 package seng302.controllers;
 
+import seng302.data.BoatStatus;
 import seng302.data.ClientPacketBuilder;
 import seng302.data.ClientSender;
 import seng302.data.DataStreamReader;
@@ -139,5 +140,10 @@ public class Client implements Runnable, Observer {
 
     public int getClientID() {
         return clientID;
+    }
+
+    public void initiateClientDisconnect(){
+        race.getBoatById(clientID).setStatus(BoatStatus.DNF);
+        dataStreamReader.disconnectClient();
     }
 }

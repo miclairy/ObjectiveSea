@@ -300,6 +300,10 @@ public class DataStreamReader extends Receiver implements Runnable{
         race.updateMarkRounded(sourceID, markIndex, time);
     }
 
+    public void disconnectClient(){
+
+    }
+
     public Socket getClientSocket() {
         return clientSocket;
     }

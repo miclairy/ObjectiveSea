@@ -238,4 +238,8 @@ public class Server implements Runnable, Observer {
             }
         }
     }
+
+    public void initiateServerDisconnect() throws IOException {
+        connectionManager.closeConnections();
+    }
 }

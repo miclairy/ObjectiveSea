@@ -4,6 +4,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,6 +20,7 @@ public class ConnectionManager extends Observable implements Runnable {
     private ServerSocket serverSocket;
     private HashMap<Integer, Socket> clients =  new HashMap<>();
     private TreeMap<AC35StreamXMLMessage, byte[]> xmlMessages = new TreeMap<>();
+    private boolean running = true;
 
 
     public ConnectionManager(int port) throws IOException {;
@@ -30,15 +32,16 @@ public class ConnectionManager extends Observable implements Runnable {
      */
     @Override
     public void run() {
-        Socket socket = null;
-        while (true) {
+        while (running) {
             try {
-                socket = serverSocket.accept();
+                Socket socket = serverSocket.accept();
                 System.out.println("Server: Accepted Connection");
                 setChanged();
                 notifyObservers(socket);
             } catch (IOException e) {
-                e.printStackTrace();
+                if(e instanceof SocketException){
+                    System.out.println("Server: Disconnected");
+                }
             }
         }
     }
@@ -92,6 +95,7 @@ public class ConnectionManager extends Observable implements Runnable {
     }
 
     public void closeConnections() throws IOException {
+        running = false;
         serverSocket.close();
     }
 
