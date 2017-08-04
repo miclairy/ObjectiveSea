@@ -169,7 +169,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         moveBoat(boatDisplay, point);
         moveWake(boatDisplay, point);
         moveSail(boatDisplay, point);
-        displayCollisions(boatDisplay, point);
+        if(!isTutorial){
+            displayCollisions(boatDisplay, point);
+        }
 
         manageStartTiming(boatDisplay);
         moveSOGVector(boatDisplay);

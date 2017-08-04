@@ -50,6 +50,10 @@ public class Controller implements Initializable, Observer {
     @FXML public Label lblUserHelp;
     @FXML public Label lblWindSpeed;
     @FXML public Circle windCircle;
+    @FXML private AnchorPane tutorialOverlay;
+    @FXML private Label tutorialOverlayTitle;
+    @FXML private Label tutorialContent;
+
 
 
     //FPS Counter
@@ -143,6 +147,16 @@ public class Controller implements Initializable, Observer {
 
 
 
+    }
+
+    public void showTutorialOverlay(String title, String content){
+        tutorialOverlayTitle.setText(title);
+        tutorialContent.setText(content);
+        tutorialOverlay.setVisible(true);
+    }
+
+    public void hideTutorialOverlay(){
+        tutorialOverlay.setVisible(false);
     }
 
     public void setApp(boolean host){
