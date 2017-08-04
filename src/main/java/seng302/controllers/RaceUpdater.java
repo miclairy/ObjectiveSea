@@ -166,7 +166,17 @@ public class RaceUpdater implements Runnable {
 
                 boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
                 //System.out.println("Passed start line");
+
             }
+            //Passing the finish line
+        } else if (nextMark.isFinishLine()) {
+            if(RoundingMechanics.boatPassedThroughCompoundMark(boat, course.getFinishLine(),
+                    course.getCourseOrder().get(boat.getLastRoundedMarkIndex()).getPosition())) {
+                System.out.println(boat.getName() + " has finished the race!");
+                System.out.println("CONGRATULATIONS! YOU'VE FINISHED THE RACE!");
+
+            }
+
         } else if (!nextMark.hasTwoMarks()){
             if(RoundingMechanics.boatPassedMark(boat, nextMark, course.getRoundingOrder().get(boat.getLastRoundedMarkIndex()+1),
                     course.getCourseOrder().get(boat.getLastRoundedMarkIndex()).getPosition(),
@@ -175,26 +185,14 @@ public class RaceUpdater implements Runnable {
                 boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
                 //System.out.println("Passed a mark");
             }
+        } else if(nextMark.hasTwoMarks()) {
+            if (RoundingMechanics.boatPassedGate(boat, nextMark, course.getCourseOrder().get(boat.getLastRoundedMarkIndex()).getPosition(),
+                    course.getCourseOrder().get(boat.getLastRoundedMarkIndex() + 2))) {
+
+                boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
+                //System.out.println("Boat has passed a gate");
+            }
         }
-//        if(RoundingMechanics.boatPassedThroughCompoundMark(boat, course.getStartLine(), startingPosition)
-//                && course.getStartLine().getCompoundMarkID() == boat.getLastRoundedMarkIndex() + 1){
-//            boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
-//            System.out.println("Passed start line");
-//            // Passing a mark
-//        } else if(!(course.getCourseOrder().get(boat.getLastRoundedMarkIndex() + 1).hasTwoMarks()) &&
-//                RoundingMechanics.boatPassedMark(boat, course.getCourseOrder().get(boat.getLastRoundedMarkIndex()+1), course.getRoundingOrder().get(boat.getLastRoundedMarkIndex()+1),
-//                        course.getCourseOrder().get(boat.getLastRoundedMarkIndex()).getPosition(),
-//                        course.getCourseOrder().get(boat.getLastRoundedMarkIndex()+2).getPosition())) {
-//            boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
-//            System.out.println("Passed a mark");
-//
-//            // Passing a gate
-//        } else if(false) {
-//
-//            //Passing the finish line
-//        } else if(false) {
-//
-//        }
     }
 
     /**

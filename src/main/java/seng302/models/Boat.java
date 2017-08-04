@@ -70,6 +70,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private long timeTillFinish;
     private Integer id;
     private AtomicBoolean sailsIn = new AtomicBoolean(false);
+    private boolean inGate = false;
 
 
     private double TWAofBoat;
@@ -394,6 +395,14 @@ public class Boat extends Observable implements Comparable<Boat>{
         double optimumHeadingB = (TWD + optimumTWA + 360) % 360;
 
         return new OptimumHeadings(optimumHeadingA, optimumHeadingB);
+    }
+
+    public boolean isInGate() {
+        return inGate;
+    }
+
+    public void setInGate(boolean inGate) {
+        this.inGate = inGate;
     }
 
 
