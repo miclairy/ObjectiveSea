@@ -118,13 +118,20 @@ public class MainMenuController implements Initializable{
         AnimationUtils.slideInTransition(liveGameGrid);
     }
 
+    @FXML private void loadTutorial() throws Exception {
+        btnSinglePlay.setDisable(true);
+        main.startHostedRace(selectedCourse, DEFAULT_PORT);
+        Thread.sleep(200);
+        main.loadRaceView(true);
+    }
+
     /**
      * Allows user to host a game at the DEFAULT_PORT and current public IP
      * @throws Exception
      */
     @FXML private void loadOfflinePlay() throws Exception{
         btnSinglePlay.setDisable(true);
-        main.startHostedRace(DEFAULT_PORT);
+        main.startHostedRace(selectedCourse, DEFAULT_PORT);
         Thread.sleep(200);
         main.loadRaceView(true);
     }
@@ -251,7 +258,7 @@ public class MainMenuController implements Initializable{
 
     /**
      * attaches click and hover listeners to buttons
-     * @param button the button to attach the listener
+     * @param node the button to attach the listener
      */
     private void addButtonListeners(Node node){
         node.addEventHandler(MouseEvent.MOUSE_ENTERED,
