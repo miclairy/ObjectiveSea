@@ -27,14 +27,12 @@ import javafx.scene.transform.Scale;
 import javafx.util.Duration;
 import seng302.data.BoatStatus;
 import seng302.data.StartTimingStatus;
-import seng302.utilities.AnimationUtils;
-import seng302.utilities.DisplayUtils;
-import seng302.utilities.PolarReader;
-import seng302.utilities.TimeUtils;
+import seng302.utilities.*;
 import seng302.models.*;
 import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
+import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Math.abs;
@@ -118,6 +116,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         if(!race.isTerminated()){
             controller.updateRaceClock();
+        }else{
+            this.stop();
+            controller.showServerDisconnectError();
         }
         if(controller.hasRaceStatusChanged()){
             controller.updatePreRaceScreen();

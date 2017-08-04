@@ -11,10 +11,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import seng302.data.BoatAction;
 import javafx.scene.shape.Circle;
 import seng302.data.BoatStatus;
 import seng302.utilities.ConnectionUtils;
@@ -24,14 +22,10 @@ import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
-import java.net.*;
+
 import java.io.*;
 
-import javax.naming.Context;
-import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.*;
 
 import static javafx.collections.FXCollections.observableArrayList;
@@ -158,9 +152,13 @@ public class Controller implements Initializable, Observer {
         }
     }
 
-    public void exitRace() throws IOException {
+    public void exitRunningRace() throws IOException {
         displaySwitcher.loadMainMenu();
         ConnectionUtils.initiateDisconnect(isHost);
+    }
+
+    public void exitTerminatedRace(){
+        displaySwitcher.loadMainMenu();
     }
 
     /**
@@ -254,6 +252,24 @@ public class Controller implements Initializable, Observer {
             raceViewController.redrawCourse();
             raceViewController.redrawBoatPaths();
         });
+    }
+
+    /**
+     * shows a popup informing user that the server has disconnected
+     */
+    public void showServerDisconnectError(){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add("style/menuStyle.css");
+        dialogPane.getStyleClass().add("myDialog");
+        alert.setTitle("Server Disconnected");
+        alert.setHeaderText("The Server has disconnected");
+        alert.setContentText("The server appears to have " +
+                "disconnected, \n return to the main menu \n" +
+                "to start another race");
+
+        alert.setOnHidden(evt -> exitTerminatedRace());
+        alert.show();
     }
 
 

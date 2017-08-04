@@ -112,7 +112,7 @@ public class Race extends Observable{
     }
 
     /**
-     * Updates the race status and prints it if it is different than before (for debugging purposes)
+     * Updates the race status and notifies observers
      * @param newRaceStatus The new race status read in
      */
     public void updateRaceStatus(RaceStatus newRaceStatus) {

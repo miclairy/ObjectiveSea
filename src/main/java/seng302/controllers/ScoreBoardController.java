@@ -1,7 +1,5 @@
 package seng302.controllers;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.chart.LineChart;
@@ -15,15 +13,12 @@ import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import seng302.utilities.AnimationUtils;
-import seng302.utilities.DisplaySwitcher;
 import seng302.views.BoatDisplay;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
 import seng302.models.Race;
-import seng302.models.Boat;
 
 import java.io.IOException;
-import java.util.Objects;
 
 /**
  * Created by Louis on 20-Apr-17.
@@ -184,7 +179,7 @@ public class ScoreBoardController {
     }
 
     @FXML private void btnExitRacePressed() throws IOException {
-        parent.exitRace();
+        parent.exitRunningRace();
     }
 
     @FXML
