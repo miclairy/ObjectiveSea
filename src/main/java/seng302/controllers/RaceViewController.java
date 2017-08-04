@@ -26,6 +26,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.util.Duration;
 import seng302.data.BoatStatus;
+import seng302.data.RaceVisionXMLParser;
 import seng302.data.StartTimingStatus;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.DisplayUtils;
@@ -93,6 +94,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private int flickercounter = 0;
     private int prevWindColorNum = 0;
 
+    private boolean isTutorial = false;
+
     BoatDisplay currentUserBoatDisplay;
     Shape boatHighlight = null;
 
@@ -103,8 +106,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         this.selectionController = selectionController;
+        if(RaceVisionXMLParser.COURSE_FILE == "GuidedPractice-course.xml"){
+            isTutorial = true;
+        }
         redrawCourse();
         race.addObserver(this);
+
     }
 
     @Override
@@ -140,7 +147,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         for (BoatDisplay displayBoat: displayBoats) {
            moveBoatDisplay(displayBoat);
         }
-        redrawRaceLines();
+        if(!isTutorial){
+            redrawRaceLines();
+        }
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
@@ -378,11 +387,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     void redrawCourse(){
         courseNeedsRedraw = false;
-        drawMarks();
-        drawBoundary();
+        if(!isTutorial) {
+            drawMarks();
+            drawBoundary();
+            redrawRaceLines();
+        }
         drawMap();
         drawWindArrow();
-        redrawRaceLines();
     }
 
     /**

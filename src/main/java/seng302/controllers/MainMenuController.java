@@ -120,7 +120,7 @@ public class MainMenuController implements Initializable{
 
     @FXML private void loadTutorial() throws Exception {
         btnSinglePlay.setDisable(true);
-        main.startHostedRace(selectedCourse, DEFAULT_PORT);
+        main.startHostedRace("GuidedPractice-course.xml", DEFAULT_PORT);
         Thread.sleep(200);
         main.loadRaceView(true);
     }
