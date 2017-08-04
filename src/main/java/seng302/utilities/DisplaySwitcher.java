@@ -11,6 +11,9 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * class to manage the handling of switching FXML displays
+ */
 public class DisplaySwitcher {
 
     private static Scene scene;
@@ -22,6 +25,9 @@ public class DisplaySwitcher {
         this.main = main;
     }
 
+    /**
+     * loads the main menu into the stage
+     */
     public void loadMainMenu() {
         try {
             MainMenuController mainMenu = (MainMenuController) replaceSceneContent("main_menu.fxml");
@@ -31,6 +37,10 @@ public class DisplaySwitcher {
         }
     }
 
+    /**
+     * loads the race view into the stage
+     * @param isHost a boolean showing if the user is a host or not
+     */
     public void loadRaceView(boolean isHost) {
         try {
             Controller race = (Controller) replaceSceneContent("race_view.fxml");
