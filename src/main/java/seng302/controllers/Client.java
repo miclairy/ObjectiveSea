@@ -29,6 +29,7 @@ public class Client implements Runnable, Observer {
     private int sourcePort;
     private boolean isParticipant;
     Thread dataStreamReaderThread;
+    private boolean isTutorial;
 
     private int connectionAttempts = 0;
     private int MAX_CONNECTION_ATTEMPTS = 200;

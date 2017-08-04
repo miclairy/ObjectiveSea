@@ -70,15 +70,18 @@
             <Circle fx:id="windCircle" fill="WHITE" radius="25.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="0.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="10.0" />
             <AnchorPane fx:id="tutorialOverlay" layoutX="1085.0" layoutY="65.0" prefHeight="260.0" prefWidth="300.0" style="-fx-background-radius: 50px;" stylesheets="@style/startersOverlayStyle.css" visible="false" AnchorPane.rightAnchor="95.0" AnchorPane.topAnchor="65.0">
                <children>
-                  <Label fx:id="tutorialOverlayTitle" alignment="CENTER" contentDisplay="CENTER" layoutX="121.0" layoutY="19.0" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" stylesheets="@style/startersOverlayStyle.css" text="KEY TITLE" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <Label fx:id="tutorialOverlayTitle" alignment="CENTER" contentDisplay="CENTER" layoutX="121.0" layoutY="19.0" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" stylesheets="@style/startersOverlayStyle.css" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <font>
                         <Font size="25.0" />
                      </font>
                   </Label>
-                  <Label fx:id="tutorialContent" alignment="CENTER" contentDisplay="CENTER" layoutX="45.0" layoutY="58.0" stylesheets="@style/startersOverlayStyle.css" text="Label" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+                  <Label fx:id="tutorialContent" alignment="CENTER" contentDisplay="CENTER" layoutX="45.0" layoutY="58.0" stylesheets="@style/startersOverlayStyle.css" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
                      <font>
                         <Font size="21.0" />
                      </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
                   </Label>
                </children>
             </AnchorPane>

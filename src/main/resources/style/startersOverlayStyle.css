@@ -42,4 +42,5 @@
     -fx-text-fill: White;
     -fx-focus-color: transparent;
     -fx-background-insets: 0, 0;
+    -fx-label-padding: 15px;
 }

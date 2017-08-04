@@ -39,6 +39,7 @@ import seng302.views.RaceView;
 import java.util.*;
 
 import static java.lang.Math.abs;
+import static seng302.data.RaceStatus.PREPARATORY;
 import static seng302.data.RaceStatus.STARTED;
 import static seng302.data.RaceStatus.TERMINATED;
 import static seng302.utilities.DisplayUtils.zoomLevel;
@@ -149,6 +150,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
         if(!isTutorial){
             redrawRaceLines();
+        } else {
+            runTutorial();
         }
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
@@ -157,6 +160,15 @@ public class RaceViewController extends AnimationTimer implements Observer {
         flickercounter++;
         orderDisplayObjects();
 
+    }
+
+    private void runTutorial(){
+        if(race.getRaceStatus().equals(PREPARATORY)){
+            controller.showTutorialOverlay("Welcome!","Watch this box to learn the keys!");
+        } else if(race.getRaceStatus().equals(STARTED)){
+            controller.showTutorialOverlay("blah","blah");
+
+        }
     }
 
     /**
