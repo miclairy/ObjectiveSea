@@ -138,7 +138,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         selectionController.zoomTracking();
 
         for (BoatDisplay displayBoat: displayBoats) {
-           moveBoatDisplay(displayBoat);
+            moveBoatDisplay(displayBoat);
         }
         redrawRaceLines();
         if (courseNeedsRedraw) redrawCourse();
@@ -147,7 +147,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         updateWindArrow();
         flickercounter++;
         orderDisplayObjects();
-
     }
 
     /**
@@ -181,6 +180,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
         } else {
             boatDisplay.getLaylines().removeDrawnLines(root);
+        }
+        if(boatDisplay.getBoat().getStatus() == BoatStatus.DNF){
+            boatDisplay.unFocus();
         }
     }
 

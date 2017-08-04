@@ -250,6 +250,10 @@ public class Race extends Observable{
         notifyObservers(UPDATED_COMPETITORS_SIGNAL);
     }
 
+    public void terminateRace(){
+        raceStatus = RaceStatus.TERMINATED;
+    }
+
     public Set<Integer> getCompetitorIds() {
         return competitorIds;
     }

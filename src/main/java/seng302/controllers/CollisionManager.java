@@ -1,5 +1,6 @@
 package seng302.controllers;
 
+import seng302.data.BoatStatus;
 import seng302.models.*;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.MathUtils;
@@ -35,7 +36,9 @@ public class CollisionManager {
             Boat boat = boats.get(i);
             for (int j = i + 1; j < boats.size(); j++) {
                 Boat otherBoat = boats.get(j);
-                checkForCollisionBetweenBoats(boat, otherBoat);
+                if(otherBoat.getStatus() != BoatStatus.DNF){
+                    checkForCollisionBetweenBoats(boat, otherBoat);
+                }
             }
             for (Mark mark : race.getCourse().getAllMarks().values()) {
                 checkForCollisionBetweenBoatAndMark(boat, mark);

@@ -41,8 +41,10 @@ public class DataStreamReader extends Receiver implements Runnable{
      */
     @Override
     public void run(){
-        setUpConnection();
-        readData();
+        while(race == null || race.getRaceStatus() != RaceStatus.TERMINATED){
+            setUpConnection();
+            readData();
+        }
     }
 
     /**
@@ -207,8 +209,8 @@ public class DataStreamReader extends Receiver implements Runnable{
                 }
 
             } catch (IOException e) {
-                System.err.println("Error occurred when reading data from stream:");
-                System.err.println(e);
+                race.terminateRace();
+                System.out.println("Client: Server has disconnected");
             }
         }
     }
