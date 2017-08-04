@@ -40,6 +40,7 @@ public class Arrow extends Group{
     }
 
     public void rotate(double amount){
+        arrowLine.getTransforms().clear();
         arrowLine.getTransforms().add(new Rotate(amount, center.getX(), center.getY()));
     }
 

@@ -249,20 +249,21 @@ public class Course {
     }
 
     private void addArrowDirection(CompoundMark mark, CompoundMark previousMark) {
-        Coordinate originLatLon = DisplayUtils.midPointFromTwoCoords(mark.getPosition(), previousMark.getPosition()) ;
+        Coordinate originLatLon = DisplayUtils.midPointFromTwoCoords(previousMark.getPosition(), mark.getPosition()) ;
         Arrow arrow = new Arrow(10, 30, originLatLon);
-        arrow.rotate(MathUtils.calculateBearingBetweenTwoPoints(mark, previousMark) - 180);
+        arrow.rotate(previousMark.getPosition().headingToCoordinate(mark.getPosition()) + 180);
+        //arrow.rotate(90);
         arrowedRoute.add(arrow);
     }
 
     public void createArrowedRoute() {
         arrowedRoute.clear();
         CompoundMark previousMark = courseOrder.get(0);
-        for (CompoundMark mark : courseOrder){
-            if (previousMark != mark) {
-                addArrowDirection(mark, previousMark);
+        for (int i = 0; i < courseOrder.size(); i ++){
+            if (previousMark != courseOrder.get(i)) {
+                addArrowDirection(courseOrder.get(i), previousMark);
             }
-            previousMark = mark;
+            previousMark = courseOrder.get(i);
         }
     }
 }
