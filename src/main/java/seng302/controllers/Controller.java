@@ -16,6 +16,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import seng302.data.BoatAction;
 import javafx.scene.shape.Circle;
+import seng302.data.BoatStatus;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplaySwitcher;
 import seng302.utilities.DisplayUtils;
@@ -307,7 +308,9 @@ public class Controller implements Initializable, Observer {
                 displayString = String.format("%d : %s (%s) - ", i+1, boat.getName(), boat.getNickName());
                 if (raceOrder.get(i).isFinished()) {
                     displayString += "Finished!";
-                } else {
+                } else if(raceOrder.get(i).getStatus() == BoatStatus.DNF){
+                    displayString += "DNF";
+                }else {
                     displayString += String.format("%.3f knots", boat.getCurrentSpeed());
                 }
             }
@@ -409,9 +412,6 @@ public class Controller implements Initializable, Observer {
             switch(sig){
                 case Race.UPDATED_STATUS_SIGNAL:
                     raceStatusChanged = true;
-                    break;
-                case Race.UPDATED_COMPETITORS_SIGNAL:
-                    displayStarters();
                     break;
             }
         }

@@ -50,6 +50,23 @@ public class ConnectionUtils {
         alert.showAndWait();
     }
 
+    /**
+     * shows a popup informing user that connection to the server failed
+     */
+    public static void showServerDisconnectError(){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add("style/menuStyle.css");
+        dialogPane.getStyleClass().add("myDialog");
+        alert.setTitle("Server Disconnected");
+        alert.setHeaderText("The Server has disconnected");
+        alert.setContentText("The server appears to have\n\n" +
+                "disconnected, return to the main menu \n" +
+                "to start another race");
+
+        alert.showAndWait();
+    }
+
     public static Client getClient() {
         return client;
     }

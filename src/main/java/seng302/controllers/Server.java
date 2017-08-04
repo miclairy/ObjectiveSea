@@ -36,7 +36,7 @@ public class Server implements Runnable, Observer {
         this.raceUpdater = raceUpdater;
         this.collisionManager = raceUpdater.getCollisionManager();
         this.packetBuilder = new ServerPacketBuilder();
-        this.connectionManager = new ConnectionManager(port);
+        this.connectionManager = new ConnectionManager(port, raceUpdater.getRace());
         this.connectionManager.addObserver(this);
     }
 

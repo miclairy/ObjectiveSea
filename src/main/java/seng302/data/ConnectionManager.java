@@ -1,5 +1,7 @@
 package seng302.data;
 
+import seng302.models.Race;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -21,10 +23,12 @@ public class ConnectionManager extends Observable implements Runnable {
     private HashMap<Integer, Socket> clients =  new HashMap<>();
     private TreeMap<AC35StreamXMLMessage, byte[]> xmlMessages = new TreeMap<>();
     private boolean running = true;
+    private Race race;
 
 
-    public ConnectionManager(int port) throws IOException {;
+    public ConnectionManager(int port, Race race) throws IOException {;
         serverSocket = new ServerSocket(port);
+        this.race = race;
     }
 
     /**
@@ -70,6 +74,7 @@ public class ConnectionManager extends Observable implements Runnable {
         } catch (java.net.SocketException e){
             System.out.printf("Server: Client %d Disconnected\n", id);
             clients.remove(id);
+            race.getBoatById(id).setStatus(BoatStatus.DNF);
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
