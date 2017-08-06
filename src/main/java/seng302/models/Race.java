@@ -255,10 +255,11 @@ public class Race extends Observable{
     }
 
     /**
-     * @return true if the race status is STARTED
+     * @return true if the race status is has passed the initial stage
      */
     public boolean hasStarted() {
         return this.raceStatus.equals(RaceStatus.STARTED);
     }
+
 }
 
