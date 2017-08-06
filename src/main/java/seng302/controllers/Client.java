@@ -1,5 +1,7 @@
 package seng302.controllers;
 
+import javafx.scene.input.KeyCode;
+import seng302.data.BoatAction;
 import seng302.data.ClientPacketBuilder;
 import seng302.data.ClientSender;
 import seng302.data.DataStreamReader;
@@ -29,7 +31,10 @@ public class Client implements Runnable, Observer {
     private int sourcePort;
     private boolean isParticipant;
     Thread dataStreamReaderThread;
-    private boolean isTutorial;
+
+    private static int tutorialKey = -1;
+    private static Runnable tutorialFunction = null;
+
 
     private int connectionAttempts = 0;
     private int MAX_CONNECTION_ATTEMPTS = 200;
@@ -124,9 +129,30 @@ public class Client implements Runnable, Observer {
                 this.clientID = (Integer) arg;
             }
         } else if (o == userInputController){
+            sendBoatCommandPacket();
+        }
+    }
+
+    private void sendBoatCommandPacket(){
+        System.out.println(userInputController.getCommandInt());
+        if(tutorialKey != -1 && tutorialKey == userInputController.getCommandInt()){
+            byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
+            sender.sendToServer(boatCommandPacket);
+            tutorialFunction.run();
+        }else if(tutorialKey == -1){
             byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
             sender.sendToServer(boatCommandPacket);
         }
+    }
+
+    public static void setTutorialAction(KeyCode key, Runnable callbackFunction){
+        tutorialKey = BoatAction.getTypeFromKeyCode(key);
+        tutorialFunction = callbackFunction;
+    }
+
+    public static void clearTutorialAction(){
+        tutorialKey = -1;
+        tutorialFunction = null;
     }
 
     public void setUserInputController(UserInputController userInputController) {

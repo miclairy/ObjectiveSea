@@ -10,6 +10,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -167,6 +168,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             controller.showTutorialOverlay("Welcome!","Watch this box to learn the keys!");
         } else if(race.getRaceStatus().equals(STARTED)){
             controller.showTutorialOverlay("blah","blah");
+            Client.setTutorialAction(KeyCode.PAGE_UP, () -> System.out.println("Shift was pressed"));
 
         }
     }
