@@ -51,7 +51,9 @@ public class UserInputController extends Observable {
             setChanged();
             notifyObservers();
         }
-        if (key.equals(SHIFT)){
+        if (key.equals(SHIFT) &&
+                (Client.getTutorialKey() == -1 ||
+                        Client.getTutorialKey() == BoatAction.getTypeFromKeyCode(KeyCode.SHIFT))){
             Boat boat = race.getBoatById(clientID);
             boat.changeSails();
         }

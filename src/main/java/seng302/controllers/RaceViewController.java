@@ -168,7 +168,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             controller.showTutorialOverlay("Welcome!","Watch this box to learn the keys!");
         } else if(race.getRaceStatus().equals(STARTED)){
             controller.showTutorialOverlay("blah","blah");
-            Client.setTutorialAction(KeyCode.PAGE_UP, () -> System.out.println("Shift was pressed"));
+            Client.setTutorialAction(KeyCode.SHIFT, () -> System.out.println("Shift was pressed"));
 
         }
     }

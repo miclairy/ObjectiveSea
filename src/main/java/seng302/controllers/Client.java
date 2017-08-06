@@ -160,6 +160,11 @@ public class Client implements Runnable, Observer {
         userInputController.setClientID(clientID);
     }
 
+
+    public static int getTutorialKey() {
+        return tutorialKey;
+    }
+
     public static Race getRace() {
         return race;
     }
