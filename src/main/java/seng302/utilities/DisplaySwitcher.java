@@ -1,10 +1,12 @@
 package seng302.utilities;
 
+import javafx.animation.FadeTransition;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import seng302.controllers.*;
 
 import java.net.URL;
@@ -63,8 +65,8 @@ public class DisplaySwitcher {
         Parent root = loader.load();
         scene = new Scene(root);
         setScene(scene);
+        AnimationUtils.transitionFXML(root);
         stage.setScene(scene);
-
         return (Initializable) loader.getController();
     }
 

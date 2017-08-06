@@ -16,13 +16,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import seng302.data.BoatStatus;
-import seng302.utilities.ConnectionUtils;
-import seng302.utilities.DisplaySwitcher;
-import seng302.utilities.DisplayUtils;
+import seng302.utilities.*;
 import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.Race;
-import seng302.utilities.TimeUtils;
 
 import java.io.*;
 
@@ -273,18 +270,20 @@ public class Controller implements Initializable, Observer {
      * shows a popup informing user that the server has disconnected
      */
     public void showServerDisconnectError() {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add("style/menuStyle.css");
-        dialogPane.getStyleClass().add("myDialog");
-        alert.setTitle("Server Disconnected");
-        alert.setHeaderText("The Server has disconnected");
-        alert.setContentText("The server appears to have " +
-                "disconnected. \nYou will be returned to " +
-                "the main menu");
+        if(!isHost){
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            DialogPane dialogPane = alert.getDialogPane();
+            dialogPane.getStylesheets().add("style/menuStyle.css");
+            dialogPane.getStyleClass().add("myDialog");
+            alert.setTitle("Server Disconnected");
+            alert.setHeaderText("The Server has disconnected");
+            alert.setContentText("The server appears to have " +
+                    "disconnected. \nYou will be returned to " +
+                    "the main menu");
 
-        alert.setOnHidden(evt -> exitTerminatedRace());
-        alert.show();
+            alert.setOnHidden(evt -> exitTerminatedRace());
+            alert.show();
+        }
     }
 
 

@@ -66,9 +66,9 @@ public class ConnectionUtils {
     }
 
     public static void initiateDisconnect(boolean isHost) throws IOException {
+        client.initiateClientDisconnect();
         if(isHost){
             server.initiateServerDisconnect();
         }
-        client.initiateClientDisconnect();
     }
 }
