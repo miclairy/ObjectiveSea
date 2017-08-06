@@ -1,6 +1,7 @@
 package seng302.controllers;
 
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.CheckBox;
@@ -8,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
@@ -37,6 +39,7 @@ public class ScoreBoardController {
     @FXML private ListView<String> placings;
     @FXML private Slider annotationsSlider;
     @FXML private Label raceTimerLabel;
+    @FXML private Label lblAnnotation;
     @FXML private CheckBox chkName;
     @FXML private CheckBox chkSpeed;
     @FXML private CheckBox chkPassMarkTime;

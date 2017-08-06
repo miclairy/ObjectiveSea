@@ -73,8 +73,8 @@ public class ConnectionManager extends Observable implements Runnable {
             clientOutput.write(packet);
         } catch (java.net.SocketException e){
             System.out.printf("Server: Client %d Disconnected\n", id);
+            notifyObservers(id);
             clients.remove(id);
-            race.getBoatById(id).setStatus(BoatStatus.DNF);
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
@@ -102,6 +102,9 @@ public class ConnectionManager extends Observable implements Runnable {
     public void closeConnections() throws IOException {
         running = false;
         serverSocket.close();
+        for(Integer clientSocketID : clients.keySet()){
+            clients.get(clientSocketID).close();
+        }
     }
 
     private void sendAllXMLsToClient(int id) {

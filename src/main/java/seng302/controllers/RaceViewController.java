@@ -8,7 +8,9 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -117,6 +119,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if(!race.isTerminated()){
             controller.updateRaceClock();
         }else{
+            controller.blurScreen(true);
             this.stop();
             controller.showServerDisconnectError();
         }
@@ -1093,7 +1096,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             distanceLine.setMark(nextMark);
         }
     }
-
 
     public BoatDisplay getCurrentUserBoatDisplay() {
         return currentUserBoatDisplay;

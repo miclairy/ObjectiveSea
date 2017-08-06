@@ -221,12 +221,16 @@ public class Server implements Runnable, Observer {
      * is started for the client
      * If the observable is a ServerListener then a registration message is received
      * @param observable The observable either a ConnectionManager or ServerListener
-     * @param arg A Socket if observable is a ConnectionManager else it is the registration type of the client
+     * @param arg A Socket or Boat ID if observable is a ConnectionManager else it is the registration type of the client
      */
     @Override
     public void update(Observable observable, Object arg) {
         if (observable.equals(connectionManager)) {
-            startServerListener((Socket) arg);
+            if(arg instanceof Socket){
+                startServerListener((Socket) arg);
+            }else{
+                raceUpdater.getRace().getBoatById((int) arg).setStatus(BoatStatus.DNF);
+            }
         } else if(observable instanceof ServerListener){
             ServerListener serverListener = (ServerListener) observable;
             Integer registrationType = (Integer) arg;

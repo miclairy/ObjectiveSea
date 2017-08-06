@@ -59,7 +59,7 @@
                                 </rowConstraints>
                                  <children>
                                     <Button fx:id="btnTrack" alignment="CENTER_RIGHT" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#btnTrackPressed" styleClass="scoreboardButtons" text="Track" visible="false" />
-                                    <Button fx:id="btnExit" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="10.0" layoutY="9.0" mnemonicParsing="false" onAction="#btnExitRacePressed" styleClass="scoreboardButtons" text="Exit Race" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
+                                    <Button fx:id="btnExit" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="10.0" layoutY="9.0" mnemonicParsing="false" onAction="#btnExitRacePressed" styleClass="scoreboardButtons" text="Exit race" GridPane.columnIndex="1" GridPane.halignment="RIGHT" />
                                  </children>
                                  <VBox.margin>
                                     <Insets left="20.0" right="20.0" top="10.0" />
