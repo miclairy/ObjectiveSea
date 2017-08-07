@@ -229,8 +229,7 @@ public class Server implements Runnable, Observer {
             if(arg instanceof Socket){
                 startServerListener((Socket) arg);
             }else{
-                raceUpdater.getRace().getBoatById((int) arg).setStatus(BoatStatus.DNF);
-                raceUpdater.getRace().getBoatById((int) arg).setCurrentSpeed(0);
+                setBoatToDNF((int) arg);
             }
         } else if(observable instanceof ServerListener){
             ServerListener serverListener = (ServerListener) observable;
@@ -246,5 +245,15 @@ public class Server implements Runnable, Observer {
 
     public void initiateServerDisconnect() throws IOException {
         connectionManager.closeConnections();
+        raceUpdater.stopRunning();
+    }
+
+    private void setBoatToDNF(int arg){
+        for(Boat boat : raceUpdater.getRace().getCompetitors()){
+            if(boat.getId().equals(arg)){
+                boat.setStatus(BoatStatus.DNF);
+                boat.changeSails();
+            }
+        }
     }
 }
