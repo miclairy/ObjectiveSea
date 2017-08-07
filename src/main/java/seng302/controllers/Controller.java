@@ -500,8 +500,7 @@ public class Controller implements Initializable, Observer {
 
     private void blurNode(Node node, boolean blur) {
         if (blur) {
-            for(int i = 0; i < 30; i += 0.5)
-            node.setEffect(new GaussianBlur(i));
+            node.setEffect(new GaussianBlur(25));
         } else {
             node.setEffect(null);
         }

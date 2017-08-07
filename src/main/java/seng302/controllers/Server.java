@@ -230,6 +230,7 @@ public class Server implements Runnable, Observer {
                 startServerListener((Socket) arg);
             }else{
                 raceUpdater.getRace().getBoatById((int) arg).setStatus(BoatStatus.DNF);
+                raceUpdater.getRace().getBoatById((int) arg).setCurrentSpeed(0);
             }
         } else if(observable instanceof ServerListener){
             ServerListener serverListener = (ServerListener) observable;
