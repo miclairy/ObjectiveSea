@@ -22,7 +22,10 @@ public class ConnectionUtils {
      * @return a boolean of whether it is valid or not
      */
     public static Boolean IPRegExMatcher(String IP){
-        return IP.matches(IP_REGEX);
+        if(IP.matches(IP_REGEX) || IP.equals("localhost")){
+            return true;
+        }
+        return false;
     }
 
     /**
