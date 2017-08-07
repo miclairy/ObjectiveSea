@@ -96,8 +96,8 @@
 }
 
 .imageMapView{
-    -fx-effect: dropshadow(gaussian, #d7d7d7, 20, 0, 0, 0);
-    -fx-opacity: 0.8;
+    //-fx-effect: dropshadow(gaussian, #d7d7d7, 20, 0, 0, 0);
+    //-fx-opacity: 0.8;
 }
 
 #mapTitle {
