@@ -208,7 +208,7 @@ public class DataStreamReader extends Receiver implements Runnable{
 
             } catch (IOException e) {
                 race.terminateRace();
-                System.out.println("Client: Server has disconnected");
+                System.out.println("Client: disconnected from Server");
             }
         }
     }
@@ -300,8 +300,9 @@ public class DataStreamReader extends Receiver implements Runnable{
         race.updateMarkRounded(sourceID, markIndex, time);
     }
 
-    public void disconnectClient(){
-
+    public void disconnectClient() throws IOException {
+        clientSocket.close();
+        dataStream.close();
     }
 
     public Socket getClientSocket() {

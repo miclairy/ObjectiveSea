@@ -8,6 +8,7 @@ import seng302.models.Boat;
 import seng302.models.Race;
 import seng302.utilities.NoConnectionToServerException;
 
+import java.io.IOException;
 import java.util.*;
 
 import java.util.Observable;
@@ -142,8 +143,8 @@ public class Client implements Runnable, Observer {
         return clientID;
     }
 
-    public void initiateClientDisconnect(){
-        race.getBoatById(clientID).setStatus(BoatStatus.DNF);
+    public void initiateClientDisconnect() throws IOException {
         dataStreamReader.disconnectClient();
+        race.getBoatById(clientID).setStatus(BoatStatus.DNF);
     }
 }

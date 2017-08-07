@@ -158,8 +158,9 @@ public class Controller implements Initializable, Observer {
     }
 
     public void exitRunningRace() throws IOException {
-        displaySwitcher.loadMainMenu();
         ConnectionUtils.initiateDisconnect(isHost);
+        displaySwitcher.loadMainMenu();
+        raceViewController.stop();
     }
 
     public void exitTerminatedRace() {
