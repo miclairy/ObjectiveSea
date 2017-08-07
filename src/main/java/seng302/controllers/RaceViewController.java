@@ -185,8 +185,15 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     keycodes.add(KeyCode.PAGE_UP);
                     Client.setTutorialActions(keycodes, () -> tutorialUpwindDownwindCounter++);
                     if (tutorialUpwindDownwindCounter > 60){
-                        tutorialStage = TutorialStage.TACK;
+                        tutorialStage = TutorialStage.VMG;
                     }
+                    break;
+                case VMG:
+                    Client.clearTutorialAction();
+
+                    keycodes.add(KeyCode.SPACE);
+                    controller.showTutorialOverlay("AutoPilot", "Press the SPACE key to move your boat to the VMG line. \n\nThis line is the optimum angle from the wind allowing your boat to go its fastest speed.");
+                    Client.setTutorialActions(keycodes, () -> tutorialStage = TutorialStage.TACK);
                     break;
                 case TACK:
                     Client.clearTutorialAction();
@@ -211,15 +218,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     Client.clearTutorialAction();
                     keycodes.add(KeyCode.SHIFT);
                     controller.showTutorialOverlay("Sails Out", "Press the SHIFT key to put your sails out. \n\nThis should cause your boat to start gaining velocity.");
-                    Client.setTutorialActions(keycodes, () -> tutorialStage = TutorialStage.VMG);
-                    break;
-                case VMG:
-                    Client.clearTutorialAction();
-
-                    keycodes.add(KeyCode.SPACE);
-                    controller.showTutorialOverlay("AutoPilot", "Press the SPACE key to move your boat to the VMG line. \n\nThis line is the optimum angle from the wind allowing your boat to go its fastest speed.");
                     Client.setTutorialActions(keycodes, () -> tutorialStage = TutorialStage.END);
                     break;
+
                 case END:
                     Client.clearTutorialAction();
 

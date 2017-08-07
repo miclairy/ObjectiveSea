@@ -134,15 +134,12 @@ public class Client implements Runnable, Observer {
     }
 
     private void sendBoatCommandPacket(){
-        System.out.println(userInputController.getCommandInt());
-        if(tutorialKeys.contains(userInputController.getCommandInt())){
-            byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
-            sender.sendToServer(boatCommandPacket);
+        if(tutorialKeys.contains(userInputController.getCommandInt())) {
             tutorialFunction.run();
-        }else if(tutorialKeys.isEmpty()){
-            byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
-            sender.sendToServer(boatCommandPacket);
         }
+        byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
+        sender.sendToServer(boatCommandPacket);
+
     }
 
     public static void setTutorialActions(List<KeyCode> keys, Runnable callbackFunction){
