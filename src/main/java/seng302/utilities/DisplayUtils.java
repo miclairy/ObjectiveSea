@@ -161,7 +161,7 @@ public class DisplayUtils {
             String mapImagePath = "/graphics/mapImages/" + courseName;
             return DisplayUtils.class.getResource(mapImagePath).toExternalForm();
         } catch (NullPointerException e){
-            String courseName = "AC33-map.png";
+            String courseName = "default-map.png";
             String mapImagePath = "/graphics/mapImages/" + courseName;
             return DisplayUtils.class.getResource(mapImagePath).toExternalForm();
         }
