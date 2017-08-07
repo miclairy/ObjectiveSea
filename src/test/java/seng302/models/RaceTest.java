@@ -32,8 +32,8 @@ public class RaceTest {
         finishLine.setMarkAsFinish();
         course.addNewCompoundMark(finishLine);
 
-        course.addMarkInOrder(1);
-        course.addMarkInOrder(2);
+        course.addMarkInOrder(1, "Port");
+        course.addMarkInOrder(2, "SP");
 
         List<Boat> boats = new ArrayList<>();
 
@@ -100,7 +100,7 @@ public class RaceTest {
     public void updateDuplicateMarkRoundedTest2(){
         Boat boat1 = defaultRace.getBoatById(1);
 
-        defaultRace.getCourse().addMarkInOrder(1);
+        defaultRace.getCourse().addMarkInOrder(1, "Stbd");
 
         assertEquals(-1, boat1.getLastRoundedMarkIndex());
         for(Boat boat : defaultRace.getCompetitors()){

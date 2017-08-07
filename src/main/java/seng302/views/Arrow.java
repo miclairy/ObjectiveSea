@@ -36,7 +36,7 @@ public class Arrow extends Group{
 
     public void relocate(CanvasCoordinate center) {
         this.center = center;
-        arrowLine.relocate(center.getX(), center.getY());
+        arrowLine.relocate(center.getX() - width / 2, center.getY() - length);
 
     }
 

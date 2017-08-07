@@ -19,6 +19,7 @@ public class Course {
     private final String WINDWARD_GATE_NAME = "Windward Gate";
 
     private ArrayList<CompoundMark> courseOrder;
+    private ArrayList<String> roundingOrder;
     private ArrayList<Coordinate> boundary;
     private double minLat, minLon, maxLat, maxLon;
     private Map<Integer, CompoundMark> compoundMarks;
@@ -33,6 +34,7 @@ public class Course {
     public Course() {
         this.compoundMarks = new HashMap<>();
         this.courseOrder = new ArrayList<>();
+        this.roundingOrder = new ArrayList<>();
         this.boundary = new ArrayList<>();
         allMarks = new HashMap<>();
         hasEntryMark = false;
@@ -56,9 +58,10 @@ public class Course {
      * Appends a mark to the course order ArrayList. The mark must already exist in the compoundMarks HashMap
      * @param compoundMarkID - the name of the mark to look up in the compoundMarks HashMap
      */
-    public void addMarkInOrder(Integer compoundMarkID){
+    public void addMarkInOrder(Integer compoundMarkID, String roundingSide){
         if(compoundMarks.containsKey(compoundMarkID)){
             courseOrder.add(compoundMarks.get(compoundMarkID));
+            roundingOrder.add(roundingSide);
         }
     }
 
@@ -267,6 +270,16 @@ public class Course {
             arrow.setColour(color);
             arrow.rotate( heading + 180);
             arrowedRoute.add(arrow);
+        }
+        if (!mark.isFinishLine()) {
+            Mark mark1 = mark.getMark1();
+            Mark mark2 = mark.getMark2();
+            Arrow mark1Arrow = new Arrow(10, 20, mark1.getPosition());
+            Arrow mark2Arrow = new Arrow(10, 20, mark2.getPosition());
+            mark1Arrow.setColour(color);
+            mark2Arrow.setColour(color);
+            arrowedRoute.add(mark1Arrow);
+            arrowedRoute.add(mark2Arrow);
         }
     }
 
