@@ -1,5 +1,6 @@
 package seng302.models;
 
+import javafx.scene.paint.Color;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.MathUtils;
 import seng302.views.Arrow;
@@ -249,11 +250,24 @@ public class Course {
     }
 
     private void addArrowDirection(CompoundMark mark, CompoundMark previousMark) {
-        Coordinate originLatLon = DisplayUtils.midPointFromTwoCoords(previousMark.getPosition(), mark.getPosition()) ;
-        Arrow arrow = new Arrow(10, 30, originLatLon);
-        arrow.rotate(previousMark.getPosition().headingToCoordinate(mark.getPosition()) + 180);
-        //arrow.rotate(90);
-        arrowedRoute.add(arrow);
+        double legLength = mark.getPosition().greaterCircleDistance(previousMark.getPosition());
+        double numberOfLegs = legLength / 0.5;
+        if (numberOfLegs < 2){
+            numberOfLegs = 2;
+        }
+        Random rand = new Random();
+        double r = rand.nextFloat();
+        double g = rand.nextFloat();
+        double b = rand.nextFloat();
+        Color color = Color.color(r, g, b);
+        double heading = previousMark.getPosition().headingToCoordinate(mark.getPosition());
+        for (int num = 1; num < numberOfLegs; num++) {
+            Coordinate position = mark.getPosition().coordAt((legLength / numberOfLegs) * num, heading + 180);
+            Arrow arrow = new Arrow(10, 20, position);
+            arrow.setColour(color);
+            arrow.rotate( heading + 180);
+            arrowedRoute.add(arrow);
+        }
     }
 
     public void createArrowedRoute() {

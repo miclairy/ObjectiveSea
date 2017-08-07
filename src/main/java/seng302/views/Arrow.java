@@ -1,6 +1,7 @@
 package seng302.views;
 
 import javafx.scene.Group;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
 import javafx.scene.transform.Rotate;
@@ -30,7 +31,7 @@ public class Arrow extends Group{
                                 this.center.getX(), this.center.getY(),
                                 width / 2  + this.center.getX(), bottomY);
         relocate(this.center);
-        arrowLine.setStrokeWidth(10.0);
+        arrowLine.setStrokeWidth(5.0);
     }
 
     public void relocate(CanvasCoordinate center) {
@@ -54,5 +55,9 @@ public class Arrow extends Group{
 
     public Polyline getArrowLine() {
         return arrowLine;
+    }
+
+    public void setColour(Color color){
+        arrowLine.setStroke(color);
     }
 }
