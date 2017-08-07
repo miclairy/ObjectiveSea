@@ -9,7 +9,7 @@
   <Course>
     <CompoundMark CompoundMarkID="1" Name="Start">
       <Mark SeqID="1" Name="Start Line 1" TargetLat="32.296577" TargetLng="-64.854304" SourceID="122" />
-      <Mark SeqID="2" Name="Start Line 2" TargetLat="32.289771" TargetLng="-64.859242" SourceID="123" />
+      <Mark SeqID="2" Name="Start Line 2" TargetLat="32.293771" TargetLng="-64.855242" SourceID="123" />
     </CompoundMark>
     <CompoundMark CompoundMarkID="2" Name="Mark">
       <Mark SeqID="1" Name="Mark1" TargetLat="32.293039" TargetLng="-64.845045" SourceID="131" />

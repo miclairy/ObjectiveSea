@@ -126,7 +126,6 @@ public class MathUtils {
         boolean mark1isCompound = mark1.hasTwoMarks();
         boolean mark2isCompound = mark2.hasTwoMarks();
 
-
         Coordinate mark1A = mark1.getMark1().getPosition();
         Coordinate mark1B;
         Coordinate midPointMark1;
@@ -138,12 +137,8 @@ public class MathUtils {
             midPointMark1 = mark1A;
         }
 
-
-
-
         double mark1Lat = midPointMark1.getLat();
         double mark1Lon = midPointMark1.getLon();
-
 
         Coordinate mark2A = mark2.getMark1().getPosition();
         Coordinate mark2B;
@@ -157,9 +152,6 @@ public class MathUtils {
                 (mark2A.getLon() - mark2B.getLon())/2);
         double mark2Lat = midPointMark2.getLat();
         double mark2Lon = midPointMark2.getLon();
-
-
-
 
         double longitude1 = mark1Lon;
         double longitude2 = mark2Lon;

@@ -16,8 +16,6 @@ public class Config {
     public static double MOCK_SPEED_SCALE;
     public static String SOURCE_ADDRESS;
     public static int SOURCE_PORT;
-    private static final String IP_REGEX = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
-
     /**
      * This function finds a config file located at DEFAULT_CONFIG_PATH and sets any properties it finds in the file.
      * Example format for property-value pair: NUMBOATS=6
@@ -43,7 +41,7 @@ public class Config {
                         break;
                     case "SOURCE":
                         String check = st.nextToken();
-                        if(IPRegExMatcher(check) || URLMatcher(check)) {
+                        if(ConnectionUtils.IPRegExMatcher(check) || URLMatcher(check)) {
                             SOURCE_ADDRESS = check;
                         } else {
                             throw new IOException("Incorrectly formatted Address");
@@ -69,9 +67,6 @@ public class Config {
         }
     }
 
-    public static Boolean IPRegExMatcher(String IP){
-        return IP.matches(IP_REGEX);
-    }
     public static Boolean URLMatcher(String URL){
         return URL.contains(".") || URL.equals("localhost");
     }
