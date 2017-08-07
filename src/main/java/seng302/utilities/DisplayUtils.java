@@ -156,9 +156,15 @@ public class DisplayUtils {
      * @return a string that relates to a picture
      */
     public static String getLocalMapURL(){
-        String courseName = RaceVisionXMLParser.COURSE_FILE.replace("-course.xml", "-map.png");
-        String mapImagePath = "/graphics/mapImages/" + courseName;
-        return DisplayUtils.class.getResource(mapImagePath).toExternalForm();
+        try {
+            String courseName = RaceVisionXMLParser.COURSE_FILE.replace("-course.xml", "-map.png");
+            String mapImagePath = "/graphics/mapImages/" + courseName;
+            return DisplayUtils.class.getResource(mapImagePath).toExternalForm();
+        } catch (NullPointerException e){
+            String courseName = "AC33-map.png";
+            String mapImagePath = "/graphics/mapImages/" + courseName;
+            return DisplayUtils.class.getResource(mapImagePath).toExternalForm();
+        }
     }
 
 

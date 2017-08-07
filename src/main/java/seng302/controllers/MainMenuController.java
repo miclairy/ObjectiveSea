@@ -46,6 +46,7 @@ public class MainMenuController implements Initializable{
     @FXML ImageView LakeTekapo;
     @FXML ImageView LakeTaupo;
     @FXML ImageView AC33;
+    @FXML ImageView Gothenburg;
 
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
 
@@ -233,6 +234,7 @@ public class MainMenuController implements Initializable{
         addImageListeners(LakeTekapo);
         addImageListeners(LakeTaupo);
         addImageListeners(AC33);
+        addImageListeners(Gothenburg);
         addImageListeners(Athens);
     }
 

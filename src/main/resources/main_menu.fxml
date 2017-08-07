@@ -41,7 +41,7 @@
             </StackPane>
             <StackPane layoutX="228.0" layoutY="172.0" prefHeight="608.0" prefWidth="1020.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="150.0">
                <children>
-                  <GridPane fx:id="btnGrid" maxHeight="299.0" maxWidth="320.0" minHeight="299.0" minWidth="320.0" prefHeight="299.0" prefWidth="320.0">
+                  <GridPane fx:id="btnGrid" maxHeight="299.0" maxWidth="320.0" minHeight="299.0" minWidth="320.0" prefHeight="299.0" prefWidth="320.0" visible="false">
                     <columnConstraints>
                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         <ColumnConstraints />
@@ -177,7 +177,7 @@
                         </Button>
                      </children>
                   </GridPane>
-                   <GridPane fx:id="courseGrid" layoutX="160.0" layoutY="238.0" maxWidth="608.0" minWidth="608.0" pickOnBounds="false" prefHeight="523.0" prefWidth="608.0" stylesheets="@style/menuStyle.css" visible="false" AnchorPane.bottomAnchor="20.0" AnchorPane.topAnchor="220.0">
+                   <GridPane fx:id="courseGrid" layoutX="160.0" layoutY="238.0" maxWidth="608.0" minWidth="608.0" pickOnBounds="false" prefHeight="523.0" prefWidth="608.0" stylesheets="@style/menuStyle.css" AnchorPane.bottomAnchor="20.0" AnchorPane.topAnchor="220.0">
                        <children>
                            <Button fx:id="btnBackHost" mnemonicParsing="false" onAction="#backToLiveGame" text="BACK" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                                <padding>
@@ -263,6 +263,12 @@
                                    <Insets />
                                </GridPane.margin>
                            </Label>
+                        <ImageView fx:id="Gothenburg" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                        <Label text="Gothenburg" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
+                           <GridPane.margin>
+                              <Insets bottom="10.0" />
+                           </GridPane.margin>
+                        </Label>
                        </children>
                        <columnConstraints>
                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
