@@ -48,11 +48,12 @@
         <Limit SeqID="2" Lat="37.816928" Lon="-122.462388" />
         <Limit SeqID="3" Lat="37.828664" Lon="-122.459428" />
         <Limit SeqID="4" Lat="37.826187" Lon="-122.426543" />
-        <Limit SeqID="5" Lat="37.824249" Lon="-122.421708" />
-        <Limit SeqID="6" Lat="37.825674" Lon="-122.418460" />
-        <Limit SeqID="7" Lat="37.824352" Lon="-122.401073" />
-        <Limit SeqID="8" Lat="37.809481" Lon="-122.392910" />
-        <Limit SeqID="9" Lat="37.805946" Lon="-122.397890" />
-        <Limit SeqID="10" Lat="37.812332" Lon="-122.411170" />
+        <Limit SeqID="5" Lat="37.822949" Lon="-122.424708" />
+        <Limit SeqID="6" Lat="37.822949" Lon="-122.421708" />
+        <Limit SeqID="7" Lat="37.825674" Lon="-122.418460" />
+        <Limit SeqID="8" Lat="37.824352" Lon="-122.401073" />
+        <Limit SeqID="9" Lat="37.809481" Lon="-122.392910" />
+        <Limit SeqID="10" Lat="37.803946" Lon="-122.397890" />
+        <Limit SeqID="11" Lat="37.812332" Lon="-122.411170" />
     </CourseLimit>
 </Race>
