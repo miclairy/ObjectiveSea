@@ -41,6 +41,9 @@ public class Controller implements Initializable, Observer {
     @FXML private AnchorPane canvasAnchor;
     @FXML private AnchorPane rightHandSide;
     @FXML private Label fpsLabel;
+    /**
+     *
+     */
     @FXML private ListView<String> startersList;
     @FXML private Label clockLabel;
     @FXML public VBox startersOverlay;
@@ -275,8 +278,10 @@ public class Controller implements Initializable, Observer {
                 break;
             case PREPARATORY:
                 hideStarterOverlay();
-                raceViewController.initBoatHighlight();
-                raceViewController.initializeBoats();
+                if(!raceViewController.hasInitializedBoats()) {
+                    raceViewController.initBoatHighlight();
+                    raceViewController.initializeBoats();
+                }
                 break;
             case STARTED:
                 if(startersOverlay.isVisible()){
@@ -418,9 +423,7 @@ public class Controller implements Initializable, Observer {
                 case Race.UPDATED_STATUS_SIGNAL:
                     raceStatusChanged = true;
                     break;
-                case Race.UPDATED_COMPETITORS_SIGNAL:
-                    displayStarters();
-                    break;
+
             }
         }
     }
@@ -461,5 +464,9 @@ public class Controller implements Initializable, Observer {
 
     @FXML private void zoomCursorExitHover(){
         DisplayUtils.fadeNodeTransition(zoomSlider, IDLE_ZOOMSLIDER_OPACITY);
+    }
+
+    public ListView<String> getStartersList() {
+        return startersList;
     }
 }
