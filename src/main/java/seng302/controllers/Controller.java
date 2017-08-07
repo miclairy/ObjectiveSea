@@ -30,34 +30,23 @@ import static javafx.collections.FXCollections.observableArrayList;
 
 public class Controller implements Initializable, Observer {
 
-    @FXML
-    public Canvas canvas;
-    @FXML
-    private Group root;
-    @FXML
-    private AnchorPane canvasAnchor;
-    @FXML
-    private AnchorPane rightHandSide;
-    @FXML
-    private Label fpsLabel;
-    @FXML
-    private ListView<String> startersList;
-    @FXML
-    private Label clockLabel;
-    @FXML
-    public VBox startersOverlay;
-    @FXML
-    private Label startersOverlayTitle;
-    @FXML
-    public ImageView mapImageView;
-    @FXML
-    private Slider zoomSlider;
-    @FXML
-    public Label lblUserHelp;
-    @FXML
-    public Label lblWindSpeed;
-    @FXML
-    public Circle windCircle;
+    @FXML public Canvas canvas;
+    @FXML private Group root;
+    @FXML private AnchorPane canvasAnchor;
+    @FXML private AnchorPane rightHandSide;
+    @FXML private Label fpsLabel;
+    /**
+     *
+     */
+    @FXML private ListView<String> startersList;
+    @FXML private Label clockLabel;
+    @FXML public VBox startersOverlay;
+    @FXML private Label startersOverlayTitle;
+    @FXML public ImageView mapImageView;
+    @FXML private Slider zoomSlider;
+    @FXML public Label lblUserHelp;
+    @FXML public Label lblWindSpeed;
+    @FXML public Circle windCircle;
     @FXML public SplitPane splitPane;
 
 
@@ -298,8 +287,10 @@ public class Controller implements Initializable, Observer {
                 break;
             case PREPARATORY:
                 hideStarterOverlay();
-                raceViewController.initBoatHighlight();
-                raceViewController.initializeBoats();
+                if(!raceViewController.hasInitializedBoats()) {
+                    raceViewController.initBoatHighlight();
+                    raceViewController.initializeBoats();
+                }
                 break;
             case STARTED:
                 if (startersOverlay.isVisible()) {
@@ -451,6 +442,7 @@ public class Controller implements Initializable, Observer {
                 case Race.UPDATED_STATUS_SIGNAL:
                     raceStatusChanged = true;
                     break;
+
             }
         }
     }
@@ -493,6 +485,10 @@ public class Controller implements Initializable, Observer {
     @FXML
     private void zoomCursorExitHover() {
         DisplayUtils.fadeNodeTransition(zoomSlider, IDLE_ZOOMSLIDER_OPACITY);
+    }
+
+    public ListView<String> getStartersList() {
+        return startersList;
     }
 
     public void blurScreen(boolean blur) {
