@@ -1,5 +1,3 @@
-
-
 package seng302.data;
 
 
@@ -100,7 +98,7 @@ public class RaceVisionXMLParserTest {
         expected.addNewCompoundMark(finish);
 
         for(int i = 1; i <= 11; i++){
-            expected.addMarkInOrder(i, "Port");
+            expected.addMarkInOrder(i, "SP");
         }
 
         expected.addToBoundary(new Coordinate(57.6739450, 11.8417100));
@@ -186,4 +184,3 @@ public class RaceVisionXMLParserTest {
         Assert.assertEquals(currentTime - (currentTime % 1000),race.getStartTimeInEpochMs());
     }
 }
-

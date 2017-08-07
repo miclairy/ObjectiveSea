@@ -273,13 +273,15 @@ public class Course {
         }
         if (!mark.isFinishLine()) {
             Mark mark1 = mark.getMark1();
-            Mark mark2 = mark.getMark2();
             Arrow mark1Arrow = new Arrow(10, 20, mark1.getPosition());
-            Arrow mark2Arrow = new Arrow(10, 20, mark2.getPosition());
             mark1Arrow.setColour(color);
-            mark2Arrow.setColour(color);
             arrowedRoute.add(mark1Arrow);
-            arrowedRoute.add(mark2Arrow);
+            if(mark.hasTwoMarks()) {
+                Mark mark2 = mark.getMark2();
+                Arrow mark2Arrow = new Arrow(10, 20, mark2.getPosition());
+                mark2Arrow.setColour(color);
+                arrowedRoute.add(mark2Arrow);
+            }
         }
     }
 

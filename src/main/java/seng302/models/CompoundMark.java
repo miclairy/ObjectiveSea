@@ -33,7 +33,7 @@ public class CompoundMark {
     }
 
     public CompoundMark(Integer compoundMarkID, String name, Mark mark1){
-        this(compoundMarkID, name, mark1, mark1);
+        this(compoundMarkID, name, mark1, null);
     }
 
     public boolean hasTwoMarks(){
