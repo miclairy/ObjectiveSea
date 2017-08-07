@@ -32,7 +32,7 @@ public class Client implements Runnable, Observer {
     private boolean isParticipant;
     Thread dataStreamReaderThread;
 
-    private static int tutorialKey = -1;
+    private static List<Integer> tutorialKeys = new ArrayList<Integer>();
     private static Runnable tutorialFunction = null;
 
 
@@ -135,23 +135,25 @@ public class Client implements Runnable, Observer {
 
     private void sendBoatCommandPacket(){
         System.out.println(userInputController.getCommandInt());
-        if(tutorialKey != -1 && tutorialKey == userInputController.getCommandInt()){
+        if(tutorialKeys.contains(userInputController.getCommandInt())){
             byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
             sender.sendToServer(boatCommandPacket);
             tutorialFunction.run();
-        }else if(tutorialKey == -1){
+        }else if(tutorialKeys.isEmpty()){
             byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
             sender.sendToServer(boatCommandPacket);
         }
     }
 
-    public static void setTutorialAction(KeyCode key, Runnable callbackFunction){
-        tutorialKey = BoatAction.getTypeFromKeyCode(key);
+    public static void setTutorialActions(List<KeyCode> keys, Runnable callbackFunction){
+        for(KeyCode key : keys){
+            tutorialKeys.add(BoatAction.getTypeFromKeyCode(key));
+        }
         tutorialFunction = callbackFunction;
     }
 
     public static void clearTutorialAction(){
-        tutorialKey = -1;
+        tutorialKeys.clear();
         tutorialFunction = null;
     }
 
@@ -161,8 +163,8 @@ public class Client implements Runnable, Observer {
     }
 
 
-    public static int getTutorialKey() {
-        return tutorialKey;
+    public static List<Integer> getTutorialKey() {
+        return tutorialKeys;
     }
 
     public static Race getRace() {
