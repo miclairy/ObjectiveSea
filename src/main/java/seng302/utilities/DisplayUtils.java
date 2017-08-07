@@ -156,10 +156,15 @@ public class DisplayUtils {
      * @return a string that relates to a picture
      */
     public static String getLocalMapURL(){
-        String courseName = RaceVisionXMLParser.COURSE_FILE.replace("-course.xml", "-map.png");
-        String mapImagePath = "/graphics/mapImages/" + courseName;
-        System.out.println(getGoogleMapsURL());
-        return DisplayUtils.class.getResource(mapImagePath).toExternalForm();
+        try {
+            String courseName = RaceVisionXMLParser.COURSE_FILE.replace("-course.xml", "-map.png");
+            String mapImagePath = "/graphics/mapImages/" + courseName;
+            return DisplayUtils.class.getResource(mapImagePath).toExternalForm();
+        } catch (NullPointerException e){
+            String courseName = "default-map.png";
+            String mapImagePath = "/graphics/mapImages/" + courseName;
+            return DisplayUtils.class.getResource(mapImagePath).toExternalForm();
+        }
     }
 
 
@@ -171,39 +176,8 @@ public class DisplayUtils {
         double canvasY = Controller.getAnchorHeight();
         double canvasX = Controller.getAnchorWidth(); //halved to keep within google size guidelines
 
-        double boundaryMinLat;
-        double boundaryMinLon;
-
-        if(min.getLat() < 0) {
-            boundaryMinLat = min.getLat() - 0.05;
-        } else {
-            boundaryMinLat = min.getLat() + 0.05;
-        }
-        if(min.getLon() < 0) {
-            boundaryMinLon = min.getLon() - 0.05;
-        } else {
-            boundaryMinLon = min.getLon() + 0.05;
-        }
-
-        double boundaryMaxLat;
-        double boundaryMaxLon;
-
-        if(max.getLat() < 0) {
-            boundaryMaxLat = max.getLat() + 0.05;
-        } else {
-            boundaryMaxLat = max.getLat() - 0.05;
-        }
-
-        if(max.getLon() < 0) {
-            boundaryMaxLon = max.getLon() + 0.05;
-        } else {
-            boundaryMaxLon = max.getLon() - 0.05;
-        }
-
-        System.out.println(boundaryMinLat + " " + boundaryMinLon);
-
-        Coordinate bottomMarker = new Coordinate(boundaryMinLat, boundaryMinLon);
-        Coordinate topMarker = new Coordinate(boundaryMaxLat, boundaryMaxLon);
+        Coordinate bottomMarker = new Coordinate(min.getLat(), min.getLon());
+        Coordinate topMarker = new Coordinate(max.getLat(), max.getLon());
 
         Coordinate middlePoint = DisplayUtils.midPointFromTwoCoords(bottomMarker, topMarker);
 
@@ -215,10 +189,10 @@ public class DisplayUtils {
                 "&style=feature:water%7Ccolor:0xaae7df" +
                 "&style=feature:all%7Celement:labels%7Cvisibility:off" +
                 "&visible=" +
-                boundaryMinLat + "," + boundaryMinLon +
+                bottomMarker.getLat() + "," + bottomMarker.getLon() +
                 "%7C" +
-                boundaryMaxLat + "," + boundaryMaxLon +
-                "&scale=2" +
+                topMarker.getLat() + "," + topMarker.getLon() +
+                "&scale=1" +
                 "&key=" + GOOGLE_API_KEY;
         return mapURL;
     }
