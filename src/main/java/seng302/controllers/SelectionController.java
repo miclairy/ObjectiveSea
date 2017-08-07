@@ -78,7 +78,6 @@ public class SelectionController extends Observable {
        }
         if (isTrackingPoint && trackingBoat != null) {
             trackingBoat.getIcon().toFront();
-            DisplayUtils.moveToPoint(trackingBoat.getBoat().getCurrentPosition());
            if(isRotationEnabled){
                 if(zoomLevel > 1){
                     rotationOffset = -trackingBoat.getBoat().getHeading();
@@ -87,6 +86,7 @@ public class SelectionController extends Observable {
             }
             setChanged();
             notifyObservers(true);
+            DisplayUtils.moveToPoint(trackingBoat.getBoat().getCurrentPosition());
         }
 
     }
