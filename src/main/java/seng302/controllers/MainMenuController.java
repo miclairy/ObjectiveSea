@@ -118,11 +118,19 @@ public class MainMenuController implements Initializable{
         AnimationUtils.slideInTransition(liveGameGrid);
     }
 
+    @FXML private void loadTutorial() throws Exception {
+        btnSinglePlay.setDisable(true);
+        main.startHostedRace(selectedCourse, DEFAULT_PORT);
+        Thread.sleep(200);
+        main.loadRaceView(true);
+    }
+
     /**
      * Allows user to host a game at the DEFAULT_PORT and current public IP
      * @throws Exception
      */
     @FXML private void loadOfflinePlay() throws Exception{
+        btnSinglePlay.setDisable(true);
         main.startHostedRace(selectedCourse, DEFAULT_PORT);
         Thread.sleep(200);
         main.loadRaceView(true);
@@ -160,11 +168,11 @@ public class MainMenuController implements Initializable{
      * Joins a race at the desired IP and Port and creates a client instance
      * @throws Exception
      */
-    @FXML private void joinGame() throws Exception{
+    @FXML private void joinGame(boolean isParticipant) throws Exception{
         if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && validatePort()){
             String ipAddress = txtIPAddress.getText();
             int portNumber = Integer.parseInt(txtPortNumber.getText());
-            boolean clientStarted = main.startClient(ipAddress, portNumber, true);
+            boolean clientStarted = main.startClient(ipAddress, portNumber, isParticipant);
             if(clientStarted){
                 Thread.sleep(200);
                 main.loadRaceView(false);
@@ -184,37 +192,22 @@ public class MainMenuController implements Initializable{
 
             alert.showAndWait();
         }
-        hideJoinProgressIndicator();
     }
 
     /**
-     * Joins a race at the desired IP and Port and creates a client instance
+     * Joins a race as a spectator
      * @throws Exception
      */
-    @FXML private void spectateGame() throws Exception{
-        if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && validatePort()){
-            String ipAddress = txtIPAddress.getText();
-            int portNumber = Integer.parseInt(txtPortNumber.getText());
-            boolean clientStarted = main.startClient(ipAddress, portNumber, false);
-            if(clientStarted){
-                Thread.sleep(200);
-                main.loadRaceView(false);
-            }
-        }else{
-            if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && !txtIPAddress.getText().isEmpty()){
-                txtIPAddress.setStyle("-fx-text-inner-color: red;");
-            }
-            if(validatePort() && !txtPortNumber.getText().isEmpty()){
-                txtPortNumber.setStyle("-fx-text-inner-color: red;");
-            }
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Port & IP ");
-            alert.setHeaderText("Invalid Port or IP Address");
-            alert.setContentText("The IP Address or Port Number you entered\n" +
-                    "is invalid\n");
+    @FXML private void joinAsSpectator() throws Exception {
+        joinGame(false);
+    }
 
-            alert.showAndWait();
-        }
+    /**
+     * Joins a race as a participant
+     * @throws Exception
+     */
+    @FXML private void joinAsParticipant() throws Exception {
+        joinGame(true);
     }
 
     /**
@@ -256,16 +249,16 @@ public class MainMenuController implements Initializable{
     private void addShiftPromptListener(TextField field, Label label){
         field.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (newValue && field.getText().isEmpty()) {
-                AnimationUtils.shiftPromptLabel(label);
+                AnimationUtils.shiftPromptLabel(label, -1);
             }else if(field.getText().isEmpty()){
-                AnimationUtils.shiftPromptLabelBack(label);
+                AnimationUtils.shiftPromptLabel(label, 1);
             }
         });
     }
 
     /**
      * attaches click and hover listeners to buttons
-     * @param button the button to attach the listener
+     * @param node the button to attach the listener
      */
     private void addButtonListeners(Node node){
         node.addEventHandler(MouseEvent.MOUSE_ENTERED,

@@ -7,6 +7,11 @@ public class ConnectionUtils {
     private static final String IP_REGEX = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
 
 
+    /**
+     * checks a given IP to make sure it is valid
+     * @param IP the IP to be checked
+     * @return a boolean of whether it is valid or not
+     */
     public static Boolean IPRegExMatcher(String IP){
         return IP.matches(IP_REGEX);
     }

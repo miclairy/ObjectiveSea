@@ -87,13 +87,6 @@ public class RaceUpdater implements Runnable {
 
     @Override
     public void run() {
-
-        Course course = race.getCourse();
-        course.initCourseLatLon();
-        //TODO make DisplayUtils not static as we need it in both the client and the server
-        //have to set this here as the client controller won't have done it yet
-        DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
-
         while (!race.getRaceStatus().isRaceEndedStatus()) {
             boolean atLeastOneBoatNotFinished = false;
             double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
@@ -371,7 +364,7 @@ public class RaceUpdater implements Runnable {
             Coordinate boatLocation = boat.getCurrentPosition();
             Coordinate markLocation = nextMark.getPosition();
             double dist = TimeUtils.calcDistance(boatLocation.getLat(), markLocation.getLat(), boatLocation.getLon(), markLocation.getLon());
-            double testTime = dist / boat.getCurrentVMG(); // 10 is the VMG estimate of the boats
+            double testTime = dist / boat.getCurrentVMG();
             double time = (TimeUtils.convertHoursToSeconds(testTime) * 1000) + race.getCurrentTimeInEpochMs(); //time at next mark in milliseconds
             try {
                 if (nextMark.isFinishLine()){
