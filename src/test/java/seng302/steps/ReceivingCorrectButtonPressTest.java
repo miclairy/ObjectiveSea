@@ -1,9 +1,11 @@
-package seng302.data;
+package seng302.steps;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import javafx.scene.input.KeyCode;
+import seng302.data.BoatAction;
+import seng302.data.ClientPacketBuilder;
 
 
 import static org.junit.Assert.assertEquals;
