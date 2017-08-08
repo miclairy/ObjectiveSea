@@ -176,8 +176,8 @@ public class DisplayUtils {
         double canvasY = Controller.getAnchorHeight();
         double canvasX = Controller.getAnchorWidth(); //halved to keep within google size guidelines
 
-        Coordinate bottomMarker = new Coordinate(min.getLat() + 0.01, min.getLon() + 0.01);
-        Coordinate topMarker = new Coordinate(max.getLat() + 0.01, max.getLon() + 0.01);
+        Coordinate bottomMarker = new Coordinate(min.getLat(), min.getLon());
+        Coordinate topMarker = new Coordinate(max.getLat(), max.getLon());
 
         Coordinate middlePoint = DisplayUtils.midPointFromTwoCoords(bottomMarker, topMarker);
 

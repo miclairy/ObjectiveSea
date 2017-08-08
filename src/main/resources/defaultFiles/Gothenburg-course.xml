@@ -48,7 +48,7 @@
         </CompoundMark>
         <CompoundMark CompoundMarkID="11" Name="Finish">
             <Mark SeqID="1" Name="Finish Line 1" TargetLat="57.6715240" TargetLng="11.8444950" SourceID="128" />
-            <Mark SeqID="2" Name="Finish Line 2" TargetLat="57.6715240" TargetLng="11.8444950" SourceID="129" />
+            <Mark SeqID="2" Name="Finish Line 2" TargetLat="57.669772" TargetLng="11.844556" SourceID="129" />
         </CompoundMark>
     </Course>
     <CompoundMarkSequence>
