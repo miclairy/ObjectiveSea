@@ -257,7 +257,10 @@
                                    <Insets />
                                </GridPane.margin>
                            </Label>
-                        <ImageView fx:id="Gothenburg" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                        <ImageView fx:id="Gothenburg" fitHeight="110.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                           <image>
+                              <Image url="@graphics/courseImages/Gottenburg-course.png" />
+                           </image></ImageView>
                         <Label id="mapTitle" text="Gothenburg" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
                            <GridPane.margin>
                               <Insets />
