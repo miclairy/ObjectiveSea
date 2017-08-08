@@ -132,4 +132,20 @@ public class AnimationUtils {
         pt.play();
 
     }
+
+    public static void dullNode(Node node){
+        FadeTransition fadeTransition = new FadeTransition(new Duration(100), node);
+        fadeTransition.setFromValue(1);
+        fadeTransition.setToValue(0.6);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        fadeTransition.play();
+    }
+
+    public static void focusNode(Node node){
+        FadeTransition fadeTransition = new FadeTransition(new Duration(100), node);
+        fadeTransition.setFromValue(node.getOpacity());
+        fadeTransition.setToValue(1);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        fadeTransition.play();
+    }
 }

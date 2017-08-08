@@ -12,10 +12,12 @@ import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import seng302.data.BoatAction;
 import javafx.scene.shape.Circle;
+import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
@@ -94,6 +96,8 @@ public class Controller implements Initializable, Observer {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        rightHandSide.setOpacity(0.5);
+        addRightHandSideListener();
         canvasAnchor.getStylesheets().addAll(COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, BOAT_CSS, DISTANCELINE_CSS);
         canvasWidth = canvas.getWidth();
         canvasHeight = canvas.getHeight();
@@ -123,6 +127,13 @@ public class Controller implements Initializable, Observer {
         raceViewController.start();
         initDisplayDrag();
         initZoom();
+    }
+
+    private void addRightHandSideListener(){
+        rightHandSide.addEventHandler(MouseEvent.MOUSE_ENTERED,
+                e -> AnimationUtils.focusNode(rightHandSide));
+        rightHandSide.addEventHandler(MouseEvent.MOUSE_EXITED,
+                e ->  AnimationUtils.dullNode(rightHandSide));
     }
 
     /**
