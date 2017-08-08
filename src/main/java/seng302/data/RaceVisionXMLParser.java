@@ -29,7 +29,7 @@ import java.util.*;
 public class RaceVisionXMLParser {
 
     private static final String DEFAULT_FILE_PATH = "/outputFiles/";
-    public static final String COURSE_FILE = "Race.xml";
+    public static String COURSE_FILE = "AC35-course.xml";
     private static final String BOAT_FILE = "Boat.xml";
     private static final String REGATTA_FILE = "Regatta.xml";
 
@@ -85,7 +85,7 @@ public class RaceVisionXMLParser {
     }
 
     /**
-     * Sets the race id in the Race.xml dom
+     * Sets the race id in the AC35-course.xml dom
      * @param root The root tag ("Race") of the dom
      * @param raceId The desired race id
      */
@@ -95,7 +95,7 @@ public class RaceVisionXMLParser {
     }
 
     /**
-     * Sets the message creation date and time in the Race.xml dom
+     * Sets the message creation date and time in the AC35-course.xml dom
      * @param root The root tag ("Race") of the dom
      */
     private void setCreationTime(Element root){
@@ -109,7 +109,7 @@ public class RaceVisionXMLParser {
     }
 
     /**
-     * Sets the race start time in the Race.xml dom
+     * Sets the race start time in the AC35-course.xml dom
      * @param root The root tag ("Race") of the dom
      * @param expectStartTimeEpochMs The expected race start time in epoch milliseconds
      */
@@ -281,7 +281,6 @@ public class RaceVisionXMLParser {
         }
 
         setRaceLines(course);
-
         return course;
     }
 
@@ -590,5 +589,9 @@ public class RaceVisionXMLParser {
             e.printStackTrace();
         }
         return competitorIds;
+    }
+
+    public static void setCourseFile(String courseFile) {
+        COURSE_FILE = courseFile;
     }
 }

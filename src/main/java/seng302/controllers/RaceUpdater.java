@@ -37,12 +37,13 @@ public class RaceUpdater implements Runnable {
     private Collection<Boat> potentialCompetitors;
     private CollisionManager collisionManager;
 
-    public RaceUpdater(){
+    public RaceUpdater(String selectedCourse){
         collisionManager = new CollisionManager();
         //set race up with default files
         intialWindSpeedGenerator();
         List<Boat> boatsInRace = new ArrayList<>();
         RaceVisionXMLParser raceVisionXMLParser = new RaceVisionXMLParser();
+        raceVisionXMLParser.setCourseFile(selectedCourse);
         potentialCompetitors = raceVisionXMLParser.importDefaultStarters();
         Course course = raceVisionXMLParser.importCourse();
         course.setTrueWindSpeed(initialWindSpeed);
@@ -448,4 +449,5 @@ public class RaceUpdater implements Runnable {
     public CollisionManager getCollisionManager() {
         return collisionManager;
     }
+
 }
