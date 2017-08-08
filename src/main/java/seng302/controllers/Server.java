@@ -36,7 +36,7 @@ public class Server implements Runnable, Observer {
         this.raceUpdater = raceUpdater;
         this.collisionManager = raceUpdater.getCollisionManager();
         this.packetBuilder = new ServerPacketBuilder();
-        this.connectionManager = new ConnectionManager(port);
+        this.connectionManager = new ConnectionManager(port, raceUpdater.getRace());
         this.connectionManager.addObserver(this);
     }
 
@@ -74,10 +74,10 @@ public class Server implements Runnable, Observer {
                 }
             }
             sendRaceUpdates(); //send one last message block with ending data
-
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //TOOD: Clean up connections
     }
 
     /**
@@ -93,7 +93,7 @@ public class Server implements Runnable, Observer {
      * Exit out of run
      */
     public void stop(){
-        raceUpdater.getRace().updateRaceStatus(RaceStatus.FINISHED);
+        raceUpdater.getRace().updateRaceStatus(RaceStatus.TERMINATED);
     }
 
     /**
@@ -221,12 +221,16 @@ public class Server implements Runnable, Observer {
      * is started for the client
      * If the observable is a ServerListener then a registration message is received
      * @param observable The observable either a ConnectionManager or ServerListener
-     * @param arg A Socket if observable is a ConnectionManager else it is the registration type of the client
+     * @param arg A Socket or Boat ID if observable is a ConnectionManager else it is the registration type of the client
      */
     @Override
     public void update(Observable observable, Object arg) {
         if (observable.equals(connectionManager)) {
-            startServerListener((Socket) arg);
+            if(arg instanceof Socket){
+                startServerListener((Socket) arg);
+            }else{
+                setBoatToDNF((int) arg);
+            }
         } else if(observable instanceof ServerListener){
             ServerListener serverListener = (ServerListener) observable;
             Integer registrationType = (Integer) arg;
@@ -235,6 +239,20 @@ public class Server implements Runnable, Observer {
             } else{
                 connectionManager.addConnection(nextViewerID, serverListener.getSocket());
                 nextViewerID++;
+            }
+        }
+    }
+
+    public void initiateServerDisconnect() throws IOException {
+        connectionManager.closeConnections();
+        raceUpdater.stopRunning();
+    }
+
+    private void setBoatToDNF(int arg){
+        for(Boat boat : raceUpdater.getRace().getCompetitors()){
+            if(boat.getId().equals(arg)){
+                boat.setStatus(BoatStatus.DNF);
+                boat.changeSails();
             }
         }
     }

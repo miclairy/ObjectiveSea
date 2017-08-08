@@ -89,6 +89,7 @@ public class Boat extends Observable implements Comparable<Boat>{
         this.lastRoundedMarkIndex = -1;
         this.pathCoords = new ArrayList<>();
         this.currentPosition = new Coordinate(0,0);
+        this.previousPosition = new Coordinate(0,0);
     }
 
     /**

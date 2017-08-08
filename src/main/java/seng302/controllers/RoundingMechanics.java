@@ -1,7 +1,6 @@
 package seng302.controllers;
 
 import seng302.models.*;
-import seng302.utilities.MathUtils;
 
 import java.awt.geom.Line2D;
 
@@ -19,7 +18,7 @@ public class RoundingMechanics {
      * @param previousMarkCoordinate
      * @return
      */
-    public static boolean boatPassedThroughCompoundMark(Boat boat, CompoundMark compoundMark, Coordinate previousMarkCoordinate) {
+    public static boolean boatPassedThroughCompoundMark(Boat boat, CompoundMark compoundMark, Coordinate previousMarkCoordinate, Boolean forward) {
         Coordinate boatPrevious = boat.getPreviousPosition();
         Coordinate boatCurrent = boat.getCurrentPosition();
         Coordinate lineMark1 = compoundMark.getMark1().getPosition();
@@ -32,19 +31,23 @@ public class RoundingMechanics {
         Integer markPreviousDir = markLine.relativeCCW(previousMarkCoordinate.getLon(), previousMarkCoordinate.getLat());
         Integer boatPreviousDir = markLine.relativeCCW(boatPrevious.getLon(), boatPrevious.getLat());
 
-        return boatLine.intersectsLine(markLine) && markPreviousDir.equals(boatPreviousDir);
+        if(forward){
+            return boatLine.intersectsLine(markLine) && markPreviousDir.equals(boatPreviousDir);
+        } else{
+            return boatLine.intersectsLine(markLine) && !markPreviousDir.equals(boatPreviousDir);
+        }
+
     }
 
     /**
      *
      * @param boat
      * @param mark
-     * @param roundingSide
      * @param previousMarkCoordinate
      * @param nextMarkCoordinate
      * @return
      */
-    public static boolean boatPassedMark(Boat boat, CompoundMark mark, String roundingSide, Coordinate previousMarkCoordinate, Coordinate nextMarkCoordinate) {
+    public static boolean boatPassedMark(Boat boat, CompoundMark mark, Coordinate previousMarkCoordinate, Coordinate nextMarkCoordinate) {
         Coordinate boatPrevious = boat.getPreviousPosition();
         Coordinate boatCurrent = boat.getCurrentPosition();
         Line2D boatLine = new Line2D.Double(boatPrevious.getLon(), boatPrevious.getLat(), boatCurrent.getLon(), boatCurrent.getLat());
@@ -72,61 +75,46 @@ public class RoundingMechanics {
      * @param boat
      * @param gate
      * @param previousMarkCoordinate
-     * @param nextCompoundMark
      * @return
      */
-    public static boolean boatPassedGate(Boat boat, CompoundMark gate, Coordinate previousMarkCoordinate, CompoundMark nextCompoundMark) {
-        boolean hasPassedGate = false;
-        Coordinate boatPrevious = boat.getPreviousPosition();
-        Coordinate boatCurrent = boat.getCurrentPosition();
-        Line2D boatLine = new Line2D.Double(boatPrevious.getLon(), boatPrevious.getLat(), boatCurrent.getLon(), boatCurrent.getLat());
+    public static boolean boatPassedThroughExternalGate(Boat boat, CompoundMark gate, Coordinate previousMarkCoordinate) {
 
-        Line2D gateLine = new Line2D.Double(gate.getMark1().getPosition().getLon(), gate.getMark1().getPosition().getLat(), gate.getMark2().getPosition().getLon(), gate.getMark2().getPosition().getLat());
-
+        //Angle of the line in relation to true 0
         Double angle = gate.getMark1().getPosition().headingToCoordinate(gate.getMark2().getPosition());
 
         //Two long distance coordinate points from each of gate marks
         Coordinate gateExteriorCoordinate1 = gate.getMark1().getPosition().coordAt(1000, (angle + 180) % 360);
         Coordinate gateExteriorCoordinate2 = gate.getMark2().getPosition().coordAt(1000, angle);
 
-        //Two exterior infinite lines
-        Line2D gateExteriorLine1 = new Line2D.Double(gate.getMark1().getPosition().getLon(), gate.getMark1().getPosition().getLat(), gateExteriorCoordinate1.getLon(), gateExteriorCoordinate1.getLat());
-        Line2D gateExteriorLine2 = new Line2D.Double(gate.getMark2().getPosition().getLon(), gate.getMark2().getPosition().getLat(), gateExteriorCoordinate2.getLon(), gateExteriorCoordinate2.getLat());
+        //Creating both exterior compound marks for the gate
+        CompoundMark getExteriorCompoundMark1 = buildDummyCompoundMark(gate.getMark1().getPosition(), gateExteriorCoordinate1);
+        CompoundMark getExteriorCompoundMark2 = buildDummyCompoundMark(gate.getMark2().getPosition(), gateExteriorCoordinate2);
 
-        //Boat crossing Gate line
-        int gatePreviousDir = gateLine.relativeCCW(previousMarkCoordinate.getLon(), previousMarkCoordinate.getLat());
-        int boatPreviousDir = gateLine.relativeCCW(boatPrevious.getLon(), boatPrevious.getLat());
-
-        //Boat crossing Infinite Gate line 1
-        int gatePreviousDir1 = gateExteriorLine1.relativeCCW(previousMarkCoordinate.getLon(), previousMarkCoordinate.getLat());
-        int boatPreviousDir1 = gateExteriorLine1.relativeCCW(boatPrevious.getLon(), boatPrevious.getLat());
-
-        int gatePreviousDir2 = gateExteriorLine2.relativeCCW(previousMarkCoordinate.getLon(), previousMarkCoordinate.getLat());
-        int boatPreviousDir2 = gateExteriorLine2.relativeCCW(boatPrevious.getLon(), boatPrevious.getLat());
-
-
-        if(gatePreviousDir == boatPreviousDir && boatLine.intersectsLine(gateLine) && !boat.isInGate()) {
-            boat.setInGate(true);
-        }
-        if (gatePreviousDir != boatPreviousDir && boatLine.intersectsLine(gateLine) && boat.isInGate()){
-            boat.setInGate(false);
-        }
-        if(!nextCompoundMark.isFinishLine()) {
-            if (boatLine.intersectsLine(gateExteriorLine1) && boat.isInGate() && gatePreviousDir1 != boatPreviousDir1) {
-                hasPassedGate = true;
-                boat.setInGate(false);
-            }
-            if (boatLine.intersectsLine(gateExteriorLine2) && boat.isInGate() && gatePreviousDir2 != boatPreviousDir2) {
-                hasPassedGate = true;
-                boat.setInGate(false);
-            }
-        } else if (nextCompoundMark.isFinishLine() && boat.isInGate()) {
-            hasPassedGate = true;
-        }
-
-
-        return hasPassedGate;
+        //Returning if the boat passed through the exterior lines
+        return boatPassedThroughCompoundMark(boat, getExteriorCompoundMark1, previousMarkCoordinate, false) ||
+                boatPassedThroughCompoundMark(boat, getExteriorCompoundMark2, previousMarkCoordinate, false);
     }
 
+    private static CompoundMark buildDummyCompoundMark(Coordinate markCoordinate1, Coordinate markCoordinate2){
+        Mark mark1 = new Mark(-1, "Dummy Mark", markCoordinate1);
+        Mark mark2 = new Mark(-1, "Dummy Mark", markCoordinate2);
+
+        return new CompoundMark(-1, "Dummy Compound Mark", mark1, mark2);
+    }
+
+    public static boolean finishLineAfterGate(RaceLine finishLine, CompoundMark currentGate, CompoundMark previousMark){
+        Coordinate gateMark1 = currentGate.getMark1().getPosition();
+        Coordinate gateMark2 = currentGate.getMark2().getPosition();
+
+        Line2D markLine = new Line2D.Double(gateMark1.getLon(), gateMark1.getLat(), gateMark2.getLon(), gateMark2.getLat());
+
+        Coordinate finishLineCoordinate = finishLine.getPosition();
+        Integer finishLineDir = markLine.relativeCCW(finishLineCoordinate.getLon(), finishLineCoordinate.getLat());
+
+        Coordinate previousMarkCoordinate = previousMark.getPosition();
+        Integer prevMarkDir = markLine.relativeCCW(previousMarkCoordinate.getLon(), previousMarkCoordinate.getLat());
+
+        return !finishLineDir.equals(prevMarkDir);
+    }
 
 }

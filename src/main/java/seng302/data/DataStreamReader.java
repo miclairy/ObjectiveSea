@@ -25,6 +25,7 @@ public class DataStreamReader extends Receiver implements Runnable{
     private int sourcePort;
     private Race race;
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumbers = new HashMap<>();
+    private final Integer SOCKET_TIMEOUT_MS = 5000;
 
     public DataStreamReader(String sourceAddress, int sourcePort){
         this.sourceAddress = sourceAddress;
@@ -51,6 +52,7 @@ public class DataStreamReader extends Receiver implements Runnable{
     void setUpConnection() {
         try {
             clientSocket = new Socket(sourceAddress, sourcePort);
+            clientSocket.setSoTimeout(SOCKET_TIMEOUT_MS);
             dataStream = clientSocket.getInputStream();
         } catch (IOException e) {
             e.printStackTrace();
@@ -164,7 +166,8 @@ public class DataStreamReader extends Receiver implements Runnable{
      */
     private void readData(){
         DataInput dataInput = new DataInputStream(dataStream);
-        while(race == null || !race.getRaceStatus().isRaceEndedStatus()) {
+        Boolean serverRunning = true;
+        while(serverRunning) {
             try {
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
@@ -207,8 +210,9 @@ public class DataStreamReader extends Receiver implements Runnable{
                 }
 
             } catch (IOException e) {
-                System.err.println("Error occurred when reading data from stream:");
-                System.err.println(e);
+                race.terminateRace();
+                serverRunning = false;
+                System.out.println("Client: disconnected from Server");
             }
         }
     }
@@ -298,6 +302,11 @@ public class DataStreamReader extends Receiver implements Runnable{
             markIndex = race.getCourse().getCourseOrder().size()-1;
         }
         race.updateMarkRounded(sourceID, markIndex, time);
+    }
+
+    public void disconnectClient() throws IOException {
+        clientSocket.close();
+        dataStream.close();
     }
 
     public Socket getClientSocket() {
