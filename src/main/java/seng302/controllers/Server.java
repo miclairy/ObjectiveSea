@@ -38,13 +38,14 @@ public class Server implements Runnable, Observer {
         this.packetBuilder = new ServerPacketBuilder();
         this.connectionManager = new ConnectionManager(port);
         this.connectionManager.addObserver(this);
+
     }
 
     /**
      * Initializes the sequence numbers for the boats and xml messages
      * @throws IOException
      */
-    private void initialize() throws IOException  {
+    private void initialize() throws IOException, NullPointerException  {
 
         xmlSequenceNumber.put(REGATTA_XML_MESSAGE, 0);
         xmlSequenceNumber.put(RACE_XML_MESSAGE, 0);
@@ -58,7 +59,7 @@ public class Server implements Runnable, Observer {
      * Sends all the data to the socket while the boats have not all finished.
      */
     @Override
-    public void run() {
+    public void run() throws NullPointerException{
         try {
             initialize();
             sendInitialRaceMessages();
@@ -174,7 +175,7 @@ public class Server implements Runnable, Observer {
      * @param type subtype of the xml message
      * @param fileName name of the file to send
      */
-    private void sendXmlMessage(AC35StreamXMLMessage type, String fileName){
+    private void sendXmlMessage(AC35StreamXMLMessage type, String fileName) {
         int sequenceNo = xmlSequenceNumber.get(type) + 1;
         xmlSequenceNumber.put(type, sequenceNo);
         byte[] packet = packetBuilder.buildXmlMessage(type, fileName, sequenceNo, raceUpdater.getRace());
