@@ -31,7 +31,14 @@ public class Arrow extends Group{
                                 this.center.getX(), this.center.getY(),
                                 width / 2  + this.center.getX(), bottomY);
         relocate(this.center);
-        arrowLine.setStrokeWidth(5.0);
+        arrowLine.setStrokeWidth(3.0);
+    }
+
+    public Arrow (double length, double width, Coordinate center, double rotation, Color color){
+        this(length, width, center);
+        rotate(rotation);
+        setColour(color);
+
     }
 
     public void relocate(CanvasCoordinate center) {

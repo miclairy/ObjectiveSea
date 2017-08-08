@@ -252,7 +252,7 @@ public class Course {
         return arrowedRoute;
     }
 
-    private void addArrowDirection(CompoundMark mark, CompoundMark previousMark) {
+    private void addArrowDirection(CompoundMark mark, CompoundMark previousMark, CompoundMark nextMark, String roundingSide) {
         double legLength = mark.getPosition().greaterCircleDistance(previousMark.getPosition());
         double numberOfLegs = legLength / 0.5;
         if (numberOfLegs < 2){
@@ -266,33 +266,56 @@ public class Course {
         double heading = previousMark.getPosition().headingToCoordinate(mark.getPosition());
         for (int num = 1; num < numberOfLegs; num++) {
             Coordinate position = mark.getPosition().coordAt((legLength / numberOfLegs) * num, heading + 180);
-            Arrow arrow = new Arrow(10, 20, position);
+            Arrow arrow = new Arrow(5, 10, position);
             arrow.setColour(color);
             arrow.rotate( heading + 180);
-            arrowedRoute.add(arrow);
+            //arrowedRoute.add(arrow);
         }
+
         if (!mark.isFinishLine()) {
-            Mark mark1 = mark.getMark1();
-            Arrow mark1Arrow = new Arrow(10, 20, mark1.getPosition());
-            mark1Arrow.setColour(color);
-            arrowedRoute.add(mark1Arrow);
-            if(mark.hasTwoMarks()) {
-                Mark mark2 = mark.getMark2();
-                Arrow mark2Arrow = new Arrow(10, 20, mark2.getPosition());
-                mark2Arrow.setColour(color);
-                arrowedRoute.add(mark2Arrow);
+            double nextHeading = mark.getMark1().getPosition().headingToCoordinate(nextMark.getPosition());
+            if(!nextMark.isFinishLine()) {
+                if(roundingSide.substring(0, 1).toUpperCase().equals("P")) {
+                    arrowsRoundMark(mark.getMark1(), color, heading, nextHeading, 1);
+                } else {
+                    arrowsRoundMark(mark.getMark1(), color, heading, nextHeading, -1);
+                }
+                if(mark.hasTwoMarks()) {
+                    nextHeading = mark.getMark2().getPosition().headingToCoordinate(nextMark.getPosition());
+                    heading = previousMark.getPosition().headingToCoordinate(mark.getMark2().getPosition());
+                    if (roundingSide.equals("PS")) {
+                        arrowsRoundMark(mark.getMark2(), color, heading, nextHeading, -1);
+                    } else {
+                        arrowsRoundMark(mark.getMark2(), color, heading, nextHeading, 1);
+                    }
+                }
             }
         }
     }
 
+    private void arrowsRoundMark(Mark mark, Color color, double heading, double nextHeading, int isPort) {
+        Arrow mark1Arrow = new Arrow(5, 10, mark.getPosition().coordAt(isPort * 0.05, (heading + 90)),
+                (heading + 180), color);
+        arrowedRoute.add(mark1Arrow);
+        Arrow mark1ArrowNext = new Arrow(5, 10, mark.getPosition().coordAt(isPort * 0.05, (nextHeading + 90)),
+                (nextHeading + 180), color);
+        arrowedRoute.add(mark1ArrowNext);
+        double interpolatedHeading = (heading + nextHeading) / 2 ;
+        Arrow mark1ArrowInterpolated = new Arrow(5, 10, mark.getPosition().coordAt(isPort * 0.05, (interpolatedHeading + 90)),
+                (interpolatedHeading + 180), color);
+        arrowedRoute.add(mark1ArrowInterpolated);
+    }
+
+
     public void createArrowedRoute() {
         arrowedRoute.clear();
         CompoundMark previousMark = courseOrder.get(0);
-        for (int i = 0; i < courseOrder.size(); i ++){
-            if (previousMark != courseOrder.get(i)) {
-                addArrowDirection(courseOrder.get(i), previousMark);
+        for (int i = 1; i < courseOrder.size(); i ++) {
+            if (i == courseOrder.size()-1) {
+                addArrowDirection(courseOrder.get(i), courseOrder.get(i - 1), courseOrder.get(i), roundingOrder.get(i));
+            } else {
+                addArrowDirection(courseOrder.get(i), courseOrder.get(i - 1), courseOrder.get(i + 1), roundingOrder.get(i));
             }
-            previousMark = courseOrder.get(i);
         }
     }
 }
