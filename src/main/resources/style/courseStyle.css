@@ -46,3 +46,12 @@
 #imvSpeedScale {
     -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 0);
 }
+
+#btnHide{
+    -fx-text-fill: white;
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 100px;
+    -fx-opacity: 0.8px;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}

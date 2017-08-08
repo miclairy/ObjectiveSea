@@ -982,27 +982,27 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * draws a wind arrow on the course view
      */
     public void drawWindArrow() {
-
         windCircle = controller.getWindCircle();
         AnchorPane canvasAnchor = controller.getCanvasAnchor();
-
+        double scoreboardOffset = 0;
+        if(!controller.isScoreboardVisible()){
+            scoreboardOffset += 430;
+        }
         if (!canvasAnchor.getChildren().contains(windArrow)){
             windArrow = raceView.drawWindArrow();
             canvasAnchor.setTopAnchor(windArrow, WIND_ARROW_Y_PADDING);
-            canvasAnchor.setRightAnchor(windArrow, WIND_ARROW_X_PADDING);
+            canvasAnchor.setRightAnchor(windArrow, WIND_ARROW_X_PADDING - scoreboardOffset);
 
             windCircle.setRadius(25);
             canvasAnchor.setTopAnchor(windCircle, WIND_CIRCLE_Y_PADDING);
-            canvasAnchor.setRightAnchor(windCircle, WIND_CIRCLE_X_PADDING);
+            canvasAnchor.setRightAnchor(windCircle, WIND_CIRCLE_X_PADDING - scoreboardOffset);
 
             windCircle.setId("windCircle");
             canvasAnchor.getChildren().add(windArrow);
+        }else{
+            canvasAnchor.setRightAnchor(windArrow, WIND_ARROW_X_PADDING - scoreboardOffset);
+            canvasAnchor.setRightAnchor(windCircle, WIND_CIRCLE_X_PADDING - scoreboardOffset);
         }
-
-
-
-
-
     }
 
     /**

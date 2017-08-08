@@ -1,5 +1,6 @@
 package seng302.controllers;
 
+import javafx.animation.TranslateTransition;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -55,6 +56,8 @@ public class Controller implements Initializable, Observer {
     @FXML public Label lblUserHelp;
     @FXML public Label lblWindSpeed;
     @FXML public Circle windCircle;
+    @FXML private Button btnHide;
+    @FXML private ImageView imvSpeedScale;
 
 
     //FPS Counter
@@ -89,6 +92,7 @@ public class Controller implements Initializable, Observer {
     private boolean raceStatusChanged = true;
     private Race race;
     private boolean isHost;
+    private boolean scoreboardVisible = true;
 
 
     private final double FOCUSED_ZOOMSLIDER_OPACITY = 0.8;
@@ -96,7 +100,7 @@ public class Controller implements Initializable, Observer {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        rightHandSide.setOpacity(0.5);
+        rightHandSide.setOpacity(0.7);
         addRightHandSideListener();
         canvasAnchor.getStylesheets().addAll(COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, BOAT_CSS, DISTANCELINE_CSS);
         canvasWidth = canvas.getWidth();
@@ -434,6 +438,27 @@ public class Controller implements Initializable, Observer {
         DisplayUtils.fadeInFadeOutNodeTransition(lblUserHelp, 1);
     }
 
+    @FXML private void hideScoreboard(){
+        if(scoreboardVisible){
+            AnimationUtils.closePane(rightHandSide);
+            scoreboardVisible = false;
+            AnchorPane canvasAnchor = getCanvasAnchor();
+            canvasAnchor.setRightAnchor(btnHide, 10.0);
+            canvasAnchor.setRightAnchor(imvSpeedScale, 12.0);
+            canvasAnchor.setRightAnchor(lblWindSpeed, 27.0);
+            btnHide.setText("<");
+            raceViewController.redrawCourse();
+        }else{
+            AnimationUtils.openPane(rightHandSide);
+            scoreboardVisible = true;
+            canvasAnchor.setRightAnchor(btnHide, 450.0);
+            canvasAnchor.setRightAnchor(imvSpeedScale, 442.0);
+            canvasAnchor.setRightAnchor(lblWindSpeed, 457.0);
+            btnHide.setText(">");
+            raceViewController.redrawCourse();
+        }
+    }
+
     public static double getAnchorHeight() {
         return anchorHeight;
     }
@@ -465,5 +490,9 @@ public class Controller implements Initializable, Observer {
 
     public ListView<String> getStartersList() {
         return startersList;
+    }
+
+    public boolean isScoreboardVisible() {
+        return scoreboardVisible;
     }
 }

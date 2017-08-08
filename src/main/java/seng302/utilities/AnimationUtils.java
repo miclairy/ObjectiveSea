@@ -4,8 +4,10 @@ import javafx.animation.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
+import seng302.controllers.Controller;
 
 /**
  * Created by Devin on 25/07/17.
@@ -136,7 +138,7 @@ public class AnimationUtils {
     public static void dullNode(Node node){
         FadeTransition fadeTransition = new FadeTransition(new Duration(100), node);
         fadeTransition.setFromValue(1);
-        fadeTransition.setToValue(0.6);
+        fadeTransition.setToValue(0.7);
         fadeTransition.setInterpolator(Interpolator.EASE_OUT);
         fadeTransition.play();
     }
@@ -147,5 +149,19 @@ public class AnimationUtils {
         fadeTransition.setToValue(1);
         fadeTransition.setInterpolator(Interpolator.EASE_OUT);
         fadeTransition.play();
+    }
+
+    public static void closePane(Node node){
+        TranslateTransition translateTransition = new TranslateTransition(new Duration(200), node);
+        translateTransition.setToX(Controller.getAnchorWidth());
+        translateTransition.setInterpolator(Interpolator.EASE_IN);
+        translateTransition.play();
+    }
+
+    public static void openPane(Node node){
+        TranslateTransition translateTransition = new TranslateTransition(new Duration(200), node);
+        translateTransition.setToX(0);
+        translateTransition.setInterpolator(Interpolator.EASE_IN);
+        translateTransition.play();
     }
 }
