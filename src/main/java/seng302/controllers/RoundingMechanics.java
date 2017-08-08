@@ -60,14 +60,18 @@ public class RoundingMechanics {
         if(Math.abs(midway2 - angle1) > Math.abs(midway1 - angle1)){
             midway = midway2;
         }
-        Coordinate otherPoint = mark.getPosition().coordAt(1000, midway);
+        Coordinate otherPoint = mark.getPosition().coordAt(1, midway);
+        Coordinate otherPoint1 = otherPoint.coordAt(2, (midway+180) % 360);
 
-        Line2D testingLine = new Line2D.Double(mark.getPosition().getLon(), mark.getPosition().getLat(), otherPoint.getLon(), otherPoint.getLat());
+        Line2D testingDirLine = new Line2D.Double(otherPoint.getLon(), otherPoint.getLat(), otherPoint1.getLon(), otherPoint1.getLat());
+        Line2D testingCrossingLine = new Line2D.Double(mark.getPosition().getLon(), mark.getPosition().getLat(), otherPoint.getLon(), otherPoint.getLat());
 
-        Integer markPreviousDir = testingLine.relativeCCW(previousMarkCoordinate.getLon(), previousMarkCoordinate.getLat());
-        Integer boatPreviousDir = testingLine.relativeCCW(boatPrevious.getLon(), boatPrevious.getLat());
-
-        return boatLine.intersectsLine(testingLine) && markPreviousDir.equals(boatPreviousDir);
+        Integer markPreviousDir = testingDirLine.relativeCCW(previousMarkCoordinate.getLon(), previousMarkCoordinate.getLat());
+        Integer boatPreviousDir = testingDirLine.relativeCCW(boatPrevious.getLon(), boatPrevious.getLat());
+        if (boatLine.intersectsLine(testingCrossingLine)) {
+            System.out.println(boatLine.intersectsLine(testingCrossingLine));
+        }
+        return boatLine.intersectsLine(testingCrossingLine) && markPreviousDir.equals(boatPreviousDir);
     }
 
     /**
@@ -102,19 +106,19 @@ public class RoundingMechanics {
         return new CompoundMark(-1, "Dummy Compound Mark", mark1, mark2);
     }
 
-    public static boolean finishLineAfterGate(RaceLine finishLine, CompoundMark currentGate, CompoundMark previousMark){
+    public static boolean nextCompoundMarkAfterGate(CompoundMark nextCompoundMark, CompoundMark currentGate, CompoundMark previousMark){
         Coordinate gateMark1 = currentGate.getMark1().getPosition();
         Coordinate gateMark2 = currentGate.getMark2().getPosition();
 
         Line2D markLine = new Line2D.Double(gateMark1.getLon(), gateMark1.getLat(), gateMark2.getLon(), gateMark2.getLat());
 
-        Coordinate finishLineCoordinate = finishLine.getPosition();
-        Integer finishLineDir = markLine.relativeCCW(finishLineCoordinate.getLon(), finishLineCoordinate.getLat());
+        Coordinate nextCompoundMarkCoordinate = nextCompoundMark.getPosition();
+        Integer nextCompoundMarkDir = markLine.relativeCCW(nextCompoundMarkCoordinate.getLon(), nextCompoundMarkCoordinate.getLat());
 
         Coordinate previousMarkCoordinate = previousMark.getPosition();
         Integer prevMarkDir = markLine.relativeCCW(previousMarkCoordinate.getLon(), previousMarkCoordinate.getLat());
 
-        return !finishLineDir.equals(prevMarkDir);
+        return !nextCompoundMarkDir.equals(prevMarkDir);
     }
 
 }

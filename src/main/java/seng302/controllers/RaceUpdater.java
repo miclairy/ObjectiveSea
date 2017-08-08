@@ -4,17 +4,14 @@ import seng302.data.BoatStatus;
 import seng302.data.RaceStatus;
 import seng302.data.RaceVisionXMLParser;
 import seng302.models.*;
-import seng302.utilities.DisplayUtils;
 import seng302.utilities.MathUtils;
 import seng302.utilities.PolarReader;
 import seng302.utilities.TimeUtils;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-
 import static seng302.data.RaceStatus.*;
 
 /**
@@ -122,7 +119,6 @@ public class RaceUpdater implements Runnable {
                     updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
                     boat.updateBoatHeading(raceSecondsPassed);
                     checkMarkRounding(boat, course);
-                    // Passing the start line
                     calculateTimeAtNextMark(boat);
                 } else {
                     if(millisBeforeStart < WARNING_SIGNAL_TIME_IN_MS && millisBeforeStart > PREPATORY_SIGNAL_TIME_IN_MS) {
@@ -177,7 +173,6 @@ public class RaceUpdater implements Runnable {
                 boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
                 System.out.println("Passed start line");
             }
-            //Passing the finish line
         } else if (currentMark.isFinishLine()) {
             if(RoundingMechanics.boatPassedThroughCompoundMark(boat, course.getFinishLine(), previousMark.getPosition(), true)) {
                 boat.setCurrentSpeed(0);
@@ -203,9 +198,15 @@ public class RaceUpdater implements Runnable {
                 }
             } else {
                 if(RoundingMechanics.boatPassedThroughCompoundMark(boat, currentMark, previousMark.getPosition(), true)){
-                    if (nextMark.isFinishLine() && RoundingMechanics.finishLineAfterGate((RaceLine) nextMark, currentMark, previousMark)) {
+                    if (RoundingMechanics.nextCompoundMarkAfterGate(nextMark, currentMark, previousMark)) {
                         boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
-                        System.out.println("Next mark is finish line");
+                        boat.setInGate(false);
+                        if(nextMark.isFinishLine()) {
+                            System.out.println("Next feature is finish line");
+                        } else {
+                            System.out.println("Passed Gate");
+
+                        }
                     } else{
                         boat.setInGate(true);
                         System.out.println("In Gate");
