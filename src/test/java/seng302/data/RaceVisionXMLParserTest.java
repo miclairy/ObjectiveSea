@@ -12,9 +12,11 @@ import java.util.List;
 
 public class RaceVisionXMLParserTest {
 
+    private RaceVisionXMLParser raceVisionXMLParser = new RaceVisionXMLParser();
+
     @Test
     public void readRaceFileTest(){
-        Course course = RaceVisionXMLParser.importCourse(RaceVisionXMLParserTest.class.getResourceAsStream("/data/testFiles/testRace.xml"));
+        Course course = raceVisionXMLParser.importCourse(RaceVisionXMLParserTest.class.getResourceAsStream("/data/testFiles/testRace.xml"));
         Course expected = createExpectedCourse();
 
         Assert.assertNotNull(course);
@@ -42,7 +44,7 @@ public class RaceVisionXMLParserTest {
     @Test(expected=IllegalArgumentException.class)
     public void nonExistentCourseFileTest(){
         InputStream fakeFileInputStream = RaceVisionXMLParserTest.class.getResourceAsStream("I am a fake file");
-        Course course = RaceVisionXMLParser.importCourse(fakeFileInputStream);
+        Course course = raceVisionXMLParser.importCourse(fakeFileInputStream);
         Assert.assertNull(course);
     }
 
@@ -136,7 +138,7 @@ public class RaceVisionXMLParserTest {
     @Test
     public void importStartersTest(){
 
-        List<Boat> boats = RaceVisionXMLParser.importStarters(RaceVisionXMLParserTest.class.getResourceAsStream("/data/testFiles/testBoat.xml"));
+        List<Boat> boats = raceVisionXMLParser.importStarters(RaceVisionXMLParserTest.class.getResourceAsStream("/data/testFiles/testBoat.xml"));
         List<Boat> expectedBoats = createExpectedBoats();
         Assert.assertEquals(expectedBoats.size(), boats.size());
         for(int i = 0; i < boats.size(); i++){
@@ -165,7 +167,7 @@ public class RaceVisionXMLParserTest {
     public void importRegattaTest(){
         Race race = new Race("test", null, new ArrayList<>());
         InputStream regattaInputStream = RaceVisionXMLParserTest.class.getResourceAsStream("/data/testFiles/testRegatta.xml");
-        RaceVisionXMLParser.importRegatta(regattaInputStream, race);
+        raceVisionXMLParser.importRegatta(regattaInputStream, race);
         Assert.assertEquals(2, race.getUTCOffset(), 0);
         Assert.assertEquals("Gothenburg World Series 2015", race.getRegattaName());
     }
@@ -174,9 +176,9 @@ public class RaceVisionXMLParserTest {
     public void updateRaceTest(){
         InputStream raceStream = RaceVisionXMLParserTest.class.getResourceAsStream("/data/testFiles/testRace.xml");
         long currentTime = Instant.now().toEpochMilli();
-        InputStream result = RaceVisionXMLParser.injectRaceXMLFields(raceStream,"11", currentTime, new ArrayList<>());
+        InputStream result = raceVisionXMLParser.injectRaceXMLFields(raceStream,"11", currentTime, new ArrayList<>());
 
-        Race race = RaceVisionXMLParser.importRace(result);
+        Race race = raceVisionXMLParser.importRace(result);
 
         Assert.assertEquals("11", race.getId());
         Assert.assertEquals(currentTime - (currentTime % 1000),race.getStartTimeInEpochMs());

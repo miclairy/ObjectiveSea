@@ -6,6 +6,7 @@ import seng302.data.StartTimingStatus;
 import seng302.data.BoatStatus;
 import seng302.utilities.MathUtils;
 import seng302.utilities.PolarReader;
+import seng302.utilities.TimeUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.lang.Math.min;
 import static java.lang.Double.max;
 import static java.lang.StrictMath.abs;
 import static seng302.utilities.MathUtils.pointBetweenTwoAngle;
@@ -41,11 +43,23 @@ public class Boat extends Observable implements Comparable<Boat>{
     private int lastGybeMarkPassed;
     private boolean finished;
     private double heading;
+    private double targetHeading;
     private double maxSpeed;
+    private double boatHealth = 100;
+    private double damageSpeed;
+    private boolean boatCheck = false;
+    private double boatPenalty;
+    private boolean justFinished = true;
+    private double timeSinceLastCollision = 0;
+
+
+    private double finishTime;
+    private double finalTime;
     private boolean lastPlayerDirection = true; //true = Clockwise / false = AntiClockwise
 
     private int penaltyCount;
-    private boolean isColliding = false;
+    private boolean markColliding;
+    private boolean boatColliding;
 
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
@@ -56,7 +70,13 @@ public class Boat extends Observable implements Comparable<Boat>{
     private Integer id;
     private AtomicBoolean sailsIn = new AtomicBoolean(false);
 
+
     private double TWAofBoat;
+    private boolean rotate;
+    private boolean tackOrGybe;
+    private double totalRotatedAmount;
+    private double currRotationAmount;
+    private int rotateDirection;
 
     public Boat(Integer id, String name, String nickName, double speed) {
         this.id = id;
@@ -119,9 +139,40 @@ public class Boat extends Observable implements Comparable<Boat>{
         return this.name;
     }
 
-    public String getNickName() {return nickName;}
+    public String getNickName() {
+        return nickName;
+    }
 
-    public double getCurrentSpeed() { return this.currentSpeed; }
+    public double getCurrentSpeed() {
+        return currentSpeed;
+    }
+
+    private void checkPenaltySpeed() {
+        double boatPenalty = 100 - boatHealth;
+        if(boatPenalty > 0 && boatPenalty < 100) {
+            damageSpeed = boatPenalty / 10;
+        } else if(boatPenalty == 0) {
+            damageSpeed = 0;
+        }
+    }
+
+    public void addDamage(int damage) {
+        if((boatHealth - damage) > 0) {
+            boatHealth -= damage;
+        } else {
+            boatHealth = 0;
+            status = BoatStatus.DNF;
+        }
+        checkPenaltySpeed();
+    }
+
+    public void addPenalty(double penalty) {
+        boatPenalty += penalty;
+    }
+
+    public double getDamageSpeed() {
+        return damageSpeed;
+    }
 
     public int getSpeedInMMS(){
         return (int) (this.currentSpeed * KNOTS_TO_MMS_MULTIPLIER);
@@ -217,6 +268,10 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void setMaxSpeed(double maxSpeed) {
+        if(maxSpeed <= 0) {
+            maxSpeed = 0;
+            this.boatCheck = true;
+        }
         this.maxSpeed = maxSpeed;
     }
 
@@ -224,9 +279,13 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void addPenalty(int penaltyCount) {this.penaltyCount = penaltyCount;}
 
-    public boolean isColliding() {return isColliding;}
+    public boolean isMarkColliding() {return markColliding;}
 
-    public void setColliding(boolean colliding) {isColliding = colliding;}
+    public boolean isBoatColliding() {return  boatColliding;}
+
+    public void setMarkColliding(boolean colliding) {markColliding = colliding;}
+
+    public void setBoatColliding(boolean colliding) {boatColliding = colliding;}
 
     public long getTimeTillFinish() {
         return timeTillFinish;
@@ -375,11 +434,23 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void VMG(Course course, PolarTable polarTable){
-        heading = getVMGHeading(course, polarTable);
+        targetHeading = getVMGHeading(course, polarTable);
+        rotate = true;
     }
 
+
     public void tackOrGybe(Course course, PolarTable polarTable) {
-        heading = getTackOrGybeHeading(course, polarTable);
+        targetHeading = getTackOrGybeHeading(course, polarTable);
+        totalRotatedAmount = min(360 - abs(targetHeading - heading), abs(targetHeading - heading));
+//        totalRotatedAmount += 2;
+        currRotationAmount = 0;
+        double TWA = Math.abs(((course.getWindDirection() - heading)));
+        if (TWA < 89 || TWA < 270 && TWA > 180){
+            rotateDirection = -1;
+        } else {
+            rotateDirection = 1;
+        }
+        tackOrGybe = true;
     }
 
     /**
@@ -396,9 +467,9 @@ public class Boat extends Observable implements Comparable<Boat>{
         double optimumHeadingA = optimumHeadings.headingA;
         double optimumHeadingB = optimumHeadings.headingB;
 
-        if(heading-1 <= optimumHeadingA && optimumHeadingA <= heading+1) {
+        if(heading - 1 <= optimumHeadingA && optimumHeadingA <= heading + 1) {
             return optimumHeadingB;
-        } else if (heading-1 <= optimumHeadingB && optimumHeadingB <= heading+1) {
+        } else if (heading - 1 <= optimumHeadingB && optimumHeadingB <= heading + 1) {
             return optimumHeadingA;
         }
 
@@ -494,10 +565,14 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void upWind(double windAngle){
+        rotate = false;
+        tackOrGybe = false;
         headingChange(windAngle);
     }
 
     public void downWind(double windAngle){
+        rotate = false;
+        tackOrGybe = false;
         double newWindAngle = windAngle;
         if(newWindAngle > 180) {
             newWindAngle -= 360;
@@ -553,5 +628,69 @@ public class Boat extends Observable implements Comparable<Boat>{
             }
         }
         return sailAngle;
+    }
+
+    public void setFinishTime(double finishTime) {
+        this.finishTime = finishTime;
+        finalTime = (finishTime / 1000.0) - TimeUtils.convertHoursToSeconds(boatPenalty);
+    }
+
+    public double getFinalTime() {
+        return finalTime;
+    }
+
+    public boolean isJustFinished() {
+        return justFinished;
+    }
+
+    public void setJustFinished(boolean justFinished) {
+        this.justFinished = justFinished;
+    }
+
+
+    public double getTimeSinceLastCollision() {
+        return timeSinceLastCollision;
+    }
+
+    public void setTimeSinceLastCollision(double timeSinceLastCollision) {
+        this.timeSinceLastCollision = timeSinceLastCollision;
+    }
+
+
+
+    /**
+     * Updates the boat heading every loop the race updated run method makes.
+     * Calculating how much rotation should occur at each run
+     * @param time the time since last calculation
+     */
+    public void updateBoatHeading(double time){
+        double angleOfRotation = 3 * time;
+        double headingDiff = targetHeading - heading;
+        if (rotate) {
+            if (headingDiff > 0) {
+                heading += angleOfRotation;
+            } else {
+                heading -= angleOfRotation;
+            }
+            if(abs(headingDiff) <= angleOfRotation) {
+                heading = targetHeading;
+                rotate = false;
+            }
+        }
+        if (tackOrGybe) {
+            if (currRotationAmount < totalRotatedAmount){
+                heading += angleOfRotation * rotateDirection;
+                if (heading < 0){
+                    heading = 360;
+                } else if (heading > 360){
+                    heading = 0;
+                }
+                currRotationAmount += angleOfRotation;
+            }
+            if(abs(headingDiff) <= angleOfRotation) {
+                heading = targetHeading;
+                tackOrGybe = false;
+            }
+        }
     }
 }

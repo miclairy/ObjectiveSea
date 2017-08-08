@@ -10,6 +10,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -59,8 +60,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private final double WAKE_SCALE_FACTOR = 17;
     private final double SOG_SCALE_FACTOR = 200.0;
     private final int ANNOTATION_HANDLE_OFFSET = 8;
-    private final double WIND_ARROW_X_PADDING = 40;
-    private final double WIND_ARROW_Y_PADDING = 50;
+    private final double WIND_ARROW_X_PADDING = 31;
+    private final double WIND_ARROW_Y_PADDING = 19;
+    private final double WIND_CIRCLE_X_PADDING = 16.5;
+    private final double WIND_CIRCLE_Y_PADDING = 10;
 
     private Race race;
     private Group root;
@@ -82,6 +85,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean drawDistanceLine = false;
     private boolean firstTime = true;
     private SelectionController selectionController;
+    private Penalties penalties = new Penalties();
 
     private double sailWidth = 5;
     private boolean isSailWidthChanging = false;
@@ -136,7 +140,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         for (BoatDisplay displayBoat: displayBoats) {
            moveBoatDisplay(displayBoat);
         }
-        drawMarks();
         redrawRaceLines();
         if (courseNeedsRedraw) redrawCourse();
         changeAnnotations(currentAnnotationsLevel, true);
@@ -203,12 +206,20 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void displayCollisions(BoatDisplay displayBoat, CanvasCoordinate point) {
         Boat boat = displayBoat.getBoat();
-        if(boat.isColliding()){
-            boat.setColliding(false);
-            if(!displayBoat.collisionInProgress()){
+
+        if(boat.isMarkColliding() || boat.isBoatColliding()){
+            if(!displayBoat.collisionInProgress){
                 collisionAnimation(point, displayBoat);
                 displayBoat.setCollisionInProgress(true);
             }
+            boat.setMarkColliding(false);
+            boat.setBoatColliding(false);
+        }
+
+        if (boat.isFinished() && boat.isJustFinished()){
+            boat.setJustFinished(false);
+            long finishTime = race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs();
+            boat.setFinishTime(finishTime);
         }
     }
 
@@ -402,16 +413,19 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public void drawMarks() {
         for (Mark mark : race.getCourse().getAllMarks().values()) {
             if (mark.getIcon() != null && root.getChildren().contains(mark.getIcon())){
-                root.getChildren().remove(mark.getIcon());
+                CanvasCoordinate point = DisplayUtils.convertFromLatLon(mark.getPosition());
+                mark.getIcon().setCenterX(point.getX());
+                mark.getIcon().setCenterY(point.getY());
+            }else{
+                Circle circle = raceView.createMark(mark.getPosition());
+                root.getChildren().add(circle);
+                mark.setIcon(circle);
+                selectionController.addMarkSelectionHandlers(mark);
             }
-            Circle circle = raceView.createMark(mark.getPosition());
-            root.getChildren().add(circle);
-            mark.setIcon(circle);
-            selectionController.addMarkSelectionHandlers(mark);
-            Circle icon = mark.getIcon();
-            icon.toFront();
-            icon.setScaleX(zoomLevel);
-            icon.setScaleY(zoomLevel);
+
+            mark.getIcon().toFront();
+            mark.getIcon().setScaleX(zoomLevel);
+            mark.getIcon().setScaleY(zoomLevel);
         }
     }
 
@@ -886,11 +900,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
             switch(sig) {
                 case Race.UPDATED_COMPETITORS_SIGNAL:
                     Platform.runLater(() -> updateCompetitors(race.getCompetitors()));
-                    break;
+                break;
             }
         } else if (obs == selectionController){
             Boolean tracking = (Boolean) object;
-            courseNeedsRedraw = selectionController.isCourseNeedsRedraw();
             for(BoatDisplay boat : displayBoats){
                 if (selectedBoats.contains(boat) && !selectionController.getSelectedBoats().contains(boat)) {
                     updateDistanceLine(false);
@@ -901,6 +914,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 }
             }
             if (tracking){
+                redrawCourse();
                 redrawBoatPaths();
             }
             selectedBoats = selectionController.getSelectedBoats();
@@ -920,10 +934,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 }
             }
             if (needsToBeAdded) {
-                PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
-                initializeBoat(polarTable, boat);
+                if (hasInitializedBoats()) {
+                    PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
+                    initializeBoat(polarTable, boat);
+                }
             }
         }
+        controller.displayStarters();
     }
 
 
@@ -967,23 +984,24 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public void drawWindArrow() {
 
         windCircle = controller.getWindCircle();
+        AnchorPane canvasAnchor = controller.getCanvasAnchor();
 
-        if (root.getChildren().contains(windArrow)){
-            root.getChildren().remove(windArrow);
-            root.getChildren().remove(windCircle);
+        if (!canvasAnchor.getChildren().contains(windArrow)){
+            windArrow = raceView.drawWindArrow();
+            canvasAnchor.setTopAnchor(windArrow, WIND_ARROW_Y_PADDING);
+            canvasAnchor.setRightAnchor(windArrow, WIND_ARROW_X_PADDING);
+
+            windCircle.setRadius(25);
+            canvasAnchor.setTopAnchor(windCircle, WIND_CIRCLE_Y_PADDING);
+            canvasAnchor.setRightAnchor(windCircle, WIND_CIRCLE_X_PADDING);
+
+            windCircle.setId("windCircle");
+            canvasAnchor.getChildren().add(windArrow);
         }
-        windArrow = raceView.drawWindArrow();
-        windArrow.setLayoutX(Controller.getAnchorWidth() - WIND_ARROW_X_PADDING);
-        windArrow.setLayoutY(WIND_ARROW_Y_PADDING);
 
 
-        windCircle.setRadius(25);
-        windCircle.setLayoutX(Controller.getAnchorWidth()- WIND_ARROW_X_PADDING);
-        windCircle.setLayoutY(WIND_ARROW_Y_PADDING - 15);
-        windCircle.setId("windCircle");
 
-        root.getChildren().add(windCircle);
-        root.getChildren().add(windArrow);
+
 
     }
 

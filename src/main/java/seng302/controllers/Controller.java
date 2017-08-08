@@ -16,13 +16,20 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import seng302.data.BoatAction;
 import javafx.scene.shape.Circle;
+import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
+import java.net.*;
+import java.io.*;
 
+import javax.naming.Context;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.*;
 
 import static javafx.collections.FXCollections.observableArrayList;
@@ -34,6 +41,9 @@ public class Controller implements Initializable, Observer {
     @FXML private AnchorPane canvasAnchor;
     @FXML private AnchorPane rightHandSide;
     @FXML private Label fpsLabel;
+    /**
+     *
+     */
     @FXML private ListView<String> startersList;
     @FXML private Label clockLabel;
     @FXML public VBox startersOverlay;
@@ -76,6 +86,7 @@ public class Controller implements Initializable, Observer {
     public boolean raceBegun;
     private boolean raceStatusChanged = true;
     private Race race;
+    private boolean isHost;
 
 
     private final double FOCUSED_ZOOMSLIDER_OPACITY = 0.8;
@@ -92,7 +103,6 @@ public class Controller implements Initializable, Observer {
         race = Client.getRace();
         race.addObserver(this);
         Course course = race.getCourse();
-        startersOverlayTitle.setText(race.getRegattaName());
         course.initCourseLatLon();
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
         selectionController = new SelectionController(root, scoreBoardController, this);
@@ -116,6 +126,40 @@ public class Controller implements Initializable, Observer {
     }
 
     /**
+     * gets users public ip address from AWS ping servers.
+     * @return the IP address or regatta name if not found
+     */
+    private String getPublicIp(){
+        try {
+            URL ipURL = new URL("http://checkip.amazonaws.com");
+            BufferedReader in = new BufferedReader(new InputStreamReader(
+                    ipURL.openStream()));
+            String ip = in.readLine(); //you get the IP as a String
+            if(ConnectionUtils.IPRegExMatcher(ip)){
+                return ("IP: " + ip);
+            }else{
+                return race.getRegattaName();
+            }
+        } catch (Exception e) {
+            return race.getRegattaName();
+        }
+
+
+
+    }
+
+    public void setApp(boolean host){
+        this.isHost = host;
+
+        if(isHost){
+            startersOverlayTitle.setText(getPublicIp());
+        }else{
+            startersOverlayTitle.setText(race.getRegattaName());
+        }
+
+    }
+
+    /**
      * initilizes display listeners to detect dragging on display. Calls DisplayUtils to move display
      * and redraw course and paths as appropriate.
      */
@@ -125,6 +169,7 @@ public class Controller implements Initializable, Observer {
                 DisplayUtils.dragDisplay((int)event.getX(),(int) event.getY());
                 raceViewController.redrawCourse();
                 raceViewController.redrawBoatPaths();
+                selectionController.deselectBoat();
             }
         });
     }
@@ -219,8 +264,10 @@ public class Controller implements Initializable, Observer {
                 break;
             case PREPARATORY:
                 hideStarterOverlay();
-                raceViewController.initBoatHighlight();
-                raceViewController.initializeBoats();
+                if(!raceViewController.hasInitializedBoats()) {
+                    raceViewController.initBoatHighlight();
+                    raceViewController.initializeBoats();
+                }
                 break;
             case STARTED:
                 if(startersOverlay.isVisible()){
@@ -362,6 +409,7 @@ public class Controller implements Initializable, Observer {
                 case Race.UPDATED_STATUS_SIGNAL:
                     raceStatusChanged = true;
                     break;
+
             }
         }
     }
@@ -392,6 +440,9 @@ public class Controller implements Initializable, Observer {
         return windCircle;
     }
 
+    public AnchorPane getCanvasAnchor() {
+        return canvasAnchor;
+    }
 
     @FXML private void zoomCursorHover(){
         DisplayUtils.fadeNodeTransition(zoomSlider, FOCUSED_ZOOMSLIDER_OPACITY);
@@ -399,5 +450,9 @@ public class Controller implements Initializable, Observer {
 
     @FXML private void zoomCursorExitHover(){
         DisplayUtils.fadeNodeTransition(zoomSlider, IDLE_ZOOMSLIDER_OPACITY);
+    }
+
+    public ListView<String> getStartersList() {
+        return startersList;
     }
 }

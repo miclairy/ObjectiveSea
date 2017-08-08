@@ -31,6 +31,9 @@ Keys:
      boats current heading.  Else the boat will either tack or gybe to the optimum angles.
      
    SpaceBar: VMG key - This key is an autopilot key, which will take the boat to the optimum VMG angle a automatically.
+
+   Control: Multiple selection - Holding down control allows for a user to select multiple boats. This can be
+     used to toggle additional annotations such as the distance between two boats.
    
    
 Collisions:  When a players boat collides with a mark or other boat, they are visually identified of this via a flashing red circle

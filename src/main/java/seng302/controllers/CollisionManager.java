@@ -13,14 +13,15 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class CollisionManager {
 
-    private Double BOAT_SENSITIVITY = 16.0;
-    private Double MARK_SENSITIVITY = 10.0;
-    private Double AT_FAULT_DELTA = 60.0;
-    private Double COLLISION_DELTA = 70.0;
+    private Double BOAT_SENSITIVITY = 0.045;
+    private Double MARK_SENSITIVITY = 0.03;
+    private Double AT_FAULT_DELTA = 30.0;
+    private Double COLLISION_DELTA = 60.0;
+    private Penalties penalties = new Penalties();
 
     private Set<Collision> currentCollisions = new CopyOnWriteArraySet<>();
 
-    public CollisionManager() {};
+    public CollisionManager() {}
 
     /**
      * Checks all boats in the race to see if they are colliding with each other or course marks
@@ -53,6 +54,7 @@ public class CollisionManager {
                 Collision collision = new Collision();
                 collision.addBoat(boat.getId());
                 currentCollisions.add(collision);
+                penalties.markCollision(boat);
             }
         }
     }
@@ -65,13 +67,20 @@ public class CollisionManager {
     private void checkForCollisionBetweenBoats(Boat boat1, Boat boat2) {
         if (collisionOfBounds(boat1.getCurrentPosition(), boat2.getCurrentPosition(), BOAT_SENSITIVITY)) {
             Collision collision = new Collision();
-            collision.addBoat(boat1.getId());
-            collision.addBoat(boat2.getId());
+            boolean hasCollided = false;
             if (boatHeadingTowardsCoordinate(boat1, boat2.getCurrentPosition(), AT_FAULT_DELTA)) {
                 collision.addAtFaultBoat(boat1.getId());
+                penalties.boatCollision(boat1,boat2);
+                hasCollided = true;
             }
             if (boatHeadingTowardsCoordinate(boat2, boat1.getCurrentPosition(), AT_FAULT_DELTA)) {
                 collision.addAtFaultBoat(boat2.getId());
+                penalties.boatCollision(boat2,boat1);
+                hasCollided = true;
+            }
+            if(hasCollided) {
+                collision.addBoat(boat1.getId());
+                collision.addBoat(boat2.getId());
             }
             currentCollisions.add(collision);
         }
@@ -87,7 +96,6 @@ public class CollisionManager {
         return MathUtils.pointBetweenTwoAngle(boat1To2Heading, delta, boat1.getHeading());
     }
 
-
     /**
      * takes two circles and calculates if there is a collision
      * @param object1LatLon Coordinate of the first object
@@ -95,14 +103,15 @@ public class CollisionManager {
      * @return boolean of collision
      */
     private boolean collisionOfBounds(Coordinate object1LatLon, Coordinate object2LatLon, double sensitivity){
-        CanvasCoordinate object1 = DisplayUtils.convertFromLatLon(object1LatLon);
-        CanvasCoordinate object2 = DisplayUtils.convertFromLatLon(object2LatLon);
-        double dx = object1.getX() - object2.getX();
-        double dy = object2.getY() - object1.getY();
-        double distance = Math.sqrt(dx * dx + dy * dy);
+        double distance = object1LatLon.greaterCircleDistance(object2LatLon);
         return distance < sensitivity;
     }
 
+    /**
+     * Checks currently stored collisions to see if any of them contain the specified boat
+     * @param boat the boat to check for
+     * @return true if the boat is currently in a collision, false otherwise
+     */
     public boolean boatIsInCollision(Boat boat) {
         for (Collision collision : currentCollisions) {
             if (collision.boatIsInCollision(boat.getId())) {
