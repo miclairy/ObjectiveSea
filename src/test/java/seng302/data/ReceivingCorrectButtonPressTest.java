@@ -8,7 +8,10 @@ import javafx.scene.input.KeyCode;
 
 import static org.junit.Assert.assertEquals;
 import static seng302.data.AC35StreamField.BOAT_ACTION_BODY;
+import static seng302.data.AC35StreamField.BOAT_ACTION_SOURCE_ID;
 import static seng302.data.AC35StreamField.HEADER_SOURCE_ID;
+import static seng302.data.AC35StreamMessage.BOAT_ACTION_MESSAGE;
+import static seng302.data.AC35StreamMessage.BOAT_LOCATION_MESSAGE;
 import static seng302.data.BoatAction.DOWNWIND;
 import static seng302.data.Receiver.byteArrayRangeToInt;
 
@@ -25,6 +28,7 @@ public class ReceivingCorrectButtonPressTest {
     private byte[] body;
     private int action;
     private int sourceId;
+    private int HEADER_LENGTH = 15;
 
 
     @Given("^the user has pressed a button$")
@@ -36,16 +40,16 @@ public class ReceivingCorrectButtonPressTest {
     @Given("^this has been sent to the receiver$")
     public void this_has_been_sent_to_the_receiver() throws Throwable {
         byte[] packet = clientPacketBuilder.createBoatCommandPacket(commandInt, 101);
-        header = new byte[15];
-        body = new byte[1];
+        header = new byte[HEADER_LENGTH];
+        body = new byte[BOAT_ACTION_MESSAGE.getLength()];
 
         int packetIndex = 0;
-        for (int i = 0; i < 15; i++){
+        for (int i = 0; i < HEADER_LENGTH; i++){
             header[packetIndex] = packet[i];
             packetIndex ++;
         }
         packetIndex = 0;
-        for (int i = 15; i < 16; i++){
+        for (int i = HEADER_LENGTH; i < HEADER_LENGTH + BOAT_ACTION_MESSAGE.getLength(); i++){
             body[packetIndex] = packet[i];
             packetIndex ++;
         }
@@ -54,7 +58,7 @@ public class ReceivingCorrectButtonPressTest {
     @When("^the receiver decodes this packet$")
     public void the_receiver_decodes_this_packet() throws Throwable {
         action = byteArrayRangeToInt(body, BOAT_ACTION_BODY.getStartIndex(), BOAT_ACTION_BODY.getEndIndex());
-        sourceId = byteArrayRangeToInt(header, HEADER_SOURCE_ID.getStartIndex(), HEADER_SOURCE_ID.getEndIndex());
+        sourceId = byteArrayRangeToInt(body, BOAT_ACTION_SOURCE_ID.getStartIndex(), BOAT_ACTION_SOURCE_ID.getEndIndex());
 
     }
     @Then("^the receiver will know what button was pressed$")
