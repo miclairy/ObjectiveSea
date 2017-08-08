@@ -70,7 +70,6 @@ public class DisplayUtils {
         xCoord += offsetX;
         yCoord += offsetY;
 
-
         CanvasCoordinate point = new CanvasCoordinate(xCoord, yCoord);
         return point;
     }

@@ -272,7 +272,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawBoat(displayBoat);
         displayBoats.add(displayBoat);
         selectionController.addBoatSelectionHandler(displayBoat);
-        initBoatPath(displayBoat);
 
         Circle grabHandle = new Circle(5);
         grabHandle.setId("annoGrabHandle");
@@ -901,7 +900,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             switch(sig) {
                 case Race.UPDATED_COMPETITORS_SIGNAL:
                     Platform.runLater(() -> updateCompetitors(race.getCompetitors()));
-                    break;
+                break;
             }
         } else if (obs == selectionController){
             Boolean tracking = (Boolean) object;
@@ -935,10 +934,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 }
             }
             if (needsToBeAdded) {
-                PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
-                initializeBoat(polarTable, boat);
+                if (hasInitializedBoats()) {
+                    PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
+                    initializeBoat(polarTable, boat);
+                }
             }
         }
+        controller.displayStarters();
     }
 
 
