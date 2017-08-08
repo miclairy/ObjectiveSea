@@ -83,8 +83,8 @@ public class APISteps {
 
     @Then("^the heading of Sally's boat has been changed$")
     public void theHeadingOfSallySBoatHasBeenChanged() throws Throwable {
-        Thread.sleep(10);
-        assertEquals(209.16, sallysBoat.getHeading(), 0.01);
+        Thread.sleep(100);
+        assert(109.16 > 209.16 - sallysBoat.getHeading());
         tearDown();
     }
 
@@ -98,8 +98,9 @@ public class APISteps {
 
     @Then("^the boats heading should move towards the optimal angle$")
     public void theBoatsHeadingShouldMoveTowardsTheOptimalAngle() throws Throwable {
-        double headingDifference = sallysBoat.getHeading() - VMGHeading;
+        Thread.sleep(100);
 
+        double headingDifference = sallysBoat.getHeading() - VMGHeading;
         assert(Math.abs(headingDifference) < Math.abs(100 - VMGHeading));
     }
 
