@@ -121,7 +121,7 @@ public class MainMenuController implements Initializable{
 
     @FXML private void loadTutorial() throws Exception {
         btnSinglePlay.setDisable(true);
-        main.startHostedRace("GuidedPractice-course.xml", DEFAULT_PORT);
+        main.startHostedRace("GuidedPractice-course.xml", DEFAULT_PORT, true);
         Thread.sleep(200);
         main.loadRaceView(true);
     }
@@ -132,7 +132,7 @@ public class MainMenuController implements Initializable{
      */
     @FXML private void loadOfflinePlay() throws Exception{
         btnSinglePlay.setDisable(true);
-        main.startHostedRace(selectedCourse, DEFAULT_PORT);
+        main.startHostedRace(selectedCourse, DEFAULT_PORT, false);
         Thread.sleep(200);
         main.loadRaceView(true);
     }
@@ -142,7 +142,7 @@ public class MainMenuController implements Initializable{
      * @throws Exception
      */
     @FXML private void startHostGame() throws Exception{
-        main.startHostedRace(selectedCourse, Integer.parseInt(txtPortNumber.getText()));
+        main.startHostedRace(selectedCourse, Integer.parseInt(txtPortNumber.getText()), false);
         Thread.sleep(200);
         main.loadRaceView(true);
     }

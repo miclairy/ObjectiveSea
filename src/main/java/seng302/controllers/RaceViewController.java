@@ -110,10 +110,15 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         this.selectionController = selectionController;
-        if(RaceVisionXMLParser.COURSE_FILE == "GuidedPractice-course.xml"){
+        if(RaceVisionXMLParser.COURSE_FILE == "GuidedPractice-course.xml") {
             isTutorial = true;
             tutorial = new Tutorial(controller, race);
+            controller.hideStarterOverlay();
+            initBoatHighlight();
+            initializeBoats();
+            initBoatPaths();
         }
+
         redrawCourse();
         race.addObserver(this);
     }
@@ -127,12 +132,15 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         double secondsElapsed = TimeUtils.convertNanosecondsToSeconds(currentTime - previousTime);
 
-        if(!race.isTerminated()){
+        if(!race.isTerminated() && !isTutorial){
             controller.updateRaceClock();
         }
         if(controller.hasRaceStatusChanged()){
-            controller.updatePreRaceScreen();
-            controller.setRaceStatusChanged(false);
+            if(!isTutorial){
+                controller.updatePreRaceScreen();
+                controller.setRaceStatusChanged(false);
+            }
+
         }
         currentTimeInSeconds += secondsElapsed;
         controller.setTimeZone(race.getUTCOffset());

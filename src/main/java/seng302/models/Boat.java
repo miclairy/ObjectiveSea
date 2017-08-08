@@ -323,6 +323,10 @@ public class Boat extends Observable implements Comparable<Boat>{
         return lastGybeMarkPassed;
     }
 
+    public boolean isTackOrGybe() {
+        return tackOrGybe;
+    }
+
     public synchronized Boolean isSailsIn() {
         return sailsIn.get();
     }

@@ -18,6 +18,8 @@ public class Tutorial {
     private Race race;
     private enum TutorialStage { UPWINDDOWNWIND, TACK, GYBE, SAILSIN, SAILSOUT, VMG, END }
     private int tutorialUpwindDownwindCounter = 0;
+    private int UPWIND_DOWNWIND_TIME = 60;
+
     private TutorialStage tutorialStage = TutorialStage.UPWINDDOWNWIND;
 
 
@@ -27,39 +29,28 @@ public class Tutorial {
     }
 
      public void runTutorial(){
-
-        if(race.getRaceStatus().equals(PREPARATORY)){
-            controller.showTutorialOverlay("Welcome!","Watch this box to learn the keys!");
-            Client.setTutorialActions(new ArrayList<KeyCode>(), null);
-
-        } else if(race.getRaceStatus().equals(STARTED)) {
-
-            switch(tutorialStage){
-                case UPWINDDOWNWIND:
-                   upwindTutorial();
-                    break;
-                case VMG:
-                    vmgTutorial();
-                    break;
-                case TACK:
-                    tackGybeTutorial(false);
-                    break;
-                case GYBE:
-                    tackGybeTutorial(true);
-                    break;
-                case SAILSIN:
-                    sailsTutorial(false);
-                    break;
-                case SAILSOUT:
-                    sailsTutorial(true);
-                    break;
-                case END:
-                    Client.clearTutorialAction();
-                    controller.showTutorialOverlay("Complete", "Tutorial is complete.");
-
-            }
-
-
+        switch(tutorialStage){
+            case UPWINDDOWNWIND:
+               upwindTutorial();
+                break;
+            case VMG:
+                vmgTutorial();
+                break;
+            case TACK:
+                tackGybeTutorial(false);
+                break;
+            case GYBE:
+                tackGybeTutorial(true);
+                break;
+            case SAILSIN:
+                sailsTutorial(false);
+                break;
+            case SAILSOUT:
+                sailsTutorial(true);
+                break;
+            case END:
+                Client.clearTutorialAction();
+                controller.showTutorialOverlay("Complete", "Tutorial is complete. Come back again.\nI hate to see you leaving :( \n\ni love you <3");
         }
 
     }
@@ -71,7 +62,7 @@ public class Tutorial {
         keycodes.add(KeyCode.UP);
         keycodes.add(KeyCode.PAGE_UP);
         Client.setTutorialActions(keycodes, () -> tutorialUpwindDownwindCounter++);
-        if (tutorialUpwindDownwindCounter > 60){
+        if (tutorialUpwindDownwindCounter > UPWIND_DOWNWIND_TIME){
             tutorialStage = TutorialStage.VMG;
         }
     }
@@ -92,7 +83,7 @@ public class Tutorial {
             controller.showTutorialOverlay("Tack/Gybe", "Press the ENTER key to Tack or Gybe. If you are the right angle to the wind, the boat should perform a tack or gybe maneuver.");
             Client.setTutorialActions(keycodes, () -> tutorialStage = TutorialStage.GYBE);
         }else{
-            controller.showTutorialOverlay("Tack/Gybe", "Try that again \n\nPress the ENTER key to Tack or Gybe. If you are the right angle to the wind, the boat should perform a tack or gybe maneuver.");
+            controller.showTutorialOverlay("Tack/Gybe", "Lets do that again \n\nPress the ENTER key to Tack or Gybe. If you are the right angle to the wind, the boat should perform a tack or gybe maneuver.");
             Client.setTutorialActions(keycodes, () -> tutorialStage = TutorialStage.SAILSIN);
         }
 

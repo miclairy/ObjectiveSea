@@ -438,6 +438,10 @@ public class RaceUpdater implements Runnable {
         this.race = race;
     }
 
+    public void setTutorial() {
+        race.updateRaceStatus(STARTED);
+    }
+
     /**
      * Randomly generates an initial wind speed between race regulations of 6-24 knots
      */
