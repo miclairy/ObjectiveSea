@@ -15,11 +15,8 @@ import javafx.geometry.Rectangle2D;
 import javafx.stage.WindowEvent;
 import javafx.event.EventHandler;
 import javafx.application.Platform;
-import seng302.data.ConnectionManager;
-import seng302.data.DataStreamReader;
+import seng302.models.ServerOptions;
 import seng302.utilities.Config;
-import seng302.models.Race;
-
 import java.io.IOException;
 
 
@@ -31,7 +28,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Config.initializeConfig();
-        setupServer();
+        //setupServer();
         setupClient();
 
         Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
@@ -59,18 +56,47 @@ public class Main extends Application {
 
     public static void main( String[] args ) {
         if (args.length >= 1) {
-            if (args[0].equals("-s")){
-                try {
-                    Config.initializeConfig();
-                    setupServer();
-                    System.out.println("Headless server started.");
-                } catch (IOException e) {
-                    System.out.println("Failed to start headless server.");
-                    e.printStackTrace();
-                }
-            }
+            launchWithArguments(args);
         } else {
             launch(args);
+        }
+    }
+
+    /**
+     * Parse command line arguments and use them to launch the application
+     * @param args arguments that application was started with
+     */
+    private static void launchWithArguments(String[] args) {
+        if (args[0].equals("server")){
+            try {
+                ServerOptions serverOptions = new ServerOptions();
+                for (int i = 1; i < args.length; i+=2) {
+                    switch(args[i]) {
+                        case "-p":
+                            serverOptions.setPort(Integer.parseInt(args[i + 1]));
+                            break;
+                        case "-n":
+                            serverOptions.setMinParticipants(Integer.parseInt(args[i + 1]));
+                            break;
+                        case "-m":
+                            serverOptions.setRaceXML(args[i + 1]);
+                            break;
+                        case "-s":
+                            serverOptions.setSpeedScale(Double.parseDouble(args[i + 1]));
+                            break;
+                        default:
+                            throw new IllegalArgumentException(String.format("Unknown argument \"%s\"", args[i]));
+                    }
+                }
+                setupServer(serverOptions);
+                System.out.println("Headless server started.");
+            } catch (IllegalArgumentException iae) {
+                System.out.print("Invalid server arguments. ");
+                System.out.println(iae.getMessage());
+            } catch (IOException e) {
+                System.out.println("Failed to start headless server.");
+                e.printStackTrace();
+            }
         }
     }
 
@@ -87,8 +113,8 @@ public class Main extends Application {
     /**
      * Creates a Server object, puts it in it's own thread and starts the thread
      */
-    private static void setupServer() throws IOException {
-        Server server = new Server(2828, Config.MOCK_SPEED_SCALE);
+    private static void setupServer(ServerOptions serverOptions) throws IOException {
+        Server server = new Server(serverOptions);
         Thread serverThread = new Thread(server);
         serverThread.setName("Server");
         serverThread.start();

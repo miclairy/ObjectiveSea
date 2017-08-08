@@ -13,10 +13,10 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class CollisionManager {
 
-    private Double BOAT_SENSITIVITY = 18.0;
-    private Double MARK_SENSITIVITY = 10.0;
+    private Double BOAT_SENSITIVITY = 0.045;
+    private Double MARK_SENSITIVITY = 0.03;
     private Double AT_FAULT_DELTA = 30.0;
-    private Double COLLISION_DELTA = 70.0;
+    private Double COLLISION_DELTA = 60.0;
     private Penalties penalties = new Penalties();
 
     private Set<Collision> currentCollisions = new CopyOnWriteArraySet<>();
@@ -96,7 +96,6 @@ public class CollisionManager {
         return MathUtils.pointBetweenTwoAngle(boat1To2Heading, delta, boat1.getHeading());
     }
 
-
     /**
      * takes two circles and calculates if there is a collision
      * @param object1LatLon Coordinate of the first object
@@ -104,14 +103,15 @@ public class CollisionManager {
      * @return boolean of collision
      */
     private boolean collisionOfBounds(Coordinate object1LatLon, Coordinate object2LatLon, double sensitivity){
-        CanvasCoordinate object1 = DisplayUtils.convertFromLatLon(object1LatLon);
-        CanvasCoordinate object2 = DisplayUtils.convertFromLatLon(object2LatLon);
-        double dx = object1.getX() - object2.getX();
-        double dy = object2.getY() - object1.getY();
-        double distance = Math.sqrt(dx * dx + dy * dy);
+        double distance = object1LatLon.greaterCircleDistance(object2LatLon);
         return distance < sensitivity;
     }
 
+    /**
+     * Checks currently stored collisions to see if any of them contain the specified boat
+     * @param boat the boat to check for
+     * @return true if the boat is currently in a collision, false otherwise
+     */
     public boolean boatIsInCollision(Boat boat) {
         for (Collision collision : currentCollisions) {
             if (collision.boatIsInCollision(boat.getId())) {
