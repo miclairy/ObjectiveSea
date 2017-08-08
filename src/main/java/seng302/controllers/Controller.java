@@ -11,25 +11,20 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import seng302.data.BoatAction;
 import javafx.scene.shape.Circle;
+import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplayUtils;
 import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
-import java.net.*;
+
 import java.io.*;
 
-import javax.naming.Context;
-import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.*;
 
 import static javafx.collections.FXCollections.observableArrayList;
@@ -153,9 +148,14 @@ public class Controller implements Initializable, Observer {
     }
 
     public void showTutorialOverlay(String title, String content){
-        tutorialOverlayTitle.setText(title);
-        tutorialContent.setText(content);
-        tutorialOverlay.setVisible(true);
+        if(!tutorialContent.getText().equals(content) || !tutorialOverlayTitle.getText().equals(title)){
+            tutorialOverlayTitle.setText(title);
+            tutorialContent.setText(content);
+            tutorialOverlay.setVisible(true);
+            AnimationUtils.scalePop(tutorialOverlay);
+            System.out.println("slidin'");
+        }
+
     }
 
     public void hideTutorialOverlay(){
