@@ -47,11 +47,26 @@
     -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 0);
 }
 
-#btnHide{
+#btnClose{
     -fx-text-fill: white;
     -fx-background-color: #2a2a2a;
-    -fx-background-radius: 100px;
-    -fx-opacity: 0.8px;
+    -fx-background-radius: 200px;
     -fx-font-size: 20px;
     -fx-font-weight: bold;
+    -fx-background-image: url('/graphics/buttonImages/closeArrow.png');
+    -fx-background-size: 30px 30px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+#btnOpen{
+    -fx-text-fill: white;
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 200px;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-background-image: url('/graphics/buttonImages/openArrow.png');
+    -fx-background-size: 30px 30px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
 }

@@ -138,6 +138,10 @@ public class Controller implements Initializable, Observer {
                 e -> AnimationUtils.focusNode(rightHandSide));
         rightHandSide.addEventHandler(MouseEvent.MOUSE_EXITED,
                 e ->  AnimationUtils.dullNode(rightHandSide));
+        btnHide.addEventHandler(MouseEvent.MOUSE_ENTERED,
+                e -> AnimationUtils.focusNode(btnHide));
+        btnHide.addEventHandler(MouseEvent.MOUSE_EXITED,
+                e ->  AnimationUtils.dullNode(btnHide));
     }
 
     /**
@@ -446,16 +450,16 @@ public class Controller implements Initializable, Observer {
             canvasAnchor.setRightAnchor(btnHide, 10.0);
             canvasAnchor.setRightAnchor(imvSpeedScale, 12.0);
             canvasAnchor.setRightAnchor(lblWindSpeed, 27.0);
-            btnHide.setText("<");
             raceViewController.redrawCourse();
+            btnHide.setId("btnOpen");
         }else{
             AnimationUtils.openPane(rightHandSide);
             scoreboardVisible = true;
             canvasAnchor.setRightAnchor(btnHide, 450.0);
             canvasAnchor.setRightAnchor(imvSpeedScale, 442.0);
             canvasAnchor.setRightAnchor(lblWindSpeed, 457.0);
-            btnHide.setText(">");
             raceViewController.redrawCourse();
+            btnHide.setId("btnClose");
         }
     }
 
