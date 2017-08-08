@@ -345,9 +345,8 @@ public class RaceUpdater implements Runnable {
         RaceLine startingLine = race.getCourse().getStartLine();
         CompoundMark startingEnd2 = new CompoundMark(-2, "", new Mark(-2, "", startingLine.getMark1().getPosition()));
         CompoundMark startingEnd1 = new CompoundMark(-1, "", new Mark(-1, "", startingLine.getMark2().getPosition()));
-        double heading1 = (MathUtils.bearingCalc(startingEnd1,startingEnd2));
-        double heading2 = (MathUtils.bearingCalc(startingEnd2,startingEnd1));
-        double heading = (MathUtils.calculateBearingBetweenTwoPoints(startingLine, race.getCourse().getCourseOrder().get(1))) % 360;
+        double heading1 = (MathUtils.calculateBearingBetweenTwoPoints(startingEnd1,startingEnd2));
+        double heading2 = (MathUtils.calculateBearingBetweenTwoPoints(startingEnd2,startingEnd1));
         double heading3;
         if(heading1 < heading2) {
             heading3 = heading1;

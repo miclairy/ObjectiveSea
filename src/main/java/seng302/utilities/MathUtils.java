@@ -116,66 +116,30 @@ public class MathUtils {
      * @param mark2
      * @return
      */
-    public static double calculateBearingBetweenTwoPoints(CompoundMark mark1, CompoundMark mark2) {
-
-        boolean mark1isCompound = mark1.hasTwoMarks();
-        boolean mark2isCompound = mark2.hasTwoMarks();
-
-        Coordinate mark1A = mark1.getMark1().getPosition();
-        Coordinate mark1B;
-        Coordinate midPointMark1;
-        if (mark1isCompound) {
-            mark1B = mark1.getMark2().getPosition();
-            midPointMark1 = new Coordinate((mark1A.getLat() - mark1B.getLat())/2,
-                    (mark1A.getLon() - mark1B.getLon())/2);
-        } else {
-            midPointMark1 = mark1A;
-        }
-
-        double mark1Lat = midPointMark1.getLat();
-        double mark1Lon = midPointMark1.getLon();
-
-        Coordinate mark2A = mark2.getMark1().getPosition();
-        Coordinate mark2B;
-        if (mark2isCompound) {
-            mark2B = mark2.getMark2().getPosition();
-        } else {
-            mark2B = new Coordinate(0,0);
-        }
-
-        Coordinate midPointMark2 = new Coordinate((mark2A.getLat() - mark2B.getLat())/2,
-                (mark2A.getLon() - mark2B.getLon())/2);
-        double mark2Lat = midPointMark2.getLat();
-        double mark2Lon = midPointMark2.getLon();
-
-        double longitude1 = mark1Lon;
-        double longitude2 = mark2Lon;
-        double latitude1 = Math.toRadians(mark1Lat);
-        double latitude2 = Math.toRadians(mark2Lat);
-        double longDiff= Math.toRadians(longitude2-longitude1);
-        double y= Math.sin(longDiff)*Math.cos(latitude2);
-        double x=Math.cos(latitude1)*Math.sin(latitude2)-Math.sin(latitude1)*Math.cos(latitude2)*Math.cos(longDiff);
-
-        return (Math.toDegrees(Math.atan2(y, x))+360)%360;
-
-    }
-
-    /**
-     * Calucluate bearing from North between two points
-     * @param mark1 the first point
-     * @param mark2 the second point
-     * @return
-     */
-    public static double bearingCalc(CompoundMark mark1, CompoundMark mark2){
+    public static double calculateBearingBetweenTwoPoints(CompoundMark mark1, CompoundMark mark2){
         double mark1lat = mark1.getMark1().getPosition().getLat();
         double mark1lng = mark1.getMark1().getPosition().getLon();
         double mark2lat = mark2.getMark1().getPosition().getLat();
         double mark2lng = mark2.getMark1().getPosition().getLon();
+
+        boolean mark1isCompound = mark1.hasTwoMarks();
+        boolean mark2isCompound = mark2.hasTwoMarks();
+
+        if(mark1isCompound){
+            mark1lat = calculateMidPoint(mark1).getLat();
+            mark1lng = calculateMidPoint(mark1).getLon();
+        }
+        if(mark2isCompound){
+            mark2lat = calculateMidPoint(mark2).getLat();
+            mark2lng = calculateMidPoint(mark2).getLon();
+        }
+
         double y = Math.sin(mark2lng-mark1lng) * Math.cos(mark2lat);
         double x = Math.cos(mark1lat)*Math.sin(mark2lat) - Math.sin(mark1lat)*Math.cos(mark2lat)*Math.cos(mark2lng-mark1lng);
         double brng = Math.toDegrees(Math.atan2(y, x));
         return (brng + 360) % 360;
     }
+
 
     /**
      * A function for calculating the bilinear interpolation of a third variable (e.g if windspeed and heading are
