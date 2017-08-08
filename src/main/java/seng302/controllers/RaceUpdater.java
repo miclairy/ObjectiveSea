@@ -131,7 +131,7 @@ public class RaceUpdater implements Runnable {
                         race.updateRaceStatus(RaceStatus.PREPARATORY);
                     }
                 }
-                if (!boat.getStatus().equals(BoatStatus.FINISHED)) {
+                if (!boat.getStatus().equals(BoatStatus.FINISHED) && !boat.getStatus().equals(BoatStatus.DNF)) {
                     atLeastOneBoatNotFinished = true;
                 }
                 if (boat.getStatus().equals(BoatStatus.DNF)) {
@@ -151,7 +151,7 @@ public class RaceUpdater implements Runnable {
             }
 
             if (race.getCompetitors().size() > 0 && !atLeastOneBoatNotFinished) {
-                race.updateRaceStatus(RaceStatus.FINISHED);
+                race.updateRaceStatus(RaceStatus.TERMINATED);
             }
 
             try{
@@ -425,6 +425,7 @@ public class RaceUpdater implements Runnable {
         Double curLon = startPosition1.getLon() + (dLon * race.getCompetitors().size());
         boat.setPosition(curLat, curLon);
         boat.setHeading(boat.getCurrentPosition().headingToCoordinate(startingLine.getPosition()));
+        startingPosition = new Coordinate(curLat, curLon);
     }
     /**
      * Updates the boats time to the next mark

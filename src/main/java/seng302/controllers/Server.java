@@ -74,10 +74,10 @@ public class Server implements Runnable, Observer {
                 }
             }
             sendRaceUpdates(); //send one last message block with ending data
-
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //TOOD: Clean up connections
     }
 
     /**
@@ -93,7 +93,7 @@ public class Server implements Runnable, Observer {
      * Exit out of run
      */
     public void stop(){
-        raceUpdater.getRace().updateRaceStatus(RaceStatus.FINISHED);
+        raceUpdater.getRace().updateRaceStatus(RaceStatus.TERMINATED);
     }
 
     /**
