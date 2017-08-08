@@ -241,6 +241,7 @@ public class MainMenuController implements Initializable{
         addButtonListeners(LakeTekapo);
         addButtonListeners(AC33);
         addButtonListeners(Athens);
+        addButtonListeners(Gothenburg);
     }
 
     private void setLabelPromptAnimations(){
