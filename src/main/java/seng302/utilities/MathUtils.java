@@ -57,19 +57,14 @@ public class MathUtils {
 
     /**
      * Function to determine if a boat is on the correct side of the start line (e.g if the boat is on the side that the course isn't on)
-     * @param BoatLat the latitude of the boat
-     * @param BoatLong the longitude of the boat
-     * @param startMark1Lat the latitude of the first start mark
-     * @param startMark1Long the longitude of the first start mark
-     * @param startMark2Lat the latitude of the first second mark
-     * @param startMark2Long the longitude of the first second mark
-     * @param markLat the latitude of the first mark
-     * @param markLong the longitude of the first mark
+     * @param boatPos the position of the boat
+     * @param startLine the position of the startline
+     * @param mark1 the position of the first mark
      * @return true if the boat is on the correct side of the start line
      */
-    public static Boolean boatBeforeStartline(double BoatLat, double BoatLong, double startMark1Lat, double startMark1Long, double startMark2Lat, double startMark2Long, double markLat, double markLong){
-        double determinantOfMark = (markLong - startMark1Long)*(startMark2Lat - startMark1Lat) - (markLat - startMark1Lat)*(startMark2Long - startMark1Long);
-        double determinantOfBoat = (BoatLong - startMark1Long)*(startMark2Lat - startMark1Lat) - (BoatLat - startMark1Lat)*(startMark2Long - startMark1Long);
+    public static Boolean boatBeforeStartline(Coordinate boatPos, CompoundMark startLine, CompoundMark mark1){
+        double determinantOfMark = (mark1.getMark1().getPosition().getLon() - startLine.getMark1().getPosition().getLon())*(startLine.getMark2().getPosition().getLat() - startLine.getMark1().getPosition().getLat()) - (mark1.getMark1().getPosition().getLat() - startLine.getMark1().getPosition().getLat())*(startLine.getMark2().getPosition().getLon() - startLine.getMark1().getPosition().getLon());
+        double determinantOfBoat = (boatPos.getLon() - startLine.getMark1().getPosition().getLon())*(startLine.getMark2().getPosition().getLat() - startLine.getMark1().getPosition().getLat()) - (boatPos.getLat() - startLine.getMark1().getPosition().getLat())*(startLine.getMark2().getPosition().getLon() - startLine.getMark1().getPosition().getLon());
         if(determinantOfBoat > 0 && determinantOfMark < 0){
             return true;
         } else if(determinantOfBoat < 0 && determinantOfMark > 0){
@@ -163,6 +158,23 @@ public class MathUtils {
 
         return (Math.toDegrees(Math.atan2(y, x))+360)%360;
 
+    }
+
+    /**
+     * Calucluate bearing from North between two points
+     * @param mark1 the first point
+     * @param mark2 the second point
+     * @return
+     */
+    public static double bearingCalc(CompoundMark mark1, CompoundMark mark2){
+        double mark1lat = mark1.getMark1().getPosition().getLat();
+        double mark1lng = mark1.getMark1().getPosition().getLon();
+        double mark2lat = mark2.getMark1().getPosition().getLat();
+        double mark2lng = mark2.getMark1().getPosition().getLon();
+        double y = Math.sin(mark2lng-mark1lng) * Math.cos(mark2lat);
+        double x = Math.cos(mark1lat)*Math.sin(mark2lat) - Math.sin(mark1lat)*Math.cos(mark2lat)*Math.cos(mark2lng-mark1lng);
+        double brng = Math.toDegrees(Math.atan2(y, x));
+        return (brng + 360) % 360;
     }
 
     /**
