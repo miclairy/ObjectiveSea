@@ -68,9 +68,6 @@ public class RoundingMechanics {
 
         Integer markPreviousDir = testingDirLine.relativeCCW(previousMarkCoordinate.getLon(), previousMarkCoordinate.getLat());
         Integer boatPreviousDir = testingDirLine.relativeCCW(boatPrevious.getLon(), boatPrevious.getLat());
-        if (boatLine.intersectsLine(testingCrossingLine)) {
-            System.out.println(boatLine.intersectsLine(testingCrossingLine));
-        }
         return boatLine.intersectsLine(testingCrossingLine) && markPreviousDir.equals(boatPreviousDir);
     }
 
