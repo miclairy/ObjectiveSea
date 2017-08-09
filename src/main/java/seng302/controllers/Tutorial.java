@@ -61,8 +61,12 @@ public class Tutorial {
                 break;
             case END:
                 Client.clearTutorialAction();
-                controller.showTutorialOverlay("Complete", "Tutorial is complete. Come back again.\n" +
-                        "I hate to see you leaving :( \n\ni love you <3");
+                controller.showTutorialOverlay("Complete", "Tutorial is complete. Become familiar with the controls before you race online.\n\n" +
+                        "UP or DOWN - upwind or downwind\n" +
+                        "ENTER - tack or gybe\n" +
+                        "SHIFT - sails in or out\n" +
+                        "SPACE - VMG autopilot\n\n" +
+                        "Press the button under the scoreboard to return to the Menu.");
                 break;
             case TACKFAIL:
                 tackFailTutorial();
@@ -70,7 +74,9 @@ public class Tutorial {
 
     }
     private void upwindTutorial(){
-        controller.showTutorialOverlay("Upwind/Downwind", "press the UP and DOWN arrow keys to turn the boat to the upwind or downwind direction. \n\nNote the wind direction shown in the side indicator.");
+        controller.showTutorialOverlay("Upwind/Downwind", "Welcome to the Objective Sea Tutorial. Follow along to master all the keys. \n\n" +
+                "Press the UP and DOWN arrow keys to turn the boat to the upwind or downwind direction. \n\n" +
+                "Note the wind direction shown on the indicator to the right.");
         List<KeyCode> keycodes = new ArrayList<KeyCode>();
         keycodes.add(KeyCode.PAGE_DOWN);
         keycodes.add(KeyCode.DOWN);
@@ -87,8 +93,9 @@ public class Tutorial {
         List<KeyCode> keycodes = new ArrayList<KeyCode>();
         Client.clearTutorialAction();
         keycodes.add(KeyCode.SPACE);
-        controller.showTutorialOverlay("AutoPilot", "Press the SPACE key to move your boat to the VMG line. " +
-                "\n\nThis line is the optimum angle from the wind allowing your boat to go its fastest speed.");
+        controller.showTutorialOverlay("AutoPilot", "The VMG is the angle between your boat and the wind that allows for the maximum speed.\n\n" +
+                "Press SPACE to automatically move your boat to the nearest VMG angle.\n\n" +
+                "If you are within 45 degrees of the wind direction, you may be in a no-sail zone. You will not automatically move to a VMG at this angle.");
         Client.setTutorialActions(keycodes, () -> {
             double vmhHeading = tutorialBoat.getVMGHeading(race.getCourse(), polarTable);
             if(vmhHeading != boatHeading){
@@ -106,7 +113,7 @@ public class Tutorial {
         double boatHeading = tutorialBoat.getHeading();
         Client.clearTutorialAction();
 
-        controller.showTutorialOverlay("Try Again", "Your boat did not move. You are heading towards the wind in the no-sail zone (45 degrees either side of the wind direction).\n\n" +
+        controller.showTutorialOverlay("Try Again", "Your boat did not move. \n\nYou are heading towards the wind in the no-sail zone (45 degrees either side of the wind direction).\n\n" +
                 "Try use the UP and DOWN keys to move yourself to the away from the wind direction and try the key again");
         Client.setTutorialActions(keysFailed, () -> {
             double vmhHeading = tutorialBoat.getVMGHeading(race.getCourse(), polarTable);
@@ -125,7 +132,8 @@ public class Tutorial {
         Client.clearTutorialAction();
         keycodes.add(KeyCode.ENTER);
         if(!hasGybe){
-            controller.showTutorialOverlay("Tack/Gybe", "Press the ENTER key to Tack or Gybe. If you are the right angle to the wind, the boat should perform a tack or gybe maneuver.");
+            controller.showTutorialOverlay("Tack/Gybe", "Tacking and Gybing are manoeuvre that flips the heading of your boat towards the opposite VMG.\n\n" +
+                    "if you are not in the no-sail zone, press ENTER now to tack or gybe.");
             Client.setTutorialActions(keycodes, () -> {
                 double vmhHeading = tutorialBoat.getVMGHeading(race.getCourse(), polarTable);
                 if(vmhHeading != boatHeading){
@@ -138,7 +146,8 @@ public class Tutorial {
                 }
             });
         }else{
-            controller.showTutorialOverlay("Tack/Gybe", "Lets do that again \n\nPress the ENTER key to Tack or Gybe. If you are the right angle to the wind, the boat should perform a tack or gybe maneuver.");
+            controller.showTutorialOverlay("Tack/Gybe", "Nice work. Lets do that again.\n\nTacking and Gybing are manoeuvre that flips the heading of your boat towards the opposite VMG.\n\n" +
+                    "if you are not in the no-sail zone, press ENTER now to tack or gybe.");
             Client.setTutorialActions(keycodes, () -> {
                 double vmhHeading = tutorialBoat.getVMGHeading(race.getCourse(), polarTable);
                 if(vmhHeading != boatHeading){
