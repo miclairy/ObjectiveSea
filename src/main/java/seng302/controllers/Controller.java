@@ -14,7 +14,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.util.Callback;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplayUtils;
@@ -22,6 +24,7 @@ import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
+import seng302.views.BoatDisplay;
 
 import java.io.*;
 
@@ -41,6 +44,7 @@ public class Controller implements Initializable, Observer {
      *
      */
     @FXML private ListView<String> startersList;
+    @FXML private ListView<String> noBoardPlacings;
     @FXML private Label clockLabel;
     @FXML private Label lblNoBoardClock;
     @FXML public VBox startersOverlay;
@@ -77,6 +81,8 @@ public class Controller implements Initializable, Observer {
     private final String STARTERS_CSS = "/style/startersOverlayStyle.css";
     private final String SETTINGSPANE_CSS = "/style/settingsPaneStyle.css";
     private final String DISTANCELINE_CSS = "/style/distanceLineStyle.css";
+    private final Color UNSELECTED_BOAT_COLOR = Color.WHITE;
+    private final Color SELECTED_BOAT_COLOR = Color.rgb(77, 197, 138);
 
     // Controllers
     @FXML private RaceViewController raceViewController;
@@ -95,8 +101,6 @@ public class Controller implements Initializable, Observer {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        rightHandSide.setOpacity(0.7);
-        lblNoBoardClock.setVisible(false);
         addRightHandSideListener();
         canvasAnchor.getStylesheets().addAll(COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, BOAT_CSS, DISTANCELINE_CSS);
         canvasWidth = canvas.getWidth();
@@ -122,6 +126,9 @@ public class Controller implements Initializable, Observer {
         clockLabel.textProperty().bind(clockString);
         hideStarterOverlay();
         raceViewController.updateWindArrow();
+        rightHandSide.setOpacity(0.7);
+        lblNoBoardClock.setVisible(false);
+        noBoardPlacings.setVisible(false);
 
         displayStarters();
         startersOverlay.toFront();
@@ -139,6 +146,10 @@ public class Controller implements Initializable, Observer {
                 e -> AnimationUtils.focusNode(btnHide));
         btnHide.addEventHandler(MouseEvent.MOUSE_EXITED,
                 e ->  AnimationUtils.dullNode(btnHide));
+        lblNoBoardClock.addEventHandler(MouseEvent.MOUSE_ENTERED,
+                e -> AnimationUtils.toggleHiddenBoardNodes(noBoardPlacings, false));
+        lblNoBoardClock.addEventHandler(MouseEvent.MOUSE_EXITED,
+                e -> AnimationUtils.toggleHiddenBoardNodes(noBoardPlacings, true));
     }
 
     /**
@@ -445,10 +456,10 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneArrow(btnHide, 430, 1);
             AnimationUtils.shiftPaneNodes(imvSpeedScale, 430);
             AnimationUtils.shiftPaneNodes(lblWindSpeed, 430);
-            lblNoBoardClock.setVisible(true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
             scoreboardVisible = false;
             raceViewController.shiftArrow(false);
+            setUpPlacingsBoard();
         }else{
             AnimationUtils.shiftPaneNodes(rightHandSide, -440);
             AnimationUtils.shiftPaneArrow(btnHide, -430, -1);
@@ -457,6 +468,33 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true);
             scoreboardVisible = true;
             raceViewController.shiftArrow(true);
+        }
+    }
+
+    private void setUpPlacingsBoard(){
+        noBoardPlacings.setItems(formattedDisplayOrder);
+        noBoardPlacings.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+            @Override
+            public ListCell<String> call(ListView<String> list) {
+                return new ColoredTextListCell();
+            }
+        });
+    }
+
+    public class ColoredTextListCell extends ListCell<String> {
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            setText(item);
+            setTextFill(UNSELECTED_BOAT_COLOR);
+
+            BoatDisplay userBoat = raceViewController.getCurrentUserBoatDisplay();
+            if(userBoat != null && item != null){
+                if(item.contains(userBoat.getBoat().getName())){
+                    setTextFill(SELECTED_BOAT_COLOR);
+                }
+            }
+
         }
     }
 

@@ -179,19 +179,20 @@ public class AnimationUtils {
         translateTransition.setInterpolator(Interpolator.EASE_IN);
 
         if(visible){
-            translateTransition.setFromY(node.getLayoutY() - 10);
-            translateTransition.setToY(node.getLayoutY());
-            fadeTransition.setFromValue(1);
+            translateTransition.setFromY(node.getLayoutY());
+            translateTransition.setToY(node.getLayoutY() - 10);
+            fadeTransition.setFromValue(0.8);
             fadeTransition.setToValue(0);
             fadeTransition.setOnFinished(new EventHandler<ActionEvent>(){
                 public void handle(ActionEvent AE){
                     node.setVisible(false);
                 }});
         }else{
+            node.setVisible(true);
             fadeTransition.setFromValue(0);
-            fadeTransition.setToValue(1);
-            translateTransition.setFromY(node.getLayoutY());
-            translateTransition.setToY(node.getLayoutY() - 10);
+            fadeTransition.setToValue(0.8);
+            translateTransition.setFromY(node.getLayoutY() - 10);
+            translateTransition.setToY(node.getLayoutY());
         }
         fadeTransition.setInterpolator(Interpolator.EASE_OUT);
         ParallelTransition pt = new ParallelTransition(translateTransition, fadeTransition);

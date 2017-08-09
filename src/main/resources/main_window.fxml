@@ -64,7 +64,8 @@
             <padding>
                <Insets bottom="7.0" left="20.0" right="20.0" top="7.0" />
             </padding></Button>
-         <Label fx:id="lblNoBoardClock" layoutX="1273.0" layoutY="52.0" text="Label" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="12.0" />
+         <Label fx:id="lblNoBoardClock" layoutX="1273.0" layoutY="52.0" text="Label" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="10.0" />
+         <ListView fx:id="noBoardPlacings" layoutX="1245.0" layoutY="-21.0" prefHeight="251.0" prefWidth="363.0" AnchorPane.rightAnchor="87.0" AnchorPane.topAnchor="50.0" />
             </children>
       <StackPane.margin>
          <Insets />
