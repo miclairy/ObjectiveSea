@@ -1,0 +1,37 @@
+Hitting a mark:
+"You can't sail over that!"
+
+Hitting another boat:
+"Are you trying to get disqualified!?"
+"Prepare to board!"
+
+Hitting boundary:
+"You can't leave the arena!"
+"Deserters will be shot!"
+
+First place:
+"Congratulations, you've won a pointless race!"
+
+Everyone but first place:
+"Pack your bags! First place has already been taken!"
+
+Everyone:
+"If you're not first you're last!"
+
+Last place:
+"It's a boat time!"
+
+Boat damage:
+"Get your rubber dingy ready!"
+"Live by the sail, die by the sail!"
+
+
+
+
+"Try that again and see what happens!"
+
+
+"It's a boat time!"
+"Oh buoy! Oh buoy! Oh buoy!"
+"Get ready to race!"
+"Get ready for a SAIL-ebratition!"
