@@ -163,6 +163,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
         displayCollisions(boatDisplay, point);
 
         manageStartTiming(boatDisplay);
+        if(scoreBoardController.isVirtualStartlineSelected() && !race.hasStarted()) {
+            drawPredictedStartLine(boatDisplay);
+        } else {
+            if(root.getChildren().contains(boatDisplay.getPredictedStartLine())) {
+                root.getChildren().remove(boatDisplay.getPredictedStartLine());
+            }
+        }
+
         moveSOGVector(boatDisplay);
         moveVMGVector(boatDisplay);
         if(race.getRaceStatus() == STARTED) {
@@ -404,6 +412,19 @@ public class RaceViewController extends AnimationTimer implements Observer {
         root.getChildren().add(line);
         raceLine.setLine(line);
         raceLine.getLine().toBack();
+    }
+
+    private void drawPredictedStartLine(BoatDisplay boatDisplay) {
+        if(boatDisplay.equals(currentUserBoatDisplay)) {
+            if (root.getChildren().contains(boatDisplay.getPredictedStartLine())) {
+                root.getChildren().remove(boatDisplay.getPredictedStartLine());
+            }
+            boatDisplay.getVirtualStartline(race);
+            Line newPredictedStartLine = boatDisplay.getPredictedStartLine();
+            root.getChildren().add(newPredictedStartLine);
+            boatDisplay.getPredictedStartLine().toBack();
+
+        }
     }
 
 

@@ -12,6 +12,7 @@ import seng302.data.StartTimingStatus;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.chart.XYChart.Data;
 import seng302.models.*;
+import seng302.utilities.DisplayUtils;
 import seng302.utilities.MathUtils;
 
 import java.util.Observable;
@@ -37,6 +38,7 @@ public class BoatDisplay implements Observer {
     private boolean annoHasMoved = false;
     private Polyline SOGVector;
     private Polyline VMGVector;
+    private Line predictedStartLine;
     private Series series;
     private final double FADEDBOAT = 0.3;
     public Circle annoGrabHandle;
@@ -186,38 +188,14 @@ public class BoatDisplay implements Observer {
      */
     public void getStartTiming(Race race){
         long secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000; //time till race starts
-        Course course = race.getCourse();
-        Coordinate position = boat.getCurrentPosition();
-        Coordinate startLine1 = course.getStartLine().getMark1().getPosition(); //position of start line mark 1
-        Coordinate startLine2 = course.getStartLine().getMark2().getPosition(); //position of start line mark 2
-
-        Coordinate mark = course.getCourseOrder().get(1).getPosition(); //Position of first mark to determine which side of the course the start line is on
-        Boolean correctSideOfStart = MathUtils.boatBeforeStartline(position.getLat(),position.getLon(),startLine1.getLat(),startLine1.getLon(),startLine2.getLat(),startLine2.getLon(),mark.getLat(),mark.getLon()); //checks if boat on correct side of the line
-
         double timeToStart;
         double timeToCrossStartLine = 0;
-        double boatsHeading = boat.getHeading();
-        double headingOfStartLine = startLine1.headingToCoordinate(startLine2);
-        double headingOfMark = mark.headingToCoordinate(startLine1);
+        double distanceToStart = distanceToStartLine(race);
 
-        Boolean boatHeadingToStart = MathUtils.boatHeadingToLine(boatsHeading, headingOfStartLine, headingOfMark); //Checks if the boat is heading towards the start line from either direction
-        InfiniteLine startlineInf = new InfiniteLine(startLine1,startLine2); //creates an infinite line in that contains the startline
-        Coordinate closestPoint = startlineInf.closestPoint(position); //finds the closest point from the boat to the previous infinite line
-        //Calculates whether the closest point from the boat is on the start line, if it isn't then the closest point is the closest end
-        double distanceToStart;
-        if(closestPoint.getLat() < Math.min(startLine1.getLat(),startLine2.getLat()) || closestPoint.getLat() > Math.max(startLine1.getLat(),startLine2.getLat())){
-            double distanceToStartLine1 = position.greaterCircleDistance(startLine1);
-            double distanceToStartLine2 = position.greaterCircleDistance(startLine2);
-            distanceToStart = Math.min(distanceToStartLine1,distanceToStartLine2); // finds which end is closest
-        } else {
-            distanceToStart = position.greaterCircleDistance(closestPoint); //if the closest point is on the start line already
-        }
-        //If the boat is on the correct side of the start and heading towards it
-
-        if(correctSideOfStart && boatHeadingToStart){
+        if(boatOnStartSide(race) && boatHeadingToStart(race)){
             timeToStart = distanceToStart/boat.getCurrentSpeed() * 60 * 60; //converted to seconds (nautical miles/knots = hours)
             timeToCrossStartLine = timeToStart + secondsElapsed;
-        } else if(!correctSideOfStart && !boatHeadingToStart){ // If boat is on the wrong side of the line but heading to the mark (from wrong direction), this checks if it is possible for the boat to even get there in time
+        } else if(!boatOnStartSide(race) && !boatHeadingToStart(race)){ // If boat is on the wrong side of the line but heading to the mark (from wrong direction), this checks if it is possible for the boat to even get there in time
             timeToStart = distanceToStart/boat.getCurrentSpeed() * 60 * 60; //converted to seconds (nautical miles/knots = hours)
             timeToCrossStartLine = timeToStart + secondsElapsed;
             if(timeToCrossStartLine < 5.0){ //if it is possible for the boat to get to the other side then we can't tell much else about it
@@ -233,6 +211,80 @@ public class BoatDisplay implements Observer {
         }
     }
 
+    public double distanceToStartLine(Race race){
+        Course course = race.getCourse();
+        Coordinate position = boat.getCurrentPosition();
+        Coordinate startLine1 = course.getStartLine().getMark1().getPosition(); //position of start line mark 1
+        Coordinate startLine2 = course.getStartLine().getMark2().getPosition(); //position of start line mark 2
+
+        InfiniteLine startlineInf = new InfiniteLine(startLine1,startLine2); //creates an infinite line in that contains the startline
+        Coordinate closestPoint = startlineInf.closestPoint(position); //finds the closest point from the boat to the previous infinite line
+        //Calculates whether the closest point from the boat is on the start line, if it isn't then the closest point is the closest end
+        double distanceToStart;
+        if(closestPoint.getLat() < Math.min(startLine1.getLat(),startLine2.getLat()) || closestPoint.getLat() > Math.max(startLine1.getLat(),startLine2.getLat())){
+            double distanceToStartLine1 = position.greaterCircleDistance(startLine1);
+            double distanceToStartLine2 = position.greaterCircleDistance(startLine2);
+            distanceToStart = Math.min(distanceToStartLine1,distanceToStartLine2); // finds which end is closest
+        } else {
+            distanceToStart = position.greaterCircleDistance(closestPoint); //if the closest point is on the start line already
+        }
+
+        return distanceToStart;
+    }
+
+    public void getVirtualStartline(Race race){
+
+        RaceLine startingLine = race.getCourse().getStartLine();
+        CompoundMark startingEnd2 = new CompoundMark(-2, "", new Mark(-2, "", startingLine.getMark1().getPosition()));
+        CompoundMark startingEnd1 = new CompoundMark(-1, "", new Mark(-1, "", startingLine.getMark2().getPosition()));
+        double heading1 = (MathUtils.calculateBearingBetweenTwoPoints(startingEnd1,startingEnd2));
+        double heading2 = (MathUtils.calculateBearingBetweenTwoPoints(startingEnd2,startingEnd1));
+        double heading3;
+        if(heading1 < heading2) {
+            heading3 = heading1;
+        } else {
+            heading3 = heading2;
+        }
+
+        long secondsElapsed = (race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs()) / 1000;
+        double distanceToVirtualStartLine = (boat.getCurrentSpeed() / 3600) * secondsElapsed;
+
+        Coordinate startPosition1 = startingEnd1.getPosition().coordAt(distanceToVirtualStartLine, heading3 + 90);
+        Coordinate startPosition2 = startingEnd2.getPosition().coordAt(distanceToVirtualStartLine, heading3 + 90);
+
+        CanvasCoordinate point1 = DisplayUtils.convertFromLatLon(startPosition1);
+        CanvasCoordinate point2 = DisplayUtils.convertFromLatLon(startPosition2);
+
+        Line predictedLine = new Line(point1.getX(), point1.getY(), point2.getX(), point2.getY());
+        predictedLine.setStroke(color);
+
+        if(!boatOnStartSide(race) || !boatHeadingToStart(race)) {
+            predictedLine.setOpacity(0);
+        }
+
+        predictedStartLine = predictedLine;
+    }
+
+    public Boolean boatHeadingToStart(Race race){
+        Course course = race.getCourse();
+        Coordinate startLine1 = course.getStartLine().getMark1().getPosition(); //position of start line mark 1
+        Coordinate startLine2 = course.getStartLine().getMark2().getPosition(); //position of start line mark 2
+        Coordinate mark = course.getCourseOrder().get(1).getPosition(); //Position of first mark to determine which side of the course the start line is on
+
+        double boatsHeading = boat.getHeading();
+        double headingOfStartLine = startLine1.headingToCoordinate(startLine2);
+        double headingOfMark = mark.headingToCoordinate(startLine1);
+
+        return MathUtils.boatHeadingToLine(boatsHeading, headingOfStartLine, headingOfMark); //Checks if the boat is heading towards the start line from either direction
+
+    }
+
+    public Boolean boatOnStartSide(Race race){
+        Course course = race.getCourse();
+        Coordinate position = boat.getCurrentPosition();
+        return MathUtils.boatBeforeStartline(position,course.getStartLine(),course.getCourseOrder().get(1)); //checks if boat on correct side of the line
+    }
+
 
     public void showVectors() {
         SOGVector.setVisible(true);
@@ -243,6 +295,7 @@ public class BoatDisplay implements Observer {
         SOGVector.setVisible(false);
         VMGVector.setVisible(false);
     }
+
 
     public void unFocus(){
         fadeNodeTransition(icon, FADEDBOAT);
@@ -319,6 +372,14 @@ public class BoatDisplay implements Observer {
 
     public boolean collisionInProgress() {
         return collisionInProgress;
+    }
+
+    public Line getPredictedStartLine() {
+        return predictedStartLine;
+    }
+
+    public void setPredictedStartLine(Line predictedStartLine) {
+        this.predictedStartLine = predictedStartLine;
     }
 }
 
