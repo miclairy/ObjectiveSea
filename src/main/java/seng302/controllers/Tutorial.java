@@ -2,7 +2,9 @@ package seng302.controllers;
 
 import javafx.scene.input.KeyCode;
 import seng302.models.Boat;
+import seng302.models.PolarTable;
 import seng302.models.Race;
+import seng302.utilities.PolarReader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,18 +19,24 @@ public class Tutorial {
 
     private Controller controller;
     private Race race;
-    private enum TutorialStage { UPWINDDOWNWIND, TACK, TACKFAIL, GYBE, SAILSIN, SAILSOUT, VMG, END }
+    public enum TutorialStage { UPWINDDOWNWIND, VMG, TACK, GYBE, SAILSIN, SAILSOUT, END, TACKFAIL }
     private int tutorialUpwindDownwindCounter = 0;
     private int UPWIND_DOWNWIND_TIME = 60;
     private Boat tutorialBoat;
+    private PolarTable polarTable;
+
 
     private TutorialStage tutorialStage = TutorialStage.UPWINDDOWNWIND;
+    private TutorialStage stepFailed;
+    private List<KeyCode> keysFailed;
+
 
 
     public Tutorial(Controller controller, Race race){
         this.controller = controller;
         this.race = race;
         if (!race.getCompetitors().isEmpty()) tutorialBoat = race.getCompetitors().get(0);
+        polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
     }
 
      public void runTutorial(){
@@ -53,7 +61,11 @@ public class Tutorial {
                 break;
             case END:
                 Client.clearTutorialAction();
-                controller.showTutorialOverlay("Complete", "Tutorial is complete. Come back again.\nI hate to see you leaving :( \n\ni love you <3");
+                controller.showTutorialOverlay("Complete", "Tutorial is complete. Come back again.\n" +
+                        "I hate to see you leaving :( \n\ni love you <3");
+                break;
+            case TACKFAIL:
+                tackFailTutorial();
         }
 
     }
@@ -78,27 +90,29 @@ public class Tutorial {
         controller.showTutorialOverlay("AutoPilot", "Press the SPACE key to move your boat to the VMG line. " +
                 "\n\nThis line is the optimum angle from the wind allowing your boat to go its fastest speed.");
         Client.setTutorialActions(keycodes, () -> {
-            if(tutorialBoat.getTargetHeading() != boatHeading){
+            double vmhHeading = tutorialBoat.getVMGHeading(race.getCourse(), polarTable);
+            if(vmhHeading != boatHeading){
                 //while(tutorialBoat.getTargetHeading() != boatHeading){}
                 tutorialStage = TutorialStage.TACK;
             }else{
-                tackFailTutorial(keycodes, TutorialStage.TACK);
+                stepFailed = tutorialStage;
+                keysFailed = keycodes;
+                tutorialStage = TutorialStage.TACKFAIL;
             }
         });
     }
 
-    private void tackFailTutorial(List<KeyCode> keycodes, TutorialStage nextTutorialStage){
+    private void tackFailTutorial(){
         double boatHeading = tutorialBoat.getHeading();
         Client.clearTutorialAction();
 
-        controller.showTutorialOverlay("NEIN", "Your boat did not move. You are heading towards the wind in the no-sail zone (45 degrees either side of the wind direction).\n\n" +
+        controller.showTutorialOverlay("Try Again", "Your boat did not move. You are heading towards the wind in the no-sail zone (45 degrees either side of the wind direction).\n\n" +
                 "Try use the UP and DOWN keys to move yourself to the away from the wind direction and try the key again");
-        Client.setTutorialActions(keycodes, () -> {
-            if(tutorialBoat.getTargetHeading() != boatHeading){
+        Client.setTutorialActions(keysFailed, () -> {
+            double vmhHeading = tutorialBoat.getVMGHeading(race.getCourse(), polarTable);
+            if(vmhHeading != boatHeading){
                 //while(tutorialBoat.getTargetHeading() != boatHeading){}
-                tutorialStage = nextTutorialStage;
-            }else{
-                tackFailTutorial(keycodes, nextTutorialStage);
+                tutorialStage = TutorialStage.values()[stepFailed.ordinal() + 1];
             }
         });
 
@@ -106,15 +120,36 @@ public class Tutorial {
     }
 
     private void tackGybeTutorial(boolean hasGybe){
+        double boatHeading = tutorialBoat.getHeading();
         List<KeyCode> keycodes = new ArrayList<KeyCode>();
         Client.clearTutorialAction();
         keycodes.add(KeyCode.ENTER);
         if(!hasGybe){
             controller.showTutorialOverlay("Tack/Gybe", "Press the ENTER key to Tack or Gybe. If you are the right angle to the wind, the boat should perform a tack or gybe maneuver.");
-            Client.setTutorialActions(keycodes, () -> tutorialStage = TutorialStage.GYBE);
+            Client.setTutorialActions(keycodes, () -> {
+                double vmhHeading = tutorialBoat.getVMGHeading(race.getCourse(), polarTable);
+                if(vmhHeading != boatHeading){
+                    //while(tutorialBoat.getTargetHeading() != boatHeading){}
+                    tutorialStage = TutorialStage.GYBE;
+                }else{
+                    stepFailed = tutorialStage;
+                    keysFailed = keycodes;
+                    tutorialStage = TutorialStage.TACKFAIL;
+                }
+            });
         }else{
             controller.showTutorialOverlay("Tack/Gybe", "Lets do that again \n\nPress the ENTER key to Tack or Gybe. If you are the right angle to the wind, the boat should perform a tack or gybe maneuver.");
-            Client.setTutorialActions(keycodes, () -> tutorialStage = TutorialStage.SAILSIN);
+            Client.setTutorialActions(keycodes, () -> {
+                double vmhHeading = tutorialBoat.getVMGHeading(race.getCourse(), polarTable);
+                if(vmhHeading != boatHeading){
+                    //while(tutorialBoat.getTargetHeading() != boatHeading){}
+                    tutorialStage = TutorialStage.SAILSIN;
+                }else{
+                    stepFailed = tutorialStage;
+                    keysFailed = keycodes;
+                    tutorialStage = TutorialStage.TACKFAIL;
+                }
+            });
         }
 
     }

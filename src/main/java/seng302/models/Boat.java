@@ -285,6 +285,10 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void setMarkColliding(boolean colliding) {markColliding = colliding;}
 
+    public PolarTable getPolarTable() {
+        return polarTable;
+    }
+
     public void setBoatColliding(boolean colliding) {boatColliding = colliding;}
 
     public long getTimeTillFinish() {
