@@ -27,7 +27,7 @@ public class ConnectionManager extends Observable implements Runnable {
     private Race race;
 
 
-    public ConnectionManager(int port, Race race) throws IOException {;
+    public ConnectionManager(int port, Race race) throws IOException {
         serverSocket = new ServerSocket(port);
         this.race = race;
     }
@@ -113,5 +113,19 @@ public class ConnectionManager extends Observable implements Runnable {
         for (byte[] xmlMessage : xmlMessages.values()) {
             sendToClient(id, xmlMessage);
         }
+    }
+
+    public void stop() {
+        running = false;
+//        System.out.println(running);
+        try {
+            serverSocket.close();
+            for (Socket socket : clients.values()){
+                socket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

@@ -60,6 +60,7 @@ public class RaceUpdater implements Runnable {
 
     public void initialize(){
         race.setId(generateRaceId());
+        System.out.println(race.getId());
         //for now we assume all boats racing are AC35 class yachts such that we can use the polars we have for them
         this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
         race.updateRaceStatus(RaceStatus.PRESTART);
