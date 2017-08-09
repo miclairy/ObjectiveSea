@@ -3,6 +3,7 @@ package seng302.controllers;
 import seng302.data.ClientPacketBuilder;
 import seng302.data.ClientSender;
 import seng302.data.DataStreamReader;
+import seng302.data.RegistrationType;
 import seng302.models.Boat;
 import seng302.models.Race;
 import seng302.utilities.NoConnectionToServerException;
@@ -53,7 +54,7 @@ public class Client implements Runnable, Observer {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                connectionAttempts ++;
+                connectionAttempts++;
             }else{
                 stopDataStreamReader();
                 throw new NoConnectionToServerException("Maximum connection attempts exceeded while trying to connect to server. Port or IP may not be valid.");
@@ -79,7 +80,8 @@ public class Client implements Runnable, Observer {
 
     @Override
     public void run() {
-        sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(isParticipant));
+        RegistrationType regoType = isParticipant ? RegistrationType.PLAYER : RegistrationType.SPECTATOR;
+        sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
         System.out.println("Client: Sent Registration Request");
         waitForRace();
     }

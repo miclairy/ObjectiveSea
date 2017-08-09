@@ -113,7 +113,7 @@ public class MainMenuController implements Initializable{
             main.startHostedRace(Integer.parseInt(txtPortNumber.getText()));
             Thread.sleep(200);
             main.loadRaceView(true);
-            txtPortNumber.setStyle("-fx-text-inner-color: 2a2a2a;");
+            txtPortNumber.setStyle("-fx-text-inner-color: #2a2a2a;");
         }else{
             if(!txtPortNumber.getText().isEmpty()){
                 txtPortNumber.setStyle("-fx-text-inner-color: red;");

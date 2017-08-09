@@ -3,6 +3,7 @@ package seng302.controllers;
 import seng302.data.AC35StreamMessage;
 import seng302.data.BoatAction;
 import seng302.data.Receiver;
+import seng302.data.RegistrationType;
 import seng302.models.Boat;
 import seng302.models.PolarTable;
 import seng302.models.Race;
@@ -71,9 +72,9 @@ public class ServerListener extends Receiver implements Runnable{
 
     private void parseRegistrationRequestMessage(byte[] body) {
         System.out.println("Server: Received Registration Request");
-        Integer registrationType = byteArrayRangeToInt(body, REGISTRATION_REQUEST_TYPE.getStartIndex(), REGISTRATION_REQUEST_TYPE.getEndIndex());
+        byte registrationByte = body[REGISTRATION_REQUEST_TYPE.getStartIndex()];
         setChanged();
-        notifyObservers(registrationType);
+        notifyObservers(RegistrationType.getTypeFromByte(registrationByte));
     }
 
     /**

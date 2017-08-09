@@ -197,7 +197,7 @@ public class DataStreamReader extends Receiver implements Runnable{
                                     case YACHT_EVENT_CODE:
                                         parseYachtEventMessage(body);
                                         break;
-                                    case REGISTRATION_ACCEPT:
+                                    case REGISTRATION_RESPONSE:
                                         parseRegistrationAcceptMessage(body);
                                 }
                             }
@@ -214,10 +214,14 @@ public class DataStreamReader extends Receiver implements Runnable{
     }
 
     private void parseRegistrationAcceptMessage(byte[] body) {
-        Integer id = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());
-        System.out.println("Client: Received ID of " + id);
-        setChanged();
-        notifyObservers(id);
+        byte statusByte = body[REGISTRATION_RESPONSE_STATUS.getStartIndex()];
+        RegistrationResponseStatus status = RegistrationResponseStatus.getStatusFromByte(statusByte);
+        if (RegistrationResponseStatus.PLAYER_SUCCESS.equals(status)) {
+            Integer id = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());
+            System.out.println("Client: Received ID of " + id);
+            setChanged();
+            notifyObservers(id);
+        }
     }
 
 

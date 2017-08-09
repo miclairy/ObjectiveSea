@@ -66,12 +66,21 @@ public class RaceUpdater implements Runnable {
         race.setStartTimeInEpochMs(currentTime + (1000 * 60 * 3)); //3 minutes from now
     }
 
+
+    /**
+     * Adds a competitor from the potential competitors collection into the race
+     * @return the id of the added competitor, or -1 if max number reached.
+     */
     public int addCompetitor() {
-        Boat newCompetitor = potentialCompetitors.iterator().next();
-        potentialCompetitors.remove(newCompetitor);
-        race.addCompetitor(newCompetitor);
-        prepareBoatForRace(newCompetitor);
-        return newCompetitor.getId();
+        if (potentialCompetitors.iterator().hasNext()) {
+            Boat newCompetitor = potentialCompetitors.iterator().next();
+            potentialCompetitors.remove(newCompetitor);
+            race.addCompetitor(newCompetitor);
+            prepareBoatForRace(newCompetitor);
+            return newCompetitor.getId();
+        } else {
+            return -1;
+        }
     }
 
     /**

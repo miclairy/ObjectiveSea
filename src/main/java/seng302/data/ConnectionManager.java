@@ -4,11 +4,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.*;
 import java.util.HashSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Observable;
-import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Gemma Lamont on 10/07/17.
@@ -17,7 +15,7 @@ import java.util.TreeMap;
 public class ConnectionManager extends Observable implements Runnable {
 
     private ServerSocket serverSocket;
-    private HashMap<Integer, Socket> clients =  new HashMap<>();
+    private Map<Integer, Socket> clients =  new ConcurrentHashMap<>();
     private TreeMap<AC35StreamXMLMessage, byte[]> xmlMessages = new TreeMap<>();
 
 
