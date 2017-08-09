@@ -26,25 +26,28 @@ public class Server implements Runnable, Observer {
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumber = new HashMap<>();
     private Map<Boat, Integer> boatSequenceNumbers = new HashMap<>();
     private Map<Boat, Integer> lastMarkRoundingSent = new HashMap<>();
+    private String DEFAULT_COURSE = "AC35-course.xml";
+    private String courseXML = DEFAULT_COURSE;
 
     private RaceUpdater raceUpdater;
     private ConnectionManager connectionManager;
     private ServerPacketBuilder packetBuilder;
     private CollisionManager collisionManager;
 
-    public Server(int port, RaceUpdater raceUpdater) throws IOException {
+    public Server(int port, RaceUpdater raceUpdater, String course) throws IOException {
         this.raceUpdater = raceUpdater;
         this.collisionManager = raceUpdater.getCollisionManager();
         this.packetBuilder = new ServerPacketBuilder();
         this.connectionManager = new ConnectionManager(port, raceUpdater.getRace());
         this.connectionManager.addObserver(this);
+        this.courseXML = course;
     }
 
     /**
      * Initializes the sequence numbers for the boats and xml messages
      * @throws IOException
      */
-    private void initialize() throws IOException  {
+    private void initialize() throws IOException, NullPointerException  {
 
         xmlSequenceNumber.put(REGATTA_XML_MESSAGE, 0);
         xmlSequenceNumber.put(RACE_XML_MESSAGE, 0);
@@ -58,7 +61,7 @@ public class Server implements Runnable, Observer {
      * Sends all the data to the socket while the boats have not all finished.
      */
     @Override
-    public void run() {
+    public void run() throws NullPointerException{
         try {
             initialize();
             sendInitialRaceMessages();
@@ -100,7 +103,7 @@ public class Server implements Runnable, Observer {
      * Sends the XML messages when the client has connected
      */
     private void sendInitialRaceMessages() {
-        sendXmlMessage(RACE_XML_MESSAGE, "Race.xml");
+        sendXmlMessage(RACE_XML_MESSAGE, courseXML);
         sendXmlMessage(BOAT_XML_MESSAGE, "Boat.xml");
         sendXmlMessage(REGATTA_XML_MESSAGE, "Regatta.xml");
     }
@@ -174,10 +177,10 @@ public class Server implements Runnable, Observer {
      * @param type subtype of the xml message
      * @param fileName name of the file to send
      */
-    private void sendXmlMessage(AC35StreamXMLMessage type, String fileName){
+    private void sendXmlMessage(AC35StreamXMLMessage type, String fileName) {
         int sequenceNo = xmlSequenceNumber.get(type) + 1;
         xmlSequenceNumber.put(type, sequenceNo);
-        byte[] packet = packetBuilder.buildXmlMessage(type, fileName, sequenceNo, raceUpdater.getRace());
+        byte[] packet = packetBuilder.buildXmlMessage(type, fileName, sequenceNo, raceUpdater.getRace(), courseXML);
         connectionManager.setXmlMessage(type, packet);
     }
 
@@ -212,7 +215,7 @@ public class Server implements Runnable, Observer {
 
         byte[] packet = packetBuilder.createRegistrationAcceptancePacket(newId);
         connectionManager.sendToClient(newId, packet);
-        sendXmlMessage(RACE_XML_MESSAGE, "Race.xml");
+        sendXmlMessage(RACE_XML_MESSAGE, courseXML);
     }
 
     /**

@@ -84,13 +84,13 @@ public class Main extends Application {
     /**
      * Creates a Server object, puts it in it's own thread and starts the thread
      */
-    private static void setupServer(int port) throws IOException {
-        RaceUpdater runner = new RaceUpdater();
+    private static void setupServer(String course, int port) throws IOException {
+        RaceUpdater runner = new RaceUpdater(course);
         runner.setScaleFactor(Config.MOCK_SPEED_SCALE);
         Thread runnerThread = new Thread(runner);
         runnerThread.setName("Race Updater");
         runnerThread.start();
-        server = new Server(port, runner);
+        server = new Server(port, runner, course);
         server.setScaleFactor(Config.MOCK_SPEED_SCALE);
         ConnectionUtils.setServer(server);
         Thread serverThread = new Thread(server);
@@ -113,9 +113,9 @@ public class Main extends Application {
         userInputController.addObserver(client);
     }
 
-    public void startHostedRace(int port) throws Exception{
+    public void startHostedRace(String course, int port) throws Exception{
         Config.initializeConfig();
-        setupServer(port);
+        setupServer(course, port);
         setupClient(port);
     }
 

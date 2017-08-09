@@ -22,7 +22,6 @@ public class Course {
     private double windDirection;
     private RaceLine startLine, finishLine;
     private boolean hasEntryMark;
-
     private double trueWindSpeed;
 
     public Course() {
