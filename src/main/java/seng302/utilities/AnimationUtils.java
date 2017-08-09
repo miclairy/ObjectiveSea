@@ -158,10 +158,17 @@ public class AnimationUtils {
         fadeTransition.play();
     }
 
-    public static void shiftPaneNodes(Node node, int amount){
+    public static void shiftPaneNodes(Node node, int amount, boolean visible){
+        node.setVisible(true);
         TranslateTransition translateTransition = new TranslateTransition(new Duration(200), node);
         translateTransition.setByX(amount);
         translateTransition.setInterpolator(Interpolator.EASE_IN);
+        if(!visible){
+            translateTransition.setOnFinished(new EventHandler<ActionEvent>(){
+                public void handle(ActionEvent AE){
+                    node.setVisible(false);
+                }});
+        }
         translateTransition.play();
     }
 

@@ -27,13 +27,14 @@
     -fx-stroke-line-cap: round;
     -fx-stroke-line-join: round;
     -fx-stroke-width: 4px;
-    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 3);
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 0);
 }
 
 #windCircle {
     -fx-stroke-width: 4px;
     -fx-fill: transparent;
     -fx-stroke: white;
+    -fx-opacity: 0.8;
     -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 3);
 }
 

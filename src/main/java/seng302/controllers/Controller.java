@@ -46,6 +46,7 @@ public class Controller implements Initializable, Observer {
      */
     @FXML private ListView<String> startersList;
     @FXML private ListView<String> noBoardPlacings;
+    @FXML private Button btnHiddenBoardTrack;
     @FXML private Label clockLabel;
     @FXML private Label lblNoBoardClock;
     @FXML public VBox startersOverlay;
@@ -135,6 +136,7 @@ public class Controller implements Initializable, Observer {
         rightHandSide.setOpacity(0.7);
         lblNoBoardClock.setVisible(false);
         noBoardPlacings.setVisible(false);
+        btnHiddenBoardTrack.setVisible(false);
 
         displayStarters();
         startersOverlay.toFront();
@@ -495,20 +497,22 @@ public class Controller implements Initializable, Observer {
 
     @FXML private void hideScoreboard(){
         if(scoreboardVisible){
-            AnimationUtils.shiftPaneNodes(rightHandSide, 440);
+            AnimationUtils.shiftPaneNodes(rightHandSide, 440, false);
             AnimationUtils.shiftPaneArrow(btnHide, 430, 1);
-            AnimationUtils.shiftPaneNodes(imvSpeedScale, 430);
-            AnimationUtils.shiftPaneNodes(lblWindSpeed, 430);
+            AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
+            AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
+            AnimationUtils.toggleHiddenBoardNodes(btnHiddenBoardTrack, false);
             scoreboardVisible = false;
             raceViewController.shiftArrow(false);
             setUpPlacingsBoard();
         }else{
-            AnimationUtils.shiftPaneNodes(rightHandSide, -440);
+            AnimationUtils.shiftPaneNodes(rightHandSide, -440, true);
             AnimationUtils.shiftPaneArrow(btnHide, -430, -1);
-            AnimationUtils.shiftPaneNodes(imvSpeedScale, -430);
-            AnimationUtils.shiftPaneNodes(lblWindSpeed, -430);
+            AnimationUtils.shiftPaneNodes(imvSpeedScale, -430, true);
+            AnimationUtils.shiftPaneNodes(lblWindSpeed, -430, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true);
+            AnimationUtils.toggleHiddenBoardNodes(btnHiddenBoardTrack, true);
             scoreboardVisible = true;
             raceViewController.shiftArrow(true);
         }
@@ -570,6 +574,11 @@ public class Controller implements Initializable, Observer {
     @FXML
     private void zoomCursorExitHover() {
         DisplayUtils.fadeNodeTransition(zoomSlider, IDLE_ZOOMSLIDER_OPACITY);
+    }
+
+    @FXML
+    private void btnTrackPressed(){
+        selectionController.trackBoat();
     }
 
     public ListView<String> getStartersList() {
