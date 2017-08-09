@@ -254,7 +254,7 @@ public class Course {
 
     private void addArrowDirection(CompoundMark mark, CompoundMark previousMark, CompoundMark nextMark, String roundingSide) {
         double legLength = mark.getPosition().greaterCircleDistance(previousMark.getPosition());
-        double numberOfLegs = legLength / 0.5;
+        double numberOfLegs = legLength / 0.1;
         if (numberOfLegs < 2){
             numberOfLegs = 2;
         }
@@ -283,12 +283,20 @@ public class Course {
                 if(mark.hasTwoMarks()) {
                     nextHeading = mark.getMark2().getPosition().headingToCoordinate(nextMark.getPosition());
                     heading = previousMark.getPosition().headingToCoordinate(mark.getMark2().getPosition());
-                    if (roundingSide.equals("PS")) {
+//                    if (roundingSide.equals("PS")) {
                         arrowsRoundMark(mark.getMark2(), color, heading, nextHeading, -1);
-                    } else {
-                        arrowsRoundMark(mark.getMark2(), color, heading, nextHeading, 1);
-                    }
+//                    } else {
+//                        arrowsRoundMark(mark.getMark2(), color, heading, nextHeading, 1);
+                   // }
                 }
+            } else {
+                nextHeading += 180;
+                Arrow arrow = new Arrow(5, 10, mark.getPosition(), nextHeading, color);
+                arrowedRoute.add(arrow);
+                Arrow arrow1 = new Arrow(5, 10, mark.getPosition().coordAt(-0.05, nextHeading), nextHeading, color);
+                arrowedRoute.add(arrow1);
+                Arrow arrow2 = new Arrow(5, 10, mark.getPosition().coordAt(-0.1, nextHeading), nextHeading, color);
+                arrowedRoute.add(arrow2);
             }
         }
     }
