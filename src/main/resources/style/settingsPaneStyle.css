@@ -1,9 +1,9 @@
 #settingsPane {
-    -fx-background-color: #2b2b2b;
+    -fx-background-color: transparent;
 }
 
 #raceClockHBox {
-    -fx-background-color: #2a2a2a;
+    -fx-background-color: transparent;
 }
 
 #settingHeader{
@@ -51,14 +51,15 @@
     -fx-text-fill: White;
     -fx-background-color: #2a2a2a;
     -fx-background-radius: 20px;
+    -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
 }
 
 #placings {
-    -fx-control-inner-background: #2a2a2a;
-    -fx-background-color: #2a2a2a;
+    -fx-control-inner-background: transparent;
+    -fx-background-color: transparent;
     -fx-font-size: 16px;
     -fx-focus-color: transparent;
-    -fx-border-color: #1a1a1a;
+    -fx-border-color: transparent;
 }
 
 #startersList{

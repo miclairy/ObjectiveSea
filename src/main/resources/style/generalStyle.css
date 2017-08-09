@@ -15,7 +15,7 @@
 }
 
 .tab-pane{
-    -fx-background-color: #2a2a2a
+    -fx-background-color: transparent;
 }
 
 .tab .tab-label{
@@ -23,21 +23,21 @@
 }
 
 .tab {
-    -fx-background-color: #2a2a2a
+    -fx-background-color: transparent;
 }
 
 .tab:selected {
     -fx-background-radius: 0;
     -fx-background-insets: 0;
-    -fx-background-color: #2a2a2a;
+    -fx-background-color: transparent;
     -fx-border-width: 0 0 3 0;
-    -fx-border-color: #2a2a2a #2a2a2a #4DC58B #2a2a2a;
+    -fx-border-color: transparent transparent #4DC58B transparent;
     -fx-focus-color: transparent;
     -fx-faint-focus-color: transparent;
 }
 
 .tab-pane .tab-header-area .tab-header-background {
-    -fx-background-color: #2a2a2a;
+    -fx-background-color: transparent;
 }
 
 .slider .thumb {
@@ -134,5 +134,10 @@
 
 .check-box:selected *.box{
     -fx-background-color: #1a1a1a;
+}
+
+#rightHandSide{
+    -fx-background-color: #2a2a2a;
+    -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
 }
 

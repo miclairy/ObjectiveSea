@@ -274,6 +274,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         selectionController.addBoatSelectionHandler(displayBoat);
 
         Circle grabHandle = new Circle(5);
+        grabHandle.setPickOnBounds(false);
         grabHandle.setId("annoGrabHandle");
         grabHandle.setCenterX(0);
         grabHandle.setCenterY(0);
@@ -475,6 +476,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         annotationFrame.getChildren().clear();
         for(String string : annotationText){
             Label annotationLabel = new Label(string);
+            annotationLabel.setPickOnBounds(false);
             annotationLabel.setId("annotationLabel");
             annotationFrame.getChildren().add(annotationLabel);
         }

@@ -57,6 +57,7 @@
     -fx-background-size: 30px 30px;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
+    -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 0);
 }
 
 #lblNoBoardClock{
@@ -67,6 +68,7 @@
     -fx-text-fill: White;
     -fx-background-color: #2a2a2a;
     -fx-background-radius: 30px;
+    -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
 }
 
 #noBoardPlacings{
@@ -78,4 +80,5 @@
     -fx-border-radius: 30;
     -fx-background-radius: 30;
     -fx-padding: 10 0 10 10;
+    -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
 }
