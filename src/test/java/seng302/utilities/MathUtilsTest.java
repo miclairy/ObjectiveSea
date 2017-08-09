@@ -88,9 +88,15 @@ public class MathUtilsTest {
 
     @Test
     public void boatBeforeStartlineTest(){
-        Assert.assertTrue(boatBeforeStartline(32.2937,-64.855242,32.296577,-64.854304,-32.293771,-64.855242,32.293039,-64.845045));
-        Assert.assertTrue(boatBeforeStartline(32.293039,-64.845045,32.296577,-64.854304,-32.293771,-64.855242,32.2937,-64.855242));
-        Assert.assertFalse(boatBeforeStartline(32.296577,-64.854304,32.296577,-64.854304,-32.293771,-64.855242,32.2937,-64.855242));
+        Coordinate boat = new Coordinate(32.2937, -64.855242);
+        Coordinate boat1 = new Coordinate(32.293039, -64.845045);
+        Coordinate boat2 = new Coordinate(32.296577, -64.854304);
+        CompoundMark startline = new CompoundMark(1, "", new Mark(1, "", new Coordinate(32.296577, -64.854304)), new Mark(1, "", new Coordinate(-32.293771, -64.855242)));
+        CompoundMark mark = new CompoundMark(1, "", new Mark(1, "", new Coordinate(32.293039, -64.845045)));
+        CompoundMark mark1 = new CompoundMark(1, "", new Mark(1, "", new Coordinate(32.2937, -64.855242)));
+        Assert.assertTrue(boatBeforeStartline(boat, startline,mark));
+        Assert.assertTrue(boatBeforeStartline(boat1,startline,mark1));
+        Assert.assertFalse(boatBeforeStartline(boat2,startline,mark1));
     }
 
     @Test

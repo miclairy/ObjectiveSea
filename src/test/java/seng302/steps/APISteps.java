@@ -7,10 +7,7 @@ import javafx.scene.input.KeyCode;
 import seng302.controllers.RaceUpdater;
 import seng302.controllers.Server;
 import seng302.controllers.ServerListener;
-import seng302.data.BoatAction;
-import seng302.data.ClientPacketBuilder;
-import seng302.data.ClientSender;
-import seng302.data.RaceStatus;
+import seng302.data.*;
 import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.PolarTable;
@@ -37,6 +34,7 @@ public class APISteps {
     private Server server;
     private Boat sallysBoat;
     private Race race;
+    private String selectedCourse = "AC35-course.xml";
     private Set<Socket> sockets = new HashSet<>();
     private Socket serverSocket;
     private static int port = 1234;
@@ -44,7 +42,6 @@ public class APISteps {
 
     @Given("^Sally has a boat$")
     public void sallyHasABoat() throws Throwable {
-        RaceUpdater raceRunner = new RaceUpdater();
         sallysBoat = new Boat(102, "Sally's Boat", "SB", 15.0);
         sallysBoat.setHeading(100.0);
         sallysBoat.setCurrentSpeed(15.0);
@@ -53,6 +50,9 @@ public class APISteps {
         race = new Race("test", course, Arrays.asList(sallysBoat));
         race.setId("1");
         race.updateRaceStatus(RaceStatus.STARTED);
+        RaceVisionXMLParser raceVisionXMLParser = mock(RaceVisionXMLParser.class);
+        when(raceVisionXMLParser.importRace()).thenReturn(race);
+        RaceUpdater raceRunner = new RaceUpdater(selectedCourse);
         PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
         VMGHeading = sallysBoat.getVMGHeading(course, polarTable);
         when(course.getWindDirection()).thenReturn(0.0);
@@ -84,6 +84,7 @@ public class APISteps {
     @Then("^the heading of Sally's boat has been changed$")
     public void theHeadingOfSallySBoatHasBeenChanged() throws Throwable {
         Thread.sleep(100);
+        System.out.println(sallysBoat.getHeading());
         assert(109.16 > 209.16 - sallysBoat.getHeading());
         tearDown();
     }
