@@ -29,7 +29,8 @@ import java.util.*;
 public class RaceVisionXMLParser {
 
     private static final String DEFAULT_FILE_PATH = "/outputFiles/";
-    public static String COURSE_FILE = "AC35-course.xml";
+    public static final String DEFAULT_COURSE_FILE = "AC35-course.xml";
+    public static String courseFile = DEFAULT_COURSE_FILE;
     private static final String BOAT_FILE = "Boat.xml";
     private static final String REGATTA_FILE = "Regatta.xml";
 
@@ -80,12 +81,12 @@ public class RaceVisionXMLParser {
      * @return a Course object
      */
     public Course importCourse(){
-        String resourcePath = "/defaultFiles/" + COURSE_FILE;
+        String resourcePath = "/defaultFiles/" + courseFile;
         return importCourse(RaceVisionXMLParser.class.getResourceAsStream(resourcePath));
     }
 
     /**
-     * Sets the race id in the AC35-course.xml dom
+     * Sets the race id in the course xml dom
      * @param root The root tag ("Race") of the dom
      * @param raceId The desired race id
      */
@@ -95,7 +96,7 @@ public class RaceVisionXMLParser {
     }
 
     /**
-     * Sets the message creation date and time in the AC35-course.xml dom
+     * Sets the message creation date and time in the course xml dom
      * @param root The root tag ("Race") of the dom
      */
     private void setCreationTime(Element root){
@@ -591,7 +592,7 @@ public class RaceVisionXMLParser {
         return competitorIds;
     }
 
-    public static void setCourseFile(String courseFile) {
-        COURSE_FILE = courseFile;
+    public static void setCourseFile(String course) {
+        courseFile = course;
     }
 }

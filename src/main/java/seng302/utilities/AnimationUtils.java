@@ -134,39 +134,4 @@ public class AnimationUtils {
 
     }
 
-    /**
-     *
-     */
-    public static void viewMapFocus(Node node){
-//        TranslateTransition translateTransition = new TranslateTransition(new Duration(80), node);
-//        translateTransition.setFromX(node.getLayoutX());
-//        translateTransition.setFromY(node.getLayoutY());
-//        translateTransition.setToX(960);
-//        translateTransition.setToY(540);
-//        translateTransition.setInterpolator(Interpolator.EASE_IN);
-
-        ScaleTransition scaleTransition = new ScaleTransition(new Duration(200), node);
-        scaleTransition.setByX(2);
-        scaleTransition.setByY(2);
-
-        ParallelTransition pt = new ParallelTransition(scaleTransition);
-        pt.play();
-    }
-
-    /**
-     *
-     */
-    public static void viewMapUnFocus(Node node){
-//        TranslateTransition translateTransition = new TranslateTransition(new Duration(80), node);
-//        translateTransition.setByX(18);
-//        translateTransition.setByY(26);
-//        translateTransition.setInterpolator(Interpolator.EASE_IN);
-
-        ScaleTransition scaleTransition = new ScaleTransition(new Duration(200), node);
-        scaleTransition.setByX(-2);
-        scaleTransition.setByY(-2);
-
-        ParallelTransition pt = new ParallelTransition(scaleTransition);
-        pt.play();
-    }
 }
