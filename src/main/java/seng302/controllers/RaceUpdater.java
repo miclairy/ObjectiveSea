@@ -41,14 +41,14 @@ public class RaceUpdater implements Runnable {
         collisionManager = new CollisionManager();
         //set race up with default files
         intialWindSpeedGenerator();
-        List<Boat> boatsInRace = new ArrayList<>();
         RaceVisionXMLParser raceVisionXMLParser = new RaceVisionXMLParser();
         raceVisionXMLParser.setCourseFile(selectedCourse);
         potentialCompetitors = raceVisionXMLParser.importDefaultStarters();
-        Course course = raceVisionXMLParser.importCourse();
+
+        race = raceVisionXMLParser.importRace();
+        Course course = race.getCourse();
         course.setTrueWindSpeed(initialWindSpeed);
         course.setWindDirection(course.getWindDirectionBasedOnGates());
-        race = new Race("Mock Runner Race", course, boatsInRace);
         initialize();
     }
 
@@ -58,7 +58,6 @@ public class RaceUpdater implements Runnable {
     }
 
     public void initialize(){
-        race.setId(generateRaceId());
         //for now we assume all boats racing are AC35 class yachts such that we can use the polars we have for them
         this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
         race.updateRaceStatus(RaceStatus.PRESTART);

@@ -28,11 +28,9 @@ import java.util.*;
 
 public class RaceVisionXMLParser {
 
-    private static final String DEFAULT_FILE_PATH = "/outputFiles/";
-    public static final String DEFAULT_COURSE_FILE = "AC35-course.xml";
-    public static String courseFile = DEFAULT_COURSE_FILE;
+    private static final String DEFAULT_COURSE_FILE = "AC35-course.xml";
+    private static String courseFile = DEFAULT_COURSE_FILE;
     private static final String BOAT_FILE = "Boat.xml";
-    private static final String REGATTA_FILE = "Regatta.xml";
 
     private final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
@@ -77,12 +75,12 @@ public class RaceVisionXMLParser {
     }
 
     /**
-     * Overload of importCourse to simplify reading in the default course file.
-     * @return a Course object
+     * Overload of importRace to simplify reading in the default course file.
+     * @return a Race object
      */
-    public Course importCourse(){
+    public Race importRace(){
         String resourcePath = "/defaultFiles/" + courseFile;
-        return importCourse(RaceVisionXMLParser.class.getResourceAsStream(resourcePath));
+        return importRace(RaceVisionXMLParser.class.getResourceAsStream(resourcePath));
     }
 
     /**
@@ -150,7 +148,7 @@ public class RaceVisionXMLParser {
             parseXMLStream(raceXML);
             Element root = dom.getDocumentElement();
 
-            setRaceId(root, raceId);
+            //setRaceId(root, raceId);
             setCreationTime(root);
             setStartTime(root, expectStartTimeEpochMs);
             setParticipants(root, participantIds);
@@ -592,7 +590,7 @@ public class RaceVisionXMLParser {
         return competitorIds;
     }
 
-    public static void setCourseFile(String course) {
+    public void setCourseFile(String course) {
         courseFile = course;
     }
 }
