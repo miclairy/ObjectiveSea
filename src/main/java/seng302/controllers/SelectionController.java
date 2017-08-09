@@ -37,6 +37,7 @@ public class SelectionController extends Observable {
     private ImageCursor boatCursor = new ImageCursor(new Image("graphics/boat-select-cursor.png"), 7, 7);
     private Mark selectedMark = null;
     private BoatDisplay trackingBoat = null;
+    private BoatDisplay clientBoat = null;
     private boolean isTrackingPoint = false;
     private double rotationOffset = 0;
     private boolean isRotationEnabled = false;
@@ -126,7 +127,7 @@ public class SelectionController extends Observable {
             boat.getLaylines().removeDrawnLines(root);
             selectedBoats.remove(boat);
             boat.getSeries().getNode().setOpacity(1);
-            trackingBoat = null;
+            trackingBoat = clientBoat;
             selectedMark = null;
             isTrackingPoint = false;
             rotationOffset = 0;
@@ -281,7 +282,6 @@ public class SelectionController extends Observable {
                     selectedBoats.remove(boat);
                 } else {
                     selectedBoats.add(boat);
-
                 }
 
             } else {
@@ -352,5 +352,12 @@ public class SelectionController extends Observable {
 
     public void setDisplayBoats(List<BoatDisplay> displayBoats) {
         this.displayBoats = displayBoats;
+        for(BoatDisplay boatDisplay : displayBoats ){
+            if(boatDisplay.getBoat().getId() == Main.getClient().getClientID()){
+                trackingBoat = boatDisplay;
+                clientBoat = boatDisplay;
+                scoreBoardController.btnTrack.setVisible(true);
+            }
+        }
     }
 }
