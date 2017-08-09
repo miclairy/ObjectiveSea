@@ -73,7 +73,7 @@
         </AnchorPane>
         <AnchorPane fx:id="rightHandSide" maxWidth="440.0" minWidth="440" StackPane.alignment="CENTER_RIGHT">
             <children>
-                <fx:include fx:id="scoreBoard" source="scoreBoard.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                <fx:include fx:id="scoreBoard" source="score_board.fxml" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
             </children>
       <StackPane.margin>
          <Insets />

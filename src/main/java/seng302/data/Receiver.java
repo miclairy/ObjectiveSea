@@ -22,7 +22,7 @@ public abstract class Receiver extends Observable{
      * @param endIndex The ending index (exclusive) of the range of bytes to be converted
      * @return The integer converted from the range of bytes in little endian order
      */
-    protected static int byteArrayRangeToInt(byte[] array, int beginIndex, int endIndex){
+    public static int byteArrayRangeToInt(byte[] array, int beginIndex, int endIndex){
         int length = endIndex - beginIndex;
         if(length <= 0 || length > 4){
             throw new IllegalArgumentException("The length of the range must be between 1 and 4 inclusive");

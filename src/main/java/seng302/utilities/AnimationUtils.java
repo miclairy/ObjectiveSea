@@ -135,6 +135,13 @@ public class AnimationUtils {
 
     }
 
+    public static void transitionFXML(Node newScene){
+        FadeTransition ft2 = new FadeTransition(Duration.millis(1000), newScene);
+        ft2.setFromValue(0.0);
+        ft2.setToValue(1.0);
+        ft2.play();
+    }
+
     public static void dullNode(Node node){
         FadeTransition fadeTransition = new FadeTransition(new Duration(100), node);
         fadeTransition.setFromValue(1);
