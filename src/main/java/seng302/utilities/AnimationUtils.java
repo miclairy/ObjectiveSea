@@ -6,6 +6,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
+import seng302.controllers.Controller;
 
 /**
  * Created by Devin on 25/07/17.
@@ -130,6 +131,6 @@ public class AnimationUtils {
 
         ParallelTransition pt = new ParallelTransition(translateTransition, scaleTransition);
         pt.play();
-
     }
+
 }
