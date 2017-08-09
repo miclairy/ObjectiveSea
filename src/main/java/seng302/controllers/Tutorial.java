@@ -1,6 +1,7 @@
 package seng302.controllers;
 
 import javafx.scene.input.KeyCode;
+import seng302.models.Boat;
 import seng302.models.Race;
 
 import java.util.ArrayList;
@@ -16,9 +17,10 @@ public class Tutorial {
 
     private Controller controller;
     private Race race;
-    private enum TutorialStage { UPWINDDOWNWIND, TACK, GYBE, SAILSIN, SAILSOUT, VMG, END }
+    private enum TutorialStage { UPWINDDOWNWIND, TACK, TACKFAIL, GYBE, SAILSIN, SAILSOUT, VMG, END }
     private int tutorialUpwindDownwindCounter = 0;
     private int UPWIND_DOWNWIND_TIME = 60;
+    private Boat tutorialBoat;
 
     private TutorialStage tutorialStage = TutorialStage.UPWINDDOWNWIND;
 
@@ -26,6 +28,7 @@ public class Tutorial {
     public Tutorial(Controller controller, Race race){
         this.controller = controller;
         this.race = race;
+        if (!race.getCompetitors().isEmpty()) tutorialBoat = race.getCompetitors().get(0);
     }
 
      public void runTutorial(){
@@ -68,11 +71,38 @@ public class Tutorial {
     }
 
     private void vmgTutorial(){
+        double boatHeading = tutorialBoat.getHeading();
         List<KeyCode> keycodes = new ArrayList<KeyCode>();
         Client.clearTutorialAction();
         keycodes.add(KeyCode.SPACE);
-        controller.showTutorialOverlay("AutoPilot", "Press the SPACE key to move your boat to the VMG line. \n\nThis line is the optimum angle from the wind allowing your boat to go its fastest speed.");
-        Client.setTutorialActions(keycodes, () -> tutorialStage = TutorialStage.TACK);
+        controller.showTutorialOverlay("AutoPilot", "Press the SPACE key to move your boat to the VMG line. " +
+                "\n\nThis line is the optimum angle from the wind allowing your boat to go its fastest speed.");
+        Client.setTutorialActions(keycodes, () -> {
+            if(tutorialBoat.getTargetHeading() != boatHeading){
+                //while(tutorialBoat.getTargetHeading() != boatHeading){}
+                tutorialStage = TutorialStage.TACK;
+            }else{
+                tackFailTutorial(keycodes, TutorialStage.TACK);
+            }
+        });
+    }
+
+    private void tackFailTutorial(List<KeyCode> keycodes, TutorialStage nextTutorialStage){
+        double boatHeading = tutorialBoat.getHeading();
+        Client.clearTutorialAction();
+
+        controller.showTutorialOverlay("NEIN", "Your boat did not move. You are heading towards the wind in the no-sail zone (45 degrees either side of the wind direction).\n\n" +
+                "Try use the UP and DOWN keys to move yourself to the away from the wind direction and try the key again");
+        Client.setTutorialActions(keycodes, () -> {
+            if(tutorialBoat.getTargetHeading() != boatHeading){
+                //while(tutorialBoat.getTargetHeading() != boatHeading){}
+                tutorialStage = nextTutorialStage;
+            }else{
+                tackFailTutorial(keycodes, nextTutorialStage);
+            }
+        });
+
+
     }
 
     private void tackGybeTutorial(boolean hasGybe){

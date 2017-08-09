@@ -660,7 +660,9 @@ public class Boat extends Observable implements Comparable<Boat>{
         this.timeSinceLastCollision = timeSinceLastCollision;
     }
 
-
+    public double getTargetHeading() {
+        return targetHeading;
+    }
 
     /**
      * Updates the boat heading every loop the race updated run method makes.

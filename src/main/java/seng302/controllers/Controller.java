@@ -153,7 +153,6 @@ public class Controller implements Initializable, Observer {
             tutorialContent.setText(content);
             tutorialOverlay.setVisible(true);
             AnimationUtils.scalePop(tutorialOverlay);
-            System.out.println("slidin'");
         }
 
     }
