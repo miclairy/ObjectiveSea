@@ -984,24 +984,20 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public void drawWindArrow() {
         windCircle = controller.getWindCircle();
         AnchorPane canvasAnchor = controller.getCanvasAnchor();
-        double scoreboardOffset = 0;
-        if(!controller.isScoreboardVisible()){
-            scoreboardOffset += 430;
-        }
         if (!canvasAnchor.getChildren().contains(windArrow)){
             windArrow = raceView.drawWindArrow();
             canvasAnchor.setTopAnchor(windArrow, WIND_ARROW_Y_PADDING);
-            canvasAnchor.setRightAnchor(windArrow, WIND_ARROW_X_PADDING - scoreboardOffset);
+            canvasAnchor.setRightAnchor(windArrow, WIND_ARROW_X_PADDING );
 
             windCircle.setRadius(25);
             canvasAnchor.setTopAnchor(windCircle, WIND_CIRCLE_Y_PADDING);
-            canvasAnchor.setRightAnchor(windCircle, WIND_CIRCLE_X_PADDING - scoreboardOffset);
+            canvasAnchor.setRightAnchor(windCircle, WIND_CIRCLE_X_PADDING);
 
             windCircle.setId("windCircle");
             canvasAnchor.getChildren().add(windArrow);
         }else{
-            canvasAnchor.setRightAnchor(windArrow, WIND_ARROW_X_PADDING - scoreboardOffset);
-            canvasAnchor.setRightAnchor(windCircle, WIND_CIRCLE_X_PADDING - scoreboardOffset);
+            canvasAnchor.setRightAnchor(windArrow, WIND_ARROW_X_PADDING);
+            canvasAnchor.setRightAnchor(windCircle, WIND_CIRCLE_X_PADDING);
         }
     }
 
@@ -1090,6 +1086,16 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if (index < raceOrder.size() && index >= 0) {
             CompoundMark nextMark = raceOrder.get(index);
             distanceLine.setMark(nextMark);
+        }
+    }
+
+    public void shiftArrow(boolean boardVisible){
+        if(boardVisible){
+            AnimationUtils.shiftPaneNodes(windCircle, -430);
+            AnimationUtils.shiftPaneNodes(windArrow, -430);
+        }else{
+            AnimationUtils.shiftPaneNodes(windCircle, 430);
+            AnimationUtils.shiftPaneNodes(windArrow, 430);
         }
     }
 

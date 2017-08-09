@@ -59,14 +59,13 @@
     -fx-background-position: center;
 }
 
-#btnOpen{
-    -fx-text-fill: white;
-    -fx-background-color: #2a2a2a;
-    -fx-background-radius: 200px;
-    -fx-font-size: 20px;
+#lblNoBoardClock{
+    -fx-content-display: center;
+    -fx-padding: 10 50 10 50;
+    -fx-opacity: 0.6;
+    -fx-font-size: 35px;
     -fx-font-weight: bold;
-    -fx-background-image: url('/graphics/buttonImages/openArrow.png');
-    -fx-background-size: 30px 30px;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: center;
+    -fx-text-fill: White;
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 30px;
 }

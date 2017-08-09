@@ -1,6 +1,5 @@
 package seng302.controllers;
 
-import javafx.animation.TranslateTransition;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -12,11 +11,9 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
-import seng302.data.BoatAction;
 import javafx.scene.shape.Circle;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
@@ -25,14 +22,10 @@ import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
-import java.net.*;
+
 import java.io.*;
 
-import javax.naming.Context;
-import java.net.Inet4Address;
-import java.net.InetAddress;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.*;
 
 import static javafx.collections.FXCollections.observableArrayList;
@@ -49,6 +42,7 @@ public class Controller implements Initializable, Observer {
      */
     @FXML private ListView<String> startersList;
     @FXML private Label clockLabel;
+    @FXML private Label lblNoBoardClock;
     @FXML public VBox startersOverlay;
     @FXML private Label startersOverlayTitle;
     @FXML public ImageView mapImageView;
@@ -58,6 +52,7 @@ public class Controller implements Initializable, Observer {
     @FXML public Circle windCircle;
     @FXML private Button btnHide;
     @FXML private ImageView imvSpeedScale;
+
 
 
     //FPS Counter
@@ -101,6 +96,7 @@ public class Controller implements Initializable, Observer {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         rightHandSide.setOpacity(0.7);
+        lblNoBoardClock.setVisible(false);
         addRightHandSideListener();
         canvasAnchor.getStylesheets().addAll(COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, BOAT_CSS, DISTANCELINE_CSS);
         canvasWidth = canvas.getWidth();
@@ -122,6 +118,7 @@ public class Controller implements Initializable, Observer {
         scoreBoardController.setUp();
         fpsString.set("..."); //set to "..." while fps count loads
         fpsLabel.textProperty().bind(fpsString);
+        lblNoBoardClock.textProperty().bind(raceTimerString);
         clockLabel.textProperty().bind(clockString);
         hideStarterOverlay();
         raceViewController.updateWindArrow();
@@ -169,13 +166,11 @@ public class Controller implements Initializable, Observer {
 
     public void setApp(boolean host){
         this.isHost = host;
-
         if(isHost){
             startersOverlayTitle.setText(getPublicIp());
         }else{
             startersOverlayTitle.setText(race.getRegattaName());
         }
-
     }
 
     /**
@@ -261,6 +256,7 @@ public class Controller implements Initializable, Observer {
             anchorWidth = canvasAnchor.getWidth();
             raceViewController.redrawCourse();
             raceViewController.redrawBoatPaths();
+            btnHide.setLayoutX(canvasWidth - 485.0);
         });
         canvasAnchor.heightProperty().addListener(resizeListener);
         canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> {
@@ -268,6 +264,7 @@ public class Controller implements Initializable, Observer {
             anchorHeight = canvasAnchor.getHeight();
             raceViewController.redrawCourse();
             raceViewController.redrawBoatPaths();
+
         });
     }
 
@@ -444,22 +441,22 @@ public class Controller implements Initializable, Observer {
 
     @FXML private void hideScoreboard(){
         if(scoreboardVisible){
-            AnimationUtils.closePane(rightHandSide);
+            AnimationUtils.shiftPaneNodes(rightHandSide, 440);
+            AnimationUtils.shiftPaneArrow(btnHide, 430, 1);
+            AnimationUtils.shiftPaneNodes(imvSpeedScale, 430);
+            AnimationUtils.shiftPaneNodes(lblWindSpeed, 430);
+            lblNoBoardClock.setVisible(true);
+            AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
             scoreboardVisible = false;
-            AnchorPane canvasAnchor = getCanvasAnchor();
-            canvasAnchor.setRightAnchor(btnHide, 10.0);
-            canvasAnchor.setRightAnchor(imvSpeedScale, 12.0);
-            canvasAnchor.setRightAnchor(lblWindSpeed, 27.0);
-            raceViewController.redrawCourse();
-            btnHide.setId("btnOpen");
+            raceViewController.shiftArrow(false);
         }else{
-            AnimationUtils.openPane(rightHandSide);
+            AnimationUtils.shiftPaneNodes(rightHandSide, -440);
+            AnimationUtils.shiftPaneArrow(btnHide, -430, -1);
+            AnimationUtils.shiftPaneNodes(imvSpeedScale, -430);
+            AnimationUtils.shiftPaneNodes(lblWindSpeed, -430);
+            AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true);
             scoreboardVisible = true;
-            canvasAnchor.setRightAnchor(btnHide, 450.0);
-            canvasAnchor.setRightAnchor(imvSpeedScale, 442.0);
-            canvasAnchor.setRightAnchor(lblWindSpeed, 457.0);
-            raceViewController.redrawCourse();
-            btnHide.setId("btnClose");
+            raceViewController.shiftArrow(true);
         }
     }
 

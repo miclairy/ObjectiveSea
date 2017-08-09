@@ -151,53 +151,50 @@ public class AnimationUtils {
         fadeTransition.play();
     }
 
-    public static void closePane(Node node){
+    public static void shiftPaneNodes(Node node, int amount){
         TranslateTransition translateTransition = new TranslateTransition(new Duration(200), node);
-        translateTransition.setToX(Controller.getAnchorWidth());
+        translateTransition.setByX(amount);
         translateTransition.setInterpolator(Interpolator.EASE_IN);
         translateTransition.play();
     }
 
-    public static void openPane(Node node){
+    public static void shiftPaneArrow(Node node, int amount, int rotation){
         TranslateTransition translateTransition = new TranslateTransition(new Duration(200), node);
-        translateTransition.setToX(0);
+        translateTransition.setByX(amount);
         translateTransition.setInterpolator(Interpolator.EASE_IN);
-        translateTransition.play();
-    }
 
-    /**
-     *
-     */
-    public static void viewMapFocus(Node node){
-//        TranslateTransition translateTransition = new TranslateTransition(new Duration(80), node);
-//        translateTransition.setFromX(node.getLayoutX());
-//        translateTransition.setFromY(node.getLayoutY());
-//        translateTransition.setToX(960);
-//        translateTransition.setToY(540);
-//        translateTransition.setInterpolator(Interpolator.EASE_IN);
+        RotateTransition rotateTransition = new RotateTransition(new Duration(200), node);
+        rotateTransition.setByAngle(180 * rotation);
+        rotateTransition.setInterpolator(Interpolator.EASE_IN);
 
-        ScaleTransition scaleTransition = new ScaleTransition(new Duration(200), node);
-        scaleTransition.setByX(2);
-        scaleTransition.setByY(2);
-
-        ParallelTransition pt = new ParallelTransition(scaleTransition);
+        ParallelTransition pt = new ParallelTransition(translateTransition, rotateTransition);
         pt.play();
+
     }
 
-    /**
-     *
-     */
-    public static void viewMapUnFocus(Node node){
-//        TranslateTransition translateTransition = new TranslateTransition(new Duration(80), node);
-//        translateTransition.setByX(18);
-//        translateTransition.setByY(26);
-//        translateTransition.setInterpolator(Interpolator.EASE_IN);
+    public static void toggleHiddenBoardNodes(Node node, boolean visible){
+        FadeTransition fadeTransition = new FadeTransition(new Duration(200), node);
 
-        ScaleTransition scaleTransition = new ScaleTransition(new Duration(200), node);
-        scaleTransition.setByX(-2);
-        scaleTransition.setByY(-2);
+        TranslateTransition translateTransition = new TranslateTransition(new Duration(200), node);
+        translateTransition.setInterpolator(Interpolator.EASE_IN);
 
-        ParallelTransition pt = new ParallelTransition(scaleTransition);
+        if(visible){
+            translateTransition.setFromY(node.getLayoutY() - 10);
+            translateTransition.setToY(node.getLayoutY());
+            fadeTransition.setFromValue(1);
+            fadeTransition.setToValue(0);
+            fadeTransition.setOnFinished(new EventHandler<ActionEvent>(){
+                public void handle(ActionEvent AE){
+                    node.setVisible(false);
+                }});
+        }else{
+            fadeTransition.setFromValue(0);
+            fadeTransition.setToValue(1);
+            translateTransition.setFromY(node.getLayoutY());
+            translateTransition.setToY(node.getLayoutY() - 10);
+        }
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        ParallelTransition pt = new ParallelTransition(translateTransition, fadeTransition);
         pt.play();
     }
 }
