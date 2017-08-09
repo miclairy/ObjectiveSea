@@ -57,19 +57,14 @@ public class MathUtils {
 
     /**
      * Function to determine if a boat is on the correct side of the start line (e.g if the boat is on the side that the course isn't on)
-     * @param BoatLat the latitude of the boat
-     * @param BoatLong the longitude of the boat
-     * @param startMark1Lat the latitude of the first start mark
-     * @param startMark1Long the longitude of the first start mark
-     * @param startMark2Lat the latitude of the first second mark
-     * @param startMark2Long the longitude of the first second mark
-     * @param markLat the latitude of the first mark
-     * @param markLong the longitude of the first mark
+     * @param boatPos the position of the boat
+     * @param startLine the position of the startline
+     * @param mark1 the position of the first mark
      * @return true if the boat is on the correct side of the start line
      */
-    public static Boolean boatBeforeStartline(double BoatLat, double BoatLong, double startMark1Lat, double startMark1Long, double startMark2Lat, double startMark2Long, double markLat, double markLong){
-        double determinantOfMark = (markLong - startMark1Long)*(startMark2Lat - startMark1Lat) - (markLat - startMark1Lat)*(startMark2Long - startMark1Long);
-        double determinantOfBoat = (BoatLong - startMark1Long)*(startMark2Lat - startMark1Lat) - (BoatLat - startMark1Lat)*(startMark2Long - startMark1Long);
+    public static Boolean boatBeforeStartline(Coordinate boatPos, CompoundMark startLine, CompoundMark mark1){
+        double determinantOfMark = (mark1.getMark1().getPosition().getLon() - startLine.getMark1().getPosition().getLon())*(startLine.getMark2().getPosition().getLat() - startLine.getMark1().getPosition().getLat()) - (mark1.getMark1().getPosition().getLat() - startLine.getMark1().getPosition().getLat())*(startLine.getMark2().getPosition().getLon() - startLine.getMark1().getPosition().getLon());
+        double determinantOfBoat = (boatPos.getLon() - startLine.getMark1().getPosition().getLon())*(startLine.getMark2().getPosition().getLat() - startLine.getMark1().getPosition().getLat()) - (boatPos.getLat() - startLine.getMark1().getPosition().getLat())*(startLine.getMark2().getPosition().getLon() - startLine.getMark1().getPosition().getLon());
         if(determinantOfBoat > 0 && determinantOfMark < 0){
             return true;
         } else if(determinantOfBoat < 0 && determinantOfMark > 0){
@@ -121,48 +116,28 @@ public class MathUtils {
      * @param mark2
      * @return
      */
-    public static double calculateBearingBetweenTwoPoints(CompoundMark mark1, CompoundMark mark2) {
+    public static double calculateBearingBetweenTwoPoints(CompoundMark mark1, CompoundMark mark2){
+        double mark1lat = mark1.getMark1().getPosition().getLat();
+        double mark1lng = mark1.getMark1().getPosition().getLon();
+        double mark2lat = mark2.getMark1().getPosition().getLat();
+        double mark2lng = mark2.getMark1().getPosition().getLon();
 
         boolean mark1isCompound = mark1.hasTwoMarks();
         boolean mark2isCompound = mark2.hasTwoMarks();
 
-        Coordinate mark1A = mark1.getMark1().getPosition();
-        Coordinate mark1B;
-        Coordinate midPointMark1;
-        if (mark1isCompound) {
-            mark1B = mark1.getMark2().getPosition();
-            midPointMark1 = new Coordinate((mark1A.getLat() - mark1B.getLat())/2,
-                    (mark1A.getLon() - mark1B.getLon())/2);
-        } else {
-            midPointMark1 = mark1A;
+        if(mark1isCompound){
+            mark1lat = calculateMidPoint(mark1).getLat();
+            mark1lng = calculateMidPoint(mark1).getLon();
+        }
+        if(mark2isCompound){
+            mark2lat = calculateMidPoint(mark2).getLat();
+            mark2lng = calculateMidPoint(mark2).getLon();
         }
 
-        double mark1Lat = midPointMark1.getLat();
-        double mark1Lon = midPointMark1.getLon();
-
-        Coordinate mark2A = mark2.getMark1().getPosition();
-        Coordinate mark2B;
-        if (mark2isCompound) {
-            mark2B = mark2.getMark2().getPosition();
-        } else {
-            mark2B = new Coordinate(0,0);
-        }
-
-        Coordinate midPointMark2 = new Coordinate((mark2A.getLat() - mark2B.getLat())/2,
-                (mark2A.getLon() - mark2B.getLon())/2);
-        double mark2Lat = midPointMark2.getLat();
-        double mark2Lon = midPointMark2.getLon();
-
-        double longitude1 = mark1Lon;
-        double longitude2 = mark2Lon;
-        double latitude1 = Math.toRadians(mark1Lat);
-        double latitude2 = Math.toRadians(mark2Lat);
-        double longDiff= Math.toRadians(longitude2-longitude1);
-        double y= Math.sin(longDiff)*Math.cos(latitude2);
-        double x=Math.cos(latitude1)*Math.sin(latitude2)-Math.sin(latitude1)*Math.cos(latitude2)*Math.cos(longDiff);
-
-        return (Math.toDegrees(Math.atan2(y, x))+360)%360;
-
+        double y = Math.sin(mark2lng-mark1lng) * Math.cos(mark2lat);
+        double x = Math.cos(mark1lat)*Math.sin(mark2lat) - Math.sin(mark1lat)*Math.cos(mark2lat)*Math.cos(mark2lng-mark1lng);
+        double brng = Math.toDegrees(Math.atan2(y, x));
+        return (brng + 360) % 360;
     }
 
     /**
