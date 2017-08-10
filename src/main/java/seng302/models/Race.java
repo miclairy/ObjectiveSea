@@ -2,6 +2,8 @@ package seng302.models;
 
 import static seng302.data.RaceStatus.*;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import seng302.data.RaceStatus;
 import seng302.utilities.TimeUtils;
 
@@ -21,6 +23,7 @@ public class Race extends Observable{
     private String regattaName;
     private Course course;
     private List<Boat> competitors = Collections.synchronizedList(new ArrayList<>());
+    private ObservableList observableCompetitorsList  = FXCollections.observableArrayList();
     private List<Boat> raceOrder = new ArrayList<>();
     private Map<Integer, Boat> boatIdMap = new HashMap<>();
     private double totalRaceTime;
@@ -230,6 +233,9 @@ public class Race extends Observable{
         boatIdMap = new HashMap<>();
         for (Boat competitor : actualCompetitors) {
             boatIdMap.put(competitor.getId(), competitor);
+            if(!observableCompetitorsList.contains(competitor)){
+                this.observableCompetitorsList.add(competitor);
+            }
         }
     }
 
@@ -245,6 +251,7 @@ public class Race extends Observable{
         this.competitorIds.add(newCompetitor.getId());
         this.boatIdMap.put(newCompetitor.getId(), newCompetitor);
         this.competitors.add(newCompetitor);
+        this.observableCompetitorsList.add(newCompetitor);
         this.raceOrder.add(newCompetitor);
         setChanged();
         notifyObservers(UPDATED_COMPETITORS_SIGNAL);
@@ -263,6 +270,10 @@ public class Race extends Observable{
      */
     public boolean hasStarted() {
         return this.raceStatus.equals(RaceStatus.STARTED);
+    }
+
+    public ObservableList<Boat> getObservableCompetitors(){
+        return observableCompetitorsList;
     }
 
 }

@@ -1,5 +1,9 @@
 package seng302.controllers;
 
+import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -14,6 +18,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+import seng302.models.Boat;
 import seng302.utilities.AnimationUtils;
 import seng302.views.BoatDisplay;
 import javafx.scene.chart.NumberAxis;
@@ -36,7 +41,6 @@ public class ScoreBoardController {
 
     //FXML fields
     @FXML private CheckBox fpsToggle;
-    @FXML private ListView<String> placings;
     @FXML private Slider annotationsSlider;
     @FXML private Label raceTimerLabel;
     @FXML private Label lblAnnotation;
@@ -54,6 +58,11 @@ public class ScoreBoardController {
     @FXML private NumberAxis xAxis ;
     @FXML private NumberAxis yAxis ;
     @FXML private CheckBox DistanceLinesToggle;
+    @FXML private TableView<Boat> tblPlacings;
+    @FXML private TableColumn<Boat, Integer> columnPosition;
+    @FXML private TableColumn<Boat, String> columnName;
+    @FXML private TableColumn<Boat, String> columnSpeed;
+    @FXML private TableColumn<Boat, String> columnStatus;
 
     private final Color UNSELECTED_BOAT_COLOR = Color.WHITE;
     private final Color SELECTED_BOAT_COLOR = Color.rgb(77, 197, 138);
@@ -86,15 +95,7 @@ public class ScoreBoardController {
 
     public void setUp(){
         race = Client.getRace();
-
-        placings.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
-            @Override
-            public ListCell<String> call(ListView<String> list) {
-                return new ColoredTextListCell();
-            }
-        });
-
-        placings.setItems(parent.getFormattedDisplayOrder());
+        setUpTable();
         raceTimerLabel.textProperty().bind(parent.raceTimerString);
         setupAnnotationControl();
         setupSparkLine();
@@ -126,6 +127,23 @@ public class ScoreBoardController {
 
         addButtonListeners(btnTrack);
         addButtonListeners(btnExit);
+    }
+
+    private void setUpTable(){
+        columnName.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
+        columnPosition.setCellValueFactory(cellData -> cellData.getValue().getCurrPlacingProperty().asObject());
+        columnSpeed.setCellValueFactory(cellData -> Bindings.format("%.2f", cellData.getValue().getSpeedProperty().asObject()));
+        columnStatus.setCellValueFactory(cellData -> cellData.getValue().getStatusProperty());
+
+        SortedList<Boat> sortedCompetitors = new SortedList<>(race.getObservableCompetitors());
+        sortedCompetitors.comparatorProperty().bind(tblPlacings.comparatorProperty());
+
+        tblPlacings.setItems(sortedCompetitors);
+        columnPosition.setStyle( "-fx-alignment: CENTER;");
+        columnName.setStyle( "-fx-alignment: CENTER;");
+        columnSpeed.setStyle( "-fx-alignment: CENTER;");
+        columnStatus.setStyle( "-fx-alignment: CENTER;");
+        //tblPlacings.setColumnResizePolicy((param) -> true );
     }
 
     @FXML
