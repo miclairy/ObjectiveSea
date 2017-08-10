@@ -48,7 +48,7 @@ public class MainMenuController implements Initializable{
     @FXML ImageView AC33;
     @FXML ImageView Gothenburg;
 
-    private String selectedCourse = "LakeTekapo-course.xml"; //default to the AC35
+    private String selectedCourse = "AC35-course.xml"; //default to the AC35
 
 
     DropShadow ds = new DropShadow( 20, Color.web("#8eb0b7"));

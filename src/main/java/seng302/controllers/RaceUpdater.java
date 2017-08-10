@@ -117,7 +117,9 @@ public class RaceUpdater implements Runnable {
                     }
                     updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
                     boat.updateBoatHeading(raceSecondsPassed);
-                    checkMarkRounding(boat, course);
+                    if (course.getCourseOrder().size() > 0) {
+                        checkMarkRounding(boat, course);
+                    }
                     calculateTimeAtNextMark(boat);
                 } else {
                     if(millisBeforeStart < WARNING_SIGNAL_TIME_IN_MS && millisBeforeStart > PREPATORY_SIGNAL_TIME_IN_MS) {
