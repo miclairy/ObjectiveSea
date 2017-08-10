@@ -235,7 +235,11 @@ public class Course {
     public Double getWindDirectionBasedOnGates(){
         CompoundMark leewardGate = findCompoundMarkByName(LEEWARD_GATE_NAME);
         CompoundMark windwardGate = findCompoundMarkByName(WINDWARD_GATE_NAME);
-        return leewardGate.getPosition().headingToCoordinate(windwardGate.getPosition());
+        if(leewardGate != null && windwardGate != null){
+            return leewardGate.getPosition().headingToCoordinate(windwardGate.getPosition());
+        }else{
+            return 0.0;
+        }
     }
 
 }
