@@ -1,11 +1,8 @@
 package seng302.utilities;
 
+import seng302.models.*;
 import seng302.models.CompoundMark;
 import seng302.models.Coordinate;
-import seng302.models.Mark;
-import seng302.models.CompoundMark;
-import seng302.models.Coordinate;
-import seng302.models.WindAngleAndSpeed;
 
 /**
  * Created by gla42 on 11/05/17.
@@ -161,6 +158,24 @@ public class MathUtils {
         double r2 = (((x1 - x)/(x1 - x0)) * z01 + ((x - x0)/(x1 - x0)) * z11);
 
         return (((y1 - y)/(y1 - y0)) * r1 + ((y - y0)/ (y1 - y0)) * r2);
+    }
+
+    public static boolean boatHeadingToStart(Course course, Boat boat){
+        Coordinate startLine1 = course.getStartLine().getMark1().getPosition(); //position of start line mark 1
+        Coordinate startLine2 = course.getStartLine().getMark2().getPosition(); //position of start line mark 2
+        Coordinate mark = course.getCourseOrder().get(1).getPosition(); //Position of first mark to determine which side of the course the start line is on
+
+        double boatsHeading = boat.getHeading();
+        double headingOfStartLine = startLine1.headingToCoordinate(startLine2);
+        double headingOfMark = mark.headingToCoordinate(startLine1);
+
+        return MathUtils.boatHeadingToLine(boatsHeading, headingOfStartLine, headingOfMark); //Checks if the boat is heading towards the start line from either direction
+
+    }
+
+    public static boolean boatOnStartSide(Course course, Boat boat){
+        Coordinate position = boat.getCurrentPosition();
+        return MathUtils.boatBeforeStartline(position,course.getStartLine(),course.getCourseOrder().get(1)); //checks if boat on correct side of the line
     }
 
 
