@@ -191,6 +191,9 @@ public class Controller implements Initializable, Observer {
         });
     }
 
+    /**
+     * adds a listener to the + and - keys to manage keyboard zooming
+     */
     private void initKeyPressListener(){
         scene.addEventFilter(KeyEvent.KEY_PRESSED, key -> {
             System.out.println(key.getCode().toString());
