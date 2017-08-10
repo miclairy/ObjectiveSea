@@ -6,6 +6,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
+import seng302.controllers.Controller;
 
 /**
  * Created by Devin on 25/07/17.
@@ -132,4 +133,12 @@ public class AnimationUtils {
         pt.play();
 
     }
+
+    public static void transitionFXML(Node newScene){
+        FadeTransition ft2 = new FadeTransition(Duration.millis(1000), newScene);
+        ft2.setFromValue(0.0);
+        ft2.setToValue(1.0);
+        ft2.play();
+    }
+
 }

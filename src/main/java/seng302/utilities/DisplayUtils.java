@@ -1,22 +1,18 @@
 package seng302.utilities;
 import javafx.animation.FadeTransition;
-import javafx.animation.ScaleTransition;
-import javafx.animation.Interpolator;
-import javafx.animation.PauseTransition;
-import javafx.animation.SequentialTransition;
 import javafx.scene.Node;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
-import seng302.models.Boat;
-import seng302.models.CanvasCoordinate;
-import seng302.models.Coordinate;
-import seng302.models.Mark;
+import seng302.data.RaceVisionXMLParser;
+import seng302.data.XMLTags;
+import seng302.models.*;
 
-import java.io.File;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 
 import static java.lang.Math.abs;
@@ -77,6 +73,12 @@ public class DisplayUtils {
         return point;
     }
 
+    public static void resetZoom(){
+        zoomLevel=1;
+        offsetY=0;
+        offsetX=0;
+    }
+
     /**
      * sets the zoom level for the canvas to redrawn at. moves offsets
      * to allow the zoom to occur in the center of screen.
@@ -84,13 +86,14 @@ public class DisplayUtils {
      */
     public static void setZoomLevel(double zoomLevel) {
 
+        if(zoomLevel < 1) zoomLevel = 1;
+        if(zoomLevel > 10) zoomLevel = 10;
+
         double deltaZoom = DisplayUtils.zoomLevel - zoomLevel;
         double canvasHeight = Controller.getAnchorHeight()/2;
         double canvasWidth = Controller.getAnchorWidth()/2;
 
-
         moveOffset((canvasWidth*deltaZoom), (canvasHeight*deltaZoom));
-
 
         DisplayUtils.zoomLevel = zoomLevel;
 
@@ -146,30 +149,30 @@ public class DisplayUtils {
     private static void moveOffset(double amountX, double amountY){
         offsetX += amountX;
         offsetY += amountY;
-
-        double canvasHeight = Controller.getAnchorHeight();
-        double canvasWidth = Controller.getAnchorWidth();
-
     }
 
     /**
-     * method used for getting a local image of the area for the race. Currently picks between two different pictures
-     * have stored in our resources folder
+     * method used for getting a local image of the area for the race. Relies on the course xml files being labelled
+     * the same as the map images (i.e. AC35-course.xml has AC35-map.png as it's map image name)
      * @return a string that relates to a picture
      */
-    public static String getLocalMapURL(){
-        String mapURL;
-        if (Objects.equals(Config.SOURCE_ADDRESS, "livedata.americascup.com")){ // getting live data
-            mapURL = DisplayUtils.class.getResource("/graphics/liveData.png").toExternalForm();
-        } else if (Objects.equals(Config.SOURCE_ADDRESS, "csse-s302staff.canterbury.ac.nz")){
-            mapURL = DisplayUtils.class.getResource("/graphics/liveData.png").toExternalForm();
-        } else {
-            mapURL = DisplayUtils.class.getResource("/graphics/mockData.png").toExternalForm();
+    public static String getLocalMapURL(Race race){
+        String id = race.getId();
+        switch(id) {
+            case "212121":
+                return DisplayUtils.class.getResource("/graphics/mapImages/AC33-map.png").toExternalForm();
+            case "232323":
+                return DisplayUtils.class.getResource("/graphics/mapImages/Athens-map.png").toExternalForm();
+            case "242424":
+                return DisplayUtils.class.getResource("/graphics/mapImages/Gothenburg-map.png").toExternalForm();
+            case "252525":
+                return DisplayUtils.class.getResource("/graphics/mapImages/LakeTaupo-map.png").toExternalForm();
+            case "262626":
+                return DisplayUtils.class.getResource("/graphics/mapImages/LakeTekapo-map.png").toExternalForm();
+            default:
+                return DisplayUtils.class.getResource("/graphics/mapImages/AC35-map.png").toExternalForm();
         }
-        return mapURL;
     }
-
-
 
 
     /**
@@ -196,7 +199,7 @@ public class DisplayUtils {
                 bottomMarker.getLat() + "," + bottomMarker.getLon() +
                 "%7C" +
                 topMarker.getLat() + "," + topMarker.getLon() +
-                "&scale=2" +
+                "&scale=1" +
                 "&key=" + GOOGLE_API_KEY;
         return mapURL;
     }

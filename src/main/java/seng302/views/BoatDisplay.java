@@ -192,7 +192,7 @@ public class BoatDisplay implements Observer {
         Coordinate startLine2 = course.getStartLine().getMark2().getPosition(); //position of start line mark 2
 
         Coordinate mark = course.getCourseOrder().get(1).getPosition(); //Position of first mark to determine which side of the course the start line is on
-        Boolean correctSideOfStart = MathUtils.boatBeforeStartline(position.getLat(),position.getLon(),startLine1.getLat(),startLine1.getLon(),startLine2.getLat(),startLine2.getLon(),mark.getLat(),mark.getLon()); //checks if boat on correct side of the line
+        Boolean correctSideOfStart = MathUtils.boatBeforeStartline(position,course.getStartLine(),course.getCourseOrder().get(1)); //checks if boat on correct side of the line
 
         double timeToStart;
         double timeToCrossStartLine = 0;

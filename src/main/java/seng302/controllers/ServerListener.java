@@ -10,6 +10,7 @@ import seng302.utilities.PolarReader;
 
 import java.io.DataInput;
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
@@ -25,8 +26,9 @@ public class ServerListener extends Receiver implements Runnable{
     private Socket socket;
     private Race race;
     private Integer clientId;
+    private boolean clientConnected = true;
 
-    ServerListener(Socket socket){
+    public ServerListener(Socket socket){
         this.socket = socket;
     }
 
@@ -36,7 +38,7 @@ public class ServerListener extends Receiver implements Runnable{
      */
     @Override
     public void run() {
-        while(true){
+        while(clientConnected){
             try {
                 DataInput dataInput = new DataInputStream(socket.getInputStream());
 
@@ -63,8 +65,10 @@ public class ServerListener extends Receiver implements Runnable{
                 }
             } catch (SocketException e) {
                 break;
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (EOFException e) {
+                //No client input
+            }catch (IOException e) {
+                clientConnected = false;
             }
         }
     }
