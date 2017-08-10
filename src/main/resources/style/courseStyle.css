@@ -50,4 +50,5 @@
 #distanceArrow{
     -fx-stroke-line-cap: round;
     -fx-stroke-line-join: round;
+    -fx-opacity: 0.8;
 }

@@ -262,7 +262,7 @@ public class Course {
         double g = rand.nextFloat();
         double b = rand.nextFloat();
         Color color = Color.color(r, g, b);
-        double heading = previousMark.getPosition().headingToCoordinate(mark.getPosition());
+        double heading = previousMark.getPosition().headingToCoordinate(mark.getMark1().getPosition());
         for (double num = numberOfLegs; num > 0; num--) {
             Coordinate position = mark.getPosition().coordAt((legLength / numberOfLegs) * num, heading + 180);
             Arrow arrow = new Arrow(5, 10, position);

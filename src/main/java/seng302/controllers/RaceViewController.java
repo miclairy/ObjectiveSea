@@ -109,7 +109,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     private void drawRaceRoute(){
-
         for (Arrow arrow : race.getCourse().getArrowedRoute()){
             arrow.removeFromCanvas(root);
         }
@@ -1018,11 +1017,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             windCircle.setId("windCircle");
             canvasAnchor.getChildren().add(windArrow);
         }
-
-
-
-
-
     }
 
     /**
