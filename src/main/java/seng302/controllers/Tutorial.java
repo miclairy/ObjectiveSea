@@ -39,6 +39,9 @@ public class Tutorial {
         polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
     }
 
+    /**
+     * ran every frame. Displays the correct step of the tutorial
+     */
      public void runTutorial(){
         switch(tutorialStage){
             case UPWINDDOWNWIND:
@@ -73,6 +76,10 @@ public class Tutorial {
         }
 
     }
+
+    /**
+     * Shows tutorial for up and down arrows.
+     */
     private void upwindTutorial(){
         controller.showTutorialOverlay("Upwind/Downwind", "Welcome to the Objective Sea Tutorial. Follow along to master all the keys. \n\n" +
                 "Press the UP and DOWN arrow keys to turn the boat to the upwind or downwind direction. \n\n" +
@@ -88,6 +95,9 @@ public class Tutorial {
         }
     }
 
+    /**
+     * Shows tutorial for space key. Has callback that checks whether boat moves
+     */
     private void vmgTutorial(){
         List<KeyCode> keycodes = new ArrayList<KeyCode>();
         Client.clearTutorialAction();
@@ -108,6 +118,9 @@ public class Tutorial {
         });
     }
 
+    /**
+     * Shows a tutorial step alerting user to the failure of a step.
+     */
     private void tackFailTutorial(){
         Client.clearTutorialAction();
 
@@ -124,6 +137,10 @@ public class Tutorial {
 
     }
 
+    /**
+     * Shows tutorial for the enter key
+     * @param hasGybe indicates the first or second run-through. allows the function to know what step is next.
+     */
     private void tackGybeTutorial(boolean hasGybe){
         List<KeyCode> keycodes = new ArrayList<KeyCode>();
         Client.clearTutorialAction();
@@ -139,6 +156,11 @@ public class Tutorial {
         }
     }
 
+    /**
+     * the callback function when the enter key is pressed
+     * @param nextStage the tutorial stage to go to upon success
+     * @param keycodes the keys required for the callback, to be recycled upon failure
+     */
     private void tackGybeCallback(TutorialStage nextStage, List<KeyCode> keycodes){
         double tackHeading = tutorialBoat.getTackOrGybeHeading(race.getCourse(), polarTable);
         if(tackHeading != -1){
@@ -150,6 +172,10 @@ public class Tutorial {
         }
     }
 
+    /**
+     * Shows a tutorial for the shift key
+     * @param isOut indicates the current position of the sail. determines what step to move onto
+     */
     private void sailsTutorial(boolean isOut){
         List<KeyCode> keycodes = new ArrayList<KeyCode>();
         Client.clearTutorialAction();
