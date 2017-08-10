@@ -68,12 +68,12 @@
             </padding>
          </Button>
          <Label fx:id="lblNoBoardClock" layoutX="1273.0" layoutY="52.0" pickOnBounds="false" text="Label" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="10.0" />
-         <TableView fx:id="tblPlacingsRV" layoutX="1245.0" layoutY="-21.0" prefHeight="251.0" prefWidth="380.0" visible="false" AnchorPane.rightAnchor="95.0" AnchorPane.topAnchor="50.0">
+         <TableView fx:id="tblPlacingsRV" layoutX="1245.0" layoutY="-21.0" prefHeight="251.0" prefWidth="400.0" visible="false" AnchorPane.rightAnchor="75.0" AnchorPane.topAnchor="50.0">
             <columns>
                <TableColumn fx:id="columnPosition" editable="false" prefWidth="74.0" resizable="false" sortable="false" text="Pos" />
                <TableColumn fx:id="columnName" editable="false" prefWidth="183.0" resizable="false" sortable="false" text="Name" />
                <TableColumn fx:id="columnSpeed" editable="false" prefWidth="64.0" resizable="false" sortable="false" text="Speed" />
-               <TableColumn fx:id="columnStatus" editable="false" prefWidth="57.0" resizable="false" sortable="false" text="Status" />
+               <TableColumn fx:id="columnStatus" editable="false" minWidth="60.0" prefWidth="60.0" resizable="false" sortable="false" text="Status" />
             </columns>
             <columnResizePolicy>
                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

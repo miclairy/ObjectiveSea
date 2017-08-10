@@ -139,7 +139,7 @@ public class ScoreBoardController {
     private void setUpTable(){
         columnName.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
         columnPosition.setCellValueFactory(cellData -> cellData.getValue().getCurrPlacingProperty().asObject());
-        columnSpeed.setCellValueFactory(cellData -> Bindings.format("%.2f kn", cellData.getValue().getSpeedProperty().asObject()));
+        columnSpeed.setCellValueFactory(cellData -> Bindings.format("%.2f kn", cellData.getValue().getSpeedProperty()));
         columnStatus.setCellValueFactory(cellData -> cellData.getValue().getStatusProperty());
 
         SortedList<Boat> sortedCompetitors = new SortedList<>(race.getObservableCompetitors());

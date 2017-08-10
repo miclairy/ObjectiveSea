@@ -47,6 +47,19 @@ public class AnimationUtils {
         return fadeTransition;
     }
 
+    public static void fadeNode(Node node, boolean visible){
+        FadeTransition fadeTransition = new FadeTransition(new Duration(150), node);
+        if(visible){
+            fadeTransition.setFromValue(node.getOpacity());
+            fadeTransition.setToValue(0);
+        }else{
+            fadeTransition.setFromValue(0);
+            fadeTransition.setToValue(1);
+        }
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        fadeTransition.play();
+    }
+
     /**
      * scales a node up when mouse hovers over it
      * @param node the node to be scaled
