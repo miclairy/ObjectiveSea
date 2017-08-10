@@ -263,41 +263,41 @@ public class Course {
         double b = rand.nextFloat();
         Color color = Color.color(r, g, b);
         double heading = previousMark.getPosition().headingToCoordinate(mark.getPosition());
-        for (int num = 1; num < numberOfLegs; num++) {
+        for (double num = numberOfLegs; num > 0; num--) {
             Coordinate position = mark.getPosition().coordAt((legLength / numberOfLegs) * num, heading + 180);
             Arrow arrow = new Arrow(5, 10, position);
-            arrow.setColour(color);
+           // arrow.setColour(color);
             arrow.rotate( heading + 180);
-            //arrowedRoute.add(arrow);
+            arrowedRoute.add(arrow);
         }
 
-        if (!mark.isFinishLine()) {
-            double nextHeading = mark.getMark1().getPosition().headingToCoordinate(nextMark.getPosition());
-            if(!nextMark.isFinishLine()) {
-                if(roundingSide.substring(0, 1).toUpperCase().equals("P")) {
-                    arrowsRoundMark(mark.getMark1(), color, heading, nextHeading, 1);
-                } else {
-                    arrowsRoundMark(mark.getMark1(), color, heading, nextHeading, -1);
-                }
-                if(mark.hasTwoMarks()) {
-                    nextHeading = mark.getMark2().getPosition().headingToCoordinate(nextMark.getPosition());
-                    heading = previousMark.getPosition().headingToCoordinate(mark.getMark2().getPosition());
-//                    if (roundingSide.equals("PS")) {
-                        arrowsRoundMark(mark.getMark2(), color, heading, nextHeading, -1);
-//                    } else {
-//                        arrowsRoundMark(mark.getMark2(), color, heading, nextHeading, 1);
-                   // }
-                }
-            } else {
-                nextHeading += 180;
-                Arrow arrow = new Arrow(5, 10, mark.getPosition(), nextHeading, color);
-                arrowedRoute.add(arrow);
-                Arrow arrow1 = new Arrow(5, 10, mark.getPosition().coordAt(-0.05, nextHeading), nextHeading, color);
-                arrowedRoute.add(arrow1);
-                Arrow arrow2 = new Arrow(5, 10, mark.getPosition().coordAt(-0.1, nextHeading), nextHeading, color);
-                arrowedRoute.add(arrow2);
-            }
-        }
+//        if (!mark.isFinishLine()) {
+//            double nextHeading = mark.getMark1().getPosition().headingToCoordinate(nextMark.getPosition());
+//            if(!nextMark.isFinishLine()) {
+//                if(roundingSide.substring(0, 1).toUpperCase().equals("P")) {
+//                    arrowsRoundMark(mark.getMark1(), color, heading, nextHeading, 1);
+//                } else {
+//                    arrowsRoundMark(mark.getMark1(), color, heading, nextHeading, -1);
+//                }
+//                if(mark.hasTwoMarks()) {
+//                    nextHeading = mark.getMark2().getPosition().headingToCoordinate(nextMark.getPosition());
+//                    heading = previousMark.getPosition().headingToCoordinate(mark.getMark2().getPosition());
+////                    if (roundingSide.equals("PS")) {
+//                        arrowsRoundMark(mark.getMark2(), color, heading, nextHeading, -1);
+////                    } else {
+////                        arrowsRoundMark(mark.getMark2(), color, heading, nextHeading, 1);
+//                   // }
+//                }
+//            } else {
+//                nextHeading += 180;
+//                Arrow arrow = new Arrow(5, 10, mark.getPosition(), nextHeading, color);
+//                arrowedRoute.add(arrow);
+//                Arrow arrow1 = new Arrow(5, 10, mark.getPosition().coordAt(-0.05, nextHeading), nextHeading, color);
+//                arrowedRoute.add(arrow1);
+//                Arrow arrow2 = new Arrow(5, 10, mark.getPosition().coordAt(-0.1, nextHeading), nextHeading, color);
+//                arrowedRoute.add(arrow2);
+//            }
+//        }
     }
 
     private void arrowsRoundMark(Mark mark, Color color, double heading, double nextHeading, int isPort) {
@@ -323,6 +323,12 @@ public class Course {
             } else {
                 addArrowDirection(courseOrder.get(i), courseOrder.get(i - 1), courseOrder.get(i + 1), roundingOrder.get(i));
             }
+        }
+        Color color = Color.color(0.301, 0.2, 0.545);
+        double increment = 0.8 / (arrowedRoute.size() + 1.0);
+        for (Arrow arrow : arrowedRoute){
+            color = Color.color(0.301, color.getGreen() + increment, 0.545);
+            arrow.setColour(color);
         }
     }
 }

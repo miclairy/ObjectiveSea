@@ -31,7 +31,8 @@ public class Arrow extends Group{
                                 this.center.getX(), this.center.getY(),
                                 width / 2  + this.center.getX(), bottomY);
         relocate(this.center);
-        arrowLine.setStrokeWidth(3.0);
+        arrowLine.setStrokeWidth(2.0);
+        arrowLine.setId("distanceArrow");
     }
 
     public Arrow (double length, double width, Coordinate center, double rotation, Color color){
