@@ -36,7 +36,6 @@ public class ReceivingCorrectButtonPressTest {
     @Given("^the user has pressed a button$")
     public void the_user_has_pressed_a_button() throws Throwable {
         commandInt = BoatAction.getTypeFromKeyCode(KeyCode.PAGE_DOWN);
-
     }
 
     @Given("^this has been sent to the receiver$")

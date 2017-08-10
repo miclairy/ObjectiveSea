@@ -26,19 +26,21 @@ public class Server implements Runnable, Observer {
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumber = new HashMap<>();
     private Map<Boat, Integer> boatSequenceNumbers = new HashMap<>();
     private Map<Boat, Integer> lastMarkRoundingSent = new HashMap<>();
+    private String DEFAULT_COURSE = "AC35-course.xml";
+    private String courseXML = DEFAULT_COURSE;
 
     private RaceUpdater raceUpdater;
     private ConnectionManager connectionManager;
     private ServerPacketBuilder packetBuilder;
     private CollisionManager collisionManager;
 
-    public Server(int port, RaceUpdater raceUpdater) throws IOException {
+    public Server(int port, RaceUpdater raceUpdater, String course) throws IOException {
         this.raceUpdater = raceUpdater;
         this.collisionManager = raceUpdater.getCollisionManager();
         this.packetBuilder = new ServerPacketBuilder();
-        this.connectionManager = new ConnectionManager(port);
+        this.connectionManager = new ConnectionManager(port, raceUpdater.getRace());
         this.connectionManager.addObserver(this);
-
+        this.courseXML = course;
     }
 
     /**
@@ -101,7 +103,7 @@ public class Server implements Runnable, Observer {
      * Sends the XML messages when the client has connected
      */
     private void sendInitialRaceMessages() {
-        sendXmlMessage(RACE_XML_MESSAGE, "Race.xml");
+        sendXmlMessage(RACE_XML_MESSAGE, courseXML);
         sendXmlMessage(BOAT_XML_MESSAGE, "Boat.xml");
         sendXmlMessage(REGATTA_XML_MESSAGE, "Regatta.xml");
     }
@@ -178,7 +180,7 @@ public class Server implements Runnable, Observer {
     private void sendXmlMessage(AC35StreamXMLMessage type, String fileName) {
         int sequenceNo = xmlSequenceNumber.get(type) + 1;
         xmlSequenceNumber.put(type, sequenceNo);
-        byte[] packet = packetBuilder.buildXmlMessage(type, fileName, sequenceNo, raceUpdater.getRace());
+        byte[] packet = packetBuilder.buildXmlMessage(type, fileName, sequenceNo, raceUpdater.getRace(), courseXML);
         connectionManager.setXmlMessage(type, packet);
     }
 
@@ -213,7 +215,7 @@ public class Server implements Runnable, Observer {
 
         byte[] packet = packetBuilder.createRegistrationAcceptancePacket(newId);
         connectionManager.sendToClient(newId, packet);
-        sendXmlMessage(RACE_XML_MESSAGE, "Race.xml");
+        sendXmlMessage(RACE_XML_MESSAGE, courseXML);
     }
 
     /**
@@ -222,12 +224,16 @@ public class Server implements Runnable, Observer {
      * is started for the client
      * If the observable is a ServerListener then a registration message is received
      * @param observable The observable either a ConnectionManager or ServerListener
-     * @param arg A Socket if observable is a ConnectionManager else it is the registration type of the client
+     * @param arg A Socket or Boat ID if observable is a ConnectionManager else it is the registration type of the client
      */
     @Override
     public void update(Observable observable, Object arg) {
         if (observable.equals(connectionManager)) {
-            startServerListener((Socket) arg);
+            if(arg instanceof Socket){
+                startServerListener((Socket) arg);
+            }else{
+                setBoatToDNF((int) arg);
+            }
         } else if(observable instanceof ServerListener){
             ServerListener serverListener = (ServerListener) observable;
             Integer registrationType = (Integer) arg;
@@ -236,6 +242,20 @@ public class Server implements Runnable, Observer {
             } else{
                 connectionManager.addConnection(nextViewerID, serverListener.getSocket());
                 nextViewerID++;
+            }
+        }
+    }
+
+    public void initiateServerDisconnect() throws IOException {
+        connectionManager.closeConnections();
+        raceUpdater.stopRunning();
+    }
+
+    private void setBoatToDNF(int arg){
+        for(Boat boat : raceUpdater.getRace().getCompetitors()){
+            if(boat.getId().equals(arg)){
+                boat.setStatus(BoatStatus.DNF);
+                boat.changeSails();
             }
         }
     }

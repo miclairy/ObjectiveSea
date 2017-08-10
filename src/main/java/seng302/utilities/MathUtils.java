@@ -140,6 +140,7 @@ public class MathUtils {
         return (brng + 360) % 360;
     }
 
+
     /**
      * A function for calculating the bilinear interpolation of a third variable (e.g if windspeed and heading are
      * known this function will calculate the boat speed at those values

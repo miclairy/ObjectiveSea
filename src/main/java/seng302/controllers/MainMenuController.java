@@ -3,13 +3,17 @@ package seng302.controllers;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.paint.Color;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
 
@@ -27,13 +31,28 @@ public class MainMenuController implements Initializable{
     @FXML Button btnSinglePlay;
     @FXML Button btnPractiseStart;
     @FXML Button btnBackPrac;
+    @FXML Button btnCourseStart;
+    @FXML Button btnBackHost;
     @FXML GridPane liveGameGrid;
     @FXML GridPane btnGrid;
     @FXML GridPane practiceGrid;
+    @FXML GridPane courseGrid;
     @FXML TextField txtIPAddress;
     @FXML TextField txtPortNumber;
     @FXML Label lblIP;
     @FXML Label lblPort;
+    @FXML ImageView AC35;
+    @FXML ImageView Athens;
+    @FXML ImageView LakeTekapo;
+    @FXML ImageView LakeTaupo;
+    @FXML ImageView AC33;
+    @FXML ImageView Gothenburg;
+
+    private String selectedCourse = "AC35-course.xml"; //default to the AC35
+
+
+    DropShadow ds = new DropShadow( 20, Color.web("#8eb0b7"));
+
     @FXML ProgressIndicator joinProgressIndicator;
 
     private Main main;
@@ -47,10 +66,12 @@ public class MainMenuController implements Initializable{
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setButtonAnimations();
+        setImageAnimations();
         setLabelPromptAnimations();
         btnGrid.setVisible(true);
         liveGameGrid.setVisible(false);
         practiceGrid.setVisible(false);
+        courseGrid.setVisible(false);
     }
 
     private void showJoinProgressIndicator(){
@@ -72,7 +93,6 @@ public class MainMenuController implements Initializable{
         liveGameGrid.setVisible(true);
         AnimationUtils.slideOutTransition(btnGrid);
         AnimationUtils.slideInTransition(liveGameGrid);
-
     }
 
     @FXML private void backToMainMenu(){
@@ -93,13 +113,26 @@ public class MainMenuController implements Initializable{
         AnimationUtils.slideInTransition(btnGrid);
     }
 
+    @FXML private void backToLiveGame(){
+        liveGameGrid.setVisible(true);
+        AnimationUtils.slideOutTransition(courseGrid);
+        AnimationUtils.slideInTransition(liveGameGrid);
+    }
+
+    @FXML private void loadTutorial() throws Exception {
+        btnSinglePlay.setDisable(true);
+        main.startHostedRace(selectedCourse, DEFAULT_PORT);
+        Thread.sleep(200);
+        main.loadRaceView(true);
+    }
+
     /**
      * Allows user to host a game at the DEFAULT_PORT and current public IP
      * @throws Exception
      */
     @FXML private void loadOfflinePlay() throws Exception{
         btnSinglePlay.setDisable(true);
-        main.startHostedRace(DEFAULT_PORT);
+        main.startHostedRace(selectedCourse, DEFAULT_PORT);
         Thread.sleep(200);
         main.loadRaceView(true);
     }
@@ -108,12 +141,18 @@ public class MainMenuController implements Initializable{
      * Allows user to host a game at the entered port and current public IP
      * @throws Exception
      */
-    @FXML private void hostGame() throws Exception{
-        if(validatePort()){
-            main.startHostedRace(Integer.parseInt(txtPortNumber.getText()));
-            Thread.sleep(200);
-            main.loadRaceView(true);
-            txtPortNumber.setStyle("-fx-text-inner-color: 2a2a2a;");
+    @FXML private void startHostGame() throws Exception{
+        main.startHostedRace(selectedCourse, Integer.parseInt(txtPortNumber.getText()));
+        Thread.sleep(200);
+        main.loadRaceView(true);
+    }
+
+    @FXML private void hostGame(){
+        if(validatePort()) {
+            courseGrid.setVisible(true);
+            AnimationUtils.slideOutTransition(liveGameGrid);
+            AnimationUtils.slideInTransition(courseGrid);
+            txtPortNumber.setStyle("-fx-text-inner-color: #2a2a2a;");
         }else{
             if(!txtPortNumber.getText().isEmpty()){
                 txtPortNumber.setStyle("-fx-text-inner-color: red;");
@@ -122,7 +161,6 @@ public class MainMenuController implements Initializable{
             alert.setTitle("Port Number ");
             alert.setHeaderText("Invalid port number");
             alert.setContentText("Please enter a valid port number\n");
-
             alert.showAndWait();
         }
     }
@@ -141,10 +179,10 @@ public class MainMenuController implements Initializable{
                 main.loadRaceView(false);
             }
         }else{
-            if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && !txtIPAddress.getText().isEmpty()){
+            if(!ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && !txtIPAddress.getText().isEmpty()){
                 txtIPAddress.setStyle("-fx-text-inner-color: red;");
             }
-            if(validatePort() && !txtPortNumber.getText().isEmpty()){
+            if(!validatePort() && !txtPortNumber.getText().isEmpty()){
                 txtPortNumber.setStyle("-fx-text-inner-color: red;");
             }
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -187,6 +225,23 @@ public class MainMenuController implements Initializable{
         addButtonListeners(btnSinglePlay);
         addButtonListeners(btnPractiseStart);
         addButtonListeners(btnBackPrac);
+        addButtonListeners(btnCourseStart);
+        addButtonListeners(btnBackHost);
+    }
+
+    private void setImageAnimations(){
+        addImageListeners(AC35);
+        addImageListeners(LakeTekapo);
+        addImageListeners(LakeTaupo);
+        addImageListeners(AC33);
+        addImageListeners(Gothenburg);
+        addImageListeners(Athens);
+        addButtonListeners(AC35);
+        addButtonListeners(LakeTaupo);
+        addButtonListeners(LakeTekapo);
+        addButtonListeners(AC33);
+        addButtonListeners(Athens);
+        addButtonListeners(Gothenburg);
     }
 
     private void setLabelPromptAnimations(){
@@ -211,14 +266,14 @@ public class MainMenuController implements Initializable{
 
     /**
      * attaches click and hover listeners to buttons
-     * @param button the button to attach the listener
+     * @param node the button to attach the listener
      */
-    private void addButtonListeners(Button button){
-        button.addEventHandler(MouseEvent.MOUSE_ENTERED,
-                e -> AnimationUtils.scaleButtonHover(button));
+    private void addButtonListeners(Node node){
+        node.addEventHandler(MouseEvent.MOUSE_ENTERED,
+                e -> AnimationUtils.scaleButtonHover(node));
 
-        button.addEventHandler(MouseEvent.MOUSE_EXITED,
-                e -> AnimationUtils.scaleButtonHoverExit(button));
+        node.addEventHandler(MouseEvent.MOUSE_EXITED,
+                e -> AnimationUtils.scaleButtonHoverExit(node));
     }
 
     /**
@@ -237,4 +292,17 @@ public class MainMenuController implements Initializable{
             return false;
         }
     }
+
+    private void addImageListeners(ImageView imageView) {
+        imageView.setOnMouseClicked( ( MouseEvent event ) ->{ imageView.requestFocus();});
+        imageView.focusedProperty().addListener(( ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue ) -> {
+            if ( newValue ){
+                imageView.setEffect( ds );
+                selectedCourse = imageView.getId() + "-course.xml";
+            }else{
+                imageView.setEffect( null );
+            }
+        });
+    }
+
 }

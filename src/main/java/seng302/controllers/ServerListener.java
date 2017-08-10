@@ -26,6 +26,7 @@ public class ServerListener extends Receiver implements Runnable{
     private Socket socket;
     private Race race;
     private Integer clientId;
+    private boolean clientConnected = true;
 
     public ServerListener(Socket socket){
         this.socket = socket;
@@ -37,7 +38,7 @@ public class ServerListener extends Receiver implements Runnable{
      */
     @Override
     public void run() {
-        while(true){
+        while(clientConnected){
             try {
                 DataInput dataInput = new DataInputStream(socket.getInputStream());
 
@@ -67,7 +68,7 @@ public class ServerListener extends Receiver implements Runnable{
             } catch (EOFException e) {
                 //No client input
             }catch (IOException e) {
-                e.printStackTrace();
+                clientConnected = false;
             }
         }
     }
