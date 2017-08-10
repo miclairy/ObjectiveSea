@@ -18,14 +18,14 @@ import java.util.ResourceBundle;
 
 public class MainMenuController implements Initializable{
     @FXML Button btnLiveGame;
-    @FXML Button btnPractise;
+    @FXML Button btnPractice;
     @FXML Button btnTutorial;
     @FXML Button btnHost;
     @FXML Button btnSpectate;
     @FXML Button btnJoin;
     @FXML Button btnBack;
     @FXML Button btnSinglePlay;
-    @FXML Button btnPractiseStart;
+    @FXML Button btnPracticeStart;
     @FXML Button btnBackPrac;
     @FXML GridPane liveGameGrid;
     @FXML GridPane btnGrid;
@@ -81,7 +81,7 @@ public class MainMenuController implements Initializable{
         AnimationUtils.slideInTransition(btnGrid);
     }
 
-    @FXML private void loadPractiseGrid(){
+    @FXML private void loadPracticeGrid(){
         practiceGrid.setVisible(true);
         AnimationUtils.slideOutTransition(btnGrid);
         AnimationUtils.slideInTransition(practiceGrid);
@@ -98,6 +98,14 @@ public class MainMenuController implements Initializable{
      * @throws Exception
      */
     @FXML private void loadOfflinePlay() throws Exception{
+        btnSinglePlay.setDisable(true);
+        main.startHostedRace(DEFAULT_PORT);
+        Thread.sleep(200);
+        main.loadRaceView(true);
+    }
+
+
+    @FXML private void loadPracticeStart() throws Exception {
         btnSinglePlay.setDisable(true);
         main.startHostedRace(DEFAULT_PORT);
         Thread.sleep(200);
@@ -178,14 +186,14 @@ public class MainMenuController implements Initializable{
      */
     private void setButtonAnimations(){
         addButtonListeners(btnLiveGame);
-        addButtonListeners(btnPractise);
+        addButtonListeners(btnPractice);
         addButtonListeners(btnTutorial);
         addButtonListeners(btnHost);
         addButtonListeners(btnSpectate);
         addButtonListeners(btnJoin);
         addButtonListeners(btnBack);
         addButtonListeners(btnSinglePlay);
-        addButtonListeners(btnPractiseStart);
+        addButtonListeners(btnPracticeStart);
         addButtonListeners(btnBackPrac);
     }
 
