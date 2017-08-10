@@ -84,7 +84,6 @@ public class APISteps {
     @Then("^the heading of Sally's boat has been changed$")
     public void theHeadingOfSallySBoatHasBeenChanged() throws Throwable {
         Thread.sleep(100);
-        System.out.println(sallysBoat.getHeading());
         assert(109.16 > 209.16 - sallysBoat.getHeading());
         tearDown();
     }
