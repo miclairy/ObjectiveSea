@@ -30,6 +30,7 @@ import seng302.utilities.DisplaySwitcher;
 import seng302.utilities.NoConnectionToServerException;
 import seng302.utilities.GameSounds;
 
+import javax.sound.sampled.LineUnavailableException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -41,9 +42,9 @@ public class Main extends Application {
     private static Client client;
     private static Server server;
     private static Stage primaryStage;
+    private DisplaySwitcher displaySwitcher;
     private GameSounds gameSounds = new GameSounds();
 
-    private DisplaySwitcher displaySwitcher;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -64,14 +65,6 @@ public class Main extends Application {
                 System.exit(0);
             }
         });
-
-        //Starts Lobby Music...
-        try {
-            gameSounds.startMenuMusic();
-            gameSounds.startMusic();
-        } catch (Throwable throwable) {
-            throwable.printStackTrace();
-        }
     }
 
     public static void main( String[] args ) {launch(args); }

@@ -16,7 +16,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
+import seng302.utilities.DisplaySwitcher;
+import seng302.utilities.GameSounds;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -89,52 +94,57 @@ public class MainMenuController implements Initializable{
         this.main = main;
     }
 
-    @FXML private void loadLiveGameGrid(){
+    @FXML private void loadLiveGameGrid() throws LineUnavailableException {
         liveGameGrid.setVisible(true);
         AnimationUtils.slideOutTransition(btnGrid);
         AnimationUtils.slideInTransition(liveGameGrid);
     }
 
-    @FXML private void backToMainMenu(){
+    @FXML private void backToMainMenu() throws LineUnavailableException {
         btnGrid.setVisible(true);
         AnimationUtils.slideOutTransition(liveGameGrid);
         AnimationUtils.slideInTransition(btnGrid);
     }
 
-    @FXML private void loadPractiseGrid(){
+    @FXML private void loadPractiseGrid() throws LineUnavailableException {
         practiceGrid.setVisible(true);
         AnimationUtils.slideOutTransition(btnGrid);
         AnimationUtils.slideInTransition(practiceGrid);
     }
 
-    @FXML private void backToMainMenuPrac(){
+    @FXML private void backToMainMenuPrac() throws LineUnavailableException {
         btnGrid.setVisible(true);
         AnimationUtils.slideOutTransition(practiceGrid);
         AnimationUtils.slideInTransition(btnGrid);
     }
 
-    @FXML private void backToLiveGame(){
+    @FXML private void backToLiveGame() throws LineUnavailableException {
         liveGameGrid.setVisible(true);
         AnimationUtils.slideOutTransition(courseGrid);
         AnimationUtils.slideInTransition(liveGameGrid);
     }
 
+    @SuppressWarnings("Duplicates")
     @FXML private void loadTutorial() throws Exception {
+        DisplaySwitcher.getGameSounds().stopMusic();
         btnSinglePlay.setDisable(true);
         main.startHostedRace(selectedCourse, DEFAULT_PORT);
         Thread.sleep(200);
         main.loadRaceView(true);
+        loadTutorialMusic();
     }
 
     /**
      * Allows user to host a game at the DEFAULT_PORT and current public IP
      * @throws Exception
      */
+    @SuppressWarnings("Duplicates")
     @FXML private void loadOfflinePlay() throws Exception{
         btnSinglePlay.setDisable(true);
         main.startHostedRace(selectedCourse, DEFAULT_PORT);
         Thread.sleep(200);
         main.loadRaceView(true);
+        loadTutorialMusic();
     }
 
     /**
@@ -145,9 +155,10 @@ public class MainMenuController implements Initializable{
         main.startHostedRace(selectedCourse, Integer.parseInt(txtPortNumber.getText()));
         Thread.sleep(200);
         main.loadRaceView(true);
+        loadRealGameSounds();
     }
 
-    @FXML private void hostGame(){
+    @FXML private void hostGame() {
         if(validatePort()) {
             courseGrid.setVisible(true);
             AnimationUtils.slideOutTransition(liveGameGrid);
@@ -192,6 +203,7 @@ public class MainMenuController implements Initializable{
                     "is invalid\n");
 
             alert.showAndWait();
+            loadRealGameSounds();
         }
     }
 
@@ -305,4 +317,15 @@ public class MainMenuController implements Initializable{
         });
     }
 
+    private void loadTutorialMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        DisplaySwitcher.getGameSounds().stopMusic();
+        DisplaySwitcher.getGameSounds().tutorialMusic();
+        DisplaySwitcher.getGameSounds().startEndlessMusic();
+    }
+
+    private void loadRealGameSounds() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        DisplaySwitcher.getGameSounds().stopMusic();
+        DisplaySwitcher.getGameSounds().oceanWaves();
+        DisplaySwitcher.getGameSounds().startEndlessMusic();
+    }
 }

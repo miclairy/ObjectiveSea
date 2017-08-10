@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import seng302.controllers.*;
 
+import javax.sound.sampled.LineUnavailableException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,11 +22,13 @@ public class DisplaySwitcher {
     private static Scene scene;
     private Stage stage;
     private Main main;
+    private static GameSounds gameSounds = new GameSounds();
 
     public DisplaySwitcher(Main main, Stage stage){
         this.stage = stage;
         this.main = main;
     }
+
 
     /**
      * loads the main menu into the stage
@@ -34,6 +37,12 @@ public class DisplaySwitcher {
         try {
             MainMenuController mainMenu = (MainMenuController) replaceSceneContent("main_menu.fxml");
             mainMenu.setApp(main);
+            try {
+                gameSounds.stopMusic();
+            } catch (Exception e) {}
+            gameSounds.menuMusic();
+            gameSounds.startEndlessMusic();
+
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -76,4 +85,7 @@ public class DisplaySwitcher {
 
     public static Scene getScene(){return scene;}
 
+    public static GameSounds getGameSounds() {
+        return gameSounds;
+    }
 }

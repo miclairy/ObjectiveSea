@@ -2,6 +2,7 @@ Hitting a mark:
 "You can't sail over that!" - over_that
 "You can't sail over that, matey!" - over_that_matey
 "Holly heck, you've hit a mark!" - holly_heck
+"Ahar me mateies, you've hit a mark! - maties
 
 Hitting another boat:
 "Are you trying to get disqualified!?" - get_disqualified
@@ -39,5 +40,4 @@ Pre-Race Start:
 "Aaarrrrggggghhhhh!" - scream
 "Oh buoy! Oh buoy! Oh buoy!" - buoy
 "Get ready for a SAIL-ebratition!" - sail_ebration
-"Ahar me mateies, you've hit a mark! - maties
 "Water you doing!?" - water
