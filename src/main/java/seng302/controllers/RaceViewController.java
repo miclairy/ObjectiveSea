@@ -8,7 +8,9 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
@@ -29,14 +31,12 @@ import javafx.util.Duration;
 import seng302.data.BoatStatus;
 import seng302.data.RaceVisionXMLParser;
 import seng302.data.StartTimingStatus;
-import seng302.utilities.AnimationUtils;
-import seng302.utilities.DisplayUtils;
-import seng302.utilities.PolarReader;
-import seng302.utilities.TimeUtils;
+import seng302.utilities.*;
 import seng302.models.*;
 import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
+import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Math.abs;
@@ -134,6 +134,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         if(!race.isTerminated() && !isTutorial){
             controller.updateRaceClock();
+        }else{
+            controller.blurScreen(true);
+            this.stop();
+            controller.showServerDisconnectError();
         }
         if(controller.hasRaceStatusChanged()){
             if(!isTutorial){
@@ -157,7 +161,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         selectionController.zoomTracking();
 
         for (BoatDisplay displayBoat: displayBoats) {
-           moveBoatDisplay(displayBoat);
+            moveBoatDisplay(displayBoat);
         }
         if(!isTutorial){
             redrawRaceLines();
@@ -170,7 +174,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         updateWindArrow();
         flickercounter++;
         orderDisplayObjects();
-
     }
 
 
@@ -209,6 +212,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
         } else {
             boatDisplay.getLaylines().removeDrawnLines(root);
+        }
+        if(boatDisplay.getBoat().getStatus() == BoatStatus.DNF){
+            boatDisplay.unFocus();
         }
     }
 
@@ -477,7 +483,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * handles the drawing of the map image and makes it fullscreen
      */
     void drawMap(){
-        String mapURL = DisplayUtils.getLocalMapURL();
+        String mapURL = DisplayUtils.getLocalMapURL(race);
         Image image = new Image(mapURL);
         controller.mapImageView.setImage(image);
         controller.mapImageView.toBack();
@@ -1123,7 +1129,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             distanceLine.setMark(nextMark);
         }
     }
-
 
     public BoatDisplay getCurrentUserBoatDisplay() {
         return currentUserBoatDisplay;

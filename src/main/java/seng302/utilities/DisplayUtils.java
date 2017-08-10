@@ -5,16 +5,14 @@ import javafx.util.Duration;
 import seng302.controllers.Controller;
 import seng302.data.RaceVisionXMLParser;
 import seng302.data.XMLTags;
-import seng302.models.Boat;
-import seng302.models.CanvasCoordinate;
-import seng302.models.Coordinate;
-import seng302.models.Course;
+import seng302.models.*;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Objects;
 
 import static java.lang.Math.abs;
@@ -75,6 +73,12 @@ public class DisplayUtils {
         return point;
     }
 
+    public static void resetZoom(){
+        zoomLevel=1;
+        offsetY=0;
+        offsetX=0;
+    }
+
     /**
      * sets the zoom level for the canvas to redrawn at. moves offsets
      * to allow the zoom to occur in the center of screen.
@@ -82,13 +86,14 @@ public class DisplayUtils {
      */
     public static void setZoomLevel(double zoomLevel) {
 
+        if(zoomLevel < 1) zoomLevel = 1;
+        if(zoomLevel > 10) zoomLevel = 10;
+
         double deltaZoom = DisplayUtils.zoomLevel - zoomLevel;
         double canvasHeight = Controller.getAnchorHeight()/2;
         double canvasWidth = Controller.getAnchorWidth()/2;
 
-
         moveOffset((canvasWidth*deltaZoom), (canvasHeight*deltaZoom));
-
 
         DisplayUtils.zoomLevel = zoomLevel;
 
@@ -144,10 +149,6 @@ public class DisplayUtils {
     private static void moveOffset(double amountX, double amountY){
         offsetX += amountX;
         offsetY += amountY;
-
-        double canvasHeight = Controller.getAnchorHeight();
-        double canvasWidth = Controller.getAnchorWidth();
-
     }
 
     /**
@@ -155,15 +156,21 @@ public class DisplayUtils {
      * the same as the map images (i.e. AC35-course.xml has AC35-map.png as it's map image name)
      * @return a string that relates to a picture
      */
-    public static String getLocalMapURL(){
-        try {
-            String courseName = RaceVisionXMLParser.COURSE_FILE.replace("-course.xml", "-map.png");
-            String mapImagePath = "/graphics/mapImages/" + courseName;
-            return DisplayUtils.class.getResource(mapImagePath).toExternalForm();
-        } catch (NullPointerException e){
-            String courseName = "default-map.png";
-            String mapImagePath = "/graphics/mapImages/" + courseName;
-            return DisplayUtils.class.getResource(mapImagePath).toExternalForm();
+    public static String getLocalMapURL(Race race){
+        String id = race.getId();
+        switch(id) {
+            case "212121":
+                return DisplayUtils.class.getResource("/graphics/mapImages/AC33-map.png").toExternalForm();
+            case "232323":
+                return DisplayUtils.class.getResource("/graphics/mapImages/Athens-map.png").toExternalForm();
+            case "242424":
+                return DisplayUtils.class.getResource("/graphics/mapImages/Gothenburg-map.png").toExternalForm();
+            case "252525":
+                return DisplayUtils.class.getResource("/graphics/mapImages/LakeTaupo-map.png").toExternalForm();
+            case "262626":
+                return DisplayUtils.class.getResource("/graphics/mapImages/LakeTekapo-map.png").toExternalForm();
+            default:
+                return DisplayUtils.class.getResource("/graphics/mapImages/AC35-map.png").toExternalForm();
         }
     }
 

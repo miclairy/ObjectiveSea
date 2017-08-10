@@ -2,6 +2,7 @@ package seng302.controllers;
 
 import javafx.scene.input.KeyCode;
 import seng302.data.BoatAction;
+import seng302.data.BoatStatus;
 import seng302.data.ClientPacketBuilder;
 import seng302.data.ClientSender;
 import seng302.data.DataStreamReader;
@@ -9,6 +10,7 @@ import seng302.models.Boat;
 import seng302.models.Race;
 import seng302.utilities.NoConnectionToServerException;
 
+import java.io.IOException;
 import java.util.*;
 
 import java.util.Observable;
@@ -170,5 +172,10 @@ public class Client implements Runnable, Observer {
 
     public int getClientID() {
         return clientID;
+    }
+
+    public void initiateClientDisconnect() throws IOException {
+        dataStreamReader.disconnectClient();
+        race.getBoatById(clientID).setStatus(BoatStatus.DNF);
     }
 }
