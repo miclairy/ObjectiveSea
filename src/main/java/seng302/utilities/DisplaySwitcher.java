@@ -46,7 +46,7 @@ public class DisplaySwitcher {
     public void loadRaceView(boolean isHost) {
         try {
             Controller race = (Controller) replaceSceneContent("race_view.fxml");
-            race.setApp(isHost, this);
+            race.setApp(isHost, this, scene);
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }

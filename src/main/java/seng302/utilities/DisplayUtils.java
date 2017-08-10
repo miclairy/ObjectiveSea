@@ -86,13 +86,14 @@ public class DisplayUtils {
      */
     public static void setZoomLevel(double zoomLevel) {
 
+        if(zoomLevel < 1) zoomLevel = 1;
+        if(zoomLevel > 10) zoomLevel = 10;
+
         double deltaZoom = DisplayUtils.zoomLevel - zoomLevel;
         double canvasHeight = Controller.getAnchorHeight()/2;
         double canvasWidth = Controller.getAnchorWidth()/2;
 
-
         moveOffset((canvasWidth*deltaZoom), (canvasHeight*deltaZoom));
-
 
         DisplayUtils.zoomLevel = zoomLevel;
 

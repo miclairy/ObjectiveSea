@@ -123,11 +123,13 @@ public class SelectionController extends Observable {
     void deselectBoat() {
         for(BoatDisplay boat : displayBoats){
             boat.focus();
-            scoreBoardController.btnTrack.setVisible(false);
             boat.getLaylines().removeDrawnLines(root);
             selectedBoats.remove(boat);
             boat.getSeries().getNode().setOpacity(1);
             trackingBoat = clientBoat;
+            if(trackingBoat == null){
+                scoreBoardController.btnTrack.setVisible(false);
+            }
             selectedMark = null;
             isTrackingPoint = false;
             rotationOffset = 0;
