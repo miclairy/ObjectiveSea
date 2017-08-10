@@ -309,6 +309,7 @@ public class SelectionController extends Observable {
         });
     }
 
+    public void setTrackingBoat(BoatDisplay boat){this.trackingBoat = boat;}
 
     public Set<BoatDisplay> getSelectedBoats() {
         return Collections.unmodifiableSet(selectedBoats);

@@ -4,8 +4,10 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.CheckBox;
@@ -20,6 +22,8 @@ import javafx.util.Callback;
 import javafx.util.StringConverter;
 import seng302.models.Boat;
 import seng302.utilities.AnimationUtils;
+import seng302.utilities.DisplaySwitcher;
+import seng302.utilities.DisplayUtils;
 import seng302.views.BoatDisplay;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
@@ -64,16 +68,19 @@ public class ScoreBoardController {
     @FXML private TableColumn<Boat, String> columnSpeed;
     @FXML private TableColumn<Boat, String> columnStatus;
 
+
     private final Color UNSELECTED_BOAT_COLOR = Color.WHITE;
     private final Color SELECTED_BOAT_COLOR = Color.rgb(77, 197, 138);
+    private Scene scene;
 
 
 
-    public void setControllers(Controller parent, RaceViewController raceViewController, Race race, SelectionController selectionController){
+    public void setControllers(Controller parent, RaceViewController raceViewController, Race race, SelectionController selectionController, Scene scene){
         this.parent = parent;
         this.raceViewController = raceViewController;
         this.selectionController = selectionController;
         this.race = race;
+        this.scene = scene;
     }
 
     public class ColoredTextListCell extends ListCell<String> {
@@ -132,7 +139,7 @@ public class ScoreBoardController {
     private void setUpTable(){
         columnName.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
         columnPosition.setCellValueFactory(cellData -> cellData.getValue().getCurrPlacingProperty().asObject());
-        columnSpeed.setCellValueFactory(cellData -> Bindings.format("%.2f", cellData.getValue().getSpeedProperty().asObject()));
+        columnSpeed.setCellValueFactory(cellData -> Bindings.format("%.2f kn", cellData.getValue().getSpeedProperty().asObject()));
         columnStatus.setCellValueFactory(cellData -> cellData.getValue().getStatusProperty());
 
         SortedList<Boat> sortedCompetitors = new SortedList<>(race.getObservableCompetitors());
@@ -143,7 +150,16 @@ public class ScoreBoardController {
         columnName.setStyle( "-fx-alignment: CENTER;");
         columnSpeed.setStyle( "-fx-alignment: CENTER;");
         columnStatus.setStyle( "-fx-alignment: CENTER;");
-        //tblPlacings.setColumnResizePolicy((param) -> true );
+        addTableListeners();
+    }
+
+    private void addTableListeners(){
+        tblPlacings.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                raceViewController.boatSelectedInTable(newSelection);
+                btnTrack.setVisible(true);
+            }
+        });
     }
 
     @FXML

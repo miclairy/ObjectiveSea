@@ -1107,6 +1107,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
+    public void boatSelectedInTable(Boat boat){
+        for(BoatDisplay boatDisplay : displayBoats){
+            if(boatDisplay.getBoat().equals(boat)){
+                selectionController.setTrackingBoat(boatDisplay);
+            }
+        }
+    }
+
 
     public BoatDisplay getCurrentUserBoatDisplay() {
         return currentUserBoatDisplay;
