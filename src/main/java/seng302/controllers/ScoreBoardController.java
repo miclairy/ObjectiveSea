@@ -249,4 +249,11 @@ public class ScoreBoardController {
             chtSparkLine.getData().add(boatSeries);
         }
     }
+
+    public void highlightUserBoat(){
+        BoatDisplay userBoat = raceViewController.getCurrentUserBoatDisplay();
+        if(userBoat != null){
+            tblPlacings.getSelectionModel().select(userBoat.getBoat());
+        }
+    }
 }

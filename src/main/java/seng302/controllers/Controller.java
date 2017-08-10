@@ -18,6 +18,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -64,7 +65,7 @@ public class Controller implements Initializable, Observer {
     @FXML private Button btnHide;
     @FXML private ImageView imvSpeedScale;
 
-    @FXML public SplitPane splitPane;
+    @FXML public StackPane stackPane;
 
 
     //FPS Counter
@@ -614,9 +615,9 @@ public class Controller implements Initializable, Observer {
     }
 
     public void blurScreen(boolean blur) {
-        blurNode(splitPane, blur);
-        splitPane.setScaleX(1.08);
-        splitPane.setScaleY(1.08);
+        blurNode(stackPane, blur);
+        stackPane.setScaleX(1.08);
+        stackPane.setScaleY(1.08);
     }
 
     private void blurNode(Node node, boolean blur) {

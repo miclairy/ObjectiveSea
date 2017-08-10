@@ -261,6 +261,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         for(BoatDisplay boatDisplay : displayBoats ){
             if(boatDisplay.getBoat().getId() == Main.getClient().getClientID()){
                 currentUserBoatDisplay = boatDisplay;
+                scoreBoardController.highlightUserBoat();
             }
         }
     }
