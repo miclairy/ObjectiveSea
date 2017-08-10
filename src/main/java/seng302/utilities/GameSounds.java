@@ -9,16 +9,16 @@ import javax.sound.sampled.*;
 
 public class GameSounds {
 
-
-    String chris_boat_time = "/musicFiles/ChrisVoiceOvers/boat_time.wav";
-    String chris_collided = "/musicFiles/ChrisVoiceOvers/collided.wav";
-    String chris_holly_heck = "/musicFiles/ChrisVoiceOvers/holly_heck.wav";
-    String chris_list_this_race = "/musicFiles/ChrisVoiceOvers/lost_this_race.wav";
-    String chris_mateies = "/musicFiles/ChrisVoiceOvers/maties.wav";
-    String chris_ready_race = "/musicFiles/ChrisVoiceOvers/ready_race.wav";
-    String chris_rubber_dingy = "/musicFiles/ChrisVoiceOvers/rubber_dingy.wav";
-    String chris_sail_ebration = "/musicFiles/ChrisVoiceOvers/sail_ebration.wav";
-    String chris_scream = "/musicFiles/ChrisVoiceOvers/scream.wav";
+    String chrisVoiceOver = "/musicFiles/ChrisVoiceOvers/";
+    String chris_boat_time = chrisVoiceOver + "boat_time.wav";
+    String chris_collided = chrisVoiceOver + "collided.wav";
+    String chris_holly_heck = chrisVoiceOver + "holly_heck.wav";
+    String chris_list_this_race = chrisVoiceOver + "lost_this_race.wav";
+    String chris_mateies = chrisVoiceOver + "maties.wav";
+    String chris_ready_race = chrisVoiceOver + "ready_race.wav";
+    String chris_rubber_dingy = chrisVoiceOver + "rubber_dingy.wav";
+    String chris_sail_ebration = chrisVoiceOver + "sail_ebration.wav";
+    String chris_scream = chrisVoiceOver + "scream.wav";
 
 
 
@@ -29,7 +29,7 @@ public class GameSounds {
 
     public void startMenuMusic() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         clip = AudioSystem.getClip();
-        inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream("/musicFiles/gameSounds/MainMenuMusic.wav"));
+        inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream("/musicFiles/gameMusic/MainMenuMusic.wav"));
         clip.open(inputStream);
         clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
@@ -52,6 +52,42 @@ public class GameSounds {
         clip = AudioSystem.getClip();
         inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream("/musicFiles/gameSounds/FlockOfSeagulls.wav"));
         clip.open(inputStream);
+    }
+
+    public void hitMark() {
+
+    }
+
+    public void hitBoat() {
+
+    }
+
+    public void hitBoundary() {
+
+    }
+
+    public void firstPlace() {
+
+    }
+
+    public void everyoneButFirstPlace() {
+
+    }
+
+    public void everyone() {
+
+    }
+
+    public void lastPlace() {
+
+    }
+
+    public void boatDamage() {
+
+    }
+
+    public void preRace() {
+
     }
 
 

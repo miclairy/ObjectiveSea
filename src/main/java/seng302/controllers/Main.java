@@ -66,6 +66,7 @@ public class Main extends Application {
         //Starts Lobby Music...
         try {
             gameSounds.startMenuMusic();
+            gameSounds.startMusic();
         } catch (Throwable throwable) {
             throwable.printStackTrace();
         }
