@@ -119,9 +119,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if(!race.isTerminated()){
             controller.updateRaceClock();
         }else{
-            controller.blurScreen(true);
+            if(race.getAbruptEnd()){
+                controller.blurScreen(true);
+                controller.showServerDisconnectError();
+            } else{
+                controller.showStarterOverlay();
+            }
             this.stop();
-            controller.showServerDisconnectError();
         }
         if(controller.hasRaceStatusChanged()){
             controller.updatePreRaceScreen();

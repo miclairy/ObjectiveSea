@@ -210,7 +210,10 @@ public class DataStreamReader extends Receiver implements Runnable{
                 }
 
             } catch (IOException e) {
-                race.terminateRace();
+                if(!race.isTerminated()){
+                    race.terminateRace();
+                    race.setAbruptEnd(true);
+                }
                 serverRunning = false;
                 System.out.println("Client: disconnected from Server");
             }
