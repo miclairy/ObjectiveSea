@@ -1,12 +1,16 @@
 package seng302.controllers;
 
+import com.sun.deploy.association.RegisterFailedException;
 import seng302.data.ClientPacketBuilder;
 import seng302.data.ClientSender;
 import seng302.data.DataStreamReader;
-import seng302.data.RegistrationType;
+import seng302.data.registration.RegistrationResponse;
+import seng302.data.registration.RegistrationType;
+import seng302.data.registration.ServerFullException;
 import seng302.models.Boat;
 import seng302.models.Race;
 import seng302.utilities.NoConnectionToServerException;
+import seng302.utilities.TimeUtils;
 
 import java.util.*;
 
@@ -19,6 +23,11 @@ import java.util.Observer;
  */
 public class Client implements Runnable, Observer {
 
+
+    private int MAX_CONNECTION_ATTEMPTS = 200;
+    private double CONNECTION_TIMEOUT = TimeUtils.secondsToMilliseconds(10.0);
+    private int WAIT_MILLISECONDS = 10;
+
     private static Race race;
     private DataStreamReader dataStreamReader;
     private ClientPacketBuilder packetBuilder;
@@ -30,11 +39,9 @@ public class Client implements Runnable, Observer {
     private int sourcePort;
     private boolean isParticipant;
     Thread dataStreamReaderThread;
+    private RegistrationResponse serverRegistrationResponse;
 
-    private int connectionAttempts = 0;
-    private int MAX_CONNECTION_ATTEMPTS = 200;
-
-    public Client(String ip, int port, boolean isParticipant) throws NoConnectionToServerException {
+    public Client(String ip, int port, boolean isParticipant) throws ServerFullException, NoConnectionToServerException {
         this.sourcePort = port;
         this.sourceAddress = ip;
         this.packetBuilder = new ClientPacketBuilder();
@@ -42,25 +49,58 @@ public class Client implements Runnable, Observer {
         setUpDataStreamReader();
         System.out.println("Client: Waiting for connection to Server");
         manageWaitingConnection();
+        RegistrationType regoType = isParticipant ? RegistrationType.PLAYER : RegistrationType.SPECTATOR;
         System.out.println("Client: Connected to Server");
         this.sender = new ClientSender(dataStreamReader.getClientSocket());
+        sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
+        System.out.println("Client: Sent Registration Request");
+        manageServerResponse();
     }
 
     private void manageWaitingConnection() throws NoConnectionToServerException {
+        int connectionAttempts = 0;
         while(dataStreamReader.getClientSocket() == null) {
             if(connectionAttempts < MAX_CONNECTION_ATTEMPTS){
                 try {
-                    Thread.sleep(10);
+                    Thread.sleep(WAIT_MILLISECONDS);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 connectionAttempts++;
-            }else{
+            } else {
                 stopDataStreamReader();
                 throw new NoConnectionToServerException("Maximum connection attempts exceeded while trying to connect to server. Port or IP may not be valid.");
             }
         }
     }
+
+    private void manageServerResponse() throws ServerFullException, NoConnectionToServerException {
+        double waitTime = 0;
+        while (serverRegistrationResponse == null) {
+            try {
+                Thread.sleep(WAIT_MILLISECONDS);
+                waitTime += WAIT_MILLISECONDS;
+                if (waitTime > CONNECTION_TIMEOUT) {
+                    throw new NoConnectionToServerException("Connection to server timed out while waiting for registration response.");
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        switch(serverRegistrationResponse.getStatus()) {
+            case PLAYER_SUCCESS:
+            case SPECTATOR_SUCCESS:
+                this.clientID = serverRegistrationResponse.getSourceId();
+                break;
+            case OUT_OF_SLOTS:
+                throw new ServerFullException();
+            case GENERAL_FAILURE:
+            case GHOST_SUCCESS:
+            case TUTORIAL_SUCCESS:
+                System.out.println("Client: Server response not understood.");
+        }
+    }
+
 
     private void setUpDataStreamReader(){
         this.dataStreamReader = new DataStreamReader(sourceAddress, sourcePort);
@@ -80,9 +120,7 @@ public class Client implements Runnable, Observer {
 
     @Override
     public void run() {
-        RegistrationType regoType = isParticipant ? RegistrationType.PLAYER : RegistrationType.SPECTATOR;
-        sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
-        System.out.println("Client: Sent Registration Request");
+        System.out.println("Client: Successfully Joined Game");
         waitForRace();
     }
 
@@ -121,8 +159,8 @@ public class Client implements Runnable, Observer {
                         oldRace.addCompetitor(potentialCompetitors.get(newId));
                     }
                 }
-            } else if (arg instanceof Integer){
-                this.clientID = (Integer) arg;
+            } else if (arg instanceof RegistrationResponse) {
+                serverRegistrationResponse = (RegistrationResponse) arg;
             }
         } else if (o == userInputController){
             byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);

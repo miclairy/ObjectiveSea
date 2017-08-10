@@ -1,5 +1,6 @@
 package seng302.data;
 
+import seng302.data.registration.RegistrationResponseStatus;
 import seng302.models.*;
 import seng302.utilities.TimeUtils;
 

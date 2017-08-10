@@ -1,6 +1,8 @@
 package seng302.controllers;
 
 import seng302.data.*;
+import seng302.data.registration.RegistrationResponseStatus;
+import seng302.data.registration.RegistrationType;
 import seng302.models.Boat;
 import seng302.models.Collision;
 import seng302.models.Race;
@@ -249,11 +251,12 @@ public class Server implements Runnable, Observer {
                 addClientToRace(serverListener);
                 break;
             case SPECTATOR:
-                connectionManager.addConnection(nextViewerID, serverListener.getSocket());
-                nextViewerID++;
                 //we may want to put a limit on number of connections to preserve server responsiveness at some point
                 //but for now just always accept new spectators
-                packetBuilder.createRegistrationResponsePacket(0, RegistrationResponseStatus.SPECTATOR_SUCCESS);
+                byte[] packet = packetBuilder.createRegistrationResponsePacket(0, RegistrationResponseStatus.SPECTATOR_SUCCESS);
+                connectionManager.addConnection(nextViewerID, serverListener.getSocket());
+                connectionManager.sendToClient(nextViewerID, packet);
+                nextViewerID++;
                 break;
             case GHOST:
                 System.out.println("Server: Client attempted to connect as ghost, ignoring.");

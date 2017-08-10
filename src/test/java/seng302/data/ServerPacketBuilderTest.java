@@ -1,6 +1,7 @@
 package seng302.data;
 
 import org.junit.Test;
+import seng302.data.registration.RegistrationResponseStatus;
 import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.Race;

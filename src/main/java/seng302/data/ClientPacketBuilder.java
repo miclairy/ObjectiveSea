@@ -1,5 +1,7 @@
 package seng302.data;
 
+import seng302.data.registration.RegistrationType;
+
 import static seng302.data.AC35StreamField.*;
 import static seng302.data.AC35StreamMessage.BOAT_ACTION_MESSAGE;
 import static seng302.data.AC35StreamMessage.REGISTRATION_REQUEST;

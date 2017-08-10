@@ -101,7 +101,7 @@ public class MainMenuController implements Initializable{
         btnSinglePlay.setDisable(true);
         main.startHostedRace(DEFAULT_PORT);
         Thread.sleep(200);
-        main.loadRaceView(true);
+        main.loadRaceView(true, true);
     }
 
     /**
@@ -112,7 +112,7 @@ public class MainMenuController implements Initializable{
         if(validatePort()){
             main.startHostedRace(Integer.parseInt(txtPortNumber.getText()));
             Thread.sleep(200);
-            main.loadRaceView(true);
+            main.loadRaceView(true, true);
             txtPortNumber.setStyle("-fx-text-inner-color: #2a2a2a;");
         }else{
             if(!txtPortNumber.getText().isEmpty()){
@@ -138,7 +138,7 @@ public class MainMenuController implements Initializable{
             boolean clientStarted = main.startClient(ipAddress, portNumber, isParticipant);
             if(clientStarted){
                 Thread.sleep(200);
-                main.loadRaceView(false);
+                main.loadRaceView(false, isParticipant);
             }
         }else{
             if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && !txtIPAddress.getText().isEmpty()){

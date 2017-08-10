@@ -1,4 +1,4 @@
-package seng302.data;
+package seng302.data.registration;
 
 /**
  * Created by mjt169 on 9/08/17.

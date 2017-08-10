@@ -3,7 +3,7 @@ package seng302.controllers;
 import seng302.data.AC35StreamMessage;
 import seng302.data.BoatAction;
 import seng302.data.Receiver;
-import seng302.data.RegistrationType;
+import seng302.data.registration.RegistrationType;
 import seng302.models.Boat;
 import seng302.models.PolarTable;
 import seng302.models.Race;

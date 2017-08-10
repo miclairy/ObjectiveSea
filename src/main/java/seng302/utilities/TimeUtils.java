@@ -12,6 +12,7 @@ import java.util.TimeZone;
 public class TimeUtils {
 
     private static final double NANOSECONDS_IN_SECOND = 1e9f;
+    private static final double MILLISECONDS_IN_SECOND = 1e3f;
     private static final double SECONDS_IN_MINUTE = 60;
     private static final double MINUTES_IN_HOUR = 60;
     private static final int CONVERSION_RATE_NAUTICALM_TO_METRES = 1852;
@@ -159,5 +160,9 @@ public class TimeUtils {
 
     public static double convertNauticalMilesToMetres(double nautMiles){
         return nautMiles * CONVERSION_RATE_NAUTICALM_TO_METRES;
+    }
+
+    public static double secondsToMilliseconds(double seconds) {
+        return seconds * MILLISECONDS_IN_SECOND;
     }
 }

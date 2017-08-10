@@ -1,6 +1,7 @@
 package seng302.data;
 
 import org.junit.Test;
+import seng302.data.registration.RegistrationType;
 
 import static org.junit.Assert.*;
 

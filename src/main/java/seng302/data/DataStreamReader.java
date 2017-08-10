@@ -1,5 +1,7 @@
 package seng302.data;
 
+import seng302.data.registration.RegistrationResponse;
+import seng302.data.registration.RegistrationResponseStatus;
 import seng302.models.Boat;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
@@ -216,12 +218,10 @@ public class DataStreamReader extends Receiver implements Runnable{
     private void parseRegistrationAcceptMessage(byte[] body) {
         byte statusByte = body[REGISTRATION_RESPONSE_STATUS.getStartIndex()];
         RegistrationResponseStatus status = RegistrationResponseStatus.getStatusFromByte(statusByte);
-        if (RegistrationResponseStatus.PLAYER_SUCCESS.equals(status)) {
-            Integer id = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());
-            System.out.println("Client: Received ID of " + id);
-            setChanged();
-            notifyObservers(id);
-        }
+        Integer id = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());
+        RegistrationResponse response = new RegistrationResponse(id, status);
+        setChanged();
+        notifyObservers(response);
     }
 
 
