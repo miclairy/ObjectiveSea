@@ -90,9 +90,14 @@ public class RaceUpdater implements Runnable {
 
     @Override
     public void run() {
+        boolean isPractice = race.getId().equals("77228423");  // 77228423 spells practice in text
         while (!race.getRaceStatus().isRaceEndedStatus() && serverRunning) {
             boolean atLeastOneBoatNotFinished = false;
             double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
+            long secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000;
+            if(isPractice && secondsElapsed > 15){
+                race.updateRaceStatus(TERMINATED);
+            }
             race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs() + (long)(raceSecondsPassed * 1000));
             generateWind();
             if (race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)) {
