@@ -188,6 +188,7 @@ public class AnimationUtils {
 
     public static void toggleHiddenBoardNodes(Node node, boolean visible){
         FadeTransition fadeTransition = new FadeTransition(new Duration(200), node);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
 
         TranslateTransition translateTransition = new TranslateTransition(new Duration(200), node);
         translateTransition.setInterpolator(Interpolator.EASE_IN);
@@ -208,7 +209,6 @@ public class AnimationUtils {
             translateTransition.setFromY(node.getLayoutY() - 10);
             translateTransition.setToY(node.getLayoutY());
         }
-        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
         ParallelTransition pt = new ParallelTransition(translateTransition, fadeTransition);
         pt.play();
     }

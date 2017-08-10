@@ -23,8 +23,6 @@
 }
 
 #btnTrack{
-    //-fx-graphic:url('/graphics/buttonImages/track-boat.png');
-    //-fx-content-display: left;
     -fx-background-image: url('/graphics/buttonImages/track-boat.png');
     -fx-background-size: 22px 22px;
     -fx-background-repeat: no-repeat;

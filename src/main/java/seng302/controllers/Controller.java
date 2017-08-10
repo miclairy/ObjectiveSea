@@ -1,11 +1,13 @@
 package seng302.controllers;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableNumberValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -51,8 +53,6 @@ public class Controller implements Initializable, Observer {
      *
      */
     @FXML private ListView<String> startersList;
-    @FXML private ListView<String> noBoardPlacings;
-    @FXML private Button btnHiddenBoardTrack;
     @FXML private Label clockLabel;
     @FXML private Label lblNoBoardClock;
     @FXML public VBox startersOverlay;
@@ -64,6 +64,11 @@ public class Controller implements Initializable, Observer {
     @FXML public Circle windCircle;
     @FXML private Button btnHide;
     @FXML private ImageView imvSpeedScale;
+    @FXML private TableView<Boat> tblPlacingsRV;
+    @FXML private TableColumn<Boat, Integer> columnPosition;
+    @FXML private TableColumn<Boat, String> columnName;
+    @FXML private TableColumn<Boat, String> columnSpeed;
+    @FXML private TableColumn<Boat, String> columnStatus;
 
     @FXML public StackPane stackPane;
 
@@ -143,8 +148,7 @@ public class Controller implements Initializable, Observer {
         raceViewController.updateWindArrow();
         rightHandSide.setOpacity(0.7);
         lblNoBoardClock.setVisible(false);
-        noBoardPlacings.setVisible(false);
-        btnHiddenBoardTrack.setVisible(false);
+        tblPlacingsRV.setVisible(false);
 
 
         displayStarters();
@@ -154,6 +158,9 @@ public class Controller implements Initializable, Observer {
         initZoom();
     }
 
+    /**
+     * adds listeners to content on the scorePanel
+     */
     private void addRightHandSideListener(){
         rightHandSide.addEventHandler(MouseEvent.MOUSE_ENTERED,
                 e -> AnimationUtils.focusNode(rightHandSide));
@@ -164,9 +171,9 @@ public class Controller implements Initializable, Observer {
         btnHide.addEventHandler(MouseEvent.MOUSE_EXITED,
                 e ->  AnimationUtils.dullNode(btnHide));
         lblNoBoardClock.addEventHandler(MouseEvent.MOUSE_ENTERED,
-                e -> AnimationUtils.toggleHiddenBoardNodes(noBoardPlacings, false));
+                e -> AnimationUtils.toggleHiddenBoardNodes(tblPlacingsRV, false));
         lblNoBoardClock.addEventHandler(MouseEvent.MOUSE_EXITED,
-                e -> AnimationUtils.toggleHiddenBoardNodes(noBoardPlacings, true));
+                e -> AnimationUtils.toggleHiddenBoardNodes(tblPlacingsRV, true));
     }
 
     /**
@@ -520,6 +527,9 @@ public class Controller implements Initializable, Observer {
         DisplayUtils.fadeInFadeOutNodeTransition(lblUserHelp, 1);
     }
 
+    /**
+     * handles the toggling of screen elemnts when the side panel is toggled on and off
+     */
     @FXML private void hideScoreboard(){
         if(scoreboardVisible){
             AnimationUtils.shiftPaneNodes(rightHandSide, 440, false);
@@ -527,30 +537,18 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
             AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
-            AnimationUtils.toggleHiddenBoardNodes(btnHiddenBoardTrack, false);
             scoreboardVisible = false;
             raceViewController.shiftArrow(false);
-            setUpPlacingsBoard();
+            setUpTable();
         }else{
             AnimationUtils.shiftPaneNodes(rightHandSide, -440, true);
             AnimationUtils.shiftPaneArrow(btnHide, -430, -1);
             AnimationUtils.shiftPaneNodes(imvSpeedScale, -430, true);
             AnimationUtils.shiftPaneNodes(lblWindSpeed, -430, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true);
-            AnimationUtils.toggleHiddenBoardNodes(btnHiddenBoardTrack, true);
             scoreboardVisible = true;
             raceViewController.shiftArrow(true);
         }
-    }
-
-    private void setUpPlacingsBoard(){
-        noBoardPlacings.setItems(formattedDisplayOrder);
-        noBoardPlacings.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
-            @Override
-            public ListCell<String> call(ListView<String> list) {
-                return new ColoredTextListCell();
-            }
-        });
     }
 
     public class ColoredTextListCell extends ListCell<String> {
@@ -618,6 +616,27 @@ public class Controller implements Initializable, Observer {
         blurNode(stackPane, blur);
         stackPane.setScaleX(1.08);
         stackPane.setScaleY(1.08);
+    }
+
+    private void setUpTable(){
+        columnName.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
+        columnPosition.setCellValueFactory(cellData -> cellData.getValue().getCurrPlacingProperty().asObject());
+        columnSpeed.setCellValueFactory(cellData -> Bindings.format("%.2f kn", cellData.getValue().getSpeedProperty().asObject()));
+        columnStatus.setCellValueFactory(cellData -> cellData.getValue().getStatusProperty());
+
+        SortedList<Boat> sortedCompetitors = new SortedList<>(race.getObservableCompetitors());
+        sortedCompetitors.comparatorProperty().bind(tblPlacingsRV.comparatorProperty());
+
+        tblPlacingsRV.setItems(sortedCompetitors);
+        columnPosition.setStyle( "-fx-alignment: CENTER;");
+        columnName.setStyle( "-fx-alignment: CENTER;");
+        columnSpeed.setStyle( "-fx-alignment: CENTER;");
+        columnStatus.setStyle( "-fx-alignment: CENTER;");
+
+        BoatDisplay userBoat = raceViewController.getCurrentUserBoatDisplay();
+        if(userBoat != null){
+            tblPlacingsRV.getSelectionModel().select(userBoat.getBoat());
+        }
     }
 
     private void blurNode(Node node, boolean blur) {
