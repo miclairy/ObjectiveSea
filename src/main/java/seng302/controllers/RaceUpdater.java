@@ -42,14 +42,16 @@ public class RaceUpdater implements Runnable {
         collisionManager = new CollisionManager();
         //set race up with default files
         intialWindSpeedGenerator();
-        List<Boat> boatsInRace = new ArrayList<>();
         RaceVisionXMLParser raceVisionXMLParser = new RaceVisionXMLParser();
         raceVisionXMLParser.setCourseFile(selectedCourse);
         potentialCompetitors = raceVisionXMLParser.importDefaultStarters();
-        Course course = raceVisionXMLParser.importCourse();
+
+        race = raceVisionXMLParser.importRace();
+
+        Course course = race.getCourse();
         course.setTrueWindSpeed(initialWindSpeed);
         course.setWindDirection(course.getWindDirectionBasedOnGates());
-        race = new Race("Mock Runner Race", course, boatsInRace);
+        //race = new Race("Mock Runner Race", course, boatsInRace);
         this.serverRunning = true;
         initialize();
     }
@@ -60,8 +62,6 @@ public class RaceUpdater implements Runnable {
     }
 
     public void initialize(){
-        race.setId(generateRaceId());
-        System.out.println(race.getId());
         //for now we assume all boats racing are AC35 class yachts such that we can use the polars we have for them
         this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
         race.updateRaceStatus(RaceStatus.PRESTART);
@@ -354,11 +354,22 @@ public class RaceUpdater implements Runnable {
         RaceLine startingLine = race.getCourse().getStartLine();
         CompoundMark startingEnd2 = new CompoundMark(-2, "", new Mark(-2, "", startingLine.getMark1().getPosition()));
         CompoundMark startingEnd1 = new CompoundMark(-1, "", new Mark(-1, "", startingLine.getMark2().getPosition()));
-        double heading1 = MathUtils.calculateBearingBetweenTwoPoints(startingEnd1, race.getCourse().getCourseOrder().get(1)) + 180;
-        double heading2 = MathUtils.calculateBearingBetweenTwoPoints(startingEnd2, race.getCourse().getCourseOrder().get(1)) + 180;
+        double heading1 = (MathUtils.calculateBearingBetweenTwoPoints(startingEnd1,startingEnd2));
+        double heading2 = (MathUtils.calculateBearingBetweenTwoPoints(startingEnd2,startingEnd1));
+        double heading3;
+        if(heading1 < heading2) {
+            heading3 = heading1;
+        } else {
+            heading3 = heading2;
+        }
 
-        Coordinate startPosition1 = startingEnd1.getPosition().coordAt(0.2, heading1);
-        Coordinate startPosition2 = startingEnd2.getPosition().coordAt(0.2, heading2);
+        Coordinate startPosition1 = startingEnd1.getPosition().coordAt(0.2, heading3 + 90);
+        Coordinate startPosition2 = startingEnd2.getPosition().coordAt(0.2, heading3 + 90);
+
+        if(!MathUtils.boatBeforeStartline(startPosition1, startingLine, race.getCourse().getCourseOrder().get(1))){
+            startPosition1 = startingEnd1.getPosition().coordAt(0.2, heading3 + 270);
+            startPosition2 = startingEnd2.getPosition().coordAt(0.2, heading3 + 270);
+        }
 
         Double dLat = (startPosition2.getLat() - startPosition1.getLat()) / (MAX_BOATS_IN_RACE / 2);
         Double dLon = (startPosition2.getLon() - startPosition1.getLon()) / (MAX_BOATS_IN_RACE / 2);

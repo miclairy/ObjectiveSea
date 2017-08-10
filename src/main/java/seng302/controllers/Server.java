@@ -26,7 +26,8 @@ public class Server implements Runnable, Observer {
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumber = new HashMap<>();
     private Map<Boat, Integer> boatSequenceNumbers = new HashMap<>();
     private Map<Boat, Integer> lastMarkRoundingSent = new HashMap<>();
-    private String courseXML = "AC35-course.xml";
+    private String DEFAULT_COURSE = "AC35-course.xml";
+    private String courseXML = DEFAULT_COURSE;
 
     private RaceUpdater raceUpdater;
     private ConnectionManager connectionManager;

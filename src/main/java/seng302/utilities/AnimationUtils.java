@@ -212,4 +212,5 @@ public class AnimationUtils {
         ParallelTransition pt = new ParallelTransition(translateTransition, fadeTransition);
         pt.play();
     }
+
 }
