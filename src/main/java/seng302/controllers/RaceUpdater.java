@@ -43,13 +43,10 @@ public class RaceUpdater implements Runnable {
         RaceVisionXMLParser raceVisionXMLParser = new RaceVisionXMLParser();
         raceVisionXMLParser.setCourseFile(selectedCourse);
         potentialCompetitors = raceVisionXMLParser.importDefaultStarters();
-
         race = raceVisionXMLParser.importRace();
-
         Course course = race.getCourse();
         course.setTrueWindSpeed(initialWindSpeed);
         course.setWindDirection(course.getWindDirectionBasedOnGates());
-        race = new Race("Mock Runner Race", course, boatsInRace);
         this.serverRunning = true;
         initialize();
     }

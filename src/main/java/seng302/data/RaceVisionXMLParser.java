@@ -27,7 +27,7 @@ import java.util.*;
 
 public class RaceVisionXMLParser {
 
-    private static final String DEFAULT_COURSE_FILE = "AC35-course.xml";
+    private static final String DEFAULT_COURSE_FILE = "Gothenburg-course.xml";
     private static String courseFile = DEFAULT_COURSE_FILE;
     private static final String BOAT_FILE = "Boat.xml";
 
@@ -193,6 +193,7 @@ public class RaceVisionXMLParser {
         Element root = dom.getDocumentElement();
         NodeList raceIdList = root.getElementsByTagName(XMLTags.Race.RACE_ID);
         String raceId = raceIdList.item(0).getTextContent();
+        System.out.println(raceId);
         race.setId(raceId);
 
         NodeList startTimeList = root.getElementsByTagName(XMLTags.Race.START_TIME);
