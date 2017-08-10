@@ -26,6 +26,7 @@ import seng302.data.DataStreamReader;
 import seng302.utilities.Config;
 import seng302.models.Race;
 import seng302.utilities.ConnectionUtils;
+import seng302.utilities.DisplaySwitcher;
 import seng302.utilities.NoConnectionToServerException;
 import seng302.utilities.GameSounds;
 
@@ -37,12 +38,12 @@ import java.util.logging.Logger;
 
 
 public class Main extends Application {
-
-    private static Scene scene;
     private static Client client;
+    private static Server server;
     private static Stage primaryStage;
     private GameSounds gameSounds = new GameSounds();
 
+    private DisplaySwitcher displaySwitcher;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -52,6 +53,7 @@ public class Main extends Application {
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
         this.primaryStage.setHeight(primaryScreenBounds.getHeight());
         this.primaryStage.setWidth(primaryScreenBounds.getWidth());
+        displaySwitcher = new DisplaySwitcher(this, primaryStage);
         loadMainMenu();
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
         this.primaryStage.show();
@@ -80,6 +82,7 @@ public class Main extends Application {
     private static void setupClient(int port) {
         try {
             client = new Client("localhost", port, true);
+            ConnectionUtils.setClient(client);
             Thread clientThread = new Thread(client);
             clientThread.setName("Client");
             clientThread.start();
@@ -98,9 +101,9 @@ public class Main extends Application {
         Thread runnerThread = new Thread(runner);
         runnerThread.setName("Race Updater");
         runnerThread.start();
-        Server server;
         server = new Server(port, runner, course);
         server.setScaleFactor(Config.MOCK_SPEED_SCALE);
+        ConnectionUtils.setServer(server);
         Thread serverThread = new Thread(server);
         serverThread.setName("Server");
         serverThread.start();
@@ -110,43 +113,15 @@ public class Main extends Application {
         return client;
     }
 
-    private void loadMainMenu() {
-        try {
-            MainMenuController mainMenu = (MainMenuController) replaceSceneContent("main_menu.fxml");
-            mainMenu.setApp(this);
-        } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void loadMainMenu() {
+        displaySwitcher.loadMainMenu();
     }
 
     public void loadRaceView(boolean isHost) {
-        try {
-            Controller race = (Controller) replaceSceneContent("main_window.fxml");
-            race.setApp(isHost);
-            UserInputController userInputController = new UserInputController(scene, Client.getRace());
-            client.setUserInputController(userInputController);
-            userInputController.addObserver(client);
-        } catch (Exception ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    /**
-     * takes an fxml file and replaces the current screen with it
-     * @param fxml an FXML file
-     * @return a display
-     * @throws Exception if can't find FXML
-     */
-    public Initializable replaceSceneContent(String fxml) throws Exception {
-        FXMLLoader loader = new FXMLLoader();
-        URL fxmlLocation = getClass().getClassLoader().getResource(fxml);
-        loader.setLocation(fxmlLocation);
-        Parent root = loader.load();
-        scene = new Scene(root);
-        setScene(scene);
-        primaryStage.setScene(scene);
-
-        return (Initializable) loader.getController();
+        displaySwitcher.loadRaceView(isHost);
+        UserInputController userInputController = new UserInputController(DisplaySwitcher.getScene(), Client.getRace());
+        client.setUserInputController(userInputController);
+        userInputController.addObserver(client);
     }
 
     public void startHostedRace(String course, int port) throws Exception{
@@ -167,6 +142,7 @@ public class Main extends Application {
     public boolean startClient(String ip, int port, boolean isParticipant){
         try {
             client = new Client(ip, port, isParticipant);
+            ConnectionUtils.setClient(client);
             Thread clientThread = new Thread(client);
             clientThread.setName("Client");
             clientThread.start();
@@ -175,12 +151,6 @@ public class Main extends Application {
             return false;
         }
         return true;
-    }
-
-
-
-    private void setScene(Scene newScene){
-        scene = newScene;
     }
 }
 

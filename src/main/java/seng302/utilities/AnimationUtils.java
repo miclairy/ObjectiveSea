@@ -131,6 +131,14 @@ public class AnimationUtils {
 
         ParallelTransition pt = new ParallelTransition(translateTransition, scaleTransition);
         pt.play();
+
+    }
+
+    public static void transitionFXML(Node newScene){
+        FadeTransition ft2 = new FadeTransition(Duration.millis(1000), newScene);
+        ft2.setFromValue(0.0);
+        ft2.setToValue(1.0);
+        ft2.play();
     }
 
 }
