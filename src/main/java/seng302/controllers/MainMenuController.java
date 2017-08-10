@@ -179,10 +179,10 @@ public class MainMenuController implements Initializable{
                 main.loadRaceView(false);
             }
         }else{
-            if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && !txtIPAddress.getText().isEmpty()){
+            if(!ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && !txtIPAddress.getText().isEmpty()){
                 txtIPAddress.setStyle("-fx-text-inner-color: red;");
             }
-            if(validatePort() && !txtPortNumber.getText().isEmpty()){
+            if(!validatePort() && !txtPortNumber.getText().isEmpty()){
                 txtPortNumber.setStyle("-fx-text-inner-color: red;");
             }
             Alert alert = new Alert(Alert.AlertType.ERROR);

@@ -112,7 +112,7 @@ public class Race extends Observable{
     }
 
     /**
-     * Updates the race status and prints it if it is different than before (for debugging purposes)
+     * Updates the race status and notifies observers
      * @param newRaceStatus The new race status read in
      */
     public void updateRaceStatus(RaceStatus newRaceStatus) {
@@ -248,6 +248,10 @@ public class Race extends Observable{
         this.raceOrder.add(newCompetitor);
         setChanged();
         notifyObservers(UPDATED_COMPETITORS_SIGNAL);
+    }
+
+    public void terminateRace(){
+        raceStatus = RaceStatus.TERMINATED;
     }
 
     public Set<Integer> getCompetitorIds() {
