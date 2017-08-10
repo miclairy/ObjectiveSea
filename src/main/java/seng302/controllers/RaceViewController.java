@@ -460,7 +460,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * handles the drawing of the map image and makes it fullscreen
      */
     void drawMap(){
-        String mapURL = DisplayUtils.getLocalMapURL();
+        String mapURL = DisplayUtils.getLocalMapURL(race);
         Image image = new Image(mapURL);
         controller.mapImageView.setImage(image);
         controller.mapImageView.toBack();

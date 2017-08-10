@@ -28,10 +28,9 @@ import java.util.*;
 
 public class RaceVisionXMLParser {
 
-    private static final String DEFAULT_FILE_PATH = "/outputFiles/";
-    public static final String COURSE_FILE = "Race.xml";
+    private static final String DEFAULT_COURSE_FILE = "AC35-course.xml";
+    private static String courseFile = DEFAULT_COURSE_FILE;
     private static final String BOAT_FILE = "Boat.xml";
-    private static final String REGATTA_FILE = "Regatta.xml";
 
     private final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
@@ -76,16 +75,16 @@ public class RaceVisionXMLParser {
     }
 
     /**
-     * Overload of importCourse to simplify reading in the default course file.
-     * @return a Course object
+     * Overload of importRace to simplify reading in the default course file.
+     * @return a Race object
      */
-    public Course importCourse(){
-        String resourcePath = "/defaultFiles/" + COURSE_FILE;
-        return importCourse(RaceVisionXMLParser.class.getResourceAsStream(resourcePath));
+    public Race importRace(){
+        String resourcePath = "/defaultFiles/" + courseFile;
+        return importRace(RaceVisionXMLParser.class.getResourceAsStream(resourcePath));
     }
 
     /**
-     * Sets the race id in the Race.xml dom
+     * Sets the race id in the course xml dom
      * @param root The root tag ("Race") of the dom
      * @param raceId The desired race id
      */
@@ -95,7 +94,7 @@ public class RaceVisionXMLParser {
     }
 
     /**
-     * Sets the message creation date and time in the Race.xml dom
+     * Sets the message creation date and time in the course xml dom
      * @param root The root tag ("Race") of the dom
      */
     private void setCreationTime(Element root){
@@ -109,7 +108,7 @@ public class RaceVisionXMLParser {
     }
 
     /**
-     * Sets the race start time in the Race.xml dom
+     * Sets the race start time in the AC35-course.xml dom
      * @param root The root tag ("Race") of the dom
      * @param expectStartTimeEpochMs The expected race start time in epoch milliseconds
      */
@@ -149,7 +148,7 @@ public class RaceVisionXMLParser {
             parseXMLStream(raceXML);
             Element root = dom.getDocumentElement();
 
-            setRaceId(root, raceId);
+            //setRaceId(root, raceId);
             setCreationTime(root);
             setStartTime(root, expectStartTimeEpochMs);
             setParticipants(root, participantIds);
@@ -284,7 +283,6 @@ public class RaceVisionXMLParser {
         }
 
         setRaceLines(course);
-
         return course;
     }
 
@@ -593,5 +591,9 @@ public class RaceVisionXMLParser {
             e.printStackTrace();
         }
         return competitorIds;
+    }
+
+    public void setCourseFile(String course) {
+        courseFile = course;
     }
 }
