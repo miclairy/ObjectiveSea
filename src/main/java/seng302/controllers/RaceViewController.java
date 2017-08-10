@@ -28,6 +28,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.util.Duration;
 import seng302.data.BoatStatus;
+import seng302.data.RaceStatus;
 import seng302.data.StartTimingStatus;
 import seng302.utilities.*;
 import seng302.models.*;
@@ -93,6 +94,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
     private int flickercounter = 0;
     private int prevWindColorNum = 0;
+    private int arrowIteration = 0;
+    private int timer = 0;
 
     BoatDisplay currentUserBoatDisplay;
     Shape boatHighlight = null;
@@ -115,6 +118,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         race.getCourse().createArrowedRoute();
         for (Arrow arrow : race.getCourse().getArrowedRoute()){
             arrow.addToCanvas(root);
+            arrow.setScale(DisplayUtils.zoomLevel);
         }
 
     }
@@ -163,6 +167,30 @@ public class RaceViewController extends AnimationTimer implements Observer {
         updateWindArrow();
         flickercounter++;
         orderDisplayObjects();
+        if (race.getRaceStatus() == RaceStatus.WARNING || race.getRaceStatus() == RaceStatus.PREPARATORY || race.getRaceStatus() == RaceStatus.PRESTART){
+            if (timer == 0){
+                arrowIteration = (arrowIteration + 1) % (race.getCourse().getArrowedRoute().size());
+                showArrowAnimation(arrowIteration);
+            }
+            timer = (timer + 1) % 6;
+        } else{
+            race.getCourse().hideArrows();
+        }
+    }
+
+    private void showArrowAnimation(int iteration){
+        List<Arrow> arrowRoute = race.getCourse().getArrowedRoute();
+        int sz = arrowRoute.size();
+        for(int i = 0; i < arrowRoute.size(); i++){
+            if (i == iteration || (i + 1) % sz == iteration || (i + 2) % sz == iteration){
+                arrowRoute.get(i).setOpacity1(1.0);
+                arrowRoute.get(i).setStrokeWidth1(5.0);
+
+            } else{
+                arrowRoute.get(i).setOpacity1(0.3);
+                arrowRoute.get(i).setStrokeWidth1(4.0);
+            }
+        }
     }
 
     /**

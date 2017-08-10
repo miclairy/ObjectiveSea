@@ -2,8 +2,10 @@ package seng302.views;
 
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
+import javafx.scene.shape.Shape;
 import javafx.scene.transform.Rotate;
 import seng302.models.CanvasCoordinate;
 import seng302.models.Coordinate;
@@ -12,7 +14,7 @@ import seng302.utilities.DisplayUtils;
 /**
  * Polyline wrapper to make arrows easy
  */
-public class Arrow extends Group{
+public class Arrow extends Polyline {
 
     private double length;
     private double width;
@@ -33,12 +35,14 @@ public class Arrow extends Group{
         relocate(this.center);
         arrowLine.setStrokeWidth(4.0);
         arrowLine.setId("distanceArrow");
+//        setOpacity(0);
     }
 
     public Arrow (double length, double width, Coordinate center, double rotation, Color color){
         this(length, width, center);
         rotate(rotation);
         setColour(color);
+
 
     }
 
@@ -67,5 +71,22 @@ public class Arrow extends Group{
 
     public void setColour(Color color){
         arrowLine.setStroke(color);
+    }
+
+    public void setVisible1(Boolean visible){
+        arrowLine.setVisible(visible);
+    }
+
+    public void setOpacity1(Double value){
+        arrowLine.setOpacity(value);
+    }
+
+    public void setStrokeWidth1(Double value){
+        arrowLine.setStrokeWidth(value);
+    }
+
+    public void setScale(Double zoomLevel) {
+        arrowLine.setScaleY(zoomLevel);
+        arrowLine.setScaleX(zoomLevel);
     }
 }

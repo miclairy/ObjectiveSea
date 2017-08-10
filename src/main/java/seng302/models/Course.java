@@ -1,11 +1,8 @@
 package seng302.models;
 
 import javafx.scene.paint.Color;
-import seng302.utilities.DisplayUtils;
-import seng302.utilities.MathUtils;
 import seng302.views.Arrow;
 
-import javax.swing.plaf.ComponentUI;
 import java.util.*;
 
 /**
@@ -253,51 +250,23 @@ public class Course {
 
     private void addArrowDirection(CompoundMark mark, CompoundMark previousMark, CompoundMark nextMark, String roundingSide) {
         double legLength = mark.getPosition().greaterCircleDistance(previousMark.getPosition());
-        double numberOfLegs = legLength / 0.1;
-        if (numberOfLegs < 2){
-            numberOfLegs = 2;
+        double arrowDistance = legLength / 0.1;
+        if (arrowDistance < 2){
+            arrowDistance = 2;
         }
         Random rand = new Random();
         double r = rand.nextFloat();
         double g = rand.nextFloat();
         double b = rand.nextFloat();
         Color color = Color.color(r, g, b);
-        double heading = previousMark.getPosition().headingToCoordinate(mark.getMark1().getPosition());
-        for (double num = numberOfLegs; num > 0; num--) {
-            Coordinate position = mark.getPosition().coordAt((legLength / numberOfLegs) * num, heading + 180);
+        double heading = previousMark.getPosition().headingToCoordinate(mark.getPosition());
+        for (double num = arrowDistance - 1; num > 0; num--) {
+            Coordinate position = mark.getPosition().coordAt((legLength / arrowDistance) * num, heading + 180);
             Arrow arrow = new Arrow(5, 10, position);
            // arrow.setColour(color);
             arrow.rotate( heading + 180);
             arrowedRoute.add(arrow);
         }
-
-//        if (!mark.isFinishLine()) {
-//            double nextHeading = mark.getMark1().getPosition().headingToCoordinate(nextMark.getPosition());
-//            if(!nextMark.isFinishLine()) {
-//                if(roundingSide.substring(0, 1).toUpperCase().equals("P")) {
-//                    arrowsRoundMark(mark.getMark1(), color, heading, nextHeading, 1);
-//                } else {
-//                    arrowsRoundMark(mark.getMark1(), color, heading, nextHeading, -1);
-//                }
-//                if(mark.hasTwoMarks()) {
-//                    nextHeading = mark.getMark2().getPosition().headingToCoordinate(nextMark.getPosition());
-//                    heading = previousMark.getPosition().headingToCoordinate(mark.getMark2().getPosition());
-////                    if (roundingSide.equals("PS")) {
-//                        arrowsRoundMark(mark.getMark2(), color, heading, nextHeading, -1);
-////                    } else {
-////                        arrowsRoundMark(mark.getMark2(), color, heading, nextHeading, 1);
-//                   // }
-//                }
-//            } else {
-//                nextHeading += 180;
-//                Arrow arrow = new Arrow(5, 10, mark.getPosition(), nextHeading, color);
-//                arrowedRoute.add(arrow);
-//                Arrow arrow1 = new Arrow(5, 10, mark.getPosition().coordAt(-0.05, nextHeading), nextHeading, color);
-//                arrowedRoute.add(arrow1);
-//                Arrow arrow2 = new Arrow(5, 10, mark.getPosition().coordAt(-0.1, nextHeading), nextHeading, color);
-//                arrowedRoute.add(arrow2);
-//            }
-//        }
     }
 
     private void arrowsRoundMark(Mark mark, Color color, double heading, double nextHeading, int isPort) {
@@ -324,11 +293,18 @@ public class Course {
                 addArrowDirection(courseOrder.get(i), courseOrder.get(i - 1), courseOrder.get(i + 1), roundingOrder.get(i));
             }
         }
-        Color color = Color.color(0.301, 0.2, 0.545);
-        double increment = 0.8 / (arrowedRoute.size() + 1.0);
+        Color color = Color.color(0.25, 0.25, 0.25); //Grey
+//        Color color = Color.color(0.0, 204.0 / 256, 122.0 / 256); //Green
+        double increment = 0.6 / (arrowedRoute.size() + 1.0);
         for (Arrow arrow : arrowedRoute){
-            color = Color.color(0.301, color.getGreen() + increment, 0.545);
+            color = Color.color(0.25, color.getGreen() + increment, 0.25);
             arrow.setColour(color);
+        }
+    }
+
+    public void hideArrows(){
+        for(Arrow arrow : arrowedRoute){
+            arrow.setVisible1(false);
         }
     }
 }
