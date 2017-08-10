@@ -73,6 +73,12 @@ public class DisplayUtils {
         return point;
     }
 
+    public static void resetZoom(){
+        zoomLevel=1;
+        offsetY=0;
+        offsetX=0;
+    }
+
     /**
      * sets the zoom level for the canvas to redrawn at. moves offsets
      * to allow the zoom to occur in the center of screen.

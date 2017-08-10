@@ -161,6 +161,7 @@ public class Controller implements Initializable, Observer {
         ConnectionUtils.initiateDisconnect(isHost);
         displaySwitcher.loadMainMenu();
         raceViewController.stop();
+        DisplayUtils.resetZoom();
     }
 
     public void exitTerminatedRace() {
