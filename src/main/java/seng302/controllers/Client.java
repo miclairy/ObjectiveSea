@@ -1,6 +1,5 @@
 package seng302.controllers;
 
-import com.sun.deploy.association.RegisterFailedException;
 import seng302.data.ClientPacketBuilder;
 import seng302.data.ClientSender;
 import seng302.data.DataStreamReader;
