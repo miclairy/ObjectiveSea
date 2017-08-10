@@ -2,6 +2,7 @@ package seng302.controllers;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableNumberValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,11 +10,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -34,6 +37,7 @@ import java.net.URL;
 import java.util.*;
 
 import static javafx.collections.FXCollections.observableArrayList;
+import static javafx.scene.input.KeyCode.*;
 
 public class Controller implements Initializable, Observer {
 
@@ -106,6 +110,8 @@ public class Controller implements Initializable, Observer {
 
     private final double FOCUSED_ZOOMSLIDER_OPACITY = 0.8;
     private final double IDLE_ZOOMSLIDER_OPACITY = 0.4;
+
+    private Scene scene;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -185,21 +191,23 @@ public class Controller implements Initializable, Observer {
 
     }
 
-    public void setApp(boolean host, DisplaySwitcher displaySwitcher) {
+    public void setApp(boolean host, DisplaySwitcher displaySwitcher, Scene scene) {
         this.displaySwitcher = displaySwitcher;
         this.isHost = host;
+        this.scene = scene;
         if (isHost) {
             startersOverlayTitle.setText(getPublicIp());
         } else {
             startersOverlayTitle.setText(race.getRegattaName());
         }
-
+        initKeyPressListener();
     }
 
     public void exitRunningRace() throws IOException {
         ConnectionUtils.initiateDisconnect(isHost);
         displaySwitcher.loadMainMenu();
         raceViewController.stop();
+        DisplayUtils.resetZoom();
     }
 
     public void exitTerminatedRace() {
@@ -217,6 +225,20 @@ public class Controller implements Initializable, Observer {
                 raceViewController.redrawCourse();
                 raceViewController.redrawBoatPaths();
                 selectionController.deselectBoat();
+            }
+        });
+    }
+
+    /**
+     * adds a listener to the + and - keys to manage keyboard zooming
+     */
+    private void initKeyPressListener(){
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, key -> {
+            if(key.getCode().equals(X) || key.getCode().equals(PLUS) || key.getCode().equals(EQUALS)){
+                setZoomSliderValue(zoomSlider.getValue()+ 0.1);
+            }
+            if(key.getCode().equals(Z) || key.getCode().equals(MINUS) || key.getCode().equals(UNDERSCORE)){
+                setZoomSliderValue(zoomSlider.getValue()- 0.1);
             }
         });
     }
@@ -555,7 +577,7 @@ public class Controller implements Initializable, Observer {
         return anchorWidth;
     }
 
-    public void setZoomSliderValue(int level) {
+    public void setZoomSliderValue(double level) {
         zoomSlider.setValue(level);
     }
 
