@@ -417,21 +417,28 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * Handles drawing of all of the marks from the course
      */
     public void drawMarks() {
+        boolean isPratice = race.getId().equals("77228423");  // 77228423 spells practice in text
+        int limit = race.getCourse().getAllMarks().size();
+        if (isPratice) limit = 2;
+        int count = 0;
         for (Mark mark : race.getCourse().getAllMarks().values()) {
-            if (mark.getIcon() != null && root.getChildren().contains(mark.getIcon())){
-                CanvasCoordinate point = DisplayUtils.convertFromLatLon(mark.getPosition());
-                mark.getIcon().setCenterX(point.getX());
-                mark.getIcon().setCenterY(point.getY());
-            }else{
-                Circle circle = raceView.createMark(mark.getPosition());
-                root.getChildren().add(circle);
-                mark.setIcon(circle);
-                selectionController.addMarkSelectionHandlers(mark);
-            }
+            if (count < limit) {
+                if (mark.getIcon() != null && root.getChildren().contains(mark.getIcon())) {
+                    CanvasCoordinate point = DisplayUtils.convertFromLatLon(mark.getPosition());
+                    mark.getIcon().setCenterX(point.getX());
+                    mark.getIcon().setCenterY(point.getY());
+                } else {
+                    Circle circle = raceView.createMark(mark.getPosition());
+                    root.getChildren().add(circle);
+                    mark.setIcon(circle);
+                    selectionController.addMarkSelectionHandlers(mark);
+                }
 
-            mark.getIcon().toFront();
-            mark.getIcon().setScaleX(zoomLevel);
-            mark.getIcon().setScaleY(zoomLevel);
+                mark.getIcon().toFront();
+                mark.getIcon().setScaleX(zoomLevel);
+                mark.getIcon().setScaleY(zoomLevel);
+                count++;
+            }
         }
     }
 

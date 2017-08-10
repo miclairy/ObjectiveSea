@@ -8,15 +8,15 @@
     </Participants>
     <Course>
         <CompoundMark CompoundMarkID="1" Name="Start">
-            <Mark SeqID="1" Name="Start Line 1" TargetLat="0.04" TargetLng="0.0" SourceID="122" />
-            <Mark SeqID="2" Name="Start Line 2" TargetLat="0.04" TargetLng="0.02213" SourceID="123" />
+            <Mark SeqID="1" Name="Start Line 1" TargetLat="0.04" TargetLng="0.0" SourceID="1" />
+            <Mark SeqID="2" Name="Start Line 2" TargetLat="0.04" TargetLng="0.02213" SourceID="2" />
         </CompoundMark>
         <CompoundMark CompoundMarkID="2" Name="Mark">
-            <Mark SeqID="1" Name="Mark" TargetLat="0.0" TargetLng="0.01175" SourceID="130" />
+            <Mark SeqID="1" Name="Mark" TargetLat="0.0" TargetLng="0.01175" SourceID="3" />
         </CompoundMark>
         <CompoundMark CompoundMarkID="11" Name="Finish">
-            <Mark SeqID="1" Name="Finish Line 1" TargetLat="0.08" TargetLng="0.01175" SourceID="128" />
-            <Mark SeqID="2" Name="Finish Line 2" TargetLat="0.08" TargetLng="0.01175" SourceID="129" />
+            <Mark SeqID="1" Name="Finish Line 1" TargetLat="0.08" TargetLng="0.01175" SourceID="4" />
+            <Mark SeqID="2" Name="Finish Line 2" TargetLat="0.08" TargetLng="0.01175" SourceID="5" />
         </CompoundMark>
     </Course>
     <CompoundMarkSequence>
