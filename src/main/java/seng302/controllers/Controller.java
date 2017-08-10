@@ -196,12 +196,10 @@ public class Controller implements Initializable, Observer {
      */
     private void initKeyPressListener(){
         scene.addEventFilter(KeyEvent.KEY_PRESSED, key -> {
-            System.out.println(key.getCode().toString());
-            if(key.getCode().equals(PLUS) || key.getCode().equals(EQUALS)){
-                System.out.println("zoom in");
+            if(key.getCode().equals(X) || key.getCode().equals(PLUS) || key.getCode().equals(EQUALS)){
                 setZoomSliderValue(zoomSlider.getValue()+ 0.1);
             }
-            if(key.getCode().equals(MINUS) || key.getCode().equals(UNDERSCORE)){
+            if(key.getCode().equals(Z) || key.getCode().equals(MINUS) || key.getCode().equals(UNDERSCORE)){
                 setZoomSliderValue(zoomSlider.getValue()- 0.1);
             }
         });
