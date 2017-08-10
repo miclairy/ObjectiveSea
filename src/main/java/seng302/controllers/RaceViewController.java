@@ -110,7 +110,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         this.selectionController = selectionController;
-        if(RaceVisionXMLParser.COURSE_FILE == "GuidedPractice-course.xml") {
+        if(RaceVisionXMLParser.courseFile == "GuidedPractice-course.xml") {
             isTutorial = true;
             tutorial = new Tutorial(controller, race);
             controller.hideStarterOverlay();
@@ -134,7 +134,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         if(!race.isTerminated() && !isTutorial){
             controller.updateRaceClock();
-        }else{
+        }else if (race.isTerminated()){
             controller.blurScreen(true);
             this.stop();
             controller.showServerDisconnectError();

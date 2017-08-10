@@ -89,7 +89,6 @@ public class Tutorial {
     }
 
     private void vmgTutorial(){
-        double boatHeading = tutorialBoat.getHeading();
         List<KeyCode> keycodes = new ArrayList<KeyCode>();
         Client.clearTutorialAction();
         keycodes.add(KeyCode.SPACE);
@@ -98,7 +97,7 @@ public class Tutorial {
                 "If you are within 45 degrees of the wind direction, you may be in a no-sail zone. You will not automatically move to a VMG at this angle.");
         Client.setTutorialActions(keycodes, () -> {
             double vmhHeading = tutorialBoat.getVMGHeading(race.getCourse(), polarTable);
-            if(vmhHeading != boatHeading){
+            if(vmhHeading != -1){
                 //while(tutorialBoat.getTargetHeading() != boatHeading){}
                 tutorialStage = TutorialStage.TACK;
             }else{
@@ -110,14 +109,13 @@ public class Tutorial {
     }
 
     private void tackFailTutorial(){
-        double boatHeading = tutorialBoat.getHeading();
         Client.clearTutorialAction();
 
         controller.showTutorialOverlay("Try Again", "Your boat did not move. \n\nYou are heading towards the wind in the no-sail zone (45 degrees either side of the wind direction).\n\n" +
                 "Try use the UP and DOWN keys to move yourself to the away from the wind direction and try the key again");
         Client.setTutorialActions(keysFailed, () -> {
             double vmhHeading = tutorialBoat.getVMGHeading(race.getCourse(), polarTable);
-            if(vmhHeading != boatHeading){
+            if(vmhHeading != -1){
                 //while(tutorialBoat.getTargetHeading() != boatHeading){}
                 tutorialStage = TutorialStage.values()[stepFailed.ordinal() + 1];
             }
@@ -127,40 +125,29 @@ public class Tutorial {
     }
 
     private void tackGybeTutorial(boolean hasGybe){
-        double boatHeading = tutorialBoat.getHeading();
         List<KeyCode> keycodes = new ArrayList<KeyCode>();
         Client.clearTutorialAction();
         keycodes.add(KeyCode.ENTER);
         if(!hasGybe){
             controller.showTutorialOverlay("Tack/Gybe", "Tacking and Gybing are manoeuvre that flips the heading of your boat towards the opposite VMG.\n\n" +
                     "if you are not in the no-sail zone, press ENTER now to tack or gybe.");
-            Client.setTutorialActions(keycodes, () -> {
-                double vmhHeading = tutorialBoat.getVMGHeading(race.getCourse(), polarTable);
-                if(vmhHeading != boatHeading){
-                    //while(tutorialBoat.getTargetHeading() != boatHeading){}
-                    tutorialStage = TutorialStage.GYBE;
-                }else{
-                    stepFailed = tutorialStage;
-                    keysFailed = keycodes;
-                    tutorialStage = TutorialStage.TACKFAIL;
-                }
-            });
+            Client.setTutorialActions(keycodes, () -> tackGybeCallback(TutorialStage.GYBE, keycodes));
         }else{
             controller.showTutorialOverlay("Tack/Gybe", "Nice work. Lets do that again.\n\nTacking and Gybing are manoeuvre that flips the heading of your boat towards the opposite VMG.\n\n" +
                     "if you are not in the no-sail zone, press ENTER now to tack or gybe.");
-            Client.setTutorialActions(keycodes, () -> {
-                double vmhHeading = tutorialBoat.getVMGHeading(race.getCourse(), polarTable);
-                if(vmhHeading != boatHeading){
-                    //while(tutorialBoat.getTargetHeading() != boatHeading){}
-                    tutorialStage = TutorialStage.SAILSIN;
-                }else{
-                    stepFailed = tutorialStage;
-                    keysFailed = keycodes;
-                    tutorialStage = TutorialStage.TACKFAIL;
-                }
-            });
+            Client.setTutorialActions(keycodes, () -> tackGybeCallback(TutorialStage.SAILSIN, keycodes));
         }
+    }
 
+    private void tackGybeCallback(TutorialStage nextStage, List<KeyCode> keycodes){
+        double tackHeading = tutorialBoat.getTackOrGybeHeading(race.getCourse(), polarTable);
+        if(tackHeading != -1){
+            tutorialStage = nextStage;
+        }else{
+            stepFailed = tutorialStage;
+            keysFailed = keycodes;
+            tutorialStage = TutorialStage.TACKFAIL;
+        }
     }
 
     private void sailsTutorial(boolean isOut){
