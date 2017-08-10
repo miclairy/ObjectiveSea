@@ -73,6 +73,12 @@ public class DisplayUtils {
         return point;
     }
 
+    public static void resetZoom(){
+        zoomLevel=1;
+        offsetY=0;
+        offsetX=0;
+    }
+
     /**
      * sets the zoom level for the canvas to redrawn at. moves offsets
      * to allow the zoom to occur in the center of screen.
@@ -80,13 +86,14 @@ public class DisplayUtils {
      */
     public static void setZoomLevel(double zoomLevel) {
 
+        if(zoomLevel < 1) zoomLevel = 1;
+        if(zoomLevel > 10) zoomLevel = 10;
+
         double deltaZoom = DisplayUtils.zoomLevel - zoomLevel;
         double canvasHeight = Controller.getAnchorHeight()/2;
         double canvasWidth = Controller.getAnchorWidth()/2;
 
-
         moveOffset((canvasWidth*deltaZoom), (canvasHeight*deltaZoom));
-
 
         DisplayUtils.zoomLevel = zoomLevel;
 
