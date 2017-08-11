@@ -67,7 +67,7 @@ public class ScoreBoardController {
     @FXML private TableColumn<Boat, String> columnName;
     @FXML private TableColumn<Boat, String> columnSpeed;
     @FXML private TableColumn<Boat, String> columnStatus;
-
+    @FXML private CheckBox VirtualStartlineToggle;
 
     private final Color UNSELECTED_BOAT_COLOR = Color.WHITE;
     private final Color SELECTED_BOAT_COLOR = Color.rgb(77, 197, 138);
@@ -222,6 +222,10 @@ public class ScoreBoardController {
     @FXML
     private void toggleDistanceLines() {
         raceViewController.updateDistanceLine(DistanceLinesToggle.isSelected());
+    }
+
+    public boolean isVirtualStartlineSelected() {
+        return VirtualStartlineToggle.isSelected();
     }
 
     public boolean isSpeedSelected(){return chkSpeed.isSelected();}
