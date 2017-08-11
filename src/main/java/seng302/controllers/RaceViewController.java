@@ -8,9 +8,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -34,7 +32,6 @@ import seng302.models.*;
 import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
-import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Math.abs;
@@ -89,6 +86,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
     private double sailWidth = 5;
     private boolean isSailWidthChanging = false;
+    boolean isPractice;
 
     private int flickercounter = 0;
     private int prevWindColorNum = 0;
@@ -103,6 +101,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         this.selectionController = selectionController;
+        isPractice = race.getId().equals("77228423");  // 77228423 spells practice in text
         redrawCourse();
         race.addObserver(this);
     }
@@ -417,9 +416,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * Handles drawing of all of the marks from the course
      */
     public void drawMarks() {
-        boolean isPratice = race.getId().equals("77228423");  // 77228423 spells practice in text
         int limit = race.getCourse().getAllMarks().size();
-        if (isPratice) limit = 2;
+        if (isPractice) limit = 2;
         int count = 0;
         for (Mark mark : race.getCourse().getAllMarks().values()) {
             if (count < limit) {

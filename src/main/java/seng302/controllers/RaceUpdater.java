@@ -96,11 +96,11 @@ public class RaceUpdater implements Runnable {
             double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
             long secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000;
             if(isPractice && secondsElapsed > 15){
-                race.updateRaceStatus(TERMINATED);
+               // race.updateRaceStatus(TERMINATED);
             }
             race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs() + (long)(raceSecondsPassed * 1000));
             generateWind();
-            if (race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)) {
+            if ((race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY))) {
                 collisionManager.checkForCollisions(race);
             }
             long millisBeforeStart = race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs();

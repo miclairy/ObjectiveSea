@@ -30,6 +30,7 @@ public class CollisionManager {
      * @param race
      */
     public void checkForCollisions(Race race){
+        boolean isPractice = race.getId().equals("77228423");  // 77228423 spells practice in text
         List<Boat> boats = new ArrayList<>();
         boats.addAll(race.getCompetitors());
         for (int i = 0; i < boats.size(); i++) {
@@ -41,7 +42,9 @@ public class CollisionManager {
                 }
             }
             for (Mark mark : race.getCourse().getAllMarks().values()) {
-                checkForCollisionBetweenBoatAndMark(boat, mark);
+                if (!isPractice || mark.getSourceID() == 1 || mark.getSourceID() == 2) {
+                    checkForCollisionBetweenBoatAndMark(boat, mark);
+                }
             }
         }
     }
