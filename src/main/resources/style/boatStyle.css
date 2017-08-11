@@ -77,3 +77,8 @@
     -fx-fill: #ff5b5b;
     -fx-opacity: 0.6;
 }
+
+#nextMarkCircle{
+    -fx-fill: #4DC58B;
+    -fx-opacity: 0.6;
+}

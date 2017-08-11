@@ -51,6 +51,7 @@ public class Controller implements Initializable, Observer {
     @FXML public Label lblUserHelp;
     @FXML public Label lblWindSpeed;
     @FXML public Circle windCircle;
+    @FXML public Circle nextMarkCircle;
     @FXML public SplitPane splitPane;
 
 
@@ -527,5 +528,9 @@ public class Controller implements Initializable, Observer {
         } else {
             node.setEffect(null);
         }
+    }
+
+    public Circle getNextMarkCircle() {
+        return nextMarkCircle;
     }
 }

@@ -30,7 +30,21 @@
     -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 3);
 }
 
+#nexMarkArrow{
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-stroke-width: 4px;
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 3);
+}
+
 #windCircle {
+    -fx-stroke-width: 4px;
+    -fx-fill: transparent;
+    -fx-stroke: white;
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 3);
+}
+
+#nextMarkCircle {
     -fx-stroke-width: 4px;
     -fx-fill: transparent;
     -fx-stroke: white;

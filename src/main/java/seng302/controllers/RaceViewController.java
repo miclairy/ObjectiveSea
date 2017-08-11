@@ -74,7 +74,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private double previousTime = 0;
     private Polygon boundary;
     private Circle windCircle;
+    private Circle nextMarkCircle;
     private Polyline windArrow;
+    private Polyline nextMarkArrow;
     private boolean windTransitionPlaying = false;
     private double currentTimeInSeconds;
     private AnnotationLevel currentAnnotationsLevel;
@@ -86,6 +88,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean firstTime = true;
     private SelectionController selectionController;
     private Penalties penalties = new Penalties();
+
+    private boolean nextMark = true;
 
     private double sailWidth = 5;
     private boolean isSailWidthChanging = false;
@@ -164,6 +168,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
         moveWake(boatDisplay, point);
         moveSail(boatDisplay, point);
         displayCollisions(boatDisplay, point);
+        if(nextMark){
+            highlightNextMark();
+            nextMark = false;
+        }
+
 
         manageStartTiming(boatDisplay);
         moveSOGVector(boatDisplay);
@@ -215,7 +224,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         if(boat.isMarkColliding() || boat.isBoatColliding()){
             if(!displayBoat.collisionInProgress){
-                collisionAnimation(point, displayBoat);
+                highlightAnimation(point, displayBoat, true, "collisionCircle");
                 displayBoat.setCollisionInProgress(true);
             }
             boat.setMarkColliding(false);
@@ -324,11 +333,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
     /**
      * creates an animation to visual a collision
-     * @param point the point where the collision iss
+     * @param point the point where the collision is
      */
-    void collisionAnimation(CanvasCoordinate point, BoatDisplay boat){
-        Circle collisionCircle1 = createCollisionCircle(point);
-        Circle collisionCircle2 = createCollisionCircle(point);
+    void highlightAnimation(CanvasCoordinate point, BoatDisplay boat, Boolean isCollision, String circleID){
+        Circle collisionCircle1 = createHighlightCircle(point, circleID);
+        Circle collisionCircle2 = createHighlightCircle(point, circleID);
 
         ScaleTransition st1 = AnimationUtils.scaleTransitionCollision(collisionCircle1, 500, 20 * zoomLevel);
         st1.setOnFinished(new EventHandler<ActionEvent>(){
@@ -344,19 +353,29 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         FadeTransition ft1 = AnimationUtils.fadeOutTransition(collisionCircle1, 800);
         FadeTransition ft2 = AnimationUtils.fadeOutTransition(collisionCircle2, 600);
-        ft2.setOnFinished(new EventHandler<ActionEvent>(){
-            public void handle(ActionEvent AE) {
-                boat.setCollisionInProgress(false);
-            }});
+
+        if(isCollision) {
+            ft2.setOnFinished(new EventHandler<ActionEvent>() {
+                public void handle(ActionEvent AE) {
+                    boat.setCollisionInProgress(false);
+                }
+            });
+        } else {
+            ft2.setOnFinished(new EventHandler<ActionEvent>() {
+                public void handle(ActionEvent AE) {
+                    nextMark = true;
+                }
+            });
+        }
 
         ParallelTransition pt = new ParallelTransition(st1, st2, ft1, ft2);
         pt.play();
     }
 
-    private Circle createCollisionCircle(CanvasCoordinate point){
+    private Circle createHighlightCircle(CanvasCoordinate point, String circleID){
         Circle circle = new Circle();
         circle.setRadius(1);
-        circle.setId("collisionCircle");
+        circle.setId(circleID);
         circle.setCenterX(point.getX());
         circle.setCenterY(point.getY());
         root.getChildren().add(circle);
@@ -386,7 +405,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawMarks();
         drawBoundary();
         drawMap();
-        drawWindArrow();
+        drawArrow();
         redrawRaceLines();
     }
 
@@ -987,7 +1006,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     /**
      * draws a wind arrow on the course view
      */
-    public void drawWindArrow() {
+    public void drawArrow() {
 
         windCircle = controller.getWindCircle();
         AnchorPane canvasAnchor = controller.getCanvasAnchor();
@@ -1004,9 +1023,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             windCircle.setId("windCircle");
             canvasAnchor.getChildren().add(windArrow);
         }
-
-
-
 
 
     }
@@ -1097,6 +1113,21 @@ public class RaceViewController extends AnimationTimer implements Observer {
             CompoundMark nextMark = raceOrder.get(index);
             distanceLine.setMark(nextMark);
         }
+    }
+
+
+    public void highlightNextMark(){
+        ArrayList<CompoundMark> courseOrder = race.getCourse().getCourseOrder();
+        CompoundMark nextMark = courseOrder.get(currentUserBoatDisplay.getBoat().getLastRoundedMarkIndex() + 1);
+        CanvasCoordinate mark = DisplayUtils.convertFromLatLon(nextMark.getPosition().getLat(), nextMark.getPosition().getLon());
+        highlightAnimation(mark, currentUserBoatDisplay, false, "nextMarkCircle");
+    }
+
+    public void arrowToNextMark() {
+        Course course = race.getCourse();
+        CompoundMark nextMark = course.getCourseOrder().get(currentUserBoatDisplay.getBoat().getLastRoundedMarkIndex()+1);
+        CompoundMark boatPosition = new CompoundMark(1, "", new Mark(1, "", currentUserBoatDisplay.getBoat().getCurrentPosition()));
+        MathUtils.calculateBearingBetweenTwoPoints(boatPosition, nextMark);
     }
 
     public BoatDisplay getCurrentUserBoatDisplay() {
