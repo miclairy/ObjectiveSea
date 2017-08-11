@@ -109,9 +109,9 @@ public class MathUtils {
      * calculates form the midpoint of the two marks.
      * Note that bearing is calculated starting from north direction from mark1
      *  and clockwise around to mark2
-     * @param mark1
-     * @param mark2
-     * @return
+     * @param mark1 first mark
+     * @param mark2 second mark
+     * @return The bearing (degrees from North) between two points
      */
     public static double calculateBearingBetweenTwoPoints(CompoundMark mark1, CompoundMark mark2){
         double mark1lat = mark1.getMark1().getPosition().getLat();
@@ -133,9 +133,10 @@ public class MathUtils {
 
         double y = Math.sin(mark2lng-mark1lng) * Math.cos(mark2lat);
         double x = Math.cos(mark1lat)*Math.sin(mark2lat) - Math.sin(mark1lat)*Math.cos(mark2lat)*Math.cos(mark2lng-mark1lng);
-        double brng = Math.toDegrees(Math.atan2(y, x));
-        return (brng + 360) % 360;
+        double bearing = Math.toDegrees(Math.atan2(y, x));
+        return (bearing + 360) % 360;
     }
+
 
     /**
      * A function for calculating the bilinear interpolation of a third variable (e.g if windspeed and heading are
