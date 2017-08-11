@@ -194,7 +194,7 @@ public class RaceView {
         return line;
     }
 
-    public Polyline drawWindArrow() {
+    public Polyline drawWindArrowPolyline() {
         double arrowHeadLength = 8;
         double arrowLength = 30;
 
@@ -211,13 +211,31 @@ public class RaceView {
         return windArrow;
     }
 
-    /**
-     * Creates a JavaFX line to represent a layline
-     * @param bearing the angle the line is at
-     * @param markCoord the source point of the layline
-     * @param boatColor the color for the layline, based of the boat
-     * @return a Line object
-     */
+    public Polyline drawNextMarkArrowPolyline() {
+        double arrowHeadLength = 30;
+        double arrowLength = 100;
+
+        Polyline nextMarkArrow = new Polyline(
+                0, 0,
+                0, -arrowLength,
+                -arrowHeadLength, -arrowLength + arrowHeadLength,
+                0, -arrowLength,
+                arrowHeadLength, -arrowLength + arrowHeadLength
+        );
+        nextMarkArrow.setId("nextMarkArrow");
+        nextMarkArrow.setStroke(Color.WHITE);
+        nextMarkArrow.setVisible(false);
+        return nextMarkArrow;
+    }
+
+
+        /**
+         * Creates a JavaFX line to represent a layline
+         * @param bearing the angle the line is at
+         * @param markCoord the source point of the layline
+         * @param boatColor the color for the layline, based of the boat
+         * @return a Line object
+         */
     public Line drawLayline(double bearing, Coordinate markCoord, Color boatColor){
         double LAYLINELENGTH = 150;
 

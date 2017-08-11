@@ -2,7 +2,6 @@ package seng302.controllers;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableNumberValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -216,11 +215,13 @@ public class Controller implements Initializable, Observer {
             DisplayUtils.setZoomLevel(zoomSlider.getValue());
             if (DisplayUtils.zoomLevel != 1) {
                 mapImageView.setVisible(false);
+                nextMarkCircle.setVisible(true);
             } else {
                 //Zoom out full, reset everything
                 selectionController.setRotationOffset(0);
                 root.getTransforms().clear();
                 mapImageView.setVisible(true);
+                nextMarkCircle.setVisible(false);
                 selectionController.setTrackingPoint(false);
                 DisplayUtils.resetOffsets();
             }
@@ -498,6 +499,10 @@ public class Controller implements Initializable, Observer {
         return windCircle;
     }
 
+    public Circle getNextMarkCircle() {
+        return nextMarkCircle;
+    }
+
     public AnchorPane getCanvasAnchor() {
         return canvasAnchor;
     }
@@ -530,7 +535,4 @@ public class Controller implements Initializable, Observer {
         }
     }
 
-    public Circle getNextMarkCircle() {
-        return nextMarkCircle;
-    }
 }
