@@ -48,10 +48,15 @@ public class AnimationUtils {
     }
 
     public static void fadeNode(Node node, boolean visible){
+        node.setVisible(true);
         FadeTransition fadeTransition = new FadeTransition(new Duration(150), node);
         if(visible){
             fadeTransition.setFromValue(node.getOpacity());
             fadeTransition.setToValue(0);
+            fadeTransition.setOnFinished(new EventHandler<ActionEvent>(){
+                public void handle(ActionEvent AE){
+                    node.setVisible(false);
+                }});
         }else{
             fadeTransition.setFromValue(0);
             fadeTransition.setToValue(1);

@@ -464,12 +464,12 @@ public class Controller implements Initializable, Observer {
      * Causes the starters overlay to hide itself, enabling a proper view of the course and boats beneath
      */
     public void hideStarterOverlay() {
-        startersOverlay.setVisible(false);
+        AnimationUtils.fadeNode(startersOverlay, true);
     }
 
     private void showStarterOverlay() {
         startersOverlay.toFront();
-        startersOverlay.setVisible(true);
+        AnimationUtils.fadeNode(startersOverlay, false);
     }
 
     public static void setCanvasHeight(double canvasHeight) {

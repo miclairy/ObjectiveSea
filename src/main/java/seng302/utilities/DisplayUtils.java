@@ -199,7 +199,7 @@ public class DisplayUtils {
                 bottomMarker.getLat() + "," + bottomMarker.getLon() +
                 "%7C" +
                 topMarker.getLat() + "," + topMarker.getLon() +
-                "&scale=1" +
+                "&scale=2" +
                 "&key=" + GOOGLE_API_KEY;
         return mapURL;
     }
