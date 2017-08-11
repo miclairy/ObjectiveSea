@@ -2,6 +2,8 @@ package seng302.utilities;
 
 import javafx.util.Pair;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import seng302.models.CompoundMark;
 import seng302.models.Coordinate;
@@ -18,6 +20,28 @@ import static seng302.utilities.MathUtils.*;
 public class MathUtilsTest {
 
     private double DELTA = 1e-6;
+    private static Course defaultCourse;
+
+    @BeforeClass
+    public static void beforeClass() {
+        //Initialise a default course for testing.
+        defaultCourse = new Course();
+
+        Mark startLine1 = new Mark(0, "Start Line 1", new Coordinate(32.296577, -64.854304));
+        Mark startLine2 = new Mark(1, "Start Line 2", new Coordinate(32.293771, -64.855242));
+        RaceLine start = new RaceLine(1, "Start Line", startLine1, startLine2);
+
+        Mark mark1 = new Mark(2, "Mark 1", new Coordinate(32.293039, -64.843983));
+        CompoundMark mark = new CompoundMark(2, "Mark", mark1);
+
+        defaultCourse.setStartLine(start);
+
+        defaultCourse.addNewCompoundMark(start);
+        defaultCourse.addNewCompoundMark(mark);
+        defaultCourse.addMarkInOrder(1);
+        defaultCourse.addMarkInOrder(2);
+    }
+
     @Test
     public void pointBetweenTwoAngleTest(){
         //if TWD is 0, then if a boat bearing is between 270 and 90 it should be true
@@ -108,21 +132,6 @@ public class MathUtilsTest {
 
     @Test
     public void boatHeadingToStartTest(){
-        Course defaultCourse = new Course();
-
-        Mark startLine1 = new Mark(0, "Start Line 1", new Coordinate(32.296577, -64.854304));
-        Mark startLine2 = new Mark(1, "Start Line 2", new Coordinate(32.293771, -64.855242));
-        RaceLine start = new RaceLine(1, "Start Line", startLine1, startLine2);
-
-        Mark mark1 = new Mark(2, "Mark 1", new Coordinate(32.293039, -64.843983));
-        CompoundMark mark = new CompoundMark(2, "Mark", mark1);
-
-        defaultCourse.setStartLine(start);
-
-        defaultCourse.addNewCompoundMark(start);
-        defaultCourse.addNewCompoundMark(mark);
-        defaultCourse.addMarkInOrder(1);
-        defaultCourse.addMarkInOrder(2);
 
         Boat boat = new Boat(0, "TestBoat", "testNickname", 10);
         boat.setCurrentSpeed(10);
@@ -137,22 +146,6 @@ public class MathUtilsTest {
 
     @Test
     public void boatOnStartSideTest(){
-        Course defaultCourse = new Course();
-
-        Mark startLine1 = new Mark(0, "Start Line 1", new Coordinate(32.296577, -64.854304));
-        Mark startLine2 = new Mark(1, "Start Line 2", new Coordinate(32.293771, -64.855242));
-        RaceLine start = new RaceLine(1, "Start Line", startLine1, startLine2);
-
-        Mark mark1 = new Mark(2, "Mark 1", new Coordinate(32.293039, -64.843983));
-        CompoundMark mark = new CompoundMark(2, "Mark", mark1);
-
-        defaultCourse.setStartLine(start);
-
-        defaultCourse.addNewCompoundMark(start);
-        defaultCourse.addNewCompoundMark(mark);
-        defaultCourse.addMarkInOrder(1);
-        defaultCourse.addMarkInOrder(2);
-
         Boat boat = new Boat(0, "TestBoat", "testNickname", 10);
         boat.setCurrentSpeed(10);
 
@@ -161,5 +154,16 @@ public class MathUtilsTest {
 
         boat.setPosition(new Coordinate(32.2937, -64.855242));
         Assert.assertFalse(boatOnStartSide(defaultCourse, boat));
+    }
+
+    @Test
+    public void distanceToStartLineTest() {
+        Boat boat = new Boat(0, "TestBoat", "testNickname", 10);
+        boat.setCurrentSpeed(10);
+
+        boat.setPosition(new Coordinate(32.2967, -64.855242));
+
+        Assert.assertEquals(0.048033120, distanceToStartLine(defaultCourse, boat), DELTA);
+
     }
 }

@@ -160,6 +160,12 @@ public class MathUtils {
         return (((y1 - y)/(y1 - y0)) * r1 + ((y - y0)/ (y1 - y0)) * r2);
     }
 
+    /**
+     * Computes whether the boat is heading towards the startline or not
+     * @param course the course the boat is on
+     * @param boat the boat which we are checking
+     * @return true if the boat is heading towards the startline, false otherwise
+     */
     public static boolean boatHeadingToStart(Course course, Boat boat){
         Coordinate startLine1 = course.getStartLine().getMark1().getPosition(); //position of start line mark 1
         Coordinate startLine2 = course.getStartLine().getMark2().getPosition(); //position of start line mark 2
@@ -173,9 +179,41 @@ public class MathUtils {
 
     }
 
+    /**
+     * Computes if the boat is on the starting side of the course
+     * @param course the course the boat is on
+     * @param boat the boat we want to check
+     * @return true if the boat is on the opposite of course side, false otherwise
+     */
     public static boolean boatOnStartSide(Course course, Boat boat){
         Coordinate position = boat.getCurrentPosition();
         return MathUtils.boatBeforeStartline(position,course.getStartLine(),course.getCourseOrder().get(1)); //checks if boat on correct side of the line
+    }
+
+    /**
+     * Calculates the distance a boat is form the startline
+     * @param course the course the boat is on
+     * @param boat the boat
+     * @return the distance in nautical miles that the boat is away from the startline
+     */
+    public static double distanceToStartLine(Course course, Boat boat){
+        Coordinate position = boat.getCurrentPosition();
+        Coordinate startLine1 = course.getStartLine().getMark1().getPosition(); //position of start line mark 1
+        Coordinate startLine2 = course.getStartLine().getMark2().getPosition(); //position of start line mark 2
+
+        InfiniteLine startlineInf = new InfiniteLine(startLine1,startLine2); //creates an infinite line in that contains the startline
+        Coordinate closestPoint = startlineInf.closestPoint(position); //finds the closest point from the boat to the previous infinite line
+        //Calculates whether the closest point from the boat is on the start line, if it isn't then the closest point is the closest end
+        double distanceToStart;
+        if(closestPoint.getLat() < Math.min(startLine1.getLat(),startLine2.getLat()) || closestPoint.getLat() > Math.max(startLine1.getLat(),startLine2.getLat())){
+            double distanceToStartLine1 = position.greaterCircleDistance(startLine1);
+            double distanceToStartLine2 = position.greaterCircleDistance(startLine2);
+            distanceToStart = Math.min(distanceToStartLine1,distanceToStartLine2); // finds which end is closest
+        } else {
+            distanceToStart = position.greaterCircleDistance(closestPoint); //if the closest point is on the start line already
+        }
+
+        return distanceToStart;
     }
 
 

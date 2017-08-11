@@ -190,7 +190,7 @@ public class BoatDisplay implements Observer {
         long secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000; //time till race starts
         double timeToStart;
         double timeToCrossStartLine = 0;
-        double distanceToStart = distanceToStartLine(race);
+        double distanceToStart = MathUtils.distanceToStartLine(race.getCourse(), boat);
 
         if(MathUtils.boatOnStartSide(race.getCourse(), boat) && MathUtils.boatHeadingToStart(race.getCourse(), boat)){
             timeToStart = distanceToStart/boat.getCurrentSpeed() * 60 * 60; //converted to seconds (nautical miles/knots = hours)
@@ -211,27 +211,13 @@ public class BoatDisplay implements Observer {
         }
     }
 
-    public double distanceToStartLine(Race race){
-        Course course = race.getCourse();
-        Coordinate position = boat.getCurrentPosition();
-        Coordinate startLine1 = course.getStartLine().getMark1().getPosition(); //position of start line mark 1
-        Coordinate startLine2 = course.getStartLine().getMark2().getPosition(); //position of start line mark 2
-
-        InfiniteLine startlineInf = new InfiniteLine(startLine1,startLine2); //creates an infinite line in that contains the startline
-        Coordinate closestPoint = startlineInf.closestPoint(position); //finds the closest point from the boat to the previous infinite line
-        //Calculates whether the closest point from the boat is on the start line, if it isn't then the closest point is the closest end
-        double distanceToStart;
-        if(closestPoint.getLat() < Math.min(startLine1.getLat(),startLine2.getLat()) || closestPoint.getLat() > Math.max(startLine1.getLat(),startLine2.getLat())){
-            double distanceToStartLine1 = position.greaterCircleDistance(startLine1);
-            double distanceToStartLine2 = position.greaterCircleDistance(startLine2);
-            distanceToStart = Math.min(distanceToStartLine1,distanceToStartLine2); // finds which end is closest
-        } else {
-            distanceToStart = position.greaterCircleDistance(closestPoint); //if the closest point is on the start line already
-        }
-
-        return distanceToStart;
-    }
-
+    /**
+     * Function to copmute the predicted place of a parallel virtual startline based on the boats
+     * current position and speed and what time the race start
+     * Line will always be parallel to the startline and only shown if the boat is heading towards
+     * the start line from the correct side and the race has not yet started.
+     * @param race The race which the boat is in
+     */
     public void getVirtualStartline(Race race){
 
         RaceLine startingLine = race.getCourse().getStartLine();
@@ -257,16 +243,18 @@ public class BoatDisplay implements Observer {
 
         Line predictedLine = new Line(point1.getX(), point1.getY(), point2.getX(), point2.getY());
         predictedLine.setStroke(color);
+        predictedLine.setStrokeWidth(2);
 
         if(!MathUtils.boatOnStartSide(race.getCourse(), boat) || !MathUtils.boatHeadingToStart(race.getCourse(), boat)) {
             predictedLine.setOpacity(0);
         }
 
+        if(boat.getCurrentSpeed() <= 0) {
+            predictedLine.setOpacity(0);
+        }
+
         predictedStartLine = predictedLine;
     }
-
-
-
 
     public void showVectors() {
         SOGVector.setVisible(true);
@@ -358,10 +346,6 @@ public class BoatDisplay implements Observer {
 
     public Line getPredictedStartLine() {
         return predictedStartLine;
-    }
-
-    public void setPredictedStartLine(Line predictedStartLine) {
-        this.predictedStartLine = predictedStartLine;
     }
 }
 
