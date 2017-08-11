@@ -162,6 +162,11 @@ public class Controller implements Initializable, Observer {
 
     }
 
+    /**
+     * shows a tutorial overlay on the screen
+     * @param title the title shown in the overlay
+     * @param content the tutorial content shown in the overlay
+     */
     public void showTutorialOverlay(String title, String content){
         if(!tutorialContent.getText().equals(content) || !tutorialOverlayTitle.getText().equals(title)){
             tutorialOverlayTitle.setText(title);
@@ -170,10 +175,6 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.scalePop(tutorialOverlay);
         }
 
-    }
-
-    public void hideTutorialOverlay(){
-        tutorialOverlay.setVisible(false);
     }
 
     public void setApp(boolean host, DisplaySwitcher displaySwitcher, Scene scene) {

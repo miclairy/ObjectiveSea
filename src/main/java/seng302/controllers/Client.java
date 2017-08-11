@@ -135,6 +135,9 @@ public class Client implements Runnable, Observer {
         }
     }
 
+    /**
+     * sends boat command packet to server. Sends keypress and runs tutorial callback function if required.
+     */
     private void sendBoatCommandPacket(){
         if(tutorialKeys.contains(userInputController.getCommandInt())) {
             tutorialFunction.run();
