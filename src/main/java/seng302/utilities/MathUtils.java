@@ -6,6 +6,7 @@ import seng302.models.Coordinate;
 
 /**
  * Created by gla42 on 11/05/17.
+ *
  */
 public class MathUtils {
 
@@ -59,16 +60,17 @@ public class MathUtils {
      * @param mark1 the position of the first mark
      * @return true if the boat is on the correct side of the start line
      */
-    public static Boolean boatBeforeStartline(Coordinate boatPos, CompoundMark startLine, CompoundMark mark1){
-        double determinantOfMark = (mark1.getMark1().getPosition().getLon() - startLine.getMark1().getPosition().getLon())*(startLine.getMark2().getPosition().getLat() - startLine.getMark1().getPosition().getLat()) - (mark1.getMark1().getPosition().getLat() - startLine.getMark1().getPosition().getLat())*(startLine.getMark2().getPosition().getLon() - startLine.getMark1().getPosition().getLon());
-        double determinantOfBoat = (boatPos.getLon() - startLine.getMark1().getPosition().getLon())*(startLine.getMark2().getPosition().getLat() - startLine.getMark1().getPosition().getLat()) - (boatPos.getLat() - startLine.getMark1().getPosition().getLat())*(startLine.getMark2().getPosition().getLon() - startLine.getMark1().getPosition().getLon());
-        if(determinantOfBoat > 0 && determinantOfMark < 0){
-            return true;
-        } else if(determinantOfBoat < 0 && determinantOfMark > 0){
-            return true;
-        } else {
-            return false;
-        }
+    public static Boolean boatBeforeStartline(Coordinate boatPos, CompoundMark startLine, CompoundMark mark1) {
+        double determinantOfMark = (mark1.getMark1().getPosition().getLon() -
+                startLine.getMark1().getPosition().getLon()) * (startLine.getMark2().getPosition().getLat() -
+                startLine.getMark1().getPosition().getLat()) - (mark1.getMark1().getPosition().getLat() -
+                startLine.getMark1().getPosition().getLat()) * (startLine.getMark2().getPosition().getLon() -
+                startLine.getMark1().getPosition().getLon());
+        double determinantOfBoat = (boatPos.getLon() - startLine.getMark1().getPosition().getLon()) *
+                (startLine.getMark2().getPosition().getLat() - startLine.getMark1().getPosition().getLat()) -
+                (boatPos.getLat() - startLine.getMark1().getPosition().getLat()) *
+                        (startLine.getMark2().getPosition().getLon() - startLine.getMark1().getPosition().getLon());
+        return determinantOfBoat > 0 && determinantOfMark < 0 || determinantOfBoat < 0 && determinantOfMark > 0;
     }
 
     /**
@@ -94,9 +96,11 @@ public class MathUtils {
     public static Boolean boatHeadingToLine(double boatsHeading, double lineHeading, double headingOfMark){
         Boolean towardsLine = false;
 
-        if(pointBetweenTwoAngle((lineHeading + 270)%360, 90, boatsHeading) && pointBetweenTwoAngle(lineHeading + 90, 90, headingOfMark)){
+        if(pointBetweenTwoAngle((lineHeading + 270)%360, 90, boatsHeading) &&
+                pointBetweenTwoAngle(lineHeading + 90, 90, headingOfMark)){
             towardsLine = true;
-        } else if(pointBetweenTwoAngle(lineHeading + 90, 90, boatsHeading) && pointBetweenTwoAngle((lineHeading + 270)%360, 90, headingOfMark)){
+        } else if(pointBetweenTwoAngle(lineHeading + 90, 90, boatsHeading) &&
+                pointBetweenTwoAngle((lineHeading + 270)%360, 90, headingOfMark)){
             towardsLine = true;
         }
         return towardsLine;
@@ -109,9 +113,9 @@ public class MathUtils {
      * calculates form the midpoint of the two marks.
      * Note that bearing is calculated starting from north direction from mark1
      *  and clockwise around to mark2
-     * @param mark1 first mark
-     * @param mark2 second mark
-     * @return The bearing (degrees from North) between two points
+     * @param mark1 the first mark that will be used as the first point
+     * @param mark2 the second mark that will be used as the last point
+     * @return heading from the mark1 to mark2
      */
     public static double calculateBearingBetweenTwoPoints(CompoundMark mark1, CompoundMark mark2){
         double mark1lat = mark1.getMark1().getPosition().getLat();
@@ -168,16 +172,13 @@ public class MathUtils {
      * @return true if the boat is heading towards the startline, false otherwise
      */
     public static boolean boatHeadingToStart(Course course, Boat boat){
-        Coordinate startLine1 = course.getStartLine().getMark1().getPosition(); //position of start line mark 1
-        Coordinate startLine2 = course.getStartLine().getMark2().getPosition(); //position of start line mark 2
-        Coordinate mark = course.getCourseOrder().get(1).getPosition(); //Position of first mark to determine which side of the course the start line is on
-
+        Coordinate startLine1 = course.getStartLine().getMark1().getPosition();
+        Coordinate startLine2 = course.getStartLine().getMark2().getPosition();
+        Coordinate mark = course.getCourseOrder().get(1).getPosition();
         double boatsHeading = boat.getHeading();
         double headingOfStartLine = startLine1.headingToCoordinate(startLine2);
         double headingOfMark = mark.headingToCoordinate(startLine1);
-
-        return MathUtils.boatHeadingToLine(boatsHeading, headingOfStartLine, headingOfMark); //Checks if the boat is heading towards the start line from either direction
-
+        return MathUtils.boatHeadingToLine(boatsHeading, headingOfStartLine, headingOfMark);
     }
 
     /**
@@ -188,7 +189,7 @@ public class MathUtils {
      */
     public static boolean boatOnStartSide(Course course, Boat boat){
         Coordinate position = boat.getCurrentPosition();
-        return MathUtils.boatBeforeStartline(position,course.getStartLine(),course.getCourseOrder().get(1)); //checks if boat on correct side of the line
+        return MathUtils.boatBeforeStartline(position,course.getStartLine(),course.getCourseOrder().get(1));
     }
 
     /**
@@ -199,23 +200,19 @@ public class MathUtils {
      */
     public static double distanceToStartLine(Course course, Boat boat){
         Coordinate position = boat.getCurrentPosition();
-        Coordinate startLine1 = course.getStartLine().getMark1().getPosition(); //position of start line mark 1
-        Coordinate startLine2 = course.getStartLine().getMark2().getPosition(); //position of start line mark 2
+        Coordinate startLine1 = course.getStartLine().getMark1().getPosition();
+        Coordinate startLine2 = course.getStartLine().getMark2().getPosition();
 
-        InfiniteLine startlineInf = new InfiniteLine(startLine1,startLine2); //creates an infinite line in that contains the startline
-        Coordinate closestPoint = startlineInf.closestPoint(position); //finds the closest point from the boat to the previous infinite line
-        //Calculates whether the closest point from the boat is on the start line, if it isn't then the closest point is the closest end
+        InfiniteLine startlineInf = new InfiniteLine(startLine1,startLine2);
+        Coordinate closestPoint = startlineInf.closestPoint(position);
         double distanceToStart;
         if(closestPoint.getLat() < Math.min(startLine1.getLat(),startLine2.getLat()) || closestPoint.getLat() > Math.max(startLine1.getLat(),startLine2.getLat())){
             double distanceToStartLine1 = position.greaterCircleDistance(startLine1);
             double distanceToStartLine2 = position.greaterCircleDistance(startLine2);
-            distanceToStart = Math.min(distanceToStartLine1,distanceToStartLine2); // finds which end is closest
+            distanceToStart = Math.min(distanceToStartLine1,distanceToStartLine2);
         } else {
-            distanceToStart = position.greaterCircleDistance(closestPoint); //if the closest point is on the start line already
+            distanceToStart = position.greaterCircleDistance(closestPoint);
         }
-
         return distanceToStart;
     }
-
-
 }
