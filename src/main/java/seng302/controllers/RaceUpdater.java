@@ -90,7 +90,8 @@ public class RaceUpdater implements Runnable {
 
     @Override
     public void run() {
-        boolean isPractice = race.getId().equals("77228423");  // 77228423 spells practice in text
+        boolean isPractice = race.getId().equals("77228423"); // 77228423 spells practice in text
+        if (isPractice) race.updateRaceStatus(PREPARATORY);
         while (!race.getRaceStatus().isRaceEndedStatus() && serverRunning) {
             boolean atLeastOneBoatNotFinished = false;
             double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
