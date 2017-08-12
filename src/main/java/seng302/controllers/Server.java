@@ -28,25 +28,28 @@ public class Server implements Runnable, Observer {
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumber = new HashMap<>();
     private Map<Boat, Integer> boatSequenceNumbers = new HashMap<>();
     private Map<Boat, Integer> lastMarkRoundingSent = new HashMap<>();
+    private String DEFAULT_COURSE = "AC35-course.xml";
+    private String courseXML = DEFAULT_COURSE;
 
     private RaceUpdater raceUpdater;
     private ConnectionManager connectionManager;
     private ServerPacketBuilder packetBuilder;
     private CollisionManager collisionManager;
 
-    public Server(int port, RaceUpdater raceUpdater) throws IOException {
+    public Server(int port, RaceUpdater raceUpdater, String course) throws IOException {
         this.raceUpdater = raceUpdater;
         this.collisionManager = raceUpdater.getCollisionManager();
         this.packetBuilder = new ServerPacketBuilder();
-        this.connectionManager = new ConnectionManager(port);
+        this.connectionManager = new ConnectionManager(port, raceUpdater.getRace());
         this.connectionManager.addObserver(this);
+        this.courseXML = course;
     }
 
     /**
      * Initializes the sequence numbers for the boats and xml messages
      * @throws IOException
      */
-    private void initialize() throws IOException  {
+    private void initialize() throws IOException, NullPointerException  {
         xmlSequenceNumber.put(REGATTA_XML_MESSAGE, 0);
         xmlSequenceNumber.put(RACE_XML_MESSAGE, 0);
         xmlSequenceNumber.put(BOAT_XML_MESSAGE, 0);
@@ -59,7 +62,7 @@ public class Server implements Runnable, Observer {
      * Sends all the data to the socket while the boats have not all finished.
      */
     @Override
-    public void run() {
+    public void run() throws NullPointerException{
         try {
             initialize();
             sendInitialRaceMessages();
@@ -101,7 +104,7 @@ public class Server implements Runnable, Observer {
      * Sends the XML messages when the client has connected
      */
     private void sendInitialRaceMessages() {
-        sendXmlMessage(RACE_XML_MESSAGE, "Race.xml");
+        sendXmlMessage(RACE_XML_MESSAGE, courseXML);
         sendXmlMessage(BOAT_XML_MESSAGE, "Boat.xml");
         sendXmlMessage(REGATTA_XML_MESSAGE, "Regatta.xml");
     }
@@ -175,10 +178,10 @@ public class Server implements Runnable, Observer {
      * @param type subtype of the xml message
      * @param fileName name of the file to send
      */
-    private void sendXmlMessage(AC35StreamXMLMessage type, String fileName){
+    private void sendXmlMessage(AC35StreamXMLMessage type, String fileName) {
         int sequenceNo = xmlSequenceNumber.get(type) + 1;
         xmlSequenceNumber.put(type, sequenceNo);
-        byte[] packet = packetBuilder.buildXmlMessage(type, fileName, sequenceNo, raceUpdater.getRace());
+        byte[] packet = packetBuilder.buildXmlMessage(type, fileName, sequenceNo, raceUpdater.getRace(), courseXML);
         connectionManager.setXmlMessage(type, packet);
     }
 
@@ -219,7 +222,7 @@ public class Server implements Runnable, Observer {
         serverListener.setClientId(newId);
 
         connectionManager.sendToClient(newId, packet);
-        sendXmlMessage(RACE_XML_MESSAGE, "Race.xml");
+        sendXmlMessage(RACE_XML_MESSAGE, courseXML);
     }
 
     /**
@@ -228,12 +231,16 @@ public class Server implements Runnable, Observer {
      * is started for the client
      * If the observable is a ServerListener then a registration message is received
      * @param observable The observable either a ConnectionManager or ServerListener
-     * @param arg A Socket if observable is a ConnectionManager else it is the registration type of the client
+     * @param arg A Socket or Boat ID if observable is a ConnectionManager else it is the registration type of the client
      */
     @Override
     public void update(Observable observable, Object arg) {
         if (observable.equals(connectionManager)) {
-            startServerListener((Socket) arg);
+            if(arg instanceof Socket){
+                startServerListener((Socket) arg);
+            }else{
+                setBoatToDNF((int) arg);
+            }
         } else if(observable instanceof ServerListener){
             manageRegistration((ServerListener) observable, (RegistrationType) arg);
         }
@@ -264,6 +271,20 @@ public class Server implements Runnable, Observer {
             case TUTORIAL:
                 System.out.println("Server: Client attempted to connect as control tutorial, ignoring.");
                 break;
+        }
+    }
+
+    public void initiateServerDisconnect() throws IOException {
+        connectionManager.closeConnections();
+        raceUpdater.stopRunning();
+    }
+
+    private void setBoatToDNF(int arg){
+        for(Boat boat : raceUpdater.getRace().getCompetitors()){
+            if(boat.getId().equals(arg)){
+                boat.setStatus(BoatStatus.DNF);
+                boat.changeSails();
+            }
         }
     }
 }

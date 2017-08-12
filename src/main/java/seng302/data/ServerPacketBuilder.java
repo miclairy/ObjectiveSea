@@ -83,9 +83,9 @@ public class ServerPacketBuilder extends PacketBuilder {
         return generatePacket(header, body);
     }
 
-    public byte[] buildXmlMessage(AC35StreamXMLMessage type, String fileName, int sequenceNo, Race race) {
+    public byte[] buildXmlMessage(AC35StreamXMLMessage type, String fileName, int sequenceNo, Race race, String course) {
         byte[] header = createHeader(XML_MESSAGE);
-        byte[] xmlBody = generateXmlBody(type, fileName, sequenceNo, race);
+        byte[] xmlBody = generateXmlBody(type, fileName, sequenceNo, race, course);
         addFieldToByteArray(header, MESSAGE_LENGTH, xmlBody.length);
         return generatePacket(header,xmlBody);
     }
@@ -190,9 +190,9 @@ public class ServerPacketBuilder extends PacketBuilder {
      * @param fileName the file which to read the bytes from
      * @return a byte array which is the body of the xml message
      */
-    private byte[] generateXmlBody(AC35StreamXMLMessage subType, String fileName, int sequenceNo, Race race) {
+    private byte[] generateXmlBody(AC35StreamXMLMessage subType, String fileName, int sequenceNo, Race race, String course) {
         try {
-            byte[] bodyContent = readXMLIntoByteArray(DEFAULT_RESOURCES_FOLDER, fileName, race);
+            byte[] bodyContent = readXMLIntoByteArray(DEFAULT_RESOURCES_FOLDER, fileName, race, course);
             byte[] body = new byte[XML_BODY.getStartIndex() + bodyContent.length];
             long timestamp = race.getCurrentTimeInEpochMs();
             addFieldToByteArray(body, XML_VERSION, 1);
@@ -218,9 +218,9 @@ public class ServerPacketBuilder extends PacketBuilder {
      * @return a byte array containing the data from the file
      * @throws IOException
      */
-    private byte[] readXMLIntoByteArray(String filePath, String fileName, Race race) throws IOException {
+    private byte[] readXMLIntoByteArray(String filePath, String fileName, Race race, String course) throws IOException {
         InputStream resourceStream = ServerPacketBuilder.class.getResourceAsStream(filePath + fileName);
-        if(fileName.equals(RaceVisionXMLParser.COURSE_FILE)){
+        if(fileName.equals(course)){
             ArrayList<Integer> participantIds = new ArrayList<>();
             for (Boat boat : race.getCompetitors()){
                 participantIds.add(boat.getId());

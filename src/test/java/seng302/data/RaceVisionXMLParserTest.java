@@ -180,7 +180,7 @@ public class RaceVisionXMLParserTest {
 
         Race race = raceVisionXMLParser.importRace(result);
 
-        Assert.assertEquals("11", race.getId());
+        Assert.assertEquals("282828", race.getId());
         Assert.assertEquals(currentTime - (currentTime % 1000),race.getStartTimeInEpochMs());
     }
 }

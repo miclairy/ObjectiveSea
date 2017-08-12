@@ -166,7 +166,7 @@ public class DataStreamReader extends Receiver implements Runnable{
      */
     private void readData(){
         DataInput dataInput = new DataInputStream(dataStream);
-        while(race == null || !race.getRaceStatus().isRaceEndedStatus()) {
+        while(race == null || !race.getRaceStatus().isRaceEndedStatus() || race.getRaceStatus() != RaceStatus.TERMINATED) {
             try {
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
@@ -209,8 +209,8 @@ public class DataStreamReader extends Receiver implements Runnable{
                 }
 
             } catch (IOException e) {
-                System.err.println("Error occurred when reading data from stream:");
-                System.err.println(e);
+                race.terminateRace();
+                System.out.println("Client: disconnected from Server");
             }
         }
     }
@@ -302,6 +302,11 @@ public class DataStreamReader extends Receiver implements Runnable{
             markIndex = race.getCourse().getCourseOrder().size()-1;
         }
         race.updateMarkRounded(sourceID, markIndex, time);
+    }
+
+    public void disconnectClient() throws IOException {
+        clientSocket.close();
+        dataStream.close();
     }
 
     public Socket getClientSocket() {

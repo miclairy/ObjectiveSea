@@ -8,7 +8,9 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -27,14 +29,12 @@ import javafx.scene.transform.Scale;
 import javafx.util.Duration;
 import seng302.data.BoatStatus;
 import seng302.data.StartTimingStatus;
-import seng302.utilities.AnimationUtils;
-import seng302.utilities.DisplayUtils;
-import seng302.utilities.PolarReader;
-import seng302.utilities.TimeUtils;
+import seng302.utilities.*;
 import seng302.models.*;
 import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
+import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Math.abs;
@@ -118,6 +118,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         if(!race.isTerminated()){
             controller.updateRaceClock();
+        }else{
+            controller.blurScreen(true);
+            this.stop();
+            controller.showServerDisconnectError();
         }
         if(controller.hasRaceStatusChanged()){
             controller.updatePreRaceScreen();
@@ -138,7 +142,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         selectionController.zoomTracking();
 
         for (BoatDisplay displayBoat: displayBoats) {
-           moveBoatDisplay(displayBoat);
+            moveBoatDisplay(displayBoat);
         }
         redrawRaceLines();
         if (courseNeedsRedraw) redrawCourse();
@@ -147,7 +151,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         updateWindArrow();
         flickercounter++;
         orderDisplayObjects();
-
     }
 
     /**
@@ -163,6 +166,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
         displayCollisions(boatDisplay, point);
 
         manageStartTiming(boatDisplay);
+        drawVirtualStartLine(boatDisplay);
+
         moveSOGVector(boatDisplay);
         moveVMGVector(boatDisplay);
         if(race.getRaceStatus() == STARTED) {
@@ -181,6 +186,23 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
         } else {
             boatDisplay.getLaylines().removeDrawnLines(root);
+        }
+        if(boatDisplay.getBoat().getStatus() == BoatStatus.DNF){
+            boatDisplay.unFocus();
+        }
+    }
+
+    /**
+     * draws the virtual startline if the race hasnt started and the option is selected, otherwise removes the line
+     * @param boatDisplay boat display variable that contains the boat we want to draw the line for
+     */
+    public void drawVirtualStartLine(BoatDisplay boatDisplay){
+        if(scoreBoardController.isVirtualStartlineSelected() && !race.hasStarted()) {
+            drawPredictedStartLine(boatDisplay);
+        } else {
+            if(root.getChildren().contains(boatDisplay.getPredictedStartLine())) {
+                root.getChildren().remove(boatDisplay.getPredictedStartLine());
+            }
         }
     }
 
@@ -347,6 +369,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
         pt.play();
     }
 
+    /**
+     * creates and returns a circle
+     * @param point canvas coord point that is used as the center of the circle
+     */
     private Circle createCollisionCircle(CanvasCoordinate point){
         Circle circle = new Circle();
         circle.setRadius(1);
@@ -406,6 +432,23 @@ public class RaceViewController extends AnimationTimer implements Observer {
         raceLine.getLine().toBack();
     }
 
+    /**
+     * draws the predicted startline of a boat.
+     * @param boatDisplay display boat of the current boat that needs its start line to be drawn
+     */
+    private void drawPredictedStartLine(BoatDisplay boatDisplay) {
+        if(boatDisplay.equals(currentUserBoatDisplay)) {
+            if (root.getChildren().contains(boatDisplay.getPredictedStartLine())) {
+                root.getChildren().remove(boatDisplay.getPredictedStartLine());
+            }
+            boatDisplay.getVirtualStartline(race);
+            Line newPredictedStartLine = boatDisplay.getPredictedStartLine();
+            root.getChildren().add(newPredictedStartLine);
+            boatDisplay.getPredictedStartLine().toBack();
+
+        }
+    }
+
 
     /**
      * Handles drawing of all of the marks from the course
@@ -446,7 +489,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * handles the drawing of the map image and makes it fullscreen
      */
     void drawMap(){
-        String mapURL = DisplayUtils.getLocalMapURL();
+        String mapURL = DisplayUtils.getLocalMapURL(race);
         Image image = new Image(mapURL);
         controller.mapImageView.setImage(image);
         controller.mapImageView.toBack();
@@ -824,6 +867,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
+    /**
+     * redraws the distance lines of the selected boat or boats.
+     */
     private void redrawDistanceLines(){
         removeDistanceLines();
         if (distanceLine.sameLeg() && !distanceLine.boatsFinished()) {
@@ -850,6 +896,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
+    /**
+     * updates the distance line annotation to display the correct distance between the two boats, or
+     * boat and course feature.
+     */
     private void updateDistanceLineAnnotation(){
         double distance;
         CanvasCoordinate canvasCoord;
@@ -998,11 +1048,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             windCircle.setId("windCircle");
             canvasAnchor.getChildren().add(windArrow);
         }
-
-
-
-
-
     }
 
     /**
@@ -1071,6 +1116,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
+    /**
+     * updates distance between two boats or the boat selected and mark it is heading to
+     */
     private void updateDistanceMark(){
         Boat boat1 = distanceLine.getFirstBoat();
         Boat boat2 = distanceLine.getSecondBoat();
@@ -1092,7 +1140,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             distanceLine.setMark(nextMark);
         }
     }
-
 
     public BoatDisplay getCurrentUserBoatDisplay() {
         return currentUserBoatDisplay;
