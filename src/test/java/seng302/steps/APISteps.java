@@ -107,14 +107,14 @@ public class APISteps {
 
     @Then("^the boats heading should be increased$")
     public void theBoatsHeadingShouldBeIncreased() throws Throwable {
-        Thread.sleep(10);
+        Thread.sleep(100);
         assertEquals(103.0, sallysBoat.getHeading(), 0.0);
         tearDown();
     }
 
     @Then("^the boats heading should be decreased$")
     public void theBoatsHeadingShouldBeDecreased() throws Throwable {
-        Thread.sleep(10);
+        Thread.sleep(100);
         assertEquals(97.0, sallysBoat.getHeading(), 0.0);
         tearDown();
     }
