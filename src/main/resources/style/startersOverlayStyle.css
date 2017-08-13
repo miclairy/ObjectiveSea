@@ -22,3 +22,25 @@
 #clockLabel {
     -fx-background-color: linear-gradient(#AAD2D2, #91BDC0);
 }
+
+#tutorialOverlay{
+    -fx-effect: dropshadow(three-pass-box, rgb(21, 54, 50), 40, 0, 0, 15);
+}
+
+#tutorialOverlayTitle {
+    -fx-background-color: linear-gradient(#B9D9DA, #AAD2D2);
+    -fx-font-size: 27px;
+    -fx-text-fill: White;
+    -fx-font-weight: bold;
+    -fx-border-radius: 10 10 0 0;
+    -fx-background-radius: 10 10 0 0;
+}
+
+#tutorialContent{
+    -fx-background-color: #2a2a2a;
+    -fx-font-size: 17px;
+    -fx-text-fill: White;
+    -fx-focus-color: transparent;
+    -fx-background-insets: 0, 0;
+    -fx-label-padding: 25px 20px 25px 20px;
+}

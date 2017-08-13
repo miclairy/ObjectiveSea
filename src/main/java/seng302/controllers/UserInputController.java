@@ -7,13 +7,14 @@ import javafx.scene.input.KeyEvent;
 import seng302.data.BoatAction;
 import seng302.models.Boat;
 import seng302.models.Race;
+import seng302.utilities.DisplayUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Observable;
 import java.util.Set;
 
-import static javafx.scene.input.KeyCode.SHIFT;
+import static javafx.scene.input.KeyCode.*;
 
 /**
  * handles user key presses.
