@@ -1,14 +1,15 @@
 package seng302.data;
 
+import seng302.models.Race;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.net.SocketException;
 import java.util.Observable;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Gemma Lamont on 10/07/17.
@@ -17,12 +18,15 @@ import java.util.TreeMap;
 public class ConnectionManager extends Observable implements Runnable {
 
     private ServerSocket serverSocket;
-    private HashMap<Integer, Socket> clients =  new HashMap<>();
+    private ConcurrentHashMap<Integer, Socket> clients =  new ConcurrentHashMap<>();
     private TreeMap<AC35StreamXMLMessage, byte[]> xmlMessages = new TreeMap<>();
+    private boolean running = true;
+    private Race race;
 
 
-    public ConnectionManager(int port) throws IOException {;
+    public ConnectionManager(int port, Race race) throws IOException {
         serverSocket = new ServerSocket(port);
+        this.race = race;
     }
 
     /**
@@ -30,15 +34,16 @@ public class ConnectionManager extends Observable implements Runnable {
      */
     @Override
     public void run() {
-        Socket socket = null;
-        while (true) {
+        while (running) {
             try {
-                socket = serverSocket.accept();
+                Socket socket = serverSocket.accept();
                 System.out.println("Server: Accepted Connection");
                 setChanged();
                 notifyObservers(socket);
             } catch (IOException e) {
-                e.printStackTrace();
+                if(e instanceof SocketException){
+                    System.out.println("Server: Disconnected");
+                }
             }
         }
     }
@@ -66,6 +71,8 @@ public class ConnectionManager extends Observable implements Runnable {
             clientOutput.write(packet);
         } catch (java.net.SocketException e){
             System.out.printf("Server: Client %d Disconnected\n", id);
+            setChanged();
+            notifyObservers(id);
             clients.remove(id);
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -91,9 +98,31 @@ public class ConnectionManager extends Observable implements Runnable {
         sendAllXMLsToClient(newId);
     }
 
+    public void closeConnections() throws IOException {
+        running = false;
+        serverSocket.close();
+        for(Integer clientSocketID : clients.keySet()){
+            clients.get(clientSocketID).close();
+        }
+    }
+
     private void sendAllXMLsToClient(int id) {
         for (byte[] xmlMessage : xmlMessages.values()) {
             sendToClient(id, xmlMessage);
         }
+    }
+
+    public void stop() {
+        running = false;
+//        System.out.println(running);
+        try {
+            serverSocket.close();
+            for (Socket socket : clients.values()){
+                socket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

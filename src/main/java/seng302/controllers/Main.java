@@ -17,41 +17,37 @@ import javafx.event.EventHandler;
 import javafx.application.Platform;
 import seng302.models.ServerOptions;
 import seng302.utilities.Config;
+import seng302.utilities.ConnectionUtils;
+import seng302.utilities.DisplaySwitcher;
+import seng302.utilities.NoConnectionToServerException;
 import java.io.IOException;
 
 
 public class Main extends Application {
-
-    private static Scene scene;
     private static Client client;
+    private static Server server;
+    private static Stage primaryStage;
+    private DisplaySwitcher displaySwitcher;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Config.initializeConfig();
-        //setupServer();
-        setupClient();
-
-        Parent parent = FXMLLoader.load(getClass().getClassLoader().getResource("main_window.fxml"));
-        primaryStage.setTitle("Race Vision");
-        primaryStage.getIcons().add(new Image("graphics/icon.png"));
-        scene = new Scene(parent);
-        primaryStage.setScene(scene);
+        this.primaryStage = primaryStage;
+        this.primaryStage.setTitle("Objective Sea");
+        this.primaryStage.getIcons().add(new Image("graphics/icon.png"));
         Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
-        primaryStage.setHeight(primaryScreenBounds.getHeight());
-        primaryStage.setWidth(primaryScreenBounds.getWidth());
+        this.primaryStage.setHeight(primaryScreenBounds.getHeight());
+        this.primaryStage.setWidth(primaryScreenBounds.getWidth());
+        displaySwitcher = new DisplaySwitcher(this, primaryStage);
+        loadMainMenu();
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
-        primaryStage.show();
-        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+        this.primaryStage.show();
+        this.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent e) {
                 Platform.exit();
                 System.exit(0);
             }
         });
-
-        UserInputController userInputController = new UserInputController(scene, Client.getRace());
-        client.setUserInputController(userInputController);
-        userInputController.addObserver(client);
     }
 
     public static void main( String[] args ) {
@@ -103,18 +99,25 @@ public class Main extends Application {
     /**
      * Initializes the client on it's own thread.
      */
-    private static void setupClient() {
-        client = new Client();
-        Thread clientThread = new Thread(client);
-        clientThread.setName("Client");
-        clientThread.start();
+    private static void setupClient(int port) {
+        try {
+            client = new Client("localhost", port, true);
+            ConnectionUtils.setClient(client);
+            Thread clientThread = new Thread(client);
+            clientThread.setName("Client");
+            clientThread.start();
+        } catch (NoConnectionToServerException e) {
+            ConnectionUtils.showServerError();
+        }
+
     }
 
     /**
      * Creates a Server object, puts it in it's own thread and starts the thread
      */
     private static void setupServer(ServerOptions serverOptions) throws IOException {
-        Server server = new Server(serverOptions);
+        server = new Server(serverOptions);
+        ConnectionUtils.setServer(server);
         Thread serverThread = new Thread(server);
         serverThread.setName("Server");
         serverThread.start();
@@ -122,6 +125,46 @@ public class Main extends Application {
 
     public static Client getClient() {
         return client;
+    }
+
+    public void loadMainMenu() {
+        displaySwitcher.loadMainMenu();
+    }
+
+    public void loadRaceView(boolean isHost) {
+        displaySwitcher.loadRaceView(isHost);
+        UserInputController userInputController = new UserInputController(DisplaySwitcher.getScene(), Client.getRace());
+        client.setUserInputController(userInputController);
+        userInputController.addObserver(client);
+    }
+
+    public void startHostedRace(String course, int port) throws Exception{
+        Config.initializeConfig();
+        setupServer(course, port);
+        setupClient(port);
+    }
+
+    /**
+     * starts the client at the desired ip and port number
+     * ensures that the client connects
+     * throws error if connection fails
+     * @param ip the ip for the client to connect to
+     * @param port the port of the client to connect to
+     * @param isParticipant whether the user is a participant or spectator
+     * @return whether the connection was successful or times out
+     */
+    public boolean startClient(String ip, int port, boolean isParticipant){
+        try {
+            client = new Client(ip, port, isParticipant);
+            ConnectionUtils.setClient(client);
+            Thread clientThread = new Thread(client);
+            clientThread.setName("Client");
+            clientThread.start();
+        } catch (NoConnectionToServerException e) {
+            ConnectionUtils.showServerError();
+            return false;
+        }
+        return true;
     }
 }
 
