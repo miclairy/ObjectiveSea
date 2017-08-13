@@ -29,7 +29,7 @@ import java.util.*;
 public class RaceVisionXMLParser {
 
     private static final String DEFAULT_COURSE_FILE = "AC35-course.xml";
-    private static String courseFile = DEFAULT_COURSE_FILE;
+    public static String courseFile = DEFAULT_COURSE_FILE;
     private static final String BOAT_FILE = "Boat.xml";
 
     private final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
