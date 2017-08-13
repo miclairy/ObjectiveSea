@@ -74,6 +74,10 @@ public class ServerListener extends Receiver implements Runnable{
         }
     }
 
+    /**
+     * parses body of the a registration request message by extracting request type and notifying
+     * @param body the body of a RegistrationRequest message
+     */
     private void parseRegistrationRequestMessage(byte[] body) {
         System.out.println("Server: Received Registration Request");
         byte registrationByte = body[REGISTRATION_REQUEST_TYPE.getStartIndex()];

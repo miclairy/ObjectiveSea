@@ -19,7 +19,7 @@ import static seng302.data.AC35StreamXMLMessage.*;
 /**
  * Created on 13/04/17.
  */
-public class DataStreamReader extends Receiver implements Runnable{
+public class ClientListener extends Receiver implements Runnable{
 
     private Socket clientSocket;
     private InputStream dataStream;
@@ -28,7 +28,7 @@ public class DataStreamReader extends Receiver implements Runnable{
     private Race race;
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumbers = new HashMap<>();
 
-    public DataStreamReader(String sourceAddress, int sourcePort){
+    public ClientListener(String sourceAddress, int sourcePort){
         this.sourceAddress = sourceAddress;
         this.sourcePort = sourcePort;
 
@@ -200,7 +200,7 @@ public class DataStreamReader extends Receiver implements Runnable{
                                         parseYachtEventMessage(body);
                                         break;
                                     case REGISTRATION_RESPONSE:
-                                        parseRegistrationAcceptMessage(body);
+                                        parseRegistrationResponseMessage(body);
                                 }
                             }
                     }
@@ -215,7 +215,11 @@ public class DataStreamReader extends Receiver implements Runnable{
         }
     }
 
-    private void parseRegistrationAcceptMessage(byte[] body) {
+    /**
+     * Parses a registration response message by extracting the Id and the status
+     * @param body the body of a RegistrationResponse message
+     */
+    private void parseRegistrationResponseMessage(byte[] body) {
         byte statusByte = body[REGISTRATION_RESPONSE_STATUS.getStartIndex()];
         RegistrationResponseStatus status = RegistrationResponseStatus.getStatusFromByte(statusByte);
         Integer id = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());

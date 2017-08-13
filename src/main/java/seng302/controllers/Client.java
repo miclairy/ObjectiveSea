@@ -3,7 +3,7 @@ package seng302.controllers;
 import seng302.data.BoatStatus;
 import seng302.data.ClientPacketBuilder;
 import seng302.data.ClientSender;
-import seng302.data.DataStreamReader;
+import seng302.data.ClientListener;
 import seng302.data.registration.RegistrationResponse;
 import seng302.data.registration.RegistrationType;
 import seng302.data.registration.ServerFullException;
@@ -30,7 +30,7 @@ public class Client implements Runnable, Observer {
     private int WAIT_MILLISECONDS = 10;
 
     private static Race race;
-    private DataStreamReader dataStreamReader;
+    private ClientListener clientListener;
     private ClientPacketBuilder packetBuilder;
     private ClientSender sender;
     private Map<Integer, Boat> potentialCompetitors;
@@ -52,15 +52,19 @@ public class Client implements Runnable, Observer {
         manageWaitingConnection();
         RegistrationType regoType = isParticipant ? RegistrationType.PLAYER : RegistrationType.SPECTATOR;
         System.out.println("Client: Connected to Server");
-        this.sender = new ClientSender(dataStreamReader.getClientSocket());
+        this.sender = new ClientSender(clientListener.getClientSocket());
         sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
         System.out.println("Client: Sent Registration Request");
         manageServerResponse();
     }
 
+    /**
+     * Waits for the server to accept the socket connection
+     * @throws NoConnectionToServerException if we timeout whilst waiting for the connection
+     */
     private void manageWaitingConnection() throws NoConnectionToServerException {
         int connectionAttempts = 0;
-        while(dataStreamReader.getClientSocket() == null) {
+        while(clientListener.getClientSocket() == null) {
             if(connectionAttempts < MAX_CONNECTION_ATTEMPTS){
                 try {
                     Thread.sleep(WAIT_MILLISECONDS);
@@ -75,6 +79,11 @@ public class Client implements Runnable, Observer {
         }
     }
 
+    /**
+     * Waits for a RegistrationResponse to be received from the server and acts upon that response
+     * @throws ServerFullException if the Response from the server was received, but the server was full
+     * @throws NoConnectionToServerException if we timeout whilst waiting for the response
+     */
     private void manageServerResponse() throws ServerFullException, NoConnectionToServerException {
         double waitTime = 0;
         while (serverRegistrationResponse == null) {
@@ -102,19 +111,18 @@ public class Client implements Runnable, Observer {
         }
     }
 
-
     private void setUpDataStreamReader(){
-        this.dataStreamReader = new DataStreamReader(sourceAddress, sourcePort);
-        dataStreamReaderThread = new Thread(dataStreamReader);
-        dataStreamReaderThread.setName("DataStreamReader");
+        this.clientListener = new ClientListener(sourceAddress, sourcePort);
+        dataStreamReaderThread = new Thread(clientListener);
+        dataStreamReaderThread.setName("ClientListener");
         dataStreamReaderThread.start();
-        dataStreamReader.addObserver(this);
+        clientListener.addObserver(this);
     }
 
     private void stopDataStreamReader(){
         if(dataStreamReaderThread != null){
             dataStreamReaderThread.stop();
-            this.dataStreamReader = null;
+            this.clientListener = null;
             System.out.println("Client: Server not found");
         }
     }
@@ -129,23 +137,23 @@ public class Client implements Runnable, Observer {
      * Waits for the race to be able to be read in
      */
     public void waitForRace(){
-        while(dataStreamReader.getRace() == null){
+        while(clientListener.getRace() == null){
             try {
                 Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        race = dataStreamReader.getRace();
+        race = clientListener.getRace();
     }
 
     /**
-     * observing UserInputController and dataStreamReader
+     * observing UserInputController and clientListener
      * @param o
      */
     @Override
     public void update(Observable o, Object arg) {
-        if (o == dataStreamReader) {
+        if (o == clientListener) {
             if (arg instanceof ArrayList) {
                 ArrayList<Boat> boats = (ArrayList<Boat>) arg;
                 potentialCompetitors = new HashMap<>();
@@ -154,7 +162,7 @@ public class Client implements Runnable, Observer {
                 }
             } else if (arg instanceof Race) {
                 Race newRace = (Race) arg;
-                Race oldRace = dataStreamReader.getRace();
+                Race oldRace = clientListener.getRace();
                 for (int newId : newRace.getCompetitorIds()) {
                     if (!oldRace.getCompetitorIds().contains(newId)) {
                         oldRace.addCompetitor(potentialCompetitors.get(newId));
@@ -183,7 +191,7 @@ public class Client implements Runnable, Observer {
     }
 
     public void initiateClientDisconnect() throws IOException {
-        dataStreamReader.disconnectClient();
+        clientListener.disconnectClient();
         race.getBoatById(clientID).setStatus(BoatStatus.DNF);
     }
 }

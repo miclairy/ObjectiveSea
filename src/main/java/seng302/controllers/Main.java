@@ -76,6 +76,11 @@ public class Main extends Application {
         displaySwitcher.loadMainMenu();
     }
 
+    /**
+     * Loads the visualiser and attaches a UserInputController to the client and the JavaFX scene
+     * @param isHost whether or not the client is also hosting the server
+     * @param isParticipant whether or not the client is an active competitor requiring control over a boat
+     */
     public void loadRaceView(boolean isHost, boolean isParticipant) {
         displaySwitcher.loadRaceView(isHost);
         if (isParticipant) {
