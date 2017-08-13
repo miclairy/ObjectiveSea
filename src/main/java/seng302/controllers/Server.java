@@ -20,37 +20,30 @@ import static seng302.data.AC35StreamXMLMessage.REGATTA_XML_MESSAGE;
 public class Server implements Runnable, Observer {
 
     private final double SECONDS_PER_UPDATE = 0.2;
-    private double scaleFactor = 1;
-
-    private int nextViewerID = 0;
 
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumber = new HashMap<>();
     private Map<Boat, Integer> boatSequenceNumbers = new HashMap<>();
     private Map<Boat, Integer> lastMarkRoundingSent = new HashMap<>();
-    private String DEFAULT_COURSE = "AC35-course.xml";
-    private String courseXML = DEFAULT_COURSE;
+    private int nextViewerID = 0;
 
     private RaceUpdater raceUpdater;
     private Thread raceUpdaterThread;
     private ConnectionManager connectionManager;
     private ServerPacketBuilder packetBuilder;
     private CollisionManager collisionManager;
-    private Integer minParticipants;
+    private ServerOptions options;
 
     public Server(ServerOptions options) throws IOException {
-        courseXML = options.getRaceXML();
-        raceUpdater = new RaceUpdater(courseXML);
+        this.options = options;
+        raceUpdater = new RaceUpdater(options.getRaceXML());
         collisionManager = raceUpdater.getCollisionManager();
         packetBuilder = new ServerPacketBuilder();
         connectionManager = new ConnectionManager(options.getPort(), raceUpdater.getRace());
         connectionManager.addObserver(this);
-        scaleFactor = options.getSpeedScale();
-        raceUpdater.setScaleFactor(scaleFactor);
+        raceUpdater.setScaleFactor(options.getSpeedScale());
         raceUpdaterThread = new Thread(raceUpdater);
         raceUpdaterThread.setName("Race Updater");
         collisionManager = raceUpdater.getCollisionManager();
-        packetBuilder = new ServerPacketBuilder();
-        minParticipants = options.getMinParticipants();
     }
 
     /**
@@ -83,7 +76,7 @@ public class Server implements Runnable, Observer {
                     sendRaceUpdates();
                 }
                 try {
-                    Thread.sleep((long)(SECONDS_PER_UPDATE * 1000 / scaleFactor));
+                    Thread.sleep((long)(SECONDS_PER_UPDATE * 1000 / options.getSpeedScale()));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -115,7 +108,7 @@ public class Server implements Runnable, Observer {
      * Sends the XML messages when the client has connected
      */
     private void sendInitialRaceMessages() {
-        sendXmlMessage(RACE_XML_MESSAGE, courseXML);
+        sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());
         sendXmlMessage(BOAT_XML_MESSAGE, "Boat.xml");
         sendXmlMessage(REGATTA_XML_MESSAGE, "Regatta.xml");
     }
@@ -192,7 +185,7 @@ public class Server implements Runnable, Observer {
     private void sendXmlMessage(AC35StreamXMLMessage type, String fileName) {
         int sequenceNo = xmlSequenceNumber.get(type) + 1;
         xmlSequenceNumber.put(type, sequenceNo);
-        byte[] packet = packetBuilder.buildXmlMessage(type, fileName, sequenceNo, raceUpdater.getRace(), courseXML);
+        byte[] packet = packetBuilder.buildXmlMessage(type, fileName, sequenceNo, raceUpdater.getRace(), options.getRaceXML());
         connectionManager.setXmlMessage(type, packet);
     }
 
@@ -217,7 +210,7 @@ public class Server implements Runnable, Observer {
         int newId = raceUpdater.addCompetitor();
         if (!raceUpdaterThread.isAlive()){
             int numCompetitors = raceUpdater.getRace().getCompetitors().size();
-            if (numCompetitors >= minParticipants) {
+            if (numCompetitors >= options.getMinParticipants()) {
                 raceUpdaterThread.start();
             }
         }
@@ -229,7 +222,7 @@ public class Server implements Runnable, Observer {
 
         byte[] packet = packetBuilder.createRegistrationAcceptancePacket(newId);
         connectionManager.sendToClient(newId, packet);
-        sendXmlMessage(RACE_XML_MESSAGE, courseXML);
+        sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());
     }
 
     /**

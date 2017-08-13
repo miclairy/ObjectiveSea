@@ -1,10 +1,16 @@
 package seng302.models;
 
+import seng302.data.RaceVisionXMLParser;
+import seng302.utilities.ConnectionUtils;
+
 /**
  * Created by mjt169 on 3/08/17.
  */
 public class ServerOptions {
 
+    private final String DEFAULT_COURSE = "AC35-course.xml";
+    private final Double DEFAULT_SPEED = 20.0;
+    private final Integer DEFAULT_PORT = 2828;
     private Integer MAX_PARTICIPANTS = 6;
 
     private Double speedScale;
@@ -16,10 +22,10 @@ public class ServerOptions {
      * Constructor with default options
      */
     public ServerOptions(){
-        speedScale = 1.0;
+        speedScale = DEFAULT_SPEED;
         minParticipants = 1;
-        port = 2828;
-        raceXML = "Race.xml";
+        port = DEFAULT_PORT;
+        raceXML = DEFAULT_COURSE;
     }
 
     public Double getSpeedScale() {
@@ -47,8 +53,11 @@ public class ServerOptions {
     }
 
     public void setPort(int port) {
-        //TODO use validatePort method in connectionUtils once it is merged in
-        this.port = port;
+        if (ConnectionUtils.validatePort(port)) {
+            this.port = port;
+        } else {
+             throw new IllegalArgumentException("Invalid port number");
+        }
     }
 
     public void setMinParticipants(int minParticipants) throws IllegalArgumentException {
@@ -61,6 +70,11 @@ public class ServerOptions {
     }
 
     public void setRaceXML(String raceXML) {
-        this.raceXML = raceXML;
+        RaceVisionXMLParser parser = new RaceVisionXMLParser();
+        if (parser.checkFileExists(raceXML)) {
+            this.raceXML = raceXML;
+        } else {
+            throw new IllegalArgumentException("Could not find a map that matches that name");
+        }
     }
 }
