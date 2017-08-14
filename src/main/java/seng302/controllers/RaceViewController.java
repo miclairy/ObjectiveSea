@@ -394,25 +394,25 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param point the point where the animation is shown
      */
     void highlightAnimation(CanvasCoordinate point, BoatDisplay boat, Boolean isCollision, String highlightID, int scale){
-        Circle collisionCircle1 = createHighlightCircle(point, highlightID);
-        Circle collisionCircle2 = createHighlightCircle(point, highlightID);
+        Circle highlightCircle1 = createHighlightCircle(point, highlightID);
+        Circle highlightCircle2 = createHighlightCircle(point, highlightID);
 
-        ScaleTransition st1 = AnimationUtils.scaleTransitionCollision(collisionCircle1, 500 * scale,
+        ScaleTransition st1 = AnimationUtils.scaleTransitionCollision(highlightCircle1, 500 * scale,
                 20/scale * zoomLevel);
         st1.setOnFinished(new EventHandler<ActionEvent>(){
             public void handle(ActionEvent AE) {
-                root.getChildren().remove(collisionCircle1);
+                root.getChildren().remove(highlightCircle1);
             }});
 
-        ScaleTransition st2 = AnimationUtils.scaleTransitionCollision(collisionCircle2, 300 * scale,
+        ScaleTransition st2 = AnimationUtils.scaleTransitionCollision(highlightCircle2, 300 * scale,
                 30/scale * zoomLevel);
         st2.setOnFinished(new EventHandler<ActionEvent>(){
             public void handle(ActionEvent AE) {
-                root.getChildren().remove(collisionCircle2);
+                root.getChildren().remove(highlightCircle2);
             }});
 
-        FadeTransition ft1 = AnimationUtils.fadeOutTransition(collisionCircle1, 800 * scale);
-        FadeTransition ft2 = AnimationUtils.fadeOutTransition(collisionCircle2, 600 * scale);
+        FadeTransition ft1 = AnimationUtils.fadeOutTransition(highlightCircle1, 800 * scale);
+        FadeTransition ft2 = AnimationUtils.fadeOutTransition(highlightCircle2, 600 * scale);
 
         if(isCollision) {
             ft2.setOnFinished(new EventHandler<ActionEvent>() {
