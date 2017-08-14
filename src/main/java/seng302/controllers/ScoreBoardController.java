@@ -54,6 +54,7 @@ public class ScoreBoardController {
     @FXML private NumberAxis xAxis ;
     @FXML private NumberAxis yAxis ;
     @FXML private CheckBox DistanceLinesToggle;
+    @FXML private CheckBox chkHighlightMark;
 
     private final Color UNSELECTED_BOAT_COLOR = Color.WHITE;
     private final Color SELECTED_BOAT_COLOR = Color.rgb(77, 197, 138);
@@ -209,6 +210,8 @@ public class ScoreBoardController {
     }
 
     public boolean isDistanceLineSelected(){return DistanceLinesToggle.isSelected();}
+
+    public boolean isHighlightMarkSelected(){return chkHighlightMark.isSelected();}
 
     public void addBoatToSparkLine(Series boatSeries){
         if(!chtSparkLine.getData().contains(boatSeries)){

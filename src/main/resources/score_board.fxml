@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.LineChart?>
@@ -19,7 +26,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<TabPane fx:id="scoreBoard" prefHeight="674.0" prefWidth="379.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.ScoreBoardController">
+<TabPane fx:id="scoreBoard" prefHeight="674.0" prefWidth="379.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.ScoreBoardController">
       <tabs>
          <Tab text="Race Leaderboard">
             <content>
@@ -147,6 +154,11 @@
                                  <GridPane.margin>
                                     <Insets left="30.0" />
                                  </GridPane.margin></CheckBox>
+                              <CheckBox id="chkAnno" fx:id="chkHighlightMark" mnemonicParsing="false" text="Highlight Next Mark" GridPane.rowIndex="3">
+                                 <GridPane.margin>
+                                    <Insets left="30.0" />
+                                 </GridPane.margin>
+                              </CheckBox>
                               </children>
                            </GridPane>
                            <GridPane prefHeight="135.0" prefWidth="161.0" GridPane.rowIndex="1">

@@ -87,6 +87,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean firstTime = true;
     private SelectionController selectionController;
     private Penalties penalties = new Penalties();
+    private boolean highlightMark = false;
 
     private boolean nextMark = true;
 
@@ -171,7 +172,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         moveWake(boatDisplay, point);
         moveSail(boatDisplay, point);
         displayCollisions(boatDisplay, point);
-        if(nextMark){
+        if(nextMark && highlightMark){
             highlightNextMark();
             nextMark = false;
         }
@@ -613,6 +614,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                             drawLayline(displayBoat);
                         }
                     }
+                    highlightMark = scoreBoardController.isHighlightMarkSelected();
                     drawBoatAnnotation(displayBoat, annotations);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
                     displayBoat.annoGrabHandle.setVisible(true);
@@ -1076,7 +1078,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         CompoundMark nextMark = course.getCourseOrder().get(boat.getLastRoundedMarkIndex() + 1);
         CompoundMark boatPosition = new CompoundMark(1, "", new Mark(1, "", boat.getCurrentPosition()));
         double angleToNextMark = MathUtils.calculateBearingBetweenTwoPoints(boatPosition, nextMark);
-        nextMarkArrow.setRotate(angleToNextMark);
+        nextMarkArrow.setRotate(angleToNextMark + selectionController.getRotationOffset());
     }
 
 
