@@ -3,17 +3,12 @@ import javafx.animation.FadeTransition;
 import javafx.scene.Node;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
-import seng302.data.RaceVisionXMLParser;
-import seng302.data.XMLTags;
 import seng302.models.*;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Objects;
 
 import static java.lang.Math.abs;
 
@@ -164,7 +159,7 @@ public class DisplayUtils {
             case "232323":
                 return DisplayUtils.class.getResource("/graphics/mapImages/Athens-map.png").toExternalForm();
             case "242424":
-                return DisplayUtils.class.getResource("/graphics/mapImages/Gothenburg-map.png").toExternalForm();
+                return DisplayUtils.class.getResource("/graphics/mapImages/Malmo-map.png").toExternalForm();
             case "252525":
                 return DisplayUtils.class.getResource("/graphics/mapImages/LakeTaupo-map.png").toExternalForm();
             case "262626":
