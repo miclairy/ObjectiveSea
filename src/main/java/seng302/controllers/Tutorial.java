@@ -14,6 +14,7 @@ import static seng302.data.RaceStatus.STARTED;
 
 /**
  * Created by sjh298 on 8/08/17.
+ *
  */
 public class Tutorial {
 
