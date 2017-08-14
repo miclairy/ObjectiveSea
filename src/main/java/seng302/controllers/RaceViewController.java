@@ -390,8 +390,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     /**
-     * creates an animation to visual a collision
-     * @param point the point where the collision is
+     * creates an animation to visualise a collision or to highlight the next mark a boat should head toward
+     * @param point the point where the animation is shown
      */
     void highlightAnimation(CanvasCoordinate point, BoatDisplay boat, Boolean isCollision, String highlightID, int scale){
         Circle collisionCircle1 = createHighlightCircle(point, highlightID);
@@ -1100,24 +1100,18 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * draws a wind arrow on the course view
      */
     public void drawWindArrow() {
-
         windCircle = controller.getWindCircle();
         AnchorPane canvasAnchor = controller.getCanvasAnchor();
-
         if (!canvasAnchor.getChildren().contains(windArrow)){
             windArrow = raceView.drawWindArrowPolyline();
             canvasAnchor.setTopAnchor(windArrow, WIND_ARROW_Y_PADDING);
             canvasAnchor.setRightAnchor(windArrow, WIND_ARROW_X_PADDING);
-
             windCircle.setRadius(25);
             canvasAnchor.setTopAnchor(windCircle, WIND_CIRCLE_Y_PADDING);
             canvasAnchor.setRightAnchor(windCircle, WIND_CIRCLE_X_PADDING);
-
             windCircle.setId("windCircle");
             canvasAnchor.getChildren().add(windArrow);
         }
-
-
     }
 
     /**
@@ -1144,19 +1138,23 @@ public class RaceViewController extends AnimationTimer implements Observer {
         windArrow.setRotate(180 + windDirection + selectionController.getRotationOffset());
     }
 
-
+    /**
+     * Draws an arrow in the heading of the next mark the boat needs to pass
+     */
     public void drawNextMarkArrow() {
-        nextMarkCircle = controller.getNextMarkCircle();
         AnchorPane canvasAnchor = controller.getCanvasAnchor();
         if (!canvasAnchor.getChildren().contains(nextMarkArrow)) {
             nextMarkArrow = raceView.drawNextMarkArrowPolyline();
             canvasAnchor.setBottomAnchor(nextMarkArrow, NEXT_MARK_ARROW_Y_PADDING);
             canvasAnchor.setRightAnchor(nextMarkArrow, NEXT_MARK_ARROW_X_PADDING);
-            nextMarkCircle.setId("nextMarkCircle");
             canvasAnchor.getChildren().add(nextMarkArrow);
         }
     }
 
+    /**
+     * Updates the direction of the next mark arrow. Sets the arrow visible if in tracking mode (isZoomed is true)
+     * @param isZoomed
+     */
     public void updateNextMarkArrow(Boolean isZoomed) {
         nextMarkArrow.setVisible(isZoomed);
         Course course = race.getCourse();
@@ -1167,24 +1165,26 @@ public class RaceViewController extends AnimationTimer implements Observer {
         nextMarkArrow.setRotate(angleToNextMark + selectionController.getRotationOffset());
     }
 
+    /**
+     * Updates the label displaying the distance to the next mark. Is visible if zoomed in
+     * @param isZoomed
+     */
     public void updateNextMarkDistance(Boolean isZoomed) {
         controller.lblNextMark.setVisible(isZoomed);
-        if(isZoomed) {
-            CompoundMark nextMark = race.getCourse().getCourseOrder().get(currentUserBoatDisplay.getBoat().getLastRoundedMarkIndex() + 1);
-            Coordinate target;
-            double distance;
-            if (nextMark.hasTwoMarks()) {
-                target = DisplayUtils.midPointFromTwoCoords(nextMark.getMark1().getPosition(), nextMark.getMark2().getPosition());
-                distance = target.greaterCircleDistance(currentUserBoatDisplay.getBoat().getCurrentPosition());
-            } else {
-                target = nextMark.getMark1().getPosition();
-                distance = target.greaterCircleDistance(currentUserBoatDisplay.getBoat().getCurrentPosition());
-            }
-            int distanceInMetres = (int) TimeUtils.convertNauticalMilesToMetres(distance);
-            controller.lblNextMark.setText(String.valueOf(distanceInMetres + "m"));
+        CompoundMark nextMark = race.getCourse().getCourseOrder().get(currentUserBoatDisplay.getBoat().getLastRoundedMarkIndex() + 1);
+        Coordinate target;
+        double distance;
+        if (nextMark.hasTwoMarks()) {
+            target = DisplayUtils.midPointFromTwoCoords(nextMark.getMark1().getPosition(), nextMark.getMark2().getPosition());
+            distance = target.greaterCircleDistance(currentUserBoatDisplay.getBoat().getCurrentPosition());
+        } else {
+            target = nextMark.getMark1().getPosition();
+            distance = target.greaterCircleDistance(currentUserBoatDisplay.getBoat().getCurrentPosition());
         }
-    }
+        int distanceInMetres = (int) TimeUtils.convertNauticalMilesToMetres(distance);
+        controller.lblNextMark.setText(String.valueOf(distanceInMetres + "m"));
 
+    }
 
 
     /**
@@ -1255,11 +1255,21 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
 
-    public void highlightNextMark(){
+    /**
+     * Creates highlight animations on the next mark a boat is heading to
+     */
+    private void highlightNextMark(){
         ArrayList<CompoundMark> courseOrder = race.getCourse().getCourseOrder();
         CompoundMark nextMark = courseOrder.get(currentUserBoatDisplay.getBoat().getLastRoundedMarkIndex() + 1);
-        CanvasCoordinate mark = DisplayUtils.convertFromLatLon(nextMark.getPosition().getLat(), nextMark.getPosition().getLon());
-        highlightAnimation(mark, currentUserBoatDisplay, false, "nextMarkHighlight", 2);
+        if(nextMark.hasTwoMarks()) {
+            CanvasCoordinate mark1 = DisplayUtils.convertFromLatLon(nextMark.getMark1().getPosition().getLat(), nextMark.getMark1().getPosition().getLon());
+            CanvasCoordinate mark2 = DisplayUtils.convertFromLatLon(nextMark.getMark2().getPosition().getLat(), nextMark.getMark2().getPosition().getLon());
+            highlightAnimation(mark1, currentUserBoatDisplay, false, "nextMarkHighlight", 2);
+            highlightAnimation(mark2, currentUserBoatDisplay, false, "nextMarkHighlight", 2);
+        } else {
+            CanvasCoordinate mark = DisplayUtils.convertFromLatLon(nextMark.getPosition().getLat(), nextMark.getPosition().getLon());
+            highlightAnimation(mark, currentUserBoatDisplay, false, "nextMarkHighlight", 2);
+        }
     }
 
 
