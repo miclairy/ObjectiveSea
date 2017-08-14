@@ -50,7 +50,6 @@ public class MainMenuController implements Initializable{
 
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
 
-
     DropShadow ds = new DropShadow( 20, Color.web("#8eb0b7"));
 
     @FXML ProgressIndicator joinProgressIndicator;
@@ -123,7 +122,7 @@ public class MainMenuController implements Initializable{
         btnSinglePlay.setDisable(true);
         main.startHostedRace("GuidedPractice-course.xml", DEFAULT_PORT, true);
         Thread.sleep(200);
-        main.loadRaceView(true);
+        main.loadRaceView(true, true);
     }
 
     /**
@@ -134,7 +133,7 @@ public class MainMenuController implements Initializable{
         btnSinglePlay.setDisable(true);
         main.startHostedRace(selectedCourse, DEFAULT_PORT, false);
         Thread.sleep(200);
-        main.loadRaceView(true);
+        main.loadRaceView(true, true);
     }
 
     /**
@@ -144,7 +143,7 @@ public class MainMenuController implements Initializable{
     @FXML private void startHostGame() throws Exception{
         main.startHostedRace(selectedCourse, Integer.parseInt(txtPortNumber.getText()), false);
         Thread.sleep(200);
-        main.loadRaceView(true);
+        main.loadRaceView(true, true);
     }
 
     @FXML private void hostGame(){
@@ -176,9 +175,9 @@ public class MainMenuController implements Initializable{
             boolean clientStarted = main.startClient(ipAddress, portNumber, isParticipant);
             if(clientStarted){
                 Thread.sleep(200);
-                main.loadRaceView(false);
+                main.loadRaceView(false, isParticipant);
             }
-        }else{
+        } else {
             if(!ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && !txtIPAddress.getText().isEmpty()){
                 txtIPAddress.setStyle("-fx-text-inner-color: red;");
             }

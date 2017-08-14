@@ -1,5 +1,7 @@
 package seng302.data;
 
+import seng302.data.registration.RegistrationResponse;
+import seng302.data.registration.RegistrationResponseStatus;
 import seng302.models.Boat;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
@@ -18,7 +20,7 @@ import static seng302.data.AC35StreamXMLMessage.*;
 /**
  * Created on 13/04/17.
  */
-public class DataStreamReader extends Receiver implements Runnable{
+public class ClientListener extends Receiver implements Runnable{
 
     private Socket clientSocket;
     private InputStream dataStream;
@@ -26,9 +28,10 @@ public class DataStreamReader extends Receiver implements Runnable{
     private int sourcePort;
     private Race race;
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumbers = new HashMap<>();
+    private final Integer SOCKET_TIMEOUT_MS = 5000;
     private boolean hasConnectionFailed = false;
 
-    public DataStreamReader(String sourceAddress, int sourcePort){
+    public ClientListener(String sourceAddress, int sourcePort){
         this.sourceAddress = sourceAddress;
         this.sourcePort = sourcePort;
 
@@ -53,6 +56,7 @@ public class DataStreamReader extends Receiver implements Runnable{
     boolean setUpConnection() {
         try {
             clientSocket = new Socket(sourceAddress, sourcePort);
+            clientSocket.setSoTimeout(SOCKET_TIMEOUT_MS);
             dataStream = clientSocket.getInputStream();
             return true;
         } catch (IOException e) {
@@ -168,7 +172,8 @@ public class DataStreamReader extends Receiver implements Runnable{
      */
     private void readData(){
         DataInput dataInput = new DataInputStream(dataStream);
-        while(race == null || !race.getRaceStatus().isRaceEndedStatus() || race.getRaceStatus() != RaceStatus.TERMINATED) {
+        Boolean serverRunning = true;
+        while(serverRunning) {
             try {
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
@@ -201,8 +206,8 @@ public class DataStreamReader extends Receiver implements Runnable{
                                     case YACHT_EVENT_CODE:
                                         parseYachtEventMessage(body);
                                         break;
-                                    case REGISTRATION_ACCEPT:
-                                        parseRegistrationAcceptMessage(body);
+                                    case REGISTRATION_RESPONSE:
+                                        parseRegistrationResponseMessage(body);
                                 }
                             }
                     }
@@ -211,17 +216,27 @@ public class DataStreamReader extends Receiver implements Runnable{
                 }
 
             } catch (IOException e) {
-                race.terminateRace();
+                if(!race.isTerminated()){
+                    race.terminateRace();
+                    race.setAbruptEnd(true);
+                }
+                serverRunning = false;
                 System.out.println("Client: disconnected from Server");
             }
         }
     }
 
-    private void parseRegistrationAcceptMessage(byte[] body) {
+    /**
+     * Parses a registration response message by extracting the Id and the status
+     * @param body the body of a RegistrationResponse message
+     */
+    private void parseRegistrationResponseMessage(byte[] body) {
+        byte statusByte = body[REGISTRATION_RESPONSE_STATUS.getStartIndex()];
+        RegistrationResponseStatus status = RegistrationResponseStatus.getStatusFromByte(statusByte);
         Integer id = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());
-        System.out.println("Client: Received ID of " + id);
+        RegistrationResponse response = new RegistrationResponse(id, status);
         setChanged();
-        notifyObservers(id);
+        notifyObservers(response);
     }
 
 

@@ -1,6 +1,7 @@
 package seng302.data;
 
 import org.junit.Test;
+import seng302.data.registration.RegistrationResponseStatus;
 import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.Race;
@@ -83,6 +84,28 @@ public class ServerPacketBuilderTest {
 
     @Test
     public void createRegistrationAcceptancePacket() {
+        ServerPacketBuilder builder = new ServerPacketBuilder();
+        byte[] fullPacket = builder.createRegistrationResponsePacket(100, RegistrationResponseStatus.PLAYER_SUCCESS);
+        byte[] body = Arrays.copyOfRange(fullPacket, HEADER_LENGTH, fullPacket.length - CRC_LENGTH); //extract body
+
+        int id = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());
+        byte status = body[REGISTRATION_RESPONSE_STATUS.getStartIndex()];
+
+        assertEquals(100, id);
+        assertEquals(RegistrationResponseStatus.PLAYER_SUCCESS.value(), status);
+    }
+
+    @Test
+    public void createRegistrationRejectionPacket() {
+        ServerPacketBuilder builder = new ServerPacketBuilder();
+        byte[] fullPacket = builder.createRegistrationResponsePacket(100, RegistrationResponseStatus.OUT_OF_SLOTS);
+        byte[] body = Arrays.copyOfRange(fullPacket, HEADER_LENGTH, fullPacket.length - CRC_LENGTH); //extract body
+
+        int id = byteArrayRangeToInt(body, REGISTRATION_SOURCE_ID.getStartIndex(), REGISTRATION_SOURCE_ID.getEndIndex());
+        byte status = body[REGISTRATION_RESPONSE_STATUS.getStartIndex()];
+
+        assertEquals(100, id);
+        assertEquals(RegistrationResponseStatus.OUT_OF_SLOTS.value(), status);
     }
 
 }

@@ -441,7 +441,7 @@ public class Controller implements Initializable, Observer {
         startersOverlay.setVisible(false);
     }
 
-    private void showStarterOverlay() {
+    public void showStarterOverlay() {
         startersOverlay.toFront();
         startersOverlay.setVisible(true);
     }
