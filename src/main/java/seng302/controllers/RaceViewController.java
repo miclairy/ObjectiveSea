@@ -106,6 +106,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.scoreBoardController = scoreBoardController;
         this.selectionController = selectionController;
         this.courseRouteArrows = new CourseRouteArrows(race.getCourse(), root);
+        courseRouteArrows.drawRaceRoute();
         redrawCourse();
         race.addObserver(this);
     }
@@ -152,7 +153,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         if (race.getRaceStatus().beforeRaceStart()){
             courseRouteArrows.updateCourseArrows();
-        } else{
+        } else if(courseRouteArrows.getArrowsShown()){
             courseRouteArrows.removeArrowsFromCanvas();
         }
 
@@ -398,7 +399,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawMap();
         drawWindArrow();
         redrawRaceLines();
-        courseRouteArrows.drawRaceRoute();
+        if(courseRouteArrows.getArrowsShown()){
+            courseRouteArrows.drawRaceRoute();
+        }
     }
 
     /**

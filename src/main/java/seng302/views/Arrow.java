@@ -20,13 +20,11 @@ public class Arrow extends Polyline {
     private double width;
     private Polyline arrowLine;
     private CanvasCoordinate center;
-    private Coordinate centerLatLon;
 
 
     public Arrow(double length, double width, Coordinate center) {
         this.length = length;
         this.width = width;
-        this.centerLatLon = center;
         this.center = DisplayUtils.convertFromLatLon(center);
         double bottomY = this.center.getY() - length;
         arrowLine = new Polyline(this.center.getX() - width / 2, bottomY,
@@ -35,23 +33,21 @@ public class Arrow extends Polyline {
         relocate(this.center);
         arrowLine.setStrokeWidth(4.0);
         arrowLine.setId("distanceArrow");
-//        setOpacity(0);
     }
 
-    public Arrow (double length, double width, Coordinate center, double rotation, Color color){
-        this(length, width, center);
-        rotate(rotation);
-        setColour(color);
-
-
-    }
-
+    /**
+     * Moves the arrows to the given CanvasCoordinate center
+     * @param center the canvas coordinate to move to
+     */
     public void relocate(CanvasCoordinate center) {
         this.center = center;
         arrowLine.relocate(center.getX() - width / 2, center.getY() - length);
-
     }
 
+    /**
+     * Rotates the arrow by the given amount
+     * @param amount The angle to rotate by
+     */
     public void rotate(double amount){
         arrowLine.getTransforms().clear();
         arrowLine.getTransforms().add(new Rotate(amount, center.getX(), center.getY()));
@@ -65,21 +61,30 @@ public class Arrow extends Polyline {
         root.getChildren().remove(arrowLine);
     }
 
-
     public void setColour(Color color){
         arrowLine.setStroke(color);
     }
 
+    /**
+     * Emphasizes the arrow
+     */
     public void emphasize(){
         arrowLine.setOpacity(1.0);
         arrowLine.setStrokeWidth(5.0);
     }
 
+    /**
+     * Makes the arrow appear faded out
+     */
     public void fade(){
         arrowLine.setOpacity(0.2);
         arrowLine.setStrokeWidth(4.0);
     }
 
+    /**
+     * Scales the arrow by zoomLevel in X and Y directions
+     * @param zoomLevel the amount to scale by
+     */
     public void setScale(Double zoomLevel) {
         arrowLine.setScaleY(zoomLevel);
         arrowLine.setScaleX(zoomLevel);

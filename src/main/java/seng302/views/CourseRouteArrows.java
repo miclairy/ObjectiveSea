@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by atc60 on 14/08/17.
+ * Class to draw the arrows to display the course order
  */
 public class CourseRouteArrows {
 
@@ -22,6 +22,7 @@ public class CourseRouteArrows {
     private Group root;
     private Integer refreshTimer;
     private Integer arrowIteration;
+    private Boolean arrowsShown = false;
 
     public CourseRouteArrows(Course course, Group root) {
         this.course = course;
@@ -31,6 +32,10 @@ public class CourseRouteArrows {
         arrowIteration = 0;
     }
 
+    /**
+     * Every REFRESH_THRESHOLD method calls, this method calls the updateArrowAnimation to the
+     * draw the next step in the arrow path.
+     */
     public void updateCourseArrows(){
         if (refreshTimer == 0){
             arrowIteration = (arrowIteration + 1) % arrowRoute.size();
@@ -39,6 +44,10 @@ public class CourseRouteArrows {
         refreshTimer = (refreshTimer + 1) % REFRESH_THRESHOLD;
     }
 
+    /**
+     * Moves the arrow path animation to the next step.
+     * @param iteration The iteration of the animation, determines which arrows to emphasize or fade
+     */
     private void updateArrowAnimation(Integer iteration){
         int numArrows = arrowRoute.size();
         for(int i = 0; i < numArrows; i++){
@@ -50,9 +59,14 @@ public class CourseRouteArrows {
         }
     }
 
-    private void addArrowDirection(CompoundMark previousMark, CompoundMark currentMark) {
+    /**
+     * Creates and adds arrows to the arrowRoute
+     * @param previousMark The starting compound mark for the leg
+     * @param currentMark The ending compound mark for the leg
+     */
+    private void addLegArrows(CompoundMark previousMark, CompoundMark currentMark) {
         double legLength = currentMark.getPosition().greaterCircleDistance(previousMark.getPosition());
-        double numArrows = (legLength / 0.1) - 1;
+        Integer numArrows = (int)((legLength / 0.1) - 1);
         if (numArrows < 1){
             numArrows = 1;
         }
@@ -65,11 +79,14 @@ public class CourseRouteArrows {
         }
     }
 
-    public void createArrowedRoute() {
+    /**
+     * Creates the arrow route based on the course and colours it
+     */
+    private void createArrowedRoute() {
         arrowRoute = new ArrayList<>();
         List<CompoundMark> courseOrder = course.getCourseOrder();
         for (int i = 1; i < courseOrder.size(); i ++) {
-            addArrowDirection(courseOrder.get(i - 1), courseOrder.get(i));
+            addLegArrows(courseOrder.get(i - 1), courseOrder.get(i));
         }
         Color color = Color.color(0.25, 0.25, 0.25); //Grey
         double increment = 0.6 / (arrowRoute.size() + 1.0);
@@ -79,12 +96,19 @@ public class CourseRouteArrows {
         }
     }
 
+    /**
+     * Removes the all the arrows in the route from the canvas
+     */
     public void removeArrowsFromCanvas(){
         for(Arrow arrow : arrowRoute){
             arrow.removeFromCanvas(root);
         }
+        arrowsShown = false;
     }
 
+    /**
+     * Removes, recreates and redraws all the route arrows on the canvas.
+     */
     public void drawRaceRoute(){
         removeArrowsFromCanvas();
         createArrowedRoute();
@@ -92,5 +116,10 @@ public class CourseRouteArrows {
             arrow.addToCanvas(root);
             arrow.setScale(DisplayUtils.zoomLevel);
         }
+        arrowsShown = true;
+    }
+
+    public Boolean getArrowsShown() {
+        return arrowsShown;
     }
 }
