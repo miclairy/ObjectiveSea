@@ -47,6 +47,11 @@ public class AnimationUtils {
         return fadeTransition;
     }
 
+    /**
+     * fades a node in our out from the screen
+     * @param node the node to be faded
+     * @param visible whether or not the node is currently visible
+     */
     public static void fadeNode(Node node, boolean visible){
         node.setVisible(true);
         FadeTransition fadeTransition = new FadeTransition(new Duration(150), node);
@@ -168,6 +173,10 @@ public class AnimationUtils {
 
     }
 
+    /**
+     * fades in a new FXML
+     * @param newScene the new scene to be faded in
+     */
     public static void transitionFXML(Node newScene){
         FadeTransition ft2 = new FadeTransition(Duration.millis(1000), newScene);
         ft2.setFromValue(0.0);
@@ -175,6 +184,10 @@ public class AnimationUtils {
         ft2.play();
     }
 
+    /**
+     * lowers the opacity of a ndoe on the screen
+     * @param node the node to be faded
+     */
     public static void dullNode(Node node){
         FadeTransition fadeTransition = new FadeTransition(new Duration(100), node);
         fadeTransition.setFromValue(1);
@@ -183,6 +196,10 @@ public class AnimationUtils {
         fadeTransition.play();
     }
 
+    /**
+     * sets a nodes opcaity to full
+     * @param node the node to be made fully opaque
+     */
     public static void focusNode(Node node){
         FadeTransition fadeTransition = new FadeTransition(new Duration(100), node);
         fadeTransition.setFromValue(node.getOpacity());
@@ -191,6 +208,12 @@ public class AnimationUtils {
         fadeTransition.play();
     }
 
+    /**
+     * shifts a node that is hidden when scoreboard visible
+     * @param node the node to be shifted
+     * @param amount the amount to shift the node by
+     * @param visible whether or not the node is visible
+     */
     public static void shiftPaneNodes(Node node, int amount, boolean visible){
         node.setVisible(true);
         TranslateTransition translateTransition = new TranslateTransition(new Duration(200), node);
@@ -205,6 +228,12 @@ public class AnimationUtils {
         translateTransition.play();
     }
 
+    /**
+     * shifts the side pane arrow in or out
+     * @param node the arrow to be shifted
+     * @param amount the amount ot shift it by
+     * @param rotation the amount to rotate it by
+     */
     public static void shiftPaneArrow(Node node, int amount, int rotation){
         TranslateTransition translateTransition = new TranslateTransition(new Duration(200), node);
         translateTransition.setByX(amount);
@@ -219,6 +248,11 @@ public class AnimationUtils {
 
     }
 
+    /**
+     *  shifts a hidden board node when panel toggled
+     * @param node the node to be shifted
+     * @param visible whether or not it is currently visible
+     */
     public static void toggleHiddenBoardNodes(Node node, boolean visible){
         FadeTransition fadeTransition = new FadeTransition(new Duration(200), node);
         fadeTransition.setInterpolator(Interpolator.EASE_OUT);

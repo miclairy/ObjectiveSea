@@ -140,6 +140,9 @@ public class ScoreBoardController {
         addButtonListeners(btnExit);
     }
 
+    /**
+     * initialises the table with boat data
+     */
     private void setUpTable(){
         columnName.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
         columnPosition.setCellValueFactory(cellData -> cellData.getValue().getCurrPlacingProperty().asObject());
@@ -187,6 +190,9 @@ public class ScoreBoardController {
         annotationsSlider.adjustValue(annotationsSlider.getMax());
     }
 
+    /**
+     * sets up the sparkline with correct sizing for the race
+     */
     private void setupSparkLine(){
         xAxis.setAutoRanging(false);
         xAxis.setLowerBound(0);
@@ -256,6 +262,9 @@ public class ScoreBoardController {
         }
     }
 
+    /**
+     * highlights the selected boat in the table view
+     */
     public void highlightUserBoat(){
         if(raceViewController != null){
             BoatDisplay userBoat = raceViewController.getCurrentUserBoatDisplay();
@@ -265,6 +274,10 @@ public class ScoreBoardController {
         }
     }
 
+
+    /**
+     * updates the table when a new competitor is added
+     */
     public void refreshTable(){
         Callback<Boat, Observable[]> cb =(Boat boat) -> new Observable[]{boat.getCurrPlacingProperty()};
 

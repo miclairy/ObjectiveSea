@@ -641,6 +641,9 @@ public class Controller implements Initializable, Observer {
         stackPane.setScaleY(1.08);
     }
 
+    /**
+     * sets up the rv table when the board is toggled
+     */
     private void setUpTable(){
         columnName.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
         columnPosition.setCellValueFactory(cellData -> cellData.getValue().getCurrPlacingProperty().asObject());
@@ -668,6 +671,9 @@ public class Controller implements Initializable, Observer {
         }
     }
 
+    /** refreshes the RV table when a competitor is added
+     *
+     */
     public void refreshTable(){
         Callback<Boat, javafx.beans.Observable[]> cb =(Boat boat) -> new javafx.beans.Observable[]{boat.getCurrPlacingProperty()};
 
