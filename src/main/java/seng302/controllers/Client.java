@@ -70,7 +70,7 @@ public class Client implements Runnable, Observer {
     private void manageWaitingConnection() throws NoConnectionToServerException {
         int connectionAttempts = 0;
         while(clientListener.getClientSocket() == null) {
-            if(dataStreamReader.isHasConnectionFailed()){
+            if(clientListener.isHasConnectionFailed()){
                 stopDataStreamReader();
                 throw new NoConnectionToServerException(true, "Connection Failed. Port number is invalid.");
             }else if(connectionAttempts < MAX_CONNECTION_ATTEMPTS){
@@ -99,7 +99,7 @@ public class Client implements Runnable, Observer {
                 Thread.sleep(WAIT_MILLISECONDS);
                 waitTime += WAIT_MILLISECONDS;
                 if (waitTime > CONNECTION_TIMEOUT) {
-                    throw new NoConnectionToServerException("Connection to server timed out while waiting for registration response.");
+                    throw new NoConnectionToServerException(false, "Connection to server timed out while waiting for registration response.");
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
