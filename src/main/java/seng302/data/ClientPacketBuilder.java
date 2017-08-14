@@ -1,5 +1,7 @@
 package seng302.data;
 
+import seng302.data.registration.RegistrationType;
+
 import static seng302.data.AC35StreamField.*;
 import static seng302.data.AC35StreamMessage.BOAT_ACTION_MESSAGE;
 import static seng302.data.AC35StreamMessage.REGISTRATION_REQUEST;
@@ -11,13 +13,13 @@ public class ClientPacketBuilder extends PacketBuilder {
 
     /**
      * Builds a byte array for the registration request message.
-     * @param participate 1 if client wants to compete in the race. 0 if client just wants to observe
+     * @param regoType the registration type of the client (currently only SPECTATOR and PLAYER will do anything)
      * @return the registration request byte array
      */
-    public byte[] createRegistrationRequestPacket(boolean participate){
+    public byte[] createRegistrationRequestPacket(RegistrationType regoType){
         byte[] header = createHeader(REGISTRATION_REQUEST);
         byte[] body = new byte[REGISTRATION_REQUEST.getLength()];
-        addFieldToByteArray(body, REGISTRATION_REQUEST_TYPE, participate ? 1 : 0);
+        addFieldToByteArray(body, REGISTRATION_REQUEST_TYPE, regoType.value());
         return generatePacket(header, body);
     }
 

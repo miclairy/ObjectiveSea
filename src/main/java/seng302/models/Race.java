@@ -29,6 +29,7 @@ public class Race extends Observable{
     private double UTCOffset;
     private boolean firstMessage = true;
     private Set<Integer> competitorIds = new HashSet<>();
+    private boolean abruptEnd;
 
     public Race(String name, Course course, List<Boat> competitors) {
         this.regattaName = name;
@@ -265,5 +266,12 @@ public class Race extends Observable{
         return this.raceStatus.equals(RaceStatus.STARTED);
     }
 
+    public void setAbruptEnd(boolean abruptEnd) {
+        this.abruptEnd = abruptEnd;
+    }
+
+    public boolean getAbruptEnd() {
+        return abruptEnd;
+    }
 }
 

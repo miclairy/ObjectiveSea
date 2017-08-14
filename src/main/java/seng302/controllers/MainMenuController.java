@@ -18,7 +18,6 @@ import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplaySwitcher;
 import seng302.utilities.GameSounds;
-
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
@@ -51,10 +50,9 @@ public class MainMenuController implements Initializable{
     @FXML ImageView LakeTekapo;
     @FXML ImageView LakeTaupo;
     @FXML ImageView AC33;
-    @FXML ImageView Gothenburg;
+    @FXML ImageView Malmo;
 
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
-
 
     DropShadow ds = new DropShadow( 20, Color.web("#8eb0b7"));
 
@@ -128,10 +126,9 @@ public class MainMenuController implements Initializable{
     @FXML private void loadTutorial() throws Exception {
         DisplaySwitcher.getGameSounds().stopMusic();
         btnSinglePlay.setDisable(true);
-        main.startHostedRace(selectedCourse, DEFAULT_PORT);
+        main.startHostedRace("GuidedPractice-course.xml", DEFAULT_PORT, true);
         Thread.sleep(200);
-        main.loadRaceView(true);
-        System.out.println("This is tutorial");
+        main.loadRaceView(true, true);
         loadTutorialMusic();
     }
 
@@ -142,9 +139,9 @@ public class MainMenuController implements Initializable{
     @SuppressWarnings("Duplicates")
     @FXML private void loadOfflinePlay() throws Exception{
         btnSinglePlay.setDisable(true);
-        main.startHostedRace(selectedCourse, DEFAULT_PORT);
+        main.startHostedRace(selectedCourse, DEFAULT_PORT, false);
         Thread.sleep(200);
-        main.loadRaceView(true);
+        main.loadRaceView(true, true);
         loadSinglePlayerMusic();
     }
 
@@ -153,9 +150,9 @@ public class MainMenuController implements Initializable{
      * @throws Exception
      */
     @FXML private void startHostGame() throws Exception{
-        main.startHostedRace(selectedCourse, Integer.parseInt(txtPortNumber.getText()));
+        main.startHostedRace(selectedCourse, Integer.parseInt(txtPortNumber.getText()), false);
         Thread.sleep(200);
-        main.loadRaceView(true);
+        main.loadRaceView(true, true);
         loadRealGameSounds();
     }
 
@@ -188,10 +185,10 @@ public class MainMenuController implements Initializable{
             boolean clientStarted = main.startClient(ipAddress, portNumber, isParticipant);
             if(clientStarted){
                 Thread.sleep(200);
-                main.loadRaceView(false);
+                main.loadRaceView(false, isParticipant);
                 loadRealGameSounds();
             }
-        }else{
+        } else {
             if(!ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && !txtIPAddress.getText().isEmpty()){
                 txtIPAddress.setStyle("-fx-text-inner-color: red;");
             }
@@ -247,14 +244,14 @@ public class MainMenuController implements Initializable{
         addImageListeners(LakeTekapo);
         addImageListeners(LakeTaupo);
         addImageListeners(AC33);
-        addImageListeners(Gothenburg);
+        addImageListeners(Malmo);
         addImageListeners(Athens);
         addButtonListeners(AC35);
         addButtonListeners(LakeTaupo);
         addButtonListeners(LakeTekapo);
         addButtonListeners(AC33);
         addButtonListeners(Athens);
-        addButtonListeners(Gothenburg);
+        addButtonListeners(Malmo);
     }
 
     private void setLabelPromptAnimations(){
