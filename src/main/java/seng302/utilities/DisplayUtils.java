@@ -340,6 +340,7 @@ public class DisplayUtils {
     public static String getTimeToNextMark(long timeAtMark, long currTime){
         String timeTillMark;
         long convertedTime = (timeAtMark - currTime);
+        System.out.println(convertedTime);
         if (timeAtMark > 0 && convertedTime < FIFTY_NINE_MINUTES_MS) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("mm:ss");
             Instant instant = Instant.ofEpochMilli(convertedTime);
