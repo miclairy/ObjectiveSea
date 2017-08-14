@@ -12,6 +12,7 @@ import static org.junit.Assert.*;
 
 /**
  * Created by mjt169 on 11/05/17.
+ *
  */
 public class RaceUpdaterTest {
 /*

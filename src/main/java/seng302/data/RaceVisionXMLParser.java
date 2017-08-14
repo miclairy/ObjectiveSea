@@ -9,7 +9,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -235,22 +234,25 @@ public class RaceVisionXMLParser {
                             break;
                         case XMLTags.Course.COMPOUND_MARK_SEQUENCE:
                             NodeList legs = element.getElementsByTagName(XMLTags.Course.CORNER);
-                            Map<Integer, Integer> markOrder = new TreeMap<>();
+                            Map<Integer, ArrayList<String>> markOrder = new TreeMap<>();
                             for (int k = 0; k < legs.getLength(); k++) {
                                 Element corner = (Element) legs.item(k);
+                                ArrayList<String> markRounding = new ArrayList<>();
                                 Integer seqNumber = Integer.parseInt(corner.getAttribute(XMLTags.Course.SEQ_ID));
-                                Integer compoundMarkID = Integer.parseInt(corner.getAttribute(XMLTags.Course.COMPOUND_MARK_ID));
-                                markOrder.put(seqNumber, compoundMarkID);
+                                markRounding.add(corner.getAttribute(XMLTags.Course.COMPOUND_MARK_ID));
+                                markRounding.add(corner.getAttribute(XMLTags.Course.ROUNDING));
+                                markOrder.put(seqNumber, markRounding);
                             }
                             for(Integer seqNumber : markOrder.keySet()){
-                                int markID = markOrder.get(seqNumber);
+                                int markID = Integer.parseInt(markOrder.get(seqNumber).get(0));
+                                String roundingSide = markOrder.get(seqNumber).get(1);
                                 if (seqNumber == 1) {
                                     CompoundMark mark = course.getCompoundMarkByID(markID);
                                     if (!mark.hasTwoMarks()){
-                                        continue;
+                                        throw new RuntimeException("Race xml file has a incorrectly formatted Start Line");
                                     }
                                 }
-                                course.addMarkInOrder(markID);
+                                course.addMarkInOrder(markID, roundingSide);
                             }
                             break;
                         case XMLTags.Course.WIND:
@@ -335,7 +337,6 @@ public class RaceVisionXMLParser {
 
     /**
      * Decodes a CompoundMark element into a CompoundMark object
-     *
      * @param compoundMarkElement - an XML <CompoundMark> element
      * @return a CompoundMark (potentially RaceLine) object
      * @throws XMLParseException when an expected tag is missing or unexpectedly formatted
@@ -353,7 +354,6 @@ public class RaceVisionXMLParser {
         if(numMarks == 2){
             Element mark1Element = (Element) markNodes.item(0);
             Element mark2Element = (Element) markNodes.item(1);
-
             Mark mark1 = parseMark(mark1Element, course);
             Mark mark2 = parseMark(mark2Element, course);
             compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark1, mark2);

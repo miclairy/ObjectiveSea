@@ -4,17 +4,14 @@ import seng302.data.BoatStatus;
 import seng302.data.RaceStatus;
 import seng302.data.RaceVisionXMLParser;
 import seng302.models.*;
-import seng302.utilities.DisplayUtils;
 import seng302.utilities.MathUtils;
 import seng302.utilities.PolarReader;
 import seng302.utilities.TimeUtils;
-
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-
 import static seng302.data.RaceStatus.*;
 
 /**
@@ -36,6 +33,7 @@ public class RaceUpdater implements Runnable {
     private PolarTable polarTable;
     private Collection<Boat> potentialCompetitors;
     private CollisionManager collisionManager;
+    private Coordinate startingPosition;
     private boolean serverRunning;
 
     public RaceUpdater(String selectedCourse){
@@ -45,13 +43,10 @@ public class RaceUpdater implements Runnable {
         RaceVisionXMLParser raceVisionXMLParser = new RaceVisionXMLParser();
         raceVisionXMLParser.setCourseFile(selectedCourse);
         potentialCompetitors = raceVisionXMLParser.importDefaultStarters();
-
         race = raceVisionXMLParser.importRace();
-
         Course course = race.getCourse();
         course.setTrueWindSpeed(initialWindSpeed);
         course.setWindDirection(course.getWindDirectionBasedOnGates());
-        //race = new Race("Mock Runner Race", course, boatsInRace);
         this.serverRunning = true;
         initialize();
     }
@@ -70,12 +65,21 @@ public class RaceUpdater implements Runnable {
         race.setStartTimeInEpochMs(currentTime + (1000 * 60 * 3)); //3 minutes from now
     }
 
+
+    /**
+     * Adds a competitor from the potential competitors collection into the race
+     * @return the id of the added competitor, or -1 if max number reached.
+     */
     public int addCompetitor() {
-        Boat newCompetitor = potentialCompetitors.iterator().next();
-        potentialCompetitors.remove(newCompetitor);
-        race.addCompetitor(newCompetitor);
-        prepareBoatForRace(newCompetitor);
-        return newCompetitor.getId();
+        if (potentialCompetitors.iterator().hasNext()) {
+            Boat newCompetitor = potentialCompetitors.iterator().next();
+            potentialCompetitors.remove(newCompetitor);
+            race.addCompetitor(newCompetitor);
+            prepareBoatForRace(newCompetitor);
+            return newCompetitor.getId();
+        } else {
+            return -1;
+        }
     }
 
     /**
@@ -92,6 +96,7 @@ public class RaceUpdater implements Runnable {
     public void run() {
         boolean isPractice = race.getId().equals("77228423"); // 77228423 spells practice in text
         if (isPractice) race.updateRaceStatus(PREPARATORY);
+        Course course = race.getCourse();
         while (!race.getRaceStatus().isRaceEndedStatus() && serverRunning) {
             boolean atLeastOneBoatNotFinished = false;
             double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
@@ -127,6 +132,9 @@ public class RaceUpdater implements Runnable {
                     }
                     updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
                     boat.updateBoatHeading(raceSecondsPassed);
+                    if (course.getCourseOrder().size() > 0) {
+                        checkMarkRounding(boat, course);
+                    }
                     calculateTimeAtNextMark(boat);
                 } else {
                     if(millisBeforeStart < WARNING_SIGNAL_TIME_IN_MS && millisBeforeStart > PREPATORY_SIGNAL_TIME_IN_MS) {
@@ -135,7 +143,7 @@ public class RaceUpdater implements Runnable {
                         race.updateRaceStatus(RaceStatus.PREPARATORY);
                     }
                 }
-                if (!boat.getStatus().equals(BoatStatus.FINISHED)) {
+                if (!boat.getStatus().equals(BoatStatus.FINISHED) && !boat.getStatus().equals(BoatStatus.DNF)) {
                     atLeastOneBoatNotFinished = true;
                 }
                 if (boat.getStatus().equals(BoatStatus.DNF)) {
@@ -155,7 +163,7 @@ public class RaceUpdater implements Runnable {
             }
 
             if (race.getCompetitors().size() > 0 && !atLeastOneBoatNotFinished) {
-                race.updateRaceStatus(RaceStatus.FINISHED);
+                race.updateRaceStatus(RaceStatus.TERMINATED);
             }
 
             try{
@@ -163,6 +171,32 @@ public class RaceUpdater implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void checkMarkRounding(Boat boat, Course course) {
+        CompoundMark currentMark = course.getCourseOrder().get(boat.getLastRoundedMarkIndex() + 1);
+        CompoundMark previousMark = null;
+        CompoundMark nextMark = null;
+        if (!currentMark.isStartLine()){
+            previousMark = course.getCourseOrder().get(boat.getLastRoundedMarkIndex());
+        }
+        if(!currentMark.isFinishLine()){
+            nextMark = course.getCourseOrder().get(boat.getLastRoundedMarkIndex() + 2);
+        }
+        if(currentMark.isStartLine()){
+            if(RoundingMechanics.boatPassedThroughCompoundMark(boat, course.getStartLine(), startingPosition, true)){
+                boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
+            }
+        } else if (currentMark.isFinishLine()) {
+            if(RoundingMechanics.boatPassedThroughCompoundMark(boat, course.getFinishLine(), previousMark.getPosition(), true)) {
+                boat.setCurrentSpeed(0);
+                boat.setStatus(BoatStatus.FINISHED);
+            }
+        } else if (!currentMark.hasTwoMarks()){
+            RoundingMechanics.boatHeadingToMark(boat, currentMark, previousMark, nextMark);
+        } else if(currentMark.hasTwoMarks()) {
+            RoundingMechanics.boatHeadingToGate(boat, currentMark, previousMark, nextMark);
         }
     }
 
@@ -176,7 +210,7 @@ public class RaceUpdater implements Runnable {
         Coordinate boatPosition = boat.getCurrentPosition();
         double distanceGained = timePassed * boat.getCurrentSpeed();
         Coordinate newPos = boatPosition.coordAt(distanceGained, boatHeading);
-        boatPosition.update(newPos.getLat(), newPos.getLon());
+        boat.setPosition(new Coordinate(newPos.getLat(), newPos.getLon()));
     }
 
 
@@ -349,7 +383,7 @@ public class RaceUpdater implements Runnable {
     private void prepareBoatForRace(Boat boat) {
         setStartingPosition(boat);
         boat.updateBoatSpeed(race.getCourse());
-        boat.setLastRoundedMarkIndex(0);
+        boat.setLastRoundedMarkIndex(-1);
         boat.setStatus(BoatStatus.PRERACE);
     }
 
@@ -387,6 +421,7 @@ public class RaceUpdater implements Runnable {
         Double curLon = startPosition1.getLon() + (dLon * race.getCompetitors().size());
         boat.setPosition(curLat, curLon);
         boat.setHeading(boat.getCurrentPosition().headingToCoordinate(startingLine.getPosition()));
+        startingPosition = new Coordinate(curLat, curLon);
     }
     /**
      * Updates the boats time to the next mark
@@ -483,5 +518,4 @@ public class RaceUpdater implements Runnable {
     public CollisionManager getCollisionManager() {
         return collisionManager;
     }
-
 }
