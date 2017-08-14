@@ -1,8 +1,6 @@
 package seng302.utilities;
 
-import javafx.util.Pair;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import seng302.models.CompoundMark;
@@ -16,6 +14,7 @@ import static seng302.utilities.MathUtils.*;
 
 /**
  * Created by gla42 on 11/05/17.
+ *
  */
 public class MathUtilsTest {
 
@@ -38,8 +37,8 @@ public class MathUtilsTest {
 
         defaultCourse.addNewCompoundMark(start);
         defaultCourse.addNewCompoundMark(mark);
-        defaultCourse.addMarkInOrder(1);
-        defaultCourse.addMarkInOrder(2);
+        defaultCourse.addMarkInOrder(1, "PS");
+        defaultCourse.addMarkInOrder(2, "PS");
     }
 
     @Test

@@ -2,14 +2,13 @@ package seng302.data;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 
-public class DataStreamReaderTest {
+public class ClientListenerTest {
     private static ServerSocket testFeedSocket;
 
     private static final String TEST_FEED_ADDRESS = "127.0.0.1";
@@ -23,7 +22,7 @@ public class DataStreamReaderTest {
 
     @Test
     public void setUpConnectionTest(){
-        DataStreamReader testReader = new DataStreamReader(TEST_FEED_ADDRESS, TEST_FEED_PORT);
+        ClientListener testReader = new ClientListener(TEST_FEED_ADDRESS, TEST_FEED_PORT);
 
         Assert.assertNull(testReader.getClientSocket());
 
@@ -44,34 +43,34 @@ public class DataStreamReaderTest {
     @Test
     public void byteArrayRangeToIntTest(){
         byte[] testByteArray = new byte[]{8, 52, 1, 0, 2};
-        Assert.assertEquals(8, DataStreamReader.byteArrayRangeToInt(testByteArray, 0, 1));
-        Assert.assertEquals(131073, DataStreamReader.byteArrayRangeToInt(testByteArray, 2, 5));
-        Assert.assertEquals(78856, DataStreamReader.byteArrayRangeToInt(testByteArray, 0, 4));
+        Assert.assertEquals(8, ClientListener.byteArrayRangeToInt(testByteArray, 0, 1));
+        Assert.assertEquals(131073, ClientListener.byteArrayRangeToInt(testByteArray, 2, 5));
+        Assert.assertEquals(78856, ClientListener.byteArrayRangeToInt(testByteArray, 0, 4));
     }
 
     @Test(expected=IllegalArgumentException.class)
     public void byteArrayRangeToIntExceptionTest(){
         byte[] testByteArray = new byte[]{8, 52, 1, 0, 2};
-        DataStreamReader.byteArrayRangeToInt(testByteArray, 0, 5);
+        ClientListener.byteArrayRangeToInt(testByteArray, 0, 5);
     }
 
     @Test
     public void intToLatLonTest(){
-        Assert.assertEquals(180, DataStreamReader.intToLatLon((int)Math.pow(2, 31)), DELTA);
-        Assert.assertEquals(-180, DataStreamReader.intToLatLon((int)-Math.pow(2, 31)), DELTA);
-        Assert.assertEquals(0, DataStreamReader.intToLatLon(0), DELTA);
-        Assert.assertEquals(41.90951585, DataStreamReader.intToLatLon(500000000), DELTA);
-        Assert.assertEquals(-33.5276126, DataStreamReader.intToLatLon(-400000000), DELTA);
+        Assert.assertEquals(180, ClientListener.intToLatLon((int)Math.pow(2, 31)), DELTA);
+        Assert.assertEquals(-180, ClientListener.intToLatLon((int)-Math.pow(2, 31)), DELTA);
+        Assert.assertEquals(0, ClientListener.intToLatLon(0), DELTA);
+        Assert.assertEquals(41.90951585, ClientListener.intToLatLon(500000000), DELTA);
+        Assert.assertEquals(-33.5276126, ClientListener.intToLatLon(-400000000), DELTA);
     }
 
     @Test
     public void intToHeadingTest(){
-        Assert.assertEquals(0, DataStreamReader.intToHeading(0x0000), DELTA);
-        Assert.assertEquals(90, DataStreamReader.intToHeading(0x4000), DELTA);
-        Assert.assertEquals(180, DataStreamReader.intToHeading(0x8000), DELTA);
-        Assert.assertEquals(270, DataStreamReader.intToHeading(0xC000), DELTA);
+        Assert.assertEquals(0, ClientListener.intToHeading(0x0000), DELTA);
+        Assert.assertEquals(90, ClientListener.intToHeading(0x4000), DELTA);
+        Assert.assertEquals(180, ClientListener.intToHeading(0x8000), DELTA);
+        Assert.assertEquals(270, ClientListener.intToHeading(0xC000), DELTA);
 
-        Assert.assertEquals(241.5948486, DataStreamReader.intToHeading(0xABCD), DELTA);
-        Assert.assertEquals(23.99963378, DataStreamReader.intToHeading(0x1111), DELTA);
+        Assert.assertEquals(241.5948486, ClientListener.intToHeading(0xABCD), DELTA);
+        Assert.assertEquals(23.99963378, ClientListener.intToHeading(0x1111), DELTA);
     }
 }

@@ -1,6 +1,8 @@
 package seng302.controllers;
 
 import seng302.data.*;
+import seng302.data.registration.RegistrationResponseStatus;
+import seng302.data.registration.RegistrationType;
 import seng302.models.Boat;
 import seng302.models.Collision;
 import seng302.models.Race;
@@ -36,6 +38,7 @@ public class Server implements Runnable, Observer {
     public Server(ServerOptions options) throws IOException {
         this.options = options;
         raceUpdater = new RaceUpdater(options.getRaceXML());
+        if(options.isTutorial()) raceUpdater.setTutorial();
         collisionManager = raceUpdater.getCollisionManager();
         packetBuilder = new ServerPacketBuilder();
         connectionManager = new ConnectionManager(options.getPort(), raceUpdater.getRace());
@@ -51,7 +54,6 @@ public class Server implements Runnable, Observer {
      * @throws IOException
      */
     private void initialize() throws IOException, NullPointerException  {
-
         xmlSequenceNumber.put(REGATTA_XML_MESSAGE, 0);
         xmlSequenceNumber.put(RACE_XML_MESSAGE, 0);
         xmlSequenceNumber.put(BOAT_XML_MESSAGE, 0);
@@ -82,10 +84,10 @@ public class Server implements Runnable, Observer {
                 }
             }
             sendRaceUpdates(); //send one last message block with ending data
-
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //TODO: Clean up connections
     }
 
     /**
@@ -101,7 +103,7 @@ public class Server implements Runnable, Observer {
      * Exit out of run
      */
     public void stop(){
-        raceUpdater.getRace().updateRaceStatus(RaceStatus.FINISHED);
+        raceUpdater.getRace().updateRaceStatus(RaceStatus.TERMINATED);
     }
 
     /**
@@ -208,19 +210,25 @@ public class Server implements Runnable, Observer {
      */
     private void addClientToRace(ServerListener serverListener){
         int newId = raceUpdater.addCompetitor();
-        if (!raceUpdaterThread.isAlive()){
-            int numCompetitors = raceUpdater.getRace().getCompetitors().size();
-            if (numCompetitors >= options.getMinParticipants()) {
-                raceUpdaterThread.start();
+        boolean success = newId != -1;
+        byte[] packet;
+        if (success) {
+            Boat boat = raceUpdater.getRace().getBoatById(newId);
+            boatSequenceNumbers.put(boat, newId);
+            lastMarkRoundingSent.put(boat, -1);
+            packet = packetBuilder.createRegistrationResponsePacket(newId, RegistrationResponseStatus.PLAYER_SUCCESS);
+            if (!raceUpdaterThread.isAlive()){
+                int numCompetitors = raceUpdater.getRace().getCompetitors().size();
+                if (numCompetitors >= options.getMinParticipants()) {
+                    raceUpdaterThread.start();
+                }
             }
+        } else {
+            packet = packetBuilder.createRegistrationResponsePacket(newId, RegistrationResponseStatus.OUT_OF_SLOTS);
         }
-        Boat boat = raceUpdater.getRace().getBoatById(newId);
-        boatSequenceNumbers.put(boat, newId);
-        lastMarkRoundingSent.put(boat, -1);
         connectionManager.addConnection(newId, serverListener.getSocket());
         serverListener.setClientId(newId);
 
-        byte[] packet = packetBuilder.createRegistrationAcceptancePacket(newId);
         connectionManager.sendToClient(newId, packet);
         sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());
     }
@@ -242,14 +250,35 @@ public class Server implements Runnable, Observer {
                 setBoatToDNF((int) arg);
             }
         } else if(observable instanceof ServerListener){
-            ServerListener serverListener = (ServerListener) observable;
-            Integer registrationType = (Integer) arg;
-            if(registrationType == 1){
+            manageRegistration((ServerListener) observable, (RegistrationType) arg);
+        }
+    }
+
+    /**
+     * Deal with the different types of registrations clients can attempt to connect with
+     * Currently ignores GHOST or TUTORIAL connection attempts.
+     * @param serverListener the serverListener with the clients socket
+     * @param registrationType the type of registration being attempted
+     */
+    private void manageRegistration(ServerListener serverListener, RegistrationType registrationType) {
+        switch (registrationType) {
+            case PLAYER:
                 addClientToRace(serverListener);
-            } else{
+                break;
+            case SPECTATOR:
+                //we may want to put a limit on number of connections to preserve server responsiveness at some point
+                //but for now just always accept new spectators
+                byte[] packet = packetBuilder.createRegistrationResponsePacket(0, RegistrationResponseStatus.SPECTATOR_SUCCESS);
                 connectionManager.addConnection(nextViewerID, serverListener.getSocket());
+                connectionManager.sendToClient(nextViewerID, packet);
                 nextViewerID++;
-            }
+                break;
+            case GHOST:
+                System.out.println("Server: Client attempted to connect as ghost, ignoring.");
+                break;
+            case TUTORIAL:
+                System.out.println("Server: Client attempted to connect as control tutorial, ignoring.");
+                break;
         }
     }
 
