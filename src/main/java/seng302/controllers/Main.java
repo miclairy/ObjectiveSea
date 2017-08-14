@@ -54,12 +54,9 @@ public class Main extends Application {
         loadMainMenu();
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
         this.primaryStage.show();
-        this.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent e) {
-                Platform.exit();
-                System.exit(0);
-            }
+        this.primaryStage.setOnCloseRequest(e -> {
+            Platform.exit();
+            System.exit(0);
         });
     }
 
@@ -84,9 +81,10 @@ public class Main extends Application {
     /**
      * Creates a Server object, puts it in it's own thread and starts the thread
      */
-    private static void setupServer(String course, int port) throws IOException {
+    private static void setupServer(String course, int port, boolean isTutorial) throws IOException {
         RaceUpdater runner = new RaceUpdater(course);
         runner.setScaleFactor(Config.MOCK_SPEED_SCALE);
+        if(isTutorial) runner.setTutorial();
         Thread runnerThread = new Thread(runner);
         runnerThread.setName("Race Updater");
         runnerThread.start();
@@ -113,9 +111,9 @@ public class Main extends Application {
         userInputController.addObserver(client);
     }
 
-    public void startHostedRace(String course, int port) throws Exception{
+    public void startHostedRace(String course, int port, boolean isTutorial) throws Exception{
         Config.initializeConfig();
-        setupServer(course, port);
+        setupServer(course, port, isTutorial);
         setupClient(port);
     }
 
