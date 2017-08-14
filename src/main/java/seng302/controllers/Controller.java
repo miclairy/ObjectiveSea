@@ -74,6 +74,7 @@ public class Controller implements Initializable, Observer {
     @FXML private TableColumn<Boat, String> columnName;
     @FXML private TableColumn<Boat, String> columnSpeed;
     @FXML private TableColumn<Boat, String> columnStatus;
+    @FXML private VBox headsUpDisplay;
 
     @FXML public StackPane stackPane;
     @FXML private AnchorPane tutorialOverlay;
@@ -157,6 +158,7 @@ public class Controller implements Initializable, Observer {
         rightHandSide.setOpacity(0.7);
         lblNoBoardClock.setVisible(false);
         tblPlacingsRV.setVisible(false);
+        headsUpDisplay.setVisible(false);
 
 
         displayStarters();
@@ -560,6 +562,7 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
             AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
+            AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, false);
             scoreboardVisible = false;
             raceViewController.shiftArrow(false);
             setUpTable();
@@ -569,6 +572,7 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(imvSpeedScale, -430, true);
             AnimationUtils.shiftPaneNodes(lblWindSpeed, -430, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true);
+            AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, true);
             scoreboardVisible = true;
             raceViewController.shiftArrow(true);
         }
