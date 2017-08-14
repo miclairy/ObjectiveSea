@@ -96,7 +96,7 @@ public class RaceUpdater implements Runnable {
             boolean atLeastOneBoatNotFinished = false;
             double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
             long secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000;
-            if(isPractice && secondsElapsed > 15){
+            if(isPractice && secondsElapsed > 200){
                 race.updateRaceStatus(TERMINATED);
             }
             race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs() + (long)(raceSecondsPassed * 1000));

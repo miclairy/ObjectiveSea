@@ -108,7 +108,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         this.selectionController = selectionController;
-        if(RaceVisionXMLParser.courseFile == "GuidedPractice-course.xml") {
+        if(RaceVisionXMLParser.courseFile.equals("GuidedPractice-course.xml")) {
             isTutorial = true;
             tutorial = new Tutorial(controller, race);
             controller.hideStarterOverlay();
@@ -116,7 +116,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             initializeBoats();
             initBoatPaths();
         }
-
         isPractice = race.getId().equals("77228423");  // 77228423 spells practice in text
         redrawCourse();
         race.addObserver(this);

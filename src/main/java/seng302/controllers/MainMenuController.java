@@ -140,7 +140,7 @@ public class MainMenuController implements Initializable{
 
     @FXML private void loadPracticeStart() throws Exception {
         btnSinglePlay.setDisable(true);
-        main.startHostedRace("PracticeStart-course.xml", DEFAULT_PORT);
+        main.startHostedRace("PracticeStart-course.xml", DEFAULT_PORT, false);
         Thread.sleep(200);
         main.loadRaceView(true);
     }
