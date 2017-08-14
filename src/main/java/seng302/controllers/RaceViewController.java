@@ -38,6 +38,7 @@ import seng302.views.RaceView;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Math.abs;
 import static seng302.data.RaceStatus.PREPARATORY;
@@ -218,6 +219,24 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if(boatDisplay.getBoat().getStatus() == BoatStatus.DNF){
             boatDisplay.unFocus();
         }
+
+        checkForLuffing(boatDisplay);
+    }
+
+    /**
+     * checks if boat, that isn't current user, is stationary.
+     * if so, make luff, else, sails out
+     * @param boatDisplay the boat to check
+     */
+    private void checkForLuffing(BoatDisplay boatDisplay){
+        if(!boatDisplay.equals(currentUserBoatDisplay)){
+            if(boatDisplay.getBoat().getCurrentSpeed() == 0.0){
+                boatDisplay.getBoat().setSailsIn(true);
+            }else{
+                boatDisplay.getBoat().setSailsIn(false);
+            }
+        }
+
     }
 
     /**
