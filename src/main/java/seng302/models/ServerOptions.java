@@ -17,6 +17,7 @@ public class ServerOptions {
     private Integer minParticipants;
     private Integer port;
     private String raceXML;
+    private boolean isTutorial;
 
     /**
      * Constructor with default options
@@ -26,6 +27,7 @@ public class ServerOptions {
         minParticipants = 1;
         port = DEFAULT_PORT;
         raceXML = DEFAULT_COURSE;
+        isTutorial = false;
     }
 
     public Double getSpeedScale() {
@@ -76,5 +78,13 @@ public class ServerOptions {
         } else {
             throw new IllegalArgumentException("Could not find a map that matches that name");
         }
+    }
+
+    public void setTutorial(boolean tutorial) {
+        this.isTutorial = tutorial;
+    }
+
+    public boolean isTutorial() {
+        return this.isTutorial;
     }
 }

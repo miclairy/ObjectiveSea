@@ -38,10 +38,10 @@ public class Server implements Runnable, Observer {
     public Server(ServerOptions options) throws IOException {
         this.options = options;
         raceUpdater = new RaceUpdater(options.getRaceXML());
-        if(options.isTutorial()) raceUpdater.setTutorial();
+        if(options.isTutorial()) raceUpdater.skipPrerace();
         collisionManager = raceUpdater.getCollisionManager();
         packetBuilder = new ServerPacketBuilder();
-        connectionManager = new ConnectionManager(options.getPort(), raceUpdater.getRace());
+        connectionManager = new ConnectionManager(options.getPort());
         connectionManager.addObserver(this);
         raceUpdater.setScaleFactor(options.getSpeedScale());
         raceUpdaterThread = new Thread(raceUpdater);

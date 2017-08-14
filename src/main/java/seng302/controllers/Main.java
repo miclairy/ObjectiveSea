@@ -13,7 +13,6 @@ import javafx.scene.image.Image;
 import javafx.geometry.Rectangle2D;
 import javafx.application.Platform;
 import seng302.data.registration.ServerFullException;
-import seng302.utilities.Config;
 import seng302.models.ServerOptions;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplaySwitcher;
@@ -99,7 +98,6 @@ public class Main extends Application {
      */
     private void setupServer(ServerOptions serverOptions) throws IOException {
         server = new Server(serverOptions);
-        //TODO in Server() if(isTutorial) runner.setTutorial();
         ConnectionUtils.setServer(server);
         Thread serverThread = new Thread(server);
         serverThread.setName("Server");
@@ -132,7 +130,8 @@ public class Main extends Application {
         ServerOptions options = new ServerOptions();
         options.setPort(port);
         options.setRaceXML(course);
-        setupServer(options); !!Add tutorial to options
+        options.setTutorial(isTutorial);
+        setupServer(options);
         startClient("localhost", port, true);
     }
 

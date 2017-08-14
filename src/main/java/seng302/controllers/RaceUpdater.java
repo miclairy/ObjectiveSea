@@ -39,7 +39,7 @@ public class RaceUpdater implements Runnable {
     public RaceUpdater(String selectedCourse){
         collisionManager = new CollisionManager();
         //set race up with default files
-        intialWindSpeedGenerator();
+        initialWindSpeedGenerator();
         RaceVisionXMLParser raceVisionXMLParser = new RaceVisionXMLParser();
         raceVisionXMLParser.setCourseFile(selectedCourse);
         potentialCompetitors = raceVisionXMLParser.importDefaultStarters();
@@ -495,14 +495,18 @@ public class RaceUpdater implements Runnable {
         this.race = race;
     }
 
-    public void setTutorial() {
+    /**
+     * Sets the race status to started so we don't have to wait around for the prerace countdown
+     * Currently used in tutorial mode.
+     */
+    public void skipPrerace() {
         race.updateRaceStatus(STARTED);
     }
 
     /**
      * Randomly generates an initial wind speed between race regulations of 6-24 knots
      */
-    private void intialWindSpeedGenerator(){
+    private void initialWindSpeedGenerator(){
         Random random = new Random();
         initialWindSpeed = MIN_WIND_SPEED + (MAX_WIND_SPEED - MIN_WIND_SPEED) * random.nextDouble();
     }
