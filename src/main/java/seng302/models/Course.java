@@ -31,6 +31,7 @@ public class Course {
         this.courseOrder = new ArrayList<>();
         this.roundingOrder = new ArrayList<>();
         this.boundary = new ArrayList<>();
+        this.roundingOrder = new ArrayList<>();
         allMarks = new HashMap<>();
         hasEntryMark = false;
     }
@@ -52,6 +53,7 @@ public class Course {
     /**
      * Appends a mark to the course order ArrayList. The mark must already exist in the compoundMarks HashMap
      * @param compoundMarkID - the name of the mark to look up in the compoundMarks HashMap
+     * @param roundingSide - side the boat has to pass a mark
      */
     public void addMarkInOrder(Integer compoundMarkID, String roundingSide){
         if(compoundMarks.containsKey(compoundMarkID)){
@@ -240,6 +242,14 @@ public class Course {
     public Double getWindDirectionBasedOnGates(){
         CompoundMark leewardGate = findCompoundMarkByName(LEEWARD_GATE_NAME);
         CompoundMark windwardGate = findCompoundMarkByName(WINDWARD_GATE_NAME);
-        return leewardGate.getPosition().headingToCoordinate(windwardGate.getPosition());
+        if(leewardGate != null && windwardGate != null){
+            return leewardGate.getPosition().headingToCoordinate(windwardGate.getPosition());
+        }else{
+            return 0.0;
+        }
+    }
+
+    public ArrayList<String> getRoundingOrder() {
+        return roundingOrder;
     }
 }

@@ -1,5 +1,6 @@
 package seng302.data;
 
+import seng302.data.registration.RegistrationResponseStatus;
 import seng302.models.*;
 import seng302.utilities.TimeUtils;
 
@@ -258,10 +259,17 @@ public class ServerPacketBuilder extends PacketBuilder {
         return body;
     }
 
-    public byte[] createRegistrationAcceptancePacket(Integer sourceID){
-        byte[] header = createHeader(REGISTRATION_ACCEPT);
-        byte[] body = new byte[REGISTRATION_ACCEPT.getLength()];
+    /**
+     * Builds a byte array representing a registration response packet
+     * @param sourceID boatID if player, 0 if spectator, -1 in case of failure
+     * @param status the success or failure status of the registration
+     * @return byte array
+     */
+    public byte[] createRegistrationResponsePacket(Integer sourceID, RegistrationResponseStatus status){
+        byte[] header = createHeader(REGISTRATION_RESPONSE);
+        byte[] body = new byte[REGISTRATION_RESPONSE.getLength()];
         addFieldToByteArray(body, REGISTRATION_SOURCE_ID, sourceID);
+        addFieldToByteArray(body, REGISTRATION_RESPONSE_STATUS, status.value());
         return generatePacket(header, body);
     }
 

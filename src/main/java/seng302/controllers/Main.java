@@ -5,15 +5,8 @@ package seng302.controllers;
  */
 import javafx.application.Application;
 import javafx.application.Preloader;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.fxml.JavaFXBuilderFactory;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.control.DialogPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
@@ -21,19 +14,12 @@ import javafx.geometry.Rectangle2D;
 import javafx.stage.WindowEvent;
 import javafx.event.EventHandler;
 import javafx.application.Platform;
-import seng302.data.ConnectionManager;
-import seng302.data.DataStreamReader;
+import seng302.data.registration.ServerFullException;
 import seng302.utilities.Config;
-import seng302.models.Race;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplaySwitcher;
 import seng302.utilities.NoConnectionToServerException;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 public class Main extends Application {
@@ -54,39 +40,21 @@ public class Main extends Application {
         loadMainMenu();
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
         this.primaryStage.show();
-        this.primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent e) {
-                Platform.exit();
-                System.exit(0);
-            }
+        this.primaryStage.setOnCloseRequest(e -> {
+            Platform.exit();
+            System.exit(0);
         });
     }
 
     public static void main( String[] args ) {launch(args); }
 
     /**
-     * Initializes the client on it's own thread.
-     */
-    private static void setupClient(int port) {
-        try {
-            client = new Client("localhost", port, true);
-            ConnectionUtils.setClient(client);
-            Thread clientThread = new Thread(client);
-            clientThread.setName("Client");
-            clientThread.start();
-        } catch (NoConnectionToServerException e) {
-            ConnectionUtils.showServerError();
-        }
-
-    }
-
-    /**
      * Creates a Server object, puts it in it's own thread and starts the thread
      */
-    private static void setupServer(String course, int port) throws IOException {
+    private static void setupServer(String course, int port, boolean isTutorial) throws IOException {
         RaceUpdater runner = new RaceUpdater(course);
         runner.setScaleFactor(Config.MOCK_SPEED_SCALE);
+        if(isTutorial) runner.setTutorial();
         Thread runnerThread = new Thread(runner);
         runnerThread.setName("Race Updater");
         runnerThread.start();
@@ -106,17 +74,24 @@ public class Main extends Application {
         displaySwitcher.loadMainMenu();
     }
 
-    public void loadRaceView(boolean isHost) {
+    /**
+     * Loads the visualiser and attaches a UserInputController to the client and the JavaFX scene
+     * @param isHost whether or not the client is also hosting the server
+     * @param isParticipant whether or not the client is an active competitor requiring control over a boat
+     */
+    public void loadRaceView(boolean isHost, boolean isParticipant) {
         displaySwitcher.loadRaceView(isHost);
-        UserInputController userInputController = new UserInputController(DisplaySwitcher.getScene(), Client.getRace());
-        client.setUserInputController(userInputController);
-        userInputController.addObserver(client);
+        if (isParticipant) {
+            UserInputController userInputController = new UserInputController(DisplaySwitcher.getScene(), Client.getRace());
+            client.setUserInputController(userInputController);
+            userInputController.addObserver(client);
+        }
     }
 
-    public void startHostedRace(String course, int port) throws Exception{
+    public void startHostedRace(String course, int port, boolean isTutorial) throws Exception{
         Config.initializeConfig();
-        setupServer(course, port);
-        setupClient(port);
+        setupServer(course, port, isTutorial);
+        startClient("localhost", port, true);
     }
 
     /**
@@ -136,10 +111,47 @@ public class Main extends Application {
             clientThread.setName("Client");
             clientThread.start();
         } catch (NoConnectionToServerException e) {
-            ConnectionUtils.showServerError();
+            showServerConnectionError();
+            return false;
+        } catch (ServerFullException e) {
+            showServerJoinError(isParticipant);
             return false;
         }
         return true;
+    }
+
+    /**
+     * Shows a popup informing user that they were unable to connect to the server
+     */
+    private static void showServerConnectionError(){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add("style/menuStyle.css");
+        dialogPane.getStyleClass().add("myDialog");
+        alert.setTitle("Cannot Connect to Server");
+        alert.setHeaderText("Cannot Connect to Server");
+        alert.setContentText("This server may not be running.\n\n" +
+                "Please ensure that the IP and Port numbers \n" +
+                "you have entered are correct.");
+        alert.showAndWait();
+    }
+
+    /**
+     * Shows a popup informing user that they were not allowed to join the server
+     * If they attempted to join as a participant, suggests they try joining as a spectator
+     * @param isParticipant whether or not an attempt was made to participate in the race
+     */
+    private void showServerJoinError(boolean isParticipant) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add("style/menuStyle.css");
+        dialogPane.getStyleClass().add("myDialog");
+        alert.setTitle("Failed to Join Server");
+        alert.setHeaderText("Failed to Join Server");
+        String message = "There was not a free slot for you to join the server.\n\n";
+        if (isParticipant) message += "You may be able to join as a spectator instead.";
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
 

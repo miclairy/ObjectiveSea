@@ -9,7 +9,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -29,7 +28,7 @@ import java.util.*;
 public class RaceVisionXMLParser {
 
     private static final String DEFAULT_COURSE_FILE = "AC35-course.xml";
-    private static String courseFile = DEFAULT_COURSE_FILE;
+    public static String courseFile = DEFAULT_COURSE_FILE;
     private static final String BOAT_FILE = "Boat.xml";
 
     private final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
@@ -250,7 +249,7 @@ public class RaceVisionXMLParser {
                                 if (seqNumber == 1) {
                                     CompoundMark mark = course.getCompoundMarkByID(markID);
                                     if (!mark.hasTwoMarks()){
-                                        continue;
+                                        throw new RuntimeException("Race xml file has a incorrectly formatted Start Line");
                                     }
                                 }
                                 course.addMarkInOrder(markID, roundingSide);
@@ -338,7 +337,6 @@ public class RaceVisionXMLParser {
 
     /**
      * Decodes a CompoundMark element into a CompoundMark object
-     *
      * @param compoundMarkElement - an XML <CompoundMark> element
      * @return a CompoundMark (potentially RaceLine) object
      * @throws XMLParseException when an expected tag is missing or unexpectedly formatted
@@ -356,7 +354,6 @@ public class RaceVisionXMLParser {
         if(numMarks == 2){
             Element mark1Element = (Element) markNodes.item(0);
             Element mark2Element = (Element) markNodes.item(1);
-
             Mark mark1 = parseMark(mark1Element, course);
             Mark mark2 = parseMark(mark2Element, course);
             compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark1, mark2);

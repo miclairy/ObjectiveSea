@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.canvas.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.canvas.Canvas?>
@@ -14,7 +23,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<SplitPane fx:id="splitPane" dividerPositions="0.99" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/generalStyle.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.Controller">
+<SplitPane fx:id="splitPane" dividerPositions="0.99" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/generalStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.Controller">
     <items>
         <AnchorPane fx:id="canvasAnchor" minHeight="200.0" minWidth="200.0" prefHeight="160.0" prefWidth="Infinity" style="-fx-background-color: #aae7df;">
             <children>
@@ -59,6 +68,23 @@
             <Label id="userHelp" fx:id="lblUserHelp" alignment="CENTER" contentDisplay="CENTER" layoutX="3.0" layoutY="1018.0" textAlignment="CENTER" wrapText="true" AnchorPane.topAnchor="30.0" />
                   <Label fx:id="fpsLabel" alignment="CENTER" centerShape="false" contentDisplay="BOTTOM" layoutX="352.0" layoutY="21.0" prefHeight="36.0" prefWidth="64.0" textAlignment="CENTER" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
             <Circle fx:id="windCircle" fill="WHITE" radius="25.0" stroke="WHITE" strokeType="INSIDE" strokeWidth="0.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="10.0" />
+            <AnchorPane fx:id="tutorialOverlay" layoutX="1085.0" layoutY="67.0" prefHeight="515.0" prefWidth="300.0" style="-fx-background-radius: 50px;" stylesheets="@style/startersOverlayStyle.css" visible="false" AnchorPane.rightAnchor="95.0" AnchorPane.topAnchor="67.0">
+               <children>
+                  <Label fx:id="tutorialOverlayTitle" alignment="CENTER" contentDisplay="CENTER" layoutX="121.0" layoutY="19.0" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" stylesheets="@style/startersOverlayStyle.css" textFill="WHITE" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <font>
+                        <Font size="25.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="tutorialContent" alignment="CENTER" contentDisplay="CENTER" layoutX="45.0" layoutY="58.0" minHeight="0.0" prefWidth="300.0" stylesheets="@style/startersOverlayStyle.css" wrapText="true" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+                     <font>
+                        <Font size="21.0" />
+                     </font>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                  </Label>
+               </children>
+            </AnchorPane>
             </children>
         </AnchorPane>
         <AnchorPane fx:id="rightHandSide" minWidth="440">

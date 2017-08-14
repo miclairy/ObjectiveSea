@@ -3,17 +3,12 @@ import javafx.animation.FadeTransition;
 import javafx.scene.Node;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
-import seng302.data.RaceVisionXMLParser;
-import seng302.data.XMLTags;
 import seng302.models.*;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Objects;
 
 import static java.lang.Math.abs;
 
@@ -73,6 +68,12 @@ public class DisplayUtils {
         return point;
     }
 
+    public static void resetZoom(){
+        zoomLevel=1;
+        offsetY=0;
+        offsetX=0;
+    }
+
     /**
      * sets the zoom level for the canvas to redrawn at. moves offsets
      * to allow the zoom to occur in the center of screen.
@@ -80,13 +81,14 @@ public class DisplayUtils {
      */
     public static void setZoomLevel(double zoomLevel) {
 
+        if(zoomLevel < 1) zoomLevel = 1;
+        if(zoomLevel > 10) zoomLevel = 10;
+
         double deltaZoom = DisplayUtils.zoomLevel - zoomLevel;
         double canvasHeight = Controller.getAnchorHeight()/2;
         double canvasWidth = Controller.getAnchorWidth()/2;
 
-
         moveOffset((canvasWidth*deltaZoom), (canvasHeight*deltaZoom));
-
 
         DisplayUtils.zoomLevel = zoomLevel;
 
@@ -157,7 +159,7 @@ public class DisplayUtils {
             case "232323":
                 return DisplayUtils.class.getResource("/graphics/mapImages/Athens-map.png").toExternalForm();
             case "242424":
-                return DisplayUtils.class.getResource("/graphics/mapImages/Gothenburg-map.png").toExternalForm();
+                return DisplayUtils.class.getResource("/graphics/mapImages/Malmo-map.png").toExternalForm();
             case "252525":
                 return DisplayUtils.class.getResource("/graphics/mapImages/LakeTaupo-map.png").toExternalForm();
             case "262626":

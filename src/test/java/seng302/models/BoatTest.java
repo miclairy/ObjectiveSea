@@ -104,13 +104,13 @@ public class BoatTest
         boat.setHeading(10);
         course.setWindDirection(0);
         optimum = boat.getVMGHeading(course, polarTable);
-        assertEquals(10, optimum, DELTA);
+        assertEquals(-1, optimum, DELTA);
 
         // Dead zone
         boat.setHeading(90);
         course.setWindDirection(0);
         optimum = boat.getVMGHeading(course, polarTable);
-        assertEquals(90, optimum, DELTA);
+        assertEquals(-1, optimum, DELTA);
     }
 
     @Test
@@ -148,7 +148,7 @@ public class BoatTest
         boat.setHeading(10);
         course.setWindDirection(0);
         optimum = boat.getTackOrGybeHeading(course, polarTable);
-        assertEquals(10, optimum, DELTA);
+        assertEquals(-1, optimum, DELTA);
 
         // Dead zone
         boat.setHeading(90);
