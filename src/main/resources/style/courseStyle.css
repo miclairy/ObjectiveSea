@@ -32,7 +32,7 @@
 #nextMarkArrow{
     -fx-stroke-line-cap: round;
     -fx-stroke-line-join: round;
-    -fx-stroke-width: 6px;
+    -fx-stroke-width: 5px;
     -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 3);
 }
 
@@ -44,10 +44,17 @@
 }
 
 #nextMarkCircle {
-    -fx-stroke-width: 6px;
+    -fx-stroke-width: 5px;
     -fx-fill: transparent;
     -fx-stroke: white;
     -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 3);
+}
+
+#lblNextMark {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-text-fill: White;
+    -fx-text-alignment: center;
 }
 
 

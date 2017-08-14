@@ -212,8 +212,8 @@ public class RaceView {
     }
 
     public Polyline drawNextMarkArrowPolyline() {
-        double arrowHeadLength = 30;
-        double arrowLength = 100;
+        double arrowHeadLength = 12;
+        double arrowLength = 50;
 
         Polyline nextMarkArrow = new Polyline(
                 0, 0,
@@ -227,6 +227,8 @@ public class RaceView {
         nextMarkArrow.setVisible(false);
         return nextMarkArrow;
     }
+
+
 
 
         /**

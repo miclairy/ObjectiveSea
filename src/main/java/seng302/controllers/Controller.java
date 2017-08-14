@@ -60,7 +60,7 @@ public class Controller implements Initializable, Observer {
     @FXML private AnchorPane tutorialOverlay;
     @FXML private Label tutorialOverlayTitle;
     @FXML private Label tutorialContent;
-
+    @FXML public Label lblNextMark;
 
 
     //FPS Counter
