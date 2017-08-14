@@ -1,6 +1,11 @@
 package seng302.utilities;
 
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+
 import java.io.*;
+import java.net.URL;
+import java.time.Duration;
 import java.util.Random;
 import javax.sound.sampled.*;
 
@@ -63,8 +68,9 @@ public class GameSounds {
     private AudioInputStream inputStream;
     private String selectedVoiceOver;
     private Random random = new Random();
+    private Media media;
 
-    public void menuMusic() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+    public void mmenuMusic() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         clip = AudioSystem.getClip();
         inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream("/musicFiles/gameMusic/MainMenuMusic.wav"));
         clip.open(inputStream);
@@ -72,10 +78,26 @@ public class GameSounds {
 
     public void tutorialMusic() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         clip = AudioSystem.getClip();
-        inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream("/musicFiles/gameMusic/TutorialMusic.wav"));
+        inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream("/musicFiles/gameMusic/SinglePlayerMusic.wav"));
         clip.open(inputStream);
         FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
         gainControl.setValue(6.0f);
+    }
+
+    public void menuMusic() {
+        URL resource = getClass().getResource("/musicFiles/gameMusic/MainMenuMusic.mp3");
+        MediaPlayer mediaPlayer = new MediaPlayer(new Media(resource.toString()));
+        mediaPlayer.setOnEndOfMedia(new Runnable() {
+            @Override
+            public void run() {
+                mediaPlayer.seek(javafx.util.Duration.ZERO);
+            }
+        });
+        mediaPlayer.play();
+        /*String music = "MainMenuMusic.mp3";
+        media = new Media(new File(music).toURI().toString());
+        MediaPlayer mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.*/
     }
 
     public void oceanWaves() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
