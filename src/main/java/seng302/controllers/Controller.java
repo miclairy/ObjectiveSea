@@ -323,6 +323,20 @@ public class Controller implements Initializable, Observer {
         }
     }
 
+    /**
+     * Display information about the success of the practice of crossing the start line. At the end of the practice time.
+     */
+    void displayFinishedPraticePopUp() {
+        Boat boat = race.getCompetitors().get(0);
+        if (boat.getLastRoundedMarkIndex() >= 0) {
+            showTutorialOverlay("Finished", "You passed the start line! \nTime: " +
+                    raceTimerString.get() + "\nSpeed: " + Math.round(boat.getCurrentSpeed()) + " knots");
+        } else {
+            showTutorialOverlay("Too late", "You failed to pass the start line at a reasonable time." +
+                    "\nTry Again");
+        }
+    }
+
 
     /**
      * Called from the RaceViewController handle if there is a change in race status

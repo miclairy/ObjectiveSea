@@ -141,14 +141,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 controller.showStarterOverlay();
                 this.stop();
             } else if (isPractice){
-                Boat boat = race.getCompetitors().get(0);
-                if (boat.getLastRoundedMarkIndex() >= 0) {
-                    controller.showTutorialOverlay("Finished", "You passed the start line! \nTime: " +
-                            controller.raceTimerString.get() + "\nSpeed: " + Math.round(boat.getCurrentSpeed()) + " knots");
-                } else {
-                    controller.showTutorialOverlay("Too late", "You failed to pass the start line at a reasonable time." +
-                            "\nTry Again");
-                }
+                controller.displayFinishedPraticePopUp();
             }
         }
         if(controller.hasRaceStatusChanged()){
