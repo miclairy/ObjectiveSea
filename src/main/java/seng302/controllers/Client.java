@@ -47,7 +47,6 @@ public class Client implements Runnable, Observer {
     private static List<Integer> tutorialKeys = new ArrayList<Integer>();
     private static Runnable tutorialFunction = null;
 
-    public Client(String ip, int port, boolean isParticipant) throws NoConnectionToServerException {
     public Client(String ip, int port, boolean isParticipant) throws ServerFullException, NoConnectionToServerException {
         this.sourcePort = port;
         this.sourceAddress = ip;
@@ -209,11 +208,6 @@ public class Client implements Runnable, Observer {
     public void setUserInputController(UserInputController userInputController) {
         this.userInputController = userInputController;
         userInputController.setClientID(clientID);
-    }
-
-
-    public static List<Integer> getTutorialKey() {
-        return tutorialKeys;
     }
 
     public static Race getRace() {
