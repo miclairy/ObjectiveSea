@@ -139,16 +139,20 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if(!race.isTerminated() && !isTutorial){
             controller.updateRaceClock();
         }else if (race.isTerminated()){
-            controller.blurScreen(true);
-            this.stop();
-            controller.showServerDisconnectError();
+            if(race.getAbruptEnd()){
+                controller.blurScreen(true);
+                controller.showServerDisconnectError();
+                this.stop();
+            } else{
+                controller.showStarterOverlay();
+                this.stop();
+            }
         }
         if(controller.hasRaceStatusChanged()){
             if(!isTutorial){
                 controller.updatePreRaceScreen();
                 controller.setRaceStatusChanged(false);
             }
-
         }
         currentTimeInSeconds += secondsElapsed;
         controller.setTimeZone(race.getUTCOffset());
