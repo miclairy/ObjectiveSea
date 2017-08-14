@@ -8,9 +8,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
@@ -28,15 +26,13 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.util.Duration;
 import seng302.data.BoatStatus;
-import seng302.data.RaceStatus;
 import seng302.data.StartTimingStatus;
 import seng302.utilities.*;
 import seng302.models.*;
-import seng302.views.Arrow;
 import seng302.views.BoatDisplay;
+import seng302.views.CourseRouteArrows;
 import seng302.views.RaceView;
 
-import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Math.abs;
@@ -92,6 +88,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private double sailWidth = 5;
     private boolean isSailWidthChanging = false;
 
+    private CourseRouteArrows courseRouteArrows;
+
     private int flickercounter = 0;
     private int prevWindColorNum = 0;
     private int arrowIteration = 0;
@@ -107,20 +105,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         this.selectionController = selectionController;
+        this.courseRouteArrows = new CourseRouteArrows(race.getCourse(), root);
         redrawCourse();
         race.addObserver(this);
-    }
-
-    private void drawRaceRoute(){
-        for (Arrow arrow : race.getCourse().getArrowedRoute()){
-            arrow.removeFromCanvas(root);
-        }
-        race.getCourse().createArrowedRoute();
-        for (Arrow arrow : race.getCourse().getArrowedRoute()){
-            arrow.addToCanvas(root);
-            arrow.setScale(DisplayUtils.zoomLevel);
-        }
-
     }
 
     @Override
@@ -162,35 +149,18 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
         redrawRaceLines();
         if (courseNeedsRedraw) redrawCourse();
+
+        if (race.getRaceStatus().beforeRaceStart()){
+            courseRouteArrows.updateCourseArrows();
+        } else{
+            courseRouteArrows.removeArrowsFromCanvas();
+        }
+
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
         updateWindArrow();
         flickercounter++;
         orderDisplayObjects();
-        if (race.getRaceStatus() == RaceStatus.WARNING || race.getRaceStatus() == RaceStatus.PREPARATORY || race.getRaceStatus() == RaceStatus.PRESTART){
-            if (timer == 0){
-                arrowIteration = (arrowIteration + 1) % (race.getCourse().getArrowedRoute().size());
-                showArrowAnimation(arrowIteration);
-            }
-            timer = (timer + 1) % 6;
-        } else{
-            race.getCourse().hideArrows();
-        }
-    }
-
-    private void showArrowAnimation(int iteration){
-        List<Arrow> arrowRoute = race.getCourse().getArrowedRoute();
-        int sz = arrowRoute.size();
-        for(int i = 0; i < arrowRoute.size(); i++){
-            if (i == iteration || (i + 1) % sz == iteration || (i + 2) % sz == iteration){
-                arrowRoute.get(i).setOpacity1(1.0);
-                arrowRoute.get(i).setStrokeWidth1(5.0);
-
-            } else{
-                arrowRoute.get(i).setOpacity1(0.3);
-                arrowRoute.get(i).setStrokeWidth1(4.0);
-            }
-        }
     }
 
     /**
@@ -428,7 +398,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawMap();
         drawWindArrow();
         redrawRaceLines();
-        drawRaceRoute();
+        courseRouteArrows.drawRaceRoute();
     }
 
     /**

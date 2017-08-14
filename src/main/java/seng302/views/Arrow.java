@@ -65,24 +65,19 @@ public class Arrow extends Polyline {
         root.getChildren().remove(arrowLine);
     }
 
-    public Polyline getArrowLine() {
-        return arrowLine;
-    }
 
     public void setColour(Color color){
         arrowLine.setStroke(color);
     }
 
-    public void setVisible1(Boolean visible){
-        arrowLine.setVisible(visible);
+    public void emphasize(){
+        arrowLine.setOpacity(1.0);
+        arrowLine.setStrokeWidth(5.0);
     }
 
-    public void setOpacity1(Double value){
-        arrowLine.setOpacity(value);
-    }
-
-    public void setStrokeWidth1(Double value){
-        arrowLine.setStrokeWidth(value);
+    public void fade(){
+        arrowLine.setOpacity(0.2);
+        arrowLine.setStrokeWidth(4.0);
     }
 
     public void setScale(Double zoomLevel) {

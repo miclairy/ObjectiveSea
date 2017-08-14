@@ -1,6 +1,5 @@
 package seng302.models;
 
-import javafx.scene.paint.Color;
 import seng302.views.Arrow;
 
 import java.util.*;
@@ -242,69 +241,5 @@ public class Course {
         CompoundMark leewardGate = findCompoundMarkByName(LEEWARD_GATE_NAME);
         CompoundMark windwardGate = findCompoundMarkByName(WINDWARD_GATE_NAME);
         return leewardGate.getPosition().headingToCoordinate(windwardGate.getPosition());
-    }
-
-    public List<Arrow> getArrowedRoute() {
-        return arrowedRoute;
-    }
-
-    private void addArrowDirection(CompoundMark mark, CompoundMark previousMark, CompoundMark nextMark, String roundingSide) {
-        double legLength = mark.getPosition().greaterCircleDistance(previousMark.getPosition());
-        double arrowDistance = legLength / 0.1;
-        if (arrowDistance < 2){
-            arrowDistance = 2;
-        }
-        Random rand = new Random();
-        double r = rand.nextFloat();
-        double g = rand.nextFloat();
-        double b = rand.nextFloat();
-        Color color = Color.color(r, g, b);
-        double heading = previousMark.getPosition().headingToCoordinate(mark.getPosition());
-        for (double num = arrowDistance - 1; num > 0; num--) {
-            Coordinate position = mark.getPosition().coordAt((legLength / arrowDistance) * num, heading + 180);
-            Arrow arrow = new Arrow(5, 10, position);
-           // arrow.setColour(color);
-            arrow.rotate( heading + 180);
-            arrowedRoute.add(arrow);
-        }
-    }
-
-    private void arrowsRoundMark(Mark mark, Color color, double heading, double nextHeading, int isPort) {
-        Arrow mark1Arrow = new Arrow(5, 10, mark.getPosition().coordAt(isPort * 0.05, (heading + 90)),
-                (heading + 180), color);
-        arrowedRoute.add(mark1Arrow);
-        Arrow mark1ArrowNext = new Arrow(5, 10, mark.getPosition().coordAt(isPort * 0.05, (nextHeading + 90)),
-                (nextHeading + 180), color);
-        arrowedRoute.add(mark1ArrowNext);
-        double interpolatedHeading = (heading + nextHeading) / 2 ;
-        Arrow mark1ArrowInterpolated = new Arrow(5, 10, mark.getPosition().coordAt(isPort * 0.05, (interpolatedHeading + 90)),
-                (interpolatedHeading + 180), color);
-        arrowedRoute.add(mark1ArrowInterpolated);
-    }
-
-
-    public void createArrowedRoute() {
-        arrowedRoute.clear();
-        CompoundMark previousMark = courseOrder.get(0);
-        for (int i = 1; i < courseOrder.size(); i ++) {
-            if (i == courseOrder.size()-1) {
-                addArrowDirection(courseOrder.get(i), courseOrder.get(i - 1), courseOrder.get(i), roundingOrder.get(i));
-            } else {
-                addArrowDirection(courseOrder.get(i), courseOrder.get(i - 1), courseOrder.get(i + 1), roundingOrder.get(i));
-            }
-        }
-        Color color = Color.color(0.25, 0.25, 0.25); //Grey
-//        Color color = Color.color(0.0, 204.0 / 256, 122.0 / 256); //Green
-        double increment = 0.6 / (arrowedRoute.size() + 1.0);
-        for (Arrow arrow : arrowedRoute){
-            color = Color.color(0.25, color.getGreen() + increment, 0.25);
-            arrow.setColour(color);
-        }
-    }
-
-    public void hideArrows(){
-        for(Arrow arrow : arrowedRoute){
-            arrow.setVisible1(false);
-        }
     }
 }
