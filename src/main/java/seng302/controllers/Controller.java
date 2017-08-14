@@ -137,6 +137,8 @@ public class Controller implements Initializable, Observer {
         raceViewController.start();
         initDisplayDrag();
         initZoom();
+        boolean isPractice = race.getId().equals("77228423");  // 77228423 spells practice in text
+        if (isPractice) setZoomSliderValue(3.0);
     }
 
     /**
