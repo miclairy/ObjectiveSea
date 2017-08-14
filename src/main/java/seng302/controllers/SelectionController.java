@@ -134,6 +134,7 @@ public class SelectionController extends Observable {
             isTrackingPoint = false;
             rotationOffset = 0;
             updateRotation();
+            scoreBoardController.highlightUserBoat();
 
         }
         setChanged();
