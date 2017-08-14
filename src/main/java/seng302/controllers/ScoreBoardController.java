@@ -255,9 +255,11 @@ public class ScoreBoardController {
     }
 
     public void highlightUserBoat(){
-        BoatDisplay userBoat = raceViewController.getCurrentUserBoatDisplay();
-        if(userBoat != null){
-            tblPlacings.getSelectionModel().select(userBoat.getBoat());
+        if(raceViewController != null){
+            BoatDisplay userBoat = raceViewController.getCurrentUserBoatDisplay();
+            if(userBoat != null){
+                tblPlacings.getSelectionModel().select(userBoat.getBoat());
+            }
         }
     }
 }
