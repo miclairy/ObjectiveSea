@@ -39,11 +39,13 @@ public class APISteps {
     private Socket serverSocket;
     private static int port = 1234;
     private double VMGHeading;
+    private double previousHeading;
 
     @Given("^Sally has a boat$")
     public void sallyHasABoat() throws Throwable {
         sallysBoat = new Boat(102, "Sally's Boat", "SB", 15.0);
         sallysBoat.setHeading(100.0);
+
         sallysBoat.setCurrentSpeed(15.0);
         Course course = mock(Course.class);
         when(course.getTrueWindSpeed()).thenReturn(10.0);
@@ -67,6 +69,8 @@ public class APISteps {
 
     @When("^Sally presses the \"([^\"]*)\" key$")
     public void sallyPressesTheKey(String key) throws Throwable {
+        previousHeading = sallysBoat.getHeading();
+
         ClientPacketBuilder packetBuilder = new ClientPacketBuilder();
         serverSocket = mock(Socket.class);
 
@@ -107,15 +111,15 @@ public class APISteps {
 
     @Then("^the boats heading should be increased$")
     public void theBoatsHeadingShouldBeIncreased() throws Throwable {
-        Thread.sleep(10);
-        assertEquals(103.0, sallysBoat.getHeading(), 0.0);
+        Thread.sleep(100);
+        assert(sallysBoat.getHeading() > previousHeading);
         tearDown();
     }
 
     @Then("^the boats heading should be decreased$")
     public void theBoatsHeadingShouldBeDecreased() throws Throwable {
-        Thread.sleep(10);
-        assertEquals(97.0, sallysBoat.getHeading(), 0.0);
+        Thread.sleep(100);
+        assert(sallysBoat.getHeading() < previousHeading);
         tearDown();
     }
 
