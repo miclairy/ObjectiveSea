@@ -154,12 +154,7 @@ public class SelectionController extends Observable {
             updateRotation();
 
             if(mark != selectedMark){
-                controller.setZoomSliderValue(3);
-                DisplayUtils.moveToPoint(mark.getPosition());
-                selectedMark = mark;
-                isTrackingPoint = true;
-                trackingBoat = null;
-                setMapVisibility(false);
+                zoomToMark(mark);
             }else{
                 controller.setZoomSliderValue(1);
                 selectedMark = null;
@@ -180,6 +175,19 @@ public class SelectionController extends Observable {
         circle.addEventHandler(MouseEvent.MOUSE_EXITED, e -> {
             root.setCursor(Cursor.DEFAULT);
         });
+    }
+
+    /**
+     * Zooms view to the specified mark
+     * @param mark the mark to zoom to
+     */
+    public void zoomToMark(Mark mark) {
+        controller.setZoomSliderValue(3);
+        DisplayUtils.moveToPoint(mark.getPosition());
+        selectedMark = mark;
+        isTrackingPoint = true;
+        trackingBoat = null;
+        setMapVisibility(false);
     }
 
     /**

@@ -18,14 +18,12 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import seng302.models.*;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplayUtils;
 import seng302.data.BoatStatus;
 import seng302.utilities.*;
-import seng302.models.Boat;
-import seng302.models.Course;
-import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 
 
@@ -138,7 +136,12 @@ public class Controller implements Initializable, Observer {
         initDisplayDrag();
         initZoom();
         boolean isPractice = race.getId().equals("77228423");  // 77228423 spells practice in text
-        if (isPractice) setZoomSliderValue(3.0);
+        if (isPractice) {
+            CompoundMark startLine = race.getCourse().getCourseOrder().get(0);
+            Mark centreMark = new Mark(0, "centre", startLine.getPosition());
+            selectionController.zoomToMark(centreMark);
+            setZoomSliderValue(2.0);
+        }
     }
 
     /**

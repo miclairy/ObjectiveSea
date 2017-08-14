@@ -89,7 +89,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
     private double sailWidth = 5;
     private boolean isSailWidthChanging = false;
-    boolean isPractice;
+    private boolean isPractice;
 
     private int flickercounter = 0;
     private int prevWindColorNum = 0;
@@ -108,15 +108,17 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         this.selectionController = selectionController;
-        if(RaceVisionXMLParser.courseFile.equals("GuidedPractice-course.xml")) {
-            isTutorial = true;
+        isPractice = race.getId().equals("77228423");  // 77228423 spells practice in text
+        isTutorial = RaceVisionXMLParser.courseFile.equals("GuidedPractice-course.xml");
+        if(isTutorial) {
             tutorial = new Tutorial(controller, race);
+        }
+        if(isTutorial || isPractice) {
             controller.hideStarterOverlay();
             initBoatHighlight();
             initializeBoats();
             initBoatPaths();
         }
-        isPractice = race.getId().equals("77228423");  // 77228423 spells practice in text
         redrawCourse();
         race.addObserver(this);
     }
