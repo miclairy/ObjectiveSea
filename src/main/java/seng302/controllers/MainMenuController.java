@@ -141,7 +141,7 @@ public class MainMenuController implements Initializable{
         btnSinglePlay.setDisable(true);
         main.startHostedRace("PracticeStart-course.xml", DEFAULT_PORT, false);
         Thread.sleep(200);
-        main.loadRaceView(true);
+        main.loadRaceView(true, true);
     }
 
     /**

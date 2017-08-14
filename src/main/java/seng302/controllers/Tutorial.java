@@ -26,12 +26,9 @@ public class Tutorial {
     private Boat tutorialBoat;
     private PolarTable polarTable;
 
-
     private TutorialStage tutorialStage = TutorialStage.UPWINDDOWNWIND;
     private TutorialStage stepFailed;
     private List<KeyCode> keysFailed;
-
-
 
     public Tutorial(Controller controller, Race race){
         this.controller = controller;
