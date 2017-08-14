@@ -80,7 +80,7 @@ public class Server implements Runnable, Observer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //TOOD: Clean up connections
+        //TODO: Clean up connections
     }
 
     /**

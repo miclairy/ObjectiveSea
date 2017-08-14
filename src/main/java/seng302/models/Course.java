@@ -50,6 +50,7 @@ public class Course {
     /**
      * Appends a mark to the course order ArrayList. The mark must already exist in the compoundMarks HashMap
      * @param compoundMarkID - the name of the mark to look up in the compoundMarks HashMap
+     * @param roundingSide - side the boat has to pass a mark
      */
     public void addMarkInOrder(Integer compoundMarkID, String roundingSide){
         if(compoundMarks.containsKey(compoundMarkID)){

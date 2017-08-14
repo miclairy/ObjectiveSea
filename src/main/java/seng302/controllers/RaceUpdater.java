@@ -178,29 +178,10 @@ public class RaceUpdater implements Runnable {
                 boat.setCurrentSpeed(0);
                 boat.setStatus(BoatStatus.FINISHED);
             }
-
         } else if (!currentMark.hasTwoMarks()){
-            if(RoundingMechanics.boatPassedMark(boat, currentMark, previousMark.getPosition(), nextMark.getPosition())) {
-                boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
-            }
+            RoundingMechanics.boatHeadingToMark(boat, currentMark, previousMark, nextMark);
         } else if(currentMark.hasTwoMarks()) {
-            if(boat.isInGate()){
-                if(RoundingMechanics.boatPassedThroughCompoundMark(boat, currentMark, previousMark.getPosition(), false)){
-                    boat.setInGate(false);
-                } else if(!nextMark.isFinishLine() && RoundingMechanics.boatPassedThroughExternalGate(boat, currentMark, previousMark.getPosition())){
-                    boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
-                    boat.setInGate(false);
-                }
-            } else {
-                if(RoundingMechanics.boatPassedThroughCompoundMark(boat, currentMark, previousMark.getPosition(), true)){
-                    if (RoundingMechanics.nextCompoundMarkAfterGate(nextMark, currentMark, previousMark)) {
-                        boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
-                        boat.setInGate(false);
-                    } else{
-                        boat.setInGate(true);
-                    }
-                }
-            }
+            RoundingMechanics.boatHeadingToGate(boat, currentMark, previousMark, nextMark);
         }
     }
 

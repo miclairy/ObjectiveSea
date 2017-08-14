@@ -337,20 +337,15 @@ public class RaceVisionXMLParser {
 
     /**
      * Decodes a CompoundMark element into a CompoundMark object
-     *
      * @param compoundMarkElement - an XML <CompoundMark> element
      * @return a CompoundMark (potentially RaceLine) object
      * @throws XMLParseException when an expected tag is missing or unexpectedly formatted
      */
     private CompoundMark parseCompoundMark(Element compoundMarkElement, Course course) throws  XMLParseException{
         CompoundMark compoundMark;
-        Dictionary sequenceDictionary;
         Integer compoundMarkID = Integer.parseInt(compoundMarkElement.getAttribute(XMLTags.Course.COMPOUND_MARK_ID));
-        //Integer sequenceID = Integer.parseInt(compoundMarkElement.getAttribute(XMLTags.Course.SEQ_ID));
-        //String roundingType = compoundMarkElement.getAttribute(XMLTags.Course.ROUNDING);
         String compoundMarkName = compoundMarkElement.getAttribute(XMLTags.Course.NAME);
         NodeList markNodes = compoundMarkElement.getElementsByTagName(XMLTags.Course.MARK);
-
 
         if (markNodes.getLength() < 1) {
             throw new XMLParseException(XMLTags.Course.COMPOUND_MARK, "Required tag was not defined.");
@@ -359,7 +354,6 @@ public class RaceVisionXMLParser {
         if(numMarks == 2){
             Element mark1Element = (Element) markNodes.item(0);
             Element mark2Element = (Element) markNodes.item(1);
-
             Mark mark1 = parseMark(mark1Element, course);
             Mark mark2 = parseMark(mark2Element, course);
             compoundMark = new CompoundMark(compoundMarkID, compoundMarkName, mark1, mark2);

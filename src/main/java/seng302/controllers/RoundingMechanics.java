@@ -12,11 +12,11 @@ public class RoundingMechanics {
 
 
     /**
-     *
-     * @param boat
-     * @param compoundMark
-     * @param previousMarkCoordinate
-     * @return
+     * Checking that a boat has passed through a compound mark
+     * @param boat current boat
+     * @param compoundMark compound mark the boat is heading to
+     * @param previousMarkCoordinate last feature the boat passed
+     * @return boolean of whether or not the boat has crossed the compound mark line
      */
     public static boolean boatPassedThroughCompoundMark(Boat boat, CompoundMark compoundMark, Coordinate previousMarkCoordinate, Boolean forward) {
         Coordinate boatPrevious = boat.getPreviousPosition();
@@ -40,12 +40,12 @@ public class RoundingMechanics {
     }
 
     /**
-     *
-     * @param boat
-     * @param mark
-     * @param previousMarkCoordinate
-     * @param nextMarkCoordinate
-     * @return
+     * method to check if a boat has gone around the mark
+     * @param boat current boat
+     * @param mark mark that the boat is heading to
+     * @param previousMarkCoordinate last feature the boat went past / through
+     * @param nextMarkCoordinate next feature the boat is heading to
+     * @return boolean, true if the boat has passed around the mark in the correct direction
      */
     public static boolean boatPassedMark(Boat boat, CompoundMark mark, Coordinate previousMarkCoordinate, Coordinate nextMarkCoordinate) {
         Coordinate boatPrevious = boat.getPreviousPosition();
@@ -72,26 +72,21 @@ public class RoundingMechanics {
     }
 
     /**
-     *
-     * @param boat
-     * @param gate
-     * @param previousMarkCoordinate
-     * @return
+     * Checking to see if a boat has gone over the external lines of the compound mark
+     * @param boat current boat
+     * @param gate compound mark that the boat is trying to pass
+     * @param previousMarkCoordinate last feature the boat passed
+     * @return boolean, true if the boat passes the external lines of the compound mark going the correct way.
      */
     public static boolean boatPassedThroughExternalGate(Boat boat, CompoundMark gate, Coordinate previousMarkCoordinate) {
-
-        //Angle of the line in relation to true 0
         Double angle = gate.getMark1().getPosition().headingToCoordinate(gate.getMark2().getPosition());
 
-        //Two long distance coordinate points from each of gate marks
         Coordinate gateExteriorCoordinate1 = gate.getMark1().getPosition().coordAt(1000, (angle + 180) % 360);
         Coordinate gateExteriorCoordinate2 = gate.getMark2().getPosition().coordAt(1000, angle);
 
-        //Creating both exterior compound marks for the gate
         CompoundMark getExteriorCompoundMark1 = buildDummyCompoundMark(gate.getMark1().getPosition(), gateExteriorCoordinate1);
         CompoundMark getExteriorCompoundMark2 = buildDummyCompoundMark(gate.getMark2().getPosition(), gateExteriorCoordinate2);
 
-        //Returning if the boat passed through the exterior lines
         return boatPassedThroughCompoundMark(boat, getExteriorCompoundMark1, previousMarkCoordinate, false) ||
                 boatPassedThroughCompoundMark(boat, getExteriorCompoundMark2, previousMarkCoordinate, false);
     }
@@ -103,6 +98,13 @@ public class RoundingMechanics {
         return new CompoundMark(-1, "Dummy Compound Mark", mark1, mark2);
     }
 
+    /**
+     * Finds which way around the boat has to go around a mark
+     * @param nextCompoundMark next course feature the boat will head to
+     * @param currentGate current gate the boat is going for
+     * @param previousMark last feature the boat passed
+     * @return boolean, true if the CCW rotation of the feature line is the same as the CCW of the previous feature line rotation
+     */
     public static boolean nextCompoundMarkAfterGate(CompoundMark nextCompoundMark, CompoundMark currentGate, CompoundMark previousMark){
         Coordinate gateMark1 = currentGate.getMark1().getPosition();
         Coordinate gateMark2 = currentGate.getMark2().getPosition();
@@ -116,6 +118,39 @@ public class RoundingMechanics {
         Integer prevMarkDir = markLine.relativeCCW(previousMarkCoordinate.getLon(), previousMarkCoordinate.getLat());
 
         return !nextCompoundMarkDir.equals(prevMarkDir);
+    }
+
+    public static void boatHeadingToMark(Boat boat, CompoundMark currentMark, CompoundMark previousMark, CompoundMark nextMark){
+        if(RoundingMechanics.boatPassedMark(boat, currentMark, previousMark.getPosition(), nextMark.getPosition())) {
+            boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
+        }
+    }
+
+    /**
+     * Logic behind a boat coming from a course feature and heading to a gate.
+     * @param boat boat we are currently working with
+     * @param currentMark current course feature the boat is heading to
+     * @param previousMark last course feature the boat passed
+     * @param nextMark course feature the boat is heading to
+     */
+    public static void boatHeadingToGate(Boat boat, CompoundMark currentMark, CompoundMark previousMark, CompoundMark nextMark){
+        if(boat.isInGate()){
+            if(boatPassedThroughCompoundMark(boat, currentMark, previousMark.getPosition(), false)){
+                boat.setInGate(false);
+            } else if(!nextMark.isFinishLine() && boatPassedThroughExternalGate(boat, currentMark, previousMark.getPosition())){
+                boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
+                boat.setInGate(false);
+            }
+        } else {
+            if(boatPassedThroughCompoundMark(boat, currentMark, previousMark.getPosition(), true)){
+                if (nextCompoundMarkAfterGate(nextMark, currentMark, previousMark)) {
+                    boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
+                    boat.setInGate(false);
+                } else{
+                    boat.setInGate(true);
+                }
+            }
+        }
     }
 
 }
