@@ -17,87 +17,83 @@ public class GameSounds {
 
     //Chris Voice overs
     private String chrisVoiceOver = "/musicFiles/gameVoiceOvers/ChrisVoiceOvers/";
-    private String chris_boat_time = chrisVoiceOver + "boat_time.wav";
-    private String chris_collided = chrisVoiceOver + "collided.wav";
-    private String chris_holly_heck = chrisVoiceOver + "holly_heck.wav";
-    private String chris_list_this_race = chrisVoiceOver + "lost_this_race.wav";
-    private String chris_mateies = chrisVoiceOver + "maties.wav";
-    private String chris_ready_race = chrisVoiceOver + "ready_race.wav";
-    private String chris_rubber_dingy = chrisVoiceOver + "rubber_dingy.wav";
-    private String chris_sail_ebration = chrisVoiceOver + "sail_ebration.wav";
-    private String chris_scream = chrisVoiceOver + "scream.wav";
+    private String chris_boat_time = chrisVoiceOver + "boat_time.mp3";
+    private String chris_collided = chrisVoiceOver + "collided.mp3";
+    private String chris_holly_heck = chrisVoiceOver + "holly_heck.mp3";
+    private String chris_list_this_race = chrisVoiceOver + "lost_this_race.mp3";
+    private String chris_mateies = chrisVoiceOver + "maties.mp3";
+    private String chris_ready_race = chrisVoiceOver + "ready_race.mp3";
+    private String chris_rubber_dingy = chrisVoiceOver + "rubber_dingy.mp3";
+    private String chris_sail_ebration = chrisVoiceOver + "sail_ebration.mp3";
+    private String chris_scream = chrisVoiceOver + "scream.mp3";
 
     //Louis Voice overs
     private String louisVoiceOver = "/musicFiles/gameVoiceOvers/LouisVoiceOvers/";
-    private String louis_be_shot = louisVoiceOver + "be_shot.wav";
-    private String louis_been_taken = louisVoiceOver + "been_taken.wav";
-    private String louis_board = louisVoiceOver + "board.wav";
-    private String louis_boat_time = louisVoiceOver + "boat_time.wav";
-    private String louis_buoy = louisVoiceOver + "buoy.wav";
-    private String louis_cant_leave = louisVoiceOver + "cant_leave.wav";
-    private String louis_get_disqualified = louisVoiceOver + "get_disqualified.wav";
-    private String louis_live_by = louisVoiceOver + "live_by.wav";
-    private String louis_never_there = louisVoiceOver + "never_there.wav";
-    private String louis_oh_ship = louisVoiceOver + "oh_ship.wav";
-    private String louis_over_that = louisVoiceOver + "over_that.wav";
-    private String louis_over_that_matey = louisVoiceOver + "over_that_matey.wav";
-    private String louis_pointless_race = louisVoiceOver + "pointless_race.wav";
-    private String louis_ready_race = louisVoiceOver + "ready_race.wav";
-    private String louis_rubber_dingy = louisVoiceOver + "rubber_dingy.wav";
-    private String louis_sail_ebration = louisVoiceOver + "sail_ebration.wav";
-    private String louis_try_that = louisVoiceOver + "try_that.wav";
-    private String louis_water = louisVoiceOver + "water.wav";
-    private String louis_youre_last = louisVoiceOver + "youre_last.wav";
+    private String louis_be_shot = louisVoiceOver + "be_shot.mp3";
+    private String louis_been_taken = louisVoiceOver + "been_taken.mp3";
+    private String louis_board = louisVoiceOver + "board.mp3";
+    private String louis_boat_time = louisVoiceOver + "boat_time.mp3";
+    private String louis_buoy = louisVoiceOver + "buoy.mp3";
+    private String louis_cant_leave = louisVoiceOver + "cant_leave.mp3";
+    private String louis_get_disqualified = louisVoiceOver + "get_disqualified.mp3";
+    private String louis_live_by = louisVoiceOver + "live_by.mp3";
+    private String louis_never_there = louisVoiceOver + "never_there.mp3";
+    private String louis_oh_ship = louisVoiceOver + "oh_ship.mp3";
+    private String louis_over_that = louisVoiceOver + "over_that.mp3";
+    private String louis_over_that_matey = louisVoiceOver + "over_that_matey.mp3";
+    private String louis_pointless_race = louisVoiceOver + "pointless_race.mp3";
+    private String louis_ready_race = louisVoiceOver + "ready_race.mp3";
+    private String louis_rubber_dingy = louisVoiceOver + "rubber_dingy.mp3";
+    private String louis_sail_ebration = louisVoiceOver + "sail_ebration.mp3";
+    private String louis_try_that = louisVoiceOver + "try_that.mp3";
+    private String louis_water = louisVoiceOver + "water.mp3";
+    private String louis_youre_last = louisVoiceOver + "youre_last.mp3";
 
     //Sam Voice Overs
     private String samVoiceOver = "/musicFiles/gameVoiceOvers/SamVoiceOvers/";
-    private String sam_be_shot = samVoiceOver + "be_shot.wav";
-    private String sam_been_taken = samVoiceOver + "been_taken.wav";
-    private String sam_board = samVoiceOver + "board.wav";
-    private String sam_cant_leave = samVoiceOver + "cant_leave.wav";
-    private String sam_get_disqualified = samVoiceOver + "get_disqualified.wav";
-    private String sam_live_by = samVoiceOver + "live_by.wav";
-    private String sam_never_there = samVoiceOver + "never_there.wav";
-    private String sam_over_that = samVoiceOver + "over_that.wav";
-    private String sam_pointless_race = samVoiceOver + "pointless_race.wav";
-    private String sam_rubber_dingy = samVoiceOver + "rubber_dingy.wav";
-    private String sam_try_that = samVoiceOver + "try_that.wav";
-    private String sam_youre_last = samVoiceOver + "youre_last.wav";
+    private String sam_be_shot = samVoiceOver + "be_shot.mp3";
+    private String sam_been_taken = samVoiceOver + "been_taken.mp3";
+    private String sam_board = samVoiceOver + "board.mp3";
+    private String sam_cant_leave = samVoiceOver + "cant_leave.mp3";
+    private String sam_get_disqualified = samVoiceOver + "get_disqualified.mp3";
+    private String sam_live_by = samVoiceOver + "live_by.mp3";
+    private String sam_never_there = samVoiceOver + "never_there.mp3";
+    private String sam_over_that = samVoiceOver + "over_that.mp3";
+    private String sam_pointless_race = samVoiceOver + "pointless_race.mp3";
+    private String sam_rubber_dingy = samVoiceOver + "rubber_dingy.mp3";
+    private String sam_try_that = samVoiceOver + "try_that.mp3";
+    private String sam_youre_last = samVoiceOver + "youre_last.mp3";
 
     private Clip clip;
     private AudioInputStream inputStream;
     private String selectedVoiceOver;
     private Random random = new Random();
-    private Media media;
+    private MediaPlayer mediaPlayer;
 
-    public void mmenuMusic() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+    public void mainMenuMusic() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         clip = AudioSystem.getClip();
         inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream("/musicFiles/gameMusic/MainMenuMusic.wav"));
         clip.open(inputStream);
     }
 
-    public void tutorialMusic() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+    public void singlePlayerMusic() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         clip = AudioSystem.getClip();
         inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream("/musicFiles/gameMusic/SinglePlayerMusic.wav"));
         clip.open(inputStream);
-        FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-        gainControl.setValue(6.0f);
+//        FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+//        gainControl.setValue(6.0f);
+    }
+
+    public void tutorialMusic() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+        clip = AudioSystem.getClip();
+        inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream("/musicFiles/gameMusic/TutorialMusic.wav"));
+        clip.open(inputStream);
     }
 
     public void menuMusic() {
-        URL resource = getClass().getResource("/musicFiles/gameMusic/MainMenuMusic.mp3");
-        MediaPlayer mediaPlayer = new MediaPlayer(new Media(resource.toString()));
-        mediaPlayer.setOnEndOfMedia(new Runnable() {
-            @Override
-            public void run() {
-                mediaPlayer.seek(javafx.util.Duration.ZERO);
-            }
-        });
+        URL resource = getClass().getResource("song name here");
+        mediaPlayer = new MediaPlayer(new Media(resource.toString()));
         mediaPlayer.play();
-        /*String music = "MainMenuMusic.mp3";
-        media = new Media(new File(music).toURI().toString());
-        MediaPlayer mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.*/
     }
 
     public void oceanWaves() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
@@ -108,7 +104,7 @@ public class GameSounds {
 
     public void flockSeagulls() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         clip = AudioSystem.getClip();
-        inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream("/musicFiles/gameSounds/FlockOfSeagulls.wav"));
+        inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream("/musicFiles/gameSounds/FlockOfSeagulls.mp3"));
         clip.open(inputStream);
     }
 

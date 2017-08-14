@@ -131,6 +131,7 @@ public class MainMenuController implements Initializable{
         main.startHostedRace(selectedCourse, DEFAULT_PORT);
         Thread.sleep(200);
         main.loadRaceView(true);
+        System.out.println("This is tutorial");
         loadTutorialMusic();
     }
 
@@ -144,7 +145,7 @@ public class MainMenuController implements Initializable{
         main.startHostedRace(selectedCourse, DEFAULT_PORT);
         Thread.sleep(200);
         main.loadRaceView(true);
-        loadTutorialMusic();
+        loadSinglePlayerMusic();
     }
 
     /**
@@ -188,6 +189,7 @@ public class MainMenuController implements Initializable{
             if(clientStarted){
                 Thread.sleep(200);
                 main.loadRaceView(false);
+                loadRealGameSounds();
             }
         }else{
             if(!ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && !txtIPAddress.getText().isEmpty()){
@@ -203,7 +205,6 @@ public class MainMenuController implements Initializable{
                     "is invalid\n");
 
             alert.showAndWait();
-            loadRealGameSounds();
         }
     }
 
@@ -315,6 +316,13 @@ public class MainMenuController implements Initializable{
                 imageView.setEffect( null );
             }
         });
+    }
+
+
+    private void loadSinglePlayerMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        DisplaySwitcher.getGameSounds().stopMusic();
+        DisplaySwitcher.getGameSounds().singlePlayerMusic();
+        DisplaySwitcher.getGameSounds().startEndlessMusic();
     }
 
     private void loadTutorialMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
