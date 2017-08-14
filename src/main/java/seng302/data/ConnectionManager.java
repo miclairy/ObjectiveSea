@@ -10,6 +10,7 @@ import java.net.SocketException;
 import java.util.Observable;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 /**
  * Created by Gemma Lamont on 10/07/17.
@@ -18,15 +19,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConnectionManager extends Observable implements Runnable {
 
     private ServerSocket serverSocket;
-    private ConcurrentHashMap<Integer, Socket> clients =  new ConcurrentHashMap<>();
+    private Map<Integer, Socket> clients =  new ConcurrentHashMap<>();
     private TreeMap<AC35StreamXMLMessage, byte[]> xmlMessages = new TreeMap<>();
     private boolean running = true;
-    private Race race;
 
 
-    public ConnectionManager(int port, Race race) throws IOException {
+    public ConnectionManager(int port) throws IOException {
         serverSocket = new ServerSocket(port);
-        this.race = race;
     }
 
     /**
