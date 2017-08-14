@@ -37,6 +37,8 @@ public class CourseRouteArrows {
      * draw the next step in the arrow path.
      */
     public void updateCourseArrows(){
+        if(!arrowsShown) return;
+
         if (refreshTimer == 0){
             arrowIteration = (arrowIteration + 1) % arrowRoute.size();
             updateArrowAnimation(arrowIteration);
@@ -92,6 +94,7 @@ public class CourseRouteArrows {
         double increment = 0.6 / (arrowRoute.size() + 1.0);
         for (Arrow arrow : arrowRoute){
             color = Color.color(0.25, color.getGreen() + increment, 0.25);
+            arrow.fade();
             arrow.setColour(color);
         }
     }
@@ -121,5 +124,15 @@ public class CourseRouteArrows {
 
     public Boolean getArrowsShown() {
         return arrowsShown;
+    }
+
+    public void hideArrows() {
+        this.arrowsShown = false;
+        removeArrowsFromCanvas();
+    }
+
+    public void showArrows() {
+        this.arrowsShown = true;
+        drawRaceRoute();
     }
 }

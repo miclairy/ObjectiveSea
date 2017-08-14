@@ -35,9 +35,6 @@ public class Controller implements Initializable, Observer {
     @FXML private AnchorPane canvasAnchor;
     @FXML private AnchorPane rightHandSide;
     @FXML private Label fpsLabel;
-    /**
-     *
-     */
     @FXML private ListView<String> startersList;
     @FXML private Label clockLabel;
     @FXML public VBox startersOverlay;
@@ -294,6 +291,10 @@ public class Controller implements Initializable, Observer {
                 }
                 break;
             case STARTED:
+                if(Main.getClient().isParticipant()){
+                    raceViewController.getCourseRouteArrows().hideArrows();
+                    scoreBoardController.getCoursePathToggle().setSelected(false);
+                }
                 if (startersOverlay.isVisible()) {
                     hideStarterOverlay();
                 }

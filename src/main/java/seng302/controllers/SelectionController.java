@@ -48,7 +48,7 @@ public class SelectionController extends Observable {
     }
 
     /**
-     * Gets the current selected boat and changes the tracking boolean. Also notify observers of this change
+     * Gets the current selected boat and changes the tracking boolean. Also notify  observers of this change
      */
     void trackBoat() {
         BoatDisplay selectedBoat = getTrackingBoat();

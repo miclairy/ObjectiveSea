@@ -19,6 +19,7 @@ import seng302.views.BoatDisplay;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
 import seng302.models.Race;
+import seng302.views.CourseRouteArrows;
 
 import java.io.IOException;
 
@@ -36,6 +37,7 @@ public class ScoreBoardController {
 
     //FXML fields
     @FXML private CheckBox fpsToggle;
+    @FXML private CheckBox coursePathToggle;
     @FXML private ListView<String> placings;
     @FXML private Slider annotationsSlider;
     @FXML private Label raceTimerLabel;
@@ -137,6 +139,16 @@ public class ScoreBoardController {
     }
 
     @FXML
+    private void toggleCoursePath(){
+        CourseRouteArrows courseRouteArrows = raceViewController.getCourseRouteArrows();
+        if(coursePathToggle.isSelected()){
+            courseRouteArrows.showArrows();
+        } else{
+            courseRouteArrows.hideArrows();
+        }
+    }
+
+    @FXML
     private void btnTrackPressed(){
         selectionController.trackBoat();
     }
@@ -214,5 +226,9 @@ public class ScoreBoardController {
         if(!chtSparkLine.getData().contains(boatSeries)){
             chtSparkLine.getData().add(boatSeries);
         }
+    }
+
+    public CheckBox getCoursePathToggle() {
+        return coursePathToggle;
     }
 }
