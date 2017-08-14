@@ -10,7 +10,6 @@ import java.awt.geom.Line2D;
  */
 public class RoundingMechanics {
 
-
     /**
      * Checking that a boat has passed through a compound mark
      * @param boat current boat
@@ -36,7 +35,6 @@ public class RoundingMechanics {
         } else{
             return boatLine.intersectsLine(markLine) && !markPreviousDir.equals(boatPreviousDir);
         }
-
     }
 
     /**
