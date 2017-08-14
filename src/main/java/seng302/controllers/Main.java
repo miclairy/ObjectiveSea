@@ -27,8 +27,6 @@ public class Main extends Application {
     private static Server server;
     private static Stage primaryStage;
     private DisplaySwitcher displaySwitcher;
-    private GameSounds gameSounds = new GameSounds();
-
 
     @Override
     public void start(Stage primaryStage) throws Exception {
