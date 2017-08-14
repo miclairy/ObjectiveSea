@@ -283,14 +283,12 @@ public class Controller implements Initializable, Observer {
             zoomSlider.setOpacity(FOCUSED_ZOOMSLIDER_OPACITY);
             DisplayUtils.setZoomLevel(zoomSlider.getValue());
             if (DisplayUtils.zoomLevel != 1) {
-                //mapImageView.setVisible(false);
-                AnimationUtils.fadeNode(mapImageView, true);
+                mapImageView.setVisible(false);
             } else {
                 //Zoom out full, reset everything
                 selectionController.setRotationOffset(0);
                 root.getTransforms().clear();
-                //mapImageView.setVisible(true);
-                AnimationUtils.fadeNode(mapImageView, false);
+                mapImageView.setVisible(true);
                 selectionController.setTrackingPoint(false);
                 DisplayUtils.resetOffsets();
             }
