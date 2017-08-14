@@ -151,12 +151,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         redrawRaceLines();
         if (courseNeedsRedraw) redrawCourse();
 
-        if (race.getRaceStatus().beforeRaceStart()){
-            courseRouteArrows.updateCourseArrows();
-        } else if(courseRouteArrows.getArrowsShown()){
-            courseRouteArrows.removeArrowsFromCanvas();
-        }
-
+        updateCourseArrows();
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
         updateWindArrow();
@@ -1106,6 +1101,23 @@ public class RaceViewController extends AnimationTimer implements Observer {
             CompoundMark nextMark = raceOrder.get(index);
             distanceLine.setMark(nextMark);
         }
+    }
+
+    /**
+     * Updates the course arrow animation, hides the arrows once the race starts if the client is a participant in the
+     * race, else the arrows stay on if the client is a observer.
+     */
+    private void updateCourseArrows(){
+        if (Main.getClient().isParticipant()){
+            if (race.getRaceStatus().beforeRaceStart()){
+                courseRouteArrows.updateCourseArrows();
+            } else if (courseRouteArrows.getArrowsShown()){
+                courseRouteArrows.removeArrowsFromCanvas();
+            }
+        } else{
+            courseRouteArrows.updateCourseArrows();
+        }
+
     }
 
     public BoatDisplay getCurrentUserBoatDisplay() {

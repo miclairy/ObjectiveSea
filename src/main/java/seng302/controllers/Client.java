@@ -147,4 +147,8 @@ public class Client implements Runnable, Observer {
         dataStreamReader.disconnectClient();
         race.getBoatById(clientID).setStatus(BoatStatus.DNF);
     }
+
+    public boolean isParticipant() {
+        return isParticipant;
+    }
 }
