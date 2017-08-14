@@ -14,6 +14,7 @@ public class Course {
     private final String WINDWARD_GATE_NAME = "Windward Gate";
 
     private ArrayList<CompoundMark> courseOrder;
+    private ArrayList<String> roundingOrder;
     private ArrayList<Coordinate> boundary;
     private double minLat, minLon, maxLat, maxLon;
     private Map<Integer, CompoundMark> compoundMarks;
@@ -27,6 +28,7 @@ public class Course {
         this.compoundMarks = new HashMap<>();
         this.courseOrder = new ArrayList<>();
         this.boundary = new ArrayList<>();
+        this.roundingOrder = new ArrayList<>();
         allMarks = new HashMap<>();
         hasEntryMark = false;
     }
@@ -48,10 +50,12 @@ public class Course {
     /**
      * Appends a mark to the course order ArrayList. The mark must already exist in the compoundMarks HashMap
      * @param compoundMarkID - the name of the mark to look up in the compoundMarks HashMap
+     * @param roundingSide - side the boat has to pass a mark
      */
-    public void addMarkInOrder(Integer compoundMarkID){
+    public void addMarkInOrder(Integer compoundMarkID, String roundingSide){
         if(compoundMarks.containsKey(compoundMarkID)){
             courseOrder.add(compoundMarks.get(compoundMarkID));
+            roundingOrder.add(roundingSide);
         }
     }
 
@@ -235,7 +239,14 @@ public class Course {
     public Double getWindDirectionBasedOnGates(){
         CompoundMark leewardGate = findCompoundMarkByName(LEEWARD_GATE_NAME);
         CompoundMark windwardGate = findCompoundMarkByName(WINDWARD_GATE_NAME);
-        return leewardGate.getPosition().headingToCoordinate(windwardGate.getPosition());
+        if(leewardGate != null && windwardGate != null){
+            return leewardGate.getPosition().headingToCoordinate(windwardGate.getPosition());
+        }else{
+            return 0.0;
+        }
     }
 
+    public ArrayList<String> getRoundingOrder() {
+        return roundingOrder;
+    }
 }

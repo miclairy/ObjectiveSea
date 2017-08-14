@@ -257,11 +257,11 @@
                                    <Insets />
                                </GridPane.margin>
                            </Label>
-                        <ImageView fx:id="Gothenburg" fitHeight="110.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                        <ImageView fx:id="Malmo" fitHeight="110.0" fitWidth="140.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                            <image>
-                              <Image url="@graphics/courseImages/Gottenburg-course.png" />
+                              <Image url="@graphics/courseImages/Malmo-course.png" />
                            </image></ImageView>
-                        <Label id="mapTitle" text="Gothenburg" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
+                        <Label id="mapTitle" text="Malmo" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin>
