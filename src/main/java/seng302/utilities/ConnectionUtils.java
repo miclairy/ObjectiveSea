@@ -42,16 +42,23 @@ public class ConnectionUtils {
     /**
      * shows a popup informing user that connection to the server failed
      */
-    public static void showServerError(){
+    public static void showServerError(NoConnectionToServerException exception){
         Alert alert = new Alert(Alert.AlertType.ERROR);
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add("style/menuStyle.css");
         dialogPane.getStyleClass().add("myDialog");
         alert.setTitle("Cannot Connect to Server");
         alert.setHeaderText("Cannot Connect to Server");
-        alert.setContentText("This server may not be running.\n\n" +
-                "Please ensure that the IP and Port numbers \n" +
-                "you have entered are correct.");
+        if(exception.isLocalError()){
+            alert.setContentText("Cannot connect to server\n\n"+
+                    "Please ensure that the Port number \n" +
+                    "you have entered is correct.");
+        }else{
+            alert.setContentText("This server may not be running.\n\n" +
+                    "Please ensure that the IP and Port numbers \n" +
+                    "you have entered are correct.");
+        }
+
 
         alert.showAndWait();
     }

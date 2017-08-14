@@ -73,7 +73,7 @@ public class Main extends Application {
             clientThread.setName("Client");
             clientThread.start();
         } catch (NoConnectionToServerException e) {
-            ConnectionUtils.showServerError();
+            ConnectionUtils.showServerError(e);
         }
 
     }
@@ -134,7 +134,7 @@ public class Main extends Application {
             clientThread.setName("Client");
             clientThread.start();
         } catch (NoConnectionToServerException e) {
-            ConnectionUtils.showServerError();
+            ConnectionUtils.showServerError(e);
             return false;
         }
         return true;

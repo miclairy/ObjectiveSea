@@ -55,7 +55,10 @@ public class Client implements Runnable, Observer {
 
     private void manageWaitingConnection() throws NoConnectionToServerException {
         while(dataStreamReader.getClientSocket() == null) {
-            if(connectionAttempts < MAX_CONNECTION_ATTEMPTS){
+            if(dataStreamReader.isHasConnectionFailed()){
+                stopDataStreamReader();
+                throw new NoConnectionToServerException(true, "Connection Failed. Port number is invalid.");
+            }else if(connectionAttempts < MAX_CONNECTION_ATTEMPTS){
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) {
@@ -64,7 +67,7 @@ public class Client implements Runnable, Observer {
                 connectionAttempts ++;
             }else{
                 stopDataStreamReader();
-                throw new NoConnectionToServerException("Maximum connection attempts exceeded while trying to connect to server. Port or IP may not be valid.");
+                throw new NoConnectionToServerException(false, "Maximum connection attempts exceeded while trying to connect to server. Port or IP may not be valid.");
             }
         }
     }

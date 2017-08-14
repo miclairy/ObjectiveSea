@@ -5,6 +5,7 @@ import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 
 import java.io.*;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -25,6 +26,7 @@ public class DataStreamReader extends Receiver implements Runnable{
     private int sourcePort;
     private Race race;
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumbers = new HashMap<>();
+    private boolean hasConnectionFailed = false;
 
     public DataStreamReader(String sourceAddress, int sourcePort){
         this.sourceAddress = sourceAddress;
@@ -41,19 +43,21 @@ public class DataStreamReader extends Receiver implements Runnable{
      */
     @Override
     public void run(){
-        setUpConnection();
-        readData();
+        if(setUpConnection()) readData();
     }
 
     /**
-     * Sets up the connection to the data source by creating a socket and creates a InputStream from the socket
+     * Sets up the connection to the data source by creating a socket and creates a InputStream from the socket.
+     * returns whether connection was successful
      */
-    void setUpConnection() {
+    boolean setUpConnection() {
         try {
             clientSocket = new Socket(sourceAddress, sourcePort);
             dataStream = clientSocket.getInputStream();
+            return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            hasConnectionFailed = true;
+            return false;
         }
     }
 
@@ -315,5 +319,9 @@ public class DataStreamReader extends Receiver implements Runnable{
 
     public Race getRace() {
         return race;
+    }
+
+    public boolean isHasConnectionFailed() {
+        return hasConnectionFailed;
     }
 }
