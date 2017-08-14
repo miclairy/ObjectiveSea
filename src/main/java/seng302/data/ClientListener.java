@@ -27,6 +27,7 @@ public class ClientListener extends Receiver implements Runnable{
     private int sourcePort;
     private Race race;
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumbers = new HashMap<>();
+    private final Integer SOCKET_TIMEOUT_MS = 5000;
 
     public ClientListener(String sourceAddress, int sourcePort){
         this.sourceAddress = sourceAddress;
@@ -53,6 +54,7 @@ public class ClientListener extends Receiver implements Runnable{
     void setUpConnection() {
         try {
             clientSocket = new Socket(sourceAddress, sourcePort);
+            clientSocket.setSoTimeout(SOCKET_TIMEOUT_MS);
             dataStream = clientSocket.getInputStream();
         } catch (IOException e) {
             e.printStackTrace();
@@ -166,7 +168,8 @@ public class ClientListener extends Receiver implements Runnable{
      */
     private void readData(){
         DataInput dataInput = new DataInputStream(dataStream);
-        while(race == null || !race.getRaceStatus().isRaceEndedStatus() || race.getRaceStatus() != RaceStatus.TERMINATED) {
+        Boolean serverRunning = true;
+        while(serverRunning) {
             try {
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
@@ -209,7 +212,11 @@ public class ClientListener extends Receiver implements Runnable{
                 }
 
             } catch (IOException e) {
-                race.terminateRace();
+                if(!race.isTerminated()){
+                    race.terminateRace();
+                    race.setAbruptEnd(true);
+                }
+                serverRunning = false;
                 System.out.println("Client: disconnected from Server");
             }
         }

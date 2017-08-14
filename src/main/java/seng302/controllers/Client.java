@@ -1,5 +1,7 @@
 package seng302.controllers;
 
+import javafx.scene.input.KeyCode;
+import seng302.data.BoatAction;
 import seng302.data.BoatStatus;
 import seng302.data.ClientPacketBuilder;
 import seng302.data.ClientSender;
@@ -42,6 +44,10 @@ public class Client implements Runnable, Observer {
     Thread dataStreamReaderThread;
     private RegistrationResponse serverRegistrationResponse;
 
+    private static List<Integer> tutorialKeys = new ArrayList<Integer>();
+    private static Runnable tutorialFunction = null;
+
+    public Client(String ip, int port, boolean isParticipant) throws NoConnectionToServerException {
     public Client(String ip, int port, boolean isParticipant) throws ServerFullException, NoConnectionToServerException {
         this.sourcePort = port;
         this.sourceAddress = ip;
@@ -172,14 +178,42 @@ public class Client implements Runnable, Observer {
                 serverRegistrationResponse = (RegistrationResponse) arg;
             }
         } else if (o == userInputController){
-            byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
-            sender.sendToServer(boatCommandPacket);
+            sendBoatCommandPacket();
         }
+    }
+
+    /**
+     * sends boat command packet to server. Sends keypress and runs tutorial callback function if required.
+     */
+    private void sendBoatCommandPacket(){
+        if(tutorialKeys.contains(userInputController.getCommandInt())) {
+            tutorialFunction.run();
+        }
+        byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
+        sender.sendToServer(boatCommandPacket);
+
+    }
+
+    public static void setTutorialActions(List<KeyCode> keys, Runnable callbackFunction){
+        for(KeyCode key : keys){
+            tutorialKeys.add(BoatAction.getTypeFromKeyCode(key));
+        }
+        tutorialFunction = callbackFunction;
+    }
+
+    public static void clearTutorialAction(){
+        tutorialKeys.clear();
+        tutorialFunction = null;
     }
 
     public void setUserInputController(UserInputController userInputController) {
         this.userInputController = userInputController;
         userInputController.setClientID(clientID);
+    }
+
+
+    public static List<Integer> getTutorialKey() {
+        return tutorialKeys;
     }
 
     public static Race getRace() {

@@ -35,6 +35,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private int leg;
 
     private Coordinate currentPosition;
+    private Coordinate previousPosition;
     private PolarTable polarTable;
 
     private int lastRoundedMarkIndex;
@@ -69,6 +70,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private long timeTillFinish;
     private Integer id;
     private AtomicBoolean sailsIn = new AtomicBoolean(false);
+    private boolean inGate = false;
 
 
     private double TWAofBoat;
@@ -87,6 +89,7 @@ public class Boat extends Observable implements Comparable<Boat>{
         this.lastRoundedMarkIndex = -1;
         this.pathCoords = new ArrayList<>();
         this.currentPosition = new Coordinate(0,0);
+        this.previousPosition = new Coordinate(0,0);
     }
 
     /**
@@ -95,6 +98,7 @@ public class Boat extends Observable implements Comparable<Boat>{
      * @param lon the longitude of the boat
      */
     public void setPosition(double lat, double lon){
+        previousPosition = new Coordinate(currentPosition.getLat(), currentPosition.getLon());
         currentPosition.setLat(lat);
         currentPosition.setLon(lon);
     }
@@ -104,6 +108,7 @@ public class Boat extends Observable implements Comparable<Boat>{
      * @param coord a Coordinate object to copy position from
      */
     public void setPosition(Coordinate coord) {
+        previousPosition = new Coordinate(currentPosition.getLat(), currentPosition.getLon());
         currentPosition.setLat(coord.getLat());
         currentPosition.setLon(coord.getLon());
     }
@@ -114,6 +119,10 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public Coordinate getCurrentPosition() {
         return currentPosition;
+    }
+
+    public Coordinate getPreviousPosition() {
+        return previousPosition;
     }
 
     /**
@@ -285,6 +294,10 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void setMarkColliding(boolean colliding) {markColliding = colliding;}
 
+    public PolarTable getPolarTable() {
+        return polarTable;
+    }
+
     public void setBoatColliding(boolean colliding) {boatColliding = colliding;}
 
     public long getTimeTillFinish() {
@@ -321,6 +334,10 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public int getLastGybeMarkPassed() {
         return lastGybeMarkPassed;
+    }
+
+    public boolean isTackOrGybe() {
+        return tackOrGybe;
     }
 
     public synchronized Boolean isSailsIn() {
@@ -389,6 +406,14 @@ public class Boat extends Observable implements Comparable<Boat>{
         return new OptimumHeadings(optimumHeadingA, optimumHeadingB);
     }
 
+    public boolean isInGate() {
+        return inGate;
+    }
+
+    public void setInGate(boolean inGate) {
+        this.inGate = inGate;
+    }
+
 
     /**
      * Class to store optimum headings as a pair
@@ -417,11 +442,11 @@ public class Boat extends Observable implements Comparable<Boat>{
         double TWA = Math.abs(((course.getWindDirection() - heading)));
         if(isTacking(TWA)) {
             if(inRange(optimumHeadings.headingA, optimumHeadings.headingB, heading)) {
-                return heading;
+                return -1;
             }
         }
         if ((int) optimumHeadings.headingA == (int) heading && (int) optimumHeadings.headingB == (int) heading){
-            return heading;
+            return -1;
         }
         double angleToOptimumA = abs( heading - optimumHeadings.headingA);
         double angleToOptimumB = abs( heading - optimumHeadings.headingB);
@@ -435,14 +460,19 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void VMG(Course course, PolarTable polarTable){
         targetHeading = getVMGHeading(course, polarTable);
+        if (targetHeading == -1){
+            targetHeading = heading;
+        }
         rotate = true;
     }
 
 
     public void tackOrGybe(Course course, PolarTable polarTable) {
         targetHeading = getTackOrGybeHeading(course, polarTable);
+        if (targetHeading == -1){
+            targetHeading = heading;
+        }
         totalRotatedAmount = min(360 - abs(targetHeading - heading), abs(targetHeading - heading));
-//        totalRotatedAmount += 2;
         currRotationAmount = 0;
         double TWA = Math.abs(((course.getWindDirection() - heading)));
         if (TWA < 89 || TWA < 270 && TWA > 180){
@@ -475,12 +505,12 @@ public class Boat extends Observable implements Comparable<Boat>{
 
         if(isTacking(TWA)) {
             if(inRange(optimumHeadings.headingA, optimumHeadings.headingB, heading)) {
-                return heading;
+                return -1;
             }
         }
 
         if ((int) optimumHeadings.headingA == (int) heading && (int) optimumHeadings.headingB == (int) heading){
-            return heading;
+            return -1;
         }
 
         double angleToOptimumA = abs( heading - optimumHeadingA);
@@ -656,7 +686,9 @@ public class Boat extends Observable implements Comparable<Boat>{
         this.timeSinceLastCollision = timeSinceLastCollision;
     }
 
-
+    public double getTargetHeading() {
+        return targetHeading;
+    }
 
     /**
      * Updates the boat heading every loop the race updated run method makes.

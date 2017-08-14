@@ -113,7 +113,6 @@ public class ConnectionManager extends Observable implements Runnable {
 
     public void stop() {
         running = false;
-//        System.out.println(running);
         try {
             serverSocket.close();
             for (Socket socket : clients.values()){
