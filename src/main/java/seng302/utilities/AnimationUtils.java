@@ -77,6 +77,21 @@ public class AnimationUtils {
     }
 
     /**
+     * highlights an on-screen element by poping it out and in momentarily
+     * @param node the element to be popped
+     */
+    public static void scalePop(Node node){
+        ScaleTransition scaleTransition = new ScaleTransition(new Duration(100), node);
+        scaleTransition.setByY(0.05);
+        scaleTransition.setByX(0.05);
+        scaleTransition.setInterpolator(Interpolator.EASE_IN);
+        scaleTransition.play();
+        scaleTransition.setOnFinished(event -> scaleButtonHoverExit(node));
+
+
+    }
+
+    /**
      * scales and fades a node to remove it from the scene
      * @param node the node to scale and fade
      */

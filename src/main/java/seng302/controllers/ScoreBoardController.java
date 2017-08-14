@@ -55,6 +55,7 @@ public class ScoreBoardController {
     @FXML private NumberAxis yAxis ;
     @FXML private CheckBox DistanceLinesToggle;
     @FXML private CheckBox chkHighlightMark;
+    @FXML private CheckBox VirtualStartlineToggle;
 
     private final Color UNSELECTED_BOAT_COLOR = Color.WHITE;
     private final Color SELECTED_BOAT_COLOR = Color.rgb(77, 197, 138);
@@ -189,6 +190,10 @@ public class ScoreBoardController {
     @FXML
     private void toggleDistanceLines() {
         raceViewController.updateDistanceLine(DistanceLinesToggle.isSelected());
+    }
+
+    public boolean isVirtualStartlineSelected() {
+        return VirtualStartlineToggle.isSelected();
     }
 
     public boolean isSpeedSelected(){return chkSpeed.isSelected();}

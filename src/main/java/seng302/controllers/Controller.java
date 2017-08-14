@@ -17,11 +17,16 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import seng302.utilities.AnimationUtils;
+import seng302.utilities.ConnectionUtils;
+import seng302.utilities.DisplayUtils;
 import seng302.data.BoatStatus;
 import seng302.utilities.*;
 import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.Race;
+import seng302.utilities.TimeUtils;
+
 
 import java.io.*;
 
@@ -52,6 +57,10 @@ public class Controller implements Initializable, Observer {
     @FXML public Circle windCircle;
     @FXML public Circle nextMarkCircle;
     @FXML public SplitPane splitPane;
+    @FXML private AnchorPane tutorialOverlay;
+    @FXML private Label tutorialOverlayTitle;
+    @FXML private Label tutorialContent;
+
 
 
     //FPS Counter
@@ -150,6 +159,21 @@ public class Controller implements Initializable, Observer {
             return race.getRegattaName();
         }
 
+
+    }
+
+    /**
+     * shows a tutorial overlay on the screen
+     * @param title the title shown in the overlay
+     * @param content the tutorial content shown in the overlay
+     */
+    public void showTutorialOverlay(String title, String content){
+        if(!tutorialContent.getText().equals(content) || !tutorialOverlayTitle.getText().equals(title)){
+            tutorialOverlayTitle.setText(title);
+            tutorialContent.setText(content);
+            tutorialOverlay.setVisible(true);
+            AnimationUtils.scalePop(tutorialOverlay);
+        }
 
     }
 
