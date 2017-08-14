@@ -1029,6 +1029,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
         }
         controller.displayStarters();
+        scoreBoardController.refreshTable();
+        scoreBoardController.updateSparkLine();
+        if(!controller.isScoreboardVisible()){
+            controller.refreshTable();
+        }
     }
 
 

@@ -646,13 +646,11 @@ public class Controller implements Initializable, Observer {
     private void setUpTable(){
         columnName.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
         columnPosition.setCellValueFactory(cellData -> cellData.getValue().getCurrPlacingProperty().asObject());
-        columnSpeed.setCellValueFactory(cellData -> Bindings.format("%.2f kn", cellData.getValue().getSpeedProperty().asObject()));
+        columnSpeed.setCellValueFactory(cellData -> Bindings.format("%.2f kn", cellData.getValue().getSpeedProperty()));
         columnStatus.setCellValueFactory(cellData -> cellData.getValue().getStatusProperty());
 
-        SortedList<Boat> sortedCompetitors = new SortedList<>(race.getObservableCompetitors());
-        sortedCompetitors.comparatorProperty().bind(tblPlacingsRV.comparatorProperty());
-
-        tblPlacingsRV.setItems(sortedCompetitors);
+        refreshTable();
+        tblPlacingsRV.getSortOrder().add(columnPosition);
         columnPosition.setStyle( "-fx-alignment: CENTER;");
         columnName.setStyle( "-fx-alignment: CENTER;");
         columnSpeed.setStyle( "-fx-alignment: CENTER;");
@@ -670,5 +668,25 @@ public class Controller implements Initializable, Observer {
         } else {
             node.setEffect(null);
         }
+    }
+
+    public void refreshTable(){
+        Callback<Boat, javafx.beans.Observable[]> cb =(Boat boat) -> new javafx.beans.Observable[]{boat.getCurrPlacingProperty()};
+
+        ObservableList<Boat> observableList = FXCollections.observableArrayList(cb);
+        observableList.addAll(race.getObservableCompetitors());
+
+        SortedList<Boat> sortedList = new SortedList<>( observableList,
+                (Boat boat1, Boat boat2) -> {
+                    if( boat1.getCurrPlacingProperty().get() < boat2.getCurrPlacingProperty().get() ) {
+                        return -1;
+                    } else if( boat1.getCurrPlacingProperty().get() > boat2.getCurrPlacingProperty().get() ) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                });
+
+        tblPlacingsRV.setItems(sortedList);
     }
 }

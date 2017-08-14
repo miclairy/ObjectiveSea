@@ -1,5 +1,7 @@
 package seng302.controllers;
 
+import com.sun.org.apache.regexp.internal.RE;
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -68,6 +70,8 @@ public class ScoreBoardController {
     @FXML private TableColumn<Boat, String> columnSpeed;
     @FXML private TableColumn<Boat, String> columnStatus;
     @FXML private CheckBox VirtualStartlineToggle;
+
+    private ObservableList<Boat> competitors = FXCollections.observableArrayList();
 
     private final Color UNSELECTED_BOAT_COLOR = Color.WHITE;
     private final Color SELECTED_BOAT_COLOR = Color.rgb(77, 197, 138);
@@ -142,10 +146,8 @@ public class ScoreBoardController {
         columnSpeed.setCellValueFactory(cellData -> Bindings.format("%.2f kn", cellData.getValue().getSpeedProperty()));
         columnStatus.setCellValueFactory(cellData -> cellData.getValue().getStatusProperty());
 
-        SortedList<Boat> sortedCompetitors = new SortedList<>(race.getObservableCompetitors());
-        sortedCompetitors.comparatorProperty().bind(tblPlacings.comparatorProperty());
-
-        tblPlacings.setItems(sortedCompetitors);
+        refreshTable();
+        tblPlacings.getSortOrder().add(columnPosition);
         columnPosition.setStyle( "-fx-alignment: CENTER;");
         columnName.setStyle( "-fx-alignment: CENTER;");
         columnSpeed.setStyle( "-fx-alignment: CENTER;");
@@ -261,5 +263,30 @@ public class ScoreBoardController {
                 tblPlacings.getSelectionModel().select(userBoat.getBoat());
             }
         }
+    }
+
+    public void refreshTable(){
+        Callback<Boat, Observable[]> cb =(Boat boat) -> new Observable[]{boat.getCurrPlacingProperty()};
+
+        ObservableList<Boat> observableList = FXCollections.observableArrayList(cb);
+        observableList.addAll(race.getObservableCompetitors());
+
+        SortedList<Boat> sortedList = new SortedList<>( observableList,
+                (Boat boat1, Boat boat2) -> {
+                    if( boat1.getCurrPlacingProperty().get() < boat2.getCurrPlacingProperty().get() ) {
+                        return -1;
+                    } else if( boat1.getCurrPlacingProperty().get() > boat2.getCurrPlacingProperty().get() ) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                });
+
+        tblPlacings.setItems(sortedList);
+    }
+
+    public void updateSparkLine(){
+        xAxis.setUpperBound(race.getCourse().getCourseOrder().size());
+        yAxis.setLowerBound(race.getCompetitors().size() + 1);
     }
 }
