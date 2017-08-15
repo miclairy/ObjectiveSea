@@ -64,6 +64,7 @@ public class ScoreBoardController {
     @FXML private NumberAxis xAxis ;
     @FXML private NumberAxis yAxis ;
     @FXML private CheckBox DistanceLinesToggle;
+    @FXML private CheckBox chkHighlightMark;
     @FXML private TableView<Boat> tblPlacings;
     @FXML private TableColumn<Boat, Integer> columnPosition;
     @FXML private TableColumn<Boat, String> columnName;
@@ -258,6 +259,8 @@ public class ScoreBoardController {
     }
 
     public boolean isDistanceLineSelected(){return DistanceLinesToggle.isSelected();}
+
+    public boolean isHighlightMarkSelected(){return chkHighlightMark.isSelected();}
 
     public void addBoatToSparkLine(Series boatSeries){
         if(!chtSparkLine.getData().contains(boatSeries)){
