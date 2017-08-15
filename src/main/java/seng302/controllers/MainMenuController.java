@@ -14,6 +14,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import seng302.models.ClientOptions;
+import seng302.models.GameMode;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
 
@@ -120,9 +122,10 @@ public class MainMenuController implements Initializable{
 
     @FXML private void loadTutorial() throws Exception {
         btnSinglePlay.setDisable(true);
-        main.startHostedRace("GuidedPractice-course.xml", DEFAULT_PORT, true);
+        ClientOptions clientOptions = new ClientOptions(GameMode.TUTORIAL);
+        main.startHostedRace("GuidedPractice-course.xml", DEFAULT_PORT, true, clientOptions);
         Thread.sleep(200);
-        main.loadRaceView(true, true);
+        main.loadRaceView(clientOptions);
     }
 
     /**
@@ -131,27 +134,32 @@ public class MainMenuController implements Initializable{
      */
     @FXML private void loadOfflinePlay() throws Exception{
         btnSinglePlay.setDisable(true);
-        main.startHostedRace(selectedCourse, DEFAULT_PORT, false);
+        ClientOptions clientOptions = new ClientOptions(GameMode.SINGLEPLAYER);
+        main.startHostedRace(selectedCourse, DEFAULT_PORT, false, clientOptions);
         Thread.sleep(200);
-        main.loadRaceView(true, true);
+        main.loadRaceView(clientOptions);
     }
 
 
     @FXML private void loadPracticeStart() throws Exception {
         btnSinglePlay.setDisable(true);
-        main.startHostedRace("PracticeStart-course.xml", DEFAULT_PORT, false);
+        ClientOptions clientOptions = new ClientOptions(GameMode.PRACTICE);
+        main.startHostedRace("PracticeStart-course.xml", DEFAULT_PORT, false, clientOptions);
         Thread.sleep(200);
-        main.loadRaceView(true, true);
+        main.loadRaceView(clientOptions);
     }
 
     /**
      * Allows user to host a game at the entered port and current public IP
      * @throws Exception
      */
-    @FXML private void startHostGame() throws Exception{
-        main.startHostedRace(selectedCourse, Integer.parseInt(txtPortNumber.getText()), false);
+    @FXML private void startHostGame() throws Exception {
+        ClientOptions clientOptions = new ClientOptions();
+        Integer port = Integer.parseInt(txtPortNumber.getText());
+        clientOptions.setServerPort(port);
+        main.startHostedRace(selectedCourse, port, false, clientOptions);
         Thread.sleep(200);
-        main.loadRaceView(true, true);
+        main.loadRaceView(clientOptions);
     }
 
     @FXML private void hostGame(){
@@ -180,10 +188,12 @@ public class MainMenuController implements Initializable{
         if(ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && validatePort()){
             String ipAddress = txtIPAddress.getText();
             int portNumber = Integer.parseInt(txtPortNumber.getText());
-            boolean clientStarted = main.startClient(ipAddress, portNumber, isParticipant);
+            ClientOptions clientOptions =
+                    new ClientOptions(ipAddress, portNumber, GameMode.MULTIPLAYER, isParticipant, false);
+            boolean clientStarted = main.startClient(clientOptions);
             if(clientStarted){
                 Thread.sleep(200);
-                main.loadRaceView(false, isParticipant);
+                main.loadRaceView(clientOptions);
             }
         } else {
             if(!ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && !txtIPAddress.getText().isEmpty()){

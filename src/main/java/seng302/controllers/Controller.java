@@ -2,7 +2,6 @@ package seng302.controllers;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableNumberValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -93,10 +92,9 @@ public class Controller implements Initializable, Observer {
     @FXML
     private SelectionController selectionController;
 
-    public boolean raceBegun;
     private boolean raceStatusChanged = true;
     private Race race;
-    private boolean isHost;
+    private ClientOptions options;
     private DisplaySwitcher displaySwitcher;
 
 
@@ -129,20 +127,11 @@ public class Controller implements Initializable, Observer {
         fpsLabel.textProperty().bind(fpsString);
         clockLabel.textProperty().bind(clockString);
         hideStarterOverlay();
-        raceViewController.updateWindArrow();
 
         displayStarters();
         startersOverlay.toFront();
-        raceViewController.start();
         initDisplayDrag();
         initZoom();
-        boolean isPractice = RaceVisionXMLParser.courseFile.equals("PracticeStart-course.xml");
-        if (isPractice) {
-            CompoundMark startLine = race.getCourse().getCourseOrder().get(0);
-            Mark centreMark = new Mark(0, "centre", startLine.getPosition());
-            selectionController.zoomToMark(centreMark);
-            setZoomSliderValue(2.0);
-        }
     }
 
     /**
@@ -164,8 +153,6 @@ public class Controller implements Initializable, Observer {
         } catch (Exception e) {
             return race.getRegattaName();
         }
-
-
     }
 
     /**
@@ -180,23 +167,31 @@ public class Controller implements Initializable, Observer {
             tutorialOverlay.setVisible(true);
             AnimationUtils.scalePop(tutorialOverlay);
         }
-
     }
 
-    public void setApp(boolean host, DisplaySwitcher displaySwitcher, Scene scene) {
+    /**
+     * Set app options and pass them on to the RaceViewController
+     * @param options configured ClientOptions
+     * @param displaySwitcher required to allow switching back to main menu
+     * @param scene the scene in which we are being drawn
+     */
+    public void setApp(ClientOptions options, DisplaySwitcher displaySwitcher, Scene scene) {
         this.displaySwitcher = displaySwitcher;
-        this.isHost = host;
+        this.options = options;
         this.scene = scene;
-        if (isHost) {
+        if (this.options.isHost()) {
             startersOverlayTitle.setText(getPublicIp());
         } else {
             startersOverlayTitle.setText(race.getRegattaName());
         }
         initKeyPressListener();
+        raceViewController.setOptions(options);
+        raceViewController.updateWindArrow();
+        raceViewController.start();
     }
 
     public void exitRunningRace() throws IOException {
-        ConnectionUtils.initiateDisconnect(isHost);
+        ConnectionUtils.initiateDisconnect(options.isHost());
         displaySwitcher.loadMainMenu();
         raceViewController.stop();
         DisplayUtils.resetZoom();
@@ -313,7 +308,7 @@ public class Controller implements Initializable, Observer {
      * shows a popup informing user that the server has disconnected
      */
     public void showServerDisconnectError() {
-        if(!isHost){
+        if(!options.isHost()){
             Alert alert = new Alert(Alert.AlertType.ERROR);
             DialogPane dialogPane = alert.getDialogPane();
             dialogPane.getStylesheets().add("style/menuStyle.css");

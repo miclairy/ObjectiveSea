@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import seng302.controllers.*;
+import seng302.models.ClientOptions;
 
 import java.net.URL;
 import java.util.logging.Level;
@@ -41,12 +42,12 @@ public class DisplaySwitcher {
 
     /**
      * loads the race view into the stage
-     * @param isHost a boolean showing if the user is a host or not
+     * @param options a set of configured ClientOptions
      */
-    public void loadRaceView(boolean isHost) {
+    public void loadRaceView(ClientOptions options) {
         try {
-            Controller race = (Controller) replaceSceneContent("race_view.fxml");
-            race.setApp(isHost, this, scene);
+            Controller raceController = (Controller) replaceSceneContent("race_view.fxml");
+            raceController.setApp(options, this, scene);
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }

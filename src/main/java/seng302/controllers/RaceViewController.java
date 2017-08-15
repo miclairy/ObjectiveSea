@@ -89,13 +89,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
     private double sailWidth = 5;
     private boolean isSailWidthChanging = false;
-    private boolean isPractice;
+    private ClientOptions options;
 
     private int flickercounter = 0;
     private int prevWindColorNum = 0;
-
-    private boolean isTutorial = false;
-
     private Tutorial tutorial;
 
     BoatDisplay currentUserBoatDisplay;
@@ -108,19 +105,33 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         this.selectionController = selectionController;
-        isPractice = RaceVisionXMLParser.courseFile.equals("PracticeStart-course.xml");
-        isTutorial = RaceVisionXMLParser.courseFile.equals("GuidedPractice-course.xml");
-        if(isTutorial) {
-            tutorial = new Tutorial(controller, race);
-        }
-        if(isTutorial || isPractice) {
+        race.addObserver(this);
+    }
+
+    /**
+     * Sets the options for the RaceViewController and deals with initial setup based on the
+     * GameMode of these options.
+     * Must be called BEFORE start() is called on this object
+     * @param options a ClientOptions object configured with the options for the RaceView
+     */
+    public void setOptions(ClientOptions options) {
+        this.options = options;
+        if(options.isTutorial() || options.isPractice()) {
             controller.hideStarterOverlay();
             initBoatHighlight();
             initializeBoats();
             initBoatPaths();
         }
+        if(options.isTutorial()) {
+            tutorial = new Tutorial(controller, race);
+        }
+        if (options.isPractice()) {
+            CompoundMark startLine = race.getCourse().getCourseOrder().get(0);
+            Mark centreMark = new Mark(0, "centre", startLine.getPosition());
+            selectionController.zoomToMark(centreMark);
+            controller.setZoomSliderValue(2.0);
+        }
         redrawCourse();
-        race.addObserver(this);
     }
 
     @Override
@@ -132,22 +143,22 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         double secondsElapsed = TimeUtils.convertNanosecondsToSeconds(currentTime - previousTime);
 
-        if(!race.isTerminated() && !isTutorial){
+        if(!race.isTerminated() && !options.isTutorial()){
             controller.updateRaceClock();
         }else if (race.isTerminated()){
             if(race.getAbruptEnd()){
                 controller.blurScreen(true);
                 controller.showServerDisconnectError();
                 this.stop();
-            } else if (!isPractice){
+            } else if (!options.isPractice()){
                 controller.showStarterOverlay();
                 this.stop();
-            } else if (isPractice){
+            } else if (options.isPractice()){
                 controller.displayFinishedPraticePopUp();
             }
         }
         if(controller.hasRaceStatusChanged()){
-            if(!isTutorial){
+            if(!options.isTutorial()){
                 controller.updatePreRaceScreen();
                 controller.setRaceStatusChanged(false);
             }
@@ -169,7 +180,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         for (BoatDisplay displayBoat: displayBoats) {
             moveBoatDisplay(displayBoat);
         }
-        if(!isTutorial){
+        if(!options.isTutorial()){
             redrawRaceLines();
         } else {
             if(tutorial != null) tutorial.runTutorial();
@@ -195,7 +206,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         moveBoat(boatDisplay, point);
         moveWake(boatDisplay, point);
         moveSail(boatDisplay, point);
-        if(!isTutorial){
+        if(!options.isTutorial()){
             displayCollisions(boatDisplay, point);
         }
 
@@ -438,7 +449,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     void redrawCourse(){
         courseNeedsRedraw = false;
-        if(!isTutorial) {
+        if(!options.isTutorial()) {
             drawMarks();
             drawBoundary();
             redrawRaceLines();
@@ -492,7 +503,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     public void drawMarks() {
         int limit = race.getCourse().getAllMarks().size();
-        if (isPractice) limit = 2;
+        if (options.isPractice()) limit = 2;
         int count = 0;
         for (Mark mark : race.getCourse().getAllMarks().values()) {
             if (count < limit) {
