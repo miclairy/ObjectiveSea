@@ -95,6 +95,8 @@ public class RaceUpdater implements Runnable {
     @Override
     public void run() {
         Course course = race.getCourse();
+        boolean oneBoatHasFinished = false;
+        double timeOfFirstFinisher = 0;
         while (!race.getRaceStatus().isRaceEndedStatus() && serverRunning) {
             boolean atLeastOneBoatNotFinished = false;
             double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
@@ -105,7 +107,16 @@ public class RaceUpdater implements Runnable {
             }
             long millisBeforeStart = race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs();
             for (Boat boat : race.getCompetitors()) {
-
+                if (boat.getStatus().equals(BoatStatus.FINISHED) && !oneBoatHasFinished){
+                    oneBoatHasFinished = true;
+                    timeOfFirstFinisher = race.getCurrentTimeInEpochMs();
+                }
+                if (oneBoatHasFinished){
+                    System.out.println(race.getCurrentTimeInEpochMs() - timeOfFirstFinisher);
+                    if (race.getCurrentTimeInEpochMs() - timeOfFirstFinisher >= TimeUtils.secondsToMilliseconds(TimeUtils.convertMinutesToSeconds(10))){
+                        race.updateRaceStatus(RaceStatus.TERMINATED);
+                    }
+                }
                 if(race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
                     if (collisionManager.boatIsInCollision(boat)) {
                         //revert the last location update as it was a collision
@@ -155,11 +166,9 @@ public class RaceUpdater implements Runnable {
                     }
                 }
             }
-
             if (race.getCompetitors().size() > 0 && !atLeastOneBoatNotFinished) {
                 race.updateRaceStatus(RaceStatus.TERMINATED);
             }
-
             try{
                 Thread.sleep((long) (SECONDS_PER_UPDATE * 1000));
             } catch (InterruptedException e) {
@@ -168,6 +177,12 @@ public class RaceUpdater implements Runnable {
         }
     }
 
+
+    /**
+     * Checks the course feature rounding of each boat given
+     * @param boat current boat
+     * @param course current course the boat is in
+     */
     private void checkMarkRounding(Boat boat, Course course) {
         CompoundMark currentMark = course.getCourseOrder().get(boat.getLastRoundedMarkIndex() + 1);
         CompoundMark previousMark = null;
