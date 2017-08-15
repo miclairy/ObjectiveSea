@@ -73,7 +73,7 @@ public class GameSounds {
     private Random random = new Random();
     private boolean endless = false;
     private MediaPlayer mediaPlayer;
-    private int randomSeaGull = (int)(random.nextDouble() * 10000) + 10000; //5-10 seconds
+    private int randomSeaGull;
 
     public void mainMenuMusic() {
         selectedMusic = "/musicFiles/gameMusic/MainMenuMusic.wav";
@@ -92,8 +92,9 @@ public class GameSounds {
     }
 
     public void flockSeagulls() {
+        randomSeaGull = (int)(random.nextDouble() * 30000) + 30000; //30-60 seconds
         Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 if(endless) {
