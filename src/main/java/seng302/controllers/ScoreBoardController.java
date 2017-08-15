@@ -182,7 +182,7 @@ public class ScoreBoardController {
                 e -> AnimationUtils.scaleButtonHoverExit(button));
     }
 
-    @FXML private void btnExitRacePressed() throws IOException {
+    @FXML private void btnExitRacePressed() {
         parent.exitRunningRace();
     }
 

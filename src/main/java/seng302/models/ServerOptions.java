@@ -18,6 +18,7 @@ public class ServerOptions {
     private Integer port;
     private String raceXML;
     private boolean isTutorial;
+    private Integer numRacesToRun;
 
     /**
      * Constructor with default options
@@ -28,6 +29,7 @@ public class ServerOptions {
         port = DEFAULT_PORT;
         raceXML = DEFAULT_COURSE;
         isTutorial = false;
+        numRacesToRun = 1;
     }
 
     public Double getSpeedScale() {
@@ -86,5 +88,20 @@ public class ServerOptions {
 
     public boolean isTutorial() {
         return this.isTutorial;
+    }
+
+    public Integer getNumRacesToRun() {
+        return numRacesToRun;
+    }
+
+    public void setNumRacesToRun(Integer numRacesToRun) {
+        this.numRacesToRun = numRacesToRun;
+    }
+
+    /**
+     * @return true if the server has been configured to always restart at the end of a race
+     */
+    public Boolean alwaysRerun() {
+        return numRacesToRun == -1;
     }
 }

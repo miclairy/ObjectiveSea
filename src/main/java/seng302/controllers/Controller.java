@@ -189,7 +189,7 @@ public class Controller implements Initializable, Observer {
         initKeyPressListener();
     }
 
-    public void exitRunningRace() throws IOException {
+    public void exitRunningRace() {
         ConnectionUtils.initiateDisconnect(isHost);
         displaySwitcher.loadMainMenu();
         raceViewController.stop();

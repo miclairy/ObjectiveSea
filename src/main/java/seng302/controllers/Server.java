@@ -37,12 +37,19 @@ public class Server implements Runnable, Observer {
 
     public Server(ServerOptions options) throws IOException {
         this.options = options;
-        raceUpdater = new RaceUpdater(options.getRaceXML());
-        if(options.isTutorial()) raceUpdater.skipPrerace();
-        collisionManager = raceUpdater.getCollisionManager();
         packetBuilder = new ServerPacketBuilder();
         connectionManager = new ConnectionManager(options.getPort());
         connectionManager.addObserver(this);
+        setupNewRaceUpdater(options);
+    }
+
+    /**
+     * Initializes a new raceUpdater with settings provided in options
+     * @param options for the race
+     */
+    private void setupNewRaceUpdater(ServerOptions options) {
+        raceUpdater = new RaceUpdater(options.getRaceXML());
+        if(options.isTutorial()) raceUpdater.skipPrerace();
         raceUpdater.setScaleFactor(options.getSpeedScale());
         raceUpdaterThread = new Thread(raceUpdater);
         raceUpdaterThread.setName("Race Updater");
@@ -66,28 +73,32 @@ public class Server implements Runnable, Observer {
      * Sends all the data to the socket while the boats have not all finished.
      */
     @Override
-    public void run() throws NullPointerException{
-        try {
-            initialize();
-            sendInitialRaceMessages();
-            Thread managerThread = new Thread(connectionManager);
-            managerThread.setName("Connection Manager");
-            managerThread.start();
-            while (!raceUpdater.raceHasEnded()) {
-                if (!raceUpdater.getRace().getCompetitors().isEmpty()) {
-                    sendRaceUpdates();
+    public void run() throws NullPointerException {
+        Integer timesRun = 0;
+        while (options.alwaysRerun() || timesRun < options.getNumRacesToRun()) {
+            setupNewRaceUpdater(options);
+            System.out.println("Server: Ready to Run New Race");
+            try {
+                initialize();
+                sendInitialRaceMessages();
+                Thread managerThread = new Thread(connectionManager);
+                managerThread.setName("Connection Manager");
+                managerThread.start();
+                while (!raceUpdater.raceHasEnded()) {
+                    if (!raceUpdater.getRace().getCompetitors().isEmpty()) {
+                        sendRaceUpdates();
+                    }
+                    Thread.sleep((long) (SECONDS_PER_UPDATE * 1000 / options.getSpeedScale()));
                 }
-                try {
-                    Thread.sleep((long)(SECONDS_PER_UPDATE * 1000 / options.getSpeedScale()));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                sendRaceUpdates(); //send one last message block with ending data
+                connectionManager.closeClientConnections();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
             }
-            sendRaceUpdates(); //send one last message block with ending data
-        } catch (IOException e) {
-            e.printStackTrace();
+            timesRun++;
         }
-        //TODO: Clean up connections
+        System.out.println("Server: Shutting Down");
+        connectionManager.closeAllConnections();
     }
 
     /**
@@ -282,8 +293,8 @@ public class Server implements Runnable, Observer {
         }
     }
 
-    public void initiateServerDisconnect() throws IOException {
-        connectionManager.closeConnections();
+    public void initiateServerDisconnect() {
+        connectionManager.closeAllConnections();
         raceUpdater.stopRunning();
     }
 

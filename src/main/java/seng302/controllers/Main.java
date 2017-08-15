@@ -61,6 +61,7 @@ public class Main extends Application {
         if (args[0].equals("server")){
             try {
                 ServerOptions serverOptions = new ServerOptions();
+                serverOptions.setNumRacesToRun(-1);
                 for (int i = 1; i < args.length; i+=2) {
                     switch(args[i]) {
                         case "-p":
@@ -74,6 +75,9 @@ public class Main extends Application {
                             break;
                         case "-s":
                             serverOptions.setSpeedScale(Double.parseDouble(args[i + 1]));
+                            break;
+                        case "-r":
+                            serverOptions.setNumRacesToRun(Integer.parseInt(args[i + 1]));
                             break;
                         default:
                             throw new IllegalArgumentException(String.format("Unknown argument \"%s\"", args[i]));
