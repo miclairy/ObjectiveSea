@@ -135,8 +135,8 @@ public class TimeUtils {
         return hours * (SECONDS_IN_MINUTE * MINUTES_IN_HOUR);
     }
 
-    public static double convertMinutesToSeconds(double seconds){
-        return seconds * SECONDS_IN_MINUTE;
+    public static double convertMinutesToSeconds(double minutes){
+        return minutes * SECONDS_IN_MINUTE;
     }
 
     public static Double convertMmPerSecondToKnots(long mmPerSecond){
