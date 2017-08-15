@@ -279,7 +279,7 @@ public class ScoreBoardController {
 
 
     /**
-     * updates the table when a new competitor is added
+     * updates the scorebaord table when a new competitor is added
      */
     public void refreshTable(){
         Callback<Boat, Observable[]> cb =(Boat boat) -> new Observable[]{boat.getCurrPlacingProperty()};
