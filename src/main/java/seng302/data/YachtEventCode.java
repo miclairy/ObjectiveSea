@@ -4,7 +4,7 @@ package seng302.data;
  * Created by mjt169 on 25/07/17.
  */
 public enum YachtEventCode {
-    COLLISION(1), COLLISION_PENALTY(2);
+    COLLISION(33), COLLISION_PENALTY(34), SAILS_IN(35), SAILS_OUT(36);
 
     private int code;
 

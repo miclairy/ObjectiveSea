@@ -135,6 +135,19 @@ public class Server implements Runnable, Observer {
             }
             collisionManager.removeCollision(collision);
         }
+        sendSailChangeMessages();
+    }
+
+    private void sendSailChangeMessages() throws IOException {
+        for (Boat boat : raceUpdater.getRace().getCompetitors()) {
+            if (!boat.isFinished()) {
+                if(boat.isSailsIn()){
+                    sendYachtEventMessage(boat, raceUpdater.getRace(), 1, YachtEventCode.SAILS_IN);
+                }else{
+                    sendYachtEventMessage(boat, raceUpdater.getRace(), 1, YachtEventCode.SAILS_OUT);
+                }
+            }
+        }
     }
 
     private void sendBoatMessagesForAllBoats() throws IOException {

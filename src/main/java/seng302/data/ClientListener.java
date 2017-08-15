@@ -285,16 +285,21 @@ public class ClientListener extends Receiver implements Runnable{
         race.setCurrentTimeInEpochMs(currentTime);
     }
 
-    private void parseYachtEventMessage(byte[] body){
+    private void parseYachtEventMessage(byte[] body) {
         int eventID = byteArrayRangeToInt(body, EVENT_ID.getStartIndex(), EVENT_ID.getEndIndex());
         int boatID = byteArrayRangeToInt(body, DESTINATION_SOURCE_ID.getStartIndex(), DESTINATION_SOURCE_ID.getEndIndex());
         if (eventID == YachtEventCode.COLLISION.code()) {
             Boat boat = race.getBoatById(boatID);
             boat.setBoatColliding(true);
             boat.setMarkColliding(true);
-        }
-        if (eventID == YachtEventCode.COLLISION_PENALTY.code()) {
+        } else if (eventID == YachtEventCode.COLLISION_PENALTY.code()) {
 
+        } else if (eventID == YachtEventCode.SAILS_IN.code()) {
+            Boat boat = race.getBoatById(boatID);
+            if (boat != null) boat.setSailsIn(true);
+        } else if(eventID == YachtEventCode.SAILS_OUT.code()) {
+            Boat boat = race.getBoatById(boatID);
+            if (boat != null) boat.setSailsIn(false);
         }
     }
 
