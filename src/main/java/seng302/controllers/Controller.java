@@ -18,6 +18,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
+import seng302.data.RaceVisionXMLParser;
 import seng302.models.*;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
@@ -135,7 +136,7 @@ public class Controller implements Initializable, Observer {
         raceViewController.start();
         initDisplayDrag();
         initZoom();
-        boolean isPractice = race.getId().equals("77228423");  // 77228423 spells practice in text
+        boolean isPractice = RaceVisionXMLParser.courseFile.equals("PracticeStart-course.xml");
         if (isPractice) {
             CompoundMark startLine = race.getCourse().getCourseOrder().get(0);
             Mark centreMark = new Mark(0, "centre", startLine.getPosition());

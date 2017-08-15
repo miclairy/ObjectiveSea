@@ -94,7 +94,7 @@ public class RaceUpdater implements Runnable {
 
     @Override
     public void run() {
-        boolean isPractice = race.getId().equals("77228423"); // 77228423 spells practice in text
+        boolean isPractice = RaceVisionXMLParser.courseFile.equals("PracticeStart-course.xml");
         if (isPractice) race.updateRaceStatus(PREPARATORY);
         Course course = race.getCourse();
         while (!race.getRaceStatus().isRaceEndedStatus() && serverRunning) {

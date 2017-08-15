@@ -1,6 +1,7 @@
 package seng302.controllers;
 
 import seng302.data.BoatStatus;
+import seng302.data.RaceVisionXMLParser;
 import seng302.models.*;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.MathUtils;
@@ -30,7 +31,7 @@ public class CollisionManager {
      * @param race
      */
     public void checkForCollisions(Race race){
-        boolean isPractice = race.getId().equals("77228423");  // 77228423 spells practice in text
+        boolean isPractice = RaceVisionXMLParser.courseFile.equals("PracticeStart-course.xml");
         List<Boat> boats = new ArrayList<>();
         boats.addAll(race.getCompetitors());
         for (int i = 0; i < boats.size(); i++) {

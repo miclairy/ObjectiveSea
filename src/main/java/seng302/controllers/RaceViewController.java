@@ -108,7 +108,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         this.selectionController = selectionController;
-        isPractice = race.getId().equals("77228423");  // 77228423 spells practice in text
+        isPractice = RaceVisionXMLParser.courseFile.equals("PracticeStart-course.xml");
         isTutorial = RaceVisionXMLParser.courseFile.equals("GuidedPractice-course.xml");
         if(isTutorial) {
             tutorial = new Tutorial(controller, race);
