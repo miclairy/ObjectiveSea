@@ -105,7 +105,6 @@ public class RaceUpdater implements Runnable {
             }
             long millisBeforeStart = race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs();
             for (Boat boat : race.getCompetitors()) {
-                boat.initialReadySound();
                 if(race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
                     if (collisionManager.boatIsInCollision(boat)) {
                         //revert the last location update as it was a collision
@@ -128,7 +127,6 @@ public class RaceUpdater implements Runnable {
                     boat.updateBoatHeading(raceSecondsPassed);
                     if (course.getCourseOrder().size() > 0) {
                         checkMarkRounding(boat, course);
-                        boat.checkPlacing(race.getCompetitors().size());
                     }
                     calculateTimeAtNextMark(boat);
                 } else {
