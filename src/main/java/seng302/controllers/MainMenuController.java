@@ -332,5 +332,6 @@ public class MainMenuController implements Initializable{
         DisplaySwitcher.getGameSounds().stopEndlessMusic();
         DisplaySwitcher.getGameSounds().oceanWaves();
         DisplaySwitcher.getGameSounds().playEndlessMusic();
+        DisplaySwitcher.getGameSounds().startSeaGullNoise();
     }
 }

@@ -4,9 +4,7 @@ package seng302.models;
 import seng302.data.StartTimingStatus;
 
 import seng302.data.BoatStatus;
-import seng302.utilities.MathUtils;
-import seng302.utilities.PolarReader;
-import seng302.utilities.TimeUtils;
+import seng302.utilities.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,6 +69,8 @@ public class Boat extends Observable implements Comparable<Boat>{
     private Integer id;
     private AtomicBoolean sailsIn = new AtomicBoolean(false);
     private boolean inGate = false;
+    private boolean finalGameSound = false;
+    private boolean firstGameSound = true;
 
 
     private double TWAofBoat;
@@ -168,11 +168,33 @@ public class Boat extends Observable implements Comparable<Boat>{
     public void addDamage(int damage) {
         if((boatHealth - damage) > 0) {
             boatHealth -= damage;
+            System.out.println(boatHealth);
         } else {
             boatHealth = 0;
             status = BoatStatus.DNF;
         }
         checkPenaltySpeed();
+    }
+
+
+    public void hasHitBoat() {
+        if(boatHealth <= 20) {
+            DisplaySwitcher.getGameSounds().boatDamage();
+            DisplaySwitcher.getGameSounds().playGameSound();
+        } else {
+            DisplaySwitcher.getGameSounds().hitBoat();
+            DisplaySwitcher.getGameSounds().playGameSound();
+        }
+    }
+
+    public void hasHitMark() {
+        if(boatHealth <= 20) {
+            DisplaySwitcher.getGameSounds().boatDamage();
+            DisplaySwitcher.getGameSounds().playGameSound();
+        } else {
+            DisplaySwitcher.getGameSounds().hitMark();
+            DisplaySwitcher.getGameSounds().playGameSound();
+        }
     }
 
     public void addPenalty(double penalty) {
@@ -725,4 +747,32 @@ public class Boat extends Observable implements Comparable<Boat>{
             }
         }
     }
+
+    public void checkPlacing(Integer noOfBoats) {
+        if(!finalGameSound) {
+            if (currPlacing == 0 && status.equals(BoatStatus.FINISHED)) {
+                DisplaySwitcher.getGameSounds().firstPlace();
+                DisplaySwitcher.getGameSounds().playGameSound();
+                finalGameSound = true;
+            } else if (currPlacing != 0 && currPlacing != noOfBoats-1 && status.equals(BoatStatus.FINISHED)) {
+                DisplaySwitcher.getGameSounds().everyoneButFirstPlace();
+                DisplaySwitcher.getGameSounds().playGameSound();
+                finalGameSound = true;
+            } else if ((currPlacing == noOfBoats-1 && status.equals(BoatStatus.FINISHED)) ||
+                    (status.equals(BoatStatus.DISQUALIFIED) || status.equals(BoatStatus.DNF))) {
+                DisplaySwitcher.getGameSounds().lastPlace();
+                DisplaySwitcher.getGameSounds().playGameSound();
+                finalGameSound = true;
+            }
+        }
+    }
+
+    public void initialReadySound() {
+        if(firstGameSound) {
+            DisplaySwitcher.getGameSounds().preRace();
+            DisplaySwitcher.getGameSounds().playGameSound();
+            firstGameSound = false;
+        }
+    }
+
 }

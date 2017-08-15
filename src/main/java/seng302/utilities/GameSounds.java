@@ -7,6 +7,8 @@ import java.io.*;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.sound.sampled.*;
 
 /**
@@ -69,7 +71,9 @@ public class GameSounds {
     private String selectedVoiceOver;
     private String selectedMusic;
     private Random random = new Random();
+    private boolean endless = false;
     private MediaPlayer mediaPlayer;
+    private int randomSeaGull = (int)(random.nextDouble() * 10000) + 10000; //5-10 seconds
 
     public void mainMenuMusic() {
         selectedMusic = "/musicFiles/gameMusic/MainMenuMusic.wav";
@@ -88,7 +92,19 @@ public class GameSounds {
     }
 
     public void flockSeagulls() {
-        selectedVoiceOver = "/musicFiles/gameSounds/FlockOfSeagulls.mp3";
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if(endless) {
+                    selectedVoiceOver = "/musicFiles/gameSounds/FlockOfSeagulls.mp3";
+                    playGameSound();
+                } else {
+                    timer.cancel();
+                    timer.purge();
+                }
+            }
+        }, 0, randomSeaGull);
     }
 
     public void hitMark() {
@@ -224,8 +240,14 @@ public class GameSounds {
         clip.start();
     }
 
+    public void startSeaGullNoise() {
+        endless = true;
+        flockSeagulls();
+    }
+
     public void stopEndlessMusic() throws LineUnavailableException {
         clip.stop();
+        endless = false;
         clip.setFramePosition(0);
     }
 }
