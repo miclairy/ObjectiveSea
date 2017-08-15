@@ -245,7 +245,7 @@ public class RaceVisionXMLParser {
                             }
                             for(Integer seqNumber : markOrder.keySet()){
                                 int markID = Integer.parseInt(markOrder.get(seqNumber).get(0));
-                                String roundingSide = markOrder.get(seqNumber).get(1);
+                                RoundingSide roundingSide = RoundingSide.parseRoundingSide(markOrder.get(seqNumber).get(1));
                                 if (seqNumber == 1) {
                                     CompoundMark mark = course.getCompoundMarkByID(markID);
                                     if (!mark.hasTwoMarks()){

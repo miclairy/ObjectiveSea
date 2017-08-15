@@ -2,9 +2,12 @@ package seng302.views;
 
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
+import seng302.controllers.RoundingMechanics;
+import seng302.data.RoundingSide;
 import seng302.models.CompoundMark;
 import seng302.models.Coordinate;
 import seng302.models.Course;
+import seng302.models.Mark;
 import seng302.utilities.DisplayUtils;
 
 import java.util.ArrayList;
@@ -44,6 +47,8 @@ public class CourseRouteArrows {
             updateArrowAnimation(arrowIteration);
         }
         refreshTimer = (refreshTimer + 1) % REFRESH_THRESHOLD;
+
+
     }
 
     /**
@@ -81,6 +86,46 @@ public class CourseRouteArrows {
         }
     }
 
+    private void markRoundingArrows(CompoundMark currentMark, CompoundMark previousMark, CompoundMark nextMark, RoundingSide roundingSide){
+        Double heading = previousMark.getPosition().headingToCoordinate(currentMark.getPosition());
+        double nextHeading = currentMark.getPosition().headingToCoordinate(nextMark.getPosition());
+
+        // Return if goes straight through gate without rounding
+        if(currentMark.hasTwoMarks() && RoundingMechanics.nextCompoundMarkAfterGate(nextMark, currentMark, previousMark)) return;
+
+        switch(roundingSide){
+            case PORT:
+                addMarkRoundingArrows(currentMark.getMark1(), heading, nextHeading, 1);
+                break;
+            case STBD:
+                addMarkRoundingArrows(currentMark.getMark1(), heading, nextHeading, -1);
+                break;
+            case PORT_STBD:
+                addMarkRoundingArrows(currentMark.getMark1(), heading, nextHeading, 1);
+                addMarkRoundingArrows(currentMark.getMark2(), heading, nextHeading, -1);
+                break;
+            case STBD_PORT:
+                addMarkRoundingArrows(currentMark.getMark1(), heading, nextHeading, -1);
+                addMarkRoundingArrows(currentMark.getMark2(), heading, nextHeading, 1);
+        }
+    }
+
+    private void addMarkRoundingArrows(Mark mark, double heading, double nextHeading, int isPort) {
+        Coordinate firstArrowPosition = mark.getPosition().coordAt(isPort * 0.05, (heading + 90));
+        Coordinate finalArrowPosition = mark.getPosition().coordAt(isPort * 0.05, (nextHeading + 90));
+
+        Double interpolatedHeading = firstArrowPosition.headingToCoordinate(finalArrowPosition);
+        Coordinate middleArrowPosition = mark.getPosition().coordAt(isPort * 0.05, (interpolatedHeading + 90));
+
+        Arrow mark1Arrow = new Arrow(5, 10, firstArrowPosition, (heading + 180));
+        arrowRoute.add(mark1Arrow);
+        Arrow mark1ArrowInterpolated = new Arrow(5, 10, middleArrowPosition, (interpolatedHeading + 180));
+        arrowRoute.add(mark1ArrowInterpolated);
+        Arrow mark1ArrowNext = new Arrow(5, 10, finalArrowPosition, (nextHeading + 180));
+        arrowRoute.add(mark1ArrowNext);
+    }
+
+
     /**
      * Creates the arrow route based on the course and colours it
      */
@@ -88,7 +133,13 @@ public class CourseRouteArrows {
         arrowRoute = new ArrayList<>();
         List<CompoundMark> courseOrder = course.getCourseOrder();
         for (int i = 1; i < courseOrder.size(); i ++) {
-            addLegArrows(courseOrder.get(i - 1), courseOrder.get(i));
+            CompoundMark prevMark = courseOrder.get(i-1);
+            CompoundMark currentMark = courseOrder.get(i);
+            addLegArrows(prevMark, currentMark);
+            if (i != courseOrder.size() - 1){
+                CompoundMark nextMark = courseOrder.get(i+1);
+                markRoundingArrows(currentMark, prevMark, nextMark, course.getRoundingOrder().get(i));
+            }
         }
         Color color = Color.color(0.25, 0.25, 0.25); //Grey
         double increment = 0.6 / (arrowRoute.size() + 1.0);

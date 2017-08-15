@@ -98,7 +98,7 @@ public class RaceVisionXMLParserTest {
         expected.addNewCompoundMark(finish);
 
         for(int i = 1; i <= 11; i++){
-            expected.addMarkInOrder(i, "SP");
+            expected.addMarkInOrder(i, RoundingSide.STBD_PORT);
         }
 
         expected.addToBoundary(new Coordinate(57.6739450, 11.8417100));

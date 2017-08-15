@@ -35,6 +35,11 @@ public class Arrow extends Polyline {
         arrowLine.setId("distanceArrow");
     }
 
+    public Arrow(double length, double width, Coordinate center, double heading) {
+        this(length, width, center);
+        rotate(heading);
+    }
+
     /**
      * Moves the arrows to the given CanvasCoordinate center
      * @param center the canvas coordinate to move to

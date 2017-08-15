@@ -1,5 +1,6 @@
 package seng302.models;
 
+import seng302.data.RoundingSide;
 import seng302.views.Arrow;
 
 import java.util.*;
@@ -15,7 +16,7 @@ public class Course {
     private final String WINDWARD_GATE_NAME = "Windward Gate";
 
     private ArrayList<CompoundMark> courseOrder;
-    private ArrayList<String> roundingOrder;
+    private ArrayList<RoundingSide> roundingOrder;
     private ArrayList<Coordinate> boundary;
     private double minLat, minLon, maxLat, maxLon;
     private Map<Integer, CompoundMark> compoundMarks;
@@ -24,7 +25,6 @@ public class Course {
     private RaceLine startLine, finishLine;
     private boolean hasEntryMark;
     private double trueWindSpeed;
-    private List<Arrow> arrowedRoute = new ArrayList<>();
 
     public Course() {
         this.compoundMarks = new HashMap<>();
@@ -55,7 +55,7 @@ public class Course {
      * @param compoundMarkID - the name of the mark to look up in the compoundMarks HashMap
      * @param roundingSide - side the boat has to pass a mark
      */
-    public void addMarkInOrder(Integer compoundMarkID, String roundingSide){
+    public void addMarkInOrder(Integer compoundMarkID, RoundingSide roundingSide){
         if(compoundMarks.containsKey(compoundMarkID)){
             courseOrder.add(compoundMarks.get(compoundMarkID));
             roundingOrder.add(roundingSide);
@@ -249,7 +249,7 @@ public class Course {
         }
     }
 
-    public ArrayList<String> getRoundingOrder() {
+    public ArrayList<RoundingSide> getRoundingOrder() {
         return roundingOrder;
     }
 }

@@ -4,6 +4,7 @@ package seng302.models;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import seng302.data.RoundingSide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +33,8 @@ public class RaceTest {
         finishLine.setMarkAsFinish();
         course.addNewCompoundMark(finishLine);
 
-        course.addMarkInOrder(1, "Port");
-        course.addMarkInOrder(2, "SP");
+        course.addMarkInOrder(1, RoundingSide.PORT);
+        course.addMarkInOrder(2, RoundingSide.STBD);
 
         List<Boat> boats = new ArrayList<>();
 
@@ -100,7 +101,7 @@ public class RaceTest {
     public void updateDuplicateMarkRoundedTest2(){
         Boat boat1 = defaultRace.getBoatById(1);
 
-        defaultRace.getCourse().addMarkInOrder(1, "Stbd");
+        defaultRace.getCourse().addMarkInOrder(1, RoundingSide.STBD);
 
         assertEquals(-1, boat1.getLastRoundedMarkIndex());
         for(Boat boat : defaultRace.getCompetitors()){
