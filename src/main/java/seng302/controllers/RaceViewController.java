@@ -110,13 +110,17 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         this.selectionController = selectionController;
-        if(RaceVisionXMLParser.courseFile == "GuidedPractice-course.xml") {
+        if(Objects.equals(RaceVisionXMLParser.courseFile, "GuidedPractice-course.xml")) {
             isTutorial = true;
             tutorial = new Tutorial(controller, race);
             controller.hideStarterOverlay();
+            scoreBoardController.annotationsSlider.setVisible(false);
+            scoreBoardController.lblAnnotation.setVisible(false);
             initBoatHighlight();
             initializeBoats();
             initBoatPaths();
+            currentAnnotationsLevel = AnnotationLevel.NO_ANNOTATION;
+            changeAnnotations(currentAnnotationsLevel, true);
         }
 
         redrawCourse();
@@ -440,6 +444,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             drawMarks();
             drawBoundary();
             redrawRaceLines();
+        } else {
+            changeAnnotations(0, true);
         }
         drawMap();
         drawWindArrow();

@@ -156,6 +156,8 @@ public class DisplayUtils {
         switch(id) {
             case "212121":
                 return DisplayUtils.class.getResource("/graphics/mapImages/AC33-map.png").toExternalForm();
+            case "222222":
+                return DisplayUtils.class.getResource("/graphics/mapImages/AC35-map.png").toExternalForm();
             case "232323":
                 return DisplayUtils.class.getResource("/graphics/mapImages/Athens-map.png").toExternalForm();
             case "242424":
@@ -165,7 +167,7 @@ public class DisplayUtils {
             case "262626":
                 return DisplayUtils.class.getResource("/graphics/mapImages/LakeTekapo-map.png").toExternalForm();
             default:
-                return DisplayUtils.class.getResource("/graphics/mapImages/AC35-map.png").toExternalForm();
+                return DisplayUtils.class.getResource("/graphics/mapImages/default-map.png").toExternalForm();
         }
     }
 

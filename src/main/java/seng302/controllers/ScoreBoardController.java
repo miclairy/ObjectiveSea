@@ -14,6 +14,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+import seng302.data.RaceVisionXMLParser;
 import seng302.utilities.AnimationUtils;
 import seng302.views.BoatDisplay;
 import javafx.scene.chart.NumberAxis;
@@ -21,6 +22,7 @@ import javafx.scene.chart.XYChart.Series;
 import seng302.models.Race;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Created by Louis on 20-Apr-17.
@@ -37,9 +39,9 @@ public class ScoreBoardController {
     //FXML fields
     @FXML private CheckBox fpsToggle;
     @FXML private ListView<String> placings;
-    @FXML private Slider annotationsSlider;
+    @FXML public Slider annotationsSlider;
     @FXML private Label raceTimerLabel;
-    @FXML private Label lblAnnotation;
+    @FXML public Label lblAnnotation;
     @FXML private CheckBox chkName;
     @FXML private CheckBox chkSpeed;
     @FXML private CheckBox chkPassMarkTime;
@@ -123,6 +125,7 @@ public class ScoreBoardController {
                 }
             }
         });
+
         annotationsSlider.setValue(1);
 
         addButtonListeners(btnTrack);
