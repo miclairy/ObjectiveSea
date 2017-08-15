@@ -67,49 +67,31 @@ public class GameSounds {
     private Clip clip;
     private AudioInputStream inputStream;
     private String selectedVoiceOver;
+    private String selectedMusic;
     private Random random = new Random();
     private MediaPlayer mediaPlayer;
 
-    public void mainMenuMusic() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
-        clip = AudioSystem.getClip();
-        inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream("/musicFiles/gameMusic/MainMenuMusic.wav"));
-        clip.open(inputStream);
+    public void mainMenuMusic() {
+        selectedMusic = "/musicFiles/gameMusic/MainMenuMusic.wav";
     }
 
-    public void singlePlayerMusic() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
-        clip = AudioSystem.getClip();
-        inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream("/musicFiles/gameMusic/SinglePlayerMusic.wav"));
-        clip.open(inputStream);
-//        FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-//        gainControl.setValue(6.0f);
+    public void singlePlayerMusic() {
+        selectedMusic = "/musicFiles/gameMusic/SinglePlayerMusic.wav";
     }
 
-    public void tutorialMusic() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
-        clip = AudioSystem.getClip();
-        inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream("/musicFiles/gameMusic/TutorialMusic.wav"));
-        clip.open(inputStream);
+    public void tutorialMusic() {
+        selectedMusic = "/musicFiles/gameMusic/TutorialMusic.wav";
     }
 
-    public void menuMusic() {
-        URL resource = getClass().getResource("song name here");
-        mediaPlayer = new MediaPlayer(new Media(resource.toString()));
-        mediaPlayer.play();
+    public void oceanWaves() {
+        selectedMusic = "/musicFiles/gameSounds/CrispOceanWaves.wav";
     }
 
-    public void oceanWaves() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
-        clip = AudioSystem.getClip();
-        inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream("/musicFiles/gameSounds/CrispOceanWaves.wav"));
-        clip.open(inputStream);
+    public void flockSeagulls() {
+        selectedVoiceOver = "/musicFiles/gameSounds/FlockOfSeagulls.mp3";
     }
 
-    public void flockSeagulls() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
-        clip = AudioSystem.getClip();
-        inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream("/musicFiles/gameSounds/FlockOfSeagulls.mp3"));
-        clip.open(inputStream);
-    }
-
-    public void hitMark() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
-        clip = AudioSystem.getClip();
+    public void hitMark() {
         int randomNumber = (int)(random.nextDouble() * 5) + 1; //1-5
         switch(randomNumber){
             case 1: selectedVoiceOver = louis_over_that;
@@ -123,8 +105,6 @@ public class GameSounds {
             case 5: selectedVoiceOver = sam_over_that;
                     break;
         }
-        inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream(selectedVoiceOver));
-        clip.open(inputStream);
     }
 
     public void hitBoat() {
@@ -155,22 +135,30 @@ public class GameSounds {
 
     }
 
+
     public void preRace() {
 
     }
 
 
 
-    public void startMusic() throws IOException, LineUnavailableException {
-        clip.start();
+    public void playGameSound () {
+        URL resource = getClass().getResource(selectedVoiceOver);
+        mediaPlayer = new MediaPlayer(new Media(resource.toString()));
+        double volume = mediaPlayer.getVolume();
+        mediaPlayer.setVolume(volume - 0.1);
+        mediaPlayer.play();
     }
 
-    public void startEndlessMusic() throws IOException, LineUnavailableException {
+    public void playEndlessMusic() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
+        clip = AudioSystem.getClip();
+        inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream(selectedMusic));
+        clip.open(inputStream);
         clip.loop(Clip.LOOP_CONTINUOUSLY);
         clip.start();
     }
 
-    public void stopMusic() throws LineUnavailableException {
+    public void stopEndlessMusic() throws LineUnavailableException {
         clip.stop();
         clip.setFramePosition(0);
     }

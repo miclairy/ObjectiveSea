@@ -17,7 +17,7 @@ import javafx.scene.paint.Color;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplaySwitcher;
-import seng302.utilities.GameSounds;
+
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
@@ -124,7 +124,7 @@ public class MainMenuController implements Initializable{
 
     @SuppressWarnings("Duplicates")
     @FXML private void loadTutorial() throws Exception {
-        DisplaySwitcher.getGameSounds().stopMusic();
+        DisplaySwitcher.getGameSounds().stopEndlessMusic();
         btnSinglePlay.setDisable(true);
         main.startHostedRace("GuidedPractice-course.xml", DEFAULT_PORT, true);
         Thread.sleep(200);
@@ -317,20 +317,20 @@ public class MainMenuController implements Initializable{
 
 
     private void loadSinglePlayerMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        DisplaySwitcher.getGameSounds().stopMusic();
+        DisplaySwitcher.getGameSounds().stopEndlessMusic();
         DisplaySwitcher.getGameSounds().singlePlayerMusic();
-        DisplaySwitcher.getGameSounds().startEndlessMusic();
+        DisplaySwitcher.getGameSounds().playEndlessMusic();
     }
 
     private void loadTutorialMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        DisplaySwitcher.getGameSounds().stopMusic();
+        DisplaySwitcher.getGameSounds().stopEndlessMusic();
         DisplaySwitcher.getGameSounds().tutorialMusic();
-        DisplaySwitcher.getGameSounds().startEndlessMusic();
+        DisplaySwitcher.getGameSounds().playEndlessMusic();
     }
 
     private void loadRealGameSounds() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        DisplaySwitcher.getGameSounds().stopMusic();
+        DisplaySwitcher.getGameSounds().stopEndlessMusic();
         DisplaySwitcher.getGameSounds().oceanWaves();
-        DisplaySwitcher.getGameSounds().startEndlessMusic();
+        DisplaySwitcher.getGameSounds().playEndlessMusic();
     }
 }

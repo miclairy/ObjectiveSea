@@ -1,15 +1,12 @@
 package seng302.utilities;
 
-import javafx.animation.FadeTransition;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import seng302.controllers.*;
 
-import javax.sound.sampled.LineUnavailableException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,10 +35,10 @@ public class DisplaySwitcher {
             MainMenuController mainMenu = (MainMenuController) replaceSceneContent("main_menu.fxml");
             mainMenu.setApp(main);
             try {
-                gameSounds.stopMusic();
+                gameSounds.stopEndlessMusic();
             } catch (Exception e) {}
             gameSounds.mainMenuMusic();
-            gameSounds.startEndlessMusic();
+            gameSounds.playEndlessMusic();
 
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
