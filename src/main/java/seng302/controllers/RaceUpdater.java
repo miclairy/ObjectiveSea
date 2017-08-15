@@ -205,6 +205,8 @@ public class RaceUpdater implements Runnable {
         double distanceGained = timePassed * boat.getCurrentSpeed();
         Coordinate newPos = boatPosition.coordAt(distanceGained, boatHeading);
         boat.setPosition(new Coordinate(newPos.getLat(), newPos.getLon()));
+        double VMG = boat.calculateVMGToMark(race.getCourse());
+        boat.setCurrentVMG(VMG);
     }
 
 
@@ -384,7 +386,7 @@ public class RaceUpdater implements Runnable {
     /**
      * Spreads the starting positions of the boats over the start line
      */
-    private void setStartingPosition(Boat boat){
+    public void setStartingPosition(Boat boat){
         RaceLine startingLine = race.getCourse().getStartLine();
         CompoundMark startingEnd2 = new CompoundMark(-2, "", new Mark(-2, "", startingLine.getMark1().getPosition()));
         CompoundMark startingEnd1 = new CompoundMark(-1, "", new Mark(-1, "", startingLine.getMark2().getPosition()));

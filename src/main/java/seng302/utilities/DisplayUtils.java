@@ -337,11 +337,12 @@ public class DisplayUtils {
      * @param currTime current time in epoch ms
      * @return the time to next mark in mm:ss or ... if invalid
      */
-    public static String getTimeToNextMark(long timeAtMark, long currTime){
+    public static String getTimeToNextMark(long timeAtMark, long currTime, Boat boat, Course course){
         String timeTillMark;
         long convertedTime = (timeAtMark - currTime);
-        System.out.println(convertedTime);
-        if (timeAtMark > 0 && convertedTime < FIFTY_NINE_MINUTES_MS) {
+        Coordinate nextMark = course.getCourseOrder().get(boat.getLastRoundedMarkIndex() + 1).getPosition();
+        Boolean headingToMark = MathUtils.pointBetweenTwoAngle(boat.getCurrentPosition().headingToCoordinate(nextMark), 60, boat.getHeading());
+        if (timeAtMark > 0 && convertedTime < FIFTY_NINE_MINUTES_MS && headingToMark) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("mm:ss");
             Instant instant = Instant.ofEpochMilli(convertedTime);
             ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
