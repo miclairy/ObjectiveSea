@@ -28,6 +28,7 @@ public class CourseRouteArrows {
 
     private ArrowOrderGraph arrowOrderGraph;
     private List<Set<Arrow>> shownArrows;
+    private Map<CompoundMark, List<Arrow>> roundingArrowMap;
 
     public CourseRouteArrows(Course course, Group root) {
         this.course = course;
@@ -35,6 +36,7 @@ public class CourseRouteArrows {
         createArrowedRoute();
         refreshTimer = 0;
         shownArrows = new ArrayList<>();
+
     }
 
     /**
@@ -79,15 +81,26 @@ public class CourseRouteArrows {
      * @param currentMark The ending compound mark for the leg
      */
     private List<Arrow> addLegArrows(CompoundMark previousMark, CompoundMark currentMark) {
+        Coordinate previousPosition = previousMark.getPosition();
+        Coordinate nextPosition = currentMark.getPosition();
+        if(!previousMark.hasTwoMarks() && roundingArrowMap.containsKey(previousMark)){
+            List<Arrow> previousArrows = roundingArrowMap.get(previousMark);
+            previousPosition = previousArrows.get(previousArrows.size()-1).getCoordinate();
+        }
+        if(!currentMark.hasTwoMarks() && roundingArrowMap.containsKey(currentMark)){
+            List<Arrow> nextArrows = roundingArrowMap.get(currentMark);
+            nextPosition = nextArrows.get(0).getCoordinate();
+        }
+
         List<Arrow> arrowList = new ArrayList<>();
-        double legLength = currentMark.getPosition().greaterCircleDistance(previousMark.getPosition());
+        double legLength = nextPosition.greaterCircleDistance(previousPosition);
         Integer numArrows = (int)((legLength / 0.1) - 1);
         if (numArrows < 1){
             numArrows = 1;
         }
-        double heading = previousMark.getPosition().headingToCoordinate(currentMark.getPosition());
+        double heading = previousPosition.headingToCoordinate(nextPosition);
         for (int num = 1; num <= numArrows; num++) {
-            Coordinate position = previousMark.getPosition().coordAt((legLength / (numArrows + 1)) * num, heading);
+            Coordinate position = previousPosition.coordAt((legLength / (numArrows + 1)) * num, heading);
             Arrow arrow = new Arrow(5, 10, position);
             arrow.rotate(heading + 180);
             arrowList.add(arrow);
@@ -153,14 +166,21 @@ public class CourseRouteArrows {
      */
     private void createArrowedRoute() {
         arrowOrderGraph = new ArrowOrderGraph();
+        roundingArrowMap = new HashMap<>();
 
         List<CompoundMark> courseOrder = course.getCourseOrder();
         Arrow prevArrow = null;
         for (int i = 1; i < courseOrder.size(); i ++) {
             CompoundMark prevMark = courseOrder.get(i-1);
             CompoundMark currentMark = courseOrder.get(i);
-            List<Arrow> legArrows = addLegArrows(prevMark, currentMark);
 
+            if (i != courseOrder.size() - 1){
+                CompoundMark nextMark = courseOrder.get(i+1);
+                List<Arrow> roundingArrows = markRoundingArrows(currentMark, prevMark, nextMark, course.getRoundingOrder().get(i));
+                roundingArrowMap.put(currentMark, roundingArrows);
+            }
+
+            List<Arrow> legArrows = addLegArrows(prevMark, currentMark);
             if(prevArrow == null){
                 arrowOrderGraph.setStartingArrow(legArrows.get(0));
             } else{
@@ -168,9 +188,7 @@ public class CourseRouteArrows {
             }
             prevArrow = legArrows.get(legArrows.size()-1);
             if (i != courseOrder.size() - 1){
-                CompoundMark nextMark = courseOrder.get(i+1);
-                List<Arrow> roundingArrows = markRoundingArrows(currentMark, prevMark, nextMark, course.getRoundingOrder().get(i));
-
+                List<Arrow> roundingArrows = roundingArrowMap.get(currentMark);
                 if(roundingArrows.size() != 0){
                     arrowOrderGraph.addArrowEdge(prevArrow, roundingArrows.get(0));
                     if(roundingArrows.size() > 3){

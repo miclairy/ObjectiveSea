@@ -20,33 +20,26 @@ public class Arrow extends Polyline {
     private double width;
     private Polyline arrowLine;
     private CanvasCoordinate center;
+    private Coordinate coordinate;
 
 
-    public Arrow(double length, double width, Coordinate center) {
+    Arrow(double length, double width, Coordinate coordinate) {
         this.length = length;
         this.width = width;
-        this.center = DisplayUtils.convertFromLatLon(center);
+        this.coordinate = coordinate;
+        this.center = DisplayUtils.convertFromLatLon(coordinate);
         double bottomY = this.center.getY() - length;
         arrowLine = new Polyline(this.center.getX() - width / 2, bottomY,
                                 this.center.getX(), this.center.getY(),
                                 width / 2  + this.center.getX(), bottomY);
-        relocate(this.center);
-        arrowLine.setStrokeWidth(4.0);
+
+        arrowLine.relocate(center.getX() - width / 2, center.getY() - length);
         arrowLine.setId("distanceArrow");
     }
 
-    public Arrow(double length, double width, Coordinate center, double heading) {
+    Arrow(double length, double width, Coordinate center, double heading) {
         this(length, width, center);
         rotate(heading);
-    }
-
-    /**
-     * Moves the arrows to the given CanvasCoordinate center
-     * @param center the canvas coordinate to move to
-     */
-    public void relocate(CanvasCoordinate center) {
-        this.center = center;
-        arrowLine.relocate(center.getX() - width / 2, center.getY() - length);
     }
 
     /**
@@ -93,5 +86,9 @@ public class Arrow extends Polyline {
     public void setScale(Double zoomLevel) {
         arrowLine.setScaleY(zoomLevel);
         arrowLine.setScaleX(zoomLevel);
+    }
+
+    public Coordinate getCoordinate() {
+        return coordinate;
     }
 }
