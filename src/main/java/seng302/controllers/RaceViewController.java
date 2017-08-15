@@ -63,9 +63,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private final double WAKE_SCALE_FACTOR = 17;
     private final double SOG_SCALE_FACTOR = 200.0;
     private final int ANNOTATION_HANDLE_OFFSET = 8;
-    private final double WIND_ARROW_X_PADDING = 31;
+    private final double WIND_ARROW_X_PADDING = 470;
     private final double WIND_ARROW_Y_PADDING = 19;
-    private final double WIND_CIRCLE_X_PADDING = 16.5;
+    private final double WIND_CIRCLE_X_PADDING = 455;
     private final double WIND_CIRCLE_Y_PADDING = 10;
 
     private Race race;
@@ -117,6 +117,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             initBoatHighlight();
             initializeBoats();
             initBoatPaths();
+            redrawCourse();
+            shiftArrow(false);
         }
 
         redrawCourse();
@@ -309,6 +311,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         for(BoatDisplay boatDisplay : displayBoats ){
             if(boatDisplay.getBoat().getId() == Main.getClient().getClientID()){
                 currentUserBoatDisplay = boatDisplay;
+                scoreBoardController.highlightUserBoat();
             }
         }
     }
@@ -328,6 +331,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         selectionController.addBoatSelectionHandler(displayBoat);
 
         Circle grabHandle = new Circle(5);
+        grabHandle.setPickOnBounds(false);
         grabHandle.setId("annoGrabHandle");
         grabHandle.setCenterX(0);
         grabHandle.setCenterY(0);
@@ -553,6 +557,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         annotationFrame.getChildren().clear();
         for(String string : annotationText){
             Label annotationLabel = new Label(string);
+            annotationLabel.setPickOnBounds(false);
             annotationLabel.setId("annotationLabel");
             annotationFrame.getChildren().add(annotationLabel);
         }
@@ -1026,6 +1031,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
         }
         controller.displayStarters();
+        scoreBoardController.refreshTable();
+        scoreBoardController.updateSparkLine();
+        if(!controller.isScoreboardVisible()){
+            controller.refreshTable();
+        }
     }
 
 
@@ -1067,14 +1077,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * draws a wind arrow on the course view
      */
     public void drawWindArrow() {
-
         windCircle = controller.getWindCircle();
         AnchorPane canvasAnchor = controller.getCanvasAnchor();
-
         if (!canvasAnchor.getChildren().contains(windArrow)){
             windArrow = raceView.drawWindArrow();
             canvasAnchor.setTopAnchor(windArrow, WIND_ARROW_Y_PADDING);
-            canvasAnchor.setRightAnchor(windArrow, WIND_ARROW_X_PADDING);
+            canvasAnchor.setRightAnchor(windArrow, WIND_ARROW_X_PADDING );
 
             windCircle.setRadius(25);
             canvasAnchor.setTopAnchor(windCircle, WIND_CIRCLE_Y_PADDING);
@@ -1082,6 +1090,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
             windCircle.setId("windCircle");
             canvasAnchor.getChildren().add(windArrow);
+        }else{
+            canvasAnchor.setRightAnchor(windArrow, WIND_ARROW_X_PADDING);
+            canvasAnchor.setRightAnchor(windCircle, WIND_CIRCLE_X_PADDING);
         }
     }
 
@@ -1175,6 +1186,25 @@ public class RaceViewController extends AnimationTimer implements Observer {
             distanceLine.setMark(nextMark);
         }
     }
+
+    public void shiftArrow(boolean boardVisible){
+        if(boardVisible){
+            AnimationUtils.shiftPaneNodes(windCircle, -430, true);
+            AnimationUtils.shiftPaneNodes(windArrow, -430, true);
+        }else{
+            AnimationUtils.shiftPaneNodes(windCircle, 430, true);
+            AnimationUtils.shiftPaneNodes(windArrow, 430, true);
+        }
+    }
+
+    public void boatSelectedInTable(Boat boat){
+        for(BoatDisplay boatDisplay : displayBoats){
+            if(boatDisplay.getBoat().equals(boat)){
+                selectionController.setTrackingBoat(boatDisplay);
+            }
+        }
+    }
+
 
     public BoatDisplay getCurrentUserBoatDisplay() {
         return currentUserBoatDisplay;

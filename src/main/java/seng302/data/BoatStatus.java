@@ -4,11 +4,17 @@ package seng302.data;
  * Created by Michael Trotter on 4/29/2017.
  */
 public enum BoatStatus {
-    UNDEFINED(0), PRERACE(1), RACING(2), FINISHED(3), DNS(4), DNF(5), DISQUALIFIED(6), OCS(7); //OCS = On Course Side, i.e. crossed start line early
+    UNDEFINED(0, "Undefined"), PRERACE(1, "Prerace"), RACING(2, "Racing"), FINISHED(3, "Finished"), DNS(4, "DNS"), DNF(5, "DNF"), DISQUALIFIED(6, "DQ"), OCS(7, "OCS"); //OCS = On Course Side, i.e. crossed start line early
 
     private final int value;
+    private final String text;
 
-    BoatStatus(int value){ this.value = value; }
+    BoatStatus(int value, String text){
+        this.value = value;
+        this.text = text;
+    }
 
     public int getValue() {return value;}
+
+    public String getText(){return text;}
 }
