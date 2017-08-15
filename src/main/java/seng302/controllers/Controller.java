@@ -671,8 +671,9 @@ public class Controller implements Initializable, Observer {
         }
     }
 
-    /** refreshes the RV table when a competitor is added
-     *
+    /**
+     * refreshes the RV table when a competitor is added
+     * order of boats is updated based on placings
      */
     public void refreshTable(){
         Callback<Boat, javafx.beans.Observable[]> cb =(Boat boat) -> new javafx.beans.Observable[]{boat.getCurrPlacingProperty()};

@@ -158,6 +158,9 @@ public class ScoreBoardController {
         addTableListeners();
     }
 
+    /**
+     * adds listeners to selections of boats in the table
+     */
     private void addTableListeners(){
         tblPlacings.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
@@ -263,7 +266,7 @@ public class ScoreBoardController {
     }
 
     /**
-     * highlights the selected boat in the table view
+     * highlights the selected boat in the scoreboard table view
      */
     public void highlightUserBoat(){
         if(raceViewController != null){
