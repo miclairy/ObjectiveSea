@@ -62,8 +62,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private final int ANNOTATION_HANDLE_OFFSET = 8;
     private final double WIND_ARROW_X_PADDING = 470;
     private final double WIND_ARROW_Y_PADDING = 19;
-    private final double NEXT_MARK_ARROW_X_PADDING = 56;
-    private final double NEXT_MARK_ARROW_Y_PADDING = 61;
+    private final double NEXT_MARK_ARROW_X_PADDING = 605;
+    private final double NEXT_MARK_ARROW_Y_PADDING = 58;
     private final double WIND_CIRCLE_X_PADDING = 455;
     private final double WIND_CIRCLE_Y_PADDING = 10;
 
@@ -1290,9 +1290,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if(boardVisible){
             AnimationUtils.shiftPaneNodes(windCircle, -430, true);
             AnimationUtils.shiftPaneNodes(windArrow, -430, true);
+            AnimationUtils.shiftPaneNodes(nextMarkArrow, -430, true);
         }else{
             AnimationUtils.shiftPaneNodes(windCircle, 430, true);
             AnimationUtils.shiftPaneNodes(windArrow, 430, true);
+            AnimationUtils.shiftPaneNodes(nextMarkArrow, 430, true);
         }
     }
 

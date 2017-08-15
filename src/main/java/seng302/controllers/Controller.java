@@ -19,6 +19,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -81,6 +82,7 @@ public class Controller implements Initializable, Observer {
     @FXML private Label tutorialOverlayTitle;
     @FXML private Label tutorialContent;
     @FXML public Label lblNextMark;
+    @FXML private GridPane nextMarkGrid;
 
     //FPS Counter
     private SimpleStringProperty fpsString = new SimpleStringProperty();
@@ -562,6 +564,7 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneArrow(btnHide, 430, 1);
             AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
             AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
+            AnimationUtils.shiftPaneNodes(nextMarkGrid, 430, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
             scoreboardVisible = false;
             raceViewController.shiftArrow(false);
@@ -571,6 +574,7 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneArrow(btnHide, -430, -1);
             AnimationUtils.shiftPaneNodes(imvSpeedScale, -430, true);
             AnimationUtils.shiftPaneNodes(lblWindSpeed, -430, true);
+            AnimationUtils.shiftPaneNodes(nextMarkGrid, -430, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true);
             scoreboardVisible = true;
             raceViewController.shiftArrow(true);
