@@ -130,7 +130,6 @@ public class CourseRouteArrows {
     private List<Arrow> addMarkRoundingArrows(Mark mark, double heading, double nextHeading, int isPort) {
         List<Arrow> arrowList = new ArrayList<>();
 
-        System.out.println(mark);
         Coordinate firstArrowPosition = mark.getPosition().coordAt(isPort * 0.05, (heading + 90));
         Coordinate finalArrowPosition = mark.getPosition().coordAt(isPort * 0.05, (nextHeading + 90));
 
