@@ -117,6 +117,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             initBoatHighlight();
             initializeBoats();
             initBoatPaths();
+            redrawCourse();
+            shiftArrow(false);
         }
 
         redrawCourse();

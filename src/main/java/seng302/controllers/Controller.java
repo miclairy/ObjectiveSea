@@ -694,4 +694,12 @@ public class Controller implements Initializable, Observer {
 
         tblPlacingsRV.setItems(sortedList);
     }
+
+    public void setUpTutorialMode(){
+        rightHandSide.setVisible(false);
+        lblNoBoardClock.setVisible(false);
+        btnHide.setVisible(false);
+        AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
+        AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
+    }
 }
