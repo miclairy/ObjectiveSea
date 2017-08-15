@@ -48,7 +48,6 @@ public class Boat extends Observable implements Comparable<Boat>{
     private double targetHeading;
     private double maxSpeed;
     private double boatHealth = 100;
-    private DoubleProperty healthProperty = new SimpleDoubleProperty(100);
     private double damageSpeed;
     private boolean boatCheck = false;
     private double boatPenalty;
@@ -67,6 +66,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StringProperty statusProperty = new SimpleStringProperty();
     private DoubleProperty headingProperty = new SimpleDoubleProperty();
+    private DoubleProperty healthProperty = new SimpleDoubleProperty();
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
 
     private List<Coordinate> pathCoords;
@@ -94,6 +94,7 @@ public class Boat extends Observable implements Comparable<Boat>{
         this.pathCoords = new ArrayList<>();
         this.currentPosition = new Coordinate(0,0);
         this.previousPosition = new Coordinate(0,0);
+        this.healthProperty.set(1.0);
     }
 
     /**
@@ -169,9 +170,7 @@ public class Boat extends Observable implements Comparable<Boat>{
         return headingProperty;
     }
 
-    public DoubleProperty getHealthProperty(){
-        return healthProperty;
-    }
+    public DoubleProperty getHealthProperty(){ return healthProperty; }
 
     public double getCurrentSpeed() {
         return currentSpeed.get();
@@ -188,11 +187,11 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void addDamage(int damage) {
         if((boatHealth - damage) > 0) {
+            healthProperty.set((boatHealth -= damage)/100);
             boatHealth -= damage;
-            healthProperty.setValue(boatHealth -= damage);
         } else {
             boatHealth = 0;
-            healthProperty.setValue(0);
+            healthProperty.set(0);
             status = BoatStatus.DNF;
         }
         checkPenaltySpeed();

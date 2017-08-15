@@ -63,8 +63,7 @@ public class HeadsupDisplay {
     }
 
     private void updateHealth(Double value){
-        System.out.println(value);
-       healthBar.setProgress(value);
+        healthBar.setProgress(value);
     }
     private void addListeners(){
         display.addEventHandler(MouseEvent.MOUSE_ENTERED,
