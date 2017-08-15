@@ -112,7 +112,6 @@ public class RaceUpdater implements Runnable {
                     timeOfFirstFinisher = race.getCurrentTimeInEpochMs();
                 }
                 if (oneBoatHasFinished){
-                    System.out.println(race.getCurrentTimeInEpochMs() - timeOfFirstFinisher);
                     if (race.getCurrentTimeInEpochMs() - timeOfFirstFinisher >= TimeUtils.secondsToMilliseconds(TimeUtils.convertMinutesToSeconds(10))){
                         race.updateRaceStatus(RaceStatus.TERMINATED);
                     }
