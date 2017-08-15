@@ -29,11 +29,11 @@
     </Course>
     <CompoundMarkSequence>
         <Corner SeqID="1" CompoundMarkID="1" Rounding="SP" ZoneSize="3" />
-        <Corner SeqID="2" CompoundMarkID="2" Rounding="Port" ZoneSize="3" />
-        <Corner SeqID="3" CompoundMarkID="4" Rounding="PS" ZoneSize="3" />
-        <Corner SeqID="4" CompoundMarkID="3" Rounding="SP" ZoneSize="3" />
-        <Corner SeqID="5" CompoundMarkID="4" Rounding="PS" ZoneSize="3" />
-        <Corner SeqID="6" CompoundMarkID="3" Rounding="SP" ZoneSize="3" />
+        <Corner SeqID="2" CompoundMarkID="2" Rounding="STBD" ZoneSize="3" />
+        <Corner SeqID="3" CompoundMarkID="4" Rounding="SP" ZoneSize="3" />
+        <Corner SeqID="4" CompoundMarkID="3" Rounding="PS" ZoneSize="3" />
+        <Corner SeqID="5" CompoundMarkID="4" Rounding="SP" ZoneSize="3" />
+        <Corner SeqID="6" CompoundMarkID="3" Rounding="PS" ZoneSize="3" />
         <Corner SeqID="11" CompoundMarkID="11" Rounding="PS" ZoneSize="3" />
     </CompoundMarkSequence>
     <CourseLimit>
