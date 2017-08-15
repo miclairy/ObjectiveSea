@@ -20,7 +20,7 @@ public class GameSounds {
     private String chris_boat_time = chrisVoiceOver + "boat_time.mp3";
     private String chris_collided = chrisVoiceOver + "collided.mp3";
     private String chris_holly_heck = chrisVoiceOver + "holly_heck.mp3";
-    private String chris_list_this_race = chrisVoiceOver + "lost_this_race.mp3";
+    private String chris_lost_this_race = chrisVoiceOver + "lost_this_race.mp3";
     private String chris_mateies = chrisVoiceOver + "maties.mp3";
     private String chris_ready_race = chrisVoiceOver + "ready_race.mp3";
     private String chris_rubber_dingy = chrisVoiceOver + "rubber_dingy.mp3";
@@ -108,36 +108,102 @@ public class GameSounds {
     }
 
     public void hitBoat() {
-
+        int randomNumber = (int)(random.nextDouble() * 4) + 1; //1-4
+        switch(randomNumber){
+            case 1: selectedVoiceOver = louis_get_disqualified;
+                break;
+            case 2: selectedVoiceOver = louis_board;
+                break;
+            case 3: selectedVoiceOver = sam_get_disqualified;
+                break;
+            case 4: selectedVoiceOver = sam_board;
+                break;
+        }
     }
 
     public void hitBoundary() {
-
+        int randomNumber = (int)(random.nextDouble() * 4) + 1; //1-4
+        switch(randomNumber){
+            case 1: selectedVoiceOver = louis_cant_leave;
+                break;
+            case 2: selectedVoiceOver = louis_be_shot;
+                break;
+            case 3: selectedVoiceOver = sam_cant_leave;
+                break;
+            case 4: selectedVoiceOver = sam_be_shot;
+                break;
+        }
     }
 
     public void firstPlace() {
-
+        int randomNumber = (int)(random.nextDouble() * 2) + 1; //1-2
+        switch(randomNumber){
+            case 1: selectedVoiceOver = louis_pointless_race;
+                break;
+            case 2: selectedVoiceOver = sam_pointless_race;
+                break;
+        }
     }
 
     public void everyoneButFirstPlace() {
-
+        int randomNumber = (int)(random.nextDouble() * 3) + 1; //1-3
+        switch(randomNumber){
+            case 1: selectedVoiceOver = louis_been_taken;
+                break;
+            case 2: selectedVoiceOver = sam_been_taken;
+                break;
+            case 3: selectedVoiceOver = chris_lost_this_race;
+                break;
+        }
     }
 
     public void everyone() {
-
+        int randomNumber = (int)(random.nextDouble() * 2) + 1; //1-2
+        switch(randomNumber){
+            case 1: selectedVoiceOver = louis_youre_last;
+                break;
+            case 2: selectedVoiceOver = sam_youre_last;
+                break;
+        }
     }
 
     public void lastPlace() {
-
+        int randomNumber = (int)(random.nextDouble() * 2) + 1; //1-2
+        switch(randomNumber){
+            case 1: selectedVoiceOver = louis_boat_time;
+                break;
+            case 2: selectedVoiceOver = chris_boat_time;
+                break;
+        }
     }
 
     public void boatDamage() {
-
+        int randomNumber = (int)(random.nextDouble() * 6) + 1; //1-6
+        switch(randomNumber){
+            case 1: selectedVoiceOver = louis_rubber_dingy;
+                break;
+            case 2: selectedVoiceOver = sam_rubber_dingy;
+                break;
+            case 3: selectedVoiceOver = chris_rubber_dingy;
+                break;
+            case 4: selectedVoiceOver = louis_live_by;
+                break;
+            case 5: selectedVoiceOver = sam_live_by;
+                break;
+            case 6: selectedVoiceOver = louis_oh_ship;
+                break;
+        }
     }
 
 
     public void preRace() {
-
+        int randomNumber = (int)(random.nextDouble() * 2) + 1; //1-2
+        switch(randomNumber){
+            case 1: selectedVoiceOver = louis_ready_race;
+                break;
+            case 2: selectedVoiceOver = chris_ready_race;
+                break;
+        }
     }
 
 
