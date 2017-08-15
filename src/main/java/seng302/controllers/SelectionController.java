@@ -134,6 +134,7 @@ public class SelectionController extends Observable {
             isTrackingPoint = false;
             rotationOffset = 0;
             updateRotation();
+            scoreBoardController.highlightUserBoat();
 
         }
         setChanged();
@@ -311,6 +312,7 @@ public class SelectionController extends Observable {
         });
     }
 
+    public void setTrackingBoat(BoatDisplay boat){this.trackingBoat = boat;}
 
     public Set<BoatDisplay> getSelectedBoats() {
         return Collections.unmodifiableSet(selectedBoats);
