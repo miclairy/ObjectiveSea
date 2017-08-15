@@ -70,6 +70,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private long timeTillFinish;
     private Integer id;
     private boolean sailsIn = false;
+    private boolean sailsNeedUpdate = false;
     private boolean inGate = false;
 
 
@@ -728,5 +729,13 @@ public class Boat extends Observable implements Comparable<Boat>{
                 tackOrGybe = false;
             }
         }
+    }
+
+    public boolean isSailsNeedUpdate() {
+        return sailsNeedUpdate;
+    }
+
+    public void setSailsNeedUpdate(boolean sailsNeedUpdate) {
+        this.sailsNeedUpdate = sailsNeedUpdate;
     }
 }

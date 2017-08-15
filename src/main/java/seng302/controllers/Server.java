@@ -138,9 +138,15 @@ public class Server implements Runnable, Observer {
         sendSailChangeMessages();
     }
 
+    /**
+     * sends message to update sails on the client when required.
+     * @throws IOException
+     */
     private void sendSailChangeMessages() throws IOException {
         for (Boat boat : raceUpdater.getRace().getCompetitors()) {
-            if (!boat.isFinished()) {
+            if (boat.isSailsNeedUpdate() && !boat.isFinished()) {
+                boat.setSailsNeedUpdate(false);
+                System.out.println("Packet sent");
                 if(boat.isSailsIn()){
                     sendYachtEventMessage(boat, raceUpdater.getRace(), 1, YachtEventCode.SAILS_IN);
                 }else{
