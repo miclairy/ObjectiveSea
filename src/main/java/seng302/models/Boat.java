@@ -48,6 +48,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private double targetHeading;
     private double maxSpeed;
     private double boatHealth = 100;
+    private DoubleProperty healthProperty = new SimpleDoubleProperty(100);
     private double damageSpeed;
     private boolean boatCheck = false;
     private double boatPenalty;
@@ -65,6 +66,7 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StringProperty statusProperty = new SimpleStringProperty();
+    private DoubleProperty headingProperty = new SimpleDoubleProperty();
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
 
     private List<Coordinate> pathCoords;
@@ -163,6 +165,14 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public IntegerProperty getCurrPlacingProperty(){ return currPlacing;}
 
+    public DoubleProperty getHeadingProperty(){
+        return headingProperty;
+    }
+
+    public DoubleProperty getHealthProperty(){
+        return healthProperty;
+    }
+
     public double getCurrentSpeed() {
         return currentSpeed.get();
     }
@@ -179,8 +189,10 @@ public class Boat extends Observable implements Comparable<Boat>{
     public void addDamage(int damage) {
         if((boatHealth - damage) > 0) {
             boatHealth -= damage;
+            healthProperty.setValue(boatHealth -= damage);
         } else {
             boatHealth = 0;
+            healthProperty.setValue(0);
             status = BoatStatus.DNF;
         }
         checkPenaltySpeed();
@@ -244,6 +256,7 @@ public class Boat extends Observable implements Comparable<Boat>{
      * @param heading the new heading
      * */
     public void setHeading(double heading) {
+        this.headingProperty.set(((heading + 360)%360));
         this.heading = ((heading + 360)%360);
     }
 
@@ -257,6 +270,10 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public double getMaxSpeed() {
         return maxSpeed;
+    }
+
+    public double getBoatHealth() {
+        return boatHealth;
     }
 
     public void setTWAofBoat(double TWAofBoat) {

@@ -96,7 +96,7 @@
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                     </columnResizePolicy>
                 </TableView>
-         <VBox fx:id="headsUpDisplay" layoutX="1775.0" prefHeight="200.0" prefWidth="317.0" AnchorPane.leftAnchor="150.0" AnchorPane.topAnchor="10.0" />
+         <VBox fx:id="headsUpDisplay" layoutX="1775.0" prefHeight="146.0" prefWidth="142.0" AnchorPane.leftAnchor="150.0" AnchorPane.topAnchor="10.0" />
             </children>
       <StackPane.margin>
          <Insets />
