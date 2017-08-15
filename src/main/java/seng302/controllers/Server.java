@@ -146,7 +146,6 @@ public class Server implements Runnable, Observer {
         for (Boat boat : raceUpdater.getRace().getCompetitors()) {
             if (boat.isSailsNeedUpdate() && !boat.isFinished()) {
                 boat.setSailsNeedUpdate(false);
-                System.out.println("Packet sent");
                 if(boat.isSailsIn()){
                     sendYachtEventMessage(boat, raceUpdater.getRace(), 1, YachtEventCode.SAILS_IN);
                 }else{
