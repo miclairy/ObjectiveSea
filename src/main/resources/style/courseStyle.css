@@ -104,10 +104,3 @@
     -fx-background-radius: 30;
     -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
 }
-
-#headsUpDisplay{
-    -fx-background-color: #2a2a2a;
-    -fx-border-radius: 30;
-    -fx-background-radius: 30;
-    -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
-}

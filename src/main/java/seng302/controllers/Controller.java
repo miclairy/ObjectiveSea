@@ -37,6 +37,7 @@ import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 import seng302.views.BoatDisplay;
 import seng302.utilities.TimeUtils;
+import seng302.views.HeadsupDisplay;
 
 
 import java.io.*;
@@ -75,6 +76,7 @@ public class Controller implements Initializable, Observer {
     @FXML private TableColumn<Boat, String> columnSpeed;
     @FXML private TableColumn<Boat, String> columnStatus;
     @FXML private VBox headsUpDisplay;
+    private HeadsupDisplay infoDisplay;
 
     @FXML public StackPane stackPane;
     @FXML private AnchorPane tutorialOverlay;
@@ -104,6 +106,7 @@ public class Controller implements Initializable, Observer {
     private final String STARTERS_CSS = "/style/startersOverlayStyle.css";
     private final String SETTINGSPANE_CSS = "/style/settingsPaneStyle.css";
     private final String DISTANCELINE_CSS = "/style/distanceLineStyle.css";
+    private final String HEADSUP_DISPLAY_CSS = "/style/headsupDisplay.css";
     private final Color UNSELECTED_BOAT_COLOR = Color.WHITE;
     private final Color SELECTED_BOAT_COLOR = Color.rgb(77, 197, 138);
 
@@ -131,7 +134,7 @@ public class Controller implements Initializable, Observer {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         addRightHandSideListener();
-        canvasAnchor.getStylesheets().addAll(COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, BOAT_CSS, DISTANCELINE_CSS);
+        canvasAnchor.getStylesheets().addAll(COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, BOAT_CSS, DISTANCELINE_CSS, HEADSUP_DISPLAY_CSS);
         canvasWidth = canvas.getWidth();
         canvasHeight = canvas.getHeight();
         anchorWidth = canvasAnchor.getWidth();
@@ -159,7 +162,6 @@ public class Controller implements Initializable, Observer {
         lblNoBoardClock.setVisible(false);
         tblPlacingsRV.setVisible(false);
         headsUpDisplay.setVisible(false);
-
 
         displayStarters();
         startersOverlay.toFront();
@@ -234,6 +236,7 @@ public class Controller implements Initializable, Observer {
             startersOverlayTitle.setText(race.getRegattaName());
         }
         initKeyPressListener();
+
     }
 
     public void exitRunningRace() throws IOException {
@@ -696,5 +699,9 @@ public class Controller implements Initializable, Observer {
                 });
 
         tblPlacingsRV.setItems(sortedList);
+    }
+
+    public void addUserBoat(){
+        this.infoDisplay = new HeadsupDisplay(raceViewController.getCurrentUserBoatDisplay(), headsUpDisplay);
     }
 }
