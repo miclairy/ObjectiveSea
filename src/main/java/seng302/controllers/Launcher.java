@@ -8,6 +8,10 @@ import com.sun.javafx.application.LauncherImpl;
 public class Launcher {
     public static void main( String[] args )
     {
-        LauncherImpl.launchApplication(Main.class, SplashScreenLoader.class, args);
+        if (args.length > 0) {
+            Main.main(args);
+        } else {
+            LauncherImpl.launchApplication(Main.class, SplashScreenLoader.class, args);
+        }
     }
 }

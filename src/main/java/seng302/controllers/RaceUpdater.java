@@ -39,7 +39,7 @@ public class RaceUpdater implements Runnable {
     public RaceUpdater(String selectedCourse){
         collisionManager = new CollisionManager();
         //set race up with default files
-        intialWindSpeedGenerator();
+        initialWindSpeedGenerator();
         RaceVisionXMLParser raceVisionXMLParser = new RaceVisionXMLParser();
         raceVisionXMLParser.setCourseFile(selectedCourse);
         potentialCompetitors = raceVisionXMLParser.importDefaultStarters();
@@ -98,12 +98,14 @@ public class RaceUpdater implements Runnable {
         while (!race.getRaceStatus().isRaceEndedStatus() && serverRunning) {
             boolean atLeastOneBoatNotFinished = false;
             double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
-            race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs() + (long)(raceSecondsPassed * 1000));
+            long millisBeforeStart = race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs();
+            race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs()
+                    + (long)(TimeUtils.secondsToMilliseconds(raceSecondsPassed)));
             generateWind();
             if (race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)) {
                 collisionManager.checkForCollisions(race);
             }
-            long millisBeforeStart = race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs();
+
             for (Boat boat : race.getCompetitors()) {
                 if(race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
                     if (collisionManager.boatIsInCollision(boat)) {
@@ -111,18 +113,7 @@ public class RaceUpdater implements Runnable {
                         updateLocation(-TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
                         boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
                     }
-                    if(boat.isSailsIn() && boat.getCurrentSpeed() > 0){
-                        boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.2);
-                        if(boat.getCurrentSpeed() < 0) boat.setCurrentSpeed(0);
-                    } else if(!boat.isSailsIn()){
-                        boat.setMaxSpeed(boat.updateBoatSpeed(race.getCourse())-boat.getDamageSpeed());
-                        if(boat.getCurrentSpeed() < boat.getMaxSpeed()){
-                            boat.setCurrentSpeed(boat.getCurrentSpeed() + 0.1);
-                        } if(boat.getCurrentSpeed() > boat.getMaxSpeed() + 1)boat.setCurrentSpeed(boat.getMaxSpeed());
-                    }
-                    if (boat.getCurrentSpeed() < 0){
-                        boat.setCurrentSpeed(0);
-                    }
+                    adjustSpeed(boat);
                     updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
                     boat.updateBoatHeading(raceSecondsPassed);
                     if (course.getCourseOrder().size() > 0) {
@@ -159,10 +150,29 @@ public class RaceUpdater implements Runnable {
                 race.updateRaceStatus(RaceStatus.TERMINATED);
             }
 
-            try{
+            try {
                 Thread.sleep((long) (SECONDS_PER_UPDATE * 1000));
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Adjusts the speed of the boat based on sails luffing or damage taken
+     * @param boat the boat who's speed we are adjusting
+     */
+    private void adjustSpeed(Boat boat) {
+        if(boat.isSailsIn() && boat.getCurrentSpeed() > 0){
+            boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.2);
+            if(boat.getCurrentSpeed() < 0) boat.setCurrentSpeed(0);
+        } else if(!boat.isSailsIn()){
+            boat.setMaxSpeed(boat.updateBoatSpeed(race.getCourse())-boat.getDamageSpeed());
+            if(boat.getCurrentSpeed() < boat.getMaxSpeed()){
+                boat.setCurrentSpeed(boat.getCurrentSpeed() + 0.1);
+            }
+            if(boat.getCurrentSpeed() > boat.getMaxSpeed() + 1) {
+                boat.setCurrentSpeed(boat.getMaxSpeed());
             }
         }
     }
@@ -492,14 +502,18 @@ public class RaceUpdater implements Runnable {
         this.race = race;
     }
 
-    public void setTutorial() {
+    /**
+     * Sets the race status to started so we don't have to wait around for the prerace countdown
+     * Currently used in tutorial mode.
+     */
+    public void skipPrerace() {
         race.updateRaceStatus(STARTED);
     }
 
     /**
      * Randomly generates an initial wind speed between race regulations of 6-24 knots
      */
-    private void intialWindSpeedGenerator(){
+    private void initialWindSpeedGenerator(){
         Random random = new Random();
         initialWindSpeed = MIN_WIND_SPEED + (MAX_WIND_SPEED - MIN_WIND_SPEED) * random.nextDouble();
     }
