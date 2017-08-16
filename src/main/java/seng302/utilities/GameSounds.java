@@ -229,7 +229,7 @@ public class GameSounds {
         URL resource = getClass().getResource(selectedVoiceOver);
         mediaPlayer = new MediaPlayer(new Media(resource.toString()));
         double volume = mediaPlayer.getVolume();
-        mediaPlayer.setVolume(volume - 0.1);
+        mediaPlayer.setVolume(volume);
         mediaPlayer.play();
     }
 
@@ -238,6 +238,9 @@ public class GameSounds {
         inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream(selectedMusic));
         clip.open(inputStream);
         clip.loop(Clip.LOOP_CONTINUOUSLY);
+        FloatControl gainControl =
+                (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+        gainControl.setValue(-10.0f);
         clip.start();
     }
 

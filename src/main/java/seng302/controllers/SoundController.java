@@ -61,7 +61,7 @@ public class SoundController implements Runnable {
     }
 
     public void hasHitBoat(Boat boat) {
-        if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 2500) && boat.isBoatCollideSound()) {
+        if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 5000) && boat.isBoatCollideSound()) {
             if ((boat.getBoatHealth() <= 20) && boat.getId().equals(clientID)) {
                 DisplaySwitcher.getGameSounds().boatDamage();
                 DisplaySwitcher.getGameSounds().playGameSound();
@@ -75,7 +75,7 @@ public class SoundController implements Runnable {
     }
 
     public void hasHitMark(Boat boat) {
-        if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 2500) && boat.isMarkCollideSound()) {
+        if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 5000) && boat.isMarkCollideSound()) {
             if (boat.getBoatHealth() <= 20 && boat.getId().equals(clientID)) {
                 DisplaySwitcher.getGameSounds().boatDamage();
                 DisplaySwitcher.getGameSounds().playGameSound();

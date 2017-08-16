@@ -421,6 +421,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             ft2.setOnFinished(new EventHandler<ActionEvent>() {
                 public void handle(ActionEvent AE) {
                     boat.setCollisionInProgress(false);
+                    boat.getBoat().setBoatCollideSound(false);
+                    boat.getBoat().setMarkCollideSound(false);
                 }
             });
         } else {
