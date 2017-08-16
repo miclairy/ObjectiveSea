@@ -30,17 +30,17 @@ public class SoundController implements Runnable {
 
     public void checkPlacing(Boat boat) {
         if (!finalGameSound && boat.getId().equals(clientID)) {
-            if (boat.getCurrPlacing() == 0 && boat.getStatus().equals(BoatStatus.FINISHED) && !firstPlaceTaken) {
+            if (boat.getCurrPlacing() == 1 && boat.getStatus().equals(BoatStatus.FINISHED) && !firstPlaceTaken) {
                 DisplaySwitcher.getGameSounds().firstPlace();
                 DisplaySwitcher.getGameSounds().playGameSound();
                 finalGameSound = true;
-            } else if (boat.getCurrPlacing() != 0 && boat.getCurrPlacing() != noOfBoats - 1 &&
+            } else if (boat.getCurrPlacing() != 1 && boat.getCurrPlacing() != noOfBoats - 1 &&
                     boat.getStatus().equals(BoatStatus.FINISHED) && firstPlaceTaken) {
                 DisplaySwitcher.getGameSounds().everyoneButFirstPlace();
                 DisplaySwitcher.getGameSounds().playGameSound();
                 finalGameSound = true;
             }
-            if ((boat.getCurrPlacing() == noOfBoats - 1 && boat.getStatus().equals(BoatStatus.FINISHED)) ||
+            if ((boat.getCurrPlacing() == noOfBoats && boat.getStatus().equals(BoatStatus.FINISHED)) && firstPlaceTaken ||
                     (boat.getStatus().equals(BoatStatus.DISQUALIFIED) || boat.getStatus().equals(BoatStatus.DNF)) && !lastPlace) {
                 DisplaySwitcher.getGameSounds().lastPlace();
                 DisplaySwitcher.getGameSounds().playGameSound();
