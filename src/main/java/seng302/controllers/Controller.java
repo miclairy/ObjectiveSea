@@ -702,6 +702,10 @@ public class Controller implements Initializable, Observer {
     }
 
     public void addUserBoat(){
-        this.infoDisplay = new HeadsupDisplay(raceViewController.getCurrentUserBoatDisplay(), headsUpDisplay);
+        this.infoDisplay = new HeadsupDisplay(raceViewController.getCurrentUserBoatDisplay(), headsUpDisplay, race);
+    }
+
+    public void refreshHUD(){
+        infoDisplay.competitorAdded();
     }
 }

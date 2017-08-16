@@ -7,51 +7,75 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import seng302.models.Race;
 import seng302.utilities.AnimationUtils;
 
 public class HeadsupDisplay {
 
     private BoatDisplay boat;
     private VBox display;
-    private Label headingLabel;
+    private Label positionLabel;
     private ProgressBar healthBar;
+    private Race race;
 
-    public HeadsupDisplay(BoatDisplay boat, VBox display){
+    public HeadsupDisplay(BoatDisplay boat, VBox display, Race race){
         this.boat = boat;
         this.display = display;
+        this.race = race;
         display.setPickOnBounds(false);
         addInfoToDisplay();
         addListeners();
     }
 
     private void addInfoToDisplay(){
+        addSpeed();
+        addPosition();
+        addHealth();
+    }
+
+    private void addSpeed(){
+        Label speedTitleLabel = new Label("Speed");
+        speedTitleLabel.setId("titleLabel");
+
         Label speedLabel = new Label();
         speedLabel.setId("speedLabel");
         boat.getBoat().getSpeedProperty().addListener((obs, oldStatus, newStatus) ->
                 Platform.runLater(() -> speedLabel.setText(String.format("%.2f kn", newStatus))));
 
-        headingLabel = new Label(String.format("%.0f°", boat.getBoat().getHeadingProperty().getValue()));
-        headingLabel.setId("headingLabel");
-        boat.getBoat().getHeadingProperty().addListener((obs, oldStatus, newStatus) ->
-                Platform.runLater(() -> updateHeading((Double)newStatus)));
+        display.getChildren().add(speedTitleLabel);
+        display.getChildren().add(speedLabel);
+    }
+
+    private void addHealth(){
+        Label healthLabel = new Label("Health");
+        healthLabel.setId("healthLabel");
 
         healthBar = new ProgressBar(boat.getBoat().getHealthProperty().doubleValue());
+        healthBar.setMinWidth(120);
         boat.getBoat().getHealthProperty().addListener((obs, oldStatus, newStatus) ->
                 Platform.runLater(() -> updateHealth((Double)newStatus)));
         healthBar.setId("boatHealth");
 
-        Label healthLabel = new Label("Health");
-        healthLabel.setId("healthLabel");
-
-        display.getChildren().add(speedLabel);
-        display.getChildren().add(headingLabel);
         display.getChildren().add(healthLabel);
         display.getChildren().add(healthBar);
-
     }
 
-    private void updateHeading(Double newHeading){
-        headingLabel.setText(String.format("%.0f°", newHeading));
+    private void addPosition(){
+        Label positionTitleLabel = new Label("Position");
+        positionTitleLabel.setId("titleLabel");
+
+        positionLabel = new Label(String.format("%d / %d", boat.getBoat().getCurrPlacingProperty().get(), race.getCompetitors().size()));
+        positionLabel.setId("positionLabel");
+        boat.getBoat().getCurrPlacingProperty().addListener((obs, oldStatus, newStatus) ->
+                Platform.runLater(() -> updatePlacing((int)newStatus)));
+
+        display.getChildren().add(positionTitleLabel);
+        display.getChildren().add(positionLabel);
+    }
+
+    private void updatePlacing(int newPos){
+        positionLabel.setText(String.format("%d / %d", newPos, race.getCompetitors().size()));
+        AnimationUtils.drawAttentionToNode(positionLabel);
     }
 
     private void updateHealth(Double value){
@@ -62,5 +86,9 @@ public class HeadsupDisplay {
                 e -> AnimationUtils.scaleButtonHover(display));
         display.addEventHandler(MouseEvent.MOUSE_EXITED,
                 e ->  AnimationUtils.scaleButtonHoverExit(display));
+    }
+
+    public void competitorAdded(){
+        positionLabel.setText(String.format("%d / %d", boat.getBoat().getCurrPlacingProperty().get(), race.getCompetitors().size()));
     }
 }
