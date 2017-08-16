@@ -38,6 +38,7 @@ public class Tutorial {
         this.race = race;
         if (!race.getCompetitors().isEmpty()) tutorialBoat = race.getCompetitors().get(0);
         polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
+        controller.setUpTutorialMode();
     }
 
     /**

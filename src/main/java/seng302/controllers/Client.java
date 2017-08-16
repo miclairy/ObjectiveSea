@@ -218,7 +218,7 @@ public class Client implements Runnable, Observer {
         return clientID;
     }
 
-    public void initiateClientDisconnect() throws IOException {
+    public void initiateClientDisconnect() {
         clientListener.disconnectClient();
         race.getBoatById(clientID).setStatus(BoatStatus.DNF);
     }
