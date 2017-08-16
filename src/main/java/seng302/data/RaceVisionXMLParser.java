@@ -593,4 +593,14 @@ public class RaceVisionXMLParser {
     public void setCourseFile(String course) {
         courseFile = course;
     }
+
+    /**
+     * Checks to see if a file exists in the expected location
+     * @param file the name of the file (which is expected to be inside /defaultFiles/) to test
+     * @return true if the file exists, false otherwise
+     */
+    public boolean checkFileExists(String file) {
+        String resourcePath = "/defaultFiles/" + file;
+        return RaceVisionXMLParser.class.getResource(resourcePath) != null;
+    }
 }
