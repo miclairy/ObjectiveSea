@@ -122,7 +122,6 @@ public class MainMenuController implements Initializable{
         AnimationUtils.slideInTransition(liveGameGrid);
     }
 
-    @SuppressWarnings("Duplicates")
     @FXML private void loadTutorial() throws Exception {
         DisplaySwitcher.getGameSounds().stopEndlessMusic();
         btnSinglePlay.setDisable(true);
@@ -136,7 +135,6 @@ public class MainMenuController implements Initializable{
      * Allows user to host a game at the DEFAULT_PORT and current public IP
      * @throws Exception
      */
-    @SuppressWarnings("Duplicates")
     @FXML private void loadOfflinePlay() throws Exception{
         btnSinglePlay.setDisable(true);
         main.startHostedRace(selectedCourse, DEFAULT_PORT, false);
