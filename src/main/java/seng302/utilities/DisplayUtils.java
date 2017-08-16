@@ -64,8 +64,7 @@ public class DisplayUtils {
         xCoord += offsetX;
         yCoord += offsetY;
 
-        CanvasCoordinate point = new CanvasCoordinate(xCoord, yCoord);
-        return point;
+        return new CanvasCoordinate(xCoord, yCoord);
     }
 
     public static void resetZoom(){
@@ -194,7 +193,7 @@ public class DisplayUtils {
                 bottomMarker.getLat() + "," + bottomMarker.getLon() +
                 "%7C" +
                 topMarker.getLat() + "," + topMarker.getLon() +
-                "&scale=1" +
+                "&scale=2" +
                 "&key=" + GOOGLE_API_KEY;
         return mapURL;
     }

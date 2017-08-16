@@ -18,7 +18,7 @@
 
 #wake{
     -fx-stroke: linear-gradient(#eaf2ff, transparent);
-        -fx-fill: linear-gradient(rgb(132, 218, 255), transparent);
+    -fx-fill: linear-gradient(rgb(132, 218, 255), transparent);
     -fx-opacity: 1;
     -fx-stroke-line-cap: round;
     -fx-stroke-line-join: round;
@@ -75,5 +75,10 @@
 
 #collisionCircle{
     -fx-fill: #ff5b5b;
+    -fx-opacity: 0.6;
+}
+
+#nextMarkHighlight{
+    -fx-fill: #4DC58B;
     -fx-opacity: 0.6;
 }

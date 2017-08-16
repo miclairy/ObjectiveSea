@@ -1,10 +1,12 @@
 package seng302.controllers;
 
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableNumberValue;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -14,10 +16,16 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.util.Callback;
+import seng302.utilities.AnimationUtils;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplayUtils;
@@ -26,6 +34,8 @@ import seng302.utilities.*;
 import seng302.models.Boat;
 import seng302.models.Course;
 import seng302.models.Race;
+import seng302.utilities.TimeUtils;
+import seng302.views.BoatDisplay;
 import seng302.utilities.TimeUtils;
 
 
@@ -46,6 +56,7 @@ public class Controller implements Initializable, Observer {
     @FXML private Label fpsLabel;
     @FXML private ListView<String> startersList;
     @FXML private Label clockLabel;
+    @FXML private Label lblNoBoardClock;
     @FXML public VBox startersOverlay;
     @FXML private Label startersOverlayTitle;
     @FXML public ImageView mapImageView;
@@ -53,12 +64,22 @@ public class Controller implements Initializable, Observer {
     @FXML public Label lblUserHelp;
     @FXML public Label lblWindSpeed;
     @FXML public Circle windCircle;
+    @FXML public Circle nextMarkCircle;
     @FXML public SplitPane splitPane;
+    @FXML private Button btnHide;
+    @FXML private ImageView imvSpeedScale;
+    @FXML private TableView<Boat> tblPlacingsRV;
+    @FXML private TableColumn<Boat, Integer> columnPosition;
+    @FXML private TableColumn<Boat, String> columnName;
+    @FXML private TableColumn<Boat, String> columnSpeed;
+    @FXML private TableColumn<Boat, String> columnStatus;
+
+    @FXML public StackPane stackPane;
     @FXML private AnchorPane tutorialOverlay;
     @FXML private Label tutorialOverlayTitle;
     @FXML private Label tutorialContent;
-
-
+    @FXML public Label lblNextMark;
+    @FXML private GridPane nextMarkGrid;
 
     //FPS Counter
     private SimpleStringProperty fpsString = new SimpleStringProperty();
@@ -82,6 +103,8 @@ public class Controller implements Initializable, Observer {
     private final String STARTERS_CSS = "/style/startersOverlayStyle.css";
     private final String SETTINGSPANE_CSS = "/style/settingsPaneStyle.css";
     private final String DISTANCELINE_CSS = "/style/distanceLineStyle.css";
+    private final Color UNSELECTED_BOAT_COLOR = Color.WHITE;
+    private final Color SELECTED_BOAT_COLOR = Color.rgb(77, 197, 138);
 
     // Controllers
     @FXML
@@ -96,6 +119,7 @@ public class Controller implements Initializable, Observer {
     private Race race;
     private boolean isHost;
     private DisplaySwitcher displaySwitcher;
+    private boolean scoreboardVisible = true;
 
 
     private final double FOCUSED_ZOOMSLIDER_OPACITY = 0.8;
@@ -105,6 +129,7 @@ public class Controller implements Initializable, Observer {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        addRightHandSideListener();
         canvasAnchor.getStylesheets().addAll(COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, BOAT_CSS, DISTANCELINE_CSS);
         canvasWidth = canvas.getWidth();
         canvasHeight = canvas.getHeight();
@@ -121,19 +146,42 @@ public class Controller implements Initializable, Observer {
         selectionController.addObserver(raceViewController);
 
         createCanvasAnchorListeners();
-        scoreBoardController.setControllers(this, raceViewController, race, selectionController);
+        scoreBoardController.setControllers(this, raceViewController, race, selectionController, DisplaySwitcher.getScene());
         scoreBoardController.setUp();
         fpsString.set("..."); //set to "..." while fps count loads
         fpsLabel.textProperty().bind(fpsString);
+        lblNoBoardClock.textProperty().bind(raceTimerString);
         clockLabel.textProperty().bind(clockString);
         hideStarterOverlay();
         raceViewController.updateWindArrow();
+        rightHandSide.setOpacity(0.7);
+        lblNoBoardClock.setVisible(false);
+        tblPlacingsRV.setVisible(false);
+
 
         displayStarters();
         startersOverlay.toFront();
         raceViewController.start();
         initDisplayDrag();
         initZoom();
+    }
+
+    /**
+     * adds listeners to content on the scorePanel
+     */
+    private void addRightHandSideListener(){
+        rightHandSide.addEventHandler(MouseEvent.MOUSE_ENTERED,
+                e -> AnimationUtils.focusNode(rightHandSide));
+        rightHandSide.addEventHandler(MouseEvent.MOUSE_EXITED,
+                e ->  AnimationUtils.dullNode(rightHandSide));
+        btnHide.addEventHandler(MouseEvent.MOUSE_ENTERED,
+                e -> AnimationUtils.focusNode(btnHide));
+        btnHide.addEventHandler(MouseEvent.MOUSE_EXITED,
+                e ->  AnimationUtils.dullNode(btnHide));
+        lblNoBoardClock.addEventHandler(MouseEvent.MOUSE_ENTERED,
+                e -> AnimationUtils.toggleHiddenBoardNodes(tblPlacingsRV, false));
+        lblNoBoardClock.addEventHandler(MouseEvent.MOUSE_EXITED,
+                e -> AnimationUtils.toggleHiddenBoardNodes(tblPlacingsRV, true));
     }
 
     /**
@@ -236,11 +284,13 @@ public class Controller implements Initializable, Observer {
             DisplayUtils.setZoomLevel(zoomSlider.getValue());
             if (DisplayUtils.zoomLevel != 1) {
                 mapImageView.setVisible(false);
+                nextMarkCircle.setVisible(true);
             } else {
                 //Zoom out full, reset everything
                 selectionController.setRotationOffset(0);
                 root.getTransforms().clear();
                 mapImageView.setVisible(true);
+                nextMarkCircle.setVisible(false);
                 selectionController.setTrackingPoint(false);
                 DisplayUtils.resetOffsets();
             }
@@ -290,6 +340,7 @@ public class Controller implements Initializable, Observer {
             anchorWidth = canvasAnchor.getWidth();
             raceViewController.redrawCourse();
             raceViewController.redrawBoatPaths();
+            btnHide.setLayoutX(canvasWidth - 485.0);
         });
         canvasAnchor.heightProperty().addListener(resizeListener);
         canvasAnchor.heightProperty().addListener((observable, oldValue, newValue) -> {
@@ -297,6 +348,7 @@ public class Controller implements Initializable, Observer {
             anchorHeight = canvasAnchor.getHeight();
             raceViewController.redrawCourse();
             raceViewController.redrawBoatPaths();
+
         });
     }
 
@@ -439,12 +491,12 @@ public class Controller implements Initializable, Observer {
      * Causes the starters overlay to hide itself, enabling a proper view of the course and boats beneath
      */
     public void hideStarterOverlay() {
-        startersOverlay.setVisible(false);
+        AnimationUtils.fadeNode(startersOverlay, true);
     }
 
     public void showStarterOverlay() {
         startersOverlay.toFront();
-        startersOverlay.setVisible(true);
+        AnimationUtils.fadeNode(startersOverlay, false);
     }
 
     public static void setCanvasHeight(double canvasHeight) {
@@ -491,7 +543,6 @@ public class Controller implements Initializable, Observer {
                 case Race.UPDATED_STATUS_SIGNAL:
                     raceStatusChanged = true;
                     break;
-
             }
         }
     }
@@ -503,6 +554,49 @@ public class Controller implements Initializable, Observer {
         lblUserHelp.setMinWidth(canvasWidth);
         lblUserHelp.setText(helper);
         DisplayUtils.fadeInFadeOutNodeTransition(lblUserHelp, 1);
+    }
+
+    /**
+     * handles the toggling of screen elemnts when the side panel is toggled on and off
+     */
+    @FXML private void hideScoreboard(){
+        if(scoreboardVisible){
+            AnimationUtils.shiftPaneNodes(rightHandSide, 440, false);
+            AnimationUtils.shiftPaneArrow(btnHide, 430, 1);
+            AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
+            AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
+            AnimationUtils.shiftPaneNodes(nextMarkGrid, 430, true);
+            AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
+            scoreboardVisible = false;
+            raceViewController.shiftArrow(false);
+            setUpTable();
+        }else{
+            AnimationUtils.shiftPaneNodes(rightHandSide, -440, true);
+            AnimationUtils.shiftPaneArrow(btnHide, -430, -1);
+            AnimationUtils.shiftPaneNodes(imvSpeedScale, -430, true);
+            AnimationUtils.shiftPaneNodes(lblWindSpeed, -430, true);
+            AnimationUtils.shiftPaneNodes(nextMarkGrid, -430, true);
+            AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true);
+            scoreboardVisible = true;
+            raceViewController.shiftArrow(true);
+        }
+    }
+
+    public class ColoredTextListCell extends ListCell<String> {
+        @Override
+        protected void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+            setText(item);
+            setTextFill(UNSELECTED_BOAT_COLOR);
+
+            BoatDisplay userBoat = raceViewController.getCurrentUserBoatDisplay();
+            if(userBoat != null && item != null){
+                if(item.contains(userBoat.getBoat().getName())){
+                    setTextFill(SELECTED_BOAT_COLOR);
+                }
+            }
+
+        }
     }
 
     public static double getAnchorHeight() {
@@ -522,6 +616,10 @@ public class Controller implements Initializable, Observer {
         return windCircle;
     }
 
+    public Circle getNextMarkCircle() {
+        return nextMarkCircle;
+    }
+
     public AnchorPane getCanvasAnchor() {
         return canvasAnchor;
     }
@@ -536,14 +634,45 @@ public class Controller implements Initializable, Observer {
         DisplayUtils.fadeNodeTransition(zoomSlider, IDLE_ZOOMSLIDER_OPACITY);
     }
 
+    @FXML
+    private void btnTrackPressed(){
+        selectionController.trackBoat();
+    }
+
     public ListView<String> getStartersList() {
         return startersList;
     }
 
+    public boolean isScoreboardVisible() {
+        return scoreboardVisible;
+    }
+
     public void blurScreen(boolean blur) {
-        blurNode(splitPane, blur);
-        splitPane.setScaleX(1.08);
-        splitPane.setScaleY(1.08);
+        blurNode(stackPane, blur);
+        stackPane.setScaleX(1.08);
+        stackPane.setScaleY(1.08);
+    }
+
+    /**
+     * sets up the rv table when the board is toggled
+     */
+    private void setUpTable(){
+        columnName.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
+        columnPosition.setCellValueFactory(cellData -> cellData.getValue().getCurrPlacingProperty().asObject());
+        columnSpeed.setCellValueFactory(cellData -> Bindings.format("%.2f kn", cellData.getValue().getSpeedProperty()));
+        columnStatus.setCellValueFactory(cellData -> cellData.getValue().getStatusProperty());
+
+        refreshTable();
+        tblPlacingsRV.getSortOrder().add(columnPosition);
+        columnPosition.setStyle( "-fx-alignment: CENTER;");
+        columnName.setStyle( "-fx-alignment: CENTER;");
+        columnSpeed.setStyle( "-fx-alignment: CENTER;");
+        columnStatus.setStyle( "-fx-alignment: CENTER;");
+
+        BoatDisplay userBoat = raceViewController.getCurrentUserBoatDisplay();
+        if(userBoat != null){
+            tblPlacingsRV.getSelectionModel().select(userBoat.getBoat());
+        }
     }
 
     private void blurNode(Node node, boolean blur) {
@@ -552,5 +681,37 @@ public class Controller implements Initializable, Observer {
         } else {
             node.setEffect(null);
         }
+    }
+
+    /**
+     * refreshes the RV table when a competitor is added
+     * order of boats is updated based on placings
+     */
+    public void refreshTable(){
+        Callback<Boat, javafx.beans.Observable[]> cb =(Boat boat) -> new javafx.beans.Observable[]{boat.getCurrPlacingProperty()};
+
+        ObservableList<Boat> observableList = FXCollections.observableArrayList(cb);
+        observableList.addAll(race.getObservableCompetitors());
+
+        SortedList<Boat> sortedList = new SortedList<>( observableList,
+                (Boat boat1, Boat boat2) -> {
+                    if( boat1.getCurrPlacingProperty().get() < boat2.getCurrPlacingProperty().get() ) {
+                        return -1;
+                    } else if( boat1.getCurrPlacingProperty().get() > boat2.getCurrPlacingProperty().get() ) {
+                        return 1;
+                    } else {
+                        return 0;
+                    }
+                });
+
+        tblPlacingsRV.setItems(sortedList);
+    }
+
+    public void setUpTutorialMode(){
+        rightHandSide.setVisible(false);
+        lblNoBoardClock.setVisible(false);
+        btnHide.setVisible(false);
+        AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
+        AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
     }
 }
