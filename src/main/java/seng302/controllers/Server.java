@@ -6,6 +6,7 @@ import seng302.data.registration.RegistrationType;
 import seng302.models.Boat;
 import seng302.models.Collision;
 import seng302.models.Race;
+import seng302.models.ServerOptions;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -21,28 +22,38 @@ import static seng302.data.AC35StreamXMLMessage.REGATTA_XML_MESSAGE;
 public class Server implements Runnable, Observer {
 
     private final double SECONDS_PER_UPDATE = 0.2;
-    private double scaleFactor = 1;
-
-    private int nextViewerID = 0;
 
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumber = new HashMap<>();
     private Map<Boat, Integer> boatSequenceNumbers = new HashMap<>();
     private Map<Boat, Integer> lastMarkRoundingSent = new HashMap<>();
-    private String DEFAULT_COURSE = "AC35-course.xml";
-    private String courseXML = DEFAULT_COURSE;
+    private int nextViewerID = 0;
 
     private RaceUpdater raceUpdater;
+    private Thread raceUpdaterThread;
     private ConnectionManager connectionManager;
     private ServerPacketBuilder packetBuilder;
     private CollisionManager collisionManager;
+    private ServerOptions options;
 
-    public Server(int port, RaceUpdater raceUpdater, String course) throws IOException {
-        this.raceUpdater = raceUpdater;
-        this.collisionManager = raceUpdater.getCollisionManager();
-        this.packetBuilder = new ServerPacketBuilder();
-        this.connectionManager = new ConnectionManager(port);
-        this.connectionManager.addObserver(this);
-        this.courseXML = course;
+    public Server(ServerOptions options) throws IOException {
+        this.options = options;
+        packetBuilder = new ServerPacketBuilder();
+        connectionManager = new ConnectionManager(options.getPort());
+        connectionManager.addObserver(this);
+        setupNewRaceUpdater(options);
+    }
+
+    /**
+     * Initializes a new raceUpdater with settings provided in options
+     * @param options for the race
+     */
+    private void setupNewRaceUpdater(ServerOptions options) {
+        raceUpdater = new RaceUpdater(options.getRaceXML());
+        if(options.isTutorial()) raceUpdater.skipPrerace();
+        raceUpdater.setScaleFactor(options.getSpeedScale());
+        raceUpdaterThread = new Thread(raceUpdater);
+        raceUpdaterThread.setName("Race Updater");
+        collisionManager = raceUpdater.getCollisionManager();
     }
 
     /**
@@ -62,26 +73,32 @@ public class Server implements Runnable, Observer {
      * Sends all the data to the socket while the boats have not all finished.
      */
     @Override
-    public void run() throws NullPointerException{
-        try {
-            initialize();
-            sendInitialRaceMessages();
-            Thread managerThread = new Thread(connectionManager);
-            managerThread.setName("Connection Manager");
-            managerThread.start();
-            while (!raceUpdater.raceHasEnded()) {
-                sendRaceUpdates();
-                try {
-                    Thread.sleep((long)(SECONDS_PER_UPDATE * 1000 / scaleFactor));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+    public void run() throws NullPointerException {
+        Integer timesRun = 0;
+        while (options.alwaysRerun() || timesRun < options.getNumRacesToRun()) {
+            setupNewRaceUpdater(options);
+            System.out.println("Server: Ready to Run New Race");
+            try {
+                initialize();
+                sendInitialRaceMessages();
+                Thread managerThread = new Thread(connectionManager);
+                managerThread.setName("Connection Manager");
+                managerThread.start();
+                while (!raceUpdater.raceHasEnded()) {
+                    if (!raceUpdater.getRace().getCompetitors().isEmpty()) {
+                        sendRaceUpdates();
+                    }
+                    Thread.sleep((long) (SECONDS_PER_UPDATE * 1000 / options.getSpeedScale()));
                 }
+                sendRaceUpdates(); //send one last message block with ending data
+                connectionManager.closeClientConnections();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
             }
-            sendRaceUpdates(); //send one last message block with ending data
-        } catch (IOException e) {
-            e.printStackTrace();
+            timesRun++;
         }
-        //TODO: Clean up connections
+        System.out.println("Server: Shutting Down");
+        connectionManager.closeAllConnections();
     }
 
     /**
@@ -104,7 +121,7 @@ public class Server implements Runnable, Observer {
      * Sends the XML messages when the client has connected
      */
     private void sendInitialRaceMessages() {
-        sendXmlMessage(RACE_XML_MESSAGE, courseXML);
+        sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());
         sendXmlMessage(BOAT_XML_MESSAGE, "Boat.xml");
         sendXmlMessage(REGATTA_XML_MESSAGE, "Regatta.xml");
     }
@@ -181,12 +198,8 @@ public class Server implements Runnable, Observer {
     private void sendXmlMessage(AC35StreamXMLMessage type, String fileName) {
         int sequenceNo = xmlSequenceNumber.get(type) + 1;
         xmlSequenceNumber.put(type, sequenceNo);
-        byte[] packet = packetBuilder.buildXmlMessage(type, fileName, sequenceNo, raceUpdater.getRace(), courseXML);
+        byte[] packet = packetBuilder.buildXmlMessage(type, fileName, sequenceNo, raceUpdater.getRace(), options.getRaceXML());
         connectionManager.setXmlMessage(type, packet);
-    }
-
-    public void setScaleFactor(double scaleFactor) {
-        this.scaleFactor = scaleFactor;
     }
 
     /**
@@ -215,6 +228,12 @@ public class Server implements Runnable, Observer {
             boatSequenceNumbers.put(boat, newId);
             lastMarkRoundingSent.put(boat, -1);
             packet = packetBuilder.createRegistrationResponsePacket(newId, RegistrationResponseStatus.PLAYER_SUCCESS);
+            if (!raceUpdaterThread.isAlive()){
+                int numCompetitors = raceUpdater.getRace().getCompetitors().size();
+                if (numCompetitors >= options.getMinParticipants()) {
+                    raceUpdaterThread.start();
+                }
+            }
         } else {
             packet = packetBuilder.createRegistrationResponsePacket(newId, RegistrationResponseStatus.OUT_OF_SLOTS);
         }
@@ -222,7 +241,7 @@ public class Server implements Runnable, Observer {
         serverListener.setClientId(newId);
 
         connectionManager.sendToClient(newId, packet);
-        sendXmlMessage(RACE_XML_MESSAGE, courseXML);
+        sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());
     }
 
     /**
@@ -238,7 +257,7 @@ public class Server implements Runnable, Observer {
         if (observable.equals(connectionManager)) {
             if(arg instanceof Socket){
                 startServerListener((Socket) arg);
-            }else{
+            } else {
                 setBoatToDNF((int) arg);
             }
         } else if(observable instanceof ServerListener){
@@ -274,8 +293,8 @@ public class Server implements Runnable, Observer {
         }
     }
 
-    public void initiateServerDisconnect() throws IOException {
-        connectionManager.closeConnections();
+    public void initiateServerDisconnect() {
+        connectionManager.closeAllConnections();
         raceUpdater.stopRunning();
     }
 

@@ -315,9 +315,13 @@ public class ClientListener extends Receiver implements Runnable{
         race.updateMarkRounded(sourceID, markIndex, time);
     }
 
-    public void disconnectClient() throws IOException {
-        clientSocket.close();
-        dataStream.close();
+    public void disconnectClient() {
+        try {
+            clientSocket.close();
+            dataStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public Socket getClientSocket() {

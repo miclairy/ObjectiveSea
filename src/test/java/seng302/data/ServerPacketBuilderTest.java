@@ -3,6 +3,7 @@ package seng302.data;
 import org.junit.Test;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.models.Boat;
+import seng302.models.CompoundMark;
 import seng302.models.Course;
 import seng302.models.Race;
 
@@ -11,6 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static seng302.data.AC35StreamField.*;
 import static seng302.data.AC35StreamField.START_TIME;
 import static seng302.data.AC35StreamField.WIND_SPEED;
@@ -32,7 +35,7 @@ public class ServerPacketBuilderTest {
         course.setWindDirection(10);
         course.setTrueWindSpeed(20);
         Boat boat1 = new Boat(100, "Test Boat 1", "TB1", 10);
-        Boat boat2 = new Boat(100, "Test Boat 2", "TB2", 10);
+        Boat boat2 = new Boat(101, "Test Boat 2", "TB2", 10);
         List<Boat> boats = new ArrayList<>();
         boats.add(boat1);
         boats.add(boat2);
@@ -65,13 +68,45 @@ public class ServerPacketBuilderTest {
         int boat2ID = byteArrayRangeToInt(body, 24 + offset, 28 + offset);
         int boat2Status = byteArrayRangeToInt(body, 28 + offset, 29 + offset);
         int boat2Leg = byteArrayRangeToInt(body, 29 + offset, 32 + offset);
-        assertEquals(boat1.getId(), (Integer) boat2ID);
-        assertEquals(boat1.getStatus(), BoatStatus.values()[boat2Status]);
-        assertEquals(boat1.getLeg(), boat2Leg);
+        assertEquals(boat2.getId(), (Integer) boat2ID);
+        assertEquals(boat2.getStatus(), BoatStatus.values()[boat2Status]);
+        assertEquals(boat2.getLeg(), boat2Leg);
     }
 
     @Test
-    public void createMarkRoundingMessage() {
+    public void createMarkRoundingMessage() throws Exception {
+        ServerPacketBuilder builder = new ServerPacketBuilder();
+        Course course = mock(Course.class);
+        ArrayList<CompoundMark> courseOrder = new ArrayList<>();
+        CompoundMark mark1 = mock(CompoundMark.class);
+        CompoundMark mark2 = mock(CompoundMark.class);
+        courseOrder.add(mark1);
+        courseOrder.add(mark2);
+        when(course.getCourseOrder()).thenReturn(courseOrder);
+        Boat boat1 = new Boat(100, "Test Boat 1", "TB1", 10);
+        Boat boat2 = new Boat(101, "Test Boat 2", "TB2", 10);
+        boat1.setLastRoundedMarkIndex(0);
+        boat2.setLastRoundedMarkIndex(1);
+        List<Boat> boats = new ArrayList<>();
+        boats.add(boat1);
+        boats.add(boat2);
+        Race race = new Race("Test Race", course, boats);
+        race.setId("1");
+        race.updateRaceStatus(RaceStatus.STARTED);
+
+        byte[] fullPacket = builder.createMarkRoundingMessage(boat1, race);
+        byte[] body = Arrays.copyOfRange(fullPacket, HEADER_LENGTH, fullPacket.length - CRC_LENGTH); //extract body
+        int sourceID = byteArrayRangeToInt(body, ROUNDING_SOURCE_ID.getStartIndex(), ROUNDING_SOURCE_ID.getEndIndex());
+        int markIndex = byteArrayRangeToInt(body, ROUNDING_MARK_ID.getStartIndex(), ROUNDING_MARK_ID.getEndIndex());
+        assertEquals(100, sourceID);
+        assertEquals(0, markIndex);
+
+        fullPacket = builder.createMarkRoundingMessage(boat2, race);
+        body = Arrays.copyOfRange(fullPacket, HEADER_LENGTH, fullPacket.length - CRC_LENGTH); //extract body
+        sourceID = byteArrayRangeToInt(body, ROUNDING_SOURCE_ID.getStartIndex(), ROUNDING_SOURCE_ID.getEndIndex());
+        markIndex = byteArrayRangeToInt(body, ROUNDING_MARK_ID.getStartIndex(), ROUNDING_MARK_ID.getEndIndex());
+        assertEquals(101, sourceID);
+        assertEquals(1, markIndex);
     }
 
     @Test
@@ -80,6 +115,40 @@ public class ServerPacketBuilderTest {
 
     @Test
     public void createBoatLocationMessage() {
+        ServerPacketBuilder builder = new ServerPacketBuilder();
+        Course course = new Course();
+        course.setWindDirection(10);
+        Boat boat1 = new Boat(100, "Test Boat 1", "TB1", 10);
+        boat1.setHeading(50.3);
+        boat1.setCurrentSpeed(23.9);
+        boat1.setPosition(23.5, 28.7);
+        boat1.setTWAofBoat(23);
+
+        List<Boat> boats = new ArrayList<>();
+        boats.add(boat1);
+        Race race = new Race("Test Race", course, boats);
+        race.setId("1");
+        race.updateRaceStatus(RaceStatus.STARTED);
+
+        byte[] fullPacket = builder.createBoatLocationMessage(boat1, race, 3);
+        byte[] body = Arrays.copyOfRange(fullPacket, HEADER_LENGTH, fullPacket.length - CRC_LENGTH); //extract body
+
+        int sourceID = byteArrayRangeToInt(body, BOAT_SOURCE_ID.getStartIndex(), BOAT_SOURCE_ID.getEndIndex());
+        int latScaled = byteArrayRangeToInt(body, LATITUDE.getStartIndex(), LATITUDE.getEndIndex());
+        int lonScaled = byteArrayRangeToInt(body, LONGITUDE.getStartIndex(), LONGITUDE.getEndIndex());
+        int headingScaled = byteArrayRangeToInt(body, HEADING.getStartIndex(), HEADING.getEndIndex());
+        int boatSpeed = byteArrayRangeToInt(body, SPEED_OVER_GROUND.getStartIndex(), SPEED_OVER_GROUND.getEndIndex());
+
+        int deviceType = byteArrayRangeToInt(body, DEVICE_TYPE.getStartIndex(), DEVICE_TYPE.getEndIndex());
+        int trueWindAngleScaled = byteArrayRangeToInt(body, TRUE_WIND_ANGLE.getStartIndex(), TRUE_WIND_ANGLE.getEndIndex());
+
+        assertEquals(100, sourceID);
+        assertEquals(280365921, latScaled);
+        assertEquals(342404337, lonScaled);
+        assertEquals(9156, headingScaled);
+        assertEquals(12295, boatSpeed);
+        assertEquals(1, deviceType);
+        assertEquals(4187, trueWindAngleScaled);
     }
 
     @Test
