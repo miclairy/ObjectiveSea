@@ -81,6 +81,9 @@ public class Main extends Application {
      */
     public void loadRaceView(boolean isHost, boolean isParticipant) {
         displaySwitcher.loadRaceView(isHost);
+        SoundController soundController = new SoundController(getClient().getClientID());
+        Thread soundControllerThread = new Thread(soundController);
+        soundControllerThread.start();
         if (isParticipant) {
             UserInputController userInputController = new UserInputController(DisplaySwitcher.getScene(), Client.getRace());
             client.setUserInputController(userInputController);

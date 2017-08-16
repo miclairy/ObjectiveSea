@@ -89,7 +89,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean drawDistanceLine = false;
     private boolean firstTime = true;
     private SelectionController selectionController;
-    private Penalties penalties = new Penalties();
     private boolean highlightMark = false;
 
     private boolean nextMark = true;

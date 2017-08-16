@@ -1,6 +1,5 @@
 package seng302.models;
 
-import seng302.utilities.DisplaySwitcher;
 
 /**
  * Created by cjd137 on 21/07/17.
@@ -17,8 +16,6 @@ public class Penalties {
         if (System.currentTimeMillis() - boatCollider.getTimeSinceLastCollision() > 2500) {
             boatCollider.addDamage(20);
             boatCollidee.addDamage(5);
-            boatCollider.hasHitBoat();
-            boatCollidee.hasHitBoat();
             boatCollider.setTimeSinceLastCollision(System.currentTimeMillis());
 
         }
@@ -41,7 +38,6 @@ public class Penalties {
         if (System.currentTimeMillis() - boatCollider.getTimeSinceLastCollision() > 2500) {
             boatCollider.addDamage(5);
             boatCollider.setTimeSinceLastCollision(System.currentTimeMillis());
-            boatCollider.hasHitMark();
         }
     }
 

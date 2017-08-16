@@ -1,5 +1,7 @@
 package seng302.data;
 
+import seng302.controllers.Controller;
+import seng302.controllers.SoundController;
 import seng302.data.registration.RegistrationResponse;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.models.Boat;
@@ -284,13 +286,17 @@ public class ClientListener extends Receiver implements Runnable{
     private void parseYachtEventMessage(byte[] body){
         int eventID = byteArrayRangeToInt(body, EVENT_ID.getStartIndex(), EVENT_ID.getEndIndex());
         int boatID = byteArrayRangeToInt(body, DESTINATION_SOURCE_ID.getStartIndex(), DESTINATION_SOURCE_ID.getEndIndex());
-        if (eventID == YachtEventCode.COLLISION.code()) {
+        if(eventID == YachtEventCode.COLLISION_MARK.code()) {
+            Boat boat = race.getBoatById(boatID);
+            boat.setMarkColliding(true);
+            boat.setMarkCollideSound(true);
+        } else if (eventID == YachtEventCode.COLLISION_PENALTY.code()) {
             Boat boat = race.getBoatById(boatID);
             boat.setBoatColliding(true);
-            boat.setMarkColliding(true);
-        }
-        if (eventID == YachtEventCode.COLLISION_PENALTY.code()) {
-
+            boat.setBoatCollideSound(true);
+        } else if (eventID == YachtEventCode.COLLISION.code()) {
+            Boat boat = race.getBoatById(boatID);
+            boat.setBoatColliding(true);
         }
     }
 
