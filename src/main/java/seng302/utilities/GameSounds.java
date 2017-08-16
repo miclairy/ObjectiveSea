@@ -241,7 +241,7 @@ public class GameSounds {
 
     public void playEndlessMusic() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
         clip = AudioSystem.getClip();
-        inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResourceAsStream(selectedMusic));
+        inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResource(selectedMusic));
         clip.open(inputStream);
         clip.loop(Clip.LOOP_CONTINUOUSLY);
         FloatControl gainControl =
