@@ -494,10 +494,22 @@ public class Boat extends Observable implements Comparable<Boat>{
         double wind = (course.getWindDirection() + 180) % 360;
         double TWA = Math.abs(wind - heading);
         if(TWA > 90 && TWA < 270) { //tacking
-            if(heading < targetHeading ) {
-                rotateDirection = 1;
+            System.out.println("tacking");
+            if (heading < targetHeading) {
+                System.out.println("heading (" + heading + " less than target " + targetHeading);
+                if((heading - targetHeading) < 0) {
+                    System.out.println("check 1");
+                    rotateDirection = -1;
+                } else {
+                    rotateDirection = 1;
+                }
             } else {
-                rotateDirection = -1;
+                System.out.println("heading (" + heading + " greater than target " + targetHeading);
+                if((heading - targetHeading) > 0) {
+                    rotateDirection = 1;
+                } else {
+                    rotateDirection = -1;
+                }
             }
         } else { //gybing
             if (heading < targetHeading) {
