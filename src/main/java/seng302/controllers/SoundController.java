@@ -80,6 +80,8 @@ public class SoundController implements Runnable {
                 DisplaySwitcher.getGameSounds().boatDamage();
                 DisplaySwitcher.getGameSounds().playGameSound();
             } else {
+                DisplaySwitcher.getGameSounds().playBuoySound();
+                DisplaySwitcher.getGameSounds().playGameSound();
                 DisplaySwitcher.getGameSounds().hitMark();
                 DisplaySwitcher.getGameSounds().playGameSound();
             }

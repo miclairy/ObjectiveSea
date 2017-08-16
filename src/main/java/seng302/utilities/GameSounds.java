@@ -66,6 +66,8 @@ public class GameSounds {
     private String sam_try_that = samVoiceOver + "try_that.mp3";
     private String sam_youre_last = samVoiceOver + "youre_last.mp3";
 
+    private String buoySound = "/musicFiles/gameSounds/BuoySound.mp3";
+
     private Clip clip;
     private AudioInputStream inputStream;
     private String selectedVoiceOver;
@@ -122,6 +124,10 @@ public class GameSounds {
             case 5: selectedVoiceOver = sam_over_that;
                     break;
         }
+    }
+
+    public void playBuoySound() {
+        selectedVoiceOver = buoySound;
     }
 
     public void hitBoat() {
