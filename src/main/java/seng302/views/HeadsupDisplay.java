@@ -76,7 +76,7 @@ public class HeadsupDisplay {
         Label positionTitleLabel = new Label("Position");
         positionTitleLabel.setId("titleLabel");
 
-        positionLabel = new Label(String.format("%d / %d", boat.getBoat().getCurrPlacingProperty().get(), race.getCompetitors().size()));
+        positionLabel = new Label("...");
         positionLabel.setId("positionLabel");
         boat.getBoat().getCurrPlacingProperty().addListener((obs, oldStatus, newStatus) ->
                 Platform.runLater(() -> updatePlacing((int)newStatus)));
