@@ -92,31 +92,31 @@ public class MainMenuController implements Initializable{
         this.main = main;
     }
 
-    @FXML private void loadLiveGameGrid() throws LineUnavailableException {
+    @FXML private void loadLiveGameGrid() {
         liveGameGrid.setVisible(true);
         AnimationUtils.slideOutTransition(btnGrid);
         AnimationUtils.slideInTransition(liveGameGrid);
     }
 
-    @FXML private void backToMainMenu() throws LineUnavailableException {
+    @FXML private void backToMainMenu() {
         btnGrid.setVisible(true);
         AnimationUtils.slideOutTransition(liveGameGrid);
         AnimationUtils.slideInTransition(btnGrid);
     }
 
-    @FXML private void loadPractiseGrid() throws LineUnavailableException {
+    @FXML private void loadPractiseGrid() {
         practiceGrid.setVisible(true);
         AnimationUtils.slideOutTransition(btnGrid);
         AnimationUtils.slideInTransition(practiceGrid);
     }
 
-    @FXML private void backToMainMenuPrac() throws LineUnavailableException {
+    @FXML private void backToMainMenuPrac() {
         btnGrid.setVisible(true);
         AnimationUtils.slideOutTransition(practiceGrid);
         AnimationUtils.slideInTransition(btnGrid);
     }
 
-    @FXML private void backToLiveGame() throws LineUnavailableException {
+    @FXML private void backToLiveGame() {
         liveGameGrid.setVisible(true);
         AnimationUtils.slideOutTransition(courseGrid);
         AnimationUtils.slideInTransition(liveGameGrid);
