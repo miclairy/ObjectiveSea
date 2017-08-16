@@ -3,26 +3,31 @@ package seng302.views;
 import java.util.*;
 
 /**
- * Created by atc60 on 15/08/17.
+ * Directed Graph to determine the order of course arrows around the course to be used in the animation.
+ * An edge from u to v means u comes right before v in the order.
  */
 public class ArrowOrderGraph {
 
-    private Map<Arrow, ArrayList<Arrow>> arrowGraph;
+    private Map<Arrow, ArrayList<Arrow>> arrowAdjacencyList;
     private Set<Arrow> currentArrows;
     private Arrow startingArrow;
 
     ArrowOrderGraph(){
-        arrowGraph = new HashMap<>();
+        arrowAdjacencyList = new HashMap<>();
         currentArrows = new HashSet<>();
     }
 
+    /**
+     * From the current set of arrows move to the next arrows in order defined by the graph.
+     * If the current set is empty, restart at the starting arrow.
+     */
     public void moveToNextArrows(){
         if(currentArrows.size() == 0){
             currentArrows.add(startingArrow);
         } else{
             Set<Arrow> nextArrows = new HashSet<>();
             for(Arrow arrow : currentArrows){
-                for(Arrow nextArrow : arrowGraph.get(arrow)){
+                for(Arrow nextArrow : arrowAdjacencyList.get(arrow)){
                     nextArrows.add(nextArrow);
                 }
             }
@@ -30,14 +35,19 @@ public class ArrowOrderGraph {
         }
     }
 
+    /**
+     * Adds an edge in the arrow order graph.
+     * @param from The starting arrow
+     * @param to The ending arrow
+     */
     public void addArrowEdge(Arrow from, Arrow to){
-        if(!arrowGraph.containsKey(from)){
-            arrowGraph.put(from, new ArrayList<>());
+        if(!arrowAdjacencyList.containsKey(from)){
+            arrowAdjacencyList.put(from, new ArrayList<>());
         }
-        if(!arrowGraph.containsKey(to)){
-            arrowGraph.put(to, new ArrayList<>());
+        if(!arrowAdjacencyList.containsKey(to)){
+            arrowAdjacencyList.put(to, new ArrayList<>());
         }
-        arrowGraph.get(from).add(to);
+        arrowAdjacencyList.get(from).add(to);
     }
 
     public void setStartingArrow(Arrow startingArrow) {
@@ -48,6 +58,10 @@ public class ArrowOrderGraph {
         return Collections.unmodifiableSet(currentArrows);
     }
 
+    /**
+     * Given an arrow list, adds an edge between adjacent arrows in the list
+     * @param arrowList A list of arrows in order.
+     */
     public void addEdges(List<Arrow> arrowList) {
         for(int i = 1; i < arrowList.size(); i++){
             addArrowEdge(arrowList.get(i-1), arrowList.get(i));
@@ -55,6 +69,6 @@ public class ArrowOrderGraph {
     }
 
     public Set<Arrow> getAllArrows(){
-        return arrowGraph.keySet();
+        return arrowAdjacencyList.keySet();
     }
 }

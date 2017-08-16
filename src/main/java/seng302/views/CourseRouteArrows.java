@@ -12,6 +12,9 @@ import seng302.utilities.DisplayUtils;
 
 import java.util.*;
 
+import static seng302.data.RoundingSide.PORT;
+import static seng302.data.RoundingSide.STBD;
+
 /**
  * Class to draw the arrows to display the course order
  */
@@ -68,11 +71,16 @@ public class CourseRouteArrows {
         }
     }
 
-    private void updateShownArrowList(Set<Arrow> currentArrows) {
+    /**
+     * Updates the list of shown arrows by adding the next iteration of arrows. Removes the oldest arrow iteration
+     * if needed.
+     * @param nextArrowIteration The set of arrows to be shown in the upcoming iteration
+     */
+    private void updateShownArrowList(Set<Arrow> nextArrowIteration) {
         if(shownArrows.size() == ARROW_ITERATIONS_SHOWN) {
             shownArrows.remove(0);
         }
-        shownArrows.add(currentArrows);
+        shownArrows.add(nextArrowIteration);
     }
 
     /**
@@ -109,7 +117,15 @@ public class CourseRouteArrows {
         return arrowList;
     }
 
-    private List<Arrow> markRoundingArrows(CompoundMark currentMark, CompoundMark previousMark, CompoundMark nextMark, RoundingSide roundingSide){
+    /**
+     * Creates and returns a list of arrows that show the direction the current compound mark is rounded.
+     * @param currentMark The current mark the arrows are showing the rounding for
+     * @param previousMark The previous mark before the current mark
+     * @param nextMark The mark after the current mark
+     * @param roundingSide The rounding
+     * @return
+     */
+    private List<Arrow> compoundMarkRoundingArrows(CompoundMark currentMark, CompoundMark previousMark, CompoundMark nextMark, RoundingSide roundingSide){
         Double heading = previousMark.getPosition().headingToCoordinate(currentMark.getPosition());
         double nextHeading = currentMark.getPosition().headingToCoordinate(nextMark.getPosition());
 
@@ -122,32 +138,42 @@ public class CourseRouteArrows {
 
         switch(roundingSide){
             case PORT:
-                arrowList.addAll(addMarkRoundingArrows(currentMark.getMark1(), heading, nextHeading, 1));
+                arrowList.addAll(createMarkRoundingArrows(currentMark.getMark1(), heading, nextHeading, PORT));
                 break;
             case STBD:
-                arrowList.addAll(addMarkRoundingArrows(currentMark.getMark1(), heading, nextHeading, -1));
+                arrowList.addAll(createMarkRoundingArrows(currentMark.getMark1(), heading, nextHeading, STBD));
                 break;
             case PORT_STBD:
-                arrowList.addAll(addMarkRoundingArrows(currentMark.getMark1(), heading, nextHeading, 1));
-                arrowList.addAll(addMarkRoundingArrows(currentMark.getMark2(), heading, nextHeading, -1));
+                arrowList.addAll(createMarkRoundingArrows(currentMark.getMark1(), heading, nextHeading, PORT));
+                arrowList.addAll(createMarkRoundingArrows(currentMark.getMark2(), heading, nextHeading, STBD));
                 break;
             case STBD_PORT:
-                arrowList.addAll(addMarkRoundingArrows(currentMark.getMark1(), heading, nextHeading, -1));
-                arrowList.addAll(addMarkRoundingArrows(currentMark.getMark2(), heading, nextHeading, 1));
+                arrowList.addAll(createMarkRoundingArrows(currentMark.getMark1(), heading, nextHeading, PORT));
+                arrowList.addAll(createMarkRoundingArrows(currentMark.getMark2(), heading, nextHeading, STBD));
                 break;
         }
 
         return arrowList;
     }
 
-    private List<Arrow> addMarkRoundingArrows(Mark mark, double heading, double nextHeading, int isPort) {
+    /**
+     * Creates the arrows to show the rounding side of a single mark
+     * @param mark The current mark
+     * @param heading The heading to this mark
+     * @param nextHeading The heading to the next mark after
+     * @param roundingSide The rounding side of the mark, either port or stbd
+     * @return A list of arrows around a single mark positioned to show the rounding side
+     */
+    private List<Arrow> createMarkRoundingArrows(Mark mark, double heading, double nextHeading, RoundingSide roundingSide) {
         List<Arrow> arrowList = new ArrayList<>();
 
-        Coordinate firstArrowPosition = mark.getPosition().coordAt(isPort * 0.05, (heading + 90));
-        Coordinate finalArrowPosition = mark.getPosition().coordAt(isPort * 0.05, (nextHeading + 90));
+        Double distanceFromMark = roundingSide == PORT ? 0.05 : -0.05;
+
+        Coordinate firstArrowPosition = mark.getPosition().coordAt(distanceFromMark, (heading + 90));
+        Coordinate finalArrowPosition = mark.getPosition().coordAt(distanceFromMark, (nextHeading + 90));
 
         Double interpolatedHeading = firstArrowPosition.headingToCoordinate(finalArrowPosition);
-        Coordinate middleArrowPosition = mark.getPosition().coordAt(isPort * 0.05, (interpolatedHeading + 90));
+        Coordinate middleArrowPosition = mark.getPosition().coordAt(distanceFromMark, (interpolatedHeading + 90));
 
         Arrow mark1Arrow = new Arrow(5, 10, firstArrowPosition, (heading + 180));
         arrowList.add(mark1Arrow);
@@ -176,7 +202,7 @@ public class CourseRouteArrows {
 
             if (i != courseOrder.size() - 1){
                 CompoundMark nextMark = courseOrder.get(i+1);
-                List<Arrow> roundingArrows = markRoundingArrows(currentMark, prevMark, nextMark, course.getRoundingOrder().get(i));
+                List<Arrow> roundingArrows = compoundMarkRoundingArrows(currentMark, prevMark, nextMark, course.getRoundingOrder().get(i));
                 roundingArrowMap.put(currentMark, roundingArrows);
             }
 
@@ -197,10 +223,6 @@ public class CourseRouteArrows {
                     prevArrow = roundingArrows.get(2);
                 }
             }
-        }
-
-        for (Arrow arrow : arrowOrderGraph.getAllArrows()){
-            arrow.setColour(ARROW_PATH_COLOR);
         }
     }
 
@@ -223,6 +245,7 @@ public class CourseRouteArrows {
         for (Arrow arrow : arrowOrderGraph.getAllArrows()){
             arrow.addToCanvas(root);
             arrow.setScale(DisplayUtils.zoomLevel);
+            arrow.setColour(ARROW_PATH_COLOR);
             arrow.fade();
         }
         arrowsShown = true;

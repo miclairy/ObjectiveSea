@@ -16,16 +16,11 @@ import seng302.utilities.DisplayUtils;
  */
 public class Arrow extends Polyline {
 
-    private double length;
-    private double width;
     private Polyline arrowLine;
     private CanvasCoordinate center;
     private Coordinate coordinate;
 
-
     Arrow(double length, double width, Coordinate coordinate) {
-        this.length = length;
-        this.width = width;
         this.coordinate = coordinate;
         this.center = DisplayUtils.convertFromLatLon(coordinate);
         double bottomY = this.center.getY() - length;
@@ -35,6 +30,7 @@ public class Arrow extends Polyline {
 
         arrowLine.relocate(center.getX() - width / 2, center.getY() - length);
         arrowLine.setId("distanceArrow");
+        fade();
     }
 
     Arrow(double length, double width, Coordinate center, double heading) {
