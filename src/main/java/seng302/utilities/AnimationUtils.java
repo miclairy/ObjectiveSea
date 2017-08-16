@@ -280,6 +280,10 @@ public class AnimationUtils {
         pt.play();
     }
 
+    /**
+     * mades a node grow and shrink to draw attention to it
+     * @param node the node to grow and shrink
+     */
     public static void drawAttentionToNode(Node node){
         ScaleTransition st = new ScaleTransition(Duration.millis(200), node);
         st.setByX(1.2);

@@ -721,6 +721,9 @@ public class Controller implements Initializable, Observer {
         infoDisplay.competitorAdded();
     }
 
+    /**
+     * sets up the tutorial mode by hiding the side panel and extra panes
+     */
     public void setUpTutorialMode(){
         rightHandSide.setVisible(false);
         lblNoBoardClock.setVisible(false);

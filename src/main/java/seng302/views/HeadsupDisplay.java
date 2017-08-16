@@ -10,6 +10,9 @@ import javafx.scene.paint.Color;
 import seng302.models.Race;
 import seng302.utilities.AnimationUtils;
 
+/** class to mange the heads up display
+ *  shows when sidepanel toggled off
+ */
 public class HeadsupDisplay {
 
     private BoatDisplay boat;
@@ -33,6 +36,9 @@ public class HeadsupDisplay {
         addHealth();
     }
 
+    /**
+     * adds a label bound to the boats speed property to the display
+     */
     private void addSpeed(){
         Label speedTitleLabel = new Label("Speed");
         speedTitleLabel.setId("titleLabel");
@@ -46,6 +52,9 @@ public class HeadsupDisplay {
         display.getChildren().add(speedLabel);
     }
 
+    /**
+     * adds a progress bar showing the boats health to the display
+     */
     private void addHealth(){
         Label healthLabel = new Label("Health");
         healthLabel.setId("healthLabel");
@@ -60,6 +69,9 @@ public class HeadsupDisplay {
         display.getChildren().add(healthBar);
     }
 
+    /**
+     * adds a label bound to the boats speed position property to the display
+     */
     private void addPosition(){
         Label positionTitleLabel = new Label("Position");
         positionTitleLabel.setId("titleLabel");
@@ -81,6 +93,10 @@ public class HeadsupDisplay {
     private void updateHealth(Double value){
         healthBar.setProgress(value);
     }
+
+    /**
+     * adds listeners to the vbox so it grows when mouse enters
+     */
     private void addListeners(){
         display.addEventHandler(MouseEvent.MOUSE_ENTERED,
                 e -> AnimationUtils.scaleButtonHover(display));
