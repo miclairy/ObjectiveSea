@@ -339,7 +339,7 @@ public class Controller implements Initializable, Observer {
                 break;
             case STARTED:
                 if(Main.getClient().isParticipant()){
-                    raceViewController.getCourseRouteArrows().hideArrows();
+                    raceViewController.getCourseRouteArrows().removeRaceRoute();
                     scoreBoardController.getCoursePathToggle().setSelected(false);
                 }
                 if (startersOverlay.isVisible()) {

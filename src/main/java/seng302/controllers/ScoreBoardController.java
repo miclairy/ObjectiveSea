@@ -1,7 +1,6 @@
 package seng302.controllers;
 
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.chart.LineChart;
 import javafx.scene.control.CheckBox;
@@ -9,7 +8,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
-import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
@@ -143,9 +141,9 @@ public class ScoreBoardController {
     private void toggleCoursePath(){
         CourseRouteArrows courseRouteArrows = raceViewController.getCourseRouteArrows();
         if(coursePathToggle.isSelected()){
-            courseRouteArrows.showArrows();
+            courseRouteArrows.drawRaceRoute();
         } else{
-            courseRouteArrows.hideArrows();
+            courseRouteArrows.removeRaceRoute();
         }
     }
 

@@ -207,7 +207,7 @@ public class CourseRouteArrows {
     /**
      * Removes the all the arrows in the route from the canvas
      */
-    public void removeArrowsFromCanvas(){
+    public void removeRaceRoute(){
         for(Arrow arrow : arrowOrderGraph.getAllArrows()){
             arrow.removeFromCanvas(root);
         }
@@ -218,7 +218,7 @@ public class CourseRouteArrows {
      * Removes, recreates and redraws all the route arrows on the canvas.
      */
     public void drawRaceRoute(){
-        removeArrowsFromCanvas();
+        removeRaceRoute();
         createArrowedRoute();
         for (Arrow arrow : arrowOrderGraph.getAllArrows()){
             arrow.addToCanvas(root);
@@ -231,15 +231,4 @@ public class CourseRouteArrows {
     public Boolean getArrowsShown() {
         return arrowsShown;
     }
-
-    public void hideArrows() {
-        this.arrowsShown = false;
-        removeArrowsFromCanvas();
-    }
-
-    public void showArrows() {
-        this.arrowsShown = true;
-        drawRaceRoute();
-    }
-
 }
