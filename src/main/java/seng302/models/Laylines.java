@@ -54,7 +54,7 @@ public class Laylines {
         double TWA = polarTable.getOptimumTWA(upwind);
         this.rightOfTWDAngle = TWD + TWA;
         this.leftOfTWDAngle = TWD - TWA;
-        shouldDraw = !upwind;
+        shouldDraw = upwind;
     }
 
     public boolean shouldDraw() {
