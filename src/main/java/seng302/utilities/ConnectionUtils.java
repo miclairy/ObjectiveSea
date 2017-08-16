@@ -1,14 +1,9 @@
 package seng302.utilities;
 
-import javafx.application.Platform;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
 import seng302.controllers.Client;
 import seng302.controllers.Server;
 
 import java.io.IOException;
-import java.util.Optional;
 
 public class ConnectionUtils {
     private static Client client;
@@ -22,10 +17,7 @@ public class ConnectionUtils {
      * @return a boolean of whether it is valid or not
      */
     public static Boolean IPRegExMatcher(String IP){
-        if(IP.matches(IP_REGEX) || IP.equals("localhost")){
-            return true;
-        }
-        return false;
+        return(IP.matches(IP_REGEX) || IP.equals("localhost"));
     }
 
     /**
@@ -33,27 +25,7 @@ public class ConnectionUtils {
      * @return whether the port is valid or not
      */
     public static boolean validatePort(int port){
-        if(port > 1024 && port < 65536){
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * shows a popup informing user that connection to the server failed
-     */
-    public static void showServerError(){
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add("style/menuStyle.css");
-        dialogPane.getStyleClass().add("myDialog");
-        alert.setTitle("Cannot Connect to Server");
-        alert.setHeaderText("Cannot Connect to Server");
-        alert.setContentText("This server may not be running.\n\n" +
-                "Please ensure that the IP and Port numbers \n" +
-                "you have entered are correct.");
-
-        alert.showAndWait();
+        return port > 1024 && port < 65536;
     }
 
     public static Client getClient() {

@@ -64,6 +64,7 @@ public class ScoreBoardController {
     @FXML private NumberAxis xAxis ;
     @FXML private NumberAxis yAxis ;
     @FXML private CheckBox DistanceLinesToggle;
+    @FXML private CheckBox chkHighlightMark;
     @FXML private TableView<Boat> tblPlacings;
     @FXML private TableColumn<Boat, Integer> columnPosition;
     @FXML private TableColumn<Boat, String> columnName;
@@ -158,6 +159,9 @@ public class ScoreBoardController {
         addTableListeners();
     }
 
+    /**
+     * adds listeners to selections of boats in the table
+     */
     private void addTableListeners(){
         tblPlacings.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
@@ -256,6 +260,8 @@ public class ScoreBoardController {
 
     public boolean isDistanceLineSelected(){return DistanceLinesToggle.isSelected();}
 
+    public boolean isHighlightMarkSelected(){return chkHighlightMark.isSelected();}
+
     public void addBoatToSparkLine(Series boatSeries){
         if(!chtSparkLine.getData().contains(boatSeries)){
             chtSparkLine.getData().add(boatSeries);
@@ -263,7 +269,7 @@ public class ScoreBoardController {
     }
 
     /**
-     * highlights the selected boat in the table view
+     * highlights the selected boat in the scoreboard table view
      */
     public void highlightUserBoat(){
         if(raceViewController != null){
@@ -276,7 +282,7 @@ public class ScoreBoardController {
 
 
     /**
-     * updates the table when a new competitor is added
+     * updates the scorebaord table when a new competitor is added
      */
     public void refreshTable(){
         Callback<Boat, Observable[]> cb =(Boat boat) -> new Observable[]{boat.getCurrPlacingProperty()};

@@ -3,7 +3,6 @@ package seng302.controllers;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableNumberValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,6 +19,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -68,6 +68,8 @@ public class Controller implements Initializable, Observer {
     @FXML public Label lblUserHelp;
     @FXML public Label lblWindSpeed;
     @FXML public Circle windCircle;
+    @FXML public Circle nextMarkCircle;
+    @FXML public SplitPane splitPane;
     @FXML private Button btnHide;
     @FXML private ImageView imvSpeedScale;
     @FXML private TableView<Boat> tblPlacingsRV;
@@ -82,7 +84,8 @@ public class Controller implements Initializable, Observer {
     @FXML private AnchorPane tutorialOverlay;
     @FXML private Label tutorialOverlayTitle;
     @FXML private Label tutorialContent;
-
+    @FXML public Label lblNextMark;
+    @FXML private GridPane nextMarkGrid;
 
     //FPS Counter
     private SimpleStringProperty fpsString = new SimpleStringProperty();
@@ -289,11 +292,13 @@ public class Controller implements Initializable, Observer {
             DisplayUtils.setZoomLevel(zoomSlider.getValue());
             if (DisplayUtils.zoomLevel != 1) {
                 mapImageView.setVisible(false);
+                nextMarkCircle.setVisible(true);
             } else {
                 //Zoom out full, reset everything
                 selectionController.setRotationOffset(0);
                 root.getTransforms().clear();
                 mapImageView.setVisible(true);
+                nextMarkCircle.setVisible(false);
                 selectionController.setTrackingPoint(false);
                 DisplayUtils.resetOffsets();
             }
@@ -564,6 +569,7 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneArrow(btnHide, 430, 1);
             AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
             AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
+            AnimationUtils.shiftPaneNodes(nextMarkGrid, 430, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
             AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, false);
             scoreboardVisible = false;
@@ -574,6 +580,7 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneArrow(btnHide, -430, -1);
             AnimationUtils.shiftPaneNodes(imvSpeedScale, -430, true);
             AnimationUtils.shiftPaneNodes(lblWindSpeed, -430, true);
+            AnimationUtils.shiftPaneNodes(nextMarkGrid, -430, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true);
             AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, true);
             scoreboardVisible = true;
@@ -613,6 +620,10 @@ public class Controller implements Initializable, Observer {
 
     public Circle getWindCircle() {
         return windCircle;
+    }
+
+    public Circle getNextMarkCircle() {
+        return nextMarkCircle;
     }
 
     public AnchorPane getCanvasAnchor() {
@@ -678,8 +689,9 @@ public class Controller implements Initializable, Observer {
         }
     }
 
-    /** refreshes the RV table when a competitor is added
-     *
+    /**
+     * refreshes the RV table when a competitor is added
+     * order of boats is updated based on placings
      */
     public void refreshTable(){
         Callback<Boat, javafx.beans.Observable[]> cb =(Boat boat) -> new javafx.beans.Observable[]{boat.getCurrPlacingProperty()};
@@ -707,5 +719,13 @@ public class Controller implements Initializable, Observer {
 
     public void refreshHUD(){
         infoDisplay.competitorAdded();
+    }
+
+    public void setUpTutorialMode(){
+        rightHandSide.setVisible(false);
+        lblNoBoardClock.setVisible(false);
+        btnHide.setVisible(false);
+        AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
+        AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
     }
 }
