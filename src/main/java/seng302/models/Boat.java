@@ -181,7 +181,6 @@ public class Boat extends Observable implements Comparable<Boat>{
     public void addDamage(int damage) {
         if((boatHealth - damage) > 0) {
             boatHealth -= damage;
-            System.out.println(boatHealth);
         } else {
             boatHealth = 0;
             status = BoatStatus.DNF;
