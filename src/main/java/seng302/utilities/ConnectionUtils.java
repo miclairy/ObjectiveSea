@@ -40,7 +40,7 @@ public class ConnectionUtils {
         ConnectionUtils.server = server;
     }
 
-    public static void initiateDisconnect(boolean isHost) throws IOException {
+    public static void initiateDisconnect(boolean isHost)  {
         client.initiateClientDisconnect();
         if(isHost){
             server.initiateServerDisconnect();

@@ -97,11 +97,25 @@ public class ConnectionManager extends Observable implements Runnable {
         sendAllXMLsToClient(newId);
     }
 
-    public void closeConnections() throws IOException {
+    /**
+     * Closes the server socket and all client connections.
+     */
+    public void closeAllConnections() {
         running = false;
-        serverSocket.close();
-        for(Integer clientSocketID : clients.keySet()){
-            clients.get(clientSocketID).close();
+        try {
+            serverSocket.close();
+            closeClientConnections();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Closes all sockets connected to clients.
+     */
+    public void closeClientConnections() throws IOException {
+        for (Socket socket : clients.values()){
+            socket.close();
         }
     }
 
@@ -109,18 +123,5 @@ public class ConnectionManager extends Observable implements Runnable {
         for (byte[] xmlMessage : xmlMessages.values()) {
             sendToClient(id, xmlMessage);
         }
-    }
-
-    public void stop() {
-        running = false;
-        try {
-            serverSocket.close();
-            for (Socket socket : clients.values()){
-                socket.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 }

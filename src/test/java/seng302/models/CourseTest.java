@@ -3,6 +3,7 @@ package seng302.models;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import seng302.data.RoundingSide;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -44,10 +45,10 @@ public class CourseTest {
         defaultCourse.addNewCompoundMark(gate);
         defaultCourse.addNewCompoundMark(finish);
 
-        defaultCourse.addMarkInOrder(1, "Port");
-        defaultCourse.addMarkInOrder(2, "Port");
-        defaultCourse.addMarkInOrder(3, "Port");
-        defaultCourse.addMarkInOrder(4, "Port");
+        defaultCourse.addMarkInOrder(1, RoundingSide.STBD_PORT);
+        defaultCourse.addMarkInOrder(2, RoundingSide.PORT);
+        defaultCourse.addMarkInOrder(3, RoundingSide.PORT);
+        defaultCourse.addMarkInOrder(4, RoundingSide.STBD_PORT);
 
         defaultCourse.addToBoundary(new Coordinate(32.318879, -64.840291));
         defaultCourse.addToBoundary(new Coordinate(32.328879, -64.840291));
