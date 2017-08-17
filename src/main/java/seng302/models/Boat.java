@@ -62,6 +62,8 @@ public class Boat extends Observable implements Comparable<Boat>{
     private int penaltyCount;
     private boolean markColliding;
     private boolean boatColliding;
+    private boolean markCollideSound = false;
+    private boolean boatCollideSound = false;
 
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StringProperty statusProperty = new SimpleStringProperty();
@@ -198,6 +200,10 @@ public class Boat extends Observable implements Comparable<Boat>{
         checkPenaltySpeed();
     }
 
+    public double getBoatHealth() {
+        return boatHealth;
+    }
+
     public void addPenalty(double penalty) {
         boatPenalty += penalty;
     }
@@ -270,10 +276,6 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public double getMaxSpeed() {
         return maxSpeed;
-    }
-
-    public double getBoatHealth() {
-        return boatHealth;
     }
 
     public void setTWAofBoat(double TWAofBoat) {
@@ -446,6 +448,22 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void setInGate(boolean inGate) {
         this.inGate = inGate;
+    }
+
+    public void setMarkCollideSound(boolean markCollideSound) {
+        this.markCollideSound = markCollideSound;
+    }
+
+    public boolean isMarkCollideSound() {
+        return markCollideSound;
+    }
+
+    public boolean isBoatCollideSound() {
+        return boatCollideSound;
+    }
+
+    public void setBoatCollideSound(boolean boatCollideSound) {
+        this.boatCollideSound = boatCollideSound;
     }
 
 

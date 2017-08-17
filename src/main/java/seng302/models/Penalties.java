@@ -1,5 +1,6 @@
 package seng302.models;
 
+
 /**
  * Created by cjd137 on 21/07/17.
  * A class for assigning penalties to boats
@@ -16,6 +17,7 @@ public class Penalties {
             boatCollider.addDamage(20);
             boatCollidee.addDamage(5);
             boatCollider.setTimeSinceLastCollision(System.currentTimeMillis());
+
         }
     }
 
@@ -54,5 +56,4 @@ public class Penalties {
     public void earlyStartPenalty(Boat boatCollider) {
         boatCollider.addPenalty(boatCollider.getCurrentSpeed()/0.02);
     }
-
 }
