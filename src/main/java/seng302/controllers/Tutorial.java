@@ -68,7 +68,7 @@ public class Tutorial {
                         "ENTER - tack or gybe\n" +
                         "SHIFT - sails in or out\n" +
                         "SPACE - VMG autopilot\n\n" +
-                        "Press the button under the scoreboard to return to the Menu.");
+                        "Press the X button on the bottom right of your screen to return to the Menu.");
                 break;
             case TACKFAIL:
                 tackFailTutorial();

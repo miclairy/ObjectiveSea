@@ -16,6 +16,7 @@
   -fx-background-color:  #232323;
   -fx-text-fill: #FFFFFF;
   -fx-font-size: 15px;
+  -fx-font-weight: 700;
   -fx-border-radius: 70;
   -fx-background-radius: 70;
   -fx-text-alignment: right;
@@ -28,6 +29,7 @@
     -fx-background-repeat: no-repeat;
     -fx-background-position: left 18 center;
     -fx-background-color:  #232323;
+    -fx-font-weight: 700;
     -fx-text-fill: #FFFFFF;
     -fx-font-size: 15px;
     -fx-border-radius: 70;

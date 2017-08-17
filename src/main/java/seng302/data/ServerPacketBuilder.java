@@ -160,6 +160,8 @@ public class ServerPacketBuilder extends PacketBuilder {
         addFieldToByteArray(body, SPEED_OVER_GROUND, boat.getSpeedInMMS());
         addFieldToByteArray(body, TRUE_WIND_DIRECTION, convertHeadingToInt(race.getCourse().getWindDirection() ));
         addFieldToByteArray(body, TRUE_WIND_ANGLE, (long) (boat.getTWAofBoat() * Math.pow(2, 15) / 180)); //convert decimal to unsigned short binary,
+        addFieldToByteArray(body, SAIL_STATE, boat.isSailsIn() ? 0 : 1); //convert decimal to unsigned short binary,
+
 
         return generatePacket(header, body);
     }
