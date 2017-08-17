@@ -145,8 +145,8 @@ public class CourseRouteArrows {
                 arrowList.addAll(createMarkRoundingArrows(currentMark.getMark2(), heading, nextHeading, STBD));
                 break;
             case STBD_PORT:
-                arrowList.addAll(createMarkRoundingArrows(currentMark.getMark1(), heading, nextHeading, PORT));
-                arrowList.addAll(createMarkRoundingArrows(currentMark.getMark2(), heading, nextHeading, STBD));
+                arrowList.addAll(createMarkRoundingArrows(currentMark.getMark1(), heading, nextHeading, STBD));
+                arrowList.addAll(createMarkRoundingArrows(currentMark.getMark2(), heading, nextHeading, PORT));
                 break;
         }
 
