@@ -157,7 +157,7 @@ public class Main extends Application {
             clientThread.setName("Client");
             clientThread.start();
         } catch (NoConnectionToServerException e) {
-            showServerConnectionError();
+            showServerConnectionError(e);
             return false;
         } catch (ServerFullException e) {
             showServerJoinError(isParticipant);
@@ -169,16 +169,23 @@ public class Main extends Application {
     /**
      * Shows a popup informing user that they were unable to connect to the server
      */
-    private static void showServerConnectionError(){
+    private static void showServerConnectionError(NoConnectionToServerException err){
         Alert alert = new Alert(Alert.AlertType.ERROR);
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add("style/menuStyle.css");
         dialogPane.getStyleClass().add("myDialog");
         alert.setTitle("Cannot Connect to Server");
         alert.setHeaderText("Cannot Connect to Server");
-        alert.setContentText("This server may not be running.\n\n" +
-                "Please ensure that the IP and Port numbers \n" +
-                "you have entered are correct.");
+        if(err.isLocalError()){
+            alert.setContentText("No connection to local server.\n\n" +
+                    "Please ensure that the Port number \n" +
+                    "you have entered is correct.");
+        }else{
+            alert.setContentText("This server may not be running.\n\n" +
+                    "Please ensure that the IP and Port numbers \n" +
+                    "you have entered are correct.");
+        }
+
         alert.showAndWait();
     }
 

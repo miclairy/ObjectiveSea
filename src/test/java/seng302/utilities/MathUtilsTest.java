@@ -3,6 +3,7 @@ package seng302.utilities;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import seng302.data.RoundingSide;
 import seng302.models.CompoundMark;
 import seng302.models.Coordinate;
 import seng302.models.Mark;
@@ -37,8 +38,8 @@ public class MathUtilsTest {
 
         defaultCourse.addNewCompoundMark(start);
         defaultCourse.addNewCompoundMark(mark);
-        defaultCourse.addMarkInOrder(1, "PS");
-        defaultCourse.addMarkInOrder(2, "PS");
+        defaultCourse.addMarkInOrder(1, RoundingSide.PORT_STBD);
+        defaultCourse.addMarkInOrder(2, RoundingSide.PORT_STBD);
     }
 
     @Test
@@ -75,6 +76,8 @@ public class MathUtilsTest {
 
         Assert.assertTrue(pointBetweenTwoAngle(131+90,90,165));
         Assert.assertTrue(pointBetweenTwoAngle((131+270)%360,90,27));
+
+        Assert.assertTrue(pointBetweenTwoAngle(169,90,174));
 
     }
 
@@ -127,6 +130,7 @@ public class MathUtilsTest {
         Assert.assertTrue(boatHeadingToLine(90,0,270));
         Assert.assertFalse(boatHeadingToLine(90,0,85));
         Assert.assertTrue(boatHeadingToLine(165,131,27));
+
     }
 
     @Test

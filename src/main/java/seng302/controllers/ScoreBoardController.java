@@ -17,11 +17,11 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
-import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+import seng302.data.RaceVisionXMLParser;
 import seng302.models.Boat;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.DisplaySwitcher;
@@ -30,8 +30,10 @@ import seng302.views.BoatDisplay;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
 import seng302.models.Race;
+import seng302.views.CourseRouteArrows;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Created by Louis on 20-Apr-17.
@@ -47,9 +49,11 @@ public class ScoreBoardController {
 
     //FXML fields
     @FXML private CheckBox fpsToggle;
+    @FXML private CheckBox coursePathToggle;
+    @FXML private ListView<String> placings;
     @FXML private Slider annotationsSlider;
     @FXML private Label raceTimerLabel;
-    @FXML private Label lblAnnotation;
+    @FXML public Label lblAnnotation;
     @FXML private CheckBox chkName;
     @FXML private CheckBox chkSpeed;
     @FXML private CheckBox chkPassMarkTime;
@@ -135,6 +139,7 @@ public class ScoreBoardController {
                 }
             }
         });
+
         annotationsSlider.setValue(1);
 
         addButtonListeners(btnTrack);
@@ -177,6 +182,16 @@ public class ScoreBoardController {
      */
     private void fpsToggle(){
         parent.fpsLabel(fpsToggle.isSelected());
+    }
+
+    @FXML
+    private void toggleCoursePath(){
+        CourseRouteArrows courseRouteArrows = raceViewController.getCourseRouteArrows();
+        if(coursePathToggle.isSelected()){
+            courseRouteArrows.drawRaceRoute();
+        } else{
+            courseRouteArrows.removeRaceRoute();
+        }
     }
 
     @FXML
@@ -307,5 +322,9 @@ public class ScoreBoardController {
     public void updateSparkLine(){
         xAxis.setUpperBound(race.getCourse().getCourseOrder().size());
         yAxis.setLowerBound(race.getCompetitors().size() + 1);
+    }
+
+    public CheckBox getCoursePathToggle() {
+        return coursePathToggle;
     }
 }

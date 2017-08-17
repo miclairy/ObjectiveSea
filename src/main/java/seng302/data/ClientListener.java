@@ -9,6 +9,7 @@ import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 
 import java.io.*;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ public class ClientListener extends Receiver implements Runnable{
     private Race race;
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumbers = new HashMap<>();
     private final Integer SOCKET_TIMEOUT_MS = 5000;
+    private boolean hasConnectionFailed = false;
 
     public ClientListener(String sourceAddress, int sourcePort){
         this.sourceAddress = sourceAddress;
@@ -46,20 +48,22 @@ public class ClientListener extends Receiver implements Runnable{
      */
     @Override
     public void run(){
-        setUpConnection();
-        readData();
+        if(setUpConnection()) readData();
     }
 
     /**
-     * Sets up the connection to the data source by creating a socket and creates a InputStream from the socket
+     * Sets up the connection to the data source by creating a socket and creates a InputStream from the socket.
+     * returns whether connection was successful
      */
-    void setUpConnection() {
+    boolean setUpConnection() {
         try {
             clientSocket = new Socket(sourceAddress, sourcePort);
             clientSocket.setSoTimeout(SOCKET_TIMEOUT_MS);
             dataStream = clientSocket.getInputStream();
+            return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            hasConnectionFailed = true;
+            return false;
         }
     }
 
@@ -148,6 +152,8 @@ public class ClientListener extends Receiver implements Runnable{
         int deviceType = byteArrayRangeToInt(body, DEVICE_TYPE.getStartIndex(), DEVICE_TYPE.getEndIndex());
         int trueWindDirectionScaled = byteArrayRangeToInt(body, TRUE_WIND_DIRECTION.getStartIndex(), TRUE_WIND_DIRECTION.getEndIndex());
         int trueWindAngleScaled = byteArrayRangeToInt(body, TRUE_WIND_ANGLE.getStartIndex(), TRUE_WIND_ANGLE.getEndIndex());
+        int sailState = byteArrayRangeToInt(body, SAIL_STATE.getStartIndex(), SAIL_STATE.getEndIndex());
+
         double trueWindAngle = intToTrueWindAngle(trueWindAngleScaled);
         //unused as we believe this is always sent as 0 from the AC35 feed
         double trueWindDirection = intToHeading(trueWindDirectionScaled);
@@ -161,6 +167,15 @@ public class ClientListener extends Receiver implements Runnable{
         } else if(deviceType == MARK_DEVICE_TYPE){
             race.getCourse().updateMark(sourceID, lat, lon);
         }
+
+        if (sailState == 0) {
+            Boat boat = race.getBoatById(sourceID);
+            if (boat != null) boat.setSailsIn(true);
+        } else {
+            Boat boat = race.getBoatById(sourceID);
+            if (boat != null) boat.setSailsIn(false);
+        }
+
     }
 
 
@@ -283,12 +298,13 @@ public class ClientListener extends Receiver implements Runnable{
         race.setCurrentTimeInEpochMs(currentTime);
     }
 
-    private void parseYachtEventMessage(byte[] body){
+    private void parseYachtEventMessage(byte[] body) {
         int eventID = byteArrayRangeToInt(body, EVENT_ID.getStartIndex(), EVENT_ID.getEndIndex());
         int boatID = byteArrayRangeToInt(body, DESTINATION_SOURCE_ID.getStartIndex(), DESTINATION_SOURCE_ID.getEndIndex());
         if(eventID == YachtEventCode.COLLISION_MARK.code()) {
             Boat boat = race.getBoatById(boatID);
             boat.setMarkColliding(true);
+            boat.setMarkCollideSound(true);
             boat.setMarkCollideSound(true);
         } else if (eventID == YachtEventCode.COLLISION_PENALTY.code()) {
             Boat boat = race.getBoatById(boatID);
@@ -340,5 +356,9 @@ public class ClientListener extends Receiver implements Runnable{
 
     public Race getRace() {
         return race;
+    }
+
+    public boolean isHasConnectionFailed() {
+        return hasConnectionFailed;
     }
 }

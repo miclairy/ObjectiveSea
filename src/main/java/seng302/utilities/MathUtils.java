@@ -4,6 +4,8 @@ import seng302.models.*;
 import seng302.models.CompoundMark;
 import seng302.models.Coordinate;
 
+import static java.lang.StrictMath.abs;
+
 /**
  * Created by gla42 on 11/05/17.
  *
@@ -20,6 +22,9 @@ public class MathUtils {
     public static boolean pointBetweenTwoAngle(double targetDirection, double deltaAngle, double actualDirection){
         double diff;
         double middle;
+        if(Math.abs(targetDirection - actualDirection) <= deltaAngle){
+            return true;
+        }
         if(targetDirection > 180){
             actualDirection -= 180;
             middle = targetDirection - 180;
@@ -95,6 +100,7 @@ public class MathUtils {
      */
     public static Boolean boatHeadingToLine(double boatsHeading, double lineHeading, double headingOfMark){
         Boolean towardsLine = false;
+        System.out.println(pointBetweenTwoAngle(lineHeading + 90, 90, headingOfMark));
 
         if(pointBetweenTwoAngle((lineHeading + 270)%360, 90, boatsHeading) &&
                 pointBetweenTwoAngle(lineHeading + 90, 90, headingOfMark)){
@@ -214,5 +220,19 @@ public class MathUtils {
             distanceToStart = position.greaterCircleDistance(closestPoint);
         }
         return distanceToStart;
+    }
+
+    /**
+     * Calculates smallest angle between to headings (acute angle)
+     * @param headingA
+     * @param headingB
+     * @return angle
+     */
+    public static double getAngleBetweenTwoHeadings(double headingA, double headingB) {
+        double angle = abs(headingA - headingB);
+        if(angle > 180) {
+            angle = 360 - angle;
+        }
+        return angle;
     }
 }

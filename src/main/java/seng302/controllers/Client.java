@@ -70,7 +70,10 @@ public class Client implements Runnable, Observer {
     private void manageWaitingConnection() throws NoConnectionToServerException {
         int connectionAttempts = 0;
         while(clientListener.getClientSocket() == null) {
-            if(connectionAttempts < MAX_CONNECTION_ATTEMPTS){
+            if(clientListener.isHasConnectionFailed()){
+                stopDataStreamReader();
+                throw new NoConnectionToServerException(true, "Connection Failed. Port number is invalid.");
+            }else if(connectionAttempts < MAX_CONNECTION_ATTEMPTS){
                 try {
                     Thread.sleep(WAIT_MILLISECONDS);
                 } catch (InterruptedException e) {
@@ -79,7 +82,7 @@ public class Client implements Runnable, Observer {
                 connectionAttempts++;
             } else {
                 stopDataStreamReader();
-                throw new NoConnectionToServerException("Maximum connection attempts exceeded while trying to connect to server. Port or IP may not be valid.");
+                throw new NoConnectionToServerException(false, "Maximum connection attempts exceeded while trying to connect to server. Port or IP may not be valid.");
             }
         }
     }
@@ -96,7 +99,7 @@ public class Client implements Runnable, Observer {
                 Thread.sleep(WAIT_MILLISECONDS);
                 waitTime += WAIT_MILLISECONDS;
                 if (waitTime > CONNECTION_TIMEOUT) {
-                    throw new NoConnectionToServerException("Connection to server timed out while waiting for registration response.");
+                    throw new NoConnectionToServerException(false, "Connection to server timed out while waiting for registration response.");
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -221,5 +224,9 @@ public class Client implements Runnable, Observer {
     public void initiateClientDisconnect() {
         clientListener.disconnectClient();
         race.getBoatById(clientID).setStatus(BoatStatus.DNF);
+    }
+
+    public boolean isParticipant() {
+        return isParticipant;
     }
 }

@@ -67,13 +67,16 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StringProperty statusProperty = new SimpleStringProperty();
+    private DoubleProperty headingProperty = new SimpleDoubleProperty();
+    private DoubleProperty healthProperty = new SimpleDoubleProperty();
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
 
     private List<Coordinate> pathCoords;
     private long timeTillMark;
     private long timeTillFinish;
     private Integer id;
-    private AtomicBoolean sailsIn = new AtomicBoolean(false);
+    private boolean sailsIn = false;
+    private boolean sailsNeedUpdate = false;
     private boolean inGate = false;
 
 
@@ -94,6 +97,7 @@ public class Boat extends Observable implements Comparable<Boat>{
         this.pathCoords = new ArrayList<>();
         this.currentPosition = new Coordinate(0,0);
         this.previousPosition = new Coordinate(0,0);
+        this.healthProperty.set(1.0);
     }
 
     /**
@@ -165,6 +169,12 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public IntegerProperty getCurrPlacingProperty(){ return currPlacing;}
 
+    public DoubleProperty getHeadingProperty(){
+        return headingProperty;
+    }
+
+    public DoubleProperty getHealthProperty(){ return healthProperty; }
+
     public double getCurrentSpeed() {
         return currentSpeed.get();
     }
@@ -180,9 +190,11 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void addDamage(int damage) {
         if((boatHealth - damage) > 0) {
+            healthProperty.set((boatHealth -= damage)/100);
             boatHealth -= damage;
         } else {
             boatHealth = 0;
+            healthProperty.set(0);
             status = BoatStatus.DNF;
         }
         checkPenaltySpeed();
@@ -250,6 +262,7 @@ public class Boat extends Observable implements Comparable<Boat>{
      * @param heading the new heading
      * */
     public void setHeading(double heading) {
+        this.headingProperty.set(((heading + 360)%360));
         this.heading = ((heading + 360)%360);
     }
 
@@ -263,6 +276,10 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public double getMaxSpeed() {
         return maxSpeed;
+    }
+
+    public double getBoatHealth() {
+        return boatHealth;
     }
 
     public void setTWAofBoat(double TWAofBoat) {
@@ -358,7 +375,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public synchronized Boolean isSailsIn() {
-        return sailsIn.get();
+        return sailsIn;
     }
 
     public void setLeg(int leg){
@@ -392,7 +409,13 @@ public class Boat extends Observable implements Comparable<Boat>{
         double lineBearing = currentPosition.headingToCoordinate(markLocation);
         double angle = Math.abs(heading - lineBearing);
 
-        return Math.cos(Math.toRadians(angle)) * currentSpeed.get();
+        double VMG = Math.cos(Math.toRadians(angle)) * currentSpeed.get();
+
+        if(angle > 90) {
+            VMG = 0;
+        }
+
+        return VMG;
     }
 
 
@@ -455,10 +478,12 @@ public class Boat extends Observable implements Comparable<Boat>{
         public double headingA;
         public double headingB;
 
+
         public OptimumHeadings(double headingA, double headingB) {
             this.headingA = headingA;
             this.headingB = headingB;
         }
+
     }
 
 
@@ -500,6 +525,12 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
 
+    /**
+     * Function called by tack/gybe (enter) key press. Sets the target heading, totalRotated amount and
+     * rotationDirection which are used by the updateBoatHeading function to gradually change the boats direction
+     * @param course
+     * @param polarTable
+     */
     public void tackOrGybe(Course course, PolarTable polarTable) {
         targetHeading = getTackOrGybeHeading(course, polarTable);
         if (targetHeading == -1){
@@ -507,17 +538,11 @@ public class Boat extends Observable implements Comparable<Boat>{
         }
         totalRotatedAmount = min(360 - abs(targetHeading - heading), abs(targetHeading - heading));
         currRotationAmount = 0;
-        double TWA = Math.abs(((course.getWindDirection() - heading)));
-        if (TWA < 89 || TWA < 270 && TWA > 180){
-            rotateDirection = -1;
-        } else {
-            rotateDirection = 1;
-        }
         tackOrGybe = true;
     }
 
     /**
-     * Function to change heading of boat when the tack/gybe button is pressed
+     * Function to calculate the target heading of boat when the tack/gybe button is pressed
      * If already on an optimum heading it switches to the "opposite" optimum
      * If in dead zones or no sail zone (heading into wind) the heading is unchanged
      * @param course
@@ -525,17 +550,23 @@ public class Boat extends Observable implements Comparable<Boat>{
      * @return new tack/gybe heading
      */
     public double getTackOrGybeHeading(Course course, PolarTable polarTable) {
+        double TWA = Math.abs(course.getWindDirection() - heading);
+        int tackOrGybeScale = isTacking(TWA) ? 1 : -1;
+
         OptimumHeadings optimumHeadings = getOptimumHeadings(course, polarTable);
-        double TWA = Math.abs(((course.getWindDirection() - heading)));
         double optimumHeadingA = optimumHeadings.headingA;
         double optimumHeadingB = optimumHeadings.headingB;
 
+        //Checks if boat is already on an optimum heading
         if(heading - 1 <= optimumHeadingA && optimumHeadingA <= heading + 1) {
+            rotateDirection = 1 * tackOrGybeScale;
             return optimumHeadingB;
         } else if (heading - 1 <= optimumHeadingB && optimumHeadingB <= heading + 1) {
+            rotateDirection = -1 * tackOrGybeScale;
             return optimumHeadingA;
         }
 
+        //Checks if boat is in the no sail zone
         if(isTacking(TWA)) {
             if(inRange(optimumHeadings.headingA, optimumHeadings.headingB, heading)) {
                 return -1;
@@ -546,12 +577,14 @@ public class Boat extends Observable implements Comparable<Boat>{
             return -1;
         }
 
-        double angleToOptimumA = abs( heading - optimumHeadingA);
-        double angleToOptimumB = abs( heading - optimumHeadingB);
+        double angleToOptimumA = MathUtils.getAngleBetweenTwoHeadings(heading, optimumHeadingA);
+        double angleToOptimumB = MathUtils.getAngleBetweenTwoHeadings(heading, optimumHeadingB);
 
         if (angleToOptimumA <= angleToOptimumB) {
+            rotateDirection = 1 * tackOrGybeScale;
             return optimumHeadingB;
         } else {
+            rotateDirection = -1 * tackOrGybeScale;
             return optimumHeadingA;
         }
     }
@@ -624,7 +657,11 @@ public class Boat extends Observable implements Comparable<Boat>{
 
 
     public synchronized void changeSails() {
-        sailsIn.set(!sailsIn.get());
+        sailsIn = !sailsIn;
+    }
+
+    public void setSailsIn(boolean sailsIn) {
+        this.sailsIn = sailsIn;
     }
 
     public void upWind(double windAngle){
@@ -677,7 +714,7 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public synchronized double getSailAngle(double windDirection){
         double sailAngle;
-        if(!sailsIn.get()){
+        if(!sailsIn){
             sailAngle = windDirection;
         } else {
             double TWA = Math.abs(((windDirection - heading)));
@@ -732,9 +769,11 @@ public class Boat extends Observable implements Comparable<Boat>{
         double angleOfRotation = 3 * time;
         double headingDiff = targetHeading - heading;
         if (rotate) {
-            if (headingDiff > 0) {
+            if (headingDiff > 0 && headingDiff < 180) {
+                heading = heading % 360;
                 heading += angleOfRotation;
             } else {
+                heading = heading % 360;
                 heading -= angleOfRotation;
             }
             if(abs(headingDiff) <= angleOfRotation) {
@@ -757,5 +796,13 @@ public class Boat extends Observable implements Comparable<Boat>{
                 tackOrGybe = false;
             }
         }
+    }
+
+    public boolean isSailsNeedUpdate() {
+        return sailsNeedUpdate;
+    }
+
+    public void setSailsNeedUpdate(boolean sailsNeedUpdate) {
+        this.sailsNeedUpdate = sailsNeedUpdate;
     }
 }

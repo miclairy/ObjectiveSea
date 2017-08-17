@@ -17,6 +17,10 @@ public enum RaceStatus {
         return this.equals(ABANDONED) || this.equals(TERMINATED);
     }
 
+    public boolean beforeRaceStart(){
+        return this.equals(WARNING) || this.equals(PREPARATORY) || this.equals(PRESTART);
+    }
+
     public static RaceStatus fromInteger(int value){
         switch(value){
             case 0:

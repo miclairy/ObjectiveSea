@@ -280,4 +280,83 @@ public class AnimationUtils {
         pt.play();
     }
 
+    /**
+     * mades a node grow and shrink to draw attention to it
+     * @param node the node to grow and shrink
+     */
+    public static void drawAttentionToNode(Node node){
+        ScaleTransition st = new ScaleTransition(Duration.millis(200), node);
+        st.setByX(1.2);
+        st.setByY(1.2);
+        st.setAutoReverse(true);
+        st.setInterpolator(Interpolator.EASE_OUT);
+        st.setCycleCount(2);
+        st.play();
+    }
+
+    /**
+     * sets a nodes opcaity to the desried opacity
+     * @param node the node to be made fully opaque
+     * @param endOpacity the end opacity
+     */
+    public static void fadeNodeCustom(Node node, double endOpacity){
+        FadeTransition fadeTransition = new FadeTransition(new Duration(200), node);
+        fadeTransition.setFromValue(node.getOpacity());
+        fadeTransition.setToValue(endOpacity);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        fadeTransition.play();
+    }
+
+
+    /**
+     * fades a course arrow in or out
+     * @param node the node to be faded
+     * @param visible whether or not the node is currently visible
+     */
+    public static FadeTransition changeCourseRouteNode(Node node, boolean visible){
+        node.setVisible(true);
+        FadeTransition fadeTransition = new FadeTransition(new Duration(150), node);
+        if(visible){
+            fadeTransition.setFromValue(node.getOpacity());
+            fadeTransition.setToValue(0);
+        }else{
+            fadeTransition.setFromValue(0);
+            fadeTransition.setToValue(1);
+        }
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        return fadeTransition;
+    }
+
+    /**
+     *  toggles a quick menu title in and out
+     * @param node the node to be shifted
+     * @param visible whether or not it is currently visible
+     */
+    public static void toggleQuickMenuNodes(Node node, boolean visible){
+        FadeTransition fadeTransition = new FadeTransition(new Duration(200), node);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+
+        TranslateTransition translateTransition = new TranslateTransition(new Duration(200), node);
+        translateTransition.setInterpolator(Interpolator.EASE_IN);
+
+        if(visible){
+            translateTransition.setFromX(node.getLayoutX());
+            translateTransition.setToX(node.getLayoutX() + 5);
+            fadeTransition.setFromValue(0.8);
+            fadeTransition.setToValue(0);
+            fadeTransition.setOnFinished(new EventHandler<ActionEvent>(){
+                public void handle(ActionEvent AE){
+                    node.setVisible(false);
+                }});
+        }else{
+            node.setVisible(true);
+            fadeTransition.setFromValue(0);
+            fadeTransition.setToValue(0.8);
+            translateTransition.setFromX(node.getLayoutX() + 5);
+            translateTransition.setToX(node.getLayoutX());
+        }
+        ParallelTransition pt = new ParallelTransition(translateTransition, fadeTransition);
+        pt.play();
+    }
+
 }
