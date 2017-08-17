@@ -496,6 +496,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             drawMarks();
             drawBoundary();
             redrawRaceLines();
+        } else {
+            changeAnnotations(0, true);
         }
         drawMap();
         drawWindArrow();
