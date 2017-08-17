@@ -46,7 +46,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private double heading;
     private double targetHeading;
     private double maxSpeed;
-    private double boatHealth = 20;
+    private double boatHealth = 100;
     private double damageSpeed;
     private boolean boatCheck = false;
     private double boatPenalty;
