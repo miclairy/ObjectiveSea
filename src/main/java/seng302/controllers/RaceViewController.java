@@ -129,10 +129,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
             initializeBoats();
             initBoatPaths();
             redrawCourse();
-            shiftArrow(false);
         }
         if(options.isTutorial()) {
             tutorial = new Tutorial(controller, race);
+            shiftArrow(false);
         }
         if (options.isPractice()) {
             CompoundMark startLine = race.getCourse().getCourseOrder().get(0);

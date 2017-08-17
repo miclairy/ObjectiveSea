@@ -25,6 +25,10 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Callback;
+import seng302.models.Boat;
+import seng302.models.ClientOptions;
+import seng302.models.Course;
+import seng302.models.Race;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
@@ -152,7 +156,6 @@ public class Controller implements Initializable, Observer {
         lblNoBoardClock.textProperty().bind(raceTimerString);
         clockLabel.textProperty().bind(clockString);
         hideStarterOverlay();
-        raceViewController.updateWindArrow();
         rightHandSide.setOpacity(0.7);
         lblNoBoardClock.setVisible(false);
         tblPlacingsRV.setVisible(false);
