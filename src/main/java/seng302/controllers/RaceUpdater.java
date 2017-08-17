@@ -7,6 +7,8 @@ import seng302.models.*;
 import seng302.utilities.MathUtils;
 import seng302.utilities.PolarReader;
 import seng302.utilities.TimeUtils;
+import seng302.views.BoatDisplay;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -27,6 +29,7 @@ public class RaceUpdater implements Runnable {
     private final double PREPATORY_SIGNAL_TIME_IN_MS = (1000 * 60 * 2);
     private final double MIN_WIND_SPEED = 6.0;
     private final double MAX_WIND_SPEED = 24.0;
+    private final double MAX_EXTRA_TIME = TimeUtils.secondsToMilliseconds(TimeUtils.convertMinutesToSeconds(10.0));
     private double initialWindSpeed;
     private final int MAX_BOATS_IN_RACE = 6;
     private Race race;
@@ -109,12 +112,18 @@ public class RaceUpdater implements Runnable {
             }
 
             for (Boat boat : race.getCompetitors()) {
-                if (boat.getStatus().equals(BoatStatus.FINISHED) && !oneBoatHasFinished){
+                BoatStatus currBoatStatus = boat.getStatus();
+                if (currBoatStatus.equals(BoatStatus.FINISHED) && !oneBoatHasFinished){
                     oneBoatHasFinished = true;
                     timeOfFirstFinisher = race.getCurrentTimeInEpochMs();
                 }
                 if (oneBoatHasFinished){
-                    if (race.getCurrentTimeInEpochMs() - timeOfFirstFinisher >= TimeUtils.secondsToMilliseconds(TimeUtils.convertMinutesToSeconds(10))){
+                    if (race.getCurrentTimeInEpochMs() - timeOfFirstFinisher >= MAX_EXTRA_TIME){
+                        for (Boat boatInRace: race.getCompetitors()){
+                            if (!boatInRace.isFinished()){
+                                boatInRace.setStatus(BoatStatus.DNF);
+                            }
+                        }
                         race.updateRaceStatus(RaceStatus.TERMINATED);
                     }
                 }
@@ -138,13 +147,13 @@ public class RaceUpdater implements Runnable {
                         race.updateRaceStatus(RaceStatus.PREPARATORY);
                     }
                 }
-                if (!boat.getStatus().equals(BoatStatus.FINISHED) && !boat.getStatus().equals(BoatStatus.DNF)) {
+                if (!currBoatStatus.equals(BoatStatus.FINISHED) && !currBoatStatus.equals(BoatStatus.DNF)) {
                     atLeastOneBoatNotFinished = true;
                 }
-                if (boat.getStatus().equals(BoatStatus.DNF)) {
+                if (currBoatStatus.equals(BoatStatus.DNF)) {
                     boat.setCurrentSpeed(0);
                 }
-                if(boat.getStatus().equals(BoatStatus.PRERACE) && race.getRaceStatus().equals(RaceStatus.STARTED)){
+                if(currBoatStatus.equals(BoatStatus.PRERACE) && race.getRaceStatus().equals(RaceStatus.STARTED)){
                     boat.setStatus(BoatStatus.RACING);
                 }
             }

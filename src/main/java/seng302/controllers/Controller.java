@@ -35,7 +35,6 @@ import seng302.models.Course;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 import seng302.views.BoatDisplay;
-import seng302.utilities.TimeUtils;
 import seng302.views.HeadsupDisplay;
 
 
@@ -169,7 +168,7 @@ public class Controller implements Initializable, Observer {
         lblTrackRV.setVisible(false);
         lblExitRV.setVisible(false);
 
-        displayStarters();
+        raceCompetitorOverview();
         startersOverlay.toFront();
         raceViewController.start();
         initDisplayDrag();
@@ -430,7 +429,7 @@ public class Controller implements Initializable, Observer {
     /**
      * Populate the starters overlay list with boats that are competing
      */
-    public void displayStarters() {
+    public void raceCompetitorOverview() {
         ObservableList<String> starters = observableArrayList();
         startersList.getItems().clear();
         for (Boat boat : race.getRaceOrder()) {

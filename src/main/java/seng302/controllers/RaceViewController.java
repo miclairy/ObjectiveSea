@@ -35,7 +35,6 @@ import seng302.views.CourseRouteArrows;
 import seng302.views.RaceView;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Math.abs;
 import static seng302.data.RaceStatus.STARTED;
@@ -158,7 +157,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 controller.showServerDisconnectError();
                 this.stop();
             } else{
-                controller.displayStarters();
+                controller.raceCompetitorOverview();
                 controller.showStarterOverlay();
                 this.stop();
             }
@@ -1092,7 +1091,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 }
             }
         }
-        controller.displayStarters();
+        controller.raceCompetitorOverview();
         scoreBoardController.refreshTable();
         scoreBoardController.updateSparkLine();
         if(!controller.isScoreboardVisible()){
