@@ -71,6 +71,8 @@ public class Controller implements Initializable, Observer {
     @FXML public Circle nextMarkCircle;
     @FXML public SplitPane splitPane;
     @FXML private Button btnHide;
+    @FXML private Button btnQuickMenuTrack;
+    @FXML private Button btnQuickMenuExit;
     @FXML private AnchorPane quickMenu;
     @FXML private ImageView imvSpeedScale;
     @FXML private TableView<Boat> tblPlacingsRV;
@@ -190,6 +192,14 @@ public class Controller implements Initializable, Observer {
                 e -> AnimationUtils.toggleHiddenBoardNodes(tblPlacingsRV, false));
         lblNoBoardClock.addEventHandler(MouseEvent.MOUSE_EXITED,
                 e -> AnimationUtils.toggleHiddenBoardNodes(tblPlacingsRV, true));
+        btnQuickMenuExit.addEventHandler(MouseEvent.MOUSE_ENTERED,
+                e -> AnimationUtils.focusNode(btnQuickMenuExit));
+        btnQuickMenuExit.addEventHandler(MouseEvent.MOUSE_EXITED,
+                e -> AnimationUtils.dullNode(btnQuickMenuExit));
+        btnQuickMenuTrack.addEventHandler(MouseEvent.MOUSE_ENTERED,
+                e ->  AnimationUtils.focusNode(btnQuickMenuTrack));
+        btnQuickMenuTrack.addEventHandler(MouseEvent.MOUSE_EXITED,
+                e ->  AnimationUtils.dullNode(btnQuickMenuTrack));
     }
 
     /**
@@ -733,5 +743,6 @@ public class Controller implements Initializable, Observer {
         btnHide.setVisible(false);
         AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
         AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
+        AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
     }
 }

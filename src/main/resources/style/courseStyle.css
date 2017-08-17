@@ -138,3 +138,16 @@
     -fx-background-position: center;
     -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 0);
 }
+
+#btnQuickMenuExit{
+    -fx-text-fill: white;
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 200px;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-background-image: url('/graphics/buttonImages/exitCross.png');
+    -fx-background-size: 25px 25px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 0);
+}
