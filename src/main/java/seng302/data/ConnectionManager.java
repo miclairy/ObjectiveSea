@@ -50,7 +50,6 @@ public class ConnectionManager extends Observable implements Runnable {
     /**
      * Sends byte array information to multiple players
      * @param packet the information packet to be sent
-     * @throws IOException
      */
     public void sendToClients(byte[] packet) {
         for(int id: clients.keySet()){
