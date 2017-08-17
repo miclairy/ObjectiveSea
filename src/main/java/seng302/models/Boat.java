@@ -432,11 +432,17 @@ public class Boat extends Observable implements Comparable<Boat>{
     private class OptimumHeadings {
         public double headingA;
         public double headingB;
+        private int rotateDirectionA;
+        private int rotateDirectionB;
+
 
         public OptimumHeadings(double headingA, double headingB) {
             this.headingA = headingA;
             this.headingB = headingB;
+            this.rotateDirectionA = -1;
+            this.rotateDirectionB = 1;
         }
+
     }
 
 
@@ -491,33 +497,6 @@ public class Boat extends Observable implements Comparable<Boat>{
         }
         totalRotatedAmount = min(360 - abs(targetHeading - heading), abs(targetHeading - heading));
         currRotationAmount = 0;
-        double wind = (course.getWindDirection() + 180) % 360;
-        double TWA = Math.abs(wind - heading);
-        if(TWA > 90 && TWA < 270) { //tacking
-            System.out.println("tacking");
-            if (heading < targetHeading) {
-                System.out.println("heading (" + heading + " less than target " + targetHeading);
-                if((heading - targetHeading) < 0) {
-                    System.out.println("check 1");
-                    rotateDirection = -1;
-                } else {
-                    rotateDirection = 1;
-                }
-            } else {
-                System.out.println("heading (" + heading + " greater than target " + targetHeading);
-                if((heading - targetHeading) > 0) {
-                    rotateDirection = 1;
-                } else {
-                    rotateDirection = -1;
-                }
-            }
-        } else { //gybing
-            if (heading < targetHeading) {
-                rotateDirection = 1;
-            } else {
-                rotateDirection = -1;
-            }
-        }
         tackOrGybe = true;
     }
 
@@ -530,14 +509,24 @@ public class Boat extends Observable implements Comparable<Boat>{
      * @return new tack/gybe heading
      */
     public double getTackOrGybeHeading(Course course, PolarTable polarTable) {
+        double TWA = Math.abs(course.getWindDirection() - heading);
+        int tackOrGybeScale = -1;
+        if(isTacking(TWA)) {
+            tackOrGybeScale = 1;
+        }
         OptimumHeadings optimumHeadings = getOptimumHeadings(course, polarTable);
-        double TWA = Math.abs(((course.getWindDirection() - heading)));
         double optimumHeadingA = optimumHeadings.headingA;
         double optimumHeadingB = optimumHeadings.headingB;
 
         if(heading - 1 <= optimumHeadingA && optimumHeadingA <= heading + 1) {
+//            System.out.println("1");
+//            System.out.println();
+            rotateDirection = 1 * tackOrGybeScale;
             return optimumHeadingB;
         } else if (heading - 1 <= optimumHeadingB && optimumHeadingB <= heading + 1) {
+//            System.out.println("-1");
+//            System.out.println();
+            rotateDirection = -1 * tackOrGybeScale;
             return optimumHeadingA;
         }
 
@@ -550,13 +539,30 @@ public class Boat extends Observable implements Comparable<Boat>{
         if ((int) optimumHeadings.headingA == (int) heading && (int) optimumHeadings.headingB == (int) heading){
             return -1;
         }
-
+//
+//        System.out.println(heading);
+//        System.out.println("heading A " + optimumHeadings.headingA);
+//        System.out.println("heading B " + optimumHeadings.headingB);
         double angleToOptimumA = abs( heading - optimumHeadingA);
         double angleToOptimumB = abs( heading - optimumHeadingB);
+        if(angleToOptimumA > 180) {
+            angleToOptimumA = 360 - angleToOptimumA;
+        }
+        if(angleToOptimumB > 180) {
+            angleToOptimumB = 360 - angleToOptimumB;
+        }
+//        System.out.println("angle to A " + angleToOptimumA);
+//        System.out.println("angle to B " + angleToOptimumB);
 
         if (angleToOptimumA <= angleToOptimumB) {
+            rotateDirection = 1 * tackOrGybeScale;
+//            System.out.println("B " + rotateDirection);
+//            System.out.println();
             return optimumHeadingB;
         } else {
+            rotateDirection = -1 * tackOrGybeScale;
+//            System.out.println("A " + rotateDirection);
+//            System.out.println();
             return optimumHeadingA;
         }
     }
