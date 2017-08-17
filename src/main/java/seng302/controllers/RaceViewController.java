@@ -119,8 +119,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         this.selectionController = selectionController;
-        this.courseRouteArrows = new CourseRouteArrows(race.getCourse(), root);
-        courseRouteArrows.drawRaceRoute();
+
         if(RaceVisionXMLParser.courseFile == "GuidedPractice-course.xml") {
             isTutorial = true;
             tutorial = new Tutorial(controller, race);
@@ -130,6 +129,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
             initBoatPaths();
             redrawCourse();
             shiftArrow(false);
+        }
+
+        if(!isTutorial) {
+            this.courseRouteArrows = new CourseRouteArrows(race.getCourse(), root);
+            courseRouteArrows.drawRaceRoute();
         }
 
         redrawCourse();
@@ -189,12 +193,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
         if(!isTutorial){
             redrawRaceLines();
+            courseRouteArrows.updateCourseArrows();
         } else {
             if(tutorial != null) tutorial.runTutorial();
         }
         if (courseNeedsRedraw) redrawCourse();
 
-        courseRouteArrows.updateCourseArrows();
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
         updateWindArrow();
@@ -493,12 +497,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawMap();
         drawWindArrow();
 
-        if(DisplayUtils.zoomLevel > 1){
-            courseRouteArrows.removeRaceRoute();
-        } else if (scoreBoardController.getCoursePathToggle().isSelected()){
-            courseRouteArrows.drawRaceRoute();
+        if(!isTutorial) {
+            if (DisplayUtils.zoomLevel > 1) {
+                courseRouteArrows.removeRaceRoute();
+            } else if (scoreBoardController.getCoursePathToggle().isSelected()) {
+                courseRouteArrows.drawRaceRoute();
+            }
         }
-
         drawNextMarkArrow();
         redrawRaceLines();
     }
