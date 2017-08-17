@@ -203,7 +203,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         controller.updatePlacings();
         updateWindArrow();
 
-
         flickercounter++;
         orderDisplayObjects();
     }
@@ -298,9 +297,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if(!displayBoat.collisionInProgress){
                 highlightAnimation(point, displayBoat, true, "collisionCircle", 1);
                 displayBoat.setCollisionInProgress(true);
-            }
-            if(boat.isMarkColliding()){
-                penalties.markCollision(boat);
             }
             boat.setMarkColliding(false);
             boat.setBoatColliding(false);

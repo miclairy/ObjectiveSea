@@ -273,6 +273,11 @@ public class ServerPacketBuilder extends PacketBuilder {
         return generatePacket(header, body);
     }
 
+    /**
+     * Builds a byte array for the Boat State Message packet
+     * @param boat The boat the message is about
+     * @return A byte array with the boat state message
+     */
     public byte[] createBoatStateMessagePacket(Boat boat){
         byte[] header = createHeader(BOAT_STATE_MESSAGE);
         byte[] body = new byte[BOAT_STATE_MESSAGE.getLength()];

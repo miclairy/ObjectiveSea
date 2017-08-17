@@ -442,6 +442,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void setBoatHealth(double boatHealth) {
+        this.healthProperty.set(boatHealth / 100.0);
         this.boatHealth = boatHealth;
     }
 
