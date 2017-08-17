@@ -294,4 +294,37 @@ public class AnimationUtils {
         st.play();
     }
 
+    /**
+     * sets a nodes opcaity to the desried opacity
+     * @param node the node to be made fully opaque
+     * @param endOpacity the end opacity
+     */
+    public static void fadeNodeCustom(Node node, double endOpacity){
+        FadeTransition fadeTransition = new FadeTransition(new Duration(200), node);
+        fadeTransition.setFromValue(node.getOpacity());
+        fadeTransition.setToValue(endOpacity);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        fadeTransition.play();
+    }
+
+
+    /**
+     * fades a course arrow in or out
+     * @param node the node to be faded
+     * @param visible whether or not the node is currently visible
+     */
+    public static FadeTransition changeCourseRouteNode(Node node, boolean visible){
+        node.setVisible(true);
+        FadeTransition fadeTransition = new FadeTransition(new Duration(150), node);
+        if(visible){
+            fadeTransition.setFromValue(node.getOpacity());
+            fadeTransition.setToValue(0);
+        }else{
+            fadeTransition.setFromValue(0);
+            fadeTransition.setToValue(1);
+        }
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        return fadeTransition;
+    }
+
 }
