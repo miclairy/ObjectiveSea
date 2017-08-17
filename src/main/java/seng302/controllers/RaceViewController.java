@@ -180,7 +180,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
         }
         if(controller.hasRaceStatusChanged()){
-            if(!options.isTutorial()){
+            if(!options.isTutorial() && !options.isPractice()){
                 controller.updatePreRaceScreen();
                 controller.setRaceStatusChanged(false);
             }
@@ -254,9 +254,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         moveSOGVector(boatDisplay);
         moveVMGVector(boatDisplay);
         if(race.getRaceStatus() == STARTED) {
-            if (!hasInitializedBoats()){
-                initBoatPaths();
-            }
             addToBoatPath(boatDisplay, point);
         }
         moveBoatAnnotation(boatDisplay.getAnnotation(), point, boatDisplay);
