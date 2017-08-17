@@ -727,7 +727,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                         displayBoat.showVectors();
                     }
                     if (scoreBoardController.isLayLinesSelected()){
-                        if (selectedBoats.contains(displayBoat)) {
+                        if (selectedBoats.contains(displayBoat) || selectionController.isClientBoat(displayBoat)) {
                             drawLayline(displayBoat);
                         }
                     }
