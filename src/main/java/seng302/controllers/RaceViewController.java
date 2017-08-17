@@ -8,11 +8,8 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -36,11 +33,9 @@ import seng302.models.*;
 import seng302.views.BoatDisplay;
 import seng302.views.RaceView;
 
-import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Math.abs;
-import static seng302.data.RaceStatus.PREPARATORY;
 import static seng302.data.RaceStatus.STARTED;
 import static seng302.data.RaceStatus.TERMINATED;
 import static seng302.utilities.DisplayUtils.zoomLevel;
@@ -142,6 +137,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 controller.showServerDisconnectError();
                 this.stop();
             } else{
+                controller.displayStarters();
                 controller.showStarterOverlay();
                 this.stop();
             }
@@ -275,7 +271,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if (boat.isFinished() && boat.isJustFinished()){
             boat.setJustFinished(false);
             long finishTime = race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs();
-            boat.setFinishTime(finishTime);
+            boat.setCollisionTime(finishTime);
         }
     }
 

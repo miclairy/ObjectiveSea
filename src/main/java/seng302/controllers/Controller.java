@@ -3,7 +3,6 @@ package seng302.controllers;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableNumberValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,7 +25,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Callback;
 import seng302.utilities.AnimationUtils;
-import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplayUtils;
 import seng302.data.BoatStatus;
@@ -36,7 +34,6 @@ import seng302.models.Course;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 import seng302.views.BoatDisplay;
-import seng302.utilities.TimeUtils;
 
 
 import java.io.*;
@@ -405,8 +402,17 @@ public class Controller implements Initializable, Observer {
      */
     public void displayStarters() {
         ObservableList<String> starters = observableArrayList();
-        for (Boat boat : race.getCompetitors()) {
-            starters.add(String.format("%s - %s", boat.getNickName(), boat.getName()));
+        startersList.getItems().clear();
+        for (Boat boat : race.getRaceOrder()) {
+            if(race.isTerminated()){
+                if (boat.getStatus().equals(BoatStatus.DNF)){
+                    starters.add(String.format("DNF : %s - %s : %s", boat.getNickName(), boat.getName(), boat.getFinalRaceTime()));
+                } else {
+                    starters.add(String.format("%d : %s - %s : %s", boat.getCurrPlacing(), boat.getNickName(), boat.getName(), boat.getFinalRaceTime()));
+                }
+            } else {
+                starters.add(String.format("%s - %s", boat.getNickName(), boat.getName()));
+            }
         }
         startersList.setItems(starters);
     }

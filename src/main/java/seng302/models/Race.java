@@ -4,6 +4,7 @@ import static seng302.data.RaceStatus.*;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import seng302.data.BoatStatus;
 import seng302.data.RaceStatus;
 import seng302.utilities.TimeUtils;
 

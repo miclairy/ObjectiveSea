@@ -18,7 +18,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static java.lang.Math.min;
 import static java.lang.Double.max;
 import static java.lang.StrictMath.abs;
-import static seng302.utilities.MathUtils.pointBetweenTwoAngle;
 
 /**
  * Class to encapsulate properties associated with a boat.
@@ -47,7 +46,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private double heading;
     private double targetHeading;
     private double maxSpeed;
-    private double boatHealth = 100;
+    private double boatHealth = 20;
     private double damageSpeed;
     private boolean boatCheck = false;
     private double boatPenalty;
@@ -55,8 +54,8 @@ public class Boat extends Observable implements Comparable<Boat>{
     private double timeSinceLastCollision = 0;
 
 
-    private double finishTime;
-    private double finalTime;
+    private String finalRaceTime = null;
+    private double collisionFinalTime;
     private boolean lastPlayerDirection = true; //true = Clockwise / false = AntiClockwise
 
     private int penaltyCount;
@@ -671,13 +670,20 @@ public class Boat extends Observable implements Comparable<Boat>{
         return sailAngle;
     }
 
-    public void setFinishTime(double finishTime) {
-        this.finishTime = finishTime;
-        finalTime = (finishTime / 1000.0) - TimeUtils.convertHoursToSeconds(boatPenalty);
+    public void setCollisionTime(double collisionTime) {
+        collisionFinalTime = (collisionTime / 1000.0) - TimeUtils.convertHoursToSeconds(boatPenalty);
     }
 
-    public double getFinalTime() {
-        return finalTime;
+    public void setFinalRaceTime(String time){
+        finalRaceTime = time;
+    }
+
+    public String getFinalRaceTime(){
+        return finalRaceTime;
+    }
+
+    public double getCollisionFinalTime() {
+        return collisionFinalTime;
     }
 
     public boolean isJustFinished() {

@@ -332,6 +332,15 @@ public class DisplayUtils {
     }
 
     /**
+     * Format string for total race time
+     */
+    public static String formatTotalRaceTime(int secondsOfRace){
+        int mins = secondsOfRace / 60;
+        int secs = secondsOfRace - (mins * 60);
+        return String.format("%d m %d s", mins, secs);
+    }
+
+    /**
      * Computes the time until the next mark label
      * @param timeAtMark time to the next mark in epoch ms
      * @param currTime current time in epoch ms
