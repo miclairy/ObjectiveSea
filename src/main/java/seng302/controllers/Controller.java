@@ -424,7 +424,7 @@ public class Controller implements Initializable, Observer {
                 }
                 break;
             case STARTED:
-                if(Main.getClient().isParticipant()){
+                if(options.isParticipant() && !options.isPractice()){
                     raceViewController.getCourseRouteArrows().removeRaceRoute();
                     scoreBoardController.getCoursePathToggle().setSelected(false);
                 }

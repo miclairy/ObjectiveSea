@@ -145,7 +145,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             controller.setZoomSliderValue(2.0);
         }
 
-        if(!options.isTutorial()) {
+        if(!options.isTutorial() && !options.isPractice()) {
             this.courseRouteArrows = new CourseRouteArrows(race.getCourse(), root);
             courseRouteArrows.drawRaceRoute();
         }
@@ -206,7 +206,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 updateNextMarkDistance(isZoomed);
             }
         }
-        if(!options.isTutorial()){
+        if(!options.isTutorial() && !options.isPractice()){
             redrawRaceLines();
             courseRouteArrows.updateCourseArrows();
         } else {
@@ -236,7 +236,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         moveBoat(boatDisplay, point);
         moveWake(boatDisplay, point);
         moveSail(boatDisplay, point);
-        if(!options.isTutorial && !boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF)){
+        if(!options.isTutorial() && !boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF)){
             displayCollisions(boatDisplay, point);
         }
         displayCollisions(boatDisplay, point);
@@ -364,7 +364,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if(boatDisplay.getBoat().getId() == Main.getClient().getClientID()){
                 currentUserBoatDisplay = boatDisplay;
                 scoreBoardController.highlightUserBoat();
-                if(!isTutorial){
+                if(!options.isTutorial()){
                     controller.addUserBoat();
                 }
             }
@@ -515,7 +515,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawMap();
         drawWindArrow();
 
-        if(!isTutorial) {
+        if(!options.isTutorial() && !options.isPractice()) {
             if (DisplayUtils.zoomLevel > 1) {
                 courseRouteArrows.removeRaceRoute();
             } else if (scoreBoardController.getCoursePathToggle().isSelected()) {
