@@ -20,6 +20,9 @@ public class MathUtils {
     public static boolean pointBetweenTwoAngle(double targetDirection, double deltaAngle, double actualDirection){
         double diff;
         double middle;
+        if(Math.abs(targetDirection - actualDirection) <= deltaAngle){
+            return true;
+        }
         if(targetDirection > 180){
             actualDirection -= 180;
             middle = targetDirection - 180;
@@ -95,6 +98,7 @@ public class MathUtils {
      */
     public static Boolean boatHeadingToLine(double boatsHeading, double lineHeading, double headingOfMark){
         Boolean towardsLine = false;
+        System.out.println(pointBetweenTwoAngle(lineHeading + 90, 90, headingOfMark));
 
         if(pointBetweenTwoAngle((lineHeading + 270)%360, 90, boatsHeading) &&
                 pointBetweenTwoAngle(lineHeading + 90, 90, headingOfMark)){

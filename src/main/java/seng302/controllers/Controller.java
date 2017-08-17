@@ -76,6 +76,8 @@ public class Controller implements Initializable, Observer {
     @FXML private TableColumn<Boat, String> columnName;
     @FXML private TableColumn<Boat, String> columnSpeed;
     @FXML private TableColumn<Boat, String> columnStatus;
+    @FXML private Label lblExitRV;
+    @FXML private Label lblTrackRV;
     @FXML private VBox headsUpDisplay;
     private HeadsupDisplay infoDisplay;
 
@@ -164,6 +166,8 @@ public class Controller implements Initializable, Observer {
         lblNoBoardClock.setVisible(false);
         tblPlacingsRV.setVisible(false);
         headsUpDisplay.setVisible(false);
+        lblTrackRV.setVisible(false);
+        lblExitRV.setVisible(false);
 
         displayStarters();
         startersOverlay.toFront();
@@ -176,6 +180,8 @@ public class Controller implements Initializable, Observer {
      * adds listeners to content on the scorePanel
      */
     private void addRightHandSideListener(){
+        btnQuickMenuTrack.setPickOnBounds(true);
+        btnQuickMenuExit.setPickOnBounds(true);
         rightHandSide.addEventHandler(MouseEvent.MOUSE_ENTERED,
                 e -> AnimationUtils.focusNode(rightHandSide));
         rightHandSide.addEventHandler(MouseEvent.MOUSE_EXITED,
@@ -189,13 +195,13 @@ public class Controller implements Initializable, Observer {
         lblNoBoardClock.addEventHandler(MouseEvent.MOUSE_EXITED,
                 e -> AnimationUtils.toggleHiddenBoardNodes(tblPlacingsRV, true));
         btnQuickMenuExit.addEventHandler(MouseEvent.MOUSE_ENTERED,
-                e -> AnimationUtils.focusNode(btnQuickMenuExit));
+                e -> quickMenuHighlight(true, lblExitRV, btnQuickMenuExit));
         btnQuickMenuExit.addEventHandler(MouseEvent.MOUSE_EXITED,
-                e -> AnimationUtils.dullNode(btnQuickMenuExit));
+                e -> quickMenuHighlight(false, lblExitRV, btnQuickMenuExit));
         btnQuickMenuTrack.addEventHandler(MouseEvent.MOUSE_ENTERED,
-                e ->  AnimationUtils.focusNode(btnQuickMenuTrack));
+                e ->  quickMenuHighlight(true, lblTrackRV, btnQuickMenuTrack));
         btnQuickMenuTrack.addEventHandler(MouseEvent.MOUSE_EXITED,
-                e ->  AnimationUtils.dullNode(btnQuickMenuTrack));
+                e -> quickMenuHighlight(false, lblTrackRV, btnQuickMenuTrack));
     }
 
     /**
@@ -753,5 +759,15 @@ public class Controller implements Initializable, Observer {
         AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
         AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
         AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
+    }
+
+    private void quickMenuHighlight(boolean isEntered, Label label, Button button){
+        if(isEntered){
+            AnimationUtils.focusNode(button);
+            AnimationUtils.toggleQuickMenuNodes(label, false);
+        }else{
+            AnimationUtils.dullNode(button);
+            AnimationUtils.toggleQuickMenuNodes(label, true);
+        }
     }
 }

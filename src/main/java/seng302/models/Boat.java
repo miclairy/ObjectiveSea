@@ -72,7 +72,8 @@ public class Boat extends Observable implements Comparable<Boat>{
     private long timeTillMark;
     private long timeTillFinish;
     private Integer id;
-    private AtomicBoolean sailsIn = new AtomicBoolean(false);
+    private boolean sailsIn = false;
+    private boolean sailsNeedUpdate = false;
     private boolean inGate = false;
 
 
@@ -367,7 +368,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public synchronized Boolean isSailsIn() {
-        return sailsIn.get();
+        return sailsIn;
     }
 
     public void setLeg(int leg){
@@ -401,7 +402,13 @@ public class Boat extends Observable implements Comparable<Boat>{
         double lineBearing = currentPosition.headingToCoordinate(markLocation);
         double angle = Math.abs(heading - lineBearing);
 
-        return Math.cos(Math.toRadians(angle)) * currentSpeed.get();
+        double VMG = Math.cos(Math.toRadians(angle)) * currentSpeed.get();
+
+        if(angle > 90) {
+            VMG = 0;
+        }
+
+        return VMG;
     }
 
 
@@ -617,7 +624,11 @@ public class Boat extends Observable implements Comparable<Boat>{
 
 
     public synchronized void changeSails() {
-        sailsIn.set(!sailsIn.get());
+        sailsIn = !sailsIn;
+    }
+
+    public void setSailsIn(boolean sailsIn) {
+        this.sailsIn = sailsIn;
     }
 
     public void upWind(double windAngle){
@@ -670,7 +681,7 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public synchronized double getSailAngle(double windDirection){
         double sailAngle;
-        if(!sailsIn.get()){
+        if(!sailsIn){
             sailAngle = windDirection;
         } else {
             double TWA = Math.abs(((windDirection - heading)));
@@ -757,5 +768,13 @@ public class Boat extends Observable implements Comparable<Boat>{
                 tackOrGybe = false;
             }
         }
+    }
+
+    public boolean isSailsNeedUpdate() {
+        return sailsNeedUpdate;
+    }
+
+    public void setSailsNeedUpdate(boolean sailsNeedUpdate) {
+        this.sailsNeedUpdate = sailsNeedUpdate;
     }
 }

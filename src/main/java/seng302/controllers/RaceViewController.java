@@ -35,6 +35,7 @@ import seng302.views.CourseRouteArrows;
 import seng302.views.RaceView;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Math.abs;
 import static seng302.data.RaceStatus.STARTED;
@@ -62,7 +63,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private final double WIND_ARROW_X_PADDING = 470;
     private final double WIND_ARROW_Y_PADDING = 19;
     private final double NEXT_MARK_ARROW_X_PADDING = 605;
-    private final double NEXT_MARK_ARROW_Y_PADDING = 58;
+    private final double NEXT_MARK_ARROW_Y_PADDING = 64;
     private final double WIND_CIRCLE_X_PADDING = 455;
     private final double WIND_CIRCLE_Y_PADDING = 10;
 
@@ -135,6 +136,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
 
         redrawCourse();
+
+        //courseRouteArrows.drawRaceRoute();
         race.addObserver(this);
     }
 
@@ -220,7 +223,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         moveBoat(boatDisplay, point);
         moveWake(boatDisplay, point);
         moveSail(boatDisplay, point);
-        if(!isTutorial){
+        if(!isTutorial && !boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF)){
             displayCollisions(boatDisplay, point);
         }
         displayCollisions(boatDisplay, point);
