@@ -152,24 +152,6 @@ public class Server implements Runnable, Observer {
             }
             collisionManager.removeCollision(collision);
         }
-        sendSailChangeMessages();
-    }
-
-    /**
-     * sends message to update sails on the client when required.
-     * @throws IOException
-     */
-    private void sendSailChangeMessages() throws IOException {
-        for (Boat boat : raceUpdater.getRace().getCompetitors()) {
-            if (boat.isSailsNeedUpdate() && !boat.isFinished()) {
-                boat.setSailsNeedUpdate(false);
-                if(boat.isSailsIn()){
-                    sendYachtEventMessage(boat, raceUpdater.getRace(), 1, YachtEventCode.SAILS_IN);
-                }else{
-                    sendYachtEventMessage(boat, raceUpdater.getRace(), 1, YachtEventCode.SAILS_OUT);
-                }
-            }
-        }
     }
 
     private void sendBoatMessagesForAllBoats() throws IOException {

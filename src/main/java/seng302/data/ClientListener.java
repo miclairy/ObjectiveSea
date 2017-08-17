@@ -150,6 +150,8 @@ public class ClientListener extends Receiver implements Runnable{
         int deviceType = byteArrayRangeToInt(body, DEVICE_TYPE.getStartIndex(), DEVICE_TYPE.getEndIndex());
         int trueWindDirectionScaled = byteArrayRangeToInt(body, TRUE_WIND_DIRECTION.getStartIndex(), TRUE_WIND_DIRECTION.getEndIndex());
         int trueWindAngleScaled = byteArrayRangeToInt(body, TRUE_WIND_ANGLE.getStartIndex(), TRUE_WIND_ANGLE.getEndIndex());
+        int sailState = byteArrayRangeToInt(body, SAIL_STATE.getStartIndex(), SAIL_STATE.getEndIndex());
+
         double trueWindAngle = intToTrueWindAngle(trueWindAngleScaled);
         //unused as we believe this is always sent as 0 from the AC35 feed
         double trueWindDirection = intToHeading(trueWindDirectionScaled);
@@ -163,6 +165,15 @@ public class ClientListener extends Receiver implements Runnable{
         } else if(deviceType == MARK_DEVICE_TYPE){
             race.getCourse().updateMark(sourceID, lat, lon);
         }
+
+        if (sailState == 0) {
+            Boat boat = race.getBoatById(sourceID);
+            if (boat != null) boat.setSailsIn(true);
+        } else {
+            Boat boat = race.getBoatById(sourceID);
+            if (boat != null) boat.setSailsIn(false);
+        }
+
     }
 
 
@@ -294,12 +305,6 @@ public class ClientListener extends Receiver implements Runnable{
             boat.setMarkColliding(true);
         } else if (eventID == YachtEventCode.COLLISION_PENALTY.code()) {
 
-        } else if (eventID == YachtEventCode.SAILS_IN.code()) {
-            Boat boat = race.getBoatById(boatID);
-            if (boat != null) boat.setSailsIn(true);
-        } else if(eventID == YachtEventCode.SAILS_OUT.code()) {
-            Boat boat = race.getBoatById(boatID);
-            if (boat != null) boat.setSailsIn(false);
         }
     }
 
