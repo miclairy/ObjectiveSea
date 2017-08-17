@@ -50,9 +50,8 @@ public class ConnectionManager extends Observable implements Runnable {
     /**
      * Sends byte array information to multiple players
      * @param packet the information packet to be sent
-     * @throws IOException
      */
-    public void sendToClients(byte[] packet) throws IOException {
+    public void sendToClients(byte[] packet) {
         for(int id: clients.keySet()){
             sendToClient(id, packet);
         }
@@ -85,11 +84,7 @@ public class ConnectionManager extends Observable implements Runnable {
      */
     public void setXmlMessage(AC35StreamXMLMessage messageType, byte[] xmlMessage){
         xmlMessages.put(messageType,xmlMessage);
-        try {
-            sendToClients(xmlMessage);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        sendToClients(xmlMessage);
     }
 
     public void addConnection(int newId, Socket socket) {

@@ -450,6 +450,10 @@ public class Boat extends Observable implements Comparable<Boat>{
         this.inGate = inGate;
     }
 
+    public void setBoatHealth(double boatHealth) {
+        this.healthProperty.set(boatHealth / 100.0);
+        this.boatHealth = boatHealth;
+    }
     public void setMarkCollideSound(boolean markCollideSound) {
         this.markCollideSound = markCollideSound;
     }

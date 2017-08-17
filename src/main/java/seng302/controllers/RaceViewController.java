@@ -205,7 +205,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         controller.updatePlacings();
         updateWindArrow();
 
-
         flickercounter++;
         orderDisplayObjects();
     }

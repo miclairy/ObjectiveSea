@@ -106,7 +106,7 @@ public class Server implements Runnable, Observer {
      * @param packet the packet to send
      * @throws IOException
      */
-    private void sendPacket(byte[] packet) throws IOException {
+    private void sendPacket(byte[] packet) {
         connectionManager.sendToClients(packet);
     }
 
@@ -124,6 +124,16 @@ public class Server implements Runnable, Observer {
         sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());
         sendXmlMessage(BOAT_XML_MESSAGE, "Boat.xml");
         sendXmlMessage(REGATTA_XML_MESSAGE, "Regatta.xml");
+    }
+
+    private void sendAllBoatStates() {
+        for(Boat boat : raceUpdater.getRace().getCompetitors()){
+            sendBoatStateMessage(boat);
+        }
+    }
+
+    private void sendBoatStateMessage(Boat boat) {
+        sendPacket(packetBuilder.createBoatStateMessagePacket(boat));
     }
 
     /**
@@ -152,6 +162,7 @@ public class Server implements Runnable, Observer {
                 if(collision.getInvolvedBoats().size() == 1) {
                     sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION_MARK);
                 }
+                sendBoatStateMessage(boat);
             }
             collisionManager.removeCollision(collision);
         }
@@ -242,9 +253,12 @@ public class Server implements Runnable, Observer {
         }
         connectionManager.addConnection(newId, serverListener.getSocket());
         serverListener.setClientId(newId);
-
         connectionManager.sendToClient(newId, packet);
-        sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());
+
+        if(success){
+            sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());
+            sendAllBoatStates();
+        }
     }
 
     /**
@@ -285,6 +299,7 @@ public class Server implements Runnable, Observer {
                 byte[] packet = packetBuilder.createRegistrationResponsePacket(0, RegistrationResponseStatus.SPECTATOR_SUCCESS);
                 connectionManager.addConnection(nextViewerID, serverListener.getSocket());
                 connectionManager.sendToClient(nextViewerID, packet);
+                sendAllBoatStates();
                 nextViewerID++;
                 break;
             case GHOST:

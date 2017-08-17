@@ -221,6 +221,10 @@ public class ClientListener extends Receiver implements Runnable{
                                         break;
                                     case REGISTRATION_RESPONSE:
                                         parseRegistrationResponseMessage(body);
+                                        break;
+                                    case BOAT_STATE_MESSAGE:
+                                        parseBoatStateMessage(body);
+                                        break;
                                 }
                             }
                     }
@@ -237,6 +241,12 @@ public class ClientListener extends Receiver implements Runnable{
                 System.out.println("Client: disconnected from Server");
             }
         }
+    }
+
+    private void parseBoatStateMessage(byte[] body) {
+        Integer boatID = byteArrayRangeToInt(body, BOAT_STATE_SOURCE_ID.getStartIndex(), BOAT_STATE_SOURCE_ID.getEndIndex());
+        Integer boatHealth = byteArrayRangeToInt(body, BOAT_HEALTH.getStartIndex(), BOAT_HEALTH.getEndIndex());
+        race.setBoatHealth(boatID, boatHealth);
     }
 
     /**
