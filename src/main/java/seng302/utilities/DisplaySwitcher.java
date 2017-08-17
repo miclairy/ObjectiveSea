@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import seng302.controllers.*;
+import seng302.models.ClientOptions;
 
 import java.net.URL;
 import java.util.logging.Level;
@@ -47,17 +48,17 @@ public class DisplaySwitcher {
 
     /**
      * loads the race view into the stage
-     * @param isHost a boolean showing if the user is a host or not
+     * @param options a set of configured ClientOptions
      */
-    public void loadRaceView(boolean isHost) {
+    public void loadRaceView(ClientOptions options) {
         try {
             SoundController soundController = new SoundController(Main.getClient().getClientID());
             soundController.setRunning(true);
             Thread soundControllerThread = new Thread(soundController);
             soundControllerThread.start();
-            Controller race = (Controller) replaceSceneContent("race_view.fxml");
-            race.setApp(isHost, this, scene);
-            race.setSoundController(soundController);
+            Controller raceController = (Controller) replaceSceneContent("race_view.fxml");
+            raceController.setApp(options, this, scene);
+            raceController.setSoundController(soundController);
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -10,6 +10,7 @@ import seng302.data.registration.RegistrationResponse;
 import seng302.data.registration.RegistrationType;
 import seng302.data.registration.ServerFullException;
 import seng302.models.Boat;
+import seng302.models.ClientOptions;
 import seng302.models.Race;
 import seng302.utilities.NoConnectionToServerException;
 import seng302.utilities.TimeUtils;
@@ -38,24 +39,20 @@ public class Client implements Runnable, Observer {
     private Map<Integer, Boat> potentialCompetitors;
     private UserInputController userInputController;
     private int clientID;
-    private String sourceAddress;
-    private int sourcePort;
-    private boolean isParticipant;
+    private ClientOptions options;
     Thread dataStreamReaderThread;
     private RegistrationResponse serverRegistrationResponse;
 
     private static List<Integer> tutorialKeys = new ArrayList<Integer>();
     private static Runnable tutorialFunction = null;
 
-    public Client(String ip, int port, boolean isParticipant) throws ServerFullException, NoConnectionToServerException {
-        this.sourcePort = port;
-        this.sourceAddress = ip;
+    public Client(ClientOptions options) throws ServerFullException, NoConnectionToServerException {
         this.packetBuilder = new ClientPacketBuilder();
-        this.isParticipant = isParticipant;
+        this.options = options;
         setUpDataStreamReader();
         System.out.println("Client: Waiting for connection to Server");
         manageWaitingConnection();
-        RegistrationType regoType = isParticipant ? RegistrationType.PLAYER : RegistrationType.SPECTATOR;
+        RegistrationType regoType = options.isParticipant() ? RegistrationType.PLAYER : RegistrationType.SPECTATOR;
         System.out.println("Client: Connected to Server");
         this.sender = new ClientSender(clientListener.getClientSocket());
         sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
@@ -120,7 +117,7 @@ public class Client implements Runnable, Observer {
     }
 
     private void setUpDataStreamReader(){
-        this.clientListener = new ClientListener(sourceAddress, sourcePort);
+        this.clientListener = new ClientListener(options.getServerAddress(), options.getServerPort());
         dataStreamReaderThread = new Thread(clientListener);
         dataStreamReaderThread.setName("ClientListener");
         dataStreamReaderThread.start();
@@ -224,9 +221,5 @@ public class Client implements Runnable, Observer {
     public void initiateClientDisconnect() {
         clientListener.disconnectClient();
         race.getBoatById(clientID).setStatus(BoatStatus.DNF);
-    }
-
-    public boolean isParticipant() {
-        return isParticipant;
     }
 }

@@ -13,6 +13,7 @@ import javafx.scene.image.Image;
 import javafx.geometry.Rectangle2D;
 import javafx.application.Platform;
 import seng302.data.registration.ServerFullException;
+import seng302.models.ClientOptions;
 import seng302.models.ServerOptions;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplaySwitcher;
@@ -119,39 +120,36 @@ public class Main extends Application {
 
     /**
      * Loads the visualiser and attaches a UserInputController to the client and the JavaFX scene
-     * @param isHost whether or not the client is also hosting the server
-     * @param isParticipant whether or not the client is an active competitor requiring control over a boat
+     * @param options ClientOptions for the RaceView
      */
-    public void loadRaceView(boolean isHost, boolean isParticipant) {
-        displaySwitcher.loadRaceView(isHost);
-        if (isParticipant) {
+    public void loadRaceView(ClientOptions options) {
+        displaySwitcher.loadRaceView(options);
+        if (options.isParticipant()) {
             UserInputController userInputController = new UserInputController(DisplaySwitcher.getScene(), Client.getRace());
             client.setUserInputController(userInputController);
             userInputController.addObserver(client);
         }
     }
 
-    public void startHostedRace(String course, int port, boolean isTutorial) throws Exception{
-        ServerOptions options = new ServerOptions();
-        options.setPort(port);
-        options.setRaceXML(course);
-        options.setTutorial(isTutorial);
-        setupServer(options);
-        startClient("localhost", port, true);
+    public void startHostedRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions) throws Exception{
+        ServerOptions serverOptions = new ServerOptions();
+        serverOptions.setPort(port);
+        serverOptions.setRaceXML(course);
+        serverOptions.setTutorial(isTutorial);
+        setupServer(serverOptions);
+        startClient(clientOptions);
     }
 
     /**
      * starts the client at the desired ip and port number
      * ensures that the client connects
      * throws error if connection fails
-     * @param ip the ip for the client to connect to
-     * @param port the port of the client to connect to
-     * @param isParticipant whether the user is a participant or spectator
+     * @param options ClientOptions to initialize with
      * @return whether the connection was successful or times out
      */
-    public boolean startClient(String ip, int port, boolean isParticipant){
+    public boolean startClient(ClientOptions options){
         try {
-            client = new Client(ip, port, isParticipant);
+            client = new Client(options);
             ConnectionUtils.setClient(client);
             Thread clientThread = new Thread(client);
             clientThread.setName("Client");
@@ -160,7 +158,7 @@ public class Main extends Application {
             showServerConnectionError(e);
             return false;
         } catch (ServerFullException e) {
-            showServerJoinError(isParticipant);
+            showServerJoinError(options.isParticipant());
             return false;
         }
         return true;
