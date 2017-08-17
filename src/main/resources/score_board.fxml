@@ -214,7 +214,7 @@
                                           <Insets left="30.0" />
                                        </GridPane.margin>
                                      </CheckBox>
-                                    <CheckBox fx:id="VirtualStartlineToggle" mnemonicParsing="false" selected="true" text="Virtual Startline" textFill="WHITE" GridPane.columnIndex="1">
+                                    <CheckBox fx:id="VirtualStartlineToggle" mnemonicParsing="false" text="Virtual Startline" textFill="WHITE" GridPane.columnIndex="1">
                                        <padding>
                                           <Insets top="8.0" />
                                        </padding>
