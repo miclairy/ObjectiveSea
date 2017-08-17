@@ -278,10 +278,6 @@ public class Boat extends Observable implements Comparable<Boat>{
         return maxSpeed;
     }
 
-    public double getBoatHealth() {
-        return boatHealth;
-    }
-
     public void setTWAofBoat(double TWAofBoat) {
         this.TWAofBoat = TWAofBoat;
     }
