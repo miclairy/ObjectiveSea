@@ -71,6 +71,7 @@ public class Controller implements Initializable, Observer {
     @FXML public Circle nextMarkCircle;
     @FXML public SplitPane splitPane;
     @FXML private Button btnHide;
+    @FXML private AnchorPane quickMenu;
     @FXML private ImageView imvSpeedScale;
     @FXML private TableView<Boat> tblPlacingsRV;
     @FXML private TableColumn<Boat, Integer> columnPosition;
@@ -242,7 +243,7 @@ public class Controller implements Initializable, Observer {
 
     }
 
-    public void exitRunningRace() throws IOException {
+    @FXML public void exitRunningRace() throws IOException {
         ConnectionUtils.initiateDisconnect(isHost);
         displaySwitcher.loadMainMenu();
         raceViewController.stop();
@@ -570,6 +571,7 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
             AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
             AnimationUtils.shiftPaneNodes(nextMarkGrid, 430, true);
+            AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
             AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, false);
             scoreboardVisible = false;
@@ -581,6 +583,7 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(imvSpeedScale, -430, true);
             AnimationUtils.shiftPaneNodes(lblWindSpeed, -430, true);
             AnimationUtils.shiftPaneNodes(nextMarkGrid, -430, true);
+            AnimationUtils.shiftPaneNodes(quickMenu, 115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true);
             AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, true);
             scoreboardVisible = true;
