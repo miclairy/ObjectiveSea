@@ -58,7 +58,7 @@ public class DisplaySwitcher {
             soundControllerThread.start();
             Controller raceController = (Controller) replaceSceneContent("race_view.fxml");
             raceController.setApp(options, this, scene);
-            race.setSoundController(soundController);
+            raceController.setSoundController(soundController);
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
