@@ -755,8 +755,4 @@ public class Boat extends Observable implements Comparable<Boat>{
             }
         }
     }
-
-    public double getBoatHealth() {
-        return boatHealth;
-    }
 }
