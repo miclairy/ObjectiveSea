@@ -522,10 +522,8 @@ public class Boat extends Observable implements Comparable<Boat>{
      */
     public double getTackOrGybeHeading(Course course, PolarTable polarTable) {
         double TWA = Math.abs(course.getWindDirection() - heading);
-        int tackOrGybeScale = -1;
-        if(isTacking(TWA)) {
-            tackOrGybeScale = 1;
-        }
+        int tackOrGybeScale = isTacking(TWA) ? 1 : -1;
+
         OptimumHeadings optimumHeadings = getOptimumHeadings(course, polarTable);
         double optimumHeadingA = optimumHeadings.headingA;
         double optimumHeadingB = optimumHeadings.headingB;
