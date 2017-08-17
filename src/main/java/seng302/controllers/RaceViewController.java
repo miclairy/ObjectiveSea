@@ -486,9 +486,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
         drawMap();
         drawWindArrow();
-        if(courseRouteArrows.getArrowsShown()){
+
+        if(selectionController.isTrackingPoint()){
+            courseRouteArrows.removeRaceRoute();
+        } else{
             courseRouteArrows.drawRaceRoute();
         }
+
         drawNextMarkArrow();
         redrawRaceLines();
     }

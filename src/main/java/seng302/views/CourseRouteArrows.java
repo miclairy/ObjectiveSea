@@ -26,7 +26,6 @@ public class CourseRouteArrows {
     private Course course;
     private Group root;
     private Integer refreshTimer;
-    private Boolean arrowsShown = false;
     private Color ARROW_PATH_COLOR = Color.color(0.25, 0.8, 0.25); //Light Green
 
     private ArrowOrderGraph arrowOrderGraph;
@@ -47,8 +46,6 @@ public class CourseRouteArrows {
      * draw the next step in the arrow path.
      */
     public void updateCourseArrows(){
-        if(!arrowsShown) return;
-
         if (refreshTimer == 0){
             updateArrowAnimation();
         }
@@ -233,7 +230,6 @@ public class CourseRouteArrows {
         for(Arrow arrow : arrowOrderGraph.getAllArrows()){
             arrow.removeFromCanvas(root);
         }
-        arrowsShown = false;
     }
 
     /**
@@ -248,10 +244,5 @@ public class CourseRouteArrows {
             arrow.setColour(ARROW_PATH_COLOR);
             arrow.fade();
         }
-        arrowsShown = true;
-    }
-
-    public Boolean getArrowsShown() {
-        return arrowsShown;
     }
 }
