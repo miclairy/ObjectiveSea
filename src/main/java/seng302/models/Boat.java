@@ -456,10 +456,12 @@ public class Boat extends Observable implements Comparable<Boat>{
         public double headingA;
         public double headingB;
 
+
         public OptimumHeadings(double headingA, double headingB) {
             this.headingA = headingA;
             this.headingB = headingB;
         }
+
     }
 
 
@@ -501,6 +503,12 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
 
+    /**
+     * Function called by tack/gybe (enter) key press. Sets the target heading, totalRotated amount and
+     * rotationDirection which are used by the updateBoatHeading function to gradually change the boats direction
+     * @param course
+     * @param polarTable
+     */
     public void tackOrGybe(Course course, PolarTable polarTable) {
         targetHeading = getTackOrGybeHeading(course, polarTable);
         if (targetHeading == -1){
@@ -508,17 +516,11 @@ public class Boat extends Observable implements Comparable<Boat>{
         }
         totalRotatedAmount = min(360 - abs(targetHeading - heading), abs(targetHeading - heading));
         currRotationAmount = 0;
-        double TWA = Math.abs(((course.getWindDirection() - heading)));
-        if (TWA < 89 || TWA < 270 && TWA > 180){
-            rotateDirection = -1;
-        } else {
-            rotateDirection = 1;
-        }
         tackOrGybe = true;
     }
 
     /**
-     * Function to change heading of boat when the tack/gybe button is pressed
+     * Function to calculate the target heading of boat when the tack/gybe button is pressed
      * If already on an optimum heading it switches to the "opposite" optimum
      * If in dead zones or no sail zone (heading into wind) the heading is unchanged
      * @param course
@@ -526,17 +528,23 @@ public class Boat extends Observable implements Comparable<Boat>{
      * @return new tack/gybe heading
      */
     public double getTackOrGybeHeading(Course course, PolarTable polarTable) {
+        double TWA = Math.abs(course.getWindDirection() - heading);
+        int tackOrGybeScale = isTacking(TWA) ? 1 : -1;
+
         OptimumHeadings optimumHeadings = getOptimumHeadings(course, polarTable);
-        double TWA = Math.abs(((course.getWindDirection() - heading)));
         double optimumHeadingA = optimumHeadings.headingA;
         double optimumHeadingB = optimumHeadings.headingB;
 
+        //Checks if boat is already on an optimum heading
         if(heading - 1 <= optimumHeadingA && optimumHeadingA <= heading + 1) {
+            rotateDirection = 1 * tackOrGybeScale;
             return optimumHeadingB;
         } else if (heading - 1 <= optimumHeadingB && optimumHeadingB <= heading + 1) {
+            rotateDirection = -1 * tackOrGybeScale;
             return optimumHeadingA;
         }
 
+        //Checks if boat is in the no sail zone
         if(isTacking(TWA)) {
             if(inRange(optimumHeadings.headingA, optimumHeadings.headingB, heading)) {
                 return -1;
@@ -547,12 +555,14 @@ public class Boat extends Observable implements Comparable<Boat>{
             return -1;
         }
 
-        double angleToOptimumA = abs( heading - optimumHeadingA);
-        double angleToOptimumB = abs( heading - optimumHeadingB);
+        double angleToOptimumA = MathUtils.getAngleBetweenTwoHeadings(heading, optimumHeadingA);
+        double angleToOptimumB = MathUtils.getAngleBetweenTwoHeadings(heading, optimumHeadingB);
 
         if (angleToOptimumA <= angleToOptimumB) {
+            rotateDirection = 1 * tackOrGybeScale;
             return optimumHeadingB;
         } else {
+            rotateDirection = -1 * tackOrGybeScale;
             return optimumHeadingA;
         }
     }
@@ -737,9 +747,11 @@ public class Boat extends Observable implements Comparable<Boat>{
         double angleOfRotation = 3 * time;
         double headingDiff = targetHeading - heading;
         if (rotate) {
-            if (headingDiff > 0) {
+            if (headingDiff > 0 && headingDiff < 180) {
+                heading = heading % 360;
                 heading += angleOfRotation;
             } else {
+                heading = heading % 360;
                 heading -= angleOfRotation;
             }
             if(abs(headingDiff) <= angleOfRotation) {

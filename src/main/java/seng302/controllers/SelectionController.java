@@ -330,6 +330,9 @@ public class SelectionController extends Observable {
         return trackingBoat;
     }
 
+    public boolean isClientBoat(BoatDisplay boat) {
+        return boat == clientBoat;
+    }
 
     public boolean isTrackingPoint() {
         return isTrackingPoint;

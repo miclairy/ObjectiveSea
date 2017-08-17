@@ -460,18 +460,14 @@ public class RaceUpdater implements Runnable {
      * generates a random windspeed and wind angle within a range of the current speed and angle
      */
     public void generateWind(){
-        //TODO: wind angle has been changed to a hard coded number.
         double range = 0.05;
         double maxSpeed = race.getCourse().getTrueWindSpeed() + range;
         double minSpeed = race.getCourse().getTrueWindSpeed() - range;
-
-        //double maxAngle = race.getCourse().getWindDirection() + range;
-        //double minAngle = race.getCourse().getWindDirection() - range;
         double speed = ThreadLocalRandom.current().nextDouble(minSpeed, maxSpeed);
-        double angle = race.getCourse().getWindDirection();//ThreadLocalRandom.current().nextDouble(minAngle, maxAngle);
 
-        race.getCourse().setTrueWindSpeed(speed);
-        race.getCourse().setWindDirection(angle);
+        if(speed > MIN_WIND_SPEED && speed < MAX_WIND_SPEED) {
+            race.getCourse().setTrueWindSpeed(speed);
+        }
     }
 
     /**
