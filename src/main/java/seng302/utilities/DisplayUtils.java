@@ -164,7 +164,6 @@ public class DisplayUtils {
             case "262626":
                 return DisplayUtils.class.getResource("/graphics/mapImages/LakeTekapo-map.png").toExternalForm();
             default:
-                System.out.println(getGoogleMapsURL());
                 return DisplayUtils.class.getResource("/graphics/mapImages/AC35-map.png").toExternalForm();
         }
     }
@@ -178,8 +177,8 @@ public class DisplayUtils {
         double canvasY = Controller.getAnchorHeight();
         double canvasX = Controller.getAnchorWidth(); //halved to keep within google size guidelines
 
-        Coordinate bottomMarker = new Coordinate(32.284581, -64.859520);
-        Coordinate topMarker = new Coordinate(32.317115,-64.827735);
+        Coordinate bottomMarker = new Coordinate(min.getLat(), min.getLon());
+        Coordinate topMarker = new Coordinate(max.getLat(), max.getLon());
 
         Coordinate middlePoint = DisplayUtils.midPointFromTwoCoords(bottomMarker, topMarker);
 
@@ -187,7 +186,7 @@ public class DisplayUtils {
                 "center=" +
                 middlePoint.getLat() + "," + middlePoint.getLon() +
                 "&size=" +
-                (int)1280/2 + "x" + (int)808/2 +
+                (int)canvasX/2 + "x" + (int)canvasY/2 +
                 "&style=feature:water%7Ccolor:0xaae7df" +
                 "&style=feature:all%7Celement:labels%7Cvisibility:off" +
                 "&visible=" +
