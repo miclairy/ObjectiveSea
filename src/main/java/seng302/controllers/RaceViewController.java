@@ -10,7 +10,6 @@ import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -27,7 +26,6 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.util.Duration;
 import seng302.data.BoatStatus;
-import seng302.data.RaceVisionXMLParser;
 import seng302.data.StartTimingStatus;
 import seng302.utilities.*;
 import seng302.models.*;
@@ -37,7 +35,6 @@ import seng302.views.RaceView;
 import java.util.*;
 
 import static java.lang.Math.abs;
-import static seng302.data.RaceStatus.PREPARATORY;
 import static seng302.data.RaceStatus.STARTED;
 import static seng302.data.RaceStatus.TERMINATED;
 import static seng302.utilities.DisplayUtils.zoomLevel;
@@ -163,7 +160,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 controller.showStarterOverlay();
                 this.stop();
             } else if (options.isPractice()){
-                controller.displayFinishedPraticePopUp();
+                controller.displayFinishedPracticePopUp();
             }
         }
         if(controller.hasRaceStatusChanged()){

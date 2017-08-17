@@ -382,7 +382,7 @@ public class Controller implements Initializable, Observer {
     /**
      * Display information about the success of the practice of crossing the start line. At the end of the practice time.
      */
-    void displayFinishedPraticePopUp() {
+    void displayFinishedPracticePopUp() {
         Boat boat = race.getCompetitors().get(0);
         if (boat.getLastRoundedMarkIndex() >= 0) {
             showTutorialOverlay("Finished", "You passed the start line! \nTime: " +
@@ -391,6 +391,7 @@ public class Controller implements Initializable, Observer {
             showTutorialOverlay("Too late", "You failed to pass the start line at a reasonable time." +
                     "\nTry Again");
         }
+        tutorialOverlay.setTranslateX(-450);
     }
 
 
