@@ -4,6 +4,7 @@ import javafx.animation.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
@@ -44,6 +45,29 @@ public class AnimationUtils {
         fadeTransition.setInterpolator(Interpolator.EASE_OUT);
 
         return fadeTransition;
+    }
+
+    /**
+     * fades a node in our out from the screen
+     * @param node the node to be faded
+     * @param visible whether or not the node is currently visible
+     */
+    public static void fadeNode(Node node, boolean visible){
+        node.setVisible(true);
+        FadeTransition fadeTransition = new FadeTransition(new Duration(150), node);
+        if(visible){
+            fadeTransition.setFromValue(node.getOpacity());
+            fadeTransition.setToValue(0);
+            fadeTransition.setOnFinished(new EventHandler<ActionEvent>(){
+                public void handle(ActionEvent AE){
+                    node.setVisible(false);
+                }});
+        }else{
+            fadeTransition.setFromValue(0);
+            fadeTransition.setToValue(1);
+        }
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        fadeTransition.play();
     }
 
     /**
@@ -149,11 +173,125 @@ public class AnimationUtils {
 
     }
 
+    /**
+     * fades in a new FXML
+     * @param newScene the new scene to be faded in
+     */
     public static void transitionFXML(Node newScene){
         FadeTransition ft2 = new FadeTransition(Duration.millis(1000), newScene);
         ft2.setFromValue(0.0);
         ft2.setToValue(1.0);
         ft2.play();
+    }
+
+    /**
+     * lowers the opacity of a ndoe on the screen
+     * @param node the node to be faded
+     */
+    public static void dullNode(Node node){
+        FadeTransition fadeTransition = new FadeTransition(new Duration(100), node);
+        fadeTransition.setFromValue(1);
+        fadeTransition.setToValue(0.7);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        fadeTransition.play();
+    }
+
+    /**
+     * sets a nodes opcaity to full
+     * @param node the node to be made fully opaque
+     */
+    public static void focusNode(Node node){
+        FadeTransition fadeTransition = new FadeTransition(new Duration(100), node);
+        fadeTransition.setFromValue(node.getOpacity());
+        fadeTransition.setToValue(1);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        fadeTransition.play();
+    }
+
+    /**
+     * shifts a node that is hidden when scoreboard visible
+     * @param node the node to be shifted
+     * @param amount the amount to shift the node by
+     * @param visible whether or not the node is visible
+     */
+    public static void shiftPaneNodes(Node node, int amount, boolean visible){
+        node.setVisible(true);
+        TranslateTransition translateTransition = new TranslateTransition(new Duration(200), node);
+        translateTransition.setByX(amount);
+        translateTransition.setInterpolator(Interpolator.EASE_IN);
+        if(!visible){
+            translateTransition.setOnFinished(new EventHandler<ActionEvent>(){
+                public void handle(ActionEvent AE){
+                    node.setVisible(false);
+                }});
+        }
+        translateTransition.play();
+    }
+
+    /**
+     * shifts the side pane arrow in or out
+     * @param node the arrow to be shifted
+     * @param amount the amount ot shift it by
+     * @param rotation the amount to rotate it by
+     */
+    public static void shiftPaneArrow(Node node, int amount, int rotation){
+        TranslateTransition translateTransition = new TranslateTransition(new Duration(200), node);
+        translateTransition.setByX(amount);
+        translateTransition.setInterpolator(Interpolator.EASE_IN);
+
+        RotateTransition rotateTransition = new RotateTransition(new Duration(200), node);
+        rotateTransition.setByAngle(180 * rotation);
+        rotateTransition.setInterpolator(Interpolator.EASE_IN);
+
+        ParallelTransition pt = new ParallelTransition(translateTransition, rotateTransition);
+        pt.play();
+
+    }
+
+    /**
+     *  shifts a hidden board node when panel toggled
+     * @param node the node to be shifted
+     * @param visible whether or not it is currently visible
+     */
+    public static void toggleHiddenBoardNodes(Node node, boolean visible){
+        FadeTransition fadeTransition = new FadeTransition(new Duration(200), node);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+
+        TranslateTransition translateTransition = new TranslateTransition(new Duration(200), node);
+        translateTransition.setInterpolator(Interpolator.EASE_IN);
+
+        if(visible){
+            translateTransition.setFromY(node.getLayoutY());
+            translateTransition.setToY(node.getLayoutY() - 10);
+            fadeTransition.setFromValue(0.8);
+            fadeTransition.setToValue(0);
+            fadeTransition.setOnFinished(new EventHandler<ActionEvent>(){
+                public void handle(ActionEvent AE){
+                    node.setVisible(false);
+                }});
+        }else{
+            node.setVisible(true);
+            fadeTransition.setFromValue(0);
+            fadeTransition.setToValue(0.8);
+            translateTransition.setFromY(node.getLayoutY() - 10);
+            translateTransition.setToY(node.getLayoutY());
+        }
+        ParallelTransition pt = new ParallelTransition(translateTransition, fadeTransition);
+        pt.play();
+    }
+
+    /**
+     * mades a node grow and shrink to draw attention to it
+     * @param node the node to grow and shrink
+     */
+    public static void drawAttentionToNode(Node node){
+        ScaleTransition st = new ScaleTransition(Duration.millis(200), node);
+        st.setByX(1.2);
+        st.setByY(1.2);
+        st.setAutoReverse(true);
+        st.setInterpolator(Interpolator.EASE_OUT);
+        st.setCycleCount(2);
+        st.play();
     }
 
 }

@@ -11,11 +11,9 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.geometry.Rectangle2D;
-import javafx.stage.WindowEvent;
-import javafx.event.EventHandler;
 import javafx.application.Platform;
 import seng302.data.registration.ServerFullException;
-import seng302.utilities.Config;
+import seng302.models.ServerOptions;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplaySwitcher;
 import seng302.utilities.NoConnectionToServerException;
@@ -24,8 +22,8 @@ import java.io.IOException;
 
 public class Main extends Application {
     private static Client client;
-    private static Server server;
-    private static Stage primaryStage;
+    private Server server;
+    private Stage primaryStage;
     private DisplaySwitcher displaySwitcher;
 
     @Override
@@ -46,20 +44,64 @@ public class Main extends Application {
         });
     }
 
-    public static void main( String[] args ) {launch(args); }
+    public static void main( String[] args ) {
+        if (args.length >= 1) {
+            Main main = new Main();
+            main.launchWithArguments(args);
+        } else {
+            launch(args);
+        }
+    }
+
+    /**
+     * Parse command line arguments and use them to launch the application
+     * @param args arguments that application was started with
+     */
+    private void launchWithArguments(String[] args) {
+        if (args[0].equals("server")){
+            try {
+                ServerOptions serverOptions = new ServerOptions();
+                serverOptions.setNumRacesToRun(-1);
+                for (int i = 1; i < args.length; i+=2) {
+                    switch(args[i]) {
+                        case "-p":
+                            serverOptions.setPort(Integer.parseInt(args[i + 1]));
+                            break;
+                        case "-n":
+                            serverOptions.setMinParticipants(Integer.parseInt(args[i + 1]));
+                            break;
+                        case "-m":
+                            serverOptions.setRaceXML(args[i + 1]);
+                            break;
+                        case "-s":
+                            serverOptions.setSpeedScale(Double.parseDouble(args[i + 1]));
+                            break;
+                        case "-r":
+                            serverOptions.setNumRacesToRun(Integer.parseInt(args[i + 1]));
+                            break;
+                        default:
+                            throw new IllegalArgumentException(String.format("Unknown argument \"%s\"", args[i]));
+                    }
+                }
+                setupServer(serverOptions);
+                System.out.println("Headless server started.");
+            } catch (IllegalArgumentException iae) {
+                System.out.print("Invalid server arguments. ");
+                System.out.println(iae.getMessage());
+                Platform.exit();
+            } catch (IOException e) {
+                System.out.println("Failed to start headless server.");
+                e.printStackTrace();
+                Platform.exit();
+            }
+        }
+    }
 
     /**
      * Creates a Server object, puts it in it's own thread and starts the thread
      */
-    private static void setupServer(String course, int port, boolean isTutorial) throws IOException {
-        RaceUpdater runner = new RaceUpdater(course);
-        runner.setScaleFactor(Config.MOCK_SPEED_SCALE);
-        if(isTutorial) runner.setTutorial();
-        Thread runnerThread = new Thread(runner);
-        runnerThread.setName("Race Updater");
-        runnerThread.start();
-        server = new Server(port, runner, course);
-        server.setScaleFactor(Config.MOCK_SPEED_SCALE);
+    private void setupServer(ServerOptions serverOptions) throws IOException {
+        server = new Server(serverOptions);
         ConnectionUtils.setServer(server);
         Thread serverThread = new Thread(server);
         serverThread.setName("Server");
@@ -70,7 +112,7 @@ public class Main extends Application {
         return client;
     }
 
-    public void loadMainMenu() {
+    private void loadMainMenu() {
         displaySwitcher.loadMainMenu();
     }
 
@@ -89,8 +131,11 @@ public class Main extends Application {
     }
 
     public void startHostedRace(String course, int port, boolean isTutorial) throws Exception{
-        Config.initializeConfig();
-        setupServer(course, port, isTutorial);
+        ServerOptions options = new ServerOptions();
+        options.setPort(port);
+        options.setRaceXML(course);
+        options.setTutorial(isTutorial);
+        setupServer(options);
         startClient("localhost", port, true);
     }
 

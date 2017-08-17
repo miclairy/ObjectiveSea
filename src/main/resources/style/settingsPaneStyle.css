@@ -1,9 +1,9 @@
 #settingsPane {
-    -fx-background-color: #2b2b2b;
+    -fx-background-color: transparent;
 }
 
 #raceClockHBox {
-    -fx-background-color: #2a2a2a;
+    -fx-background-color: transparent;
 }
 
 #settingHeader{
@@ -16,6 +16,7 @@
   -fx-background-color:  #232323;
   -fx-text-fill: #FFFFFF;
   -fx-font-size: 15px;
+  -fx-font-weight: 700;
   -fx-border-radius: 70;
   -fx-background-radius: 70;
   -fx-text-alignment: right;
@@ -23,13 +24,12 @@
 }
 
 #btnTrack{
-    //-fx-graphic:url('/graphics/buttonImages/track-boat.png');
-    //-fx-content-display: left;
     -fx-background-image: url('/graphics/buttonImages/track-boat.png');
     -fx-background-size: 22px 22px;
     -fx-background-repeat: no-repeat;
     -fx-background-position: left 18 center;
     -fx-background-color:  #232323;
+    -fx-font-weight: 700;
     -fx-text-fill: #FFFFFF;
     -fx-font-size: 15px;
     -fx-border-radius: 70;
@@ -76,14 +76,15 @@
     -fx-text-fill: White;
     -fx-background-color: #2a2a2a;
     -fx-background-radius: 20px;
+    -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
 }
 
 #placings {
-    -fx-control-inner-background: #2a2a2a;
-    -fx-background-color: #2a2a2a;
+    -fx-control-inner-background: transparent;
+    -fx-background-color: transparent;
     -fx-font-size: 16px;
     -fx-focus-color: transparent;
-    -fx-border-color: #1a1a1a;
+    -fx-border-color: transparent;
 }
 
 #startersList{

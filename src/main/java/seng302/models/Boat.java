@@ -1,6 +1,7 @@
 package seng302.models;
 
 
+import javafx.beans.property.*;
 import seng302.data.StartTimingStatus;
 
 import seng302.data.BoatStatus;
@@ -29,9 +30,9 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     private String name;
     private String nickName;
-    private double currentSpeed;
+    private DoubleProperty currentSpeed = new SimpleDoubleProperty();
     private double currentVMG;
-    private int currPlacing;
+    private IntegerProperty currPlacing = new SimpleIntegerProperty();
     private int leg;
 
     private Coordinate currentPosition;
@@ -63,6 +64,9 @@ public class Boat extends Observable implements Comparable<Boat>{
     private boolean boatColliding;
 
     private BoatStatus status = BoatStatus.UNDEFINED;
+    private StringProperty statusProperty = new SimpleStringProperty();
+    private DoubleProperty headingProperty = new SimpleDoubleProperty();
+    private DoubleProperty healthProperty = new SimpleDoubleProperty();
     private StartTimingStatus timeStatus = StartTimingStatus.ONTIME;
 
     private List<Coordinate> pathCoords;
@@ -91,6 +95,7 @@ public class Boat extends Observable implements Comparable<Boat>{
         this.pathCoords = new ArrayList<>();
         this.currentPosition = new Coordinate(0,0);
         this.previousPosition = new Coordinate(0,0);
+        this.healthProperty.set(1.0);
     }
 
     /**
@@ -116,6 +121,7 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void setStatus(BoatStatus status) {
         this.status = status;
+        this.statusProperty.setValue(status.getText());
     }
 
     public Coordinate getCurrentPosition() {
@@ -149,12 +155,26 @@ public class Boat extends Observable implements Comparable<Boat>{
         return this.name;
     }
 
+    public StringProperty getNameProperty(){return new SimpleStringProperty(name);}
+
     public String getNickName() {
         return nickName;
     }
 
+    public DoubleProperty getSpeedProperty(){ return currentSpeed; }
+
+    public StringProperty getStatusProperty() { return statusProperty; }
+
+    public IntegerProperty getCurrPlacingProperty(){ return currPlacing;}
+
+    public DoubleProperty getHeadingProperty(){
+        return headingProperty;
+    }
+
+    public DoubleProperty getHealthProperty(){ return healthProperty; }
+
     public double getCurrentSpeed() {
-        return currentSpeed;
+        return currentSpeed.get();
     }
 
     private void checkPenaltySpeed() {
@@ -168,9 +188,11 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void addDamage(int damage) {
         if((boatHealth - damage) > 0) {
+            healthProperty.set((boatHealth -= damage)/100);
             boatHealth -= damage;
         } else {
             boatHealth = 0;
+            healthProperty.set(0);
             status = BoatStatus.DNF;
         }
         checkPenaltySpeed();
@@ -185,7 +207,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public int getSpeedInMMS(){
-        return (int) (this.currentSpeed * KNOTS_TO_MMS_MULTIPLIER);
+        return (int) (this.currentSpeed.get() * KNOTS_TO_MMS_MULTIPLIER);
     }
 
     public int getLastRoundedMarkIndex() {
@@ -220,10 +242,10 @@ public class Boat extends Observable implements Comparable<Boat>{
         return heading;
     }
 
-    public int getCurrPlacing(){return currPlacing;}
+    public int getCurrPlacing(){return currPlacing.get();}
 
     public void setCurrPlacing(int placing){
-        this.currPlacing = placing;
+        this.currPlacing.setValue(placing);
         setChanged();
         notifyObservers();
     }
@@ -234,6 +256,7 @@ public class Boat extends Observable implements Comparable<Boat>{
      * @param heading the new heading
      * */
     public void setHeading(double heading) {
+        this.headingProperty.set(((heading + 360)%360));
         this.heading = ((heading + 360)%360);
     }
 
@@ -249,6 +272,10 @@ public class Boat extends Observable implements Comparable<Boat>{
         return maxSpeed;
     }
 
+    public double getBoatHealth() {
+        return boatHealth;
+    }
+
     public void setTWAofBoat(double TWAofBoat) {
         this.TWAofBoat = TWAofBoat;
     }
@@ -258,7 +285,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     public void setCurrentSpeed(double speed) {
-        this.currentSpeed = max(0.0, speed);
+        this.currentSpeed.set(max(0.0, speed));
     }
 
     public long getTimeAtNextMark() {
@@ -376,7 +403,7 @@ public class Boat extends Observable implements Comparable<Boat>{
         double lineBearing = currentPosition.headingToCoordinate(markLocation);
         double angle = Math.abs(heading - lineBearing);
 
-        return Math.cos(Math.toRadians(angle)) * currentSpeed;
+        return Math.cos(Math.toRadians(angle)) * currentSpeed.get();
     }
 
 
