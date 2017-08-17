@@ -47,17 +47,22 @@ public class APISteps {
         sallysBoat.setHeading(100.0);
 
         sallysBoat.setCurrentSpeed(15.0);
-        Course course = mock(Course.class);
-        when(course.getTrueWindSpeed()).thenReturn(10.0);
-        race = new Race("test", course, Arrays.asList(sallysBoat));
+        RaceVisionXMLParser rc = new RaceVisionXMLParser();
+        Race tempRace = rc.importRace();
+        race = new Race("test", tempRace.getCourse(), Arrays.asList(sallysBoat));
+        race.getCourse().setTrueWindSpeed(10);
+        race.getCourse().setWindDirection(0);
         race.setId("1");
         race.updateRaceStatus(RaceStatus.STARTED);
         RaceVisionXMLParser raceVisionXMLParser = mock(RaceVisionXMLParser.class);
         when(raceVisionXMLParser.importRace()).thenReturn(race);
         RaceUpdater raceRunner = new RaceUpdater(selectedCourse);
         PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
-        VMGHeading = sallysBoat.getVMGHeading(course, polarTable);
-        when(course.getWindDirection()).thenReturn(0.0);
+
+        VMGHeading = sallysBoat.getVMGHeading(race.getCourse(), polarTable);
+        raceRunner.setStartingPosition(sallysBoat);
+        sallysBoat.setHeading(100.0);
+
         raceRunner.setRace(race);
         Thread runnerThread = new Thread(raceRunner);
         runnerThread.setName("Race Updater");

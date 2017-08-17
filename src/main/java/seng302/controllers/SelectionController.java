@@ -142,8 +142,8 @@ public class SelectionController extends Observable {
     }
 
     /**
-     * adds event handler to marks so we can detet if selected by the user
-     * @param mark
+     * adds event handler to marks so we can detect if selected by the user
+     * @param mark mark that the user has clicked on
      */
     void addMarkSelectionHandlers(Mark mark){
 

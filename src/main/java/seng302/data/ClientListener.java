@@ -6,6 +6,7 @@ import seng302.data.registration.RegistrationResponse;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.models.Boat;
 import seng302.models.Race;
+import seng302.utilities.DisplayUtils;
 import seng302.utilities.TimeUtils;
 
 import java.io.*;
@@ -292,9 +293,16 @@ public class ClientListener extends Receiver implements Runnable{
             if(race.getCourse().hasEntryMark()) legOffset += 1;
             Boat boat = race.getBoatById(boatID);
             if(boat != null){
+                BoatStatus currBoatStatus = BoatStatus.values()[boatStatus];
+                if(currBoatStatus.equals(BoatStatus.FINISHED) || currBoatStatus.equals(BoatStatus.DNF)){
+                    if (boat.getFinalRaceTime() == null) {
+                        String time = DisplayUtils.formatTotalRaceTime((int) ((currentTime - race.getStartTimeInEpochMs()) / 1000));
+                        boat.setFinalRaceTime(time);
+                    }
+                }
                 boat.setTimeTillMark(estimatedTimeAtMark);
                 boat.setLeg(legNumber + legOffset);
-                boat.setStatus(BoatStatus.values()[boatStatus]);
+                boat.setStatus(currBoatStatus);
             }
         }
         if(race.isFirstMessage()){

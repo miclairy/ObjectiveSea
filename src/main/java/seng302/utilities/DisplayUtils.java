@@ -333,15 +333,26 @@ public class DisplayUtils {
     }
 
     /**
+     * Format string for total race time
+     */
+    public static String formatTotalRaceTime(int secondsOfRace){
+        int mins = secondsOfRace / 60;
+        int secs = secondsOfRace - (mins * 60);
+        return String.format("%d m %d s", mins, secs);
+    }
+
+    /**
      * Computes the time until the next mark label
      * @param timeAtMark time to the next mark in epoch ms
      * @param currTime current time in epoch ms
      * @return the time to next mark in mm:ss or ... if invalid
      */
-    public static String getTimeToNextMark(long timeAtMark, long currTime){
+    public static String getTimeToNextMark(long timeAtMark, long currTime, Boat boat, Course course){
         String timeTillMark;
         long convertedTime = (timeAtMark - currTime);
-        if (timeAtMark > 0 && convertedTime < FIFTY_NINE_MINUTES_MS) {
+        Coordinate nextMark = course.getCourseOrder().get(boat.getLastRoundedMarkIndex() + 1).getPosition();
+        Boolean headingToMark = MathUtils.pointBetweenTwoAngle(boat.getCurrentPosition().headingToCoordinate(nextMark), 60, boat.getHeading());
+        if (timeAtMark > 0 && convertedTime < FIFTY_NINE_MINUTES_MS && headingToMark) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("mm:ss");
             Instant instant = Instant.ofEpochMilli(convertedTime);
             ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneOffset.UTC);
