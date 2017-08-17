@@ -94,21 +94,28 @@ public class RaceUpdater implements Runnable {
 
     @Override
     public void run() {
+        boolean isPractice = RaceVisionXMLParser.courseFile.equals("PracticeStart-course.xml");
+        if (isPractice) race.updateRaceStatus(PREPARATORY);
         Course course = race.getCourse();
         while (!race.getRaceStatus().isRaceEndedStatus() && serverRunning) {
             boolean atLeastOneBoatNotFinished = false;
             double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
             long millisBeforeStart = race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs();
+            long secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000;
             race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs()
                     + (long)(TimeUtils.secondsToMilliseconds(raceSecondsPassed)));
+            race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs() + (long)(raceSecondsPassed * 1000));
             generateWind();
             if (race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)) {
                 collisionManager.checkForCollisions(race);
             }
-
             for (Boat boat : race.getCompetitors()) {
+                if(isPractice && (secondsElapsed > 60 || boat.getLastRoundedMarkIndex() == 0)){
+                    race.updateRaceStatus(TERMINATED);
+                }
                 if(race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
                     if (collisionManager.boatIsInCollision(boat)) {
+
                         //revert the last location update as it was a collision
                         updateLocation(-TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
                         boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
@@ -116,7 +123,7 @@ public class RaceUpdater implements Runnable {
                     adjustSpeed(boat);
                     updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
                     boat.updateBoatHeading(raceSecondsPassed);
-                    if (course.getCourseOrder().size() > 0) {
+                    if (course.getCourseOrder().size() > 0 && race.getRaceStatus().equals(STARTED)) {
                         checkMarkRounding(boat, course);
                     }
                     calculateTimeAtNextMark(boat);

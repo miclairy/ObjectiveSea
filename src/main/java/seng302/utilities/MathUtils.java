@@ -100,7 +100,7 @@ public class MathUtils {
      */
     public static Boolean boatHeadingToLine(double boatsHeading, double lineHeading, double headingOfMark){
         Boolean towardsLine = false;
-        System.out.println(pointBetweenTwoAngle(lineHeading + 90, 90, headingOfMark));
+        // System.out.println(pointBetweenTwoAngle(lineHeading + 90, 90, headingOfMark));
 
         if(pointBetweenTwoAngle((lineHeading + 270)%360, 90, boatsHeading) &&
                 pointBetweenTwoAngle(lineHeading + 90, 90, headingOfMark)){
