@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import seng302.data.RoundingSide;
 import seng302.models.*;
 import seng302.views.BoatDisplay;
 import java.time.Instant;
@@ -46,10 +47,10 @@ public class DisplayTimeUtils {
         defaultCourse.addNewCompoundMark(gate);
         defaultCourse.addNewCompoundMark(finish);
 
-        defaultCourse.addMarkInOrder(1, "Port");
-        defaultCourse.addMarkInOrder(2, "Port");
-        defaultCourse.addMarkInOrder(3, "Port");
-        defaultCourse.addMarkInOrder(4, "Port");
+        defaultCourse.addMarkInOrder(1, RoundingSide.PORT);
+        defaultCourse.addMarkInOrder(2, RoundingSide.PORT);
+        defaultCourse.addMarkInOrder(3, RoundingSide.PORT);
+        defaultCourse.addMarkInOrder(4, RoundingSide.PORT);
 
         defaultCourse.addToBoundary(new Coordinate(32.318879, -64.840291));
         defaultCourse.addToBoundary(new Coordinate(32.328879, -64.840291));
