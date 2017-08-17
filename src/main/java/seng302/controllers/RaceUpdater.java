@@ -101,9 +101,9 @@ public class RaceUpdater implements Runnable {
             boolean atLeastOneBoatNotFinished = false;
             double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
             long millisBeforeStart = race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs();
+            long secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000;
             race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs()
                     + (long)(TimeUtils.secondsToMilliseconds(raceSecondsPassed)));
-            long secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000;
             race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs() + (long)(raceSecondsPassed * 1000));
             generateWind();
             if (race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)) {
@@ -115,6 +115,7 @@ public class RaceUpdater implements Runnable {
                 }
                 if(race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
                     if (collisionManager.boatIsInCollision(boat)) {
+
                         //revert the last location update as it was a collision
                         updateLocation(-TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
                         boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
