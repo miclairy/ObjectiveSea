@@ -458,7 +458,7 @@ public class RaceUpdater implements Runnable {
         double minSpeed = race.getCourse().getTrueWindSpeed() - range;
         double speed = ThreadLocalRandom.current().nextDouble(minSpeed, maxSpeed);
 
-        if(speed > 6 && speed < 24) {
+        if(speed > MIN_WIND_SPEED && speed < MAX_WIND_SPEED) {
             race.getCourse().setTrueWindSpeed(speed);
         }
     }
