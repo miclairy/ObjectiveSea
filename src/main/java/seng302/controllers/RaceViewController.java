@@ -26,7 +26,6 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.util.Duration;
 import seng302.data.BoatStatus;
-import seng302.data.RaceVisionXMLParser;
 import seng302.data.StartTimingStatus;
 import seng302.utilities.*;
 import seng302.models.*;
@@ -88,13 +87,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean drawDistanceLine = false;
     private boolean firstTime = true;
     private SelectionController selectionController;
-    private Penalties penalties = new Penalties();
     private boolean highlightMark = false;
 
     private boolean nextMark = true;
 
     private double sailWidth = 5;
     private boolean isSailWidthChanging = false;
+    private ClientOptions options;
 
     private CourseRouteArrows courseRouteArrows;
 
@@ -102,8 +101,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private int prevWindColorNum = 0;
     private int arrowIteration = 0;
     private int timer = 0;
-
-    private boolean isTutorial = false;
 
     private Tutorial tutorial;
 
@@ -117,19 +114,36 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         this.selectionController = selectionController;
+        race.addObserver(this) ;
+    }
 
-        if(RaceVisionXMLParser.courseFile == "GuidedPractice-course.xml") {
-            isTutorial = true;
-            tutorial = new Tutorial(controller, race);
+            /**
+     * Sets the options for the RaceViewController and deals with initial setup based on the
+     * GameMode of these options.
+     * Must be called BEFORE start() is called on this object
+     * @param options a ClientOptions object configured with the options for the RaceView
+     */
+    public void setOptions(ClientOptions options) {
+        this.options = options;
+        if(options.isTutorial() || options.isPractice()) {
             controller.hideStarterOverlay();
             initBoatHighlight();
             initializeBoats();
-            initBoatPaths();
             redrawCourse();
+        }
+        if(options.isTutorial()) {
+            tutorial = new Tutorial(controller, race);
             shiftArrow(false);
+            initBoatPaths();
+        }
+        if (options.isPractice()) {
+            CompoundMark startLine = race.getCourse().getCourseOrder().get(0);
+            Mark centreMark = new Mark(0, "centre", startLine.getPosition());
+            selectionController.zoomToMark(centreMark);
+            controller.setZoomSliderValue(2.0);
         }
 
-        if(!isTutorial) {
+        if(!options.isTutorial() && !options.isPractice()) {
             this.courseRouteArrows = new CourseRouteArrows(race.getCourse(), root);
             courseRouteArrows.drawRaceRoute();
         }
@@ -149,21 +163,23 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         double secondsElapsed = TimeUtils.convertNanosecondsToSeconds(currentTime - previousTime);
 
-        if(!race.isTerminated() && !isTutorial){
+        if(!race.isTerminated() && !options.isTutorial()){
             controller.updateRaceClock();
         }else if (race.isTerminated()){
             if(race.getAbruptEnd()){
                 controller.blurScreen(true);
                 controller.showServerDisconnectError();
                 this.stop();
-            } else{
+            } else if (!options.isPractice()){
                 controller.raceCompetitorOverview();
                 controller.showStarterOverlay();
                 this.stop();
+            } else if (options.isPractice()){
+                controller.displayFinishedPracticePopUp();
             }
         }
         if(controller.hasRaceStatusChanged()){
-            if(!isTutorial){
+            if(!options.isTutorial() && !options.isPractice()){
                 controller.updatePreRaceScreen();
                 controller.setRaceStatusChanged(false);
             }
@@ -192,7 +208,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 updateNextMarkDistance(isZoomed);
             }
         }
-        if(!isTutorial){
+        if(!options.isTutorial() && !options.isPractice()){
             redrawRaceLines();
             courseRouteArrows.updateCourseArrows();
         } else {
@@ -203,7 +219,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
         updateWindArrow();
-
 
         flickercounter++;
         orderDisplayObjects();
@@ -222,7 +237,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         moveBoat(boatDisplay, point);
         moveWake(boatDisplay, point);
         moveSail(boatDisplay, point);
-        if(!isTutorial && !boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF)){
+        if(!options.isTutorial() && !boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF)){
             displayCollisions(boatDisplay, point);
         }
         displayCollisions(boatDisplay, point);
@@ -300,9 +315,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 highlightAnimation(point, displayBoat, true, "collisionCircle", 1);
                 displayBoat.setCollisionInProgress(true);
             }
-            if(boat.isMarkColliding()){
-                penalties.markCollision(boat);
-            }
             boat.setMarkColliding(false);
             boat.setBoatColliding(false);
         }
@@ -347,7 +359,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if(boatDisplay.getBoat().getId() == Main.getClient().getClientID()){
                 currentUserBoatDisplay = boatDisplay;
                 scoreBoardController.highlightUserBoat();
-                if(!isTutorial){
+                if(!options.isTutorial()){
                     controller.addUserBoat();
                 }
             }
@@ -442,6 +454,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             ft2.setOnFinished(new EventHandler<ActionEvent>() {
                 public void handle(ActionEvent AE) {
                     boat.setCollisionInProgress(false);
+                    boat.getBoat().setBoatCollideSound(false);
+                    boat.getBoat().setMarkCollideSound(false);
                 }
             });
         } else {
@@ -490,15 +504,17 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     void redrawCourse(){
         courseNeedsRedraw = false;
-        if(!isTutorial) {
+        if(!options.isTutorial()) {
             drawMarks();
             drawBoundary();
             redrawRaceLines();
+        } else {
+            changeAnnotations(0, true);
         }
         drawMap();
         drawWindArrow();
 
-        if(!isTutorial) {
+        if(!options.isTutorial() && !options.isPractice()) {
             if (DisplayUtils.zoomLevel > 1) {
                 courseRouteArrows.removeRaceRoute();
             } else if (scoreBoardController.getCoursePathToggle().isSelected()) {
@@ -553,21 +569,27 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * Handles drawing of all of the marks from the course
      */
     public void drawMarks() {
+        int limit = race.getCourse().getAllMarks().size();
+        if (options.isPractice()) limit = 2;
+        int count = 0;
         for (Mark mark : race.getCourse().getAllMarks().values()) {
-            if (mark.getIcon() != null && root.getChildren().contains(mark.getIcon())){
-                CanvasCoordinate point = DisplayUtils.convertFromLatLon(mark.getPosition());
-                mark.getIcon().setCenterX(point.getX());
-                mark.getIcon().setCenterY(point.getY());
-            }else{
-                Circle circle = raceView.createMark(mark.getPosition());
-                root.getChildren().add(circle);
-                mark.setIcon(circle);
-                selectionController.addMarkSelectionHandlers(mark);
-            }
+            if (count < limit) {
+                if (mark.getIcon() != null && root.getChildren().contains(mark.getIcon())) {
+                    CanvasCoordinate point = DisplayUtils.convertFromLatLon(mark.getPosition());
+                    mark.getIcon().setCenterX(point.getX());
+                    mark.getIcon().setCenterY(point.getY());
+                } else {
+                    Circle circle = raceView.createMark(mark.getPosition());
+                    root.getChildren().add(circle);
+                    mark.setIcon(circle);
+                    selectionController.addMarkSelectionHandlers(mark);
+                }
 
-            mark.getIcon().toFront();
-            mark.getIcon().setScaleX(zoomLevel);
-            mark.getIcon().setScaleY(zoomLevel);
+                mark.getIcon().toFront();
+                mark.getIcon().setScaleX(zoomLevel);
+                mark.getIcon().setScaleY(zoomLevel);
+                count++;
+            }
         }
     }
 
@@ -723,7 +745,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                         displayBoat.showVectors();
                     }
                     if (scoreBoardController.isLayLinesSelected()){
-                        if (selectedBoats.contains(displayBoat)) {
+                        if (selectedBoats.contains(displayBoat) || selectionController.isClientBoat(displayBoat)) {
                             drawLayline(displayBoat);
                         }
                     }

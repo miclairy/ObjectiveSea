@@ -25,14 +25,15 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Callback;
+import seng302.models.Boat;
+import seng302.models.ClientOptions;
+import seng302.models.Course;
+import seng302.models.Race;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplayUtils;
 import seng302.data.BoatStatus;
 import seng302.utilities.*;
-import seng302.models.Boat;
-import seng302.models.Course;
-import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 import seng302.views.BoatDisplay;
 import seng302.views.HeadsupDisplay;
@@ -121,10 +122,9 @@ public class Controller implements Initializable, Observer {
     @FXML
     private SelectionController selectionController;
 
-    public boolean raceBegun;
     private boolean raceStatusChanged = true;
     private Race race;
-    private boolean isHost;
+    private ClientOptions options;
     private DisplaySwitcher displaySwitcher;
     private boolean scoreboardVisible = true;
 
@@ -132,6 +132,7 @@ public class Controller implements Initializable, Observer {
     private final double FOCUSED_ZOOMSLIDER_OPACITY = 0.8;
     private final double IDLE_ZOOMSLIDER_OPACITY = 0.4;
 
+    private SoundController soundController;
     private Scene scene;
 
     @Override
@@ -160,7 +161,6 @@ public class Controller implements Initializable, Observer {
         lblNoBoardClock.textProperty().bind(raceTimerString);
         clockLabel.textProperty().bind(clockString);
         hideStarterOverlay();
-        raceViewController.updateWindArrow();
         rightHandSide.setOpacity(0.7);
         lblNoBoardClock.setVisible(false);
         tblPlacingsRV.setVisible(false);
@@ -170,7 +170,6 @@ public class Controller implements Initializable, Observer {
 
         raceCompetitorOverview();
         startersOverlay.toFront();
-        raceViewController.start();
         initDisplayDrag();
         initZoom();
     }
@@ -222,8 +221,6 @@ public class Controller implements Initializable, Observer {
         } catch (Exception e) {
             return race.getRegattaName();
         }
-
-
     }
 
     /**
@@ -238,25 +235,33 @@ public class Controller implements Initializable, Observer {
             tutorialOverlay.setVisible(true);
             AnimationUtils.scalePop(tutorialOverlay);
         }
-
     }
 
-    public void setApp(boolean host, DisplaySwitcher displaySwitcher, Scene scene) {
+    /**
+     * Set app options and pass them on to the RaceViewController
+     * @param options configured ClientOptions
+     * @param displaySwitcher required to allow switching back to main menu
+     * @param scene the scene in which we are being drawn
+     */
+    public void setApp(ClientOptions options, DisplaySwitcher displaySwitcher, Scene scene) {
         this.displaySwitcher = displaySwitcher;
-        this.isHost = host;
+        this.options = options;
         this.scene = scene;
-        if (isHost) {
+        if (this.options.isHost()) {
             startersOverlayTitle.setText(getPublicIp());
         } else {
             startersOverlayTitle.setText(race.getRegattaName());
         }
         initKeyPressListener();
-
+        raceViewController.setOptions(options);
+        raceViewController.updateWindArrow();
+        raceViewController.start();
     }
 
     @FXML public void exitRunningRace() {
-        ConnectionUtils.initiateDisconnect(isHost);
+        ConnectionUtils.initiateDisconnect(options.isHost());
         displaySwitcher.loadMainMenu();
+        soundController.setRunning(false);
         raceViewController.stop();
         DisplayUtils.resetZoom();
     }
@@ -376,7 +381,7 @@ public class Controller implements Initializable, Observer {
      * shows a popup informing user that the server has disconnected
      */
     public void showServerDisconnectError() {
-        if(!isHost){
+        if(!options.isHost()){
             Alert alert = new Alert(Alert.AlertType.ERROR);
             DialogPane dialogPane = alert.getDialogPane();
             dialogPane.getStylesheets().add("style/menuStyle.css");
@@ -390,6 +395,21 @@ public class Controller implements Initializable, Observer {
             alert.setOnHidden(evt -> exitTerminatedRace());
             alert.show();
         }
+    }
+
+    /**
+     * Display information about the success of the practice of crossing the start line. At the end of the practice time.
+     */
+    void displayFinishedPracticePopUp() {
+        Boat boat = race.getCompetitors().get(0);
+        if (boat.getLastRoundedMarkIndex() >= 0) {
+            showTutorialOverlay("Finished", "You passed the start line! \nTime: " +
+                    raceTimerString.get() + "\nSpeed: " + Math.round(boat.getCurrentSpeed()) + " knots");
+        } else {
+            showTutorialOverlay("Too late", "You failed to pass the start line at a reasonable time." +
+                    "\nTry Again");
+        }
+        tutorialOverlay.setTranslateX(-450);
     }
 
 
@@ -410,7 +430,7 @@ public class Controller implements Initializable, Observer {
                 }
                 break;
             case STARTED:
-                if(Main.getClient().isParticipant()){
+                if(options.isParticipant() && !options.isPractice()){
                     raceViewController.getCourseRouteArrows().removeRaceRoute();
                     scoreBoardController.getCoursePathToggle().setSelected(false);
                 }
@@ -768,5 +788,9 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.dullNode(button);
             AnimationUtils.toggleQuickMenuNodes(label, true);
         }
+    }
+
+    public void setSoundController(SoundController soundController) {
+        this.soundController = soundController;
     }
 }

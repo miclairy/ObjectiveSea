@@ -1,5 +1,7 @@
 package seng302.data;
 
+import seng302.controllers.Controller;
+import seng302.controllers.SoundController;
 import seng302.data.registration.RegistrationResponse;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.models.Boat;
@@ -220,6 +222,10 @@ public class ClientListener extends Receiver implements Runnable{
                                         break;
                                     case REGISTRATION_RESPONSE:
                                         parseRegistrationResponseMessage(body);
+                                        break;
+                                    case BOAT_STATE_MESSAGE:
+                                        parseBoatStateMessage(body);
+                                        break;
                                 }
                             }
                     }
@@ -236,6 +242,12 @@ public class ClientListener extends Receiver implements Runnable{
                 System.out.println("Client: disconnected from Server");
             }
         }
+    }
+
+    private void parseBoatStateMessage(byte[] body) {
+        Integer boatID = byteArrayRangeToInt(body, BOAT_STATE_SOURCE_ID.getStartIndex(), BOAT_STATE_SOURCE_ID.getEndIndex());
+        Integer boatHealth = byteArrayRangeToInt(body, BOAT_HEALTH.getStartIndex(), BOAT_HEALTH.getEndIndex());
+        race.setBoatHealth(boatID, boatHealth);
     }
 
     /**
@@ -307,12 +319,18 @@ public class ClientListener extends Receiver implements Runnable{
     private void parseYachtEventMessage(byte[] body) {
         int eventID = byteArrayRangeToInt(body, EVENT_ID.getStartIndex(), EVENT_ID.getEndIndex());
         int boatID = byteArrayRangeToInt(body, DESTINATION_SOURCE_ID.getStartIndex(), DESTINATION_SOURCE_ID.getEndIndex());
-        if (eventID == YachtEventCode.COLLISION.code()) {
+        if(eventID == YachtEventCode.COLLISION_MARK.code()) {
+            Boat boat = race.getBoatById(boatID);
+            boat.setMarkColliding(true);
+            boat.setMarkCollideSound(true);
+            boat.setMarkCollideSound(true);
+        } else if (eventID == YachtEventCode.COLLISION_PENALTY.code()) {
             Boat boat = race.getBoatById(boatID);
             boat.setBoatColliding(true);
-            boat.setMarkColliding(true);
-        } else if (eventID == YachtEventCode.COLLISION_PENALTY.code()) {
-
+            boat.setBoatCollideSound(true);
+        } else if (eventID == YachtEventCode.COLLISION.code()) {
+            Boat boat = race.getBoatById(boatID);
+            boat.setBoatColliding(true);
         }
     }
 

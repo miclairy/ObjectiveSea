@@ -97,6 +97,8 @@ public class RaceUpdater implements Runnable {
 
     @Override
     public void run() {
+        boolean isPractice = RaceVisionXMLParser.courseFile.equals("PracticeStart-course.xml");
+        if (isPractice) race.updateRaceStatus(PREPARATORY);
         Course course = race.getCourse();
         boolean oneBoatHasFinished = false;
         double timeOfFirstFinisher = 0;
@@ -104,14 +106,18 @@ public class RaceUpdater implements Runnable {
             boolean atLeastOneBoatNotFinished = false;
             double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
             long millisBeforeStart = race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs();
+            long secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000;
             race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs()
                     + (long)(TimeUtils.secondsToMilliseconds(raceSecondsPassed)));
+            race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs() + (long)(raceSecondsPassed * 1000));
             generateWind();
             if (race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)) {
                 collisionManager.checkForCollisions(race);
             }
-
             for (Boat boat : race.getCompetitors()) {
+                if(isPractice && (secondsElapsed > 60 || boat.getLastRoundedMarkIndex() == 0)){
+                    race.updateRaceStatus(TERMINATED);
+                }
                 BoatStatus currBoatStatus = boat.getStatus();
                 if (currBoatStatus.equals(BoatStatus.FINISHED) && !oneBoatHasFinished){
                     oneBoatHasFinished = true;
@@ -129,6 +135,7 @@ public class RaceUpdater implements Runnable {
                 }
                 if(race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
                     if (collisionManager.boatIsInCollision(boat)) {
+
                         //revert the last location update as it was a collision
                         updateLocation(-TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
                         boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
@@ -136,7 +143,7 @@ public class RaceUpdater implements Runnable {
                     adjustSpeed(boat);
                     updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
                     boat.updateBoatHeading(raceSecondsPassed);
-                    if (course.getCourseOrder().size() > 0) {
+                    if (course.getCourseOrder().size() > 0 && race.getRaceStatus().equals(STARTED)) {
                         checkMarkRounding(boat, course);
                     }
                     calculateTimeAtNextMark(boat);
@@ -478,18 +485,14 @@ public class RaceUpdater implements Runnable {
      * generates a random windspeed and wind angle within a range of the current speed and angle
      */
     public void generateWind(){
-        //TODO: wind angle has been changed to a hard coded number.
         double range = 0.05;
         double maxSpeed = race.getCourse().getTrueWindSpeed() + range;
         double minSpeed = race.getCourse().getTrueWindSpeed() - range;
-
-        //double maxAngle = race.getCourse().getWindDirection() + range;
-        //double minAngle = race.getCourse().getWindDirection() - range;
         double speed = ThreadLocalRandom.current().nextDouble(minSpeed, maxSpeed);
-        double angle = race.getCourse().getWindDirection();//ThreadLocalRandom.current().nextDouble(minAngle, maxAngle);
 
-        race.getCourse().setTrueWindSpeed(speed);
-        race.getCourse().setWindDirection(angle);
+        if(speed > MIN_WIND_SPEED && speed < MAX_WIND_SPEED) {
+            race.getCourse().setTrueWindSpeed(speed);
+        }
     }
 
     /**

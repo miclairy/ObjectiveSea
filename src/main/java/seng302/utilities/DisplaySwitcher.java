@@ -1,13 +1,12 @@
 package seng302.utilities;
 
-import javafx.animation.FadeTransition;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import seng302.controllers.*;
+import seng302.models.ClientOptions;
 
 import java.net.URL;
 import java.util.logging.Level;
@@ -21,11 +20,13 @@ public class DisplaySwitcher {
     private static Scene scene;
     private Stage stage;
     private Main main;
+    private static GameSounds gameSounds = new GameSounds();
 
     public DisplaySwitcher(Main main, Stage stage){
         this.stage = stage;
         this.main = main;
     }
+
 
     /**
      * loads the main menu into the stage
@@ -34,6 +35,12 @@ public class DisplaySwitcher {
         try {
             MainMenuController mainMenu = (MainMenuController) replaceSceneContent("main_menu.fxml");
             mainMenu.setApp(main);
+            try {
+                gameSounds.stopEndlessMusic();
+            } catch (Exception e) {}
+            gameSounds.mainMenuMusic();
+            gameSounds.playEndlessMusic();
+
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -41,12 +48,17 @@ public class DisplaySwitcher {
 
     /**
      * loads the race view into the stage
-     * @param isHost a boolean showing if the user is a host or not
+     * @param options a set of configured ClientOptions
      */
-    public void loadRaceView(boolean isHost) {
+    public void loadRaceView(ClientOptions options) {
         try {
-            Controller race = (Controller) replaceSceneContent("race_view.fxml");
-            race.setApp(isHost, this, scene);
+            SoundController soundController = new SoundController(Main.getClient().getClientID());
+            soundController.setRunning(true);
+            Thread soundControllerThread = new Thread(soundController);
+            soundControllerThread.start();
+            Controller raceController = (Controller) replaceSceneContent("race_view.fxml");
+            raceController.setApp(options, this, scene);
+            raceController.setSoundController(soundController);
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -76,4 +88,7 @@ public class DisplaySwitcher {
 
     public static Scene getScene(){return scene;}
 
+    public static GameSounds getGameSounds() {
+        return gameSounds;
+    }
 }

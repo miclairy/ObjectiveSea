@@ -7,7 +7,7 @@ package seng302.data;
 public enum AC35StreamMessage {
     REGISTRATION_REQUEST(55, 4), REGISTRATION_RESPONSE(56, 5), XML_MESSAGE(26), BOAT_LOCATION_MESSAGE(37, 56),
     MARK_ROUNDING_MESSAGE(38, 21), RACE_STATUS_MESSAGE(12), UNKNOWN(0),
-    BOAT_ACTION_MESSAGE(100, 5), YACHT_EVENT_CODE(29, 22);
+    BOAT_ACTION_MESSAGE(100, 5), YACHT_EVENT_CODE(29, 22), BOAT_STATE_MESSAGE(103, 5);
 
     private final int type, length;
 
@@ -47,6 +47,8 @@ public enum AC35StreamMessage {
                 return REGISTRATION_RESPONSE;
             case 29:
                 return YACHT_EVENT_CODE;
+            case 103:
+                return BOAT_STATE_MESSAGE;
             default:
                 return UNKNOWN;
         }

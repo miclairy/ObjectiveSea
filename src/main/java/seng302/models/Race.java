@@ -285,5 +285,9 @@ public class Race extends Observable{
     public boolean getAbruptEnd() {
         return abruptEnd;
     }
+
+    public void setBoatHealth(Integer boatID, Integer boatHealth) {
+        boatIdMap.get(boatID).setBoatHealth(boatHealth);
+    }
 }
 
