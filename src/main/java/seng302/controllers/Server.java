@@ -159,6 +159,9 @@ public class Server implements Runnable, Observer {
                 if (collision.boatIsAtFault(boatId)) {
                     sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION_PENALTY);
                 }
+                if(collision.getInvolvedBoats().size() == 1) {
+                    sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION_MARK);
+                }
                 sendBoatStateMessage(boat);
             }
             collisionManager.removeCollision(collision);

@@ -1,12 +1,10 @@
 package seng302.utilities;
 
-import javafx.animation.FadeTransition;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import seng302.controllers.*;
 
 import java.net.URL;
@@ -21,11 +19,13 @@ public class DisplaySwitcher {
     private static Scene scene;
     private Stage stage;
     private Main main;
+    private static GameSounds gameSounds = new GameSounds();
 
     public DisplaySwitcher(Main main, Stage stage){
         this.stage = stage;
         this.main = main;
     }
+
 
     /**
      * loads the main menu into the stage
@@ -34,6 +34,12 @@ public class DisplaySwitcher {
         try {
             MainMenuController mainMenu = (MainMenuController) replaceSceneContent("main_menu.fxml");
             mainMenu.setApp(main);
+            try {
+                gameSounds.stopEndlessMusic();
+            } catch (Exception e) {}
+            gameSounds.mainMenuMusic();
+            gameSounds.playEndlessMusic();
+
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -45,8 +51,13 @@ public class DisplaySwitcher {
      */
     public void loadRaceView(boolean isHost) {
         try {
+            SoundController soundController = new SoundController(Main.getClient().getClientID());
+            soundController.setRunning(true);
+            Thread soundControllerThread = new Thread(soundController);
+            soundControllerThread.start();
             Controller race = (Controller) replaceSceneContent("race_view.fxml");
             race.setApp(isHost, this, scene);
+            race.setSoundController(soundController);
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -76,4 +87,7 @@ public class DisplaySwitcher {
 
     public static Scene getScene(){return scene;}
 
+    public static GameSounds getGameSounds() {
+        return gameSounds;
+    }
 }

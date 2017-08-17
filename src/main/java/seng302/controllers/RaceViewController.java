@@ -36,6 +36,7 @@ import seng302.views.CourseRouteArrows;
 import seng302.views.RaceView;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Math.abs;
 import static seng302.data.RaceStatus.PREPARATORY;
@@ -64,7 +65,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private final double WIND_ARROW_X_PADDING = 470;
     private final double WIND_ARROW_Y_PADDING = 19;
     private final double NEXT_MARK_ARROW_X_PADDING = 605;
-    private final double NEXT_MARK_ARROW_Y_PADDING = 58;
+    private final double NEXT_MARK_ARROW_Y_PADDING = 64;
     private final double WIND_CIRCLE_X_PADDING = 455;
     private final double WIND_CIRCLE_Y_PADDING = 10;
 
@@ -90,7 +91,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean drawDistanceLine = false;
     private boolean firstTime = true;
     private SelectionController selectionController;
-    private Penalties penalties = new Penalties();
     private boolean highlightMark = false;
 
     private boolean nextMark = true;
@@ -137,6 +137,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
 
         redrawCourse();
+
+        //courseRouteArrows.drawRaceRoute();
         race.addObserver(this);
     }
 
@@ -220,7 +222,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         moveBoat(boatDisplay, point);
         moveWake(boatDisplay, point);
         moveSail(boatDisplay, point);
-        if(!isTutorial){
+        if(!isTutorial && !boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF)){
             displayCollisions(boatDisplay, point);
         }
         displayCollisions(boatDisplay, point);
@@ -437,6 +439,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             ft2.setOnFinished(new EventHandler<ActionEvent>() {
                 public void handle(ActionEvent AE) {
                     boat.setCollisionInProgress(false);
+                    boat.getBoat().setBoatCollideSound(false);
+                    boat.getBoat().setMarkCollideSound(false);
                 }
             });
         } else {
@@ -489,6 +493,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             drawMarks();
             drawBoundary();
             redrawRaceLines();
+        } else {
+            changeAnnotations(0, true);
         }
         drawMap();
         drawWindArrow();
@@ -718,7 +724,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                         displayBoat.showVectors();
                     }
                     if (scoreBoardController.isLayLinesSelected()){
-                        if (selectedBoats.contains(displayBoat)) {
+                        if (selectedBoats.contains(displayBoat) || selectionController.isClientBoat(displayBoat)) {
                             drawLayline(displayBoat);
                         }
                     }

@@ -21,6 +21,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+import seng302.data.RaceVisionXMLParser;
 import seng302.models.Boat;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.DisplaySwitcher;
@@ -32,6 +33,7 @@ import seng302.models.Race;
 import seng302.views.CourseRouteArrows;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Created by Louis on 20-Apr-17.
@@ -51,7 +53,7 @@ public class ScoreBoardController {
     @FXML private ListView<String> placings;
     @FXML private Slider annotationsSlider;
     @FXML private Label raceTimerLabel;
-    @FXML private Label lblAnnotation;
+    @FXML public Label lblAnnotation;
     @FXML private CheckBox chkName;
     @FXML private CheckBox chkSpeed;
     @FXML private CheckBox chkPassMarkTime;
@@ -137,6 +139,7 @@ public class ScoreBoardController {
                 }
             }
         });
+
         annotationsSlider.setValue(1);
 
         addButtonListeners(btnTrack);
