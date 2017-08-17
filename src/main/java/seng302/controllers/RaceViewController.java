@@ -88,7 +88,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean drawDistanceLine = false;
     private boolean firstTime = true;
     private SelectionController selectionController;
-    private Penalties penalties = new Penalties();
     private boolean highlightMark = false;
 
     private boolean nextMark = true;
@@ -317,9 +316,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 highlightAnimation(point, displayBoat, true, "collisionCircle", 1);
                 displayBoat.setCollisionInProgress(true);
             }
-            if(boat.isMarkColliding()){
-                penalties.markCollision(boat);
-            }
             boat.setMarkColliding(false);
             boat.setBoatColliding(false);
         }
@@ -459,6 +455,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             ft2.setOnFinished(new EventHandler<ActionEvent>() {
                 public void handle(ActionEvent AE) {
                     boat.setCollisionInProgress(false);
+                    boat.getBoat().setBoatCollideSound(false);
+                    boat.getBoat().setMarkCollideSound(false);
                 }
             });
         } else {

@@ -27,6 +27,7 @@ public class Main extends Application {
     private Stage primaryStage;
     private DisplaySwitcher displaySwitcher;
 
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;

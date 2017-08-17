@@ -18,7 +18,11 @@ import seng302.models.ClientOptions;
 import seng302.models.GameMode;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
+import seng302.utilities.DisplaySwitcher;
 
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -90,42 +94,44 @@ public class MainMenuController implements Initializable{
         this.main = main;
     }
 
-    @FXML private void loadLiveGameGrid(){
+    @FXML private void loadLiveGameGrid() {
         liveGameGrid.setVisible(true);
         AnimationUtils.slideOutTransition(btnGrid);
         AnimationUtils.slideInTransition(liveGameGrid);
     }
 
-    @FXML private void backToMainMenu(){
+    @FXML private void backToMainMenu() {
         btnGrid.setVisible(true);
         AnimationUtils.slideOutTransition(liveGameGrid);
         AnimationUtils.slideInTransition(btnGrid);
     }
 
-    @FXML private void loadPracticeGrid(){
+    @FXML private void loadPracticeGrid() {
         practiceGrid.setVisible(true);
         AnimationUtils.slideOutTransition(btnGrid);
         AnimationUtils.slideInTransition(practiceGrid);
     }
 
-    @FXML private void backToMainMenuPrac(){
+    @FXML private void backToMainMenuPrac() {
         btnGrid.setVisible(true);
         AnimationUtils.slideOutTransition(practiceGrid);
         AnimationUtils.slideInTransition(btnGrid);
     }
 
-    @FXML private void backToLiveGame(){
+    @FXML private void backToLiveGame() {
         liveGameGrid.setVisible(true);
         AnimationUtils.slideOutTransition(courseGrid);
         AnimationUtils.slideInTransition(liveGameGrid);
     }
 
     @FXML private void loadTutorial() throws Exception {
+        DisplaySwitcher.getGameSounds().stopEndlessMusic();
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.TUTORIAL);
         main.startHostedRace("GuidedPractice-course.xml", DEFAULT_PORT, true, clientOptions);
         Thread.sleep(200);
         main.loadRaceView(clientOptions);
+        loadTutorialMusic();
     }
 
     /**
@@ -138,6 +144,7 @@ public class MainMenuController implements Initializable{
         main.startHostedRace(selectedCourse, DEFAULT_PORT, false, clientOptions);
         Thread.sleep(200);
         main.loadRaceView(clientOptions);
+        loadSinglePlayerMusic();
     }
 
 
@@ -147,6 +154,7 @@ public class MainMenuController implements Initializable{
         main.startHostedRace("PracticeStart-course.xml", DEFAULT_PORT, false, clientOptions);
         Thread.sleep(200);
         main.loadRaceView(clientOptions);
+        loadSinglePlayerMusic();
     }
 
     /**
@@ -160,9 +168,10 @@ public class MainMenuController implements Initializable{
         main.startHostedRace(selectedCourse, port, false, clientOptions);
         Thread.sleep(200);
         main.loadRaceView(clientOptions);
+        loadRealGameSounds();
     }
 
-    @FXML private void hostGame(){
+    @FXML private void hostGame() {
         if(validatePort()) {
             courseGrid.setVisible(true);
             AnimationUtils.slideOutTransition(liveGameGrid);
@@ -194,6 +203,7 @@ public class MainMenuController implements Initializable{
             if(clientStarted){
                 Thread.sleep(200);
                 main.loadRaceView(clientOptions);
+                loadRealGameSounds();
             }
         } else {
             if(!ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && !txtIPAddress.getText().isEmpty()){
@@ -322,4 +332,23 @@ public class MainMenuController implements Initializable{
         });
     }
 
+
+    private void loadSinglePlayerMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        DisplaySwitcher.getGameSounds().stopEndlessMusic();
+        DisplaySwitcher.getGameSounds().singlePlayerMusic();
+        DisplaySwitcher.getGameSounds().playEndlessMusic();
+    }
+
+    private void loadTutorialMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+        DisplaySwitcher.getGameSounds().stopEndlessMusic();
+        DisplaySwitcher.getGameSounds().tutorialMusic();
+        DisplaySwitcher.getGameSounds().playEndlessMusic();
+    }
+
+    private void loadRealGameSounds() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        DisplaySwitcher.getGameSounds().stopEndlessMusic();
+        DisplaySwitcher.getGameSounds().oceanWaves();
+        DisplaySwitcher.getGameSounds().playEndlessMusic();
+        DisplaySwitcher.getGameSounds().startSeaGullNoise();
+    }
 }

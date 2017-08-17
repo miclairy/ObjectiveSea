@@ -134,6 +134,7 @@ public class Controller implements Initializable, Observer {
     private final double FOCUSED_ZOOMSLIDER_OPACITY = 0.8;
     private final double IDLE_ZOOMSLIDER_OPACITY = 0.4;
 
+    private SoundController soundController;
     private Scene scene;
 
     @Override
@@ -262,6 +263,7 @@ public class Controller implements Initializable, Observer {
     @FXML public void exitRunningRace() {
         ConnectionUtils.initiateDisconnect(options.isHost());
         displaySwitcher.loadMainMenu();
+        soundController.setRunning(false);
         raceViewController.stop();
         DisplayUtils.resetZoom();
     }
@@ -779,5 +781,9 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.dullNode(button);
             AnimationUtils.toggleQuickMenuNodes(label, true);
         }
+    }
+
+    public void setSoundController(SoundController soundController) {
+        this.soundController = soundController;
     }
 }
