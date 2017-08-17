@@ -295,6 +295,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 highlightAnimation(point, displayBoat, true, "collisionCircle", 1);
                 displayBoat.setCollisionInProgress(true);
             }
+            if(boat.isMarkColliding()){
+                penalties.markCollision(boat);
+            }
             boat.setMarkColliding(false);
             boat.setBoatColliding(false);
         }
@@ -339,6 +342,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if(boatDisplay.getBoat().getId() == Main.getClient().getClientID()){
                 currentUserBoatDisplay = boatDisplay;
                 scoreBoardController.highlightUserBoat();
+                if(!isTutorial){
+                    controller.addUserBoat();
+                }
             }
         }
     }
@@ -1084,6 +1090,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         scoreBoardController.updateSparkLine();
         if(!controller.isScoreboardVisible()){
             controller.refreshTable();
+            controller.refreshHUD();
         }
     }
 
