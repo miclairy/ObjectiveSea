@@ -327,4 +327,36 @@ public class AnimationUtils {
         return fadeTransition;
     }
 
+    /**
+     *  toggles a quick menu title in and out
+     * @param node the node to be shifted
+     * @param visible whether or not it is currently visible
+     */
+    public static void toggleQuickMenuNodes(Node node, boolean visible){
+        FadeTransition fadeTransition = new FadeTransition(new Duration(200), node);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+
+        TranslateTransition translateTransition = new TranslateTransition(new Duration(200), node);
+        translateTransition.setInterpolator(Interpolator.EASE_IN);
+
+        if(visible){
+            translateTransition.setFromX(node.getLayoutX());
+            translateTransition.setToX(node.getLayoutX() + 5);
+            fadeTransition.setFromValue(0.8);
+            fadeTransition.setToValue(0);
+            fadeTransition.setOnFinished(new EventHandler<ActionEvent>(){
+                public void handle(ActionEvent AE){
+                    node.setVisible(false);
+                }});
+        }else{
+            node.setVisible(true);
+            fadeTransition.setFromValue(0);
+            fadeTransition.setToValue(0.8);
+            translateTransition.setFromX(node.getLayoutX() + 5);
+            translateTransition.setToX(node.getLayoutX());
+        }
+        ParallelTransition pt = new ParallelTransition(translateTransition, fadeTransition);
+        pt.play();
+    }
+
 }
