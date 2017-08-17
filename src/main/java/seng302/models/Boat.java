@@ -448,15 +448,11 @@ public class Boat extends Observable implements Comparable<Boat>{
     private class OptimumHeadings {
         public double headingA;
         public double headingB;
-        private int rotateDirectionA;
-        private int rotateDirectionB;
 
 
         public OptimumHeadings(double headingA, double headingB) {
             this.headingA = headingA;
             this.headingB = headingB;
-            this.rotateDirectionA = -1;
-            this.rotateDirectionB = 1;
         }
 
     }
@@ -534,18 +530,16 @@ public class Boat extends Observable implements Comparable<Boat>{
         double optimumHeadingA = optimumHeadings.headingA;
         double optimumHeadingB = optimumHeadings.headingB;
 
+        //Checks if boat is already on an optimum heading
         if(heading - 1 <= optimumHeadingA && optimumHeadingA <= heading + 1) {
-//            System.out.println("1");
-//            System.out.println();
             rotateDirection = 1 * tackOrGybeScale;
             return optimumHeadingB;
         } else if (heading - 1 <= optimumHeadingB && optimumHeadingB <= heading + 1) {
-//            System.out.println("-1");
-//            System.out.println();
             rotateDirection = -1 * tackOrGybeScale;
             return optimumHeadingA;
         }
 
+        //Checks if boat is in the no sail zone
         if(isTacking(TWA)) {
             if(inRange(optimumHeadings.headingA, optimumHeadings.headingB, heading)) {
                 return -1;
@@ -555,30 +549,15 @@ public class Boat extends Observable implements Comparable<Boat>{
         if ((int) optimumHeadings.headingA == (int) heading && (int) optimumHeadings.headingB == (int) heading){
             return -1;
         }
-//
-//        System.out.println(heading);
-//        System.out.println("heading A " + optimumHeadings.headingA);
-//        System.out.println("heading B " + optimumHeadings.headingB);
-        double angleToOptimumA = abs( heading - optimumHeadingA);
-        double angleToOptimumB = abs( heading - optimumHeadingB);
-        if(angleToOptimumA > 180) {
-            angleToOptimumA = 360 - angleToOptimumA;
-        }
-        if(angleToOptimumB > 180) {
-            angleToOptimumB = 360 - angleToOptimumB;
-        }
-//        System.out.println("angle to A " + angleToOptimumA);
-//        System.out.println("angle to B " + angleToOptimumB);
+
+        double angleToOptimumA = MathUtils.getAngleBetweenTwoHeadings(heading, optimumHeadingA);
+        double angleToOptimumB = MathUtils.getAngleBetweenTwoHeadings(heading, optimumHeadingB);
 
         if (angleToOptimumA <= angleToOptimumB) {
             rotateDirection = 1 * tackOrGybeScale;
-//            System.out.println("B " + rotateDirection);
-//            System.out.println();
             return optimumHeadingB;
         } else {
             rotateDirection = -1 * tackOrGybeScale;
-//            System.out.println("A " + rotateDirection);
-//            System.out.println();
             return optimumHeadingA;
         }
     }
