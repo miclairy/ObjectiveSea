@@ -32,6 +32,7 @@ import seng302.data.StartTimingStatus;
 import seng302.utilities.*;
 import seng302.models.*;
 import seng302.views.BoatDisplay;
+import seng302.views.CourseRouteArrows;
 import seng302.views.RaceView;
 
 import java.util.*;
@@ -97,8 +98,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private double sailWidth = 5;
     private boolean isSailWidthChanging = false;
 
+    private CourseRouteArrows courseRouteArrows;
+
     private int flickercounter = 0;
     private int prevWindColorNum = 0;
+    private int arrowIteration = 0;
+    private int timer = 0;
 
     private boolean isTutorial = false;
 
@@ -114,17 +119,21 @@ public class RaceViewController extends AnimationTimer implements Observer {
         this.raceView = new RaceView();
         this.scoreBoardController = scoreBoardController;
         this.selectionController = selectionController;
-        if(Objects.equals(RaceVisionXMLParser.courseFile, "GuidedPractice-course.xml")) {
+
+        if(RaceVisionXMLParser.courseFile == "GuidedPractice-course.xml") {
             isTutorial = true;
             tutorial = new Tutorial(controller, race);
             controller.hideStarterOverlay();
-            scoreBoardController.annotationsSlider.setVisible(false);
-            scoreBoardController.lblAnnotation.setVisible(false);
             initBoatHighlight();
             initializeBoats();
             initBoatPaths();
             redrawCourse();
             shiftArrow(false);
+        }
+
+        if(!isTutorial) {
+            this.courseRouteArrows = new CourseRouteArrows(race.getCourse(), root);
+            courseRouteArrows.drawRaceRoute();
         }
 
         redrawCourse();
@@ -184,10 +193,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
         if(!isTutorial){
             redrawRaceLines();
+            courseRouteArrows.updateCourseArrows();
         } else {
             if(tutorial != null) tutorial.runTutorial();
         }
         if (courseNeedsRedraw) redrawCourse();
+
         changeAnnotations(currentAnnotationsLevel, true);
         controller.updatePlacings();
         updateWindArrow();
@@ -288,6 +299,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 highlightAnimation(point, displayBoat, true, "collisionCircle", 1);
                 displayBoat.setCollisionInProgress(true);
             }
+            if(boat.isMarkColliding()){
+                penalties.markCollision(boat);
+            }
             boat.setMarkColliding(false);
             boat.setBoatColliding(false);
         }
@@ -332,6 +346,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if(boatDisplay.getBoat().getId() == Main.getClient().getClientID()){
                 currentUserBoatDisplay = boatDisplay;
                 scoreBoardController.highlightUserBoat();
+                if(!isTutorial){
+                    controller.addUserBoat();
+                }
             }
         }
     }
@@ -481,6 +498,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
         drawMap();
         drawWindArrow();
+
+        if(!isTutorial) {
+            if (DisplayUtils.zoomLevel > 1) {
+                courseRouteArrows.removeRaceRoute();
+            } else if (scoreBoardController.getCoursePathToggle().isSelected()) {
+                courseRouteArrows.drawRaceRoute();
+            }
+        }
         drawNextMarkArrow();
         redrawRaceLines();
     }
@@ -1072,6 +1097,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         scoreBoardController.updateSparkLine();
         if(!controller.isScoreboardVisible()){
             controller.refreshTable();
+            controller.refreshHUD();
         }
     }
 
@@ -1111,7 +1137,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     /**
-     * draws a wind arrow on the course view
+     * draws a wind Arrow on the course view
      */
     public void drawWindArrow() {
         windCircle = controller.getWindCircle();
@@ -1132,7 +1158,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     /**
-     * checks if wind arrow needs updating
+     * checks if wind Arrow needs updating
      */
     public void updateWindArrow() {
         windArrow.setVisible(true);
@@ -1148,7 +1174,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     /**
-     * updates angle of wind arrow
+     * updates angle of wind Arrow
      */
     public void updateWindArrowAngle() {
         double windDirection = (float)race.getCourse().getWindDirection();
@@ -1217,7 +1243,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     /**
-     * updates the colour of the wind arrow with a transition
+     * updates the colour of the wind Arrow with a transition
      * @param colorNum the num for related color value
      */
     public void updateWindArrowColor(int colorNum){
@@ -1313,6 +1339,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
     public BoatDisplay getCurrentUserBoatDisplay() {
         return currentUserBoatDisplay;
+    }
+
+    public CourseRouteArrows getCourseRouteArrows() {
+        return courseRouteArrows;
     }
 }
 

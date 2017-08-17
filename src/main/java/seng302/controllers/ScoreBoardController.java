@@ -17,7 +17,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
-import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
@@ -31,6 +30,7 @@ import seng302.views.BoatDisplay;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
 import seng302.models.Race;
+import seng302.views.CourseRouteArrows;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -49,7 +49,9 @@ public class ScoreBoardController {
 
     //FXML fields
     @FXML private CheckBox fpsToggle;
-    @FXML public Slider annotationsSlider;
+    @FXML private CheckBox coursePathToggle;
+    @FXML private ListView<String> placings;
+    @FXML private Slider annotationsSlider;
     @FXML private Label raceTimerLabel;
     @FXML public Label lblAnnotation;
     @FXML private CheckBox chkName;
@@ -183,6 +185,16 @@ public class ScoreBoardController {
     }
 
     @FXML
+    private void toggleCoursePath(){
+        CourseRouteArrows courseRouteArrows = raceViewController.getCourseRouteArrows();
+        if(coursePathToggle.isSelected()){
+            courseRouteArrows.drawRaceRoute();
+        } else{
+            courseRouteArrows.removeRaceRoute();
+        }
+    }
+
+    @FXML
     private void btnTrackPressed(){
         selectionController.trackBoat();
     }
@@ -310,5 +322,9 @@ public class ScoreBoardController {
     public void updateSparkLine(){
         xAxis.setUpperBound(race.getCourse().getCourseOrder().size());
         yAxis.setLowerBound(race.getCompetitors().size() + 1);
+    }
+
+    public CheckBox getCoursePathToggle() {
+        return coursePathToggle;
     }
 }
