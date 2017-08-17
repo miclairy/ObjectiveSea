@@ -402,7 +402,13 @@ public class Boat extends Observable implements Comparable<Boat>{
         double lineBearing = currentPosition.headingToCoordinate(markLocation);
         double angle = Math.abs(heading - lineBearing);
 
-        return Math.cos(Math.toRadians(angle)) * currentSpeed.get();
+        double VMG = Math.cos(Math.toRadians(angle)) * currentSpeed.get();
+
+        if(angle > 90) {
+            VMG = 0;
+        }
+
+        return VMG;
     }
 
 
