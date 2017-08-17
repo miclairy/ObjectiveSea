@@ -128,6 +128,7 @@ public class Controller implements Initializable, Observer {
     private final double FOCUSED_ZOOMSLIDER_OPACITY = 0.8;
     private final double IDLE_ZOOMSLIDER_OPACITY = 0.4;
 
+    private SoundController soundController;
     private Scene scene;
 
     @Override
@@ -240,6 +241,7 @@ public class Controller implements Initializable, Observer {
     public void exitRunningRace() {
         ConnectionUtils.initiateDisconnect(isHost);
         displaySwitcher.loadMainMenu();
+        soundController.setRunning(false);
         raceViewController.stop();
         DisplayUtils.resetZoom();
     }
@@ -712,5 +714,9 @@ public class Controller implements Initializable, Observer {
         btnHide.setVisible(false);
         AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
         AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
+    }
+
+    public void setSoundController(SoundController soundController) {
+        this.soundController = soundController;
     }
 }

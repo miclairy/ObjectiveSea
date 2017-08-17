@@ -113,6 +113,9 @@ public class GameSounds {
         }, 0, randomSeaGull);
     }
 
+    /**
+     * Plays a random voiceover when a player has hit a mark
+     */
     public void hitMark() {
         int randomNumber = (int)(random.nextDouble() * 5) + 1; //1-5
         switch(randomNumber){
@@ -133,6 +136,9 @@ public class GameSounds {
         selectedVoiceOver = buoySound;
     }
 
+    /**
+     * Plays a random voice over when a boat has hit another boat
+     */
     public void hitBoat() {
         int randomNumber = (int)(random.nextDouble() * 4) + 1; //1-4
         switch(randomNumber){
@@ -147,6 +153,9 @@ public class GameSounds {
         }
     }
 
+    /**
+     * Plays a random voice over when a boat hits the boundary
+     */
     public void hitBoundary() {
         int randomNumber = (int)(random.nextDouble() * 4) + 1; //1-4
         switch(randomNumber){
@@ -161,6 +170,9 @@ public class GameSounds {
         }
     }
 
+    /**
+     * Plays a random voice over when a boat comes in first
+     */
     public void firstPlace() {
         int randomNumber = (int)(random.nextDouble() * 2) + 1; //1-2
         switch(randomNumber){
@@ -171,6 +183,9 @@ public class GameSounds {
         }
     }
 
+    /**
+     * Plays a random voice over when a boat finishes the race
+     */
     public void everyoneButFirstPlace() {
         int randomNumber = (int)(random.nextDouble() * 3) + 1; //1-3
         switch(randomNumber){
@@ -193,6 +208,9 @@ public class GameSounds {
         }
     }
 
+    /**
+     * Plays a random voice over when a boat finishes in last place
+     */
     public void lastPlace() {
         int randomNumber = (int)(random.nextDouble() * 2) + 1; //1-2
         switch(randomNumber){
@@ -203,6 +221,9 @@ public class GameSounds {
         }
     }
 
+    /**
+     * Plays a random voice over when a boat loses health
+     */
     public void boatDamage() {
         int randomNumber = (int)(random.nextDouble() * 6) + 1; //1-6
         switch(randomNumber){
@@ -222,6 +243,9 @@ public class GameSounds {
     }
 
 
+    /**
+     * Plays a random voiceover during the race prestart
+     */
     public void preRace() {
         int randomNumber = (int)(random.nextDouble() * 2) + 1; //1-2
         switch(randomNumber){
@@ -232,6 +256,9 @@ public class GameSounds {
         }
     }
 
+    /**
+     * Plays single instance sounds (e.g.voice overs)
+     */
     public void playGameSound () {
         URL resource = getClass().getResource(selectedVoiceOver);
         mediaPlayer = new MediaPlayer(new Media(resource.toString()));
@@ -240,6 +267,12 @@ public class GameSounds {
         mediaPlayer.play();
     }
 
+    /**
+     * Plays looping music (e.g. lobby music)
+     * @throws IOException
+     * @throws LineUnavailableException
+     * @throws UnsupportedAudioFileException
+     */
     public void playEndlessMusic() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
         clip = AudioSystem.getClip();
         inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResource(selectedMusic));

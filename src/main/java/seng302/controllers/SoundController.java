@@ -22,6 +22,7 @@ public class SoundController implements Runnable {
     private int clientID;
     private Race race = Client.getRace();
     private int noOfBoats = race.getCompetitors().size();
+    private boolean running;
 
     public SoundController(int clientID) {
         this.clientID = clientID;
@@ -29,8 +30,8 @@ public class SoundController implements Runnable {
 
 
     /**
-     * Plays sounds based on boat placing. If boat has won, first place sound is played
-     * If boat has lost, last place sound is played
+     * Plays sounds based on boat placing. If boat has won, first place sound is played.
+     * If boat has lost, last place sound is played. If boat is finished, and not last or first a sound is played
      */
     public void checkPlacing(Boat boat) {
         if (!finalGameSound && boat.getId().equals(clientID)) {
@@ -107,7 +108,7 @@ public class SoundController implements Runnable {
 
     @Override
     public void run() {
-        while(true) {
+        while(running) {
             for (Boat boat : race.getCompetitors()) {
                 initialReadySound();
                 checkPlacing(boat);
@@ -120,5 +121,9 @@ public class SoundController implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
     }
 }
