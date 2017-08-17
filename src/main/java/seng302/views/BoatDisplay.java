@@ -243,7 +243,8 @@ public class BoatDisplay implements Observer {
 
         Line predictedLine = new Line(point1.getX(), point1.getY(), point2.getX(), point2.getY());
         predictedLine.setStroke(color);
-        predictedLine.setStrokeWidth(2);
+        predictedLine.setStrokeWidth(4);
+        predictedLine.setId("predictedStartline");
 
         if(!MathUtils.boatOnStartSide(race.getCourse(), boat) || !MathUtils.boatHeadingToStart(race.getCourse(), boat)) {
             predictedLine.setOpacity(0);

@@ -1,14 +1,15 @@
 package seng302.views;
 
+import javafx.animation.FadeTransition;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Polyline;
-import javafx.scene.shape.Shape;
 import javafx.scene.transform.Rotate;
 import seng302.models.CanvasCoordinate;
 import seng302.models.Coordinate;
+import seng302.utilities.AnimationUtils;
 import seng302.utilities.DisplayUtils;
 
 /**
@@ -49,10 +50,17 @@ public class Arrow extends Polyline {
 
     public void addToCanvas(Group root){
         root.getChildren().add(arrowLine);
+        FadeTransition ft = AnimationUtils.changeCourseRouteNode(arrowLine, true);
+        ft.play();
     }
 
     public void removeFromCanvas(Group root){
-        root.getChildren().remove(arrowLine);
+        FadeTransition ft = AnimationUtils.changeCourseRouteNode(arrowLine, true);
+        ft.setOnFinished(new EventHandler<ActionEvent>(){
+            public void handle(ActionEvent AE){
+                root.getChildren().remove(arrowLine);
+            }});
+        ft.play();
     }
 
     public void setColour(Color color){
@@ -63,7 +71,8 @@ public class Arrow extends Polyline {
      * Emphasizes the arrow
      */
     public void emphasize(){
-        arrowLine.setOpacity(1.0);
+        AnimationUtils.fadeNodeCustom(arrowLine, 1);
+        //arrowLine.setOpacity(1.0);
         arrowLine.setStrokeWidth(5.0);
     }
 
@@ -71,7 +80,8 @@ public class Arrow extends Polyline {
      * Makes the arrow appear faded out
      */
     public void fade(){
-        arrowLine.setOpacity(0.2);
+        AnimationUtils.fadeNodeCustom(arrowLine, 0.2);
+        //arrowLine.setOpacity(0.2);
         arrowLine.setStrokeWidth(4.0);
     }
 

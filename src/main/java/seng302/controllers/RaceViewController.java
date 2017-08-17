@@ -65,7 +65,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private final double WIND_ARROW_X_PADDING = 470;
     private final double WIND_ARROW_Y_PADDING = 19;
     private final double NEXT_MARK_ARROW_X_PADDING = 605;
-    private final double NEXT_MARK_ARROW_Y_PADDING = 58;
+    private final double NEXT_MARK_ARROW_Y_PADDING = 64;
     private final double WIND_CIRCLE_X_PADDING = 455;
     private final double WIND_CIRCLE_Y_PADDING = 10;
 
@@ -138,6 +138,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
 
         redrawCourse();
+
+        //courseRouteArrows.drawRaceRoute();
         race.addObserver(this);
     }
 
