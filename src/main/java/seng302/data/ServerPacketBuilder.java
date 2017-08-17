@@ -273,4 +273,12 @@ public class ServerPacketBuilder extends PacketBuilder {
         return generatePacket(header, body);
     }
 
+    public byte[] createBoatStateMessagePacket(Boat boat){
+        byte[] header = createHeader(BOAT_STATE_MESSAGE);
+        byte[] body = new byte[BOAT_STATE_MESSAGE.getLength()];
+        addFieldToByteArray(body, BOAT_STATE_SOURCE_ID, boat.getId());
+        addFieldToByteArray(body, BOAT_HEALTH, (int)boat.getBoatHealth());
+        return generatePacket(header, body);
+    }
+
 }

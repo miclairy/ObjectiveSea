@@ -126,6 +126,16 @@ public class Server implements Runnable, Observer {
         sendXmlMessage(REGATTA_XML_MESSAGE, "Regatta.xml");
     }
 
+    private void sendAllBoatStates() throws IOException {
+        for(Boat boat : raceUpdater.getRace().getCompetitors()){
+            sendBoatStateMessage(boat);
+        }
+    }
+
+    private void sendBoatStateMessage(Boat boat) throws IOException {
+        sendPacket(packetBuilder.createBoatStateMessagePacket(boat));
+    }
+
     /**
      * Sends Race Status, Boat Location and Mark Rounding messages that are currently necessary
      * @throws IOException
@@ -149,6 +159,7 @@ public class Server implements Runnable, Observer {
                 if (collision.boatIsAtFault(boatId)) {
                     sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION_PENALTY);
                 }
+                sendBoatStateMessage(boat);
             }
             collisionManager.removeCollision(collision);
         }
@@ -262,6 +273,11 @@ public class Server implements Runnable, Observer {
             }
         } else if(observable instanceof ServerListener){
             manageRegistration((ServerListener) observable, (RegistrationType) arg);
+            try {
+                sendAllBoatStates();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

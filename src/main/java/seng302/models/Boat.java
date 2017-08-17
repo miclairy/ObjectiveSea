@@ -425,6 +425,9 @@ public class Boat extends Observable implements Comparable<Boat>{
         this.inGate = inGate;
     }
 
+    public void setBoatHealth(double boatHealth) {
+        this.boatHealth = boatHealth;
+    }
 
     /**
      * Class to store optimum headings as a pair
@@ -735,5 +738,9 @@ public class Boat extends Observable implements Comparable<Boat>{
                 tackOrGybe = false;
             }
         }
+    }
+
+    public double getBoatHealth() {
+        return boatHealth;
     }
 }
