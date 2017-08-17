@@ -93,6 +93,9 @@ public class GameSounds {
         selectedMusic = "/musicFiles/gameSounds/CrispOceanWaves.wav";
     }
 
+    /**
+     * Plays seagull sound at an interval between 30 to 60 seconds
+     */
     public void flockSeagulls() {
         randomSeaGull = (int)(random.nextDouble() * 30000) + 30000; //30-60 seconds
         Timer timer = new Timer();
@@ -228,8 +231,6 @@ public class GameSounds {
                 break;
         }
     }
-
-
 
     public void playGameSound () {
         URL resource = getClass().getResource(selectedVoiceOver);

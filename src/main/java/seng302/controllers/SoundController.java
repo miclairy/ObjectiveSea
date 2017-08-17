@@ -28,6 +28,10 @@ public class SoundController implements Runnable {
     }
 
 
+    /**
+     * Plays sounds based on boat placing. If boat has won, first place sound is played
+     * If boat has lost, last place sound is played
+     */
     public void checkPlacing(Boat boat) {
         if (!finalGameSound && boat.getId().equals(clientID)) {
             if (boat.getCurrPlacing() == 1 && boat.getStatus().equals(BoatStatus.FINISHED) && !firstPlaceTaken) {
@@ -52,6 +56,9 @@ public class SoundController implements Runnable {
         }
     }
 
+    /**
+     * Plays prerace game sound
+     */
     public void initialReadySound() {
         if(firstGameSound) {
             DisplaySwitcher.getGameSounds().preRace();
@@ -60,6 +67,10 @@ public class SoundController implements Runnable {
         }
     }
 
+    /**
+     * When boat hits another boat, boat damage sound and hitting boat sounds are played
+     * @param boat
+     */
     public void hasHitBoat(Boat boat) {
         if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 5000) && boat.isBoatCollideSound()) {
             if ((boat.getBoatHealth() <= 20) && boat.getId().equals(clientID)) {
@@ -74,6 +85,10 @@ public class SoundController implements Runnable {
         }
     }
 
+    /**
+     * When boat hits a mark, boat damage sound and hitting a mark sound plays
+     * @param boat
+     */
     public void hasHitMark(Boat boat) {
         if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 5000) && boat.isMarkCollideSound()) {
             if (boat.getBoatHealth() <= 20 && boat.getId().equals(clientID)) {
