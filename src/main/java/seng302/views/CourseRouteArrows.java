@@ -20,7 +20,7 @@ import static seng302.data.RoundingSide.STBD;
  */
 public class CourseRouteArrows {
 
-    private final int REFRESH_THRESHOLD = 8;
+    private final int REFRESH_THRESHOLD = 4;
     private final int ARROW_ITERATIONS_SHOWN = 3;
 
     private Course course;

@@ -145,3 +145,17 @@
     -fx-background-position: center;
     -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 0);
 }
+
+#lblExitRV{
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 0);
+}
+
+#lblTrackRV{
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 0);
+}

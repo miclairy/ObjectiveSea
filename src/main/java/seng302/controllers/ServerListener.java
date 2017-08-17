@@ -105,9 +105,11 @@ public class ServerListener extends Receiver implements Runnable{
                 break;
             case SAILS_IN:
                 boat.changeSails();
+                boat.setSailsNeedUpdate(true);
                 break;
             case SAILS_OUT:
                 boat.changeSails();
+                boat.setSailsNeedUpdate(true);
                 break;
             case TACK_GYBE:
                 boat.tackOrGybe(race.getCourse(), polarTable);
