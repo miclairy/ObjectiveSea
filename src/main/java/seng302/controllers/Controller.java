@@ -19,6 +19,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -34,6 +35,8 @@ import seng302.models.Course;
 import seng302.models.Race;
 import seng302.utilities.TimeUtils;
 import seng302.views.BoatDisplay;
+import seng302.utilities.TimeUtils;
+import seng302.views.HeadsupDisplay;
 
 
 import java.io.*;
@@ -51,9 +54,6 @@ public class Controller implements Initializable, Observer {
     @FXML private AnchorPane canvasAnchor;
     @FXML private AnchorPane rightHandSide;
     @FXML private Label fpsLabel;
-    /**
-     *
-     */
     @FXML private ListView<String> startersList;
     @FXML private Label clockLabel;
     @FXML private Label lblNoBoardClock;
@@ -64,19 +64,27 @@ public class Controller implements Initializable, Observer {
     @FXML public Label lblUserHelp;
     @FXML public Label lblWindSpeed;
     @FXML public Circle windCircle;
+    @FXML public Circle nextMarkCircle;
+    @FXML public SplitPane splitPane;
     @FXML private Button btnHide;
+    @FXML private Button btnQuickMenuTrack;
+    @FXML private Button btnQuickMenuExit;
+    @FXML private AnchorPane quickMenu;
     @FXML private ImageView imvSpeedScale;
     @FXML private TableView<Boat> tblPlacingsRV;
     @FXML private TableColumn<Boat, Integer> columnPosition;
     @FXML private TableColumn<Boat, String> columnName;
     @FXML private TableColumn<Boat, String> columnSpeed;
     @FXML private TableColumn<Boat, String> columnStatus;
+    @FXML private VBox headsUpDisplay;
+    private HeadsupDisplay infoDisplay;
 
     @FXML public StackPane stackPane;
     @FXML private AnchorPane tutorialOverlay;
     @FXML private Label tutorialOverlayTitle;
     @FXML private Label tutorialContent;
-
+    @FXML public Label lblNextMark;
+    @FXML private GridPane nextMarkGrid;
 
     //FPS Counter
     private SimpleStringProperty fpsString = new SimpleStringProperty();
@@ -100,6 +108,7 @@ public class Controller implements Initializable, Observer {
     private final String STARTERS_CSS = "/style/startersOverlayStyle.css";
     private final String SETTINGSPANE_CSS = "/style/settingsPaneStyle.css";
     private final String DISTANCELINE_CSS = "/style/distanceLineStyle.css";
+    private final String HEADSUP_DISPLAY_CSS = "/style/headsupDisplay.css";
     private final Color UNSELECTED_BOAT_COLOR = Color.WHITE;
     private final Color SELECTED_BOAT_COLOR = Color.rgb(77, 197, 138);
 
@@ -127,7 +136,7 @@ public class Controller implements Initializable, Observer {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         addRightHandSideListener();
-        canvasAnchor.getStylesheets().addAll(COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, BOAT_CSS, DISTANCELINE_CSS);
+        canvasAnchor.getStylesheets().addAll(COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, BOAT_CSS, DISTANCELINE_CSS, HEADSUP_DISPLAY_CSS);
         canvasWidth = canvas.getWidth();
         canvasHeight = canvas.getHeight();
         anchorWidth = canvasAnchor.getWidth();
@@ -154,7 +163,7 @@ public class Controller implements Initializable, Observer {
         rightHandSide.setOpacity(0.7);
         lblNoBoardClock.setVisible(false);
         tblPlacingsRV.setVisible(false);
-
+        headsUpDisplay.setVisible(false);
 
         displayStarters();
         startersOverlay.toFront();
@@ -179,6 +188,14 @@ public class Controller implements Initializable, Observer {
                 e -> AnimationUtils.toggleHiddenBoardNodes(tblPlacingsRV, false));
         lblNoBoardClock.addEventHandler(MouseEvent.MOUSE_EXITED,
                 e -> AnimationUtils.toggleHiddenBoardNodes(tblPlacingsRV, true));
+        btnQuickMenuExit.addEventHandler(MouseEvent.MOUSE_ENTERED,
+                e -> AnimationUtils.focusNode(btnQuickMenuExit));
+        btnQuickMenuExit.addEventHandler(MouseEvent.MOUSE_EXITED,
+                e -> AnimationUtils.dullNode(btnQuickMenuExit));
+        btnQuickMenuTrack.addEventHandler(MouseEvent.MOUSE_ENTERED,
+                e ->  AnimationUtils.focusNode(btnQuickMenuTrack));
+        btnQuickMenuTrack.addEventHandler(MouseEvent.MOUSE_EXITED,
+                e ->  AnimationUtils.dullNode(btnQuickMenuTrack));
     }
 
     /**
@@ -229,9 +246,10 @@ public class Controller implements Initializable, Observer {
             startersOverlayTitle.setText(race.getRegattaName());
         }
         initKeyPressListener();
+
     }
 
-    public void exitRunningRace() throws IOException {
+    @FXML public void exitRunningRace() {
         ConnectionUtils.initiateDisconnect(isHost);
         displaySwitcher.loadMainMenu();
         raceViewController.stop();
@@ -281,11 +299,13 @@ public class Controller implements Initializable, Observer {
             DisplayUtils.setZoomLevel(zoomSlider.getValue());
             if (DisplayUtils.zoomLevel != 1) {
                 mapImageView.setVisible(false);
+                nextMarkCircle.setVisible(true);
             } else {
                 //Zoom out full, reset everything
                 selectionController.setRotationOffset(0);
                 root.getTransforms().clear();
                 mapImageView.setVisible(true);
+                nextMarkCircle.setVisible(false);
                 selectionController.setTrackingPoint(false);
                 DisplayUtils.resetOffsets();
             }
@@ -385,6 +405,10 @@ public class Controller implements Initializable, Observer {
                 }
                 break;
             case STARTED:
+                if(Main.getClient().isParticipant()){
+                    raceViewController.getCourseRouteArrows().removeRaceRoute();
+                    scoreBoardController.getCoursePathToggle().setSelected(false);
+                }
                 if (startersOverlay.isVisible()) {
                     hideStarterOverlay();
                 }
@@ -565,7 +589,10 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneArrow(btnHide, 430, 1);
             AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
             AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
+            AnimationUtils.shiftPaneNodes(nextMarkGrid, 430, true);
+            AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
+            AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, false);
             scoreboardVisible = false;
             raceViewController.shiftArrow(false);
             setUpTable();
@@ -574,7 +601,10 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneArrow(btnHide, -430, -1);
             AnimationUtils.shiftPaneNodes(imvSpeedScale, -430, true);
             AnimationUtils.shiftPaneNodes(lblWindSpeed, -430, true);
+            AnimationUtils.shiftPaneNodes(nextMarkGrid, -430, true);
+            AnimationUtils.shiftPaneNodes(quickMenu, 115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true);
+            AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, true);
             scoreboardVisible = true;
             raceViewController.shiftArrow(true);
         }
@@ -612,6 +642,10 @@ public class Controller implements Initializable, Observer {
 
     public Circle getWindCircle() {
         return windCircle;
+    }
+
+    public Circle getNextMarkCircle() {
+        return nextMarkCircle;
     }
 
     public AnchorPane getCanvasAnchor() {
@@ -701,11 +735,23 @@ public class Controller implements Initializable, Observer {
         tblPlacingsRV.setItems(sortedList);
     }
 
+    public void addUserBoat(){
+        this.infoDisplay = new HeadsupDisplay(raceViewController.getCurrentUserBoatDisplay(), headsUpDisplay, race);
+    }
+
+    public void refreshHUD(){
+        infoDisplay.competitorAdded();
+    }
+
+    /**
+     * sets up the tutorial mode by hiding the side panel and extra panes
+     */
     public void setUpTutorialMode(){
         rightHandSide.setVisible(false);
         lblNoBoardClock.setVisible(false);
         btnHide.setVisible(false);
         AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
         AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
+        AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
     }
 }

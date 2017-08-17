@@ -17,7 +17,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
-import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
@@ -30,6 +29,7 @@ import seng302.views.BoatDisplay;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
 import seng302.models.Race;
+import seng302.views.CourseRouteArrows;
 
 import java.io.IOException;
 
@@ -47,6 +47,8 @@ public class ScoreBoardController {
 
     //FXML fields
     @FXML private CheckBox fpsToggle;
+    @FXML private CheckBox coursePathToggle;
+    @FXML private ListView<String> placings;
     @FXML private Slider annotationsSlider;
     @FXML private Label raceTimerLabel;
     @FXML private Label lblAnnotation;
@@ -64,6 +66,7 @@ public class ScoreBoardController {
     @FXML private NumberAxis xAxis ;
     @FXML private NumberAxis yAxis ;
     @FXML private CheckBox DistanceLinesToggle;
+    @FXML private CheckBox chkHighlightMark;
     @FXML private TableView<Boat> tblPlacings;
     @FXML private TableColumn<Boat, Integer> columnPosition;
     @FXML private TableColumn<Boat, String> columnName;
@@ -179,6 +182,16 @@ public class ScoreBoardController {
     }
 
     @FXML
+    private void toggleCoursePath(){
+        CourseRouteArrows courseRouteArrows = raceViewController.getCourseRouteArrows();
+        if(coursePathToggle.isSelected()){
+            courseRouteArrows.drawRaceRoute();
+        } else{
+            courseRouteArrows.removeRaceRoute();
+        }
+    }
+
+    @FXML
     private void btnTrackPressed(){
         selectionController.trackBoat();
     }
@@ -226,7 +239,7 @@ public class ScoreBoardController {
                 e -> AnimationUtils.scaleButtonHoverExit(button));
     }
 
-    @FXML private void btnExitRacePressed() throws IOException {
+    @FXML private void btnExitRacePressed() {
         parent.exitRunningRace();
     }
 
@@ -258,6 +271,8 @@ public class ScoreBoardController {
     }
 
     public boolean isDistanceLineSelected(){return DistanceLinesToggle.isSelected();}
+
+    public boolean isHighlightMarkSelected(){return chkHighlightMark.isSelected();}
 
     public void addBoatToSparkLine(Series boatSeries){
         if(!chtSparkLine.getData().contains(boatSeries)){
@@ -304,5 +319,9 @@ public class ScoreBoardController {
     public void updateSparkLine(){
         xAxis.setUpperBound(race.getCourse().getCourseOrder().size());
         yAxis.setLowerBound(race.getCompetitors().size() + 1);
+    }
+
+    public CheckBox getCoursePathToggle() {
+        return coursePathToggle;
     }
 }

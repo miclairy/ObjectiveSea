@@ -167,11 +167,11 @@ public class RaceView {
     }
 
     /**
-     * Draws a vector arrow based from fromCoord to toCoord with the given color
-     * @param fromCoord The coordinate of the base of the arrow
-     * @param toCoord The coordinate of the top (pointy-end) of the arrow
-     * @param bearing The bearing from the base to the top of the arrow
-     * @param color The color of the arrow
+     * Draws a vector Arrow based from fromCoord to toCoord with the given color
+     * @param fromCoord The coordinate of the base of the Arrow
+     * @param toCoord The coordinate of the top (pointy-end) of the Arrow
+     * @param bearing The bearing from the base to the top of the Arrow
+     * @param color The color of the Arrow
      * @return a Polyline generated starting from fromCoord to toCoord in terms of CanvasCoordinates on screen.
      */
     private Polyline drawVectorArrow(Coordinate fromCoord, Coordinate toCoord, double bearing, Color color){
@@ -194,7 +194,7 @@ public class RaceView {
         return line;
     }
 
-    public Polyline drawWindArrow() {
+    public Polyline drawWindArrowPolyline() {
         double arrowHeadLength = 8;
         double arrowLength = 30;
 
@@ -211,13 +211,33 @@ public class RaceView {
         return windArrow;
     }
 
-    /**
-     * Creates a JavaFX line to represent a layline
-     * @param bearing the angle the line is at
-     * @param markCoord the source point of the layline
-     * @param boatColor the color for the layline, based of the boat
-     * @return a Line object
-     */
+    public Polyline drawNextMarkArrowPolyline() {
+        double arrowHeadLength = 12;
+        double arrowLength = 50;
+
+        Polyline nextMarkArrow = new Polyline(
+                0, 0,
+                0, -arrowLength,
+                -arrowHeadLength, -arrowLength + arrowHeadLength,
+                0, -arrowLength,
+                arrowHeadLength, -arrowLength + arrowHeadLength
+        );
+        nextMarkArrow.setId("nextMarkArrow");
+        nextMarkArrow.setStroke(Color.WHITE);
+        nextMarkArrow.setVisible(false);
+        return nextMarkArrow;
+    }
+
+
+
+
+        /**
+         * Creates a JavaFX line to represent a layline
+         * @param bearing the angle the line is at
+         * @param markCoord the source point of the layline
+         * @param boatColor the color for the layline, based of the boat
+         * @return a Line object
+         */
     public Line drawLayline(double bearing, Coordinate markCoord, Color boatColor){
         double LAYLINELENGTH = 150;
 

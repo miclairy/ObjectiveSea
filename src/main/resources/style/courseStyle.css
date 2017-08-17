@@ -23,11 +23,17 @@
 }
 
 #windArrow{
-
     -fx-stroke-line-cap: round;
     -fx-stroke-line-join: round;
     -fx-stroke-width: 4px;
     -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 0);
+}
+
+#nextMarkArrow{
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-stroke-width: 5px;
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 3);
 }
 
 #windCircle {
@@ -38,6 +44,21 @@
     -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 3);
 }
 
+#nextMarkCircle {
+    -fx-stroke-width: 5px;
+    -fx-fill: transparent;
+    -fx-stroke: white;
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 3);
+}
+
+#lblNextMark {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-text-fill: White;
+    -fx-text-alignment: center;
+}
+
+
 #lblWindSpeed {
     -fx-font-size: 14px;
     -fx-font-weight: bold;
@@ -46,6 +67,12 @@
 
 #imvSpeedScale {
     -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 0);
+}
+
+#distanceArrow{
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-opacity: 0.8;
 }
 
 #btnClose{
@@ -84,23 +111,37 @@
     -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
 }
 
-#btnHiddenBoardTrack{
-    -fx-background-image: url('/graphics/buttonImages/track-boat.png');
-    -fx-background-size: 22px 22px;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: left 18 center;
-    -fx-background-color:  #232323;
-    -fx-text-fill: #FFFFFF;
-    -fx-font-size: 15px;
-    -fx-border-radius: 70;
-    -fx-background-radius: 70;
-    -fx-text-alignment: right;
-    -fx-padding: 10 25 10 55;
-}
-
 #tblPlacingsRV{
     -fx-background-color: #2a2a2a;
     -fx-border-radius: 30;
     -fx-background-radius: 30;
     -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
+}
+
+#btnQuickMenuTrack{
+    -fx-text-fill: white;
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 200px;
+    -fx-background-radius: 200px;
+    -fx-font-size: 20px;
+     -fx-font-weight: bold;
+    -fx-background-image: url('/graphics/buttonImages/track-boat.png');
+    -fx-background-size: 25px 25px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 0);
+}
+
+#btnQuickMenuExit{
+    -fx-text-fill: white;
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 200px;
+    -fx-background-radius: 200px;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-background-image: url('/graphics/buttonImages/exitCross.png');
+    -fx-background-size: 25px 25px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 0);
 }

@@ -245,7 +245,7 @@ public class RaceVisionXMLParser {
                             }
                             for(Integer seqNumber : markOrder.keySet()){
                                 int markID = Integer.parseInt(markOrder.get(seqNumber).get(0));
-                                String roundingSide = markOrder.get(seqNumber).get(1);
+                                RoundingSide roundingSide = RoundingSide.parseRoundingSide(markOrder.get(seqNumber).get(1));
                                 if (seqNumber == 1) {
                                     CompoundMark mark = course.getCompoundMarkByID(markID);
                                     if (!mark.hasTwoMarks()){
@@ -592,5 +592,15 @@ public class RaceVisionXMLParser {
 
     public void setCourseFile(String course) {
         courseFile = course;
+    }
+
+    /**
+     * Checks to see if a file exists in the expected location
+     * @param file the name of the file (which is expected to be inside /defaultFiles/) to test
+     * @return true if the file exists, false otherwise
+     */
+    public boolean checkFileExists(String file) {
+        String resourcePath = "/defaultFiles/" + file;
+        return RaceVisionXMLParser.class.getResource(resourcePath) != null;
     }
 }
