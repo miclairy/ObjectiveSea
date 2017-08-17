@@ -124,12 +124,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
             controller.hideStarterOverlay();
             initBoatHighlight();
             initializeBoats();
-            initBoatPaths();
             redrawCourse();
         }
         if(options.isTutorial()) {
             tutorial = new Tutorial(controller, race);
             shiftArrow(false);
+            initBoatPaths();
         }
         if (options.isPractice()) {
             CompoundMark startLine = race.getCourse().getCourseOrder().get(0);
@@ -236,6 +236,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         moveSOGVector(boatDisplay);
         moveVMGVector(boatDisplay);
         if(race.getRaceStatus() == STARTED) {
+            if (!hasInitializedBoats()){
+                initBoatPaths();
+            }
             addToBoatPath(boatDisplay, point);
         }
         moveBoatAnnotation(boatDisplay.getAnnotation(), point, boatDisplay);
