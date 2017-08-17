@@ -487,9 +487,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawMap();
         drawWindArrow();
 
-        if(selectionController.isTrackingPoint()){
+        if(DisplayUtils.zoomLevel > 1){
             courseRouteArrows.removeRaceRoute();
-        } else{
+        } else if (scoreBoardController.getCoursePathToggle().isSelected()){
             courseRouteArrows.drawRaceRoute();
         }
 
