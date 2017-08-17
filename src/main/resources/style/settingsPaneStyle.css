@@ -87,7 +87,7 @@
     -fx-border-color: transparent;
 }
 
-#startersList{
+#overViewList{
     -fx-control-inner-background: #1a1a1a;
     -fx-font-size: 17px;
     -fx-focus-color: transparent;

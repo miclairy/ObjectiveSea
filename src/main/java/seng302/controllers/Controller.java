@@ -53,7 +53,7 @@ public class Controller implements Initializable, Observer {
     @FXML private AnchorPane canvasAnchor;
     @FXML private AnchorPane rightHandSide;
     @FXML private Label fpsLabel;
-    @FXML private ListView<String> startersList;
+    @FXML private ListView<String> overViewList;
     @FXML private Label clockLabel;
     @FXML private Label lblNoBoardClock;
     @FXML public VBox startersOverlay;
@@ -430,20 +430,20 @@ public class Controller implements Initializable, Observer {
      * Populate the starters overlay list with boats that are competing
      */
     public void raceCompetitorOverview() {
-        ObservableList<String> starters = observableArrayList();
-        startersList.getItems().clear();
+        ObservableList<String> overViewBoatStrings = observableArrayList();
+        overViewList.getItems().clear();
         for (Boat boat : race.getRaceOrder()) {
             if(race.isTerminated()){
                 if (boat.getStatus().equals(BoatStatus.DNF)){
-                    starters.add(String.format("DNF : %s - %s : %s", boat.getNickName(), boat.getName(), boat.getFinalRaceTime()));
+                    overViewBoatStrings.add(String.format("DNF : %s - %s : %s", boat.getNickName(), boat.getName(), boat.getFinalRaceTime()));
                 } else {
-                    starters.add(String.format("%d : %s - %s : %s", boat.getCurrPlacing(), boat.getNickName(), boat.getName(), boat.getFinalRaceTime()));
+                    overViewBoatStrings.add(String.format("%d : %s - %s : %s", boat.getCurrPlacing(), boat.getNickName(), boat.getName(), boat.getFinalRaceTime()));
                 }
             } else {
-                starters.add(String.format("%s - %s", boat.getNickName(), boat.getName()));
+                overViewBoatStrings.add(String.format("%s - %s", boat.getNickName(), boat.getName()));
             }
         }
-        startersList.setItems(starters);
+        overViewList.setItems(overViewBoatStrings);
     }
 
     /**
@@ -672,8 +672,8 @@ public class Controller implements Initializable, Observer {
         selectionController.trackBoat();
     }
 
-    public ListView<String> getStartersList() {
-        return startersList;
+    public ListView<String> getOverViewList() {
+        return overViewList;
     }
 
     public boolean isScoreboardVisible() {
