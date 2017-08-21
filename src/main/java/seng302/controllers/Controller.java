@@ -18,6 +18,7 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -633,6 +634,9 @@ public class Controller implements Initializable, Observer {
             scoreboardVisible = true;
             raceViewController.shiftArrow(true);
         }
+    }
+
+    public void rotateBoat(TouchEvent touchEvent) {
     }
 
     public class ColoredTextListCell extends ListCell<String> {
