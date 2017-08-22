@@ -636,9 +636,6 @@ public class Controller implements Initializable, Observer {
         }
     }
 
-    public void rotateBoat(TouchEvent touchEvent) {
-    }
-
     public class ColoredTextListCell extends ListCell<String> {
         @Override
         protected void updateItem(String item, boolean empty) {

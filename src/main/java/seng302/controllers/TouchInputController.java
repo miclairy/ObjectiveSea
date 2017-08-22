@@ -38,15 +38,22 @@ import static javafx.scene.input.KeyCode.*;
 
         private void touchEventListener() {
             scene.addEventFilter(TouchEvent.ANY, touch -> {
-                checkTouchPressed(touch.getEventType());
+                checkTouchPressed(touch);
                 if ( consumedTouchEvents.contains(touch.getEventType())) {
                     touch.consume();
                 }
             });
         }
 
-        private void checkTouchPressed(EventType<TouchEvent> touchEvent){
-            commandInt = 5;
+        private void checkTouchPressed(TouchEvent touchEvent){
+            double heading = race.getBoatById(clientID).getHeading();
+            if(touchEvent.getTouchPoint().getSceneX() < scene.getWidth()/2) {
+                //(heading < 180 && heading > 0) {
+                    commandInt = 5;
+                //}
+            } else {
+                commandInt = 6;
+            }
             if (commandInt != -1) {
                 setChanged();
                 notifyObservers();

@@ -129,6 +129,7 @@ public class Main extends Application {
             TouchInputController touchInputController = new TouchInputController(DisplaySwitcher.getScene(), Client.getRace());
             client.setInputControllers(keyInputController, touchInputController);
             keyInputController.addObserver(client);
+            touchInputController.addObserver(client);
         }
     }
 

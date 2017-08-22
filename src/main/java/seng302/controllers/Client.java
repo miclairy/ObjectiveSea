@@ -177,18 +177,29 @@ public class Client implements Runnable, Observer {
                 serverRegistrationResponse = (RegistrationResponse) arg;
             }
         } else if (o == keyInputController){
-            sendBoatCommandPacket();
+            sendBoatKeyCommandPacket();
+        } else if (o == touchInputController) {
+            sendBoatTouchCommandPacket();
         }
     }
 
     /**
      * sends boat command packet to server. Sends keypress and runs tutorial callback function if required.
      */
-    private void sendBoatCommandPacket(){
+    private void sendBoatKeyCommandPacket(){
         if(tutorialKeys.contains(keyInputController.getCommandInt())) {
             tutorialFunction.run();
         }
         byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(keyInputController.getCommandInt(), this.clientID);
+        sender.sendToServer(boatCommandPacket);
+
+    }
+
+    private void sendBoatTouchCommandPacket(){
+        if(tutorialKeys.contains(touchInputController.getCommandInt())) {
+            tutorialFunction.run();
+        }
+        byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(touchInputController.getCommandInt(), this.clientID);
         sender.sendToServer(boatCommandPacket);
 
     }
