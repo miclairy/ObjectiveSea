@@ -74,11 +74,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private double previousTime = 0;
     private Polygon boundary;
     private Circle windCircle;
-    private Circle nextMarkCircle;
     private Polyline windArrow;
     private Polyline nextMarkArrow;
     private boolean windTransitionPlaying = false;
-    private double currentTimeInSeconds;
     private AnnotationLevel currentAnnotationsLevel;
     private boolean courseNeedsRedraw = false;
     private boolean initializedBoats = false;
@@ -87,7 +85,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean drawDistanceLine = false;
     private boolean firstTime = true;
     private SelectionController selectionController;
-    private boolean highlightMark = false;
 
     private boolean nextMark = true;
 
@@ -99,13 +96,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
     private int flickercounter = 0;
     private int prevWindColorNum = 0;
-    private int arrowIteration = 0;
-    private int timer = 0;
 
     private Tutorial tutorial;
 
-    BoatDisplay currentUserBoatDisplay;
-    Shape boatHighlight = null;
+    private BoatDisplay currentUserBoatDisplay;
+    private Shape boatHighlight = null;
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController, SelectionController selectionController) {
         this.root = root;
@@ -160,12 +155,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             previousTime = currentTime;
             return;
         }
-
-        double secondsElapsed = TimeUtils.convertNanosecondsToSeconds(currentTime - previousTime);
-
-        if(!race.isTerminated() && !options.isTutorial()){
-            controller.updateRaceClock();
-        }else if (race.isTerminated()){
+        if (race.isTerminated()){
             if(race.getAbruptEnd()){
                 controller.blurScreen(true);
                 controller.showServerDisconnectError();
@@ -177,6 +167,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             } else if (options.isPractice()){
                 controller.displayFinishedPracticePopUp();
             }
+        } else if (!options.isTutorial()) {
+            controller.updateRaceClock();
         }
         if(controller.hasRaceStatusChanged()){
             if(!options.isTutorial() && !options.isPractice()){
@@ -184,7 +176,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 controller.setRaceStatusChanged(false);
             }
         }
-        currentTimeInSeconds += secondsElapsed;
         controller.setTimeZone(race.getUTCOffset());
         controller.updateFPSCounter(currentTime);
         run();
@@ -197,17 +188,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void run(){
         if (drawDistanceLine) redrawDistanceLines();
         selectionController.zoomTracking();
-        Boolean isZoomed = false;
-        if(zoomLevel != 1) {
-            isZoomed = true;
-        }
         for (BoatDisplay displayBoat: displayBoats) {
             moveBoatDisplay(displayBoat);
+            manageBoatInformationFeatures(displayBoat);
             if(displayBoat == currentUserBoatDisplay) {
-                updateNextMarkArrow(isZoomed);
-                updateNextMarkDistance(isZoomed);
+                manageNextMarkVisuals();
             }
         }
+
         if(!options.isTutorial() && !options.isPractice()){
             redrawRaceLines();
             courseRouteArrows.updateCourseArrows();
@@ -224,8 +212,18 @@ public class RaceViewController extends AnimationTimer implements Observer {
         orderDisplayObjects();
     }
 
-
-
+    /**
+     * Manages highlight of next mark or the arrow to next mark if zoomed
+     */
+    private void manageNextMarkVisuals() {
+        Boolean isZoomed = zoomLevel != 1;
+        updateNextMarkArrow(isZoomed);
+        updateNextMarkDistance(isZoomed);
+        if(nextMark && scoreBoardController.isHighlightMarkSelected() && !isZoomed){
+            highlightNextMark();
+            nextMark = false;
+        }
+    }
 
     /**
      * Moves and individual BoatDisplay object
@@ -240,36 +238,36 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if(!options.isTutorial() && !boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF)){
             displayCollisions(boatDisplay, point);
         }
-        displayCollisions(boatDisplay, point);
-        if(nextMark && highlightMark && zoomLevel == 1){
-            highlightNextMark();
-            nextMark = false;
-        }
-
-        manageStartTiming(boatDisplay);
-        drawVirtualStartLine(boatDisplay);
-
-        moveSOGVector(boatDisplay);
-        moveVMGVector(boatDisplay);
         if(race.getRaceStatus() == STARTED) {
             addToBoatPath(boatDisplay, point);
         }
         moveBoatAnnotation(boatDisplay.getAnnotation(), point, boatDisplay);
+        manageStartTiming(boatDisplay);
+        if(boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF)){
+            boatDisplay.unFocus();
+        }
+    }
+
+    /**
+     * Draws/moves boat information features including:
+     * - Laylines
+     * - Vectors
+     * - Virtual Startline
+     * - Mark Highlight
+     * @param boatDisplay the boat to manage features for
+     */
+    private void manageBoatInformationFeatures(BoatDisplay boatDisplay) {
+        drawVirtualStartLine(boatDisplay);
         if(scoreBoardController.areVectorsSelected()){
             boatDisplay.showVectors();
+            moveSOGVector(boatDisplay);
+            moveVMGVector(boatDisplay);
         } else {
             boatDisplay.hideVectors();
         }
-        if (scoreBoardController.isLayLinesSelected()){
-            boatDisplay.getLaylines().removeDrawnLines(root);
-            if (selectedBoats.contains(boatDisplay)) {
-                drawLayline(boatDisplay);
-            }
-        } else {
-            boatDisplay.getLaylines().removeDrawnLines(root);
-        }
-        if(boatDisplay.getBoat().getStatus() == BoatStatus.DNF){
-            boatDisplay.unFocus();
+        boatDisplay.getLaylines().removeDrawnLines(root);
+        if (scoreBoardController.isLayLinesSelected() && selectedBoats.contains(boatDisplay)) {
+            drawLayline(boatDisplay);
         }
     }
 
@@ -435,35 +433,23 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         ScaleTransition st1 = AnimationUtils.scaleTransitionCollision(highlightCircle1, 500 * scale,
                 20/scale * zoomLevel);
-        st1.setOnFinished(new EventHandler<ActionEvent>(){
-            public void handle(ActionEvent AE) {
-                root.getChildren().remove(highlightCircle1);
-            }});
+        st1.setOnFinished(AE -> root.getChildren().remove(highlightCircle1));
 
         ScaleTransition st2 = AnimationUtils.scaleTransitionCollision(highlightCircle2, 300 * scale,
                 30/scale * zoomLevel);
-        st2.setOnFinished(new EventHandler<ActionEvent>(){
-            public void handle(ActionEvent AE) {
-                root.getChildren().remove(highlightCircle2);
-            }});
+        st2.setOnFinished(AE -> root.getChildren().remove(highlightCircle2));
 
         FadeTransition ft1 = AnimationUtils.fadeOutTransition(highlightCircle1, 800 * scale);
         FadeTransition ft2 = AnimationUtils.fadeOutTransition(highlightCircle2, 600 * scale);
 
         if(isCollision) {
-            ft2.setOnFinished(new EventHandler<ActionEvent>() {
-                public void handle(ActionEvent AE) {
-                    boat.setCollisionInProgress(false);
-                    boat.getBoat().setBoatCollideSound(false);
-                    boat.getBoat().setMarkCollideSound(false);
-                }
+            ft2.setOnFinished(AE -> {
+                boat.setCollisionInProgress(false);
+                boat.getBoat().setBoatCollideSound(false);
+                boat.getBoat().setMarkCollideSound(false);
             });
         } else {
-            ft2.setOnFinished(new EventHandler<ActionEvent>() {
-                public void handle(ActionEvent AE) {
-                    nextMark = true;
-                }
-            });
+            ft2.setOnFinished(AE -> nextMark = true);
         }
 
         ParallelTransition pt = new ParallelTransition(st1, st2, ft1, ft2);
@@ -749,7 +735,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                             drawLayline(displayBoat);
                         }
                     }
-                    highlightMark = scoreBoardController.isHighlightMarkSelected();
                     drawBoatAnnotation(displayBoat, annotations);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
                     displayBoat.annoGrabHandle.setVisible(true);
