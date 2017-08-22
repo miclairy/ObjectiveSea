@@ -32,7 +32,7 @@
 <StackPane fx:id="stackPane" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/generalStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.Controller">
    <children>
    
-           <AnchorPane fx:id="canvasAnchor" minHeight="200.0" minWidth="200.0" onTouchMoved="#rotateBoat" prefHeight="1080.0" prefWidth="1395.0" style="-fx-background-color: #aae7df;">
+           <AnchorPane fx:id="canvasAnchor" minHeight="200.0" minWidth="200.0" prefHeight="1080.0" prefWidth="1395.0" style="-fx-background-color: #aae7df;">
                <children>
                    <ImageView fx:id="mapImageView" fitHeight="88.0" fitWidth="100.0" pickOnBounds="true" />
                    <VBox fx:id="startersOverlay" alignment="CENTER" blendMode="SRC_ATOP" prefHeight="600.0" prefWidth="400.0" styleClass="startersOverlay" stylesheets="@style/startersOverlayStyle.css" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="100.0">

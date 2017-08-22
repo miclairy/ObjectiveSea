@@ -15,7 +15,6 @@ import seng302.models.Race;
 import seng302.utilities.NoConnectionToServerException;
 import seng302.utilities.TimeUtils;
 
-import java.io.IOException;
 import java.util.*;
 
 import java.util.Observable;
@@ -37,7 +36,8 @@ public class Client implements Runnable, Observer {
     private ClientPacketBuilder packetBuilder;
     private ClientSender sender;
     private Map<Integer, Boat> potentialCompetitors;
-    private UserInputController userInputController;
+    private KeyInputController keyInputController;
+    private TouchInputController touchInputController;
     private int clientID;
     private ClientOptions options;
     Thread dataStreamReaderThread;
@@ -153,7 +153,7 @@ public class Client implements Runnable, Observer {
     }
 
     /**
-     * observing UserInputController and clientListener
+     * observing KeyInputController and clientListener
      * @param o
      */
     @Override
@@ -176,7 +176,7 @@ public class Client implements Runnable, Observer {
             } else if (arg instanceof RegistrationResponse) {
                 serverRegistrationResponse = (RegistrationResponse) arg;
             }
-        } else if (o == userInputController){
+        } else if (o == keyInputController){
             sendBoatCommandPacket();
         }
     }
@@ -185,10 +185,10 @@ public class Client implements Runnable, Observer {
      * sends boat command packet to server. Sends keypress and runs tutorial callback function if required.
      */
     private void sendBoatCommandPacket(){
-        if(tutorialKeys.contains(userInputController.getCommandInt())) {
+        if(tutorialKeys.contains(keyInputController.getCommandInt())) {
             tutorialFunction.run();
         }
-        byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
+        byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(keyInputController.getCommandInt(), this.clientID);
         sender.sendToServer(boatCommandPacket);
 
     }
@@ -205,9 +205,11 @@ public class Client implements Runnable, Observer {
         tutorialFunction = null;
     }
 
-    public void setUserInputController(UserInputController userInputController) {
-        this.userInputController = userInputController;
-        userInputController.setClientID(clientID);
+    public void setInputControllers(KeyInputController keyInputController, TouchInputController touchInputController) {
+        this.keyInputController = keyInputController;
+        this.touchInputController = touchInputController;
+        touchInputController.setClientID(clientID);
+        keyInputController.setClientID(clientID);
     }
 
     public static Race getRace() {
