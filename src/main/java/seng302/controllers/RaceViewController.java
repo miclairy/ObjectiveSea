@@ -86,7 +86,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean firstTime = true;
     private SelectionController selectionController;
 
-    private boolean nextMark = true;
+    private boolean showNextMarkAnimation = true;
 
     private double sailWidth = 5;
     private boolean isSailWidthChanging = false;
@@ -235,12 +235,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * Manages highlight of next mark or the arrow to next mark if zoomed
      */
     private void manageNextMarkVisuals() {
-        Boolean isZoomed = zoomLevel != 1;
-        updateNextMarkArrow(isZoomed);
-        updateNextMarkDistance(isZoomed);
-        if(nextMark && scoreBoardController.isHighlightMarkSelected() && !isZoomed){
-            highlightNextMark();
-            nextMark = false;
+        if (nextMarkArrow != null) {
+            Boolean isZoomed = zoomLevel != 1;
+            updateNextMarkArrow(isZoomed);
+            updateNextMarkDistance(isZoomed);
+            if (showNextMarkAnimation && scoreBoardController.isHighlightMarkSelected() && !isZoomed) {
+                highlightNextMark();
+                showNextMarkAnimation = false;
+            }
         }
     }
 
@@ -468,7 +470,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 boat.getBoat().setMarkCollideSound(false);
             });
         } else {
-            ft2.setOnFinished(AE -> nextMark = true);
+            ft2.setOnFinished(AE -> showNextMarkAnimation = true);
         }
 
         ParallelTransition pt = new ParallelTransition(st1, st2, ft1, ft2);
@@ -513,6 +515,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             drawMarks();
             drawBoundary();
             redrawRaceLines();
+            drawNextMarkArrow();
         } else {
             changeAnnotations(0, true);
         }
@@ -525,7 +528,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 courseRouteArrows.drawRaceRoute();
             }
         }
-        drawNextMarkArrow();
     }
 
     /**
@@ -1340,15 +1342,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
 
     public void shiftArrow(boolean boardVisible){
-        if(boardVisible){
-            AnimationUtils.shiftPaneNodes(windCircle, -430, true);
-            AnimationUtils.shiftPaneNodes(windArrow, -430, true);
-            AnimationUtils.shiftPaneNodes(nextMarkArrow, -430, true);
-        }else{
-            AnimationUtils.shiftPaneNodes(windCircle, 430, true);
-            AnimationUtils.shiftPaneNodes(windArrow, 430, true);
-            AnimationUtils.shiftPaneNodes(nextMarkArrow, 430, true);
-        }
+        int shiftWidth = boardVisible ? -430 : 430;
+        AnimationUtils.shiftPaneNodes(windCircle, shiftWidth, true);
+        AnimationUtils.shiftPaneNodes(windArrow, shiftWidth, true);
+        if (nextMarkArrow != null) AnimationUtils.shiftPaneNodes(nextMarkArrow, shiftWidth, true);
     }
 
     public void boatSelectedInTable(Boat boat){
