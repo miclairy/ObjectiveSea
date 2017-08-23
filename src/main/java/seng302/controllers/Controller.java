@@ -253,7 +253,7 @@ public class Controller implements Initializable, Observer {
             startersOverlayTitle.setText(race.getRegattaName());
         }
         initKeyPressListener();
-        raceViewController.setOptions(options);
+        raceViewController.setupRaceView(options);
         raceViewController.updateWindArrow();
         raceViewController.start();
     }

@@ -117,41 +117,60 @@ public class RaceViewController extends AnimationTimer implements Observer {
         race.addObserver(this) ;
     }
 
-            /**
+    /**
      * Sets the options for the RaceViewController and deals with initial setup based on the
      * GameMode of these options.
      * Must be called BEFORE start() is called on this object
      * @param options a ClientOptions object configured with the options for the RaceView
      */
-    public void setOptions(ClientOptions options) {
+    public void setupRaceView(ClientOptions options) {
         this.options = options;
-        if(options.isTutorial() || options.isPractice()) {
-            controller.hideStarterOverlay();
-            initBoatHighlight();
-            initializeBoats();
-            redrawCourse();
-        }
-        if(options.isTutorial()) {
-            tutorial = new Tutorial(controller, race);
-            shiftArrow(false);
-            initBoatPaths();
-        }
         if (options.isPractice()) {
-            CompoundMark startLine = race.getCourse().getCourseOrder().get(0);
-            Mark centreMark = new Mark(0, "centre", startLine.getPosition());
-            selectionController.zoomToMark(centreMark);
-            controller.setZoomSliderValue(2.0);
+            setupPracticeMode();
+        } else if (options.isTutorial()) {
+            setupTutorialMode();
+        } else {
+            setupStandardRaceMode();
         }
+    }
 
-        if(!options.isTutorial() && !options.isPractice()) {
-            this.courseRouteArrows = new CourseRouteArrows(race.getCourse(), root);
-            courseRouteArrows.drawRaceRoute();
-        }
-
+    /**
+     * Ready the race view for a standard race mode
+     */
+    private void setupStandardRaceMode() {
+        this.courseRouteArrows = new CourseRouteArrows(race.getCourse(), root);
+        courseRouteArrows.drawRaceRoute();
         redrawCourse();
+        drawMap();
+    }
 
-        //courseRouteArrows.drawRaceRoute();
-        race.addObserver(this);
+    /**
+     * Ready the race view for tutorial mode
+     */
+    private void setupTutorialMode() {
+        controller.hideStarterOverlay();
+        initBoatHighlight();
+        initializeBoats();
+        redrawCourse();
+        tutorial = new Tutorial(controller, race);
+        shiftArrow(false);
+        initBoatPaths();
+        drawMap();
+    }
+
+    /**
+     * Ready the race view for practice mode
+     */
+    private void setupPracticeMode() {
+        controller.hideStarterOverlay();
+        initBoatHighlight();
+        initializeBoats();
+        redrawCourse();
+        CompoundMark startLine = race.getCourse().getCourseOrder().get(0);
+        Mark centreMark = new Mark(0, "centre", startLine.getPosition());
+        selectionController.zoomToMark(centreMark);
+        controller.setZoomSliderValue(2.0);
+        drawMap();
     }
 
     @Override
@@ -511,7 +530,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         } else {
             changeAnnotations(0, true);
         }
-        drawMap();
         drawWindArrow();
 
         if(!options.isTutorial() && !options.isPractice()) {
@@ -522,7 +540,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
         }
         drawNextMarkArrow();
-        redrawRaceLines();
     }
 
     /**
