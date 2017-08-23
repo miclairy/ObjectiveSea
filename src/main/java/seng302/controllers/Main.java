@@ -12,7 +12,9 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.geometry.Rectangle2D;
 import javafx.application.Platform;
+import seng302.data.registration.RaceUnavailableException;
 import seng302.data.registration.ServerFullException;
+import seng302.data.registration.ServerRegistrationException;
 import seng302.models.ClientOptions;
 import seng302.models.ServerOptions;
 import seng302.utilities.ConnectionUtils;
@@ -157,8 +159,8 @@ public class Main extends Application {
         } catch (NoConnectionToServerException e) {
             showServerConnectionError(e);
             return false;
-        } catch (ServerFullException e) {
-            showServerJoinError(options.isParticipant());
+        } catch (ServerRegistrationException e) {
+            showServerJoinError(options.isParticipant(), e);
             return false;
         }
         return true;
@@ -167,7 +169,7 @@ public class Main extends Application {
     /**
      * Shows a popup informing user that they were unable to connect to the server
      */
-    private static void showServerConnectionError(NoConnectionToServerException err){
+    private void showServerConnectionError(NoConnectionToServerException err){
         Alert alert = new Alert(Alert.AlertType.ERROR);
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add("style/menuStyle.css");
@@ -178,12 +180,11 @@ public class Main extends Application {
             alert.setContentText("No connection to local server.\n\n" +
                     "Please ensure that the Port number \n" +
                     "you have entered is correct.");
-        }else{
+        } else {
             alert.setContentText("This server may not be running.\n\n" +
                     "Please ensure that the IP and Port numbers \n" +
                     "you have entered are correct.");
         }
-
         alert.showAndWait();
     }
 
@@ -192,15 +193,20 @@ public class Main extends Application {
      * If they attempted to join as a participant, suggests they try joining as a spectator
      * @param isParticipant whether or not an attempt was made to participate in the race
      */
-    private void showServerJoinError(boolean isParticipant) {
+    private void showServerJoinError(boolean isParticipant, ServerRegistrationException ex) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add("style/menuStyle.css");
         dialogPane.getStyleClass().add("myDialog");
         alert.setTitle("Failed to Join Server");
         alert.setHeaderText("Failed to Join Server");
-        String message = "There was not a free slot for you to join the server.\n\n";
-        if (isParticipant) message += "You may be able to join as a spectator instead.";
+        String message = "";
+        if (ex instanceof ServerFullException) {
+            message = "There was not a free slot for you to join the server.\n\n";
+            if (isParticipant) message += "You may be able to join as a spectator instead.";
+        } else if (ex instanceof RaceUnavailableException) {
+            message = "The race is not currently available.\n\n";
+        }
         alert.setContentText(message);
         alert.showAndWait();
     }
