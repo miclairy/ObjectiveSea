@@ -24,6 +24,7 @@ import static java.lang.Math.abs;
         private Race race;
         private final Set<EventType<TouchEvent>> consumedTouchEvents = new HashSet<>(Arrays.asList(TouchEvent.TOUCH_MOVED, TouchEvent.TOUCH_PRESSED));
         private final Set<EventType<SwipeEvent>> consumedSwipeEvents = new HashSet<>(Arrays.asList(SwipeEvent.SWIPE_LEFT, SwipeEvent.SWIPE_DOWN));
+        private DisplayTouchController displayTouchController;
 
         /**
          * Sets up user key press handler.
@@ -32,6 +33,7 @@ import static java.lang.Math.abs;
         public TouchInputController(Scene scene, Race race) {
             this.scene = scene;
             this.race = race;
+            this.displayTouchController = new DisplayTouchController(scene);
             touchEventListener();
         }
 
@@ -47,6 +49,7 @@ import static java.lang.Math.abs;
         private void checkTouchMoved(TouchEvent touchEvent) {
             Boat playersBoat = race.getBoatById(clientID);
             if (touchEvent.getTouchPoints().size() == 1) {
+                displayTouchController.displayTouch(touchEvent.getTouchPoint());
                 CanvasCoordinate sceneCentreCoordinate = new CanvasCoordinate(scene.getWidth()/2, scene.getHeight()/2);
                 CanvasCoordinate touchPoint = new CanvasCoordinate(touchEvent.getTouchPoint().getSceneX(), touchEvent.getTouchPoint().getSceneY());
 
@@ -70,7 +73,13 @@ import static java.lang.Math.abs;
             }
         }
 
-        public boolean calculateRotationDirection(double boatHeading, double angleTouch){
+    /**
+     * calculates the optimal rotation for the boat to move towards finger
+     * @param boatHeading the current heading of the boat
+     * @param angleTouch the angle of the touch input from 0
+     * @return a boolean true if upwind, boolean false if downwind
+     */
+    public boolean calculateRotationDirection(double boatHeading, double angleTouch){
             if(boatHeading < angleTouch) {
                 if(abs(boatHeading - angleTouch)<180) {
                     return false;

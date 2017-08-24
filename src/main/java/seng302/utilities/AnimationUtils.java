@@ -359,4 +359,13 @@ public class AnimationUtils {
         pt.play();
     }
 
+    public static ScaleTransition touchInAction(Node point){
+        ScaleTransition scaleTransition = new ScaleTransition(new Duration(500), point);
+        scaleTransition.setByX(0.8);
+        scaleTransition.setByY(0.8);
+        scaleTransition.setAutoReverse(true);
+        scaleTransition.setCycleCount(Timeline.INDEFINITE);
+        return scaleTransition;
+    }
+
 }

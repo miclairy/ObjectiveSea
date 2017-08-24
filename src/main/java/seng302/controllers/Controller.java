@@ -257,6 +257,7 @@ public class Controller implements Initializable, Observer {
         raceViewController.setOptions(options);
         raceViewController.updateWindArrow();
         raceViewController.start();
+        DisplayTouchController.setRoot(root);
     }
 
     @FXML public void exitRunningRace() {
