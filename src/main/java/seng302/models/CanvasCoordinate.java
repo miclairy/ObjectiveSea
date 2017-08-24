@@ -30,4 +30,20 @@ public class CanvasCoordinate {
     public static double distance(CanvasCoordinate a, CanvasCoordinate b){
         return Math.hypot(a.getX()-b.getX(), a.getY()-b.getY());
     }
+
+
+
+    public double getAngleFromSceneCentre(CanvasCoordinate canvasCoordinate) {
+
+        double Ldelta = Math.toRadians(canvasCoordinate.getX()) - Math.toRadians(this.x);
+        double X = Math.cos(Math.toRadians(canvasCoordinate.getY()) * Math.sin(Ldelta));
+        double Y = Math.cos(Math.toRadians(this.y)) * Math.sin(Math.toRadians(canvasCoordinate.getY()))
+                - Math.sin(Math.toRadians(this.y)) * Math.cos(Math.toRadians(canvasCoordinate.getY())) * Math.cos(Ldelta);
+        double angle = Math.toDegrees(Math.atan2(X, Y));
+        if (angle < 0) {
+            angle += 360;
+        }
+
+        return angle;
+    }
 }

@@ -47,19 +47,14 @@ import java.util.Set;
             //double heading = playersBoat.getHeading();
             if (touchEvent.getTouchPoints().size() == 1) {
 
-                CanvasCoordinate boatPositionCanvasCoordinate = DisplayUtils.convertFromLatLon(playersBoat.getCurrentPosition());
-                Coordinate boatPosition = new Coordinate(boatPositionCanvasCoordinate.getX(), boatPositionCanvasCoordinate.getY());
-                Coordinate sceneCentreCoordinate = new Coordinate(scene.getWidth(), scene.getHeight());
-                Mark sceneCentre = new Mark(0, "sceneCentre", sceneCentreCoordinate);
-                Coordinate touchPoint = new Coordinate(touchEvent.getTouchPoint().getSceneX(), touchEvent.getTouchPoint().getSceneY());
+                CanvasCoordinate boatPosition = DisplayUtils.convertFromLatLon(playersBoat.getCurrentPosition());
+                CanvasCoordinate sceneCentreCoordinate = new CanvasCoordinate(scene.getWidth()/2, scene.getHeight()/2);
+                CanvasCoordinate touchPoint = new CanvasCoordinate(touchEvent.getTouchPoint().getSceneX(), touchEvent.getTouchPoint().getSceneY());
 
-                double angleToBoat = sceneCentre.getPosition().headingToCoordinate(boatPosition);
-                double angleToFinger = sceneCentre.getPosition().headingToCoordinate(touchPoint);
+                System.out.println("Angle of Boat = " + boatPosition.getAngleFromSceneCentre(sceneCentreCoordinate));
+                System.out.println("Angle of touch = " + touchPoint.getAngleFromSceneCentre(sceneCentreCoordinate));
 
-                System.out.println("Angle of Boat = " + angleToBoat);
-                System.out.println("Angle of finger = " + angleToFinger);
-
-
+                
 //                if (touchEvent.getTouchPoint().getSceneX() < scene.getWidth() / 2) {
                 //(heading < 180 && heading > 0) {
 //                    commandInt = 5;
