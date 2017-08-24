@@ -3,18 +3,15 @@ package seng302.controllers;
 import javafx.event.EventType;
 import javafx.scene.Scene;
 import javafx.scene.input.*;
-import seng302.data.BoatAction;
-import seng302.models.Boat;
-import seng302.models.Race;
+import seng302.models.*;
+import seng302.utilities.DisplayUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Observable;
 import java.util.Set;
 
-import static javafx.scene.input.KeyCode.*;
-
-    /**
+/**
      * handles user key presses.
      */
     public class TouchInputController extends Observable {
@@ -38,30 +35,48 @@ import static javafx.scene.input.KeyCode.*;
 
         private void touchEventListener() {
             scene.addEventFilter(TouchEvent.ANY, touch -> {
-                checkTouchPressed(touch);
+                checkTouchMoved(touch);
                 if ( consumedTouchEvents.contains(touch.getEventType())) {
                     touch.consume();
                 }
             });
         }
 
-        private void checkTouchPressed(TouchEvent touchEvent){
-            double heading = race.getBoatById(clientID).getHeading();
-            if(touchEvent.getTouchPoint().getSceneX() < scene.getWidth()/2) {
+        private void checkTouchMoved(TouchEvent touchEvent) {
+            Boat playersBoat = race.getBoatById(clientID);
+            //double heading = playersBoat.getHeading();
+            if (touchEvent.getTouchPoints().size() == 1) {
+
+                CanvasCoordinate boatPositionCanvasCoordinate = DisplayUtils.convertFromLatLon(playersBoat.getCurrentPosition());
+                Coordinate boatPosition = new Coordinate(boatPositionCanvasCoordinate.getX(), boatPositionCanvasCoordinate.getY());
+                Coordinate sceneCentreCoordinate = new Coordinate(scene.getWidth(), scene.getHeight());
+                Mark sceneCentre = new Mark(0, "sceneCentre", sceneCentreCoordinate);
+                Coordinate touchPoint = new Coordinate(touchEvent.getTouchPoint().getSceneX(), touchEvent.getTouchPoint().getSceneY());
+
+                double angleToBoat = sceneCentre.getPosition().headingToCoordinate(boatPosition);
+                double angleToFinger = sceneCentre.getPosition().headingToCoordinate(touchPoint);
+
+                System.out.println("Angle of Boat = " + angleToBoat);
+                System.out.println("Angle of finger = " + angleToFinger);
+
+
+//                if (touchEvent.getTouchPoint().getSceneX() < scene.getWidth() / 2) {
                 //(heading < 180 && heading > 0) {
-                    commandInt = 5;
-                //}
-            } else {
-                commandInt = 6;
-            }
-            if (commandInt != -1) {
-                setChanged();
-                notifyObservers();
-            }
+//                    commandInt = 5;
+//                    //}
+//                } else {
+//                    commandInt = 6;
+//                }
+//                if (commandInt != -1) {
+//                    setChanged();
+//                    notifyObservers();
+//                }
 //            if (key.equals(SHIFT)){
 //                Boat boat = race.getBoatById(clientID);
 //                boat.changeSails();
 //            }
+                //}
+            }
         }
 
         public int getCommandInt() {
