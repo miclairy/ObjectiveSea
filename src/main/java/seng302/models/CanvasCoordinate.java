@@ -35,15 +35,20 @@ public class CanvasCoordinate {
 
     public double getAngleFromSceneCentre(CanvasCoordinate canvasCoordinate) {
 
-        double Ldelta = Math.toRadians(canvasCoordinate.getX()) - Math.toRadians(this.x);
-        double X = Math.cos(Math.toRadians(canvasCoordinate.getY()) * Math.sin(Ldelta));
-        double Y = Math.cos(Math.toRadians(this.y)) * Math.sin(Math.toRadians(canvasCoordinate.getY()))
-                - Math.sin(Math.toRadians(this.y)) * Math.cos(Math.toRadians(canvasCoordinate.getY())) * Math.cos(Ldelta);
-        double angle = Math.toDegrees(Math.atan2(X, Y));
-        if (angle < 0) {
-            angle += 360;
-        }
+        final double deltaY = (this.y - canvasCoordinate.getY());
+        final double deltaX = (this.x - canvasCoordinate.getX());
+        final double result = Math.toDegrees(Math.atan2(deltaY, deltaX));
+        return (result < 0) ? (360d + result) : result;
 
-        return angle;
+//        double Ldelta = Math.toRadians(canvasCoordinate.getX()) - Math.toRadians(this.x);
+//        double X = Math.cos(Math.toRadians(canvasCoordinate.getY()) * Math.sin(Ldelta));
+//        double Y = Math.cos(Math.toRadians(this.y)) * Math.sin(Math.toRadians(canvasCoordinate.getY()))
+//                - Math.sin(Math.toRadians(this.y)) * Math.cos(Math.toRadians(canvasCoordinate.getY())) * Math.cos(Ldelta);
+//        double angle = Math.toDegrees(Math.atan2(X, Y));
+//        if (angle < 0) {
+//            angle += 360;
+//        }
+//
+//        return angle;
     }
 }

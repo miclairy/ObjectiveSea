@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.Observable;
 import java.util.Set;
 
+import static java.lang.Math.abs;
+
 /**
      * handles user key presses.
      */
@@ -44,33 +46,44 @@ import java.util.Set;
 
         private void checkTouchMoved(TouchEvent touchEvent) {
             Boat playersBoat = race.getBoatById(clientID);
-            //double heading = playersBoat.getHeading();
             if (touchEvent.getTouchPoints().size() == 1) {
-
-                CanvasCoordinate boatPosition = DisplayUtils.convertFromLatLon(playersBoat.getCurrentPosition());
                 CanvasCoordinate sceneCentreCoordinate = new CanvasCoordinate(scene.getWidth()/2, scene.getHeight()/2);
                 CanvasCoordinate touchPoint = new CanvasCoordinate(touchEvent.getTouchPoint().getSceneX(), touchEvent.getTouchPoint().getSceneY());
 
-                System.out.println("Angle of Boat = " + boatPosition.getAngleFromSceneCentre(sceneCentreCoordinate));
-                System.out.println("Angle of touch = " + touchPoint.getAngleFromSceneCentre(sceneCentreCoordinate));
+                double angleTouch = touchPoint.getAngleFromSceneCentre(sceneCentreCoordinate);
+                double boatHeading = playersBoat.getHeading() - 90;
+                if (boatHeading < 0) {
+                    boatHeading += 360;
+                }
 
-                
-//                if (touchEvent.getTouchPoint().getSceneX() < scene.getWidth() / 2) {
-                //(heading < 180 && heading > 0) {
-//                    commandInt = 5;
-//                    //}
-//                } else {
-//                    commandInt = 6;
-//                }
-//                if (commandInt != -1) {
-//                    setChanged();
-//                    notifyObservers();
-//                }
-//            if (key.equals(SHIFT)){
-//                Boat boat = race.getBoatById(clientID);
-//                boat.changeSails();
-//            }
-                //}
+                if (!(boatHeading > (angleTouch - 2) && boatHeading < (angleTouch + 2))) {
+                    if(calculateRotationDirection(boatHeading, angleTouch)){
+                        commandInt = 5;
+                    } else {
+                        commandInt = 6;
+                    }
+                }
+                if (commandInt != -1) {
+                    setChanged();
+                    notifyObservers();
+                }
+            }
+        }
+
+        public boolean calculateRotationDirection(double boatHeading, double angleTouch){
+            if(boatHeading < angleTouch) {
+                if(abs(boatHeading - angleTouch)<180) {
+                    return false;
+                } else{
+                    return true;
+                }
+            }
+            else {
+                if(abs(boatHeading - angleTouch)<180){
+                    return true;
+                } else{
+                    return false;
+                }
             }
         }
 

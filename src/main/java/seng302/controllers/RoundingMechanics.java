@@ -52,8 +52,6 @@ public class RoundingMechanics {
 
         Double angle2 = mark.getPosition().headingToCoordinate(nextMarkCoordinate);
         Double angle1 = mark.getPosition().headingToCoordinate(previousMarkCoordinate);
-        System.out.println("Angle 2 = " + angle2);
-        System.out.println("Angle 1 = " + angle1);
         Double midway1 = (angle1 + angle2) / 2;
         Double midway2 = (midway1 + 180) % 360;
         Double midway = midway1;
