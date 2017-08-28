@@ -28,7 +28,7 @@ import java.util.ResourceBundle;
 
 public class MainMenuController implements Initializable{
     @FXML Button btnLiveGame;
-    @FXML Button btnPractice;
+    @FXML Button btnOfflinePlay;
     @FXML Button btnTutorial;
     @FXML Button btnHost;
     @FXML Button btnSpectate;
@@ -39,6 +39,8 @@ public class MainMenuController implements Initializable{
     @FXML Button btnBackPrac;
     @FXML Button btnCourseStart;
     @FXML Button btnBackHost;
+    @FXML Button btnCreateGame;
+    @FXML Button btnJoinGame;
     @FXML GridPane liveGameGrid;
     @FXML GridPane btnGrid;
     @FXML GridPane practiceGrid;
@@ -242,18 +244,11 @@ public class MainMenuController implements Initializable{
      * attaches listeners to buttons to allow for hover and click animations
      */
     private void setButtonAnimations(){
-        addButtonListeners(btnLiveGame);
-        addButtonListeners(btnPractice);
+        addButtonListeners(btnCreateGame);
+        addButtonListeners(btnJoinGame);
+        addButtonListeners(btnOfflinePlay);
         addButtonListeners(btnTutorial);
-        addButtonListeners(btnHost);
-        addButtonListeners(btnSpectate);
-        addButtonListeners(btnJoin);
-        addButtonListeners(btnBack);
-        addButtonListeners(btnSinglePlay);
-        addButtonListeners(btnPracticeStart);
-        addButtonListeners(btnBackPrac);
-        addButtonListeners(btnCourseStart);
-        addButtonListeners(btnBackHost);
+
     }
 
     private void setImageAnimations(){

@@ -1,32 +1,56 @@
 #menuAnchor{
-    -fx-effect: dropshadow(gaussian, #808080, 20, 0, 0, 0);
-    -fx-border-radius: 40 40 40 40;
-    -fx-background-radius: 40 40 40 40;
+    -fx-effect: dropshadow(gaussian, #517a7a, 40, 0, 0, 20);
+    -fx-border-radius: 10 10 10 10;
+    -fx-background-radius: 10 10 10 10;
     -fx-background-color: white;
 }
 
-.button{
+#btnTutorial{
+    -fx-background-color:  transparent;
+    -fx-font: 11px "Helvetica Neue";
+    -fx-font-weight: bold;
+}
+
+#btnOfflinePlay{
+    -fx-background-color:  transparent;
+    -fx-font: 11px "Helvetica Neue";
+    -fx-font-weight: bold;
+}
+
+#btnCreateGame{
+    -fx-padding: 10 200 10 25;
+    -fx-background-color:  white;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-effect: dropshadow(gaussian, #b1b1b1, 15, 0, 0, 5);
+    -fx-background-image: url('/graphics/hostArrow.png');
+    -fx-background-size: 22px 22px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: right 18 center;
+}
+
+#btnJoinGame{
+    -fx-font-weight: bold;
+    -fx-padding: 10 158 10 25;
+    -fx-background-color:  white;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-effect: dropshadow(gaussian, #b1b1b1, 15, 0, 0, 5);
+    -fx-background-image: url('/graphics/joinArrow.png');
+    -fx-background-size: 22px 22px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: right 18 center;
+}
+
+#lblModeType{
+    -fx-font: 32px "Helvetica Neue";
+    -fx-font-weight: 700;
+    -fx-text-fill: #2e2e2e;
+}
+
+#lblModeDescription{
     -fx-font: 12px "Helvetica Neue Normal";
-    -fx-text-fill: #FFFFFF;
-    //-fx-padding: 10 40 10 40;
-    -fx-background-color:  #8eb0b7;
-    -fx-border-radius: 70;
-    -fx-background-radius: 70;
-}
-
-.button:hover{
-    -fx-background-color: #a4c4ca;
-}
-
-.button:pressed{
-    -fx-background-color: #81a4ab;
-}
-
-#btnGrid{
-    -fx-effect: dropshadow(gaussian, #BEBEBE, 20, 0, 0, 0);
-    -fx-border-radius: 40 40 40 40;
-    -fx-background-radius: 40 40 40 40;
-    -fx-background-color: white;
+    -fx-text-fill: #6a6a6a;
 }
 
 
@@ -95,12 +119,11 @@
     -fx-progress-color: white;
 }
 
-.imageMapView{
-    //-fx-effect: dropshadow(gaussian, #d7d7d7, 20, 0, 0, 0);
-    //-fx-opacity: 0.8;
-}
-
 #mapTitle {
     -fx-font: 16px "Helvetica Neue Heavy";
     -fx-text-fill: #2a2a2a;
+}
+
+#imvLogo{
+    -fx-effect: dropshadow(gaussian, #2f595a, 20, 0, 0, 0);
 }
