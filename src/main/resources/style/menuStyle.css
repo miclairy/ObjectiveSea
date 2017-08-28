@@ -22,7 +22,7 @@
     -fx-background-color:  white;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
-    -fx-effect: dropshadow(gaussian, #b1b1b1, 15, 0, 0, 5);
+    -fx-effect: dropshadow(gaussian, #D6D6D6, 15, 0, 0, 5);
     -fx-background-image: url('/graphics/hostArrow.png');
     -fx-background-size: 22px 22px;
     -fx-background-repeat: no-repeat;
@@ -35,7 +35,7 @@
     -fx-background-color:  white;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
-    -fx-effect: dropshadow(gaussian, #b1b1b1, 15, 0, 0, 5);
+    -fx-effect: dropshadow(gaussian, #D6D6D6, 15, 0, 0, 5);
     -fx-background-image: url('/graphics/joinArrow.png');
     -fx-background-size: 22px 22px;
     -fx-background-repeat: no-repeat;
