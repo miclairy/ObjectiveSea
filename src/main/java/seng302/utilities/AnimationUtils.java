@@ -135,6 +135,27 @@ public class AnimationUtils {
     }
 
     /**
+     * scales and fades a node to remove it from the scene
+     * @param node1 the node to fade out
+     * @param node2 the node to fade in
+     */
+    public static void switchPaneFade(Node node1, Node node2){
+        FadeTransition fadeTransition1 = new FadeTransition(new Duration(300), node1);
+        fadeTransition1.setFromValue(1);
+        fadeTransition1.setToValue(0);
+        fadeTransition1.setInterpolator(Interpolator.EASE_OUT);
+        fadeTransition1.setOnFinished(new EventHandler<ActionEvent>(){public void handle(ActionEvent AE){node1.setVisible(false); }});
+
+        FadeTransition fadeTransition2 = new FadeTransition(new Duration(300), node2);
+        fadeTransition2.setFromValue(0);
+        fadeTransition2.setToValue(1);
+        fadeTransition2.setInterpolator(Interpolator.EASE_OUT);
+        node2.setVisible(true);
+        ParallelTransition pt = new ParallelTransition(fadeTransition1, fadeTransition2);
+        pt.play();
+    }
+
+    /**
      * scales and fades in a node to the scene
      * @param node the node to bring in
      */

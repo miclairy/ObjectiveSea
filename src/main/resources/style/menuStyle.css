@@ -1,8 +1,14 @@
 #menuAnchor{
-    -fx-effect: dropshadow(gaussian, #517a7a, 40, 0, 0, 20);
-    -fx-border-radius: 10 10 10 10;
-    -fx-background-radius: 10 10 10 10;
     -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+#dropShadowAnchor{
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-effect: dropshadow(gaussian, #659494, 20, 0, 0, 10);
 }
 
 #btnTutorial{
@@ -17,8 +23,20 @@
     -fx-font-weight: bold;
 }
 
+#btnOnlinePane{
+    -fx-background-color:  transparent;
+    -fx-font: 11px "Helvetica Neue";
+    -fx-font-weight: bold;
+}
+
+#btnOnlineBack{
+    -fx-background-color:  transparent;
+    -fx-font: 11px "Helvetica Neue";
+    -fx-font-weight: bold;
+}
+
 #btnCreateGame{
-    -fx-padding: 10 200 10 25;
+    -fx-padding: 10 195 10 25;
     -fx-background-color:  white;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
@@ -31,7 +49,57 @@
 
 #btnJoinGame{
     -fx-font-weight: bold;
-    -fx-padding: 10 158 10 25;
+    -fx-padding: 10 153 10 25;
+    -fx-background-color:  white;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-effect: dropshadow(gaussian, #D6D6D6, 15, 0, 0, 5);
+    -fx-background-image: url('/graphics/joinArrow.png');
+    -fx-background-size: 22px 22px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: right 18 center;
+}
+
+#btnCompete{
+    -fx-padding: 10 195 10 25;
+    -fx-background-color:  white;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-effect: dropshadow(gaussian, #D6D6D6, 15, 0, 0, 5);
+    -fx-background-image: url('/graphics/hostArrow.png');
+    -fx-background-size: 22px 22px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: right 18 center;
+}
+
+#btnSpectate{
+    -fx-padding: 10 195 10 25;
+    -fx-background-color:  white;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-effect: dropshadow(gaussian, #D6D6D6, 15, 0, 0, 5);
+    -fx-background-image: url('/graphics/joinArrow.png');
+    -fx-background-size: 22px 22px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: right 18 center;
+}
+
+#btnPractiseStart{
+    -fx-font-weight: bold;
+    -fx-padding: 10 140 10 25;
+    -fx-background-color:  white;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-effect: dropshadow(gaussian, #D6D6D6, 15, 0, 0, 5);
+    -fx-background-image: url('/graphics/hostArrow.png');
+    -fx-background-size: 22px 22px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: right 18 center;
+}
+
+#btnSinglePlay{
+    -fx-font-weight: bold;
+    -fx-padding: 10 193 10 25;
     -fx-background-color:  white;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
@@ -48,7 +116,29 @@
     -fx-text-fill: #2e2e2e;
 }
 
+#lblJoinRace{
+    -fx-font: 32px "Helvetica Neue";
+    -fx-font-weight: 700;
+    -fx-text-fill: #2e2e2e;
+}
+
+#lblOfflineMode{
+    -fx-font: 32px "Helvetica Neue";
+    -fx-font-weight: 700;
+    -fx-text-fill: #2e2e2e;
+}
+
 #lblModeDescription{
+    -fx-font: 12px "Helvetica Neue Normal";
+    -fx-text-fill: #6a6a6a;
+}
+
+#lblJoinDescription{
+    -fx-font: 12px "Helvetica Neue Normal";
+    -fx-text-fill: #6a6a6a;
+}
+
+#lblOfflineDescription{
     -fx-font: 12px "Helvetica Neue Normal";
     -fx-text-fill: #6a6a6a;
 }
@@ -126,4 +216,12 @@
 
 #imvLogo{
     -fx-effect: dropshadow(gaussian, #2f595a, 20, 0, 0, 0);
+}
+
+#imvSidePane{
+    -fx-opacity: 0.7;
+}
+
+#tblAvailableGames{
+
 }

@@ -4,16 +4,18 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.GaussianBlur;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import seng302.models.ClientOptions;
 import seng302.models.GameMode;
 import seng302.utilities.AnimationUtils;
@@ -27,34 +29,38 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class MainMenuController implements Initializable{
-    @FXML Button btnLiveGame;
     @FXML Button btnOfflinePlay;
     @FXML Button btnTutorial;
     @FXML Button btnHost;
     @FXML Button btnSpectate;
     @FXML Button btnJoin;
     @FXML Button btnBack;
+    @FXML Button btnOnlineBack;
     @FXML Button btnSinglePlay;
-    @FXML Button btnPracticeStart;
-    @FXML Button btnBackPrac;
+    @FXML Button btnPractiseStart;
     @FXML Button btnCourseStart;
     @FXML Button btnBackHost;
     @FXML Button btnCreateGame;
     @FXML Button btnJoinGame;
+    @FXML Button btnCompete;
     @FXML GridPane liveGameGrid;
-    @FXML GridPane btnGrid;
-    @FXML GridPane practiceGrid;
+    @FXML GridPane onlinePane;
+    @FXML GridPane offlinePane;
     @FXML GridPane courseGrid;
+    @FXML GridPane joinRacePane;
     @FXML TextField txtIPAddress;
     @FXML TextField txtPortNumber;
     @FXML Label lblIP;
     @FXML Label lblPort;
+    @FXML ImageView imvSidePane;
     @FXML ImageView AC35;
     @FXML ImageView Athens;
     @FXML ImageView LakeTekapo;
     @FXML ImageView LakeTaupo;
     @FXML ImageView AC33;
     @FXML ImageView Malmo;
+    @FXML AnchorPane menuAnchor;
+    @FXML TableView tblAvailableRaces;
 
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
 
@@ -75,22 +81,14 @@ public class MainMenuController implements Initializable{
         setButtonAnimations();
         setImageAnimations();
         setLabelPromptAnimations();
-        btnGrid.setVisible(true);
+        onlinePane.setVisible(true);
         liveGameGrid.setVisible(false);
-        practiceGrid.setVisible(false);
+        offlinePane.setVisible(false);
         courseGrid.setVisible(false);
+        joinRacePane.setVisible(false);
+        clipChildren(menuAnchor, 2*10);
+        tblAvailableRaces.setPlaceholder(new Label("No Available Races"));
     }
-
-    private void showJoinProgressIndicator(){
-        btnJoin.setText("");
-        joinProgressIndicator.setPrefSize(15.0,15.0);
-    }
-    private void hideJoinProgressIndicator(){
-        btnJoin.setText("JOIN");
-
-        joinProgressIndicator.setPrefSize(0.0,0.0);
-    }
-
 
     public void setApp(Main main){
         this.main = main;
@@ -98,26 +96,30 @@ public class MainMenuController implements Initializable{
 
     @FXML private void loadLiveGameGrid() {
         liveGameGrid.setVisible(true);
-        AnimationUtils.slideOutTransition(btnGrid);
+        AnimationUtils.slideOutTransition(onlinePane);
         AnimationUtils.slideInTransition(liveGameGrid);
     }
 
     @FXML private void backToMainMenu() {
-        btnGrid.setVisible(true);
+        onlinePane.setVisible(true);
         AnimationUtils.slideOutTransition(liveGameGrid);
-        AnimationUtils.slideInTransition(btnGrid);
+        AnimationUtils.slideInTransition(onlinePane);
     }
 
-    @FXML private void loadPracticeGrid() {
-        practiceGrid.setVisible(true);
-        AnimationUtils.slideOutTransition(btnGrid);
-        AnimationUtils.slideInTransition(practiceGrid);
+    @FXML private void loadOfflinePane() {
+        AnimationUtils.switchPaneFade(onlinePane, offlinePane);
     }
 
-    @FXML private void backToMainMenuPrac() {
-        btnGrid.setVisible(true);
-        AnimationUtils.slideOutTransition(practiceGrid);
-        AnimationUtils.slideInTransition(btnGrid);
+    @FXML private void loadOnlinePane() {
+        AnimationUtils.switchPaneFade(offlinePane, onlinePane);
+    }
+
+    @FXML private void loadJoinPane(){
+        AnimationUtils.switchPaneFade(onlinePane, joinRacePane);
+    }
+
+    @FXML private void backToOnline(){
+        AnimationUtils.switchPaneFade(joinRacePane, onlinePane);
     }
 
     @FXML private void backToLiveGame() {
@@ -248,6 +250,11 @@ public class MainMenuController implements Initializable{
         addButtonListeners(btnJoinGame);
         addButtonListeners(btnOfflinePlay);
         addButtonListeners(btnTutorial);
+        addButtonListeners(btnCompete);
+        addButtonListeners(btnSpectate);
+        addButtonListeners(btnOnlineBack);
+        addButtonListeners(btnPractiseStart);
+        addButtonListeners(btnSinglePlay);
 
     }
 
@@ -345,5 +352,17 @@ public class MainMenuController implements Initializable{
         DisplaySwitcher.getGameSounds().oceanWaves();
         DisplaySwitcher.getGameSounds().playEndlessMusic();
         DisplaySwitcher.getGameSounds().startSeaGullNoise();
+    }
+
+    private void clipChildren(Region region, double arc) {
+
+        final Rectangle outputClip = new Rectangle();
+        outputClip.setArcWidth(arc);
+        outputClip.setArcHeight(arc);
+        region.setClip(outputClip);
+        region.layoutBoundsProperty().addListener((ov, oldValue, newValue) -> {
+            outputClip.setWidth(newValue.getWidth());
+            outputClip.setHeight(newValue.getHeight());
+        });
     }
 }
