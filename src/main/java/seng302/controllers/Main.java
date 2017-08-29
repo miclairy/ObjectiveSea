@@ -19,6 +19,7 @@ import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplaySwitcher;
 import seng302.utilities.NoConnectionToServerException;
 import java.io.IOException;
+import java.net.BindException;
 
 
 public class Main extends Application {
@@ -103,7 +104,12 @@ public class Main extends Application {
      * Creates a Server object, puts it in it's own thread and starts the thread
      */
     private void setupServer(ServerOptions serverOptions) throws IOException {
-        server = new Server(serverOptions);
+        try{
+            server = new Server(serverOptions);
+        }catch(BindException e){
+            System.out.println("bind exception");
+            return;
+        }
         ConnectionUtils.setServer(server);
         Thread serverThread = new Thread(server);
         serverThread.setName("Server");

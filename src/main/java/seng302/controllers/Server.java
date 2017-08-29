@@ -9,6 +9,7 @@ import seng302.models.Race;
 import seng302.models.ServerOptions;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.Socket;
 import java.util.*;
 
@@ -34,6 +35,8 @@ public class Server implements Runnable, Observer {
     private ServerPacketBuilder packetBuilder;
     private CollisionManager collisionManager;
     private ServerOptions options;
+
+
 
     public Server(ServerOptions options) throws IOException {
         this.options = options;
