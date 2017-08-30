@@ -102,6 +102,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private int arrowIteration = 0;
     private int timer = 0;
 
+    List<ParallelTransition> parallelTransitions = new ArrayList<ParallelTransition>();
+
     private Tutorial tutorial;
 
     BoatDisplay currentUserBoatDisplay;
@@ -468,6 +470,17 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         ParallelTransition pt = new ParallelTransition(st1, st2, ft1, ft2);
         pt.play();
+        parallelTransitions.add(pt);
+    }
+
+    void stopHighlightAnimation(){
+        System.out.println("paused transition");
+        if(!parallelTransitions.isEmpty()){
+            for(ParallelTransition pt : parallelTransitions){
+                pt.jumpTo(Duration.hours(1));
+            }
+        }
+        parallelTransitions.clear();
     }
 
     /**

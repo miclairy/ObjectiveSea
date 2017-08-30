@@ -689,6 +689,7 @@ public class Controller implements Initializable, Observer {
 
     @FXML
     private void btnTrackPressed(){
+        raceViewController.stopHighlightAnimation();
         selectionController.trackBoat();
     }
 
