@@ -104,12 +104,7 @@ public class Main extends Application {
      * Creates a Server object, puts it in it's own thread and starts the thread
      */
     private void setupServer(ServerOptions serverOptions) throws IOException {
-        try{
-            server = new Server(serverOptions);
-        }catch(BindException e){
-            System.out.println("bind exception");
-            return;
-        }
+        server = new Server(serverOptions);
         ConnectionUtils.setServer(server);
         Thread serverThread = new Thread(server);
         serverThread.setName("Server");
@@ -137,13 +132,28 @@ public class Main extends Application {
         }
     }
 
-    public void startHostedRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions) throws Exception{
+    /**
+     * initilises a hosted race with the provided parameters
+     * @param course course name
+     * @param port port number to host
+     * @param isTutorial is hosted game a tutorial
+     * @param clientOptions client options
+     * @return whether starting hosted race was successful or not
+     * @throws Exception uncaught error
+     */
+    public boolean startHostedRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions) throws Exception{
         ServerOptions serverOptions = new ServerOptions();
         serverOptions.setPort(port);
         serverOptions.setRaceXML(course);
         serverOptions.setTutorial(isTutorial);
-        setupServer(serverOptions);
+        try{
+            setupServer(serverOptions);
+        } catch(BindException e){
+            showPortInUseError(port);
+            return false;
+        }
         startClient(clientOptions);
+        return true;
     }
 
     /**
@@ -207,6 +217,23 @@ public class Main extends Application {
         alert.setHeaderText("Failed to Join Server");
         String message = "There was not a free slot for you to join the server.\n\n";
         if (isParticipant) message += "You may be able to join as a spectator instead.";
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    /**
+     * shows a popup saying that port is in use.
+     * @param port port number to display
+     */
+    private void showPortInUseError(int port) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add("style/menuStyle.css");
+        dialogPane.getStyleClass().add("myDialog");
+        alert.setTitle("Failed to Host this Race");
+        alert.setHeaderText("Failed to Host this Race");
+        String message = "Port number "+port+" is already in use\n" +
+                "Please try again with another port.";
         alert.setContentText(message);
         alert.showAndWait();
     }
