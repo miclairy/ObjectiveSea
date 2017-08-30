@@ -322,8 +322,10 @@ public class Server implements Runnable, Observer {
     private void setBoatToDNF(int arg){
         for(Boat boat : raceUpdater.getRace().getCompetitors()){
             if(boat.getId().equals(arg)){
-                boat.setStatus(BoatStatus.DNF);
-                boat.changeSails();
+                if(!boat.getStatus().equals(BoatStatus.FINISHED)){
+                    boat.setStatus(BoatStatus.DNF);
+                    boat.changeSails();
+                }
             }
         }
     }
