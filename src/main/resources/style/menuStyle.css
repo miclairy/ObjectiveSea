@@ -292,6 +292,12 @@
     -fx-text-fill: white;
 }
 
+#lblSpeedNumBigger{
+    -fx-font: 42px "Helvetica Neue";
+    -fx-font-weight: 700;
+    -fx-text-fill: white;
+}
+
 #circleBoats{
     -fx-fill: #ff776b;
     -fx-effect: dropshadow(gaussian, #d0d0d0, 15, 0, 0, 4);

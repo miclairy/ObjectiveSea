@@ -21,6 +21,7 @@ import seng302.models.GameMode;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplaySwitcher;
+import seng302.views.AvailableRace;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -63,12 +64,15 @@ public class MainMenuController implements Initializable{
     @FXML ImageView AC33;
     @FXML ImageView Malmo;
     @FXML AnchorPane menuAnchor;
-    @FXML TableView tblAvailableRaces;
+    @FXML TableView<AvailableRace> tblAvailableRaces;
+    @FXML TableColumn<AvailableRace, String> columnMap;
+    @FXML TableColumn<AvailableRace, Integer> columnParticipants;
     @FXML Slider boatsInRaceSlider;
     @FXML Label lblBoatsNum;
     @FXML Slider speedScaleSlider;
     @FXML Label lblSpeedNum;
     @FXML Label lblSpeedNumBig;
+    @FXML Label lblSpeedNumBigger;
     @FXML Shape circleSpeed;
     @FXML Shape circleBoats;
 
@@ -139,7 +143,13 @@ public class MainMenuController implements Initializable{
     }
 
     @FXML private void loadJoinPane(){
+        setUpAvailableRaceTable();
         AnimationUtils.switchPaneFade(onlinePane, joinRacePane);
+    }
+
+    private void setUpAvailableRaceTable(){
+        columnMap.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
+        columnParticipants.setCellValueFactory(cellData -> cellData.getValue().numBoatsProperty().asObject());
     }
 
     @FXML private void backToOnline(){
@@ -420,18 +430,27 @@ public class MainMenuController implements Initializable{
                 circleSpeed.setTranslateX(bounds.getMinX() + 10);
                 lblSpeedNum.setTranslateX(bounds.getMinX() + 10);
                 lblSpeedNumBig.setTranslateX(bounds.getMinX() + 10);
+                lblSpeedNumBigger.setTranslateX(bounds.getMinX() + 10);
 
                 lblSpeedNum.textProperty().setValue(
                         String.valueOf((int) speedScaleSlider.getValue()));
                 lblSpeedNumBig.textProperty().setValue(
                         String.valueOf((int) speedScaleSlider.getValue()));
+                lblSpeedNumBigger.textProperty().setValue(
+                        String.valueOf((int) speedScaleSlider.getValue()));
 
-                if(speedScaleSlider.getValue() >= 10){
+                if(speedScaleSlider.getValue() >= 10 && speedScaleSlider.getValue() < 20){
                     lblSpeedNum.setVisible(false);
                     lblSpeedNumBig.setVisible(true);
+                    lblSpeedNumBigger.setVisible(false);
+                }else if(speedScaleSlider.getValue() >= 20){
+                    lblSpeedNum.setVisible(false);
+                    lblSpeedNumBig.setVisible(false);
+                    lblSpeedNumBigger.setVisible(true);
                 }else{
                     lblSpeedNum.setVisible(true);
                     lblSpeedNumBig.setVisible(false);
+                    lblSpeedNumBigger.setVisible(false);
                 }
             }
         });
