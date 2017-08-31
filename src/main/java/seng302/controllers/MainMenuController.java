@@ -1,14 +1,13 @@
 package seng302.controllers;
 
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.effect.BlurType;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.GaussianBlur;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -16,6 +15,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import seng302.models.ClientOptions;
 import seng302.models.GameMode;
 import seng302.utilities.AnimationUtils;
@@ -43,11 +43,14 @@ public class MainMenuController implements Initializable{
     @FXML Button btnCreateGame;
     @FXML Button btnJoinGame;
     @FXML Button btnCompete;
+    @FXML Button btnOnlineBackFromHost;
+    @FXML Button btnStartHostRace;
     @FXML GridPane liveGameGrid;
     @FXML GridPane onlinePane;
     @FXML GridPane offlinePane;
     @FXML GridPane courseGrid;
     @FXML GridPane joinRacePane;
+    @FXML GridPane hostOptionsPane;
     @FXML TextField txtIPAddress;
     @FXML TextField txtPortNumber;
     @FXML Label lblIP;
@@ -61,6 +64,13 @@ public class MainMenuController implements Initializable{
     @FXML ImageView Malmo;
     @FXML AnchorPane menuAnchor;
     @FXML TableView tblAvailableRaces;
+    @FXML Slider boatsInRaceSlider;
+    @FXML Label lblBoatsNum;
+    @FXML Slider speedScaleSlider;
+    @FXML Label lblSpeedNum;
+    @FXML Label lblSpeedNumBig;
+    @FXML Shape circleSpeed;
+    @FXML Shape circleBoats;
 
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
 
@@ -81,13 +91,19 @@ public class MainMenuController implements Initializable{
         setButtonAnimations();
         setImageAnimations();
         setLabelPromptAnimations();
+        setPaneVisibility();
+        setUpSliders();
+        clipChildren(menuAnchor, 2*10);
+        tblAvailableRaces.setPlaceholder(new Label("No Available Races"));
+    }
+
+    private void setPaneVisibility(){
         onlinePane.setVisible(true);
         liveGameGrid.setVisible(false);
         offlinePane.setVisible(false);
         courseGrid.setVisible(false);
         joinRacePane.setVisible(false);
-        clipChildren(menuAnchor, 2*10);
-        tblAvailableRaces.setPlaceholder(new Label("No Available Races"));
+        hostOptionsPane.setVisible(false);
     }
 
     public void setApp(Main main){
@@ -106,6 +122,14 @@ public class MainMenuController implements Initializable{
         AnimationUtils.slideInTransition(onlinePane);
     }
 
+    @FXML private void createHostedGame(){
+
+    }
+
+    @FXML private void loadHostOptionsPane(){
+        AnimationUtils.switchPaneFade(onlinePane, hostOptionsPane);
+    }
+
     @FXML private void loadOfflinePane() {
         AnimationUtils.switchPaneFade(onlinePane, offlinePane);
     }
@@ -121,6 +145,8 @@ public class MainMenuController implements Initializable{
     @FXML private void backToOnline(){
         AnimationUtils.switchPaneFade(joinRacePane, onlinePane);
     }
+
+    @FXML private void backFromHost(){AnimationUtils.switchPaneFade(hostOptionsPane, onlinePane);}
 
     @FXML private void backToLiveGame() {
         liveGameGrid.setVisible(true);
@@ -255,6 +281,8 @@ public class MainMenuController implements Initializable{
         addButtonListeners(btnOnlineBack);
         addButtonListeners(btnPractiseStart);
         addButtonListeners(btnSinglePlay);
+        addButtonListeners(btnStartHostRace);
+        addButtonListeners(btnOnlineBackFromHost);
 
     }
 
@@ -363,6 +391,49 @@ public class MainMenuController implements Initializable{
         region.layoutBoundsProperty().addListener((ov, oldValue, newValue) -> {
             outputClip.setWidth(newValue.getWidth());
             outputClip.setHeight(newValue.getHeight());
+        });
+    }
+
+    private void setUpSliders() {
+        boatsInRaceSlider.valueProperty().addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue arg0, Object arg1, Object arg2) {
+                Bounds bounds = boatsInRaceSlider.lookup(".thumb").getBoundsInParent();
+
+                circleBoats.setTranslateX(bounds.getMinX() + 10);
+                lblBoatsNum.setTranslateX(bounds.getMinX() + 10);
+
+                lblBoatsNum.textProperty().setValue(
+                        String.valueOf((int) boatsInRaceSlider.getValue()));
+
+
+            }
+        });
+
+        speedScaleSlider.valueProperty().addListener(new ChangeListener() {
+
+            @Override
+            public void changed(ObservableValue arg0, Object arg1, Object arg2) {
+                Bounds bounds = speedScaleSlider.lookup(".thumb").getBoundsInParent();
+
+                circleSpeed.setTranslateX(bounds.getMinX() + 10);
+                lblSpeedNum.setTranslateX(bounds.getMinX() + 10);
+                lblSpeedNumBig.setTranslateX(bounds.getMinX() + 10);
+
+                lblSpeedNum.textProperty().setValue(
+                        String.valueOf((int) speedScaleSlider.getValue()));
+                lblSpeedNumBig.textProperty().setValue(
+                        String.valueOf((int) speedScaleSlider.getValue()));
+
+                if(speedScaleSlider.getValue() >= 10){
+                    lblSpeedNum.setVisible(false);
+                    lblSpeedNumBig.setVisible(true);
+                }else{
+                    lblSpeedNum.setVisible(true);
+                    lblSpeedNumBig.setVisible(false);
+                }
+            }
         });
     }
 }

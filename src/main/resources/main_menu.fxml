@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -16,6 +17,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
 <StackPane fx:id="stackPane" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/menuStyle.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.MainMenuController">
@@ -29,7 +31,95 @@
          <children>
             <StackPane fx:id="stackPane" layoutX="228.0" layoutY="1.0" prefHeight="840.0" prefWidth="700.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="1.0">
                <children>
-                  <GridPane fx:id="joinRacePane" layoutX="10.0" layoutY="10.0" maxHeight="855.0" maxWidth="755.0" minHeight="299.0" minWidth="320.0" prefHeight="763.0" prefWidth="700.0">
+                  <GridPane fx:id="hostOptionsPane" layoutX="10.0" layoutY="10.0" maxHeight="855.0" maxWidth="755.0" minHeight="299.0" minWidth="320.0" prefHeight="763.0" prefWidth="700.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints />
+                        <ColumnConstraints />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints maxHeight="50.0" minHeight="50.0" prefHeight="50.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="381.0" minHeight="10.0" prefHeight="376.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <Button fx:id="btnOnlineBackFromHost" mnemonicParsing="false" onAction="#backFromHost" text="Back" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+                           <GridPane.margin>
+                              <Insets bottom="25.0" left="40.0" />
+                           </GridPane.margin>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </Button>
+                        <Label fx:id="lblJoinRace" text="Host Race" GridPane.halignment="LEFT" GridPane.valignment="TOP">
+                           <GridPane.margin>
+                              <Insets left="40.0" top="20.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Label fx:id="lblJoinDescription" layoutX="60.0" layoutY="160.0" text="Select the minimum number of boats in the race and the speed scale to start your perfect race" wrapText="true" GridPane.halignment="LEFT" GridPane.rowSpan="2" GridPane.valignment="TOP">
+                           <GridPane.margin>
+                              <Insets left="40.0" right="350.0" top="60.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Button fx:id="btnStartHostRace" layoutX="90.0" layoutY="250.0" mnemonicParsing="false" onAction="#loadLiveGameGrid" text="Select Map" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+                           <padding>
+                              <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
+                           </padding>
+                           <GridPane.margin>
+                              <Insets bottom="29.0" right="40.0" />
+                           </GridPane.margin>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
+                        </Button>
+                        <Slider fx:id="boatsInRaceSlider" blockIncrement="1.0" majorTickUnit="1.0" max="6.0" min="1.0" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+                           <GridPane.margin>
+                              <Insets bottom="70.0" left="150.0" right="150.0" />
+                           </GridPane.margin>
+                        </Slider>
+                        <Label fx:id="lblBoatsInRace" styleClass="sliderLabels" text="Minimum Competitors" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                           <GridPane.margin>
+                              <Insets bottom="30.0" right="155.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Slider fx:id="speedScaleSlider" blockIncrement="1.0" layoutX="70.0" layoutY="199.0" majorTickUnit="1.0" max="30.0" min="1.0" snapToTicks="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
+                           <GridPane.margin>
+                              <Insets bottom="90.0" left="150.0" right="150.0" />
+                           </GridPane.margin>
+                        </Slider>
+                        <Label fx:id="lblSpeedScale" layoutX="70.0" layoutY="168.0" styleClass="sliderLabels" text="Speed Scale" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+                           <GridPane.margin>
+                              <Insets right="155.0" top="220.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Circle fx:id="circleBoats" fill="WHITE" radius="28.0" stroke="TRANSPARENT" strokeType="INSIDE" strokeWidth="0.0" styleClass="numCircles" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+                           <GridPane.margin>
+                              <Insets bottom="170.0" left="130.0" />
+                           </GridPane.margin>
+                        </Circle>
+                        <Circle fx:id="circleSpeed" fill="#d3d3d3" layoutX="360.0" layoutY="162.0" radius="28.0" stroke="TRANSPARENT" strokeType="INSIDE" strokeWidth="0.0" styleClass="numCircles" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                           <GridPane.margin>
+                              <Insets left="130.0" top="70.0" />
+                           </GridPane.margin>
+                        </Circle>
+                        <Label fx:id="lblBoatsNum" text="1" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+                           <GridPane.margin>
+                              <Insets bottom="170.0" left="142.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Label fx:id="lblSpeedNum" contentDisplay="CENTER" layoutX="503.0" layoutY="127.0" text="1" textAlignment="CENTER" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+                           <GridPane.margin>
+                              <Insets left="142.0" top="70.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Label fx:id="lblSpeedNumBig" contentDisplay="CENTER" layoutX="503.0" layoutY="247.0" text="10" textAlignment="CENTER" visible="false" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+                           <GridPane.margin>
+                              <Insets left="133.0" top="70.0" />
+                           </GridPane.margin>
+                        </Label>
+                     </children>
+                  </GridPane>
+                  <GridPane fx:id="joinRacePane" layoutX="10.0" layoutY="10.0" maxHeight="855.0" maxWidth="755.0" minHeight="299.0" minWidth="320.0" prefHeight="763.0" prefWidth="700.0" visible="false">
                      <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         <ColumnConstraints />
@@ -176,7 +266,7 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <Button fx:id="btnCreateGame" mnemonicParsing="false" onAction="#loadLiveGameGrid" text="Host" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                        <Button fx:id="btnCreateGame" mnemonicParsing="false" onAction="#loadHostOptionsPane" text="Host" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                            <padding>
                               <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                            </padding>

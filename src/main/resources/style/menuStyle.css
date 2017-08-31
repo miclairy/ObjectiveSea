@@ -29,6 +29,12 @@
     -fx-font-weight: bold;
 }
 
+#btnOnlineBackFromHost{
+    -fx-background-color:  transparent;
+    -fx-font: 11px "Helvetica Neue";
+    -fx-font-weight: bold;
+}
+
 #btnOnlineBack{
     -fx-background-color:  transparent;
     -fx-font: 11px "Helvetica Neue";
@@ -50,6 +56,19 @@
 #btnJoinGame{
     -fx-font-weight: bold;
     -fx-padding: 10 153 10 25;
+    -fx-background-color:  white;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-effect: dropshadow(gaussian, #D6D6D6, 15, 0, 0, 5);
+    -fx-background-image: url('/graphics/joinArrow.png');
+    -fx-background-size: 22px 22px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: right 18 center;
+}
+
+#btnStartHostRace{
+    -fx-font-weight: bold;
+    -fx-padding: 10 60 10 25;
     -fx-background-color:  white;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
@@ -224,4 +243,61 @@
 
 #tblAvailableGames{
 
+}
+
+.sliderLabels{
+    -fx-font: 14px "Helvetica Neue";
+    -fx-font-weight: bold;
+    -fx-text-fill: #2e2e2e;
+    -fx-opacity: 0.7;
+}
+
+#boatsInRaceSlider .track{
+    -fx-background-color: #dfdfdf;
+    -fx-padding: 2.5;
+    -fx-effect: dropshadow(gaussian, #e2e2e2, 12, 0, 0, 3);
+}
+
+#boatsInRaceSlider .thumb {
+    -fx-background-color: #888888;
+    -fx-effect: dropshadow(gaussian, #e2e2e2, 12, 0, 0, 3);
+}
+
+#speedScaleSlider .track{
+    -fx-background-color: #dfdfdf;
+    -fx-padding: 2.5;
+    -fx-effect: dropshadow(gaussian, #e2e2e2, 12, 0, 0, 3);
+}
+
+#speedScaleSlider .thumb {
+    -fx-background-color: #888888;
+    -fx-effect: dropshadow(gaussian, #e2e2e2, 12, 0, 0, 3);
+}
+
+#lblBoatsNum{
+    -fx-font: 54px "Helvetica Neue";
+    -fx-font-weight: 700;
+    -fx-text-fill: #ffffff;
+}
+
+#lblSpeedNum{
+    -fx-font: 54px "Helvetica Neue";
+    -fx-font-weight: 700;
+    -fx-text-fill: white;
+}
+
+#lblSpeedNumBig{
+    -fx-font: 42px "Helvetica Neue";
+    -fx-font-weight: 700;
+    -fx-text-fill: white;
+}
+
+#circleBoats{
+    -fx-fill: #ff776b;
+    -fx-effect: dropshadow(gaussian, #d0d0d0, 15, 0, 0, 4);
+}
+
+#circleSpeed{
+    -fx-fill: #91acb3;
+    -fx-effect: dropshadow(gaussian, #d0d0d0, 15, 0, 0, 4);
 }
