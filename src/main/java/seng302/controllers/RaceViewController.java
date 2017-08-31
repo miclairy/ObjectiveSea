@@ -474,10 +474,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     void stopHighlightAnimation(){
-        System.out.println("paused transition");
         if(!parallelTransitions.isEmpty()){
             for(ParallelTransition pt : parallelTransitions){
-                pt.jumpTo(Duration.hours(1));
+                pt.setRate(999);
             }
         }
         parallelTransitions.clear();
