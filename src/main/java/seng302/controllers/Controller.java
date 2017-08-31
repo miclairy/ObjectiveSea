@@ -305,6 +305,7 @@ public class Controller implements Initializable, Observer {
     private void initZoom() {
         //Zoomed out
         zoomSlider.valueProperty().addListener((arg0, arg1, arg2) -> {
+            raceViewController.stopHighlightAnimation();
             zoomSlider.setOpacity(FOCUSED_ZOOMSLIDER_OPACITY);
             DisplayUtils.setZoomLevel(zoomSlider.getValue());
             if (DisplayUtils.zoomLevel != 1) {
@@ -661,6 +662,7 @@ public class Controller implements Initializable, Observer {
     }
 
     public void setZoomSliderValue(double level) {
+        raceViewController.stopHighlightAnimation();
         zoomSlider.setValue(level);
     }
 
@@ -689,7 +691,6 @@ public class Controller implements Initializable, Observer {
 
     @FXML
     private void btnTrackPressed(){
-        raceViewController.stopHighlightAnimation();
         selectionController.trackBoat();
     }
 
