@@ -38,6 +38,7 @@ import java.util.*;
 import static java.lang.Math.abs;
 import static seng302.data.RaceStatus.STARTED;
 import static seng302.data.RaceStatus.TERMINATED;
+import static seng302.utilities.DisplayUtils.isOutsideBounds;
 import static seng302.utilities.DisplayUtils.zoomLevel;
 
 /**
@@ -103,6 +104,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private int timer = 0;
 
     private Tutorial tutorial;
+
+    private Color DEFAULT_HIGHTLIGHT_COLOR = Color.valueOf("#4DC58B");
+    private Color RED_HIGHTLIGHT_COLOR = Color.valueOf("#c55d4d");
+    private Color ORANGE_HIGHTLIGHT_COLOR = Color.valueOf("#c5894d");
+
+
 
     BoatDisplay currentUserBoatDisplay;
     Shape boatHighlight = null;
@@ -225,8 +232,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
 
-
-
     /**
      * Moves and individual BoatDisplay object
      * moves the onscreen boat, wake, sail, annotations to where they should be onscreen
@@ -286,6 +291,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
         }
     }
+
 
     /**
      * sets the order of the objects on the display. defines what object will go on top of another.
@@ -413,7 +419,25 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public void initBoatHighlight(){
         boatHighlight = new Circle(0,0,10);
         boatHighlight.setId("usersBoatHighlight");
+        boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
         root.getChildren().add(boatHighlight);
+    }
+
+    private void updateBoatHighlight(Boat boat){
+        if (race.hasStarted()){
+            if(boat.getLeg() == 0){
+                boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
+            }else{
+                boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
+            }
+        }else{
+            if(boat.getTimeStatus().equals(StartTimingStatus.EARLY)){
+                boatHighlight.setFill(ORANGE_HIGHTLIGHT_COLOR);
+            }else{
+                boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
+            }
+        }
+
     }
 
     /**
@@ -424,6 +448,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             initBoatPath(boat);
         }
     }
+
 
     /**
      * creates an animation to visualise a collision or to highlight the next mark a boat should head toward
@@ -917,6 +942,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             boatHighlight.setTranslateX(point.getX());
             boatHighlight.setScaleX(zoomLevel*1.5);
             boatHighlight.setScaleY(zoomLevel*1.5);
+            updateBoatHighlight(boat.getBoat());
             boatHighlight.toFront();
         }
         icon.toFront();
