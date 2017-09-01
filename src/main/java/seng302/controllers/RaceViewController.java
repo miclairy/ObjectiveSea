@@ -107,7 +107,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
     private Color DEFAULT_HIGHTLIGHT_COLOR = Color.valueOf("#4DC58B");
     private Color RED_HIGHTLIGHT_COLOR = Color.valueOf("#c55d4d");
-    private Color ORANGE_HIGHTLIGHT_COLOR = Color.valueOf("#c5894d");
+    private Color ORANGE_HIGHTLIGHT_COLOR = Color.valueOf("#c5974d");
+    private boolean startedEarlyPenalty = false;
+    private enum PenaltyStatus {NO_PENALTY, WARNING, PENALTY}
+    private PenaltyStatus penaltyStatus = PenaltyStatus.NO_PENALTY;
 
 
 
@@ -423,7 +426,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         root.getChildren().add(boatHighlight);
     }
 
-    private boolean startedEarlyPenalty = false;
 
     /**
      * changes the color of the boat highlight to update as the boat is about to recieve a penalty
@@ -441,14 +443,28 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     race.getCourse().getCompoundMarks().get(2))){
                 startedEarlyPenalty = true;
                 boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
+                boatHighlightChangeAnimation("redBoatHighlight");
+                penaltyStatus = PenaltyStatus.PENALTY;
 
             } else if(boat.getTimeStatus().equals(StartTimingStatus.EARLY)) {
                 boatHighlight.setFill(ORANGE_HIGHTLIGHT_COLOR);
+                if(!penaltyStatus.equals(PenaltyStatus.WARNING)){
+                    boatHighlightChangeAnimation("orangeBoatHighlight");
+                    penaltyStatus = PenaltyStatus.WARNING;
+                }
             } else {
                 boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
+                if(!penaltyStatus.equals(PenaltyStatus.NO_PENALTY)){
+                    boatHighlightChangeAnimation("defaultBoatHighlight");
+                    penaltyStatus = PenaltyStatus.NO_PENALTY;
+                }
             }
         }else{
             boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
+            if(!penaltyStatus.equals(PenaltyStatus.NO_PENALTY)){
+                boatHighlightChangeAnimation("defaultBoatHighlight");
+                penaltyStatus = PenaltyStatus.NO_PENALTY;
+            }
             startedEarlyPenalty = false;
 
         }
@@ -465,6 +481,25 @@ public class RaceViewController extends AnimationTimer implements Observer {
             initBoatPath(boat);
         }
     }
+
+    /**
+     * creates a highlight animation at the location of the users boat
+     * @param highlightID the css tag for the animation
+     */
+    void boatHighlightChangeAnimation(String highlightID){
+        CanvasCoordinate canvasCoordinate = new CanvasCoordinate(currentUserBoatDisplay.getSail().getLayoutX(),
+                currentUserBoatDisplay.getSail().getLayoutY());
+        Circle highlightCircle1 = createHighlightCircle(canvasCoordinate, highlightID);
+        ScaleTransition st1 = AnimationUtils.scaleTransitionCollision(highlightCircle1, 500,
+                15 * zoomLevel);
+        st1.setOnFinished(AE -> root.getChildren().remove(highlightCircle1));
+
+        FadeTransition ft1 = AnimationUtils.fadeOutTransition(highlightCircle1, 500);
+
+        ParallelTransition pt = new ParallelTransition(st1, ft1);
+        pt.play();
+    }
+
 
 
     /**
@@ -959,8 +994,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
             boatHighlight.setTranslateX(point.getX());
             boatHighlight.setScaleX(zoomLevel*1.5);
             boatHighlight.setScaleY(zoomLevel*1.5);
-            updateBoatHighlight(boat.getBoat());
             boatHighlight.toFront();
+            if(!options.isTutorial() && !options.isPractice()){
+                updateBoatHighlight(boat.getBoat());
+            }
         }
         icon.toFront();
     }
