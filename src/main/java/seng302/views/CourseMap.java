@@ -2,7 +2,7 @@ package seng302.views;
 
 import javafx.scene.image.Image;
 
-public class Map {
+public class CourseMap {
 
     private String mapName;
     private String imageLocation;
@@ -10,7 +10,7 @@ public class Map {
     private Integer numberOfMarks;
     private String estTimeToRace;
 
-    public Map(String mapName, String imageLocation, Integer numberOfMarks, String estTimeToRace) {
+    public CourseMap(String mapName, String imageLocation, Integer numberOfMarks, String estTimeToRace) {
         this.mapName = mapName;
         this.imageLocation = imageLocation;
         this.image = new Image(imageLocation);

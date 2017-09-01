@@ -22,7 +22,7 @@ import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplaySwitcher;
 import seng302.views.AvailableRace;
-import seng302.views.Map;
+import seng302.views.CourseMap;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -78,7 +78,7 @@ public class MainMenuController implements Initializable{
     @FXML Label lblMapName;
     @FXML Label lblTime;
 
-    private ArrayList<Map> availableMaps = new ArrayList<>();
+    private ArrayList<CourseMap> availableCourseMaps = new ArrayList<>();
     private int currentMapIndex = 0;
 
 
@@ -418,16 +418,16 @@ public class MainMenuController implements Initializable{
     }
 
     private void setUpMaps(){
-        availableMaps.add(new Map("AC33", "/graphics/courseImages/AC33-course.png", 5, "28:59"));
-        availableMaps.add(new Map("Athens", "/graphics/courseImages/Athens-course.png", 4, "29:42"));
-        availableMaps.add(new Map("Lake Tekapo", "/graphics/courseImages/LakeTekapo-course.png", 6, "30:00"));
-        availableMaps.add(new Map("Lake Taupo", "/graphics/courseImages/LakeTaupo-course.png", 4, "25:40"));
-        availableMaps.add(new Map("Malmo", "/graphics/courseImages/Malmo-course.png", 4, "28:20"));
-        availableMaps.add(new Map("AC35", "/graphics/courseImages/AC35-course.png", 2, "24:59"));
+        availableCourseMaps.add(new CourseMap("AC33", "/graphics/courseImages/AC33-course.png", 5, "28:59"));
+        availableCourseMaps.add(new CourseMap("Athens", "/graphics/courseImages/Athens-course.png", 4, "29:42"));
+        availableCourseMaps.add(new CourseMap("Lake Tekapo", "/graphics/courseImages/LakeTekapo-course.png", 6, "30:00"));
+        availableCourseMaps.add(new CourseMap("Lake Taupo", "/graphics/courseImages/LakeTaupo-course.png", 4, "25:40"));
+        availableCourseMaps.add(new CourseMap("Malmo", "/graphics/courseImages/Malmo-course.png", 4, "28:20"));
+        availableCourseMaps.add(new CourseMap("AC35", "/graphics/courseImages/AC35-course.png", 2, "24:59"));
     }
 
     @FXML private void nextMap(){
-        if(currentMapIndex == availableMaps.size() - 1){
+        if(currentMapIndex == availableCourseMaps.size() - 1){
             currentMapIndex = 0;
         }else{
             currentMapIndex += 1;
@@ -437,7 +437,7 @@ public class MainMenuController implements Initializable{
 
     @FXML private void previousMap(){
         if(currentMapIndex == 0){
-            currentMapIndex = availableMaps.size() - 1;
+            currentMapIndex = availableCourseMaps.size() - 1;
         }else{
             currentMapIndex -= 1;
         }
@@ -445,11 +445,11 @@ public class MainMenuController implements Initializable{
     }
 
     private void updateMap(){
-        Map currentMap = availableMaps.get(currentMapIndex);
-        selectedCourse = currentMap.getMapName().replace(" ", "") + "-course.xml";
-        imvMapPreview.setImage(currentMap.getImage());
-        lblMapName.setText(currentMap.getMapName());
-        lblMarks.setText(currentMap.getNumberOfMarks().toString());
-        lblTime.setText(currentMap.getEstTimeToRace());
+        CourseMap currentCourseMap = availableCourseMaps.get(currentMapIndex);
+        selectedCourse = currentCourseMap.getMapName().replace(" ", "") + "-course.xml";
+        imvMapPreview.setImage(currentCourseMap.getImage());
+        lblMapName.setText(currentCourseMap.getMapName());
+        lblMarks.setText(currentCourseMap.getNumberOfMarks().toString());
+        lblTime.setText(currentCourseMap.getEstTimeToRace());
     }
 }
