@@ -17,6 +17,12 @@
     -fx-font-weight: bold;
 }
 
+#btnManual{
+    -fx-background-color:  transparent;
+    -fx-font: 11px "Helvetica Neue";
+    -fx-font-weight: bold;
+}
+
 #btnOfflinePlay{
     -fx-background-color:  transparent;
     -fx-font: 11px "Helvetica Neue";
@@ -30,6 +36,12 @@
 }
 
 #btnOnlineBackFromHost{
+    -fx-background-color:  transparent;
+    -fx-font: 11px "Helvetica Neue";
+    -fx-font-weight: bold;
+}
+
+#btnBackToOptions{
     -fx-background-color:  transparent;
     -fx-font: 11px "Helvetica Neue";
     -fx-font-weight: bold;
@@ -66,7 +78,20 @@
     -fx-background-position: right 18 center;
 }
 
-#btnStartHostRace{
+#btnStartRace{
+    -fx-font-weight: bold;
+    -fx-padding: 10 60 10 25;
+    -fx-background-color:  white;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-effect: dropshadow(gaussian, #D6D6D6, 15, 0, 0, 5);
+    -fx-background-image: url('/graphics/joinArrow.png');
+    -fx-background-size: 22px 22px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: right 18 center;
+}
+
+#btnLoadMap{
     -fx-font-weight: bold;
     -fx-padding: 10 60 10 25;
     -fx-background-color:  white;
@@ -142,6 +167,12 @@
 }
 
 #lblOfflineMode{
+    -fx-font: 32px "Helvetica Neue";
+    -fx-font-weight: 700;
+    -fx-text-fill: #2e2e2e;
+}
+
+#lblMapName{
     -fx-font: 32px "Helvetica Neue";
     -fx-font-weight: 700;
     -fx-text-fill: #2e2e2e;
@@ -306,4 +337,74 @@
 #circleSpeed{
     -fx-fill: #91acb3;
     -fx-effect: dropshadow(gaussian, #d0d0d0, 15, 0, 0, 4);
+}
+
+#imvMapPreview{
+    -fx-effect: dropshadow(gaussian, #70a3a3, 40, 0, 0, 8);
+}
+
+#btnMapLeft{
+    -fx-text-fill: white;
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 200px;
+    -fx-background-radius: 200px;
+    -fx-padding: 7 20 7 20px;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-background-image: url('/graphics/buttonImages/openArrow.png');
+    -fx-background-size: 30px 30px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-opacity: 0.7;
+    -fx-effect: dropshadow(gaussian, #577e7e, 10, 0, 0, 5);
+}
+
+#btnMapRight{
+    -fx-text-fill: white;
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 200px;
+    -fx-background-radius: 200px;
+    -fx-padding: 7 20 7 20px;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-background-image: url('/graphics/buttonImages/closeArrow.png');
+    -fx-background-size: 30px 30px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-opacity: 0.7;
+    -fx-effect: dropshadow(gaussian, #577e7e, 10, 0, 0, 5);
+}
+
+#lblMarksTitle{
+    -fx-font: 20px "Helvetica Neue";
+    -fx-font-weight: bold;
+    -fx-text-fill: #2d2d2d;
+}
+
+#markCircle{
+    -fx-fill: #ff776b;
+    -fx-effect: dropshadow(gaussian, #d0d0d0, 15, 0, 0, 4);
+}
+
+#lblMarks{
+    -fx-font: 54px "Helvetica Neue";
+    -fx-font-weight: 700;
+    -fx-text-fill: white;
+}
+
+#lblEstTime{
+    -fx-font: 20px "Helvetica Neue";
+    -fx-font-weight: bold;
+    -fx-text-fill: #2d2d2d;
+}
+
+#timeCircle{
+    -fx-fill: #93DA9F;
+    -fx-effect: dropshadow(gaussian, #d0d0d0, 15, 0, 0, 4);
+}
+
+#lblTime{
+    -fx-font: 20px "Helvetica Neue";
+    -fx-font-weight: 700;
+    -fx-text-fill: white;
 }

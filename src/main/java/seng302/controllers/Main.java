@@ -131,11 +131,18 @@ public class Main extends Application {
         }
     }
 
-    public void startHostedRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions) throws Exception{
+    public void startLocalRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions) throws Exception{
         ServerOptions serverOptions = new ServerOptions();
         serverOptions.setPort(port);
         serverOptions.setRaceXML(course);
         serverOptions.setTutorial(isTutorial);
+        setupServer(serverOptions);
+        startClient(clientOptions);
+    }
+
+    public void startHostedRace(String course, Double speedScale, int numParticipants, ClientOptions clientOptions) throws Exception{
+        ServerOptions serverOptions = new ServerOptions(speedScale, numParticipants);
+        serverOptions.setRaceXML(course);
         setupServer(serverOptions);
         startClient(clientOptions);
     }

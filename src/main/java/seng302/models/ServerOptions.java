@@ -32,6 +32,18 @@ public class ServerOptions {
         numRacesToRun = 1;
     }
 
+    /**
+     * Constructor for custom host game
+     */
+    public ServerOptions(Double speedScale, int minParticipants){
+        this.speedScale = speedScale;
+        this.minParticipants = minParticipants;
+        port = DEFAULT_PORT;
+        raceXML = DEFAULT_COURSE;
+        isTutorial = false;
+        numRacesToRun = 1;
+    }
+
     public Double getSpeedScale() {
         return speedScale;
     }

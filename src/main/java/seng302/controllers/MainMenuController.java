@@ -22,11 +22,13 @@ import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplaySwitcher;
 import seng302.views.AvailableRace;
+import seng302.views.Map;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class MainMenuController implements Initializable{
@@ -39,30 +41,25 @@ public class MainMenuController implements Initializable{
     @FXML Button btnOnlineBack;
     @FXML Button btnSinglePlay;
     @FXML Button btnPractiseStart;
-    @FXML Button btnCourseStart;
-    @FXML Button btnBackHost;
+    @FXML Button btnManual;
     @FXML Button btnCreateGame;
     @FXML Button btnJoinGame;
     @FXML Button btnCompete;
     @FXML Button btnOnlineBackFromHost;
-    @FXML Button btnStartHostRace;
+    @FXML Button btnLoadMap;
+    @FXML Button btnBackToOptions;
+    @FXML Button btnStartRace;
     @FXML GridPane liveGameGrid;
     @FXML GridPane onlinePane;
     @FXML GridPane offlinePane;
-    @FXML GridPane courseGrid;
     @FXML GridPane joinRacePane;
     @FXML GridPane hostOptionsPane;
+    @FXML GridPane selectMapPane;
     @FXML TextField txtIPAddress;
     @FXML TextField txtPortNumber;
     @FXML Label lblIP;
     @FXML Label lblPort;
     @FXML ImageView imvSidePane;
-    @FXML ImageView AC35;
-    @FXML ImageView Athens;
-    @FXML ImageView LakeTekapo;
-    @FXML ImageView LakeTaupo;
-    @FXML ImageView AC33;
-    @FXML ImageView Malmo;
     @FXML AnchorPane menuAnchor;
     @FXML TableView<AvailableRace> tblAvailableRaces;
     @FXML TableColumn<AvailableRace, String> columnMap;
@@ -75,6 +72,15 @@ public class MainMenuController implements Initializable{
     @FXML Label lblSpeedNumBigger;
     @FXML Shape circleSpeed;
     @FXML Shape circleBoats;
+
+    @FXML ImageView imvMapPreview;
+    @FXML Label lblMarks;
+    @FXML Label lblMapName;
+    @FXML Label lblTime;
+
+    private ArrayList<Map> availableMaps = new ArrayList<>();
+    private int currentMapIndex = 0;
+
 
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
 
@@ -93,10 +99,11 @@ public class MainMenuController implements Initializable{
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         setButtonAnimations();
-        setImageAnimations();
         setLabelPromptAnimations();
         setPaneVisibility();
         setUpSliders();
+        setUpMaps();
+        updateMap();
         clipChildren(menuAnchor, 2*10);
         tblAvailableRaces.setPlaceholder(new Label("No Available Races"));
     }
@@ -105,9 +112,9 @@ public class MainMenuController implements Initializable{
         onlinePane.setVisible(true);
         liveGameGrid.setVisible(false);
         offlinePane.setVisible(false);
-        courseGrid.setVisible(false);
         joinRacePane.setVisible(false);
         hostOptionsPane.setVisible(false);
+        selectMapPane.setVisible(false);
     }
 
     public void setApp(Main main){
@@ -142,6 +149,10 @@ public class MainMenuController implements Initializable{
         AnimationUtils.switchPaneFade(offlinePane, onlinePane);
     }
 
+    @FXML private void loadMapPane(){ AnimationUtils.switchPaneFade(hostOptionsPane, selectMapPane); }
+
+    @FXML private void backToOptions(){ AnimationUtils.switchPaneFade(selectMapPane, hostOptionsPane); }
+
     @FXML private void loadJoinPane(){
         setUpAvailableRaceTable();
         AnimationUtils.switchPaneFade(onlinePane, joinRacePane);
@@ -158,17 +169,11 @@ public class MainMenuController implements Initializable{
 
     @FXML private void backFromHost(){AnimationUtils.switchPaneFade(hostOptionsPane, onlinePane);}
 
-    @FXML private void backToLiveGame() {
-        liveGameGrid.setVisible(true);
-        AnimationUtils.slideOutTransition(courseGrid);
-        AnimationUtils.slideInTransition(liveGameGrid);
-    }
-
     @FXML private void loadTutorial() throws Exception {
         DisplaySwitcher.getGameSounds().stopEndlessMusic();
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.TUTORIAL);
-        main.startHostedRace("GuidedPractice-course.xml", DEFAULT_PORT, true, clientOptions);
+        main.startLocalRace("GuidedPractice-course.xml", DEFAULT_PORT, true, clientOptions);
         Thread.sleep(200);
         main.loadRaceView(clientOptions);
         loadTutorialMusic();
@@ -181,7 +186,7 @@ public class MainMenuController implements Initializable{
     @FXML private void loadOfflinePlay() throws Exception{
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.SINGLEPLAYER);
-        main.startHostedRace(selectedCourse, DEFAULT_PORT, false, clientOptions);
+        main.startLocalRace(selectedCourse, DEFAULT_PORT, false, clientOptions);
         Thread.sleep(200);
         main.loadRaceView(clientOptions);
         loadSinglePlayerMusic();
@@ -191,7 +196,7 @@ public class MainMenuController implements Initializable{
     @FXML private void loadPracticeStart() throws Exception {
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.PRACTICE);
-        main.startHostedRace("PracticeStart-course.xml", DEFAULT_PORT, false, clientOptions);
+        main.startLocalRace("PracticeStart-course.xml", DEFAULT_PORT, false, clientOptions);
         Thread.sleep(200);
         main.loadRaceView(clientOptions);
         loadSinglePlayerMusic();
@@ -202,31 +207,13 @@ public class MainMenuController implements Initializable{
      * @throws Exception
      */
     @FXML private void startHostGame() throws Exception {
+        Double speed = speedScaleSlider.getValue();
+        Integer minCompetitors = (int) boatsInRaceSlider.getValue();
         ClientOptions clientOptions = new ClientOptions();
-        Integer port = Integer.parseInt(txtPortNumber.getText());
-        clientOptions.setServerPort(port);
-        main.startHostedRace(selectedCourse, port, false, clientOptions);
+        main.startHostedRace(selectedCourse, speed, minCompetitors, clientOptions);
         Thread.sleep(200);
         main.loadRaceView(clientOptions);
         loadRealGameSounds();
-    }
-
-    @FXML private void hostGame() {
-        if(validatePort()) {
-            courseGrid.setVisible(true);
-            AnimationUtils.slideOutTransition(liveGameGrid);
-            AnimationUtils.slideInTransition(courseGrid);
-            txtPortNumber.setStyle("-fx-text-inner-color: #2a2a2a;");
-        }else{
-            if(!txtPortNumber.getText().isEmpty()){
-                txtPortNumber.setStyle("-fx-text-inner-color: red;");
-            }
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Port Number ");
-            alert.setHeaderText("Invalid port number");
-            alert.setContentText("Please enter a valid port number\n");
-            alert.showAndWait();
-        }
     }
 
     /**
@@ -291,24 +278,11 @@ public class MainMenuController implements Initializable{
         addButtonListeners(btnOnlineBack);
         addButtonListeners(btnPractiseStart);
         addButtonListeners(btnSinglePlay);
-        addButtonListeners(btnStartHostRace);
+        addButtonListeners(btnLoadMap);
         addButtonListeners(btnOnlineBackFromHost);
-
-    }
-
-    private void setImageAnimations(){
-        addImageListeners(AC35);
-        addImageListeners(LakeTekapo);
-        addImageListeners(LakeTaupo);
-        addImageListeners(AC33);
-        addImageListeners(Malmo);
-        addImageListeners(Athens);
-        addButtonListeners(AC35);
-        addButtonListeners(LakeTaupo);
-        addButtonListeners(LakeTekapo);
-        addButtonListeners(AC33);
-        addButtonListeners(Athens);
-        addButtonListeners(Malmo);
+        addButtonListeners(btnBackToOptions);
+        addButtonListeners(btnStartRace);
+        addButtonListeners(btnManual);
     }
 
     private void setLabelPromptAnimations(){
@@ -359,19 +333,6 @@ public class MainMenuController implements Initializable{
             return false;
         }
     }
-
-    private void addImageListeners(ImageView imageView) {
-        imageView.setOnMouseClicked( ( MouseEvent event ) ->{ imageView.requestFocus();});
-        imageView.focusedProperty().addListener(( ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue ) -> {
-            if ( newValue ){
-                imageView.setEffect( ds );
-                selectedCourse = imageView.getId() + "-course.xml";
-            }else{
-                imageView.setEffect( null );
-            }
-        });
-    }
-
 
     private void loadSinglePlayerMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         DisplaySwitcher.getGameSounds().stopEndlessMusic();
@@ -454,5 +415,41 @@ public class MainMenuController implements Initializable{
                 }
             }
         });
+    }
+
+    private void setUpMaps(){
+        availableMaps.add(new Map("AC33", "/graphics/courseImages/AC33-course.png", 5, "28:59"));
+        availableMaps.add(new Map("Athens", "/graphics/courseImages/Athens-course.png", 4, "29:42"));
+        availableMaps.add(new Map("Lake Tekapo", "/graphics/courseImages/LakeTekapo-course.png", 6, "30:00"));
+        availableMaps.add(new Map("Lake Taupo", "/graphics/courseImages/LakeTaupo-course.png", 4, "25:40"));
+        availableMaps.add(new Map("Malmo", "/graphics/courseImages/Malmo-course.png", 4, "28:20"));
+        availableMaps.add(new Map("AC35", "/graphics/courseImages/AC35-course.png", 2, "24:59"));
+    }
+
+    @FXML private void nextMap(){
+        if(currentMapIndex == availableMaps.size() - 1){
+            currentMapIndex = 0;
+        }else{
+            currentMapIndex += 1;
+        }
+        updateMap();
+    }
+
+    @FXML private void previousMap(){
+        if(currentMapIndex == 0){
+            currentMapIndex = availableMaps.size() - 1;
+        }else{
+            currentMapIndex -= 1;
+        }
+        updateMap();
+    }
+
+    private void updateMap(){
+        Map currentMap = availableMaps.get(currentMapIndex);
+        selectedCourse = currentMap.getMapName().replace(" ", "") + "-course.xml";
+        imvMapPreview.setImage(currentMap.getImage());
+        lblMapName.setText(currentMap.getMapName());
+        lblMarks.setText(currentMap.getNumberOfMarks().toString());
+        lblTime.setText(currentMap.getEstTimeToRace());
     }
 }
