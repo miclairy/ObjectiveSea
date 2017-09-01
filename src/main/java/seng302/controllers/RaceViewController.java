@@ -473,6 +473,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         parallelTransitions.add(pt);
     }
 
+    /**
+     * Stops the current mark and boat highlighting animations by running them at 999 speed until completion
+     */
     void stopHighlightAnimation(){
         if(!parallelTransitions.isEmpty()){
             for(ParallelTransition pt : parallelTransitions){
