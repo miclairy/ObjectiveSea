@@ -435,7 +435,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void updateBoatHighlight(Boat boat){
         if(boat.getLeg() == 0){
-
             if(startedEarlyPenalty) {
                 boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
             }else if(!MathUtils.boatBeforeStartline(boat.getCurrentPosition(),
@@ -443,35 +442,28 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     race.getCourse().getCompoundMarks().get(2))){
                 startedEarlyPenalty = true;
                 boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
-                boatHighlightChangeAnimation("redBoatHighlight");
                 controller.setUserHelpLabel("Start line was crossed early. It must be crossed again.");
-                penaltyStatus = PenaltyStatus.PENALTY;
+                animateBoatHighlightColor(PenaltyStatus.PENALTY, "redBoatHighlight");
 
             } else if(boat.getTimeStatus().equals(StartTimingStatus.EARLY)) {
                 boatHighlight.setFill(ORANGE_HIGHTLIGHT_COLOR);
-                if(!penaltyStatus.equals(PenaltyStatus.WARNING)){
-                    boatHighlightChangeAnimation("orangeBoatHighlight");
-                    penaltyStatus = PenaltyStatus.WARNING;
-                }
+                animateBoatHighlightColor(PenaltyStatus.WARNING, "orangeBoatHighlight");
             } else {
                 boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
-                if(!penaltyStatus.equals(PenaltyStatus.NO_PENALTY)){
-                    boatHighlightChangeAnimation("defaultBoatHighlight");
-                    penaltyStatus = PenaltyStatus.NO_PENALTY;
-                }
+                animateBoatHighlightColor(PenaltyStatus.NO_PENALTY, "defaultBoatHighlight");
             }
         }else{
             boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
-            if(!penaltyStatus.equals(PenaltyStatus.NO_PENALTY)){
-                boatHighlightChangeAnimation("defaultBoatHighlight");
-                penaltyStatus = PenaltyStatus.NO_PENALTY;
-            }
+            animateBoatHighlightColor(PenaltyStatus.NO_PENALTY, "defaultBoatHighlight");
             startedEarlyPenalty = false;
-
         }
+    }
 
-
-
+    private void animateBoatHighlightColor(PenaltyStatus status, String animationID){
+        if(!penaltyStatus.equals(status)){
+            boatHighlightChangeAnimation(animationID);
+            penaltyStatus = status;
+        }
     }
 
     /**
