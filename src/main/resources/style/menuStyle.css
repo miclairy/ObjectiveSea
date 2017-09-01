@@ -226,8 +226,10 @@
 }
 
 #txtPortNumber{
-    -fx-font: 18px "Helvetica Neue Normal";
+    -fx-font: 18px "Helvetica Neue";
     -fx-background-color: transparent;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
     -fx-border-width: 0 0 3 0;
     -fx-border-color: #2a2a2a #2a2a2a #f4654b #2a2a2a;
     -fx-focus-color: transparent;
@@ -235,7 +237,9 @@
 }
 
 #txtIPAddress{
-    -fx-font: 18px "Helvetica Neue Normal";
+    -fx-font: 18px "Helvetica Neue";
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
     -fx-background-radius: 0;
     -fx-background-insets: 0;
     -fx-background-color: transparent;
@@ -246,13 +250,15 @@
 }
 
 #lblIP{
-    -fx-font: 18px "Helvetica Neue Normal";
-    -fx-text-fill: #aaaaaa;
+    -fx-font: 18px "Helvetica Neue";
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
 }
 
 #lblPort{
-    -fx-font: 18px "Helvetica Neue Normal";
-    -fx-text-fill: #aaaaaa;
+    -fx-font: 18px "Helvetica Neue";
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
 }
 
 #joinProgressIndicator{

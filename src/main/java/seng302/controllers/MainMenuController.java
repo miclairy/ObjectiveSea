@@ -80,6 +80,7 @@ public class MainMenuController implements Initializable{
 
     private ArrayList<CourseMap> availableCourseMaps = new ArrayList<>();
     private int currentMapIndex = 0;
+    private boolean manuallyJoinGame = false;
 
 
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
@@ -110,7 +111,6 @@ public class MainMenuController implements Initializable{
 
     private void setPaneVisibility(){
         onlinePane.setVisible(true);
-        liveGameGrid.setVisible(false);
         offlinePane.setVisible(false);
         joinRacePane.setVisible(false);
         hostOptionsPane.setVisible(false);
@@ -254,7 +254,11 @@ public class MainMenuController implements Initializable{
      * @throws Exception
      */
     @FXML private void joinAsSpectator() throws Exception {
-        joinGame(false);
+        if(manuallyJoinGame){
+            joinGame(false);
+        }else{
+            //TODO: connect to game from server options
+        }
     }
 
     /**
@@ -262,7 +266,11 @@ public class MainMenuController implements Initializable{
      * @throws Exception
      */
     @FXML private void joinAsParticipant() throws Exception {
-        joinGame(true);
+        if(manuallyJoinGame){
+            joinGame(true);
+        }else{
+            //TODO: connect to game from server options
+        }
     }
 
     /**
@@ -451,5 +459,20 @@ public class MainMenuController implements Initializable{
         lblMapName.setText(currentCourseMap.getMapName());
         lblMarks.setText(currentCourseMap.getNumberOfMarks().toString());
         lblTime.setText(currentCourseMap.getEstTimeToRace());
+    }
+
+    @FXML private void displayManualOptions(){
+        manuallyJoinGame = !manuallyJoinGame;
+        txtIPAddress.setVisible(manuallyJoinGame);
+        txtPortNumber.setVisible(manuallyJoinGame);
+        lblIP.setVisible(manuallyJoinGame);
+        lblPort.setVisible(manuallyJoinGame);
+        tblAvailableRaces.setVisible(!manuallyJoinGame);
+        if(manuallyJoinGame){
+            btnManual.setText("Auto");
+        }else{
+            btnManual.setText("Manual");
+        }
+
     }
 }
