@@ -423,20 +423,37 @@ public class RaceViewController extends AnimationTimer implements Observer {
         root.getChildren().add(boatHighlight);
     }
 
+    private boolean startedEarlyPenalty = false;
+
+    /**
+     * changes the color of the boat highlight to update as the boat is about to recieve a penalty
+     * and changes again if it does. All penalties are based around whether the race has started
+     * when the player crosses the start line.
+     * @param boat the boat to be monitoring for penalty.
+     */
     private void updateBoatHighlight(Boat boat){
-        if (race.hasStarted()){
-            if(boat.getLeg() == 0){
+        if(boat.getLeg() == 0){
+
+            if(startedEarlyPenalty) {
                 boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
-            }else{
+            }else if(!MathUtils.boatBeforeStartline(boat.getCurrentPosition(),
+                    race.getCourse().getStartLine(),
+                    race.getCourse().getCompoundMarks().get(2))){
+                startedEarlyPenalty = true;
+                boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
+
+            } else if(boat.getTimeStatus().equals(StartTimingStatus.EARLY)) {
+                boatHighlight.setFill(ORANGE_HIGHTLIGHT_COLOR);
+            } else {
                 boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
             }
         }else{
-            if(boat.getTimeStatus().equals(StartTimingStatus.EARLY)){
-                boatHighlight.setFill(ORANGE_HIGHTLIGHT_COLOR);
-            }else{
-                boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
-            }
+            boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
+            startedEarlyPenalty = false;
+
         }
+
+
 
     }
 
