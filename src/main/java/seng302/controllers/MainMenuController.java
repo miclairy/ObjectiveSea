@@ -167,7 +167,13 @@ public class MainMenuController implements Initializable{
         AnimationUtils.mapHover(mapPolygon);
     }
 
-    @FXML private void backToOptions(){ AnimationUtils.switchPaneFade(selectMapPane, hostOptionsPane); }
+    @FXML private void backToOptions(){
+        AnimationUtils.switchPaneFade(selectMapPane, hostOptionsPane);
+        if(currentCourseMap != null){
+            for(Mark mark : currentCourseMap.getMarks().values()){
+                menuAnchor.getChildren().remove(mark.getIcon());
+            }
+        }}
 
     @FXML private void loadJoinPane(){
         setUpAvailableRaceTable();
