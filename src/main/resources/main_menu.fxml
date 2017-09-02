@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.Double?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
@@ -16,6 +17,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Polygon?>
 
 <StackPane fx:id="stackPane" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/menuStyle.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.MainMenuController">
    <children>
@@ -28,7 +30,7 @@
          <children>
             <StackPane fx:id="stackPane" layoutX="228.0" layoutY="1.0" prefHeight="840.0" prefWidth="700.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="1.0">
                <children>
-                  <GridPane fx:id="selectMapPane" layoutX="10.0" layoutY="10.0" maxHeight="855.0" maxWidth="755.0" minHeight="299.0" minWidth="320.0" prefHeight="763.0" prefWidth="700.0" visible="false" StackPane.alignment="TOP_LEFT">
+                  <GridPane fx:id="selectMapPane" layoutX="10.0" layoutY="10.0" maxHeight="855.0" maxWidth="755.0" minHeight="299.0" minWidth="320.0" prefHeight="763.0" prefWidth="700.0" StackPane.alignment="TOP_LEFT">
                      <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         <ColumnConstraints />
@@ -40,17 +42,22 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
+                        <ImageView fx:id="imvMapPane" fitHeight="494.0" fitWidth="770.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="1">
+                           <image>
+                              <Image url="@graphics/mapPane.png" />
+                           </image>
+                        </ImageView>
                         <Button fx:id="btnBackToOptions" mnemonicParsing="false" onAction="#backToOptions" text="Back" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
                            <GridPane.margin>
-                              <Insets bottom="25.0" left="310.0" />
+                              <Insets bottom="25.0" left="20.0" />
                            </GridPane.margin>
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </Button>
-                        <Label fx:id="lblMapName" text="AC-35" GridPane.halignment="LEFT" GridPane.valignment="TOP">
+                        <Label fx:id="lblMapName" prefHeight="47.0" prefWidth="301.0" text="AC-35" GridPane.halignment="LEFT" GridPane.valignment="TOP">
                            <GridPane.margin>
-                              <Insets left="320.0" top="20.0" />
+                              <Insets left="40.0" top="20.0" />
                            </GridPane.margin>
                         </Label>
                         <Button fx:id="btnStartRace" layoutX="90.0" layoutY="250.0" mnemonicParsing="false" onAction="#startHostGame" text="Start" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.rowSpan="2" GridPane.valignment="BOTTOM">
@@ -64,59 +71,65 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </Button>
-                        <ImageView fx:id="imvSidePane" fitHeight="525.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="LEFT" GridPane.rowSpan="2" GridPane.valignment="CENTER">
-                           <image>
-                              <Image url="@graphics/menuSidePane.png" />
-                           </image>
-                        </ImageView>
-                        <ImageView fx:id="imvMapPreview" fitHeight="272.0" fitWidth="274.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="1">
-                           <image>
-                              <Image url="@graphics/courseImages/AC35-course.png" />
-                           </image>
+                        <Button fx:id="btnMapLeft" mnemonicParsing="false" onAction="#previousMap" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
                            <GridPane.margin>
-                              <Insets bottom="60.0" left="15.0" />
+                              <Insets bottom="18.0" left="90.0" right="550.0" />
                            </GridPane.margin>
-                        </ImageView>
-                        <Button fx:id="btnMapLeft" mnemonicParsing="false" onAction="#previousMap" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
-                           <GridPane.margin>
-                              <Insets left="90.0" />
-                           </GridPane.margin>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
                         </Button>
-                        <Button fx:id="btnMapRight" layoutX="60.0" layoutY="406.0" mnemonicParsing="false" onAction="#nextMap" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
+                        <Button fx:id="btnMapRight" layoutX="60.0" layoutY="406.0" mnemonicParsing="false" onAction="#nextMap" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
                            <GridPane.margin>
-                              <Insets left="170.0" />
+                              <Insets bottom="18.0" left="160.0" />
                            </GridPane.margin>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
                         </Button>
-                        <Label fx:id="lblMarksTitle" text="Marks" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                        <Label fx:id="lblMarksTitle" text="Marks" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
                            <GridPane.margin>
-                              <Insets left="340.0" top="30.0" />
+                              <Insets right="40.0" top="150.0" />
                            </GridPane.margin>
                         </Label>
-                        <Circle fx:id="markCircle" fill="DODGERBLUE" radius="30.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                        <Circle fx:id="markCircle" fill="DODGERBLUE" radius="30.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
                            <GridPane.margin>
-                              <Insets left="340.0" top="60.0" />
+                              <Insets right="40.0" top="180.0" />
                            </GridPane.margin>
                         </Circle>
-                        <Label fx:id="lblMarks" text="5" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                        <Label fx:id="lblMarks" text="5" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
                            <GridPane.margin>
-                              <Insets left="355.0" top="56.0" />
+                              <Insets right="54.0" top="176.0" />
                            </GridPane.margin>
                         </Label>
-                        <Label fx:id="lblEstTime" layoutX="350.0" layoutY="90.0" text="Time" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                        <Label fx:id="lblEstTime" layoutX="350.0" layoutY="90.0" text="Time" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
                            <GridPane.margin>
-                              <Insets left="456.0" top="30.0" />
+                              <Insets right="48.0" top="30.0" />
                            </GridPane.margin>
                         </Label>
-                        <Circle fx:id="timeCircle" fill="DODGERBLUE" layoutX="380.0" layoutY="150.0" radius="30.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                        <Circle fx:id="timeCircle" fill="DODGERBLUE" layoutX="380.0" layoutY="150.0" radius="30.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
                            <GridPane.margin>
-                              <Insets left="450.0" top="60.0" />
+                              <Insets right="40.0" top="60.0" />
                            </GridPane.margin>
                         </Circle>
-                        <Label fx:id="lblTime" layoutX="365.0" layoutY="116.0" text="28:59" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                        <Label fx:id="lblTime" layoutX="365.0" layoutY="116.0" text="28:59" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
                            <GridPane.margin>
-                              <Insets left="455.0" top="77.0" />
+                              <Insets right="44.0" top="77.0" />
                            </GridPane.margin>
                         </Label>
+                        <Polygon fx:id="mapPolygon" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+                          <points>
+                            <Double fx:value="-50.0" />
+                            <Double fx:value="40.0" />
+                            <Double fx:value="50.0" />
+                            <Double fx:value="40.0" />
+                            <Double fx:value="0.0" />
+                            <Double fx:value="-60.0" />
+                          </points>
+                           <GridPane.margin>
+                              <Insets bottom="20.0" />
+                           </GridPane.margin>
+                        </Polygon>
                      </children>
                   </GridPane>
                   <GridPane fx:id="hostOptionsPane" layoutX="10.0" layoutY="10.0" maxHeight="855.0" maxWidth="755.0" minHeight="299.0" minWidth="320.0" prefHeight="763.0" prefWidth="700.0" visible="false">
@@ -212,7 +225,7 @@
                         </Label>
                      </children>
                   </GridPane>
-                  <GridPane fx:id="joinRacePane" layoutX="10.0" layoutY="10.0" maxHeight="855.0" maxWidth="755.0" minHeight="299.0" minWidth="320.0" prefHeight="763.0" prefWidth="700.0">
+                  <GridPane fx:id="joinRacePane" layoutX="10.0" layoutY="10.0" maxHeight="855.0" maxWidth="755.0" minHeight="299.0" minWidth="320.0" prefHeight="763.0" prefWidth="700.0" visible="false">
                      <columnConstraints>
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         <ColumnConstraints />

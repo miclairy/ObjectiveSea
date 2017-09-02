@@ -5,22 +5,27 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Light;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
-import seng302.models.ClientOptions;
-import seng302.models.GameMode;
+import seng302.models.*;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplaySwitcher;
+import seng302.utilities.DisplayUtils;
 import seng302.views.AvailableRace;
 import seng302.views.CourseMap;
 
@@ -31,20 +36,19 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import static seng302.utilities.DisplayUtils.zoomLevel;
+
 public class MainMenuController implements Initializable{
-    @FXML Button btnOfflinePlay;
-    @FXML Button btnTutorial;
-    @FXML Button btnHost;
-    @FXML Button btnSpectate;
-    @FXML Button btnJoin;
-    @FXML Button btnBack;
-    @FXML Button btnOnlineBack;
-    @FXML Button btnSinglePlay;
-    @FXML Button btnPractiseStart;
-    @FXML Button btnManual;
-    @FXML Button btnCreateGame;
-    @FXML Button btnJoinGame;
-    @FXML Button btnCompete;
+    @FXML private Button btnOfflinePlay;
+    @FXML private Button btnTutorial;
+    @FXML private Button btnSpectate;
+    @FXML private Button btnOnlineBack;
+    @FXML private Button btnSinglePlay;
+    @FXML private Button btnPractiseStart;
+    @FXML private Button btnManual;
+    @FXML private Button btnCreateGame;
+    @FXML private Button btnJoinGame;
+    @FXML private Button btnCompete;
     @FXML Button btnOnlineBackFromHost;
     @FXML Button btnLoadMap;
     @FXML Button btnBackToOptions;
@@ -60,7 +64,8 @@ public class MainMenuController implements Initializable{
     @FXML Label lblIP;
     @FXML Label lblPort;
     @FXML ImageView imvSidePane;
-    @FXML AnchorPane menuAnchor;
+    @FXML ImageView imvMapPane;
+    @FXML private AnchorPane menuAnchor;
     @FXML TableView<AvailableRace> tblAvailableRaces;
     @FXML TableColumn<AvailableRace, String> columnMap;
     @FXML TableColumn<AvailableRace, Integer> columnParticipants;
@@ -72,15 +77,19 @@ public class MainMenuController implements Initializable{
     @FXML Label lblSpeedNumBigger;
     @FXML Shape circleSpeed;
     @FXML Shape circleBoats;
+    @FXML Polygon mapPolygon;
 
-    @FXML ImageView imvMapPreview;
     @FXML Label lblMarks;
     @FXML Label lblMapName;
     @FXML Label lblTime;
 
     private ArrayList<CourseMap> availableCourseMaps = new ArrayList<>();
     private int currentMapIndex = 0;
+    private CourseMap currentCourseMap;
+    private CourseMap previousCourseMap;
     private boolean manuallyJoinGame = false;
+    public static double paneHeight;
+    public static double paneWidth;
 
 
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
@@ -99,12 +108,14 @@ public class MainMenuController implements Initializable{
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        DisplayUtils.setIsRaceView(false);
         setButtonAnimations();
         setLabelPromptAnimations();
         setPaneVisibility();
         setUpSliders();
+        paneHeight = 400;
+        paneWidth = 400;
         setUpMaps();
-        updateMap();
         clipChildren(menuAnchor, 2*10);
         tblAvailableRaces.setPlaceholder(new Label("No Available Races"));
     }
@@ -149,7 +160,12 @@ public class MainMenuController implements Initializable{
         AnimationUtils.switchPaneFade(offlinePane, onlinePane);
     }
 
-    @FXML private void loadMapPane(){ AnimationUtils.switchPaneFade(hostOptionsPane, selectMapPane); }
+    @FXML private void loadMapPane(){
+        AnimationUtils.switchPaneFade(hostOptionsPane, selectMapPane);
+        currentCourseMap = availableCourseMaps.get(currentMapIndex);
+        updateMap();
+        AnimationUtils.mapHover(mapPolygon);
+    }
 
     @FXML private void backToOptions(){ AnimationUtils.switchPaneFade(selectMapPane, hostOptionsPane); }
 
@@ -426,39 +442,62 @@ public class MainMenuController implements Initializable{
     }
 
     private void setUpMaps(){
-        availableCourseMaps.add(new CourseMap("AC33", "/graphics/courseImages/AC33-course.png", 5, "28:59"));
-        availableCourseMaps.add(new CourseMap("Athens", "/graphics/courseImages/Athens-course.png", 4, "29:42"));
-        availableCourseMaps.add(new CourseMap("Lake Tekapo", "/graphics/courseImages/LakeTekapo-course.png", 6, "30:00"));
-        availableCourseMaps.add(new CourseMap("Lake Taupo", "/graphics/courseImages/LakeTaupo-course.png", 4, "25:40"));
-        availableCourseMaps.add(new CourseMap("Malmo", "/graphics/courseImages/Malmo-course.png", 4, "28:20"));
-        availableCourseMaps.add(new CourseMap("AC35", "/graphics/courseImages/AC35-course.png", 2, "24:59"));
+        availableCourseMaps.add(new CourseMap("AC33", "/graphics/courseImages/AC33-course.png", 7, "28:59"));
+        availableCourseMaps.add(new CourseMap("Athens", "/graphics/courseImages/Athens-course.png", 7, "29:42"));
+        availableCourseMaps.add(new CourseMap("Lake Tekapo", "/graphics/courseImages/LakeTekapo-course.png", 7, "30:00"));
+        availableCourseMaps.add(new CourseMap("Lake Taupo", "/graphics/courseImages/LakeTaupo-course.png", 7, "25:40"));
+        availableCourseMaps.add(new CourseMap("Malmo", "/graphics/courseImages/Malmo-course.png", 7, "28:20"));
+        availableCourseMaps.add(new CourseMap("AC35", "/graphics/courseImages/AC35-course.png", 6, "24:59"));
     }
 
     @FXML private void nextMap(){
+        previousCourseMap = availableCourseMaps.get(currentMapIndex);
         if(currentMapIndex == availableCourseMaps.size() - 1){
             currentMapIndex = 0;
         }else{
             currentMapIndex += 1;
         }
+        currentCourseMap = availableCourseMaps.get(currentMapIndex);
         updateMap();
     }
 
     @FXML private void previousMap(){
+        previousCourseMap = availableCourseMaps.get(currentMapIndex);
         if(currentMapIndex == 0){
             currentMapIndex = availableCourseMaps.size() - 1;
         }else{
             currentMapIndex -= 1;
         }
+        currentCourseMap = availableCourseMaps.get(currentMapIndex);
         updateMap();
     }
 
+    /**
+     * updates the map in the map selection pane when arrow clicked
+     */
     private void updateMap(){
-        CourseMap currentCourseMap = availableCourseMaps.get(currentMapIndex);
         selectedCourse = currentCourseMap.getMapName().replace(" ", "") + "-course.xml";
-        imvMapPreview.setImage(currentCourseMap.getImage());
         lblMapName.setText(currentCourseMap.getMapName());
         lblMarks.setText(currentCourseMap.getNumberOfMarks().toString());
         lblTime.setText(currentCourseMap.getEstTimeToRace());
+        mapPolygon.getPoints().clear();
+        mapPolygon.getPoints().addAll(currentCourseMap.getMapBoundary().getPoints());
+        drawMarks();
+    }
+
+    /**
+     * draws marks onto the map displayed in the menu map selection pane
+     */
+    private void drawMarks(){
+        if(previousCourseMap != null){
+            for(Mark mark : previousCourseMap.getMarks().values()){
+                menuAnchor.getChildren().remove(mark.getIcon());
+            }
+        }
+
+        for(Mark mark : currentCourseMap.getMarks().values()){
+            menuAnchor.getChildren().add(mark.getIcon());
+        }
     }
 
     @FXML private void displayManualOptions(){
@@ -474,5 +513,13 @@ public class MainMenuController implements Initializable{
             btnManual.setText("Manual");
         }
 
+    }
+
+    public static double getCanvasHeight(){
+        return paneHeight;
+    }
+
+    public static double getCanvasWidth(){
+        return paneWidth;
     }
 }

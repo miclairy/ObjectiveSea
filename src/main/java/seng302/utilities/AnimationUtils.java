@@ -6,6 +6,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
 
@@ -380,4 +381,14 @@ public class AnimationUtils {
         pt.play();
     }
 
+    public static void mapHover(Node map) {
+
+        ScaleTransition scaleTransition = new ScaleTransition(new Duration(1500), map);
+        scaleTransition.setByX(0.02);
+        scaleTransition.setByY(0.02);
+        scaleTransition.setInterpolator(Interpolator.EASE_OUT);
+        scaleTransition.setCycleCount(Animation.INDEFINITE);
+        scaleTransition.setAutoReverse(true);
+        scaleTransition.play();
+    }
 }
