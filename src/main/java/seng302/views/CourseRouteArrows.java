@@ -1,6 +1,8 @@
 package seng302.views;
 
 import javafx.scene.Group;
+import javafx.scene.Parent;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import seng302.controllers.RoundingMechanics;
 import seng302.data.RoundingSide;
@@ -20,11 +22,11 @@ import static seng302.data.RoundingSide.STBD;
  */
 public class CourseRouteArrows {
 
-    private final int REFRESH_THRESHOLD = 4;
+    private final int REFRESH_THRESHOLD = 6;
     private final int ARROW_ITERATIONS_SHOWN = 3;
 
     private Course course;
-    private Group root;
+    private Parent root;
     private Integer refreshTimer;
     private Color ARROW_PATH_COLOR = Color.color(0.25, 0.8, 0.25); //Light Green
 
@@ -32,7 +34,7 @@ public class CourseRouteArrows {
     private List<Set<Arrow>> shownArrows;
     private Map<CompoundMark, List<Arrow>> roundingArrowMap;
 
-    public CourseRouteArrows(Course course, Group root) {
+    public CourseRouteArrows(Course course, Parent root) {
         this.course = course;
         this.root = root;
         createArrowedRoute();
@@ -228,7 +230,12 @@ public class CourseRouteArrows {
      */
     public void removeRaceRoute(){
         for(Arrow arrow : arrowOrderGraph.getAllArrows()){
-            arrow.removeFromCanvas(root);
+            if(root instanceof Group){
+                arrow.removeFromCanvas((Group)root);
+            }else{
+                arrow.removeFromMenu((Pane) root);
+            }
+
         }
     }
 
@@ -239,8 +246,13 @@ public class CourseRouteArrows {
         removeRaceRoute();
         createArrowedRoute();
         for (Arrow arrow : arrowOrderGraph.getAllArrows()){
-            arrow.addToCanvas(root);
-            arrow.setScale(DisplayUtils.zoomLevel);
+            if(root instanceof Group){
+                arrow.addToCanvas((Group)root);
+                arrow.setScale(DisplayUtils.zoomLevel);
+            }else{
+                arrow.addToMenu((Pane) root);
+                arrow.setScale(0.7);
+            }
             arrow.setColour(ARROW_PATH_COLOR);
             arrow.fade();
         }

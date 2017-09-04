@@ -1,23 +1,17 @@
 package seng302.controllers;
 
+import javafx.animation.AnimationTimer;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
-import javafx.geometry.Point2D;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.Light;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
@@ -36,8 +30,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import static seng302.utilities.DisplayUtils.zoomLevel;
-
 public class MainMenuController implements Initializable{
     @FXML private Button btnOfflinePlay;
     @FXML private Button btnTutorial;
@@ -49,39 +41,36 @@ public class MainMenuController implements Initializable{
     @FXML private Button btnCreateGame;
     @FXML private Button btnJoinGame;
     @FXML private Button btnCompete;
-    @FXML Button btnOnlineBackFromHost;
-    @FXML Button btnLoadMap;
-    @FXML Button btnBackToOptions;
-    @FXML Button btnStartRace;
-    @FXML GridPane liveGameGrid;
-    @FXML GridPane onlinePane;
-    @FXML GridPane offlinePane;
-    @FXML GridPane joinRacePane;
-    @FXML GridPane hostOptionsPane;
-    @FXML GridPane selectMapPane;
-    @FXML TextField txtIPAddress;
-    @FXML TextField txtPortNumber;
-    @FXML Label lblIP;
-    @FXML Label lblPort;
-    @FXML ImageView imvSidePane;
-    @FXML ImageView imvMapPane;
+    @FXML private Button btnOnlineBackFromHost;
+    @FXML private Button btnLoadMap;
+    @FXML private Button btnBackToOptions;
+    @FXML private Button btnStartRace;
+    @FXML private GridPane onlinePane;
+    @FXML private GridPane offlinePane;
+    @FXML private GridPane joinRacePane;
+    @FXML private GridPane hostOptionsPane;
+    @FXML private GridPane selectMapPane;
+    @FXML private TextField txtIPAddress;
+    @FXML private TextField txtPortNumber;
+    @FXML private Label lblIP;
+    @FXML private Label lblPort;
     @FXML private AnchorPane menuAnchor;
-    @FXML TableView<AvailableRace> tblAvailableRaces;
-    @FXML TableColumn<AvailableRace, String> columnMap;
-    @FXML TableColumn<AvailableRace, Integer> columnParticipants;
-    @FXML Slider boatsInRaceSlider;
-    @FXML Label lblBoatsNum;
-    @FXML Slider speedScaleSlider;
-    @FXML Label lblSpeedNum;
-    @FXML Label lblSpeedNumBig;
-    @FXML Label lblSpeedNumBigger;
-    @FXML Shape circleSpeed;
-    @FXML Shape circleBoats;
-    @FXML Polygon mapPolygon;
+    @FXML private TableView<AvailableRace> tblAvailableRaces;
+    @FXML private TableColumn<AvailableRace, String> columnMap;
+    @FXML private TableColumn<AvailableRace, Integer> columnParticipants;
+    @FXML private Slider boatsInRaceSlider;
+    @FXML private Label lblBoatsNum;
+    @FXML private Slider speedScaleSlider;
+    @FXML private Label lblSpeedNum;
+    @FXML private Label lblSpeedNumBig;
+    @FXML private Label lblSpeedNumBigger;
+    @FXML private Shape circleSpeed;
+    @FXML private Shape circleBoats;
+    @FXML private Polygon mapPolygon;
 
-    @FXML Label lblMarks;
-    @FXML Label lblMapName;
-    @FXML Label lblTime;
+    @FXML private Label lblMarks;
+    @FXML private Label lblMapName;
+    @FXML private Label lblTime;
 
     private ArrayList<CourseMap> availableCourseMaps = new ArrayList<>();
     private int currentMapIndex = 0;
@@ -90,13 +79,9 @@ public class MainMenuController implements Initializable{
     private boolean manuallyJoinGame = false;
     public static double paneHeight;
     public static double paneWidth;
-
+    private AnimationTimer timer;
 
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
-
-    DropShadow ds = new DropShadow( 20, Color.web("#8eb0b7"));
-
-    @FXML ProgressIndicator joinProgressIndicator;
 
     private Main main;
     private final int DEFAULT_PORT = 2828;
@@ -132,22 +117,6 @@ public class MainMenuController implements Initializable{
         this.main = main;
     }
 
-    @FXML private void loadLiveGameGrid() {
-        liveGameGrid.setVisible(true);
-        AnimationUtils.slideOutTransition(onlinePane);
-        AnimationUtils.slideInTransition(liveGameGrid);
-    }
-
-    @FXML private void backToMainMenu() {
-        onlinePane.setVisible(true);
-        AnimationUtils.slideOutTransition(liveGameGrid);
-        AnimationUtils.slideInTransition(onlinePane);
-    }
-
-    @FXML private void createHostedGame(){
-
-    }
-
     @FXML private void loadHostOptionsPane(){
         AnimationUtils.switchPaneFade(onlinePane, hostOptionsPane);
     }
@@ -164,7 +133,6 @@ public class MainMenuController implements Initializable{
         AnimationUtils.switchPaneFade(hostOptionsPane, selectMapPane);
         currentCourseMap = availableCourseMaps.get(currentMapIndex);
         updateMap();
-        AnimationUtils.mapHover(mapPolygon);
     }
 
     @FXML private void backToOptions(){
@@ -173,6 +141,8 @@ public class MainMenuController implements Initializable{
             for(Mark mark : currentCourseMap.getMarks().values()){
                 menuAnchor.getChildren().remove(mark.getIcon());
             }
+            currentCourseMap.removeArrowedRoute();
+            timer.stop();
         }}
 
     @FXML private void loadJoinPane(){
@@ -232,7 +202,9 @@ public class MainMenuController implements Initializable{
         Double speed = speedScaleSlider.getValue();
         Integer minCompetitors = (int) boatsInRaceSlider.getValue();
         ClientOptions clientOptions = new ClientOptions();
-        main.startHostedRace(selectedCourse, speed, minCompetitors, clientOptions);
+
+        main.startHostedRace(currentCourseMap.getXML(), speed, minCompetitors, clientOptions);
+        timer.stop();
         Thread.sleep(200);
         main.loadRaceView(clientOptions);
         loadRealGameSounds();
@@ -417,18 +389,10 @@ public class MainMenuController implements Initializable{
             @Override
             public void changed(ObservableValue arg0, Object arg1, Object arg2) {
                 Bounds bounds = speedScaleSlider.lookup(".thumb").getBoundsInParent();
-
-                circleSpeed.setTranslateX(bounds.getMinX() + 10);
-                lblSpeedNum.setTranslateX(bounds.getMinX() + 10);
-                lblSpeedNumBig.setTranslateX(bounds.getMinX() + 10);
-                lblSpeedNumBigger.setTranslateX(bounds.getMinX() + 10);
-
-                lblSpeedNum.textProperty().setValue(
-                        String.valueOf((int) speedScaleSlider.getValue()));
-                lblSpeedNumBig.textProperty().setValue(
-                        String.valueOf((int) speedScaleSlider.getValue()));
-                lblSpeedNumBigger.textProperty().setValue(
-                        String.valueOf((int) speedScaleSlider.getValue()));
+                setUpLabelProperties(bounds, circleSpeed);
+                setUpLabelProperties(bounds, lblSpeedNum);
+                setUpLabelProperties(bounds, lblSpeedNumBig);
+                setUpLabelProperties(bounds, lblSpeedNumBigger);
 
                 if(speedScaleSlider.getValue() >= 10 && speedScaleSlider.getValue() < 20){
                     lblSpeedNum.setVisible(false);
@@ -447,13 +411,20 @@ public class MainMenuController implements Initializable{
         });
     }
 
+    private void setUpLabelProperties(Bounds bounds, Node node){
+        node.setTranslateX(bounds.getMinX() + 10);
+        if(node instanceof Label){
+            ((Label) node).textProperty().setValue(String.valueOf((int) speedScaleSlider.getValue()));
+        }
+    }
+
     private void setUpMaps(){
-        availableCourseMaps.add(new CourseMap("AC33", "/graphics/courseImages/AC33-course.png", 7, "28:59"));
-        availableCourseMaps.add(new CourseMap("Athens", "/graphics/courseImages/Athens-course.png", 7, "29:42"));
-        availableCourseMaps.add(new CourseMap("Lake Tekapo", "/graphics/courseImages/LakeTekapo-course.png", 7, "30:00"));
-        availableCourseMaps.add(new CourseMap("Lake Taupo", "/graphics/courseImages/LakeTaupo-course.png", 7, "25:40"));
-        availableCourseMaps.add(new CourseMap("Malmo", "/graphics/courseImages/Malmo-course.png", 7, "28:20"));
-        availableCourseMaps.add(new CourseMap("AC35", "/graphics/courseImages/AC35-course.png", 6, "24:59"));
+        availableCourseMaps.add(new CourseMap("AC35","24:59"));
+        availableCourseMaps.add(new CourseMap("AC33","28:59"));
+        availableCourseMaps.add(new CourseMap("Lake Tekapo","30:00"));
+        availableCourseMaps.add(new CourseMap("Lake Taupo","25:40"));
+        availableCourseMaps.add(new CourseMap("Malmo","28:20"));
+        availableCourseMaps.add(new CourseMap("Athens","29:42"));
     }
 
     @FXML private void nextMap(){
@@ -463,7 +434,6 @@ public class MainMenuController implements Initializable{
         }else{
             currentMapIndex += 1;
         }
-        currentCourseMap = availableCourseMaps.get(currentMapIndex);
         updateMap();
     }
 
@@ -474,7 +444,6 @@ public class MainMenuController implements Initializable{
         }else{
             currentMapIndex -= 1;
         }
-        currentCourseMap = availableCourseMaps.get(currentMapIndex);
         updateMap();
     }
 
@@ -482,13 +451,14 @@ public class MainMenuController implements Initializable{
      * updates the map in the map selection pane when arrow clicked
      */
     private void updateMap(){
-        selectedCourse = currentCourseMap.getMapName().replace(" ", "") + "-course.xml";
+        currentCourseMap = availableCourseMaps.get(currentMapIndex);
+        drawRoute();
+        drawMarks();
         lblMapName.setText(currentCourseMap.getMapName());
         lblMarks.setText(currentCourseMap.getNumberOfMarks().toString());
         lblTime.setText(currentCourseMap.getEstTimeToRace());
         mapPolygon.getPoints().clear();
         mapPolygon.getPoints().addAll(currentCourseMap.getMapBoundary().getPoints());
-        drawMarks();
     }
 
     /**
@@ -506,6 +476,28 @@ public class MainMenuController implements Initializable{
         }
     }
 
+    /**
+     * draws the route of a boat onto the map and creates an animation loop highlighting it
+     */
+    private void drawRoute(){
+        if(previousCourseMap != null){
+            previousCourseMap.removeArrowedRoute();
+            timer.stop();
+        }
+        currentCourseMap.setUpArrowRoute(menuAnchor);
+        timer = new AnimationTimer() {
+            @Override
+            public void handle(long l) {
+                currentCourseMap.updateArrowRoute();
+            }
+        };
+        timer.start();
+    }
+
+    /**
+     * changes from the table view to a manual view with text fields for port and IP
+     * entry
+     */
     @FXML private void displayManualOptions(){
         manuallyJoinGame = !manuallyJoinGame;
         txtIPAddress.setVisible(manuallyJoinGame);
