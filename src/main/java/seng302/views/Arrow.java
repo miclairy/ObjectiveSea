@@ -93,7 +93,7 @@ public class Arrow extends Polyline {
      * Emphasizes the arrow
      */
     public void emphasize(){
-        AnimationUtils.fadeNodeCustom(arrowLine, 1);
+        AnimationUtils.fadeNodeCustom(arrowLine, 0.8);
         arrowLine.setStrokeWidth(5.0);
     }
 

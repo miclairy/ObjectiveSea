@@ -12,6 +12,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
@@ -469,8 +471,12 @@ public class MainMenuController implements Initializable{
             for(Mark mark : previousCourseMap.getMarks().values()){
                 menuAnchor.getChildren().remove(mark.getIcon());
             }
+            menuAnchor.getChildren().remove(previousCourseMap.getStartLine());
+            menuAnchor.getChildren().remove(previousCourseMap.getFinishLine());
         }
 
+        menuAnchor.getChildren().add(currentCourseMap.getStartLine());
+        menuAnchor.getChildren().add(currentCourseMap.getFinishLine());
         for(Mark mark : currentCourseMap.getMarks().values()){
             menuAnchor.getChildren().add(mark.getIcon());
         }
