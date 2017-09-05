@@ -95,6 +95,9 @@ public class RaceUpdater implements Runnable {
         return dateFormat.format(date);
     }
 
+    /**
+     * the main loop of the race server
+     */
     @Override
     public void run() {
         boolean isPractice = RaceVisionXMLParser.courseFile.equals("PracticeStart-course.xml");

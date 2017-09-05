@@ -29,6 +29,11 @@ public class CollisionManager {
     public CollisionManager() {}
 
 
+    /**
+     * creates a polygon of the course boundary marks
+     * @param boundaryCoordinates the coordinates of the boundary
+     * @return the polygon
+     */
     public Polygon createCourseBoundary(List<Coordinate> boundaryCoordinates){
         Polygon boundary = new Polygon();
         for(Coordinate coord : boundaryCoordinates){
@@ -82,6 +87,11 @@ public class CollisionManager {
         }
     }
 
+    /**
+     * determines whether boat is out of bounds and creates collision and penalties if so
+     * @param boat the boat to check
+     * @param raceStatus the status of the race
+     */
     private void checkForOutOfBounds(Boat boat, RaceStatus raceStatus){
         if  (raceStatus.equals(RaceStatus.STARTED) && !boundary.contains(boat.getCurrentLat(), boat.getCurrentLon())){
             Collision collision = new Collision();
