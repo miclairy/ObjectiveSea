@@ -146,18 +146,23 @@ public class MainMenuController implements Initializable{
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
             loadSinglePlayerMusic();
+        }else{
+            btnSinglePlay.setDisable(false);
         }
     }
 
 
     @FXML private void loadPracticeStart() throws Exception {
-        btnSinglePlay.setDisable(true);
+        btnPracticeStart.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.PRACTICE);
         if(main.startHostedRace("PracticeStart-course.xml", DEFAULT_PORT, false, clientOptions)){
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
             loadSinglePlayerMusic();
+        }else{
+            btnPracticeStart.setDisable(false);
         }
+
     }
 
     /**

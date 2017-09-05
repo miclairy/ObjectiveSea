@@ -232,8 +232,8 @@ public class Main extends Application {
         dialogPane.getStyleClass().add("myDialog");
         alert.setTitle("Failed to Host this Race");
         alert.setHeaderText("Failed to Host this Race");
-        String message = "Port number "+port+" is already in use\n" +
-                "Please try again with another port.";
+        String message = "You already have a game running\n" +
+                "Please close that game to continue.";
         alert.setContentText(message);
         alert.showAndWait();
     }
