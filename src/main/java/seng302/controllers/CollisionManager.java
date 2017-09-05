@@ -84,7 +84,7 @@ public class CollisionManager {
     private void checkForOutOfBounds(Boat boat, RaceStatus raceStatus){
         if  (raceStatus.equals(RaceStatus.STARTED) && !boundary.contains(boat.getCurrentLat(), boat.getCurrentLon())){
             Collision collision = new Collision();
-            collision.isOutOfBounds();
+            collision.setOutOfBounds(true);
             collision.addBoat(boat.getId());
             penalties.boatOutOfBounds(boat);
             currentCollisions.add(collision);
@@ -146,7 +146,7 @@ public class CollisionManager {
      */
     public boolean boatIsInCollision(Boat boat) {
         for (Collision collision : currentCollisions) {
-            if (collision.boatIsInCollision(boat.getId())) {
+            if (!collision.isOutOfBounds() && collision.boatIsInCollision(boat.getId())) {
                 return true;
             }
         }
