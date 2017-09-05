@@ -30,6 +30,13 @@ public class Penalties {
 
     }
 
+    public void boatOutOfBounds(Boat boat){
+        if (System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 2500) {
+            boat.addDamage(10);
+            boat.setTimeSinceLastCollision(System.currentTimeMillis());
+        }
+    }
+
     /**
      * When a boat collides with a mark
      * @param boatCollider the boat which hit the mark
