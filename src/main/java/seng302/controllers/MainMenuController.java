@@ -143,6 +143,8 @@ public class MainMenuController implements Initializable{
             for(Mark mark : currentCourseMap.getMarks().values()){
                 menuAnchor.getChildren().remove(mark.getIcon());
             }
+            menuAnchor.getChildren().remove(currentCourseMap.getFinishLine());
+            menuAnchor.getChildren().remove(currentCourseMap.getStartLine());
             currentCourseMap.removeArrowedRoute();
             timer.stop();
         }}
