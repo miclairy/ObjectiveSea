@@ -19,7 +19,7 @@ import static javafx.scene.input.KeyCode.*;
 /**
  * handles user key presses.
  */
-public class UserInputController extends Observable {
+public class KeyInputController extends Observable {
 
     private Scene scene;
     private int commandInt;
@@ -31,7 +31,7 @@ public class UserInputController extends Observable {
      * Sets up user key press handler.
      * @param scene The scene of the client
      */
-    public UserInputController(Scene scene, Race race) {
+    public KeyInputController(Scene scene, Race race) {
         this.scene = scene;
         this.race = race;
         keyEventListener();

@@ -18,6 +18,7 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.TouchEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -256,6 +257,7 @@ public class Controller implements Initializable, Observer {
         raceViewController.setOptions(options);
         raceViewController.updateWindArrow();
         raceViewController.start();
+        DisplayTouchController.setRoot(root);
     }
 
     @FXML public void exitRunningRace() {
