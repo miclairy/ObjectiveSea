@@ -46,6 +46,7 @@ public class CollisionManager {
     public void checkForCollisions(Race race){
         if(boundary == null) boundary = createCourseBoundary(race.getCourse().getBoundary());
         boolean isPractice = RaceVisionXMLParser.courseFile.equals("PracticeStart-course.xml");
+        boolean isTutorial = RaceVisionXMLParser.courseFile.equals("GuidedPractice-course.xml");
         List<Boat> boats = new ArrayList<>();
         boats.addAll(race.getCompetitors());
         for (int i = 0; i < boats.size(); i++) {
@@ -56,7 +57,7 @@ public class CollisionManager {
                     checkForCollisionBetweenBoats(boat, otherBoat);
                 }
             }
-            checkForOutOfBounds(boat, race.getRaceStatus());
+            if(!isPractice && !isTutorial) checkForOutOfBounds(boat, race.getRaceStatus());
             for (Mark mark : race.getCourse().getAllMarks().values()) {
                 if (!isPractice || mark.getSourceID() == 1 || mark.getSourceID() == 2) {
                     checkForCollisionBetweenBoatAndMark(boat, mark);
