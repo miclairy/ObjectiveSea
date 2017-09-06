@@ -8,10 +8,12 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
@@ -57,6 +59,7 @@ public class MainMenuController implements Initializable{
     @FXML private Label lblIP;
     @FXML private Label lblPort;
     @FXML private AnchorPane menuAnchor;
+    @FXML private AnchorPane dropShadowAnchor;
     @FXML private TableView<AvailableRace> tblAvailableRaces;
     @FXML private TableColumn<AvailableRace, String> columnMap;
     @FXML private TableColumn<AvailableRace, Integer> columnParticipants;
@@ -69,6 +72,8 @@ public class MainMenuController implements Initializable{
     @FXML private Shape circleSpeed;
     @FXML private Shape circleBoats;
     @FXML private Polygon mapPolygon;
+    @FXML private ImageView imvLogoCircle;
+    @FXML private Button btnGetStarted;
 
     @FXML private Label lblMarks;
     @FXML private Label lblMapName;
@@ -113,14 +118,24 @@ public class MainMenuController implements Initializable{
         joinRacePane.setVisible(false);
         hostOptionsPane.setVisible(false);
         selectMapPane.setVisible(false);
+        menuAnchor.setVisible(false);
+        dropShadowAnchor.setVisible(false);
     }
 
     public void setApp(Main main){
         this.main = main;
     }
 
+    @FXML private void showMenu(){
+        AnimationUtils.fadeMenuPane(menuAnchor);
+        AnimationUtils.fadeMenuPane(dropShadowAnchor);
+        AnimationUtils.slideUpNode(imvLogoCircle);
+        AnimationUtils.fadeNodeCustom(btnGetStarted, 0);
+    }
+
     @FXML private void loadHostOptionsPane(){
         AnimationUtils.switchPaneFade(onlinePane, hostOptionsPane);
+        AnimationUtils.fadeNodeCustom(imvLogoCircle, 0);
     }
 
     @FXML private void loadOfflinePane() {
@@ -152,6 +167,7 @@ public class MainMenuController implements Initializable{
     @FXML private void loadJoinPane(){
         setUpAvailableRaceTable();
         AnimationUtils.switchPaneFade(onlinePane, joinRacePane);
+        AnimationUtils.fadeNodeCustom(imvLogoCircle, 0);
     }
 
     private void setUpAvailableRaceTable(){
@@ -161,9 +177,12 @@ public class MainMenuController implements Initializable{
 
     @FXML private void backToOnline(){
         AnimationUtils.switchPaneFade(joinRacePane, onlinePane);
+        AnimationUtils.fadeNodeCustom(imvLogoCircle, 1);
     }
 
-    @FXML private void backFromHost(){AnimationUtils.switchPaneFade(hostOptionsPane, onlinePane);}
+    @FXML private void backFromHost(){AnimationUtils.switchPaneFade(hostOptionsPane, onlinePane);
+        AnimationUtils.fadeNodeCustom(imvLogoCircle, 1);
+    }
 
     @FXML private void loadTutorial() throws Exception {
         DisplaySwitcher.getGameSounds().stopEndlessMusic();
@@ -289,6 +308,7 @@ public class MainMenuController implements Initializable{
         addButtonListeners(btnBackToOptions);
         addButtonListeners(btnStartRace);
         addButtonListeners(btnManual);
+        addButtonListeners(btnGetStarted);
     }
 
     private void setLabelPromptAnimations(){

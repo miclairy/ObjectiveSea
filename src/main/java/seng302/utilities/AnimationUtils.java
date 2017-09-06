@@ -326,6 +326,14 @@ public class AnimationUtils {
         fadeTransition.setFromValue(node.getOpacity());
         fadeTransition.setToValue(endOpacity);
         fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        if(endOpacity == 0){
+            fadeTransition.setOnFinished(new EventHandler<ActionEvent>(){
+                public void handle(ActionEvent AE){
+                    node.setVisible(false);
+                }});
+        }else{
+            node.setVisible(true);
+        }
         fadeTransition.play();
     }
 
@@ -381,14 +389,47 @@ public class AnimationUtils {
         pt.play();
     }
 
-    public static void mapHover(Node map) {
-
-        ScaleTransition scaleTransition = new ScaleTransition(new Duration(1500), map);
-        scaleTransition.setByX(0.02);
-        scaleTransition.setByY(0.02);
+    /**
+     * adds an infinite hover effect to a node
+     * @param node the node that the transition is applied to
+     */
+    public static void nodeHover(Node node) {
+        ScaleTransition scaleTransition = new ScaleTransition(new Duration(1700), node);
+        scaleTransition.setByX(0.04);
+        scaleTransition.setByY(0.04);
         scaleTransition.setInterpolator(Interpolator.EASE_OUT);
         scaleTransition.setCycleCount(Animation.INDEFINITE);
         scaleTransition.setAutoReverse(true);
         scaleTransition.play();
     }
+
+    public static void slideUpNode(Node node){
+        TranslateTransition translateTransition = new TranslateTransition(new Duration(300), node);
+        translateTransition.setInterpolator(Interpolator.EASE_OUT);
+        translateTransition.setByY(80);
+        translateTransition.setByX(200);
+
+        ScaleTransition scaleTransition = new ScaleTransition(new Duration(300), node);
+        scaleTransition.setByX(-0.08);
+        scaleTransition.setByY(-0.08);
+        scaleTransition.setInterpolator(Interpolator.EASE_OUT);
+
+        ParallelTransition pt = new ParallelTransition(translateTransition, scaleTransition);
+        pt.play();
+    }
+
+    /**
+     * fades in a menu pane
+     * @param node the pane to be faded
+     */
+    public static void fadeMenuPane(Node node){
+        node.setVisible(true);
+        FadeTransition fadeTransition = new FadeTransition(new Duration(300), node);
+        fadeTransition.setFromValue(0);
+        fadeTransition.setToValue(1);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        fadeTransition.play();
+    }
 }
+
+
