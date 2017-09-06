@@ -5,10 +5,12 @@ import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.event.EventTarget;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.TouchPoint;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import seng302.models.CanvasCoordinate;
 import seng302.utilities.AnimationUtils;
 import seng302.views.BoatDisplay;
@@ -51,5 +53,18 @@ public class DisplayTouchController {
 
     public static void setRoot(Group root) {
         DisplayTouchController.root = root;
+    }
+
+    public void displaySwipe(CanvasCoordinate swipeEnd, CanvasCoordinate swipeStart) {
+        Line path = createHighlightPath(swipeStart, swipeEnd);
+
+        touchTransition = AnimationUtils.touchInAction(path);
+        touchTransition.play();
+    }
+
+    private Line createHighlightPath(CanvasCoordinate swipeStart, CanvasCoordinate swipeEnd){
+        Line path = new Line(swipeStart.getX(), swipeStart.getY(), swipeEnd.getX(), swipeEnd.getY());
+        root.getChildren().add(path);
+        return path;
     }
 }

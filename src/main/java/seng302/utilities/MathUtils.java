@@ -233,4 +233,18 @@ public class MathUtils {
         }
         return angle;
     }
+
+    /**
+     * Calculates the heading of the line starting at start.
+     * @param start point to start
+     * @param end point to end
+     * @return heading between points
+     */
+    public static double getHeadingBetweenTwoCoodinates(CanvasCoordinate start, CanvasCoordinate end){
+        double bearing = Math.toDegrees(Math.atan2(start.getX() - end.getX(), start.getY() - end.getY()));
+        if (bearing < 0){
+            bearing += 360;
+        }
+        return bearing;
+    }
 }
