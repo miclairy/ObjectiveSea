@@ -58,8 +58,8 @@ public class RoundingMechanics {
         if(Math.abs(midway2 - angle1) > Math.abs(midway1 - angle1)){
             midway = midway2;
         }
-        Coordinate otherPoint = mark.getPosition().coordAt(1, midway);
-        Coordinate otherPoint1 = otherPoint.coordAt(2, (midway+180) % 360);
+        Coordinate otherPoint = mark.getPosition().euclideanCoordAt(1, midway);
+        Coordinate otherPoint1 = otherPoint.euclideanCoordAt(2, (midway+180) % 360);
 
         Line2D testingDirLine = new Line2D.Double(otherPoint.getLon(), otherPoint.getLat(), otherPoint1.getLon(), otherPoint1.getLat());
         Line2D testingCrossingLine = new Line2D.Double(mark.getPosition().getLon(), mark.getPosition().getLat(), otherPoint.getLon(), otherPoint.getLat());
@@ -79,8 +79,8 @@ public class RoundingMechanics {
     public static boolean boatPassedThroughExternalGate(Boat boat, CompoundMark gate, Coordinate previousMarkCoordinate) {
         Double angle = gate.getMark1().getPosition().headingToCoordinate(gate.getMark2().getPosition());
 
-        Coordinate gateExteriorCoordinate1 = gate.getMark1().getPosition().coordAt(1000, (angle + 180) % 360);
-        Coordinate gateExteriorCoordinate2 = gate.getMark2().getPosition().coordAt(1000, angle);
+        Coordinate gateExteriorCoordinate1 = gate.getMark1().getPosition().coordAt(1, (angle + 180) % 360);
+        Coordinate gateExteriorCoordinate2 = gate.getMark2().getPosition().coordAt(1, angle);
 
         CompoundMark getExteriorCompoundMark1 = buildDummyCompoundMark(gate.getMark1().getPosition(), gateExteriorCoordinate1);
         CompoundMark getExteriorCompoundMark2 = buildDummyCompoundMark(gate.getMark2().getPosition(), gateExteriorCoordinate2);
