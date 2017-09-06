@@ -116,7 +116,7 @@ public class Main extends Application {
     }
 
     private void loadMainMenu() {
-        displaySwitcher.loadMainMenu();
+        displaySwitcher.loadMainMenu(true);
     }
 
     /**

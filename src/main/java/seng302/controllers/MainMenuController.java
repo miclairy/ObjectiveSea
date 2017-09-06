@@ -122,8 +122,11 @@ public class MainMenuController implements Initializable{
         dropShadowAnchor.setVisible(false);
     }
 
-    public void setApp(Main main){
+    public void setApp(Main main, Boolean firstLoad){
         this.main = main;
+        if(!firstLoad){
+            showMenu();
+        }
     }
 
     @FXML private void showMenu(){
@@ -131,6 +134,7 @@ public class MainMenuController implements Initializable{
         AnimationUtils.fadeMenuPane(dropShadowAnchor);
         AnimationUtils.slideUpNode(imvLogoCircle);
         AnimationUtils.fadeNodeCustom(btnGetStarted, 0);
+        imvLogoCircle.setId("imvLogoShifted");
     }
 
     @FXML private void loadHostOptionsPane(){

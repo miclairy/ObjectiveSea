@@ -246,14 +246,14 @@ public class Controller implements Initializable, Observer {
 
     @FXML public void exitRunningRace() {
         ConnectionUtils.initiateDisconnect(options.isHost());
-        displaySwitcher.loadMainMenu();
+        displaySwitcher.loadMainMenu(false);
         soundController.setRunning(false);
         raceViewController.stop();
         DisplayUtils.resetZoom();
     }
 
     public void exitTerminatedRace() {
-        displaySwitcher.loadMainMenu();
+        displaySwitcher.loadMainMenu(false);
     }
 
     /**

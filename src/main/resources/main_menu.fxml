@@ -470,7 +470,7 @@
                 <Insets bottom="20.0" right="20.0" />
             </StackPane.margin>
         </ImageView>
-      <Button fx:id="btnGetStarted" mnemonicParsing="false" onAction="#showMenu" text="Let's Go" StackPane.alignment="TOP_CENTER">
+      <Button fx:id="btnGetStarted" mnemonicParsing="false" onAction="#showMenu" text="Let's Go!" StackPane.alignment="TOP_CENTER">
          <StackPane.margin>
             <Insets top="450.0" />
          </StackPane.margin>

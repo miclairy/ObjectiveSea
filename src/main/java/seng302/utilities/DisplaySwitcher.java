@@ -31,10 +31,10 @@ public class DisplaySwitcher {
     /**
      * loads the main menu into the stage
      */
-    public void loadMainMenu() {
+    public void loadMainMenu(Boolean firstLoad) {
         try {
             MainMenuController mainMenu = (MainMenuController) replaceSceneContent("main_menu.fxml");
-            mainMenu.setApp(main);
+            mainMenu.setApp(main, firstLoad);
             try {
                 gameSounds.stopEndlessMusic();
             } catch (Exception e) {}

@@ -410,8 +410,8 @@ public class AnimationUtils {
         translateTransition.setByX(200);
 
         ScaleTransition scaleTransition = new ScaleTransition(new Duration(300), node);
-        scaleTransition.setByX(-0.08);
-        scaleTransition.setByY(-0.08);
+        scaleTransition.setByX(-0.1);
+        scaleTransition.setByY(-0.1);
         scaleTransition.setInterpolator(Interpolator.EASE_OUT);
 
         ParallelTransition pt = new ParallelTransition(translateTransition, scaleTransition);
