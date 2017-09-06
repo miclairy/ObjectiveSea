@@ -133,7 +133,7 @@ public class MainMenuController implements Initializable{
         AnimationUtils.fadeMenuPane(menuAnchor);
         AnimationUtils.fadeMenuPane(dropShadowAnchor);
         AnimationUtils.slideUpNode(imvLogoCircle);
-        AnimationUtils.fadeNodeCustom(btnGetStarted, 0);
+        AnimationUtils.removeMenuButton(btnGetStarted, 0);
         imvLogoCircle.setId("imvLogoShifted");
     }
 

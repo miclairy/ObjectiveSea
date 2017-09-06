@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
+import seng302.views.Arrow;
 
 /**
  * Created by Devin on 25/07/17.
@@ -326,14 +327,6 @@ public class AnimationUtils {
         fadeTransition.setFromValue(node.getOpacity());
         fadeTransition.setToValue(endOpacity);
         fadeTransition.setInterpolator(Interpolator.EASE_OUT);
-        if(endOpacity == 0){
-            fadeTransition.setOnFinished(new EventHandler<ActionEvent>(){
-                public void handle(ActionEvent AE){
-                    node.setVisible(false);
-                }});
-        }else{
-            node.setVisible(true);
-        }
         fadeTransition.play();
     }
 
@@ -406,7 +399,7 @@ public class AnimationUtils {
     public static void slideUpNode(Node node){
         TranslateTransition translateTransition = new TranslateTransition(new Duration(300), node);
         translateTransition.setInterpolator(Interpolator.EASE_OUT);
-        translateTransition.setByY(80);
+        translateTransition.setByY(60);
         translateTransition.setByX(200);
 
         ScaleTransition scaleTransition = new ScaleTransition(new Duration(300), node);
@@ -428,6 +421,27 @@ public class AnimationUtils {
         fadeTransition.setFromValue(0);
         fadeTransition.setToValue(1);
         fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        fadeTransition.play();
+    }
+
+    /**
+     * sets a nodes opcaity to the desried opacity
+     * @param node the node to be made fully opaque
+     * @param endOpacity the end opacity
+     */
+    public static void removeMenuButton(Node node, double endOpacity){
+        FadeTransition fadeTransition = new FadeTransition(new Duration(200), node);
+        fadeTransition.setFromValue(node.getOpacity());
+        fadeTransition.setToValue(endOpacity);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        if(endOpacity == 0){
+            fadeTransition.setOnFinished(new EventHandler<ActionEvent>(){
+                public void handle(ActionEvent AE){
+                    node.setVisible(false);
+                }});
+        }else{
+            node.setVisible(true);
+        }
         fadeTransition.play();
     }
 }
