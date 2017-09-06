@@ -240,7 +240,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if(!options.isTutorial() && !boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF)){
             displayCollisions(boatDisplay, point);
         }
-        displayCollisions(boatDisplay, point);
         if(nextMark && highlightMark && zoomLevel == 1){
             highlightNextMark();
             nextMark = false;
