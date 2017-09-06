@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.geometry.Rectangle2D;
 import javafx.application.Platform;
+import seng302.data.ClientPacketBuilder;
 import seng302.data.registration.ServerFullException;
 import seng302.models.ClientOptions;
 import seng302.models.ServerOptions;
@@ -140,11 +141,12 @@ public class Main extends Application {
         startClient(clientOptions);
     }
 
-    public void startHostedRace(String course, Double speedScale, int numParticipants, ClientOptions clientOptions) throws Exception{
+    public void startHostedRace(String course, Double speedScale, int numParticipants, ClientOptions clientOptions, int currentCourseIndex) throws Exception{
         ServerOptions serverOptions = new ServerOptions(speedScale, numParticipants);
         serverOptions.setRaceXML(course);
         setupServer(serverOptions);
         startClient(clientOptions);
+        // client.updateVM(serverOptions.getSpeedScale(), serverOptions.getMinParticipants(), clientOptions.getServerPort(), ConnectionUtils.getPublicIp(), currentCourseIndex);
     }
 
     /**

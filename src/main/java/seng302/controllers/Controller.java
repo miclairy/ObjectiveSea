@@ -204,27 +204,6 @@ public class Controller implements Initializable, Observer {
     }
 
     /**
-     * gets users public ip address from AWS ping servers.
-     *
-     * @return the IP address or regatta name if not found
-     */
-    private String getPublicIp() {
-        try {
-            URL ipURL = new URL("http://checkip.amazonaws.com");
-            BufferedReader in = new BufferedReader(new InputStreamReader(
-                    ipURL.openStream()));
-            String ip = in.readLine(); //you get the IP as a String
-            if (ConnectionUtils.IPRegExMatcher(ip)) {
-                return ("IP: " + ip);
-            } else {
-                return race.getRegattaName();
-            }
-        } catch (Exception e) {
-            return race.getRegattaName();
-        }
-    }
-
-    /**
      * shows a tutorial overlay on the screen
      * @param title the title shown in the overlay
      * @param content the tutorial content shown in the overlay
@@ -249,7 +228,12 @@ public class Controller implements Initializable, Observer {
         this.options = options;
         this.scene = scene;
         if (this.options.isHost()) {
-            startersOverlayTitle.setText(getPublicIp());
+            String ip = ConnectionUtils.getPublicIp();
+            if (Objects.equals(ip, null)) {
+                startersOverlayTitle.setText(race.getRegattaName());
+            } else {
+                startersOverlayTitle.setText("IP: " + ip);
+            }
         } else {
             startersOverlayTitle.setText(race.getRegattaName());
         }

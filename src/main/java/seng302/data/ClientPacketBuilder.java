@@ -2,8 +2,12 @@ package seng302.data;
 
 import seng302.data.registration.RegistrationType;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import static seng302.data.AC35StreamField.*;
 import static seng302.data.AC35StreamMessage.BOAT_ACTION_MESSAGE;
+import static seng302.data.AC35StreamMessage.HOST_GAME_MESSAGE;
 import static seng302.data.AC35StreamMessage.REGISTRATION_REQUEST;
 
 /**
@@ -23,6 +27,25 @@ public class ClientPacketBuilder extends PacketBuilder {
         return generatePacket(header, body);
     }
 
+    public byte[] createGameRegistrationPacket(Double speedScale, Integer minParticipants, Integer serverPort, String publicIp, int currentCourseIndex) {
+        byte[] header = createHeader(HOST_GAME_MESSAGE);
+        byte[] body = new byte[13];
+        addFieldToByteArray(body, HOST_GAME_IP, Receiver.byteArrayRangeToLong(publicIp.getBytes(), 0, publicIp.getBytes().length));
+        addFieldToByteArray(body, HOST_GAME_PORT, serverPort);
+        addFieldToByteArray(body, HOST_GAME_MAP, currentCourseIndex);
+        addFieldToByteArray(body, HOST_GAME_SPEED, speedScale.longValue());
+        addFieldToByteArray(body, HOST_GAME_STATUS, 1);
+        addFieldToByteArray(body, HOST_GAME_REQUIRED_PLAYERS, minParticipants);
+        addFieldToByteArray(body, HOST_GAME_CURRENT_PLAYERS, 1);
+        return generatePacket(header, body);
+    }
+
+    /**
+     * Creates the packets that contain the button presses from the client
+     * @param commandInt ID of the key pressed
+     * @param clientId id of the client that has pressed the button
+     * @return the full packet
+     */
     public byte[] createBoatCommandPacket(int commandInt, int clientId) {
         byte[] header = createHeader(BOAT_ACTION_MESSAGE, clientId);
         byte[] body = new byte[5];

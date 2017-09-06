@@ -225,8 +225,7 @@ public class MainMenuController implements Initializable{
         Double speed = speedScaleSlider.getValue();
         Integer minCompetitors = (int) boatsInRaceSlider.getValue();
         ClientOptions clientOptions = new ClientOptions();
-
-        main.startHostedRace(currentCourseMap.getXML(), speed, minCompetitors, clientOptions);
+        main.startHostedRace(currentCourseMap.getXML(), speed, minCompetitors, clientOptions, currentMapIndex);
         timer.stop();
         Thread.sleep(200);
         main.loadRaceView(clientOptions);

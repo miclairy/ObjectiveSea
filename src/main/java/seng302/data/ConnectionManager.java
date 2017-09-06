@@ -1,7 +1,5 @@
 package seng302.data;
 
-import seng302.models.Race;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;

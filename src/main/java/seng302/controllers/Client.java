@@ -222,4 +222,9 @@ public class Client implements Runnable, Observer {
         clientListener.disconnectClient();
         race.getBoatById(clientID).setStatus(BoatStatus.DNF);
     }
+
+    public void updateVM(Double speedScale, Integer minParticipants, Integer serverPort, String publicIp, int currentCourseIndex){
+        byte[] registerGamePacket = packetBuilder.createGameRegistrationPacket(speedScale, minParticipants, serverPort, publicIp, currentCourseIndex);
+        sender.sendToServer(registerGamePacket);
+    }
 }
