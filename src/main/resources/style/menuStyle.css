@@ -11,43 +11,7 @@
     -fx-effect: dropshadow(gaussian, #6c9292, 20, 0, 0, 10);
 }
 
-#btnTutorial{
-    -fx-background-color:  transparent;
-    -fx-font: 11px "Helvetica Neue";
-    -fx-font-weight: bold;
-}
-
-#btnManual{
-    -fx-background-color:  transparent;
-    -fx-font: 11px "Helvetica Neue";
-    -fx-font-weight: bold;
-}
-
-#btnOfflinePlay{
-    -fx-background-color:  transparent;
-    -fx-font: 11px "Helvetica Neue";
-    -fx-font-weight: bold;
-}
-
-#btnOnlinePane{
-    -fx-background-color:  transparent;
-    -fx-font: 11px "Helvetica Neue";
-    -fx-font-weight: bold;
-}
-
-#btnOnlineBackFromHost{
-    -fx-background-color:  transparent;
-    -fx-font: 11px "Helvetica Neue";
-    -fx-font-weight: bold;
-}
-
-#btnBackToOptions{
-    -fx-background-color:  transparent;
-    -fx-font: 11px "Helvetica Neue";
-    -fx-font-weight: bold;
-}
-
-#btnOnlineBack{
+.btnNoStyle{
     -fx-background-color:  transparent;
     -fx-font: 11px "Helvetica Neue";
     -fx-font-weight: bold;
@@ -55,130 +19,54 @@
 
 #btnCreateGame{
     -fx-padding: 10 195 10 25;
-    -fx-background-color:  white;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
-    -fx-effect: dropshadow(gaussian, #D6D6D6, 15, 0, 0, 5);
     -fx-background-image: url('/graphics/hostArrow.png');
-    -fx-background-size: 22px 22px;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: right 18 center;
 }
 
 #btnJoinGame{
     -fx-padding: 10 153 10 25;
-    -fx-background-color:  white;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
-    -fx-effect: dropshadow(gaussian, #D6D6D6, 15, 0, 0, 5);
     -fx-background-image: url('/graphics/joinArrow.png');
-    -fx-background-size: 22px 22px;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: right 18 center;
 }
 
 #btnStartRace{
     -fx-padding: 10 60 10 25;
-    -fx-background-color:  white;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
-    -fx-effect: dropshadow(gaussian, #6c9292, 15, 0, 0, 5);
     -fx-background-image: url('/graphics/joinArrow.png');
-    -fx-background-size: 22px 22px;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: right 18 center;
+    -fx-effect: dropshadow(gaussian, rgba(108, 128, 128, 0.67), 15, 0, 0, 5);
 }
 
 #btnLoadMap{
     -fx-padding: 10 60 10 25;
-    -fx-background-color:  white;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
-    -fx-effect: dropshadow(gaussian, #D6D6D6, 15, 0, 0, 5);
     -fx-background-image: url('/graphics/joinArrow.png');
-    -fx-background-size: 22px 22px;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: right 18 center;
 }
 
 #btnCompete{
     -fx-padding: 10 195 10 25;
-    -fx-background-color:  white;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
-    -fx-effect: dropshadow(gaussian, #D6D6D6, 15, 0, 0, 5);
     -fx-background-image: url('/graphics/hostArrow.png');
-    -fx-background-size: 22px 22px;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: right 18 center;
 }
 
 #btnSpectate{
+    -fx-padding: 10 195 10 25;
+    -fx-background-image: url('/graphics/joinArrow.png');
+}
+
+#btnPractiseStart{
+    -fx-padding: 10 140 10 25;
+    -fx-background-image: url('/graphics/hostArrow.png');
+}
+
+#btnSinglePlay{
+    -fx-padding: 10 193 10 25;
+    -fx-background-image: url('/graphics/joinArrow.png');
+}
+
+.btnSelection{
     -fx-padding: 10 195 10 25;
     -fx-background-color:  white;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
     -fx-effect: dropshadow(gaussian, #D6D6D6, 15, 0, 0, 5);
-    -fx-background-image: url('/graphics/joinArrow.png');
     -fx-background-size: 22px 22px;
     -fx-background-repeat: no-repeat;
     -fx-background-position: right 18 center;
-}
-
-#btnPractiseStart{
-    -fx-font-weight: bold;
-    -fx-padding: 10 140 10 25;
-    -fx-background-color:  white;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
-    -fx-effect: dropshadow(gaussian, #D6D6D6, 15, 0, 0, 5);
-    -fx-background-image: url('/graphics/hostArrow.png');
-    -fx-background-size: 22px 22px;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: right 18 center;
-}
-
-#btnSinglePlay{
-    -fx-padding: 10 193 10 25;
-    -fx-background-color:  white;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
-    -fx-effect: dropshadow(gaussian, #D6D6D6, 15, 0, 0, 5);
-    -fx-background-image: url('/graphics/joinArrow.png');
-    -fx-background-size: 22px 22px;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: right 18 center;
-}
-
-#btnGetStarted{
-    -fx-text-fill: #919191;
-    -fx-padding: 10 50 10 25;
-    -fx-background-color: #fafafa;
-    -fx-border-radius: 4;
-    -fx-background-radius: 4;
-    -fx-effect: dropshadow(gaussian, rgba(108, 146, 146, 0.84), 15, 0, 0, 5);
-    -fx-background-image: url('/graphics/joinArrow.png');
-    -fx-background-size: 22px 22px;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: right 18 center;
-}
-
-#lblModeType{
-    -fx-font: 32px "Helvetica Neue";
-    -fx-font-weight: 700;
-    -fx-text-fill: #2e2e2e;
-}
-
-#lblJoinRace{
-    -fx-font: 32px "Helvetica Neue";
-    -fx-font-weight: 700;
-    -fx-text-fill: #2e2e2e;
-}
-
-#lblOfflineMode{
-    -fx-font: 32px "Helvetica Neue";
-    -fx-font-weight: 700;
-    -fx-text-fill: #2e2e2e;
 }
 
 #lblMapName{
@@ -187,51 +75,15 @@
     -fx-text-fill: #ffffff;
 }
 
-#lblModeDescription{
+.paneTitle{
+    -fx-font: 32px "Helvetica Neue";
+    -fx-font-weight: 700;
+    -fx-text-fill: #2e2e2e;
+}
+
+.paneDescription{
     -fx-font: 12px "Helvetica Neue Normal";
     -fx-text-fill: #6a6a6a;
-}
-
-#lblJoinDescription{
-    -fx-font: 12px "Helvetica Neue Normal";
-    -fx-text-fill: #6a6a6a;
-}
-
-#lblOfflineDescription{
-    -fx-font: 12px "Helvetica Neue Normal";
-    -fx-text-fill: #6a6a6a;
-}
-
-
-#liveGameGrid{
-    -fx-effect: dropshadow(gaussian, #BEBEBE, 20, 0, 0, 0);
-    -fx-border-radius: 40 40 40 40;
-    -fx-background-radius: 40 40 40 40;
-    -fx-background-color: white;
-}
-
-#practiceGrid{
-    -fx-effect: dropshadow(gaussian, #BEBEBE, 20, 0, 0, 0);
-    -fx-border-radius: 40 40 40 40;
-    -fx-background-radius: 40 40 40 40;
-    -fx-background-color: white;
-}
-
-#courseGrid{
-    -fx-effect: dropshadow(gaussian, #BEBEBE, 20, 0, 0, 0);
-    -fx-border-radius: 40 40 40 40;
-    -fx-background-radius: 40 40 40 40;
-    -fx-background-color: white;
-}
-
-#courseImage1, #courseImage2, #courseImage3, #courseImage4{
-    -fx-effect: dropshadow(gaussian, #BEBEBE, 20, 0, 0, 0);
-    -fx-border-radius: 40 40 40 40;
-    -fx-background-radius: 40 40 40 40;
-}
-
-#txtIPAddress{
-
 }
 
 #txtPortNumber{
@@ -372,7 +224,7 @@
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
     -fx-opacity: 0.7;
-    -fx-effect: dropshadow(gaussian, #6c9292, 10, 0, 0, 5);
+    -fx-effect: dropshadow(gaussian, rgba(108, 128, 128, 0.80), 15, 0, 0, 5);
 }
 
 #btnMapRight{
@@ -388,7 +240,7 @@
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
     -fx-opacity: 0.7;
-    -fx-effect: dropshadow(gaussian, #6c9292, 10, 0, 0, 5);
+    -fx-effect: dropshadow(gaussian, rgba(108, 128, 128, 0.80), 15, 0, 0, 5);
 }
 
 #lblMarksTitle{

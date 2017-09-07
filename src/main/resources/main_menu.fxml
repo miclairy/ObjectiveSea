@@ -30,7 +30,7 @@
             <children>
                 <StackPane fx:id="stackPane" layoutX="228.0" layoutY="1.0" prefHeight="840.0" prefWidth="700.0" AnchorPane.bottomAnchor="-1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="1.0">
                     <children>
-                        <GridPane fx:id="selectMapPane" layoutX="10.0" layoutY="10.0" maxHeight="855.0" maxWidth="755.0" minHeight="299.0" minWidth="320.0" prefHeight="763.0" prefWidth="700.0" StackPane.alignment="TOP_LEFT">
+                        <GridPane fx:id="selectMapPane" layoutX="10.0" layoutY="10.0" maxHeight="855.0" maxWidth="755.0" minHeight="299.0" minWidth="320.0" prefHeight="763.0" prefWidth="700.0" visible="false" StackPane.alignment="TOP_LEFT">
                             <columnConstraints>
                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                 <ColumnConstraints />
@@ -47,7 +47,7 @@
                                         <Image url="@graphics/mapPane.png" />
                                     </image>
                                 </ImageView>
-                                <Button fx:id="btnBackToOptions" mnemonicParsing="false" onAction="#backToOptions" text="Back" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+                                <Button fx:id="btnBackToOptions" mnemonicParsing="false" onAction="#backToOptions" styleClass="btnNoStyle" text="Back" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
                                     <GridPane.margin>
                                         <Insets bottom="25.0" left="20.0" />
                                     </GridPane.margin>
@@ -60,7 +60,7 @@
                                         <Insets left="40.0" top="20.0" />
                                     </GridPane.margin>
                                 </Label>
-                                <Button fx:id="btnStartRace" layoutX="90.0" layoutY="250.0" mnemonicParsing="false" onAction="#startHostGame" text="Start" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.rowSpan="2" GridPane.valignment="BOTTOM">
+                                <Button fx:id="btnStartRace" layoutX="90.0" layoutY="250.0" mnemonicParsing="false" onAction="#startHostGame" styleClass="btnSelection" text="Start" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.rowSpan="2" GridPane.valignment="BOTTOM">
                                     <padding>
                                         <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                                     </padding>
@@ -97,9 +97,9 @@
                                         <Insets right="40.0" top="180.0" />
                                     </GridPane.margin>
                                 </Circle>
-                                <Label fx:id="lblMarks" text="5" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                                <Label fx:id="lblMarks" text="5" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
                                     <GridPane.margin>
-                                        <Insets right="54.0" top="176.0" />
+                                        <Insets left="560.0" top="176.0" />
                                     </GridPane.margin>
                                 </Label>
                                 <Label fx:id="lblEstTime" layoutX="350.0" layoutY="90.0" text="Time" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
@@ -112,9 +112,9 @@
                                         <Insets right="40.0" top="60.0" />
                                     </GridPane.margin>
                                 </Circle>
-                                <Label fx:id="lblTime" layoutX="365.0" layoutY="116.0" text="28:59" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                                <Label fx:id="lblTime" layoutX="365.0" layoutY="116.0" text="28:59" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
                                     <GridPane.margin>
-                                        <Insets right="44.0" top="77.0" />
+                                        <Insets left="560.0" top="77.0" />
                                     </GridPane.margin>
                                 </Label>
                                 <Polygon fx:id="mapPolygon" fill="DODGERBLUE" stroke="BLACK" strokeType="INSIDE" GridPane.halignment="CENTER" GridPane.rowIndex="1">
@@ -144,7 +144,7 @@
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             </rowConstraints>
                             <children>
-                                <Button fx:id="btnOnlineBackFromHost" mnemonicParsing="false" onAction="#backFromHost" text="Back" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+                                <Button fx:id="btnOnlineBackFromHost" mnemonicParsing="false" onAction="#backFromHost" styleClass="btnNoStyle" text="Back" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
                                     <GridPane.margin>
                                         <Insets bottom="25.0" left="40.0" />
                                     </GridPane.margin>
@@ -152,17 +152,17 @@
                                         <Cursor fx:constant="HAND" />
                                     </cursor>
                                 </Button>
-                                <Label fx:id="lblJoinRace" text="Host Race" GridPane.halignment="LEFT" GridPane.valignment="TOP">
+                                <Label fx:id="lblJoinRace" styleClass="paneTitle" text="Host Race" GridPane.halignment="LEFT" GridPane.valignment="TOP">
                                     <GridPane.margin>
                                         <Insets left="40.0" top="20.0" />
                                     </GridPane.margin>
                                 </Label>
-                                <Label fx:id="lblJoinDescription" layoutX="60.0" layoutY="160.0" text="Select the minimum number of boats in the race and the speed scale to start your perfect race" wrapText="true" GridPane.halignment="LEFT" GridPane.rowSpan="2" GridPane.valignment="TOP">
+                                <Label fx:id="lblJoinDescription" layoutX="60.0" layoutY="160.0" styleClass="paneDescription" text="Select the minimum number of boats in the race and the speed scale to start your perfect race" wrapText="true" GridPane.halignment="LEFT" GridPane.rowSpan="2" GridPane.valignment="TOP">
                                     <GridPane.margin>
                                         <Insets left="40.0" right="350.0" top="60.0" />
                                     </GridPane.margin>
                                 </Label>
-                                <Button fx:id="btnLoadMap" layoutX="90.0" layoutY="250.0" mnemonicParsing="false" onAction="#loadMapPane" text="Select Map" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+                                <Button fx:id="btnLoadMap" layoutX="90.0" layoutY="250.0" mnemonicParsing="false" onAction="#loadMapPane" styleClass="btnSelection" text="Select Map" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
                                     <padding>
                                         <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                                     </padding>
@@ -203,24 +203,14 @@
                                         <Insets left="130.0" top="70.0" />
                                     </GridPane.margin>
                                 </Circle>
-                                <Label fx:id="lblBoatsNum" text="1" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+                                <Label fx:id="lblBoatsNum" text="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
                                     <GridPane.margin>
-                                        <Insets bottom="170.0" left="142.0" />
+                                        <Insets bottom="170.0" right="385.0" />
                                     </GridPane.margin>
                                 </Label>
-                                <Label fx:id="lblSpeedNum" contentDisplay="CENTER" layoutX="503.0" layoutY="127.0" text="1" textAlignment="CENTER" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+                                <Label fx:id="lblSpeedNum" contentDisplay="CENTER" layoutX="503.0" layoutY="127.0" text="1" textAlignment="CENTER" GridPane.halignment="CENTER" GridPane.rowIndex="1">
                                     <GridPane.margin>
-                                        <Insets left="142.0" top="70.0" />
-                                    </GridPane.margin>
-                                </Label>
-                                <Label fx:id="lblSpeedNumBig" contentDisplay="CENTER" layoutX="503.0" layoutY="247.0" text="10" textAlignment="CENTER" visible="false" GridPane.halignment="LEFT" GridPane.rowIndex="1">
-                                    <GridPane.margin>
-                                        <Insets left="133.0" top="70.0" />
-                                    </GridPane.margin>
-                                </Label>
-                                <Label fx:id="lblSpeedNumBigger" contentDisplay="CENTER" layoutX="143.0" layoutY="256.0" text="20" textAlignment="CENTER" visible="false" GridPane.halignment="LEFT" GridPane.rowIndex="1">
-                                    <GridPane.margin>
-                                        <Insets left="135.0" top="70.0" />
+                                        <Insets right="384.0" top="70.0" />
                                     </GridPane.margin>
                                 </Label>
                             </children>
@@ -237,7 +227,7 @@
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             </rowConstraints>
                             <children>
-                                <Button fx:id="btnCompete" mnemonicParsing="false" onAction="#joinAsParticipant" text="Compete" GridPane.columnSpan="3" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                                <Button fx:id="btnCompete" mnemonicParsing="false" onAction="#joinAsParticipant" styleClass="btnSelection" text="Compete" GridPane.columnSpan="3" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                                     <padding>
                                         <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                                     </padding>
@@ -248,7 +238,7 @@
                                         <Cursor fx:constant="HAND" />
                                     </cursor>
                                 </Button>
-                                <Button fx:id="btnOnlineBack" mnemonicParsing="false" onAction="#backToOnline" text="Back" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+                                <Button fx:id="btnOnlineBack" mnemonicParsing="false" onAction="#backToOnline" styleClass="btnNoStyle" text="Back" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
                                     <GridPane.margin>
                                         <Insets bottom="8.0" left="310.0" />
                                     </GridPane.margin>
@@ -256,17 +246,17 @@
                                         <Cursor fx:constant="HAND" />
                                     </cursor>
                                 </Button>
-                                <Label fx:id="lblJoinRace" text="Join a Race" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                                <Label fx:id="lblJoinRace" styleClass="paneTitle" text="Join a Race" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
                                     <GridPane.margin>
                                         <Insets right="160.0" top="90.0" />
                                     </GridPane.margin>
                                 </Label>
-                                <Label fx:id="lblJoinDescription" layoutX="60.0" layoutY="160.0" text="Select a race to compete or spectate in" wrapText="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                                <Label fx:id="lblJoinDescription" layoutX="60.0" layoutY="160.0" styleClass="paneDescription" text="Select a race to compete or spectate in" wrapText="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
                                     <GridPane.margin>
                                         <Insets right="115.0" top="130.0" />
                                     </GridPane.margin>
                                 </Label>
-                                <Button fx:id="btnSpectate" layoutX="90.0" layoutY="250.0" mnemonicParsing="false" onAction="#joinAsSpectator" text="Spectate" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+                                <Button fx:id="btnSpectate" layoutX="90.0" layoutY="250.0" mnemonicParsing="false" onAction="#joinAsSpectator" styleClass="btnSelection" text="Spectate" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
                                     <padding>
                                         <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                                     </padding>
@@ -311,7 +301,7 @@
                                         <Insets left="33.0" top="156.0" />
                                     </GridPane.margin>
                                 </Label>
-                                <Button fx:id="btnManual" layoutX="320.0" layoutY="430.0" mnemonicParsing="false" onAction="#displayManualOptions" text="Manual" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+                                <Button fx:id="btnManual" layoutX="320.0" layoutY="430.0" mnemonicParsing="false" onAction="#displayManualOptions" styleClass="btnNoStyle" text="Manual" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
                                     <cursor>
                                         <Cursor fx:constant="HAND" />
                                     </cursor>
@@ -333,7 +323,7 @@
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             </rowConstraints>
                             <children>
-                                <Button fx:id="btnPractiseStart" maxWidth="249.0" minWidth="249.0" mnemonicParsing="false" onAction="#loadPracticeStart" prefWidth="249.0" text="Practice Start" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                                <Button fx:id="btnPractiseStart" maxWidth="249.0" minWidth="249.0" mnemonicParsing="false" onAction="#loadPracticeStart" prefWidth="249.0" styleClass="btnSelection" text="Practice Start" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                                     <padding>
                                         <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                                     </padding>
@@ -344,7 +334,7 @@
                                         <Cursor fx:constant="HAND" />
                                     </cursor>
                                 </Button>
-                                <Button fx:id="btnOnlinePane" mnemonicParsing="false" onAction="#loadOnlinePane" text="Online Mode" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                                <Button fx:id="btnOnlinePane" mnemonicParsing="false" onAction="#loadOnlinePane" styleClass="btnNoStyle" text="Online Mode" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                                     <GridPane.margin>
                                         <Insets right="160.0" top="20.0" />
                                     </GridPane.margin>
@@ -352,7 +342,7 @@
                                         <Cursor fx:constant="HAND" />
                                     </cursor>
                                 </Button>
-                                <Button fx:id="btnTutorial" mnemonicParsing="false" onAction="#loadTutorial" text="Tutorial" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                                <Button fx:id="btnTutorial" mnemonicParsing="false" onAction="#loadTutorial" styleClass="btnNoStyle" text="Tutorial" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                                     <GridPane.margin>
                                         <Insets top="20.0" />
                                     </GridPane.margin>
@@ -360,17 +350,17 @@
                                         <Cursor fx:constant="HAND" />
                                     </cursor>
                                 </Button>
-                                <Label fx:id="lblOfflineMode" text="Offline Race" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                                <Label fx:id="lblOfflineMode" styleClass="paneTitle" text="Offline Race" GridPane.rowIndex="1" GridPane.valignment="TOP">
                                     <GridPane.margin>
                                         <Insets left="50.0" top="100.0" />
                                     </GridPane.margin>
                                 </Label>
-                                <Label fx:id="lblOfflineDescription" layoutX="60.0" layoutY="160.0" text="Race against the computer or practise your start technique" wrapText="true" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                                <Label fx:id="lblOfflineDescription" layoutX="60.0" layoutY="160.0" styleClass="paneDescription" text="Race against the computer or practise your start technique" wrapText="true" GridPane.rowIndex="1" GridPane.valignment="TOP">
                                     <GridPane.margin>
                                         <Insets left="52.0" right="350.0" top="140.0" />
                                     </GridPane.margin>
                                 </Label>
-                                <Button fx:id="btnSinglePlay" layoutX="90.0" layoutY="250.0" mnemonicParsing="false" onAction="#loadOfflinePlay" text="Race" GridPane.rowIndex="1">
+                                <Button fx:id="btnSinglePlay" layoutX="90.0" layoutY="250.0" mnemonicParsing="false" onAction="#loadOfflinePlay" styleClass="btnSelection" text="Race" GridPane.rowIndex="1">
                                     <padding>
                                         <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                                     </padding>
@@ -388,7 +378,7 @@
                                 </ImageView>
                             </children>
                         </GridPane>
-                        <GridPane fx:id="onlinePane" maxHeight="855.0" maxWidth="755.0" minHeight="299.0" minWidth="320.0" prefHeight="763.0" prefWidth="700.0" visible="false">
+                        <GridPane fx:id="onlinePane" maxHeight="855.0" maxWidth="755.0" minHeight="299.0" minWidth="320.0" prefHeight="763.0" prefWidth="700.0">
                             <columnConstraints>
                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                 <ColumnConstraints />
@@ -400,7 +390,7 @@
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             </rowConstraints>
                             <children>
-                                <Button fx:id="btnCreateGame" maxWidth="249.0" minWidth="249.0" mnemonicParsing="false" onAction="#loadHostOptionsPane" prefWidth="249.0" text="Host" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                                <Button fx:id="btnCreateGame" maxWidth="249.0" minWidth="249.0" mnemonicParsing="false" onAction="#loadHostOptionsPane" prefWidth="249.0" styleClass="btnSelection" text="Host" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                                     <padding>
                                         <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                                     </padding>
@@ -411,7 +401,7 @@
                                         <Cursor fx:constant="HAND" />
                                     </cursor>
                                 </Button>
-                                <Button fx:id="btnOfflinePlay" mnemonicParsing="false" onAction="#loadOfflinePane" text="Offline Mode" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                                <Button fx:id="btnOfflinePlay" mnemonicParsing="false" onAction="#loadOfflinePane" styleClass="btnNoStyle" text="Offline Mode" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                                     <GridPane.margin>
                                         <Insets right="160.0" top="20.0" />
                                     </GridPane.margin>
@@ -419,7 +409,7 @@
                                         <Cursor fx:constant="HAND" />
                                     </cursor>
                                 </Button>
-                                <Button fx:id="btnTutorial" mnemonicParsing="false" onAction="#loadTutorial" text="Tutorial" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                                <Button fx:id="btnTutorial" mnemonicParsing="false" onAction="#loadTutorial" styleClass="btnNoStyle" text="Tutorial" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="TOP">
                                     <GridPane.margin>
                                         <Insets top="20.0" />
                                     </GridPane.margin>
@@ -427,17 +417,17 @@
                                         <Cursor fx:constant="HAND" />
                                     </cursor>
                                 </Button>
-                                <Label fx:id="lblModeType" text="Online Race" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                                <Label fx:id="lblModeType" styleClass="paneTitle" text="Online Race" GridPane.rowIndex="1" GridPane.valignment="TOP">
                                     <GridPane.margin>
                                         <Insets left="50.0" top="100.0" />
                                     </GridPane.margin>
                                 </Label>
-                                <Label fx:id="lblModeDescription" layoutX="60.0" layoutY="160.0" text="Join an online race to get started, or create your own to race on your favourite map" wrapText="true" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                                <Label fx:id="lblModeDescription" layoutX="60.0" layoutY="160.0" styleClass="paneDescription" text="Join an online race to get started, or create your own to race on your favourite map" wrapText="true" GridPane.rowIndex="1" GridPane.valignment="TOP">
                                     <GridPane.margin>
                                         <Insets left="52.0" right="350.0" top="140.0" />
                                     </GridPane.margin>
                                 </Label>
-                                <Button fx:id="btnJoinGame" layoutX="90.0" layoutY="250.0" maxWidth="249.0" minWidth="249.0" mnemonicParsing="false" onAction="#loadJoinPane" prefWidth="249.0" text="Join a Race" GridPane.rowIndex="1">
+                                <Button fx:id="btnJoinGame" layoutX="90.0" layoutY="250.0" maxWidth="249.0" minWidth="249.0" mnemonicParsing="false" onAction="#loadJoinPane" prefWidth="249.0" styleClass="btnSelection" text="Join a Race" GridPane.rowIndex="1">
                                     <padding>
                                         <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                                     </padding>

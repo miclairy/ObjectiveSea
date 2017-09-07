@@ -64,8 +64,6 @@ public class MainMenuController implements Initializable{
     @FXML private Label lblBoatsNum;
     @FXML private Slider speedScaleSlider;
     @FXML private Label lblSpeedNum;
-    @FXML private Label lblSpeedNumBig;
-    @FXML private Label lblSpeedNumBigger;
     @FXML private Shape circleSpeed;
     @FXML private Shape circleBoats;
     @FXML private Polygon mapPolygon;
@@ -235,10 +233,10 @@ public class MainMenuController implements Initializable{
             }
         } else {
             if(!ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && !txtIPAddress.getText().isEmpty()){
-                txtIPAddress.setStyle("-fx-text-inner-color: red;");
+                txtIPAddress.setStyle("-fx-text-inner-color: #ff5459;");
             }
             if(!validatePort() && !txtPortNumber.getText().isEmpty()){
-                txtPortNumber.setStyle("-fx-text-inner-color: red;");
+                txtPortNumber.setStyle("-fx-text-inner-color: #ff5459;");
             }
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Port & IP ");
@@ -362,9 +360,13 @@ public class MainMenuController implements Initializable{
         DisplaySwitcher.getGameSounds().startSeaGullNoise();
     }
 
+    /**
+     * clips side pane image to match the round edges of the pane
+     * @param region the area to clip
+     * @param arc the rounding of the corners
+     */
     private void clipChildren(Region region, double arc) {
-
-        final Rectangle outputClip = new Rectangle();
+        Rectangle outputClip = new Rectangle();
         outputClip.setArcWidth(arc);
         outputClip.setArcHeight(arc);
         region.setClip(outputClip);
@@ -374,56 +376,62 @@ public class MainMenuController implements Initializable{
         });
     }
 
+    /**
+     * sets up sliders so labels and circles move with slider thumb
+     */
     private void setUpSliders() {
-        boatsInRaceSlider.valueProperty().addListener(new ChangeListener() {
-
-            @Override
-            public void changed(ObservableValue arg0, Object arg1, Object arg2) {
-                Bounds bounds = boatsInRaceSlider.lookup(".thumb").getBoundsInParent();
-
-                circleBoats.setTranslateX(bounds.getMinX() + 10);
-                lblBoatsNum.setTranslateX(bounds.getMinX() + 10);
-
-                lblBoatsNum.textProperty().setValue(
-                        String.valueOf((int) boatsInRaceSlider.getValue()));
-
-
-            }
+        boatsInRaceSlider.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
+            updateBoatsLabel();
+        });
+        boatsInRaceSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            updateBoatsLabel();
         });
 
-        speedScaleSlider.valueProperty().addListener(new ChangeListener() {
-            @Override
-            public void changed(ObservableValue arg0, Object arg1, Object arg2) {
-                Bounds bounds = speedScaleSlider.lookup(".thumb").getBoundsInParent();
-                setUpLabelProperties(bounds, circleSpeed);
-                setUpLabelProperties(bounds, lblSpeedNum);
-                setUpLabelProperties(bounds, lblSpeedNumBig);
-                setUpLabelProperties(bounds, lblSpeedNumBigger);
-
-                if(speedScaleSlider.getValue() >= 10 && speedScaleSlider.getValue() < 20){
-                    lblSpeedNum.setVisible(false);
-                    lblSpeedNumBig.setVisible(true);
-                    lblSpeedNumBigger.setVisible(false);
-                }else if(speedScaleSlider.getValue() >= 20){
-                    lblSpeedNum.setVisible(false);
-                    lblSpeedNumBig.setVisible(false);
-                    lblSpeedNumBigger.setVisible(true);
-                }else{
-                    lblSpeedNum.setVisible(true);
-                    lblSpeedNumBig.setVisible(false);
-                    lblSpeedNumBigger.setVisible(false);
-                }
-            }
+        speedScaleSlider.boundsInParentProperty().addListener((observable, oldValue, newValue) -> {
+            updateSpeedLabel();
+        });
+        speedScaleSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            updateSpeedLabel();
         });
     }
 
-    private void setUpLabelProperties(Bounds bounds, Node node){
-        node.setTranslateX(bounds.getMinX() + 10);
-        if(node instanceof Label){
-            ((Label) node).textProperty().setValue(String.valueOf((int) speedScaleSlider.getValue()));
+    /**
+     * binds the lable text to the slider value and shifts circle to new loctation
+     */
+    private void updateSpeedLabel(){
+        Bounds bounds = speedScaleSlider.lookup(".thumb").getBoundsInParent();
+
+        circleSpeed.setTranslateX(bounds.getMinX() + 10);
+        lblSpeedNum.setTranslateX(bounds.getMinX() + 10);
+
+        lblSpeedNum.textProperty().setValue(
+                String.valueOf((int) speedScaleSlider.getValue()));
+
+        if(speedScaleSlider.getValue() >= 10){
+            lblSpeedNum.setScaleX(0.8);
+            lblSpeedNum.setScaleY(0.8);
+        }else{
+            lblSpeedNum.setScaleX(1);
+            lblSpeedNum.setScaleY(1);
         }
     }
 
+    /**
+     * binds the lable text to the slider value and shifts circle to new loctation
+     */
+    private void updateBoatsLabel(){
+        Bounds bounds = boatsInRaceSlider.lookup(".thumb").getBoundsInParent();
+
+        circleBoats.setTranslateX(bounds.getMinX() + 10);
+        lblBoatsNum.setTranslateX(bounds.getMinX() + 10);
+
+        lblBoatsNum.textProperty().setValue(
+                String.valueOf((int) boatsInRaceSlider.getValue()));
+    }
+
+    /**
+     * creates maps from XML files
+     */
     private void setUpMaps(){
         availableCourseMaps.add(new CourseMap("AC35","24:59"));
         availableCourseMaps.add(new CourseMap("AC33","28:59"));
@@ -433,6 +441,9 @@ public class MainMenuController implements Initializable{
         availableCourseMaps.add(new CourseMap("Athens","29:42"));
     }
 
+    /**
+     * called when next arrow pressed, changes map in menu
+     */
     @FXML private void nextMap(){
         previousCourseMap = availableCourseMaps.get(currentMapIndex);
         if(currentMapIndex == availableCourseMaps.size() - 1){
@@ -443,6 +454,9 @@ public class MainMenuController implements Initializable{
         updateMap();
     }
 
+    /**
+     * called when back arrow pressed, changes map in menu
+     */
     @FXML private void previousMap(){
         previousCourseMap = availableCourseMaps.get(currentMapIndex);
         if(currentMapIndex == 0){
