@@ -19,11 +19,9 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import seng302.data.registration.ServerFullException;
 import seng302.models.*;
-import seng302.utilities.AnimationUtils;
-import seng302.utilities.ConnectionUtils;
-import seng302.utilities.DisplaySwitcher;
-import seng302.utilities.DisplayUtils;
+import seng302.utilities.*;
 import seng302.views.AvailableRace;
 import seng302.views.CourseMap;
 
@@ -87,6 +85,7 @@ public class MainMenuController implements Initializable{
     public static double paneHeight;
     public static double paneWidth;
     private AnimationTimer timer;
+    private MainMenuClient client;
 
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
 
@@ -168,10 +167,11 @@ public class MainMenuController implements Initializable{
             timer.stop();
         }}
 
-    @FXML private void loadJoinPane(){
+    @FXML private void loadJoinPane() throws ServerFullException, NoConnectionToServerException {
         setUpAvailableRaceTable();
         AnimationUtils.switchPaneFade(onlinePane, joinRacePane);
         AnimationUtils.fadeNodeCustom(imvLogoCircle, 0);
+        client = new MainMenuClient();
     }
 
     private void setUpAvailableRaceTable(){

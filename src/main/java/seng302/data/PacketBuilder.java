@@ -33,7 +33,7 @@ public abstract class PacketBuilder {
      * @param item item to add
      * @param numBytes number of bytes to split the int into
      */
-    private void addIntIntoByteArray(byte[] array, int start, long item, int numBytes){
+    protected void addIntIntoByteArray(byte[] array, int start, long item, int numBytes){
         for (int i = 0; i < numBytes; i ++) {
             array[start + i] = (byte) (item >> i * 8);
         }

@@ -10,6 +10,7 @@ import seng302.models.ServerOptions;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.*;
 
 import static seng302.data.AC35StreamXMLMessage.BOAT_XML_MESSAGE;
@@ -317,9 +318,12 @@ public class Server implements Runnable, Observer {
                 break;
             case REQUEST_RUNNING_GAMES:
                 System.out.println("Server: Client attempted to connect as menu");
+                byte[] allGames = new byte[availableRaces.size() * AC35StreamMessage.HOST_GAME_MESSAGE.getLength()];
+                ByteBuffer target = ByteBuffer.wrap(allGames);
                 for(byte[] race : availableRaces){
-                    connectionManager.sendToClient(nextViewerID, race);
+                    target.put(race);
                 }
+                System.out.println(allGames);
                 break;
         }
     }
