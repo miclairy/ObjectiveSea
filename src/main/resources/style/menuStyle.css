@@ -66,7 +66,6 @@
 }
 
 #btnJoinGame{
-    -fx-font-weight: bold;
     -fx-padding: 10 153 10 25;
     -fx-background-color:  white;
     -fx-border-radius: 4;
@@ -79,7 +78,6 @@
 }
 
 #btnStartRace{
-    -fx-font-weight: bold;
     -fx-padding: 10 60 10 25;
     -fx-background-color:  white;
     -fx-border-radius: 4;
@@ -92,7 +90,6 @@
 }
 
 #btnLoadMap{
-    -fx-font-weight: bold;
     -fx-padding: 10 60 10 25;
     -fx-background-color:  white;
     -fx-border-radius: 4;
@@ -142,7 +139,6 @@
 }
 
 #btnSinglePlay{
-    -fx-font-weight: bold;
     -fx-padding: 10 193 10 25;
     -fx-background-color:  white;
     -fx-border-radius: 4;
@@ -155,7 +151,6 @@
 }
 
 #btnGetStarted{
-    -fx-font-weight: bold;
     -fx-text-fill: #919191;
     -fx-padding: 10 50 10 25;
     -fx-background-color: #fafafa;

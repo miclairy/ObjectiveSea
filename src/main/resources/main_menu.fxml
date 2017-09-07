@@ -333,7 +333,7 @@
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             </rowConstraints>
                             <children>
-                                <Button fx:id="btnPractiseStart" mnemonicParsing="false" onAction="#loadPracticeStart" text="Practice Start" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                                <Button fx:id="btnPractiseStart" maxWidth="249.0" minWidth="249.0" mnemonicParsing="false" onAction="#loadPracticeStart" prefWidth="249.0" text="Practice Start" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                                     <padding>
                                         <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                                     </padding>
@@ -400,7 +400,7 @@
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             </rowConstraints>
                             <children>
-                                <Button fx:id="btnCreateGame" mnemonicParsing="false" onAction="#loadHostOptionsPane" text="Host" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                                <Button fx:id="btnCreateGame" maxWidth="249.0" minWidth="249.0" mnemonicParsing="false" onAction="#loadHostOptionsPane" prefWidth="249.0" text="Host" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                                     <padding>
                                         <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                                     </padding>
@@ -437,7 +437,7 @@
                                         <Insets left="52.0" right="350.0" top="140.0" />
                                     </GridPane.margin>
                                 </Label>
-                                <Button fx:id="btnJoinGame" layoutX="90.0" layoutY="250.0" mnemonicParsing="false" onAction="#loadJoinPane" text="Join a Race" GridPane.rowIndex="1">
+                                <Button fx:id="btnJoinGame" layoutX="90.0" layoutY="250.0" maxWidth="249.0" minWidth="249.0" mnemonicParsing="false" onAction="#loadJoinPane" prefWidth="249.0" text="Join a Race" GridPane.rowIndex="1">
                                     <padding>
                                         <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                                     </padding>
@@ -470,18 +470,5 @@
                 <Insets bottom="20.0" right="20.0" />
             </StackPane.margin>
         </ImageView>
-      <Button fx:id="btnGetStarted" mnemonicParsing="false" onAction="#showMenu" text="Let's Go!" StackPane.alignment="TOP_CENTER">
-         <StackPane.margin>
-            <Insets top="450.0" />
-         </StackPane.margin>
-      </Button>
-      <ImageView fx:id="imvLogoCircle" fitHeight="272.0" fitWidth="309.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="TOP_CENTER">
-         <image>
-            <Image url="@graphics/icon.png" />
-         </image>
-         <StackPane.margin>
-            <Insets top="150.0" />
-         </StackPane.margin>
-      </ImageView>
     </children>
 </StackPane>
