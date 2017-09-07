@@ -97,41 +97,25 @@ public class Coordinate {
      * Calculates the lat and long based on given distance and bearing from current lat,long
      * @param distance the distance between the two coordinates
      * @param bearing the bearing to the next coordinate in degrees
+     * @param radius the radius of the sphere
      * @return the new coordinate
      */
-    public Coordinate coordAt(double distance, double bearing){
+    public Coordinate coordAt(double distance, double bearing, double radius){
         bearing = Math.toRadians(bearing);
         double lat1 = Math.toRadians(lat);
         double long1 = Math.toRadians(lon);
 
-        double lat2 = Math.asin( Math.sin(lat1)*Math.cos(distance/EARTH_RADIUS_IN_NAUTICAL_MILES) + Math.cos(lat1)*Math.sin(distance/EARTH_RADIUS_IN_NAUTICAL_MILES)*Math.cos(bearing));
+        double lat2 = Math.asin( Math.sin(lat1)*Math.cos(distance/radius) + Math.cos(lat1)*Math.sin(distance/radius)*Math.cos(bearing));
 
-        double long2 = long1 + Math.atan2(Math.sin(bearing)*Math.sin(distance/EARTH_RADIUS_IN_NAUTICAL_MILES)*Math.cos(lat1), Math.cos(distance/EARTH_RADIUS_IN_NAUTICAL_MILES)-Math.sin(lat1)*Math.sin(lat2));
+        double long2 = long1 + Math.atan2(Math.sin(bearing)*Math.sin(distance/radius)*Math.cos(lat1), Math.cos(distance/radius)-Math.sin(lat1)*Math.sin(lat2));
 
         lat2 = Math.toDegrees(lat2);
         long2 = Math.toDegrees(long2);
         return new Coordinate(lat2,long2);
     }
 
-    /**
-     * Calculates the lat and long based on given distance and bearing from current lat,long on a Euclidean (flat) plane.
-     * @param distance the distance between the two coordinates
-     * @param bearing the bearing to the next coordinate in degrees
-     * @return the new coordinate
-     * #TODO; UNIT TEST
-     */
-    public Coordinate euclideanCoordAt(double distance, double bearing){
-        bearing = Math.toRadians(bearing);
-        double lat1 = Math.toRadians(lat);
-        double long1 = Math.toRadians(lon);
-
-        double lat2 = Math.asin( Math.sin(lat1)*Math.cos(distance) + Math.cos(lat1)*Math.sin(distance)*Math.cos(bearing));
-
-        double long2 = long1 + Math.atan2(Math.sin(bearing)*Math.sin(distance)*Math.cos(lat1), Math.cos(distance)-Math.sin(lat1)*Math.sin(lat2));
-
-        lat2 = Math.toDegrees(lat2);
-        long2 = Math.toDegrees(long2);
-        return new Coordinate(lat2,long2);
+    public Coordinate coordAt(double distance, double bearing){
+        return coordAt(distance, bearing, EARTH_RADIUS_IN_NAUTICAL_MILES);
     }
 
     /**
