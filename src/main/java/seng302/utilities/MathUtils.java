@@ -241,10 +241,10 @@ public class MathUtils {
      * @return heading between points
      */
     public static double getHeadingBetweenTwoCoodinates(CanvasCoordinate start, CanvasCoordinate end){
-        double bearing = Math.toDegrees(Math.atan2(start.getX() - end.getX(), start.getY() - end.getY()));
+        double bearing = Math.toDegrees(Math.atan2(start.getY() - end.getY(), start.getX() - end.getX()));
         if (bearing < 0){
             bearing += 360;
         }
-        return bearing;
+        return (bearing + 270) % 360;
     }
 }

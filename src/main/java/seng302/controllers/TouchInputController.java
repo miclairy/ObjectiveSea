@@ -62,17 +62,20 @@ import static java.lang.Math.abs;
                 CanvasCoordinate swipeEnd = new CanvasCoordinate(swipe.getScreenX(), swipe.getScreenY());
                 displayTouchController.displaySwipe(swipeEnd, swipeStart);
                 double swipeBearing = MathUtils.getHeadingBetweenTwoCoodinates(swipeStart, swipeEnd);
-                double swipeBearingReverse = MathUtils.getHeadingBetweenTwoCoodinates(swipeEnd, swipeStart);
-                swipeAction(swipe, swipeBearing, swipeBearingReverse);
+                swipeAction(swipe, swipeBearing);
             });
         }
 
-        private void swipeAction(ScrollEvent swipe, double swipeBearing, double swipeBearingReverse){
+        private void swipeAction(ScrollEvent swipe, double swipeBearing){
             double boatHeading = race.getBoatById(clientID).getHeading();
-            double headingDifference = abs(boatHeading - swipeBearing);
-            double headingDifferenceReverse = abs(boatHeading - swipeBearingReverse);
-            System.out.println(boatHeading + " swipe "  + swipeBearing + " difference " + headingDifference + " " + headingDifferenceReverse);
-            if (headingDifference <= 45 || headingDifferenceReverse <= 45){
+            double headingDifference = (boatHeading - swipeBearing) % 360;
+//            if (headingDifference < -180.0)
+//                headingDifference += 360.0;
+//            else if (headingDifference >= 180.0)
+//                headingDifference -= 360.0;
+            double tangentHeadingDistance = ((boatHeading + 90) % 360 - swipeBearing) % 360;
+            System.out.println(boatHeading + " swipe "  + swipeBearing + " difference " + headingDifference);
+            if (abs(headingDifference) <= abs(tangentHeadingDistance)){
                 commandInt = BoatAction.SAILS_IN.getType();
             } else {
                 commandInt = BoatAction.TACK_GYBE.getType();
