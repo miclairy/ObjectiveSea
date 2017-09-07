@@ -1,6 +1,7 @@
 package seng302.utilities;
 
 import seng302.controllers.Client;
+import seng302.controllers.GameClient;
 import seng302.controllers.Server;
 
 import java.io.BufferedReader;
@@ -9,7 +10,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 public class ConnectionUtils {
-    private static Client client;
+    private static GameClient client;
     private static Server server;
     private static final String IP_REGEX = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
 
@@ -35,7 +36,7 @@ public class ConnectionUtils {
         return client;
     }
 
-    public static void setClient(Client client) {
+    public static void setClient(GameClient client) {
         ConnectionUtils.client = client;
     }
 

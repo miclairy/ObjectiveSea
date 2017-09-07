@@ -145,7 +145,7 @@ public class Controller implements Initializable, Observer {
         anchorWidth = canvasAnchor.getWidth();
         anchorHeight = canvasAnchor.getHeight();
 
-        race = Client.getRace();
+        race = GameClient.getRace();
         race.addObserver(this);
         Course course = race.getCourse();
         course.initCourseLatLon();

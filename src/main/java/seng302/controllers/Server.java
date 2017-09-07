@@ -28,6 +28,8 @@ public class Server implements Runnable, Observer {
     private Map<Boat, Integer> lastMarkRoundingSent = new HashMap<>();
     private int nextViewerID = 0;
 
+    private ArrayList<byte[]> availableRaces = new ArrayList<>();
+
     private RaceUpdater raceUpdater;
     private Thread raceUpdaterThread;
     private ConnectionManager connectionManager;
@@ -278,7 +280,12 @@ public class Server implements Runnable, Observer {
                 setBoatToDNF((int) arg);
             }
         } else if(observable instanceof ServerListener){
-            manageRegistration((ServerListener) observable, (RegistrationType) arg);
+            if(arg instanceof  RegistrationType){
+                manageRegistration((ServerListener) observable, (RegistrationType) arg);
+            }else{
+                availableRaces.add((byte[])arg);
+                System.out.println(availableRaces.size());
+            }
         }
     }
 
@@ -307,6 +314,12 @@ public class Server implements Runnable, Observer {
                 break;
             case TUTORIAL:
                 System.out.println("Server: Client attempted to connect as control tutorial, ignoring.");
+                break;
+            case REQUEST_RUNNING_GAMES:
+                System.out.println("Server: Client attempted to connect as menu");
+                for(byte[] race : availableRaces){
+                    connectionManager.sendToClient(nextViewerID, race);
+                }
                 break;
         }
     }

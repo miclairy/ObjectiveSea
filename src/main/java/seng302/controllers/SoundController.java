@@ -20,7 +20,7 @@ public class SoundController implements Runnable {
     private boolean firstPlaceTaken = false;
     private boolean lastPlace = false;
     private int clientID;
-    private Race race = Client.getRace();
+    private Race race = GameClient.getRace();
     private int noOfBoats = race.getCompetitors().size();
     private boolean running;
 

@@ -7,7 +7,6 @@ import seng302.data.registration.RegistrationType;
 import seng302.models.Boat;
 import seng302.models.PolarTable;
 import seng302.models.Race;
-import seng302.utilities.ConnectionUtils;
 import seng302.utilities.PolarReader;
 
 import java.io.DataInput;
@@ -58,7 +57,7 @@ public class ServerListener extends Receiver implements Runnable{
                 if (checkCRC(header, body, crc)) {
                     switch (messageType) {
                         case HOST_GAME_MESSAGE:
-                            parseHostGameMessage(body);
+                            recordHostGameMessage(body);
                             break;
                         case REGISTRATION_REQUEST:
                             parseRegistrationRequestMessage(body);
@@ -79,10 +78,10 @@ public class ServerListener extends Receiver implements Runnable{
         }
     }
 
-    private void parseHostGameMessage(byte[] body){
+    private void recordHostGameMessage(byte[] body){
         System.out.println("Server: Recording on VM");
-        long ipAddress = byteArrayRangeToLong(body, HOST_GAME_IP.getStartIndex(), HOST_GAME_IP.getEndIndex());
-        String stringIpAddress = ConnectionUtils.ipLongToString(ipAddress);
+        setChanged();
+        notifyObservers(body);
     }
 
     /**

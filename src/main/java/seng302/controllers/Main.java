@@ -23,7 +23,7 @@ import java.io.IOException;
 
 
 public class Main extends Application {
-    private static Client client;
+    private static GameClient client;
     private Server server;
     private Stage primaryStage;
     private DisplaySwitcher displaySwitcher;
@@ -111,7 +111,7 @@ public class Main extends Application {
         serverThread.start();
     }
 
-    public static Client getClient() {
+    public static GameClient getClient() {
         return client;
     }
 
@@ -126,7 +126,7 @@ public class Main extends Application {
     public void loadRaceView(ClientOptions options) {
         displaySwitcher.loadRaceView(options);
         if (options.isParticipant()) {
-            UserInputController userInputController = new UserInputController(DisplaySwitcher.getScene(), Client.getRace());
+            UserInputController userInputController = new UserInputController(DisplaySwitcher.getScene(), GameClient.getRace());
             client.setUserInputController(userInputController);
             userInputController.addObserver(client);
         }
@@ -158,7 +158,7 @@ public class Main extends Application {
      */
     public boolean startClient(ClientOptions options){
         try {
-            client = new Client(options);
+            client = new GameClient(options);
             ConnectionUtils.setClient(client);
             Thread clientThread = new Thread(client);
             clientThread.setName("Client");

@@ -26,46 +26,26 @@ import java.util.Observer;
  * Created by mjt169 on 18/07/17.
  *
  */
-public class Client implements Runnable, Observer {
+public abstract class Client implements Runnable, Observer {
 
 
     private int MAX_CONNECTION_ATTEMPTS = 200;
     private double CONNECTION_TIMEOUT = TimeUtils.secondsToMilliseconds(10.0);
     private int WAIT_MILLISECONDS = 10;
 
-    private static Race race;
-    private ClientListener clientListener;
-    private ClientPacketBuilder packetBuilder;
-    private ClientSender sender;
-    private Map<Integer, Boat> potentialCompetitors;
-    private UserInputController userInputController;
-    private int clientID;
-    private ClientOptions options;
+    protected ClientListener clientListener;
+    protected ClientPacketBuilder packetBuilder;
+    protected ClientSender sender;
     Thread dataStreamReaderThread;
-    private RegistrationResponse serverRegistrationResponse;
+    protected RegistrationResponse serverRegistrationResponse;
+    protected int clientID;
 
-    private static List<Integer> tutorialKeys = new ArrayList<Integer>();
-    private static Runnable tutorialFunction = null;
-
-    public Client(ClientOptions options) throws ServerFullException, NoConnectionToServerException {
-        this.packetBuilder = new ClientPacketBuilder();
-        this.options = options;
-        setUpDataStreamReader();
-        System.out.println("Client: Waiting for connection to Server");
-        manageWaitingConnection();
-        RegistrationType regoType = options.isParticipant() ? RegistrationType.PLAYER : RegistrationType.SPECTATOR;
-        System.out.println("Client: Connected to Server");
-        this.sender = new ClientSender(clientListener.getClientSocket());
-        sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
-        System.out.println("Client: Sent Registration Request");
-        manageServerResponse();
-    }
 
     /**
      * Waits for the server to accept the socket connection
      * @throws NoConnectionToServerException if we timeout whilst waiting for the connection
      */
-    private void manageWaitingConnection() throws NoConnectionToServerException {
+    protected void manageWaitingConnection() throws NoConnectionToServerException {
         int connectionAttempts = 0;
         while(clientListener.getClientSocket() == null) {
             if(clientListener.isHasConnectionFailed()){
@@ -90,7 +70,7 @@ public class Client implements Runnable, Observer {
      * @throws ServerFullException if the Response from the server was received, but the server was full
      * @throws NoConnectionToServerException if we timeout whilst waiting for the response
      */
-    private void manageServerResponse() throws ServerFullException, NoConnectionToServerException {
+    protected void manageServerResponse() throws ServerFullException, NoConnectionToServerException {
         double waitTime = 0;
         while (serverRegistrationResponse == null) {
             try {
@@ -117,15 +97,15 @@ public class Client implements Runnable, Observer {
         }
     }
 
-    private void setUpDataStreamReader(){
-        this.clientListener = new ClientListener(options.getServerAddress(), options.getServerPort());
+    protected void setUpDataStreamReader(String serverAddress, int serverPort){
+        this.clientListener = new ClientListener(serverAddress, serverPort);
         dataStreamReaderThread = new Thread(clientListener);
         dataStreamReaderThread.setName("ClientListener");
         dataStreamReaderThread.start();
         clientListener.addObserver(this);
     }
 
-    private void stopDataStreamReader(){
+    protected void stopDataStreamReader(){
         if(dataStreamReaderThread != null){
             dataStreamReaderThread.stop();
             this.clientListener = null;
@@ -133,100 +113,11 @@ public class Client implements Runnable, Observer {
         }
     }
 
-    @Override
-    public void run() {
-        System.out.println("Client: Successfully Joined Game");
-        waitForRace();
-    }
-
-    /**
-     * Waits for the race to be able to be read in
-     */
-    public void waitForRace(){
-        while(clientListener.getRace() == null){
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        race = clientListener.getRace();
-    }
-
-    /**
-     * observing UserInputController and clientListener
-     * @param o
-     */
-    @Override
-    public void update(Observable o, Object arg) {
-        if (o == clientListener) {
-            if (arg instanceof ArrayList) {
-                ArrayList<Boat> boats = (ArrayList<Boat>) arg;
-                potentialCompetitors = new HashMap<>();
-                for (Boat boat : boats) {
-                    potentialCompetitors.put(boat.getId(), boat);
-                }
-            } else if (arg instanceof Race) {
-                Race newRace = (Race) arg;
-                Race oldRace = clientListener.getRace();
-                for (int newId : newRace.getCompetitorIds()) {
-                    if (!oldRace.getCompetitorIds().contains(newId)) {
-                        oldRace.addCompetitor(potentialCompetitors.get(newId));
-                    }
-                }
-            } else if (arg instanceof RegistrationResponse) {
-                serverRegistrationResponse = (RegistrationResponse) arg;
-            }
-        } else if (o == userInputController){
-            sendBoatCommandPacket();
-        }
-    }
-
-    /**
-     * sends boat command packet to server. Sends keypress and runs tutorial callback function if required.
-     */
-    private void sendBoatCommandPacket(){
-        if(tutorialKeys.contains(userInputController.getCommandInt())) {
-            tutorialFunction.run();
-        }
-        byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
-        sender.sendToServer(boatCommandPacket);
-
-    }
-
-    public static void setTutorialActions(List<KeyCode> keys, Runnable callbackFunction){
-        for(KeyCode key : keys){
-            tutorialKeys.add(BoatAction.getTypeFromKeyCode(key));
-        }
-        tutorialFunction = callbackFunction;
-    }
-
-    public static void clearTutorialAction(){
-        tutorialKeys.clear();
-        tutorialFunction = null;
-    }
-
-    public void setUserInputController(UserInputController userInputController) {
-        this.userInputController = userInputController;
-        userInputController.setClientID(clientID);
-    }
-
-    public static Race getRace() {
-        return race;
-    }
-
-    public int getClientID() {
-        return clientID;
-    }
-
-    public void initiateClientDisconnect() {
-        clientListener.disconnectClient();
-        race.getBoatById(clientID).setStatus(BoatStatus.DNF);
-    }
-
     public void updateVM(Double speedScale, Integer minParticipants, Integer serverPort, String publicIp, int currentCourseIndex){
         byte[] registerGamePacket = packetBuilder.createGameRegistrationPacket(speedScale, minParticipants, serverPort, publicIp, currentCourseIndex);
         System.out.println("Client: Updating VM");
         sender.sendToServer(registerGamePacket);
     }
+
+
 }
