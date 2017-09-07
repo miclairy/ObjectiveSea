@@ -43,7 +43,7 @@ public class DisplayTouchController {
      */
     private Circle createHighlightCircle(TouchPoint point){
         Circle circle = new Circle();
-        circle.setRadius(40);
+        circle.setRadius(10);
         circle.setId("tapCircle");
         circle.setCenterX(point.getX());
         circle.setCenterY(point.getY());

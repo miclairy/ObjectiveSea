@@ -43,7 +43,7 @@ import static java.lang.Math.abs;
         }
 
         private void touchEventListener() {
-//            scene.addEventFilter(TouchEvent.ANY, touch -> {
+//            scene.addEventFilter(TouchEvent.TOUCH_STATIONARY, touch -> {
 //                checkTouchMoved(touch);
 //                if ( consumedTouchEvents.contains(touch.getEventType())) {
 //                    touch.consume();
@@ -68,14 +68,13 @@ import static java.lang.Math.abs;
 
         private void swipeAction(ScrollEvent swipe, double swipeBearing){
             double boatHeading = race.getBoatById(clientID).getHeading();
-            double headingDifference = (boatHeading - swipeBearing) % 360;
+            double headingDifference = abs(boatHeading - swipeBearing) % 180;
 //            if (headingDifference < -180.0)
 //                headingDifference += 360.0;
 //            else if (headingDifference >= 180.0)
 //                headingDifference -= 360.0;
-            double tangentHeadingDistance = ((boatHeading + 90) % 360 - swipeBearing) % 360;
             System.out.println(boatHeading + " swipe "  + swipeBearing + " difference " + headingDifference);
-            if (abs(headingDifference) <= abs(tangentHeadingDistance)){
+            if (headingDifference <= 15 || headingDifference >= 165){
                 commandInt = BoatAction.SAILS_IN.getType();
             } else {
                 commandInt = BoatAction.TACK_GYBE.getType();
