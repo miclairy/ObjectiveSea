@@ -6,6 +6,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
 
@@ -215,7 +216,6 @@ public class AnimationUtils {
      * @param visible whether or not the node is visible
      */
     public static void shiftPaneNodes(Node node, int amount, boolean visible){
-        node.setVisible(true);
         TranslateTransition translateTransition = new TranslateTransition(new Duration(200), node);
         translateTransition.setByX(amount);
         translateTransition.setInterpolator(Interpolator.EASE_IN);

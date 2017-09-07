@@ -149,8 +149,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
 
         redrawCourse();
-
-        //courseRouteArrows.drawRaceRoute();
         race.addObserver(this);
     }
 
@@ -359,9 +357,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if(boatDisplay.getBoat().getId() == Main.getClient().getClientID()){
                 currentUserBoatDisplay = boatDisplay;
                 scoreBoardController.highlightUserBoat();
-                if(!options.isTutorial()){
-                    controller.addUserBoat();
-                }
             }
         }
     }
