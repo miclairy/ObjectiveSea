@@ -49,6 +49,8 @@ public enum AC35StreamMessage {
                 return YACHT_EVENT_CODE;
             case 103:
                 return BOAT_STATE_MESSAGE;
+            case 108:
+                return HOST_GAME_MESSAGE;
             default:
                 return UNKNOWN;
         }

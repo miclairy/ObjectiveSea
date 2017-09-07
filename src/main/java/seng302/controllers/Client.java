@@ -12,6 +12,7 @@ import seng302.data.registration.ServerFullException;
 import seng302.models.Boat;
 import seng302.models.ClientOptions;
 import seng302.models.Race;
+import seng302.utilities.ConnectionUtils;
 import seng302.utilities.NoConnectionToServerException;
 import seng302.utilities.TimeUtils;
 
@@ -225,6 +226,7 @@ public class Client implements Runnable, Observer {
 
     public void updateVM(Double speedScale, Integer minParticipants, Integer serverPort, String publicIp, int currentCourseIndex){
         byte[] registerGamePacket = packetBuilder.createGameRegistrationPacket(speedScale, minParticipants, serverPort, publicIp, currentCourseIndex);
+        System.out.println("Client: Updating VM");
         sender.sendToServer(registerGamePacket);
     }
 }

@@ -1,6 +1,7 @@
 package seng302.data;
 
 import seng302.data.registration.RegistrationType;
+import seng302.utilities.ConnectionUtils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -29,8 +30,9 @@ public class ClientPacketBuilder extends PacketBuilder {
 
     public byte[] createGameRegistrationPacket(Double speedScale, Integer minParticipants, Integer serverPort, String publicIp, int currentCourseIndex) {
         byte[] header = createHeader(HOST_GAME_MESSAGE);
-        byte[] body = new byte[13];
-        addFieldToByteArray(body, HOST_GAME_IP, Receiver.byteArrayRangeToLong(publicIp.getBytes(), 0, publicIp.getBytes().length));
+        byte[] body = new byte[HOST_GAME_MESSAGE.getLength()];
+        long ip = ConnectionUtils.ipStringToLong(publicIp);
+        addFieldToByteArray(body, HOST_GAME_IP, ip);
         addFieldToByteArray(body, HOST_GAME_PORT, serverPort);
         addFieldToByteArray(body, HOST_GAME_MAP, currentCourseIndex);
         addFieldToByteArray(body, HOST_GAME_SPEED, speedScale.longValue());

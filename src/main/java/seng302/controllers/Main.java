@@ -146,7 +146,7 @@ public class Main extends Application {
         serverOptions.setRaceXML(course);
         setupServer(serverOptions);
         startClient(clientOptions);
-        // client.updateVM(serverOptions.getSpeedScale(), serverOptions.getMinParticipants(), clientOptions.getServerPort(), ConnectionUtils.getPublicIp(), currentCourseIndex);
+        client.updateVM(serverOptions.getSpeedScale(), serverOptions.getMinParticipants(), clientOptions.getServerPort(), ConnectionUtils.getPublicIp(), currentCourseIndex);
     }
 
     /**

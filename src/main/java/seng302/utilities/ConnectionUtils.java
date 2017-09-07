@@ -70,4 +70,35 @@ public class ConnectionUtils {
             return null;
         }
     }
+
+    public static String ipLongToString(long longIp){
+        String ip = "";
+        for (int i = 0; i < 4; i++){
+            int num = (int)(longIp / Math.pow(256, (3 - i)));
+            longIp = longIp - (long)(num * Math.pow(256, (3 - i)));
+            if (i == 0){
+                ip = String.valueOf(num);
+            } else {
+                ip = ip + "." + String.valueOf(num);
+            }
+        }
+        return ip;
+    }
+
+    /**
+     * Converts an ip string to a long to be sent in a packet
+     * @param ip ip string
+     * @return long that corresponds to ip address
+     */
+    public static long ipStringToLong(String ip){
+        String[] ipBytes;
+        double num = 0;
+        if (ip != null){
+            ipBytes = ip.split("\\.");
+            for (int i = ipBytes.length - 1; i >= 0; i--){
+                num += ((Integer.parseInt(ipBytes[i]) % 256) * Math.pow(256, (3 - i)));
+            }
+        }
+        return (long) num;
+    }
 }
