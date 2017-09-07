@@ -1,6 +1,7 @@
 package seng302.controllers;
 
 import com.sun.org.apache.regexp.internal.RE;
+import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -48,6 +49,7 @@ public class ScoreBoardController {
     private SelectionController selectionController;
 
     //FXML fields
+    @FXML private TabPane scoreBoard;
     @FXML private CheckBox fpsToggle;
     @FXML private CheckBox coursePathToggle;
     @FXML private ListView<String> placings;
@@ -75,6 +77,7 @@ public class ScoreBoardController {
     @FXML private TableColumn<Boat, String> columnSpeed;
     @FXML private TableColumn<Boat, String> columnStatus;
     @FXML private CheckBox VirtualStartlineToggle;
+    @FXML private ProgressBar boatHealth;
 
     private ObservableList<Boat> competitors = FXCollections.observableArrayList();
 
@@ -144,6 +147,7 @@ public class ScoreBoardController {
 
         addButtonListeners(btnTrack);
         addButtonListeners(btnExit);
+        scoreBoard.getSelectionModel().select(1);
     }
 
     /**
@@ -162,6 +166,16 @@ public class ScoreBoardController {
         columnSpeed.setStyle( "-fx-alignment: CENTER;");
         columnStatus.setStyle( "-fx-alignment: CENTER;");
         addTableListeners();
+    }
+
+    private void setUpProgressBar(){
+        raceViewController.getCurrentUserBoatDisplay().getBoat().getHealthProperty().addListener((obs, oldStatus, newStatus) ->
+                Platform.runLater(() -> updateHealth((Double)newStatus)));
+    }
+
+
+    private void updateHealth(Double value){
+        boatHealth.setProgress(value);
     }
 
     /**
@@ -291,6 +305,7 @@ public class ScoreBoardController {
             BoatDisplay userBoat = raceViewController.getCurrentUserBoatDisplay();
             if(userBoat != null){
                 tblPlacings.getSelectionModel().select(userBoat.getBoat());
+                setUpProgressBar();
             }
         }
     }
