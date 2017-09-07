@@ -19,6 +19,7 @@ public class ServerOptions {
     private String raceXML;
     private boolean isTutorial;
     private Integer numRacesToRun;
+    private boolean hasAI;
 
     /**
      * Constructor with default options
@@ -30,6 +31,7 @@ public class ServerOptions {
         raceXML = DEFAULT_COURSE;
         isTutorial = false;
         numRacesToRun = 1;
+        hasAI = false;
     }
 
     public Double getSpeedScale() {
@@ -103,5 +105,13 @@ public class ServerOptions {
      */
     public Boolean alwaysRerun() {
         return numRacesToRun == -1;
+    }
+
+    public boolean hasAI() {
+        return hasAI;
+    }
+
+    public void setHasAI(boolean hasAI) {
+        this.hasAI = hasAI;
     }
 }

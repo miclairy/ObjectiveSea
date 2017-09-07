@@ -25,8 +25,8 @@ public class RaceUpdater implements Runnable {
 
     private final double SECONDS_PER_UPDATE = 0.02;
     private double scaleFactor = 1;
-    private final double WARNING_SIGNAL_TIME_IN_MS = (1000 * 60 * 3);
-    private final double PREPATORY_SIGNAL_TIME_IN_MS = (1000 * 60 * 2);
+    private final double WARNING_SIGNAL_TIME_IN_MS = (1000 * 60 * 6);
+    private final double PREPATORY_SIGNAL_TIME_IN_MS = (1000 * 60 * 5);
     private final double MIN_WIND_SPEED = 6.0;
     private final double MAX_WIND_SPEED = 24.0;
     private final double MAX_EXTRA_TIME = TimeUtils.secondsToMilliseconds(TimeUtils.convertMinutesToSeconds(10.0));
@@ -102,6 +102,9 @@ public class RaceUpdater implements Runnable {
         Course course = race.getCourse();
         boolean oneBoatHasFinished = false;
         double timeOfFirstFinisher = 0;
+
+        int aiIndex = -1;
+
         while (!race.getRaceStatus().isRaceEndedStatus() && serverRunning) {
             boolean atLeastOneBoatNotFinished = false;
             double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
@@ -134,15 +137,24 @@ public class RaceUpdater implements Runnable {
                     }
                 }
                 if(race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
+                    Double raceHoursPassed = TimeUtils.convertSecondsToHours(raceSecondsPassed);
                     if (collisionManager.boatIsInCollision(boat)) {
 
                         //revert the last location update as it was a collision
-                        updateLocation(-TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
+                        updateLocation(-raceHoursPassed, boat);
                         boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
                     }
                     adjustSpeed(boat);
-                    updateLocation(TimeUtils.convertSecondsToHours(raceSecondsPassed), boat);
-                    boat.updateBoatHeading(raceSecondsPassed);
+                    if(boat.isAI()){
+                        CompoundMark nextMark = course.getCourseOrder().get(boat.getLastRoundedMarkIndex()+1);
+                        Double headingToNextMark = boat.getCurrentPosition().headingToCoordinate(nextMark.getPosition());
+                        boat.setHeading(headingToNextMark);
+                    } else{
+                        boat.updateBoatHeading(raceSecondsPassed);
+                    }
+
+                    updateLocation(raceHoursPassed, boat);
+
                     if (course.getCourseOrder().size() > 0 && race.getRaceStatus().equals(STARTED)) {
                         checkMarkRounding(boat, course);
                     }
@@ -552,5 +564,11 @@ public class RaceUpdater implements Runnable {
 
     public CollisionManager getCollisionManager() {
         return collisionManager;
+    }
+
+    public void addAI() {
+        Integer aiID = addCompetitor();
+        Boat aiBoat = race.getBoatById(aiID);
+        aiBoat.setAI(true);
     }
 }

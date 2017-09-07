@@ -128,7 +128,7 @@ public class MainMenuController implements Initializable{
         DisplaySwitcher.getGameSounds().stopEndlessMusic();
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.TUTORIAL);
-        main.startHostedRace("GuidedPractice-course.xml", DEFAULT_PORT, true, clientOptions);
+        main.startHostedRace("GuidedPractice-course.xml", DEFAULT_PORT, true, clientOptions, false);
         Thread.sleep(200);
         main.loadRaceView(clientOptions);
         loadTutorialMusic();
@@ -141,7 +141,7 @@ public class MainMenuController implements Initializable{
     @FXML private void loadOfflinePlay() throws Exception{
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.SINGLEPLAYER);
-        main.startHostedRace(selectedCourse, DEFAULT_PORT, false, clientOptions);
+        main.startHostedRace(selectedCourse, DEFAULT_PORT, false, clientOptions, true);
         Thread.sleep(200);
         main.loadRaceView(clientOptions);
         loadSinglePlayerMusic();
@@ -151,7 +151,7 @@ public class MainMenuController implements Initializable{
     @FXML private void loadPracticeStart() throws Exception {
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.PRACTICE);
-        main.startHostedRace("PracticeStart-course.xml", DEFAULT_PORT, false, clientOptions);
+        main.startHostedRace("PracticeStart-course.xml", DEFAULT_PORT, false, clientOptions, false);
         Thread.sleep(200);
         main.loadRaceView(clientOptions);
         loadSinglePlayerMusic();
@@ -165,7 +165,7 @@ public class MainMenuController implements Initializable{
         ClientOptions clientOptions = new ClientOptions();
         Integer port = Integer.parseInt(txtPortNumber.getText());
         clientOptions.setServerPort(port);
-        main.startHostedRace(selectedCourse, port, false, clientOptions);
+        main.startHostedRace(selectedCourse, port, false, clientOptions, false);
         Thread.sleep(200);
         main.loadRaceView(clientOptions);
         loadRealGameSounds();

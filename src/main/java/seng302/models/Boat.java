@@ -86,6 +86,8 @@ public class Boat extends Observable implements Comparable<Boat>{
     private double currRotationAmount;
     private int rotateDirection;
 
+    private boolean isAI = false;
+
     public Boat(Integer id, String name, String nickName, double speed) {
         this.id = id;
         this.name = name;
@@ -810,5 +812,13 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void setSailsNeedUpdate(boolean sailsNeedUpdate) {
         this.sailsNeedUpdate = sailsNeedUpdate;
+    }
+
+    public boolean isAI() {
+        return isAI;
+    }
+
+    public void setAI(boolean AI) {
+        isAI = AI;
     }
 }

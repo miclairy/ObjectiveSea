@@ -51,6 +51,7 @@ public class Server implements Runnable, Observer {
         raceUpdater = new RaceUpdater(options.getRaceXML());
         if(options.isTutorial()) raceUpdater.skipPrerace();
         raceUpdater.setScaleFactor(options.getSpeedScale());
+        if(options.hasAI()) raceUpdater.addAI();
         raceUpdaterThread = new Thread(raceUpdater);
         raceUpdaterThread.setName("Race Updater");
         collisionManager = raceUpdater.getCollisionManager();

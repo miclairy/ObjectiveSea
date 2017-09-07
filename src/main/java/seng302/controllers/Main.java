@@ -131,11 +131,12 @@ public class Main extends Application {
         }
     }
 
-    public void startHostedRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions) throws Exception{
+    public void startHostedRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions, Boolean hasAI) throws Exception{
         ServerOptions serverOptions = new ServerOptions();
         serverOptions.setPort(port);
         serverOptions.setRaceXML(course);
         serverOptions.setTutorial(isTutorial);
+        serverOptions.setHasAI(hasAI);
         setupServer(serverOptions);
         startClient(clientOptions);
     }
