@@ -50,8 +50,6 @@ import static java.lang.Math.abs;
         private void checkTouchMoved(TouchEvent touchEvent) {
             Boat playersBoat = race.getBoatById(clientID);
             if (touchEvent.getTouchPoints().size() == 1) {
-                //displayTouchController.displayTouch(touchEvent.getTouchPoint());
-                //CanvasCoordinate sceneCentreCoordinate = new CanvasCoordinate(scene.getWidth()/2, scene.getHeight()/2);
                 CanvasCoordinate touchPoint = new CanvasCoordinate(touchEvent.getTouchPoint().getSceneX(), touchEvent.getTouchPoint().getSceneY());
                 CanvasCoordinate boatPosition = DisplayUtils.convertFromLatLon(playersBoat.getCurrentPosition());
                 double windAngle = race.getCourse().getWindDirection() + 180;
@@ -244,49 +242,26 @@ import static java.lang.Math.abs;
                 double angleToRotate = MathUtils.getAngleBetweenTwoHeadings(boatHeading, touchAngle);
 //                System.out.println("angle to rotate " + angleToRotate);
 //                if(!(boatHeading > (angleTouch - 3)) && !(boatHeading < (angleTouch + 3))) {
+
+                System.out.println("Boat heading: " + boatHeading);
+                System.out.println("angle of touch: " + angleTouch);
+                double angleToRotate = MathUtils.getAngleBetweenTwoHeadings(boatHeading, angleTouch);
+                System.out.println("angle to rotate " + angleToRotate);
+
                 if(angleToRotate > 6) {
                     System.out.println(checkRotation(boatHeading, touchAngle, windAngle));
                     if (checkRotation(boatHeading, touchAngle, windAngle)) { // checks which action to take (upwind or downwind)
                         //upwind
-                        if ((windAngle > boatHeading && windAngle - 180 < boatHeading && StrictMath.abs(windAngle - 180 - boatHeading) > DELTA) ||
-                                (windAngle < boatHeading && windAngle + 180 < boatHeading && StrictMath.abs(windAngle + 180 - boatHeading) > DELTA)) {
-                            commandInt = 5;
-                            System.out.println("up 5");
-                        } else {
-                            System.out.println("up 6");
-                            commandInt = 6;
-                        }
+                        commandInt = 5;
                     } else {
                         //downwind
-                        if ((windAngle > boatHeading && windAngle - 180 > boatHeading && StrictMath.abs(windAngle - 180 - boatHeading) > DELTA) ||    //3
-                                (windAngle < boatHeading && windAngle + 180 > boatHeading && StrictMath.abs(windAngle + 180 - boatHeading) > DELTA)) {
-                            System.out.println("down 6");
-                            commandInt = 6;
-                        } else {
-                            System.out.println("down 5");
-                            commandInt = 5;
-                        }
+                        commandInt = 6;
                     }
                 } else {
                     commandInt = -1;
                 }*/
 
 
-//                if (!(boatHeading > (angleTouch - 2) && boatHeading < (angleTouch + 2))) {
-//                    if(checkRotation(boatHeading, angleTouch)) {
-//                        //if ((boatHeading < windAngle + 90) || (boatHeading > windAngle - 90)) {
-//                            commandInt = 5;
-////                        } else {
-////                            commandInt = 6;
-////                        }
-//                    } else {
-//                        //if ((boatHeading > windAngle + 90) && (boatHeading < windAngle - 90)) {
-//                            commandInt = 6;
-////                        } else {
-////                            commandInt = 5;
-////                        }
-//                    }
-//                }
                 if (commandInt != -1) {
                     setChanged();
                     notifyObservers();
@@ -303,19 +278,35 @@ import static java.lang.Math.abs;
      * @param windDirection direction of wind from
      * @return a boolean true if action should be upwind, boolean false if action should be downwind
      */
-    public boolean checkRotation(double boatHeading, double touchAngle, double windDirection){
-        double windTo = windDirection + 180;
-        if(boatHeading + 360 < windTo + 360 && boatHeading + 360 > windTo + 180) {// on right of down wind
-            if(touchAngle + 360 < boatHeading + 360) {// boat should move downwind
+
+    public static boolean checkRotation(double boatHeading, double touchAngle, double windDirection){
+//        System.out.println((windDirection + 180) % 360);
+        double windTo = (windDirection + 180) % 360;
+        if(boatHeading <= windTo && boatHeading >= windDirection) {// on right of wind coming from east
+            System.out.println("right");
+            if(touchAngle + 360 < boatHeading + 360 ) {// boat should move upwind
                 return true;
-            } else {// boat should move upwind
+            } else {// boat should move downwind
                 return false;
             }
         } else { // on left
             if(touchAngle + 360 < boatHeading + 360) {
                 return false;
-            } else {
+            } else {}
+        }
+        if(windTo < windDirection && (boatHeading + 360) > windTo) { // on right side of wind coming from west
+//            System.out.println("right");
+            double copyBoatHeading = boatHeading;
+            if((boatHeading - touchAngle) < 0) {
+                boatHeading += 360;
+            }
+            if((touchAngle - copyBoatHeading) < 0) {
+                touchAngle += 360;
+            }
+            if(touchAngle + 360 < boatHeading + 360 ) {// boat should move upwind
                 return true;
+            } else {// boat should move downwind
+                return false;
             }
         }
 //            if(boatHeading < touchAngle) {
@@ -332,7 +323,21 @@ import static java.lang.Math.abs;
 //                    return false;
 //                }
 //            }
+        else { // on left
+            System.out.println("left");
+            if(boatHeading < windDirection) {
+                boatHeading += 360;
+            }
+            if(touchAngle < windDirection) {
+                touchAngle += 360;
+            }
+            if(touchAngle > boatHeading) {
+                return true;
+            } else {
+                return false;
+            }
         }
+    }
 
         public int getCommandInt() {
             return commandInt;
