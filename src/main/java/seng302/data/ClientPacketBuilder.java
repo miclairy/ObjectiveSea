@@ -28,20 +28,6 @@ public class ClientPacketBuilder extends PacketBuilder {
         return generatePacket(header, body);
     }
 
-    public byte[] createGameRegistrationPacket(Double speedScale, Integer minParticipants, Integer serverPort, String publicIp, int currentCourseIndex) {
-        byte[] header = createHeader(HOST_GAME_MESSAGE);
-        byte[] body = new byte[HOST_GAME_MESSAGE.getLength()];
-        long ip = ConnectionUtils.ipStringToLong(publicIp);
-        addFieldToByteArray(body, HOST_GAME_IP, ip);
-        addFieldToByteArray(body, HOST_GAME_PORT, serverPort);
-        addFieldToByteArray(body, HOST_GAME_MAP, currentCourseIndex);
-        addFieldToByteArray(body, HOST_GAME_SPEED, speedScale.longValue());
-        addFieldToByteArray(body, HOST_GAME_STATUS, 1);
-        addFieldToByteArray(body, HOST_GAME_REQUIRED_PLAYERS, minParticipants);
-        addFieldToByteArray(body, HOST_GAME_CURRENT_PLAYERS, 1);
-        return generatePacket(header, body);
-    }
-
     /**
      * Creates the packets that contain the button presses from the client
      * @param commandInt ID of the key pressed

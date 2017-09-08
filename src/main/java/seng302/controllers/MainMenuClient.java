@@ -28,11 +28,14 @@ public class MainMenuClient extends Client {
     public MainMenuClient() throws ServerFullException, NoConnectionToServerException {
         this.packetBuilder = new ClientPacketBuilder();
         setUpDataStreamReader("localhost", 2828);
-        manageWaitingConnection();
-        RegistrationType regoType = RegistrationType.REQUEST_RUNNING_GAMES;
-        this.sender = new ClientSender(clientListener.getClientSocket());
-        sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
-        manageServerResponse();
+        try {
+            manageWaitingConnection();
+            RegistrationType regoType = RegistrationType.REQUEST_RUNNING_GAMES;
+            this.sender = new ClientSender(clientListener.getClientSocket());
+            sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
+        } catch (NoConnectionToServerException e) {
+            System.out.println("Cannot reach server on current address");
+        }
     }
 
     @Override

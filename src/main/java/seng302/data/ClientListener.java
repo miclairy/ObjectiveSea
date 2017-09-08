@@ -1,16 +1,15 @@
 package seng302.data;
 
-import seng302.controllers.Controller;
-import seng302.controllers.SoundController;
 import seng302.data.registration.RegistrationResponse;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.models.Boat;
 import seng302.models.Race;
+import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.TimeUtils;
+import seng302.views.AvailableRace;
 
 import java.io.*;
-import java.net.ConnectException;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -226,6 +225,9 @@ public class ClientListener extends Receiver implements Runnable{
                                     case BOAT_STATE_MESSAGE:
                                         parseBoatStateMessage(body);
                                         break;
+                                    case HOST_GAME_MESSAGE:
+                                        parseHostedGameMessage(body);
+                                        break;
                                 }
                             }
                     }
@@ -353,6 +355,18 @@ public class ClientListener extends Receiver implements Runnable{
             markIndex = race.getCourse().getCourseOrder().size()-1;
         }
         race.updateMarkRounded(sourceID, markIndex, time);
+    }
+
+    private void parseHostedGameMessage(byte[] body){
+        long serverIpLong = byteArrayRangeToLong(body, HOST_GAME_IP.getStartIndex(), HOST_GAME_IP.getEndIndex());
+        String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
+        int serverPort = byteArrayRangeToInt(body, HOST_GAME_PORT.getStartIndex(), HOST_GAME_PORT.getEndIndex());
+        int courseIndex = byteArrayRangeToInt(body, HOST_GAME_MAP.getStartIndex(), HOST_GAME_MAP.getEndIndex());
+        long gameSpeed = byteArrayRangeToLong(body, HOST_GAME_SPEED.getStartIndex(), HOST_GAME_SPEED.getEndIndex());
+        int gameStatus = byteArrayRangeToInt(body, HOST_GAME_STATUS.getStartIndex(), HOST_GAME_STATUS.getEndIndex());
+        int gameMinPlayers = byteArrayRangeToInt(body, HOST_GAME_REQUIRED_PLAYERS.getStartIndex(), HOST_GAME_REQUIRED_PLAYERS.getEndIndex());
+        int gameCurrentPlayers = byteArrayRangeToInt(body, HOST_GAME_CURRENT_PLAYERS.getStartIndex(), HOST_GAME_CURRENT_PLAYERS.getEndIndex());
+        AvailableRace availableRace = new AvailableRace(String.valueOf(courseIndex), gameCurrentPlayers, serverPort, serverIP);
     }
 
     public void disconnectClient() {

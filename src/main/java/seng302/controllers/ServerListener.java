@@ -79,7 +79,7 @@ public class ServerListener extends Receiver implements Runnable{
     }
 
     private void recordHostGameMessage(byte[] body){
-        System.out.println("Server: Recording on VM");
+        System.out.println("Server: Recording game on VM");
         setChanged();
         notifyObservers(body);
     }

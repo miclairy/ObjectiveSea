@@ -285,7 +285,6 @@ public class Server implements Runnable, Observer {
                 manageRegistration((ServerListener) observable, (RegistrationType) arg);
             }else{
                 availableRaces.add((byte[])arg);
-                System.out.println(availableRaces.size());
             }
         }
     }
@@ -317,13 +316,12 @@ public class Server implements Runnable, Observer {
                 System.out.println("Server: Client attempted to connect as control tutorial, ignoring.");
                 break;
             case REQUEST_RUNNING_GAMES:
-                System.out.println("Server: Client attempted to connect as menu");
-                byte[] allGames = new byte[availableRaces.size() * AC35StreamMessage.HOST_GAME_MESSAGE.getLength()];
-                ByteBuffer target = ByteBuffer.wrap(allGames);
+                System.out.println("Server: Client requesting games");
+                connectionManager.addConnection(nextViewerID, serverListener.getSocket());
                 for(byte[] race : availableRaces){
-                    target.put(race);
+                    byte[] racePacket = packetBuilder.createGameRegistrationPacket(race);
+                    connectionManager.sendToClient(nextViewerID, racePacket);
                 }
-                System.out.println(allGames);
                 break;
         }
     }

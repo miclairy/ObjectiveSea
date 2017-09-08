@@ -43,6 +43,12 @@ public class GameClient extends Client{
         manageServerResponse();
     }
 
+    public void updateVM(Double speedScale, Integer minParticipants, Integer serverPort, String publicIp, int currentCourseIndex){
+        byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(speedScale, minParticipants, serverPort, publicIp, currentCourseIndex);
+        System.out.println("Client: Updating VM");
+        sender.sendToServer(registerGamePacket);
+    }
+
     @Override
     public void run() {
         System.out.println("Client: Successfully Joined Game");

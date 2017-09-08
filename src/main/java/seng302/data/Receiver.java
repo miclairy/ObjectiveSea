@@ -5,6 +5,7 @@ import java.util.zip.CRC32;
 
 /**
  * Created by mjt169 on 18/07/17.
+ *
  */
 public abstract class Receiver extends Observable{
     protected final int HEADER_LENGTH = 15;
