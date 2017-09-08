@@ -357,6 +357,10 @@ public class ClientListener extends Receiver implements Runnable{
         race.updateMarkRounded(sourceID, markIndex, time);
     }
 
+    /**
+     * Method to decode a host game packet from the server
+     * @param body body of the hosted game, containing all relevant information about a game
+     */
     private void parseHostedGameMessage(byte[] body){
         long serverIpLong = byteArrayRangeToLong(body, HOST_GAME_IP.getStartIndex(), HOST_GAME_IP.getEndIndex());
         String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
