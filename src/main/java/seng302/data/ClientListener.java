@@ -370,7 +370,9 @@ public class ClientListener extends Receiver implements Runnable{
         int gameStatus = byteArrayRangeToInt(body, HOST_GAME_STATUS.getStartIndex(), HOST_GAME_STATUS.getEndIndex());
         int gameMinPlayers = byteArrayRangeToInt(body, HOST_GAME_REQUIRED_PLAYERS.getStartIndex(), HOST_GAME_REQUIRED_PLAYERS.getEndIndex());
         int gameCurrentPlayers = byteArrayRangeToInt(body, HOST_GAME_CURRENT_PLAYERS.getStartIndex(), HOST_GAME_CURRENT_PLAYERS.getEndIndex());
-        AvailableRace availableRace = new AvailableRace(String.valueOf(courseIndex), gameCurrentPlayers, serverPort, serverIP);
+        AvailableRace availableRace = new AvailableRace(CourseName.getCourseNameFromInt((int)courseIndex).getText(), gameCurrentPlayers, serverPort, serverIP);
+        setChanged();
+        notifyObservers(availableRace);
     }
 
     public void disconnectClient() {

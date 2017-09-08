@@ -101,6 +101,8 @@ public class MainMenuController implements Initializable{
         setUpMaps();
         clipChildren(menuAnchor, 2*10);
         tblAvailableRaces.setPlaceholder(new Label("No Available Races"));
+        columnMap.setStyle( "-fx-alignment: CENTER;");
+        columnParticipants.setStyle( "-fx-alignment: CENTER;");
     }
 
     private void setPaneVisibility(){
@@ -112,8 +114,9 @@ public class MainMenuController implements Initializable{
         menuAnchor.setVisible(true);
     }
 
-    public void setApp(Main main){
+    public void setApp(Main main) throws ServerFullException, NoConnectionToServerException {
         this.main = main;
+        this.client = new MainMenuClient();
     }
 
     @FXML private void loadHostOptionsPane(){
@@ -146,10 +149,11 @@ public class MainMenuController implements Initializable{
             timer.stop();
         }}
 
-    @FXML private void loadJoinPane() throws ServerFullException, NoConnectionToServerException {
+    @FXML private void loadJoinPane(){
         setUpAvailableRaceTable();
         AnimationUtils.switchPaneFade(onlinePane, joinRacePane);
-        client = new MainMenuClient();
+        client.checkForRaces();
+        tblAvailableRaces.setItems(client.getAvailableRaces());
     }
 
     private void setUpAvailableRaceTable(){
@@ -253,7 +257,15 @@ public class MainMenuController implements Initializable{
         if(manuallyJoinGame){
             joinGame(false);
         }else{
-            //TODO: connect to game from server options
+            AvailableRace race = tblAvailableRaces.getSelectionModel().getSelectedItem();
+            ClientOptions clientOptions =
+                    new ClientOptions(race.getIpAddress(), race.getPort(), GameMode.MULTIPLAYER, false, false);
+            boolean clientStarted = main.startClient(clientOptions);
+            if(clientStarted){
+                Thread.sleep(200);
+                main.loadRaceView(clientOptions);
+                loadRealGameSounds();
+            }
         }
     }
 
@@ -265,7 +277,16 @@ public class MainMenuController implements Initializable{
         if(manuallyJoinGame){
             joinGame(true);
         }else{
-            //TODO: connect to game from server options
+            AvailableRace race = tblAvailableRaces.getSelectionModel().getSelectedItem();
+            System.out.println(race.getIpAddress() + " " + race.getPort());
+            ClientOptions clientOptions =
+                    new ClientOptions(race.getIpAddress(), race.getPort(), GameMode.MULTIPLAYER, true, false);
+            boolean clientStarted = main.startClient(clientOptions);
+            if(clientStarted){
+                Thread.sleep(200);
+                main.loadRaceView(clientOptions);
+                loadRealGameSounds();
+            }
         }
     }
 
@@ -400,7 +421,6 @@ public class MainMenuController implements Initializable{
 
         circleSpeed.setTranslateX(bounds.getMinX() + 10);
         lblSpeedNum.setTranslateX(bounds.getMinX() + 10);
-
         lblSpeedNum.textProperty().setValue(
                 String.valueOf((int) speedScaleSlider.getValue()));
 
