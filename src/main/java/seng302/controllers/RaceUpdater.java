@@ -38,13 +38,13 @@ public class RaceUpdater implements Runnable {
     private CollisionManager collisionManager;
     private Coordinate startingPosition;
     private boolean serverRunning;
+    private boolean isPractice;
 
-    private List<Coordinate> nextRoundingCoordinates = new ArrayList<>();
-    private Integer targetPositionIndex;
-    private Coordinate targetPosition;
-    private Boat aiBoat;
+    private long secondsElapsed;
+    private double timeOfFirstFinisher, millisBeforeStart, raceSecondsPassed;
+    private boolean oneBoatHasFinished, atLeastOneBoatNotFinished;
 
-    private final Double aiRoundingDelta = 0.003;
+    private AIBoat aiBoat;
 
     public RaceUpdater(String selectedCourse){
         collisionManager = new CollisionManager();
@@ -104,96 +104,23 @@ public class RaceUpdater implements Runnable {
 
     @Override
     public void run() {
-        boolean isPractice = RaceVisionXMLParser.courseFile.equals("PracticeStart-course.xml");
+        raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
+        isPractice = RaceVisionXMLParser.courseFile.equals("PracticeStart-course.xml");
         if (isPractice) race.updateRaceStatus(PREPARATORY);
-        Course course = race.getCourse();
-        boolean oneBoatHasFinished = false;
-        double timeOfFirstFinisher = 0;
-        setUpAI();
+        oneBoatHasFinished = false;
+        timeOfFirstFinisher = 0;
         while (!race.getRaceStatus().isRaceEndedStatus() && serverRunning) {
-            boolean atLeastOneBoatNotFinished = false;
-            double raceSecondsPassed = SECONDS_PER_UPDATE * scaleFactor;
-            long millisBeforeStart = race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs();
-            long secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000;
-            race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs()
-                    + (long)(TimeUtils.secondsToMilliseconds(raceSecondsPassed)));
-            race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs() + (long)(raceSecondsPassed * 1000));
+            atLeastOneBoatNotFinished = false;
+            updateRaceTimes();
+            updateRaceStartStatus();
             generateWind();
             if (race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)) {
                 collisionManager.checkForCollisions(race);
             }
             for (Boat boat : race.getCompetitors()) {
-                if(isPractice && (secondsElapsed > 60 || boat.getLastRoundedMarkIndex() == 0)){
-                    race.updateRaceStatus(TERMINATED);
-                }
-                BoatStatus currBoatStatus = boat.getStatus();
-                if (currBoatStatus.equals(BoatStatus.FINISHED) && !oneBoatHasFinished){
-                    oneBoatHasFinished = true;
-                    timeOfFirstFinisher = race.getCurrentTimeInEpochMs();
-                }
-                if (oneBoatHasFinished){
-                    if (race.getCurrentTimeInEpochMs() - timeOfFirstFinisher >= MAX_EXTRA_TIME){
-                        for (Boat boatInRace: race.getCompetitors()){
-                            if (!boatInRace.isFinished()){
-                                boatInRace.setStatus(BoatStatus.DNF);
-                            }
-                        }
-                        race.updateRaceStatus(RaceStatus.TERMINATED);
-                    }
-                }
-                if(race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
-                    Double raceHoursPassed = TimeUtils.convertSecondsToHours(raceSecondsPassed);
-                    if (!boat.isAI() && collisionManager.boatIsInCollision(boat)) {
-
-                        //revert the last location update as it was a collision
-                        updateLocation(-raceHoursPassed, boat);
-                        boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
-                    }
-                    adjustSpeed(boat);
-                    if(boat.isAI()){
-                        if(!aiBoat.isFinished()){
-                            Double headingToNextMark = boat.getCurrentPosition().headingToCoordinate(targetPosition);
-                            boat.setHeading(headingToNextMark);
-                            updateLocation(raceHoursPassed, boat);
-                            checkAIRounding();
-                        }
-                    } else{
-                        boat.updateBoatHeading(raceSecondsPassed);
-                        updateLocation(raceHoursPassed, boat);
-                        if (course.getCourseOrder().size() > 0 && race.getRaceStatus().equals(STARTED)) {
-                            checkMarkRounding(boat, course);
-                        }
-                    }
-
-                    calculateTimeAtNextMark(boat);
-                } else {
-                    if(millisBeforeStart < WARNING_SIGNAL_TIME_IN_MS && millisBeforeStart > PREPARATORY_SIGNAL_TIME_IN_MS) {
-                        race.updateRaceStatus(WARNING);
-                    }else if(millisBeforeStart < PREPARATORY_SIGNAL_TIME_IN_MS && millisBeforeStart > 0){
-                        race.updateRaceStatus(RaceStatus.PREPARATORY);
-                    }
-                }
-                if (!currBoatStatus.equals(BoatStatus.FINISHED) && !currBoatStatus.equals(BoatStatus.DNF)) {
-                    atLeastOneBoatNotFinished = true;
-                }
-                if (currBoatStatus.equals(BoatStatus.DNF)) {
-                    boat.setCurrentSpeed(0);
-                }
-                if(currBoatStatus.equals(BoatStatus.PRERACE) && race.getRaceStatus().equals(RaceStatus.STARTED)){
-                    boat.setStatus(BoatStatus.RACING);
-                }
+                updateBoat(boat);
             }
-            if (millisBeforeStart < 0 && race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
-                race.updateRaceStatus(RaceStatus.STARTED);
-                for(Boat boat : race.getCompetitors()){
-                    if(!boat.getStatus().equals(BoatStatus.DNF)){
-                        boat.setStatus(BoatStatus.RACING);
-                    }
-                }
-            }
-            if (race.getCompetitors().size() > 0 && !atLeastOneBoatNotFinished) {
-                race.updateRaceStatus(RaceStatus.TERMINATED);
-            }
+            checkRaceTermination();
             try {
                 Thread.sleep((long) (SECONDS_PER_UPDATE * 1000));
             } catch (InterruptedException e) {
@@ -202,54 +129,94 @@ public class RaceUpdater implements Runnable {
         }
     }
 
-    private void checkAIRounding() {
-        if(aiBoat.getCurrentPosition().greaterCircleDistance(targetPosition) < aiRoundingDelta){
-            targetPositionIndex++;
-            if(targetPositionIndex == nextRoundingCoordinates.size()){
-                targetPositionIndex = 0;
-                setNextRoundingCoordinates(aiBoat);
-                aiBoat.setLastRoundedMarkIndex(aiBoat.getLastRoundedMarkIndex()+1);
+    private void updateRaceTimes() {
+        millisBeforeStart = race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs();
+        secondsElapsed = (race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000;
+        race.setCurrentTimeInEpochMs(race.getCurrentTimeInEpochMs() + (long)(raceSecondsPassed * 1000));
+    }
+
+    private void updateRaceStartStatus() {
+        if(millisBeforeStart < WARNING_SIGNAL_TIME_IN_MS && millisBeforeStart > PREPARATORY_SIGNAL_TIME_IN_MS) {
+            race.updateRaceStatus(WARNING);
+        }else if(millisBeforeStart < PREPARATORY_SIGNAL_TIME_IN_MS && millisBeforeStart > 0){
+            race.updateRaceStatus(RaceStatus.PREPARATORY);
+        } else if (millisBeforeStart < 0 && race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
+            race.updateRaceStatus(RaceStatus.STARTED);
+            for(Boat boat : race.getCompetitors()){
+                if(!boat.getStatus().equals(BoatStatus.DNF)){
+                    boat.setStatus(BoatStatus.RACING);
+                }
             }
-            targetPosition = nextRoundingCoordinates.get(targetPositionIndex);
         }
     }
 
-    private void setNextRoundingCoordinates(Boat boat){
-        List<CompoundMark> courseOrder = race.getCourse().getCourseOrder();
-        Integer lastRoundedIndex = boat.getLastRoundedMarkIndex();
-        if(lastRoundedIndex == courseOrder.size() - 1){
-            aiBoat.setStatus(BoatStatus.FINISHED);
-            return;
+    private void checkRaceTermination() {
+        if(oneBoatHasFinished){
+            if (race.getCurrentTimeInEpochMs() - timeOfFirstFinisher >= MAX_EXTRA_TIME){
+                for (Boat boatInRace: race.getCompetitors()){
+                    if (!boatInRace.isFinished()){
+                        boatInRace.setStatus(BoatStatus.DNF);
+                    }
+                }
+                System.out.println("hi1");
+                race.updateRaceStatus(RaceStatus.TERMINATED);
+            }
+        } else if (race.getCompetitors().size() > 0 && !atLeastOneBoatNotFinished) {
+            System.out.println("hi2");
+            race.updateRaceStatus(RaceStatus.TERMINATED);
         }
-        CompoundMark currentMark = courseOrder.get(boat.getLastRoundedMarkIndex()+1);
-        nextRoundingCoordinates.clear();
-        if(currentMark instanceof RaceLine){
-            nextRoundingCoordinates.add(currentMark.getPosition());
-        } else {
-            CompoundMark previousMark = courseOrder.get(boat.getLastRoundedMarkIndex());
-            CompoundMark nextMark = courseOrder.get(boat.getLastRoundedMarkIndex()+2);
+    }
 
-            Double heading = previousMark.getPosition().headingToCoordinate(currentMark.getPosition());
-            Double nextHeading = currentMark.getPosition().headingToCoordinate(nextMark.getPosition());
+    private void updateBoat(Boat boat){
+        if(isPractice && (secondsElapsed > 60 || boat.getLastRoundedMarkIndex() == 0)){
+            race.updateRaceStatus(TERMINATED);
+        }
 
-            String roundingSideString = race.getCourse().getRoundingOrder().get(boat.getLastRoundedMarkIndex()+1).getRoundingSideString();
-            RoundingSide roundingSide;
-            if(currentMark.hasTwoMarks()){
-                roundingSide = roundingSideString.charAt(0) == 'P' ? RoundingSide.PORT : RoundingSide.STBD;
+        if(race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
+            Double raceHoursPassed = TimeUtils.convertSecondsToHours(raceSecondsPassed);
+            if (!boat.isAI() && collisionManager.boatIsInCollision(boat)) {
+                //revert the last location update as it was a collision
+                updateLocation(-raceHoursPassed, boat);
+                boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
+            }
+            adjustSpeed(boat);
+            if(boat.isAI()){
+                if(!boat.isFinished()){
+                    aiBoat.updateHeading();
+                    updateLocation(raceHoursPassed, boat);
+                    aiBoat.checkAIRounding();
+                }
             } else{
-                roundingSide = race.getCourse().getRoundingOrder().get(boat.getLastRoundedMarkIndex()+1);
+                boat.updateBoatHeading(raceSecondsPassed);
+                updateLocation(raceHoursPassed, boat);
+                Course course = race.getCourse();
+                if (course.getCourseOrder().size() > 0 && race.getRaceStatus().equals(STARTED)) {
+                    checkMarkRounding(boat, course);
+                }
             }
-            System.out.println(roundingSide);
+            calculateTimeAtNextMark(boat);
+        }
+        checkBoatStatus(boat);
+    }
 
-            nextRoundingCoordinates = RoundingMechanics.markRoundingCoordinates(currentMark.getMark1(), heading, nextHeading, roundingSide);
+
+    private void checkBoatStatus(Boat boat){
+        BoatStatus currBoatStatus = boat.getStatus();
+        if (currBoatStatus.equals(BoatStatus.FINISHED) && !oneBoatHasFinished){
+            oneBoatHasFinished = true;
+            timeOfFirstFinisher = race.getCurrentTimeInEpochMs();
+        }
+        if (!currBoatStatus.equals(BoatStatus.FINISHED) && !currBoatStatus.equals(BoatStatus.DNF)) {
+            atLeastOneBoatNotFinished = true;
+        }
+        if (currBoatStatus.equals(BoatStatus.DNF)) {
+            boat.setCurrentSpeed(0);
+        }
+        if(currBoatStatus.equals(BoatStatus.PRERACE) && race.getRaceStatus().equals(RaceStatus.STARTED)){
+            boat.setStatus(BoatStatus.RACING);
         }
     }
 
-    private void setUpAI() {
-        setNextRoundingCoordinates(aiBoat);
-        targetPositionIndex = 0;
-        targetPosition = nextRoundingCoordinates.get(targetPositionIndex);
-    }
 
     /**
      * Adjusts the speed of the boat based on sails luffing or damage taken
@@ -624,7 +591,8 @@ public class RaceUpdater implements Runnable {
 
     public void addAI() {
         Integer aiID = addCompetitor();
-        aiBoat = race.getBoatById(aiID);
-        aiBoat.setAI(true);
+        Boat boat = race.getBoatById(aiID);
+        boat.setAI(true);
+        aiBoat = new AIBoat(boat, race.getCourse());
     }
 }
