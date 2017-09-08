@@ -271,13 +271,13 @@ import static java.lang.Math.abs;
 
         }
 
-    /**
-     * calculates the optimal rotation for the boat to move towards finger
+/*    //**
+      calculates the optimal rotation for the boat to move towards finger
      * @param boatHeading the current heading of the boat
      * @param touchAngle the angle of the touch input from 0
      * @param windDirection direction of wind from
      * @return a boolean true if action should be upwind, boolean false if action should be downwind
-     */
+     *//*
 
     public static boolean checkRotation(double boatHeading, double touchAngle, double windDirection){
 //        System.out.println((windDirection + 180) % 360);
@@ -337,7 +337,7 @@ import static java.lang.Math.abs;
                 return false;
             }
         }
-    }
+    }*/
 
         public int getCommandInt() {
             return commandInt;
