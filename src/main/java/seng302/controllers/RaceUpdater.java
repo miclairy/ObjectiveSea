@@ -3,7 +3,6 @@ package seng302.controllers;
 import seng302.data.BoatStatus;
 import seng302.data.RaceStatus;
 import seng302.data.RaceVisionXMLParser;
-import seng302.data.RoundingSide;
 import seng302.models.*;
 import seng302.utilities.MathUtils;
 import seng302.utilities.PolarReader;
@@ -158,11 +157,9 @@ public class RaceUpdater implements Runnable {
                         boatInRace.setStatus(BoatStatus.DNF);
                     }
                 }
-                System.out.println("hi1");
                 race.updateRaceStatus(RaceStatus.TERMINATED);
             }
         } else if (race.getCompetitors().size() > 0 && !atLeastOneBoatNotFinished) {
-            System.out.println("hi2");
             race.updateRaceStatus(RaceStatus.TERMINATED);
         }
     }
@@ -183,8 +180,9 @@ public class RaceUpdater implements Runnable {
             if(boat.isAI()){
                 if(!boat.isFinished()){
                     aiBoat.updateHeading();
+                    aiBoat.avoidFutureCollision();
                     updateLocation(raceHoursPassed, boat);
-                    aiBoat.checkAIRounding();
+                    aiBoat.checkRounding();
                 }
             } else{
                 boat.updateBoatHeading(raceSecondsPassed);

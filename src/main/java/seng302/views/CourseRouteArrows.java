@@ -22,6 +22,7 @@ public class CourseRouteArrows {
 
     private final int REFRESH_THRESHOLD = 4;
     private final int ARROW_ITERATIONS_SHOWN = 3;
+    private final double ARROW_DISTANCE_FROM_MARK = 0.05;
 
     private Course course;
     private Group root;
@@ -164,7 +165,7 @@ public class CourseRouteArrows {
     private List<Arrow> createMarkRoundingArrows(Mark mark, double heading, double nextHeading, RoundingSide roundingSide) {
         List<Arrow> arrowList = new ArrayList<>();
 
-        List<Coordinate> positions = RoundingMechanics.markRoundingCoordinates(mark, heading, nextHeading, roundingSide);
+        List<Coordinate> positions = RoundingMechanics.markRoundingCoordinates(mark, heading, nextHeading, roundingSide, ARROW_DISTANCE_FROM_MARK);
         Double interpolatedHeading = positions.get(0).headingToCoordinate(positions.get(2));
 
         Arrow mark1Arrow = new Arrow(5, 10, positions.get(0), (heading + 180));

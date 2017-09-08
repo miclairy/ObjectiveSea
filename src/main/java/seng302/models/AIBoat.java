@@ -1,17 +1,23 @@
 package seng302.models;
 
+import seng302.controllers.CollisionManager;
 import seng302.controllers.RoundingMechanics;
 import seng302.data.BoatStatus;
 import seng302.data.RoundingSide;
+import seng302.utilities.MathUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static seng302.data.RoundingSide.PORT;
 
 /**
  * Created by atc60 on 8/09/17.
  */
 public class AIBoat {
-    private static final Double ROUNDING_DELTA = 0.003;
+    private static final Double ROUNDING_DISTANCE = 0.06;
+    private static final Double ROUNDING_DELTA = 0.01;
+    private static final Double COLLISION_CHECK_DISTANCE = 0.1;
 
     private Boat boat;
     private List<Coordinate> nextRoundingCoordinates;
@@ -28,7 +34,7 @@ public class AIBoat {
         targetPosition = nextRoundingCoordinates.get(targetPositionIndex);
     }
 
-    public void checkAIRounding() {
+    public void checkRounding() {
         if(boat.getCurrentPosition().greaterCircleDistance(targetPosition) < ROUNDING_DELTA){
             targetPositionIndex++;
             if(targetPositionIndex == nextRoundingCoordinates.size()){
@@ -65,12 +71,31 @@ public class AIBoat {
             } else{
                 roundingSide = course.getRoundingOrder().get(boat.getLastRoundedMarkIndex()+1);
             }
-            nextRoundingCoordinates = RoundingMechanics.markRoundingCoordinates(currentMark.getMark1(), heading, nextHeading, roundingSide);
+            nextRoundingCoordinates = RoundingMechanics.markRoundingCoordinates(currentMark.getMark1(), heading, nextHeading, roundingSide, ROUNDING_DISTANCE);
         }
     }
 
     public void updateHeading() {
         Double headingToNextMark = boat.getCurrentPosition().headingToCoordinate(targetPosition);
         boat.setHeading(headingToNextMark);
+    }
+
+    public boolean checkFutureCollision(Mark mark) {
+        Coordinate checkPointEnd = boat.getCurrentPosition().coordAt(COLLISION_CHECK_DISTANCE, boat.getHeading());
+        Double distance = MathUtils.distanceToLineSegment(boat.getCurrentPosition(), checkPointEnd, mark.getPosition());
+        return distance <= CollisionManager.MARK_SENSITIVITY;
+    }
+
+    public void avoidFutureCollision() {
+        for(Integer markID : course.getAllMarks().keySet()){
+            Mark mark = course.getAllMarks().get(markID);
+            if(checkFutureCollision(mark)){
+                List<Coordinate> avoidCoords = RoundingMechanics.markRoundingCoordinates(mark, boat.getHeading(), boat.getHeading(), PORT, ROUNDING_DISTANCE);
+                nextRoundingCoordinates.add(targetPositionIndex, avoidCoords.get(1));
+                System.out.println(avoidCoords);
+                targetPosition = nextRoundingCoordinates.get(targetPositionIndex);
+                updateHeading();
+            }
+        }
     }
 }

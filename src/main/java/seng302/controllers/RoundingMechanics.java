@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static seng302.data.RoundingSide.PORT;
+import static seng302.data.RoundingSide.STBD;
 
 /**
  * Created by cjd137 on 2/08/17.
@@ -164,8 +165,10 @@ public class RoundingMechanics {
     }
 
 
-    public static List<Coordinate> markRoundingCoordinates(Mark mark, Double heading, Double nextHeading, RoundingSide roundingSide){
-        Double distanceFromMark = roundingSide == PORT ? 0.05 : -0.05;
+    public static List<Coordinate> markRoundingCoordinates(Mark mark, Double heading, Double nextHeading, RoundingSide roundingSide, Double distanceFromMark){
+        if(roundingSide == STBD){
+            distanceFromMark = -distanceFromMark;
+        }
 
         Coordinate firstCoordinate = mark.getPosition().coordAt(distanceFromMark, (heading + 90));
         Coordinate finalCoordinate = mark.getPosition().coordAt(distanceFromMark, (nextHeading + 90));

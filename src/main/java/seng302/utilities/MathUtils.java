@@ -207,12 +207,16 @@ public class MathUtils {
         Coordinate startLine1 = course.getStartLine().getMark1().getPosition();
         Coordinate startLine2 = course.getStartLine().getMark2().getPosition();
 
-        InfiniteLine startlineInf = new InfiniteLine(startLine1,startLine2);
+        return distanceToLineSegment(startLine1, startLine2, position);
+    }
+
+    public static double distanceToLineSegment(Coordinate lineStart, Coordinate lineEnd, Coordinate position){
+        InfiniteLine startlineInf = new InfiniteLine(lineStart, lineEnd);
         Coordinate closestPoint = startlineInf.closestPoint(position);
         double distanceToStart;
-        if(closestPoint.getLat() < Math.min(startLine1.getLat(),startLine2.getLat()) || closestPoint.getLat() > Math.max(startLine1.getLat(),startLine2.getLat())){
-            double distanceToStartLine1 = position.greaterCircleDistance(startLine1);
-            double distanceToStartLine2 = position.greaterCircleDistance(startLine2);
+        if(closestPoint.getLat() < Math.min(lineStart.getLat(),lineEnd.getLat()) || closestPoint.getLat() > Math.max(lineStart.getLat(),lineEnd.getLat())){
+            double distanceToStartLine1 = position.greaterCircleDistance(lineStart);
+            double distanceToStartLine2 = position.greaterCircleDistance(lineEnd);
             distanceToStart = Math.min(distanceToStartLine1,distanceToStartLine2);
         } else {
             distanceToStart = position.greaterCircleDistance(closestPoint);
