@@ -5,6 +5,7 @@ import seng302.controllers.RoundingMechanics;
 import seng302.data.BoatStatus;
 import seng302.data.RoundingSide;
 import seng302.utilities.MathUtils;
+import seng302.utilities.PolarReader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +25,10 @@ public class AIBoat {
     private Integer targetPositionIndex;
     private Coordinate targetPosition;
     private Course course;
+    private PolarTable polarTable;
 
     public AIBoat(Boat boat, Course course) {
+        this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), course);
         this.boat = boat;
         this.course = course;
         nextRoundingCoordinates = new ArrayList<>();
@@ -55,23 +58,32 @@ public class AIBoat {
         }
         CompoundMark currentMark = courseOrder.get(boat.getLastRoundedMarkIndex()+1);
         nextRoundingCoordinates.clear();
+        Coordinate tackingGybingCoord = addTackandGybeMarks(boat.getCurrentPosition(), currentMark.getPosition());
+        System.out.println(tackingGybingCoord);
+        if(tackingGybingCoord != null){
+            nextRoundingCoordinates.add(tackingGybingCoord);
+        }
         if(currentMark instanceof RaceLine){
             nextRoundingCoordinates.add(currentMark.getPosition());
         } else {
             CompoundMark previousMark = courseOrder.get(boat.getLastRoundedMarkIndex());
             CompoundMark nextMark = courseOrder.get(boat.getLastRoundedMarkIndex()+2);
 
-            Double heading = previousMark.getPosition().headingToCoordinate(currentMark.getPosition());
-            Double nextHeading = currentMark.getPosition().headingToCoordinate(nextMark.getPosition());
+            if(currentMark.hasTwoMarks() && RoundingMechanics.nextCompoundMarkAfterGate(nextMark, currentMark, previousMark)) {
+                nextRoundingCoordinates.add(currentMark.getPosition());
+            } else {
+                Double heading = previousMark.getPosition().headingToCoordinate(currentMark.getPosition());
+                Double nextHeading = currentMark.getPosition().headingToCoordinate(nextMark.getPosition());
 
-            String roundingSideString = course.getRoundingOrder().get(boat.getLastRoundedMarkIndex()+1).getRoundingSideString();
-            RoundingSide roundingSide;
-            if(currentMark.hasTwoMarks()){
-                roundingSide = roundingSideString.charAt(0) == 'P' ? RoundingSide.PORT : RoundingSide.STBD;
-            } else{
-                roundingSide = course.getRoundingOrder().get(boat.getLastRoundedMarkIndex()+1);
+                String roundingSideString = course.getRoundingOrder().get(boat.getLastRoundedMarkIndex()+1).getRoundingSideString();
+                RoundingSide roundingSide;
+                if(currentMark.hasTwoMarks()){
+                    roundingSide = roundingSideString.charAt(0) == 'P' ? RoundingSide.PORT : RoundingSide.STBD;
+                } else{
+                    roundingSide = course.getRoundingOrder().get(boat.getLastRoundedMarkIndex()+1);
+                }
+                nextRoundingCoordinates.addAll(RoundingMechanics.markRoundingCoordinates(currentMark.getMark1(), heading, nextHeading, roundingSide, ROUNDING_DISTANCE));
             }
-            nextRoundingCoordinates = RoundingMechanics.markRoundingCoordinates(currentMark.getMark1(), heading, nextHeading, roundingSide, ROUNDING_DISTANCE);
         }
     }
 
@@ -97,5 +109,49 @@ public class AIBoat {
                 updateHeading();
             }
         }
+    }
+
+    public Coordinate addTackandGybeMarks(Coordinate lastMark, Coordinate nextMark) {
+        double headingBetweenMarks = lastMark.headingToCoordinate(nextMark);
+        double TrueWindAngle;
+        double alphaAngle;
+
+        if(MathUtils.pointBetweenTwoAngle(course.getWindDirection(), polarTable.getOptimumTWA(true), headingBetweenMarks)){
+            TrueWindAngle = polarTable.getOptimumTWA(true);
+            alphaAngle = getAlphaAngle(course.getWindDirection(), headingBetweenMarks, true);
+        } else if (MathUtils.pointBetweenTwoAngle((course.getWindDirection() + 180) % 360, 180 - polarTable.getOptimumTWA(false), headingBetweenMarks)){
+            TrueWindAngle = polarTable.getOptimumTWA(false);
+            alphaAngle = getAlphaAngle(course.getWindDirection(), headingBetweenMarks, false);
+        } else {
+            return null;
+        }
+        double lengthOfTack = Math.abs(calculateLengthOfTack(TrueWindAngle,alphaAngle,nextMark,lastMark));
+        Coordinate tackingCoord = lastMark.coordAt(lengthOfTack,alphaAngle);
+
+        return tackingCoord;
+    }
+
+    public double calculateLengthOfTack(double TrueWindAngle, double alphaAngle,Coordinate nextMark, Coordinate lastMark){
+
+        double lengthOfLeg = lastMark.greaterCircleDistance(nextMark);
+        double betaAngle = (2*TrueWindAngle) - alphaAngle;
+        double lengthOfTack = ((lengthOfLeg* Math.sin(Math.toRadians(betaAngle)))/Math.sin(Math.toRadians(180 - 2*TrueWindAngle)))/2.0;
+        return lengthOfTack;
+    }
+
+    /**
+     * @param windDirection the current wind direction for the course
+     * @param bearing
+     * @param onTack whether calculateOptimumTack is happening, or calculateOptimumGybe
+     * @return the alpha angle
+     */
+    private double getAlphaAngle(double windDirection, double bearing, boolean onTack) {
+        double alphaAngle;
+        if(bearing <= (windDirection + 90.0)){
+            alphaAngle = Math.abs(bearing - windDirection) % 360;
+        } else {
+            alphaAngle = (360 + windDirection - bearing) % 360;
+        }
+        return onTack ? alphaAngle : 360 - alphaAngle;
     }
 }

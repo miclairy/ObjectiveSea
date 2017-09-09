@@ -234,6 +234,7 @@ public class BoatDisplay implements Observer {
 
         long secondsElapsed = (race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs()) / 1000;
         double distanceToVirtualStartLine = (boat.getCurrentSpeed() / 3600) * secondsElapsed;
+        System.out.println(distanceToVirtualStartLine);
 
         Coordinate startPosition1 = startingEnd1.getPosition().coordAt(distanceToVirtualStartLine, heading3 + 90);
         Coordinate startPosition2 = startingEnd2.getPosition().coordAt(distanceToVirtualStartLine, heading3 + 90);
