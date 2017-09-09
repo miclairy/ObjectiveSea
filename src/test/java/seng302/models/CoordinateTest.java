@@ -43,4 +43,21 @@ public class CoordinateTest {
         Coordinate coord2 = new Coordinate(50, 30);
         assertEquals(0, Math.round(coord1.headingToCoordinate(coord2)));
     }
+
+    @Test
+    public void coordAtDefaultTest()  {
+        Coordinate coord1 = new Coordinate(50, 30);
+        Coordinate coord2 = coord1.coordAt(1, 12);
+        assertEquals(50.016302, coord2.getLat(), 1e-6);
+        assertEquals(30.005393, coord2.getLon(), 1e-6);
+    }
+
+    @Test
+    public void coordAtTest()  {
+        Coordinate coord1 = new Coordinate(50, 30);
+        Coordinate coord2 = coord1.coordAt(1, 12, 1);
+        assertEquals(70.555264, coord2.getLat(), 1e-6);
+        assertEquals(178.295254, coord2.getLon(), 1e-6);
+    }
+
 }
