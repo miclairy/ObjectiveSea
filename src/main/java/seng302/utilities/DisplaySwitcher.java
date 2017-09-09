@@ -37,7 +37,9 @@ public class DisplaySwitcher {
             mainMenu.setApp(main);
             try {
                 gameSounds.stopEndlessMusic();
-            } catch (Exception e) {}
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             gameSounds.mainMenuMusic();
             gameSounds.playEndlessMusic();
 

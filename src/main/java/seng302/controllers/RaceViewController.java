@@ -1400,15 +1400,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
 
     public void shiftArrow(boolean boardVisible){
-        if(boardVisible){
-            AnimationUtils.shiftPaneNodes(windCircle, -430, true);
-            AnimationUtils.shiftPaneNodes(windArrow, -430, true);
-            AnimationUtils.shiftPaneNodes(nextMarkArrow, -430, true);
-        }else{
-            AnimationUtils.shiftPaneNodes(windCircle, 430, true);
-            AnimationUtils.shiftPaneNodes(windArrow, 430, true);
-            AnimationUtils.shiftPaneNodes(nextMarkArrow, 430, true);
-        }
+        int shiftWidth = boardVisible ? -430 : 430;
+        AnimationUtils.shiftPaneNodes(windCircle, shiftWidth, true);
+        AnimationUtils.shiftPaneNodes(windArrow, shiftWidth, true);
+        if (nextMarkArrow != null && options.isParticipant()) AnimationUtils.shiftPaneNodes(nextMarkArrow, shiftWidth, true);
     }
 
     public void boatSelectedInTable(Boat boat){
