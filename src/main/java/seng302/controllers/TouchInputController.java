@@ -75,13 +75,17 @@ import static java.lang.Math.hypot;
                 //downWind towards wind arrow - 6
                 //upWind away from wind arrow - 5
 
+                double oppositeWindAngle = windAngle - 180;
+                if(oppositeWindAngle < 0) {
+                    oppositeWindAngle += 360;
+                }
 
                 double DELTA = 0.00001;
                 if (!((boatHeading > (touchAngle - 2)) && (boatHeading < (touchAngle + 2)))) {
                     if ((((boatHeading - touchAngle) < 180) && ((boatHeading - touchAngle) > 0)) ||
                             (((boatHeading - touchAngle) < -180) && ((boatHeading - touchAngle) > -360))) {
                         if (boatHeading > touchAngle) {
-                            commandInt = changeRotationDirection(windAngle, boatHeading, touchAngle);
+                            commandInt = changeRotationDirection(windAngle, oppositeWindAngle, boatHeading, touchAngle);
                         } else if (boatHeading < touchAngle) {
                             //boat heading between 0-180
                             //touch angle between 180-360
@@ -91,8 +95,9 @@ import static java.lang.Math.hypot;
                                 newWindAngle = windAngle + 360;
                             } else {
                                 newWindAngle = windAngle;
+                                oppositeWindAngle += 360;
                             }
-                            commandInt = changeRotationDirection(newWindAngle, boatHeading + 360, touchAngle);
+                            commandInt = changeRotationDirection(newWindAngle, oppositeWindAngle, boatHeading + 360, touchAngle);
                         }
                         //Anti Clockwise
 
@@ -116,22 +121,22 @@ import static java.lang.Math.hypot;
         }
 
 
-        public int changeRotationDirection(double windAngle, double boatHeading, double touchAngle) {
+        public int changeRotationDirection(double windAngle, double oppositeWindAngle, double boatHeading, double touchAngle) {
 
             int direction = -1;
-            double oppositeWindAngle = windAngle - 180;
-            if(oppositeWindAngle < 0) {
-                oppositeWindAngle += 360;
-            }
 
-            if ((((touchAngle - windAngle) < -180 && (touchAngle - windAngle) > -360)) ||
-                    (((touchAngle - windAngle) > 0) && (touchAngle - windAngle) < 180) ||
+            if (((touchAngle - windAngle) < -180 && (touchAngle - windAngle) > -360 && (boatHeading < oppositeWindAngle)) ||
+                    (((touchAngle - windAngle) > 0) && (touchAngle - windAngle) < 180 && (boatHeading < oppositeWindAngle)) ||
                     (windAngle < boatHeading && windAngle > touchAngle)) {
+
                 direction = 6;
-            } else if ((((touchAngle - windAngle) < 0 && (touchAngle - windAngle) > -180)) ||
-                    (((touchAngle - windAngle) > 180) && (touchAngle - windAngle) < 360) ||
+
+            } else if (((touchAngle - windAngle) < 0 && (touchAngle - windAngle) > -180 && (boatHeading > oppositeWindAngle)) ||
+                    (((touchAngle - windAngle) > 180) && (touchAngle - windAngle) < 360 && (boatHeading > oppositeWindAngle)) ||
                     (oppositeWindAngle < boatHeading && oppositeWindAngle > touchAngle)) {
+
                 direction = 5;
+
             }
 
             return direction;
