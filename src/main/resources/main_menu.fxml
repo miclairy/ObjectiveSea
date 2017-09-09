@@ -174,7 +174,7 @@
                               <Insets top="30.0" />
                            </GridPane.margin>
                         </Button>
-                        <Button fx:id="btnSinglePlay" mnemonicParsing="false" onAction="#loadOfflinePlay" text="SINGLE PLAY" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                        <Button fx:id="btnSinglePlay" mnemonicParsing="false" onAction="#loadMapsForSinglePlay" text="SINGLE PLAY" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
                            <padding>
                               <Insets bottom="10.0" left="52.0" right="52.0" top="10.0" />
                            </padding>
@@ -191,7 +191,7 @@
                                    <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                                </padding>
                            </Button>
-                           <Button fx:id="btnCourseStart" mnemonicParsing="false" onAction="#startHostGame" text="START" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                           <Button fx:id="btnCourseStart" mnemonicParsing="false" onAction="#startGame" text="START" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                                <padding>
                                    <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                                </padding>

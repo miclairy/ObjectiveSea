@@ -54,6 +54,8 @@ public class MainMenuController implements Initializable{
     @FXML ImageView AC33;
     @FXML ImageView Malmo;
 
+    private Boolean isSinglePlayer = false;
+
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
 
     DropShadow ds = new DropShadow( 20, Color.web("#8eb0b7"));
@@ -107,6 +109,7 @@ public class MainMenuController implements Initializable{
     }
 
     @FXML private void loadPracticeGrid() {
+        isSinglePlayer = true;
         practiceGrid.setVisible(true);
         AnimationUtils.slideOutTransition(btnGrid);
         AnimationUtils.slideInTransition(practiceGrid);
@@ -138,13 +141,19 @@ public class MainMenuController implements Initializable{
      * Allows user to host a game at the DEFAULT_PORT and current public IP
      * @throws Exception
      */
-    @FXML private void loadOfflinePlay() throws Exception{
+    private void loadOfflinePlay() throws Exception{
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.SINGLEPLAYER);
         main.startHostedRace(selectedCourse, DEFAULT_PORT, false, clientOptions, true);
         Thread.sleep(200);
         main.loadRaceView(clientOptions);
         loadSinglePlayerMusic();
+    }
+
+    @FXML private void loadMapsForSinglePlay() {
+        courseGrid.setVisible(true);
+        AnimationUtils.slideOutTransition(practiceGrid);
+        AnimationUtils.slideInTransition(courseGrid);
     }
 
 
@@ -157,11 +166,19 @@ public class MainMenuController implements Initializable{
         loadSinglePlayerMusic();
     }
 
+    @FXML private void startGame() throws Exception {
+        if(isSinglePlayer) {
+            loadOfflinePlay();
+        } else {
+            startHostGame();
+        }
+    }
+
     /**
      * Allows user to host a game at the entered port and current public IP
      * @throws Exception
      */
-    @FXML private void startHostGame() throws Exception {
+    private void startHostGame() throws Exception {
         ClientOptions clientOptions = new ClientOptions();
         Integer port = Integer.parseInt(txtPortNumber.getText());
         clientOptions.setServerPort(port);
