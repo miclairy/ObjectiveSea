@@ -103,6 +103,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private int arrowIteration = 0;
     private int timer = 0;
 
+    List<ParallelTransition> parallelTransitions = new ArrayList<ParallelTransition>();
+
     private Tutorial tutorial;
 
     private Color DEFAULT_HIGHTLIGHT_COLOR = Color.valueOf("#4DC58B");
@@ -530,6 +532,19 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         ParallelTransition pt = new ParallelTransition(st1, st2, ft1, ft2);
         pt.play();
+        parallelTransitions.add(pt);
+    }
+
+    /**
+     * Stops the current mark and boat highlighting animations by running them at 999 speed until completion
+     */
+    void stopHighlightAnimation(){
+        if(!parallelTransitions.isEmpty()){
+            for(ParallelTransition pt : parallelTransitions){
+                pt.setRate(999);
+            }
+        }
+        parallelTransitions.clear();
     }
 
     /**
