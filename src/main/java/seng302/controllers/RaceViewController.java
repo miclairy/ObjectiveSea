@@ -38,6 +38,7 @@ import java.util.*;
 import static java.lang.Math.abs;
 import static seng302.data.RaceStatus.STARTED;
 import static seng302.data.RaceStatus.TERMINATED;
+import static seng302.utilities.DisplayUtils.isOutsideBounds;
 import static seng302.utilities.DisplayUtils.zoomLevel;
 
 /**
@@ -74,11 +75,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private double previousTime = 0;
     private Polygon boundary;
     private Circle windCircle;
-    private Circle nextMarkCircle;
     private Polyline windArrow;
     private Polyline nextMarkArrow;
     private boolean windTransitionPlaying = false;
-    private double currentTimeInSeconds;
     private AnnotationLevel currentAnnotationsLevel;
     private boolean courseNeedsRedraw = false;
     private boolean initializedBoats = false;
@@ -87,7 +86,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean drawDistanceLine = false;
     private boolean firstTime = true;
     private SelectionController selectionController;
-    private boolean highlightMark = false;
 
     private boolean nextMark = true;
 
@@ -99,13 +97,19 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
     private int flickercounter = 0;
     private int prevWindColorNum = 0;
-    private int arrowIteration = 0;
-    private int timer = 0;
+
+    List<ParallelTransition> parallelTransitions = new ArrayList<ParallelTransition>();
 
     private Tutorial tutorial;
 
-    BoatDisplay currentUserBoatDisplay;
-    Shape boatHighlight = null;
+    private BoatDisplay currentUserBoatDisplay;
+    private Shape boatHighlight = null;
+    private Color DEFAULT_HIGHTLIGHT_COLOR = Color.valueOf("#4DC58B");
+    private Color RED_HIGHTLIGHT_COLOR = Color.valueOf("#c55d4d");
+    private Color ORANGE_HIGHTLIGHT_COLOR = Color.valueOf("#c5974d");
+    private boolean startedEarlyPenalty = false;
+    private enum PenaltyStatus {NO_PENALTY, WARNING, PENALTY}
+    private PenaltyStatus penaltyStatus = PenaltyStatus.NO_PENALTY;
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController, SelectionController selectionController) {
         this.root = root;
@@ -160,12 +164,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             previousTime = currentTime;
             return;
         }
-
-        double secondsElapsed = TimeUtils.convertNanosecondsToSeconds(currentTime - previousTime);
-
-        if(!race.isTerminated() && !options.isTutorial()){
-            controller.updateRaceClock();
-        }else if (race.isTerminated()){
+        if (race.isTerminated()){
             if(race.getAbruptEnd()){
                 controller.blurScreen(true);
                 controller.showServerDisconnectError();
@@ -177,6 +176,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
             } else if (options.isPractice()){
                 controller.displayFinishedPracticePopUp();
             }
+        } else if (!options.isTutorial()) {
+            controller.updateRaceClock();
         }
         if(controller.hasRaceStatusChanged()){
             if(!options.isTutorial() && !options.isPractice()){
@@ -184,7 +185,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 controller.setRaceStatusChanged(false);
             }
         }
-        currentTimeInSeconds += secondsElapsed;
         controller.setTimeZone(race.getUTCOffset());
         controller.updateFPSCounter(currentTime);
         run();
@@ -197,17 +197,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void run(){
         if (drawDistanceLine) redrawDistanceLines();
         selectionController.zoomTracking();
-        Boolean isZoomed = false;
-        if(zoomLevel != 1) {
-            isZoomed = true;
-        }
         for (BoatDisplay displayBoat: displayBoats) {
             moveBoatDisplay(displayBoat);
+            manageBoatInformationFeatures(displayBoat);
             if(displayBoat == currentUserBoatDisplay) {
-                updateNextMarkArrow(isZoomed);
-                updateNextMarkDistance(isZoomed);
+                manageNextMarkVisuals();
             }
         }
+
         if(!options.isTutorial() && !options.isPractice()){
             redrawRaceLines();
             courseRouteArrows.updateCourseArrows();
@@ -226,7 +223,18 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
 
 
-
+/**
+     * Manages highlight of next mark or the arrow to next mark if zoomed
+     */
+    private void manageNextMarkVisuals() {
+        Boolean isZoomed = zoomLevel != 1;
+        updateNextMarkArrow(isZoomed);
+        updateNextMarkDistance(isZoomed);
+        if(nextMark && scoreBoardController.isHighlightMarkSelected() && !isZoomed){
+            highlightNextMark();
+            nextMark = false;
+        }
+    }
     /**
      * Moves and individual BoatDisplay object
      * moves the onscreen boat, wake, sail, annotations to where they should be onscreen
@@ -254,21 +262,32 @@ public class RaceViewController extends AnimationTimer implements Observer {
             addToBoatPath(boatDisplay, point);
         }
         moveBoatAnnotation(boatDisplay.getAnnotation(), point, boatDisplay);
+        manageStartTiming(boatDisplay);
+        if(boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF)){
+            boatDisplay.unFocus();
+        }
+    }
+
+    /**
+     * Draws/moves boat information features including:
+     * - Laylines
+     * - Vectors
+     * - Virtual Startline
+     * - Mark Highlight
+     * @param boatDisplay the boat to manage features for
+     */
+    private void manageBoatInformationFeatures(BoatDisplay boatDisplay) {
+        drawVirtualStartLine(boatDisplay);
         if(scoreBoardController.areVectorsSelected()){
             boatDisplay.showVectors();
+            moveSOGVector(boatDisplay);
+            moveVMGVector(boatDisplay);
         } else {
             boatDisplay.hideVectors();
         }
-        if (scoreBoardController.isLayLinesSelected()){
-            boatDisplay.getLaylines().removeDrawnLines(root);
-            if (selectedBoats.contains(boatDisplay)) {
-                drawLayline(boatDisplay);
-            }
-        } else {
-            boatDisplay.getLaylines().removeDrawnLines(root);
-        }
-        if(boatDisplay.getBoat().getStatus() == BoatStatus.DNF){
-            boatDisplay.unFocus();
+        boatDisplay.getLaylines().removeDrawnLines(root);
+        if (scoreBoardController.isLayLinesSelected() && selectedBoats.contains(boatDisplay)) {
+            drawLayline(boatDisplay);
         }
     }
 
@@ -285,6 +304,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
         }
     }
+
 
     /**
      * sets the order of the objects on the display. defines what object will go on top of another.
@@ -319,7 +339,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             boat.setOutOfBounds(false);
 
         }
-
         if (boat.isFinished() && boat.isJustFinished()){
             boat.setJustFinished(false);
             long finishTime = race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs();
@@ -414,7 +433,53 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public void initBoatHighlight(){
         boatHighlight = new Circle(0,0,10);
         boatHighlight.setId("usersBoatHighlight");
+        boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
         root.getChildren().add(boatHighlight);
+    }
+
+
+    /**
+     * changes the color of the boat highlight to update as the boat is about to recieve a penalty
+     * and changes again if it does. Penalties occur when the player crosses the start line early,
+     * the player is in a collision or the player is out of course bounds
+     * @param displayBoat the boat to be monitoring for penalty.
+     */
+    private void updateBoatHighlight(BoatDisplay displayBoat){
+        Boat boat = displayBoat.getBoat();
+
+        if(displayBoat.collisionInProgress){
+            boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
+            animateBoatHighlightColor(PenaltyStatus.PENALTY, "redBoatHighlight");
+        } else if(boat.getLeg() == 0){
+            if(startedEarlyPenalty) {
+                boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
+            }else if(!MathUtils.boatBeforeStartline(boat.getCurrentPosition(),
+                    race.getCourse().getStartLine(),
+                    race.getCourse().getCompoundMarks().get(2))){
+                startedEarlyPenalty = true;
+                boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
+                controller.setUserHelpLabel("Start line was crossed early. It must be crossed again.");
+                animateBoatHighlightColor(PenaltyStatus.PENALTY, "redBoatHighlight");
+
+            } else if(boat.getTimeStatus().equals(StartTimingStatus.EARLY)) {
+                boatHighlight.setFill(ORANGE_HIGHTLIGHT_COLOR);
+                animateBoatHighlightColor(PenaltyStatus.WARNING, "orangeBoatHighlight");
+            } else {
+                boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
+                animateBoatHighlightColor(PenaltyStatus.NO_PENALTY, "defaultBoatHighlight");
+            }
+        }else{
+            boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
+            animateBoatHighlightColor(PenaltyStatus.NO_PENALTY, "defaultBoatHighlight");
+            startedEarlyPenalty = false;
+        }
+    }
+
+    private void animateBoatHighlightColor(PenaltyStatus status, String animationID){
+        if(!penaltyStatus.equals(status)){
+            boatHighlightChangeAnimation(animationID);
+            penaltyStatus = status;
+        }
     }
 
     /**
@@ -427,6 +492,26 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     /**
+     * creates a highlight animation at the location of the users boat
+     * @param highlightID the css tag for the animation
+     */
+    void boatHighlightChangeAnimation(String highlightID){
+        CanvasCoordinate canvasCoordinate = new CanvasCoordinate(currentUserBoatDisplay.getSail().getLayoutX(),
+                currentUserBoatDisplay.getSail().getLayoutY());
+        Circle highlightCircle1 = createHighlightCircle(canvasCoordinate, highlightID);
+        ScaleTransition st1 = AnimationUtils.scaleTransitionCollision(highlightCircle1, 500,
+                15 * zoomLevel);
+        st1.setOnFinished(AE -> root.getChildren().remove(highlightCircle1));
+
+        FadeTransition ft1 = AnimationUtils.fadeOutTransition(highlightCircle1, 500);
+
+        ParallelTransition pt = new ParallelTransition(st1, ft1);
+        pt.play();
+    }
+
+
+
+    /**
      * creates an animation to visualise a collision or to highlight the next mark a boat should head toward
      * @param point the point where the animation is shown
      */
@@ -436,41 +521,43 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         ScaleTransition st1 = AnimationUtils.scaleTransitionCollision(highlightCircle1, 500 * scale,
                 20/scale * zoomLevel);
-        st1.setOnFinished(new EventHandler<ActionEvent>(){
-            public void handle(ActionEvent AE) {
-                root.getChildren().remove(highlightCircle1);
-            }});
+        st1.setOnFinished(AE -> root.getChildren().remove(highlightCircle1));
 
         ScaleTransition st2 = AnimationUtils.scaleTransitionCollision(highlightCircle2, 300 * scale,
                 30/scale * zoomLevel);
-        st2.setOnFinished(new EventHandler<ActionEvent>(){
-            public void handle(ActionEvent AE) {
-                root.getChildren().remove(highlightCircle2);
-            }});
+        st2.setOnFinished(AE -> root.getChildren().remove(highlightCircle2));
 
         FadeTransition ft1 = AnimationUtils.fadeOutTransition(highlightCircle1, 800 * scale);
         FadeTransition ft2 = AnimationUtils.fadeOutTransition(highlightCircle2, 600 * scale);
 
         if(isCollision) {
-            ft2.setOnFinished(new EventHandler<ActionEvent>() {
-                public void handle(ActionEvent AE) {
-                    boat.setCollisionInProgress(false);
-                    boat.getBoat().setBoatCollideSound(false);
-                    boat.getBoat().setMarkCollideSound(false);
-                    boat.getBoat().setOutOfBoundsSound(false);
+            boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
+            ft2.setOnFinished(AE -> {
+                boat.setCollisionInProgress(false);
+                boat.getBoat().setBoatCollideSound(false);
+                boat.getBoat().setMarkCollideSound(false);
+                boat.getBoat().setOutOfBoundsSound(false);
 
-                }
             });
         } else {
-            ft2.setOnFinished(new EventHandler<ActionEvent>() {
-                public void handle(ActionEvent AE) {
-                    nextMark = true;
-                }
-            });
+            ft2.setOnFinished(AE -> nextMark = true);
         }
 
         ParallelTransition pt = new ParallelTransition(st1, st2, ft1, ft2);
         pt.play();
+        parallelTransitions.add(pt);
+    }
+
+    /**
+     * Stops the current mark and boat highlighting animations by running them at 999 speed until completion
+     */
+    void stopHighlightAnimation(){
+        if(!parallelTransitions.isEmpty()){
+            for(ParallelTransition pt : parallelTransitions){
+                pt.setRate(999);
+            }
+        }
+        parallelTransitions.clear();
     }
 
     /**
@@ -752,7 +839,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                             drawLayline(displayBoat);
                         }
                     }
-                    highlightMark = scoreBoardController.isHighlightMarkSelected();
                     drawBoatAnnotation(displayBoat, annotations);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
                     displayBoat.annoGrabHandle.setVisible(true);
@@ -921,6 +1007,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
             boatHighlight.setScaleX(zoomLevel*1.5);
             boatHighlight.setScaleY(zoomLevel*1.5);
             boatHighlight.toFront();
+            if(!options.isTutorial() && !options.isPractice()){
+                updateBoatHighlight(boat);
+            }
         }
         icon.toFront();
     }
@@ -1341,15 +1430,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
 
     public void shiftArrow(boolean boardVisible){
-        if(boardVisible){
-            AnimationUtils.shiftPaneNodes(windCircle, -430, true);
-            AnimationUtils.shiftPaneNodes(windArrow, -430, true);
-            AnimationUtils.shiftPaneNodes(nextMarkArrow, -430, true);
-        }else{
-            AnimationUtils.shiftPaneNodes(windCircle, 430, true);
-            AnimationUtils.shiftPaneNodes(windArrow, 430, true);
-            AnimationUtils.shiftPaneNodes(nextMarkArrow, 430, true);
-        }
+        int shiftWidth = boardVisible ? -430 : 430;
+        AnimationUtils.shiftPaneNodes(windCircle, shiftWidth, true);
+        AnimationUtils.shiftPaneNodes(windArrow, shiftWidth, true);
+        if (nextMarkArrow != null && options.isParticipant()) AnimationUtils.shiftPaneNodes(nextMarkArrow, shiftWidth, true);
     }
 
     public void boatSelectedInTable(Boat boat){

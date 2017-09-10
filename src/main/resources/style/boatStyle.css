@@ -54,7 +54,6 @@
 
 #usersBoatHighlight {
     -fx-opacity: 0.4;
-    -fx-fill: #4DC58B;
 }
 
 #vectorLine {
@@ -80,6 +79,22 @@
 
 #nextMarkHighlight{
     -fx-fill: #4DC58B;
+    -fx-opacity: 0.6;
+}
+
+#defaultBoatHighlight{
+    -fx-fill: #4DC58B;
+    -fx-opacity: 0.6;
+}
+
+#redBoatHighlight{
+    -fx-fill: #c55d4d;
+    -fx-opacity: 0.6;
+}
+
+
+#orangeBoatHighlight{
+    -fx-fill: #c5974d;
     -fx-opacity: 0.6;
 }
 

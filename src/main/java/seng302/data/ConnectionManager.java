@@ -4,6 +4,7 @@ import seng302.models.Race;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -117,6 +118,20 @@ public class ConnectionManager extends Observable implements Runnable {
     private void sendAllXMLsToClient(int id) {
         for (byte[] xmlMessage : xmlMessages.values()) {
             sendToClient(id, xmlMessage);
+        }
+    }
+
+    /**
+     * Closes and removes the given connection
+     * @param connectionID
+     */
+    public void removeConnection(int connectionID) {
+        try {
+            Socket socket= clients.get(connectionID);
+            socket.close();
+            clients.remove(connectionID);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
