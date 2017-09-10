@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.canvas.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.canvas.Canvas?>
@@ -29,7 +20,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<StackPane fx:id="stackPane" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/generalStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.Controller">
+<StackPane fx:id="stackPane" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/generalStyle.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.Controller">
    <children>
    
            <AnchorPane fx:id="canvasAnchor" minHeight="200.0" minWidth="200.0" prefHeight="1080.0" prefWidth="1395.0" style="-fx-background-color: #aae7df;">
@@ -59,6 +50,11 @@
                            <ListView fx:id="overViewList" maxHeight="500.0" maxWidth="400.0" minHeight="150.0" minWidth="100.0" mouseTransparent="true" prefHeight="300.0" prefWidth="300.0" />
                        </children>
                    </VBox>
+                   <Group fx:id="root" layoutY="-1.0">
+                       <children>
+                           <Canvas fx:id="canvas" height="400.0" width="298.0" />
+                       </children>
+                   </Group>
                    <ImageView fx:id="mapImageView1" fitHeight="88.0" fitWidth="100.0" layoutX="10.0" layoutY="10.0" pickOnBounds="true" />
                <Label fx:id="lblWindSpeed" layoutX="1422.0" layoutY="79.0" text="Speed" AnchorPane.rightAnchor="457.0" AnchorPane.topAnchor="79.0" />
                <ImageView fx:id="imvSpeedScale" fitHeight="9.0" fitWidth="82.0" layoutX="1394.0" layoutY="67.0" AnchorPane.rightAnchor="442.0" AnchorPane.topAnchor="67.0">
@@ -123,11 +119,6 @@
                   </Label>
                        </children>
                    </GridPane>
-                   <Group fx:id="root" layoutY="-1.0">
-                       <children>
-                           <Canvas fx:id="canvas" height="400.0" width="298.0" />
-                       </children>
-                   </Group>
             <AnchorPane fx:id="quickMenu" layoutX="1200.0" layoutY="946.0" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="60.0" AnchorPane.rightAnchor="-100.0">
                <children>
                   <Button fx:id="btnQuickMenuTrack" layoutX="33.0" layoutY="164.0" mnemonicParsing="false" onAction="#btnTrackPressed" opacity="0.7" AnchorPane.bottomAnchor="30.0" AnchorPane.rightAnchor="0.0">

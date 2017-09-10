@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.TouchPoint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
+import javafx.scene.transform.Transform;
 import seng302.models.CanvasCoordinate;
 import seng302.utilities.AnimationUtils;
 import seng302.views.BoatDisplay;
@@ -57,9 +58,11 @@ public class DisplayTouchController {
 
     public void displaySwipe(CanvasCoordinate swipeEnd, CanvasCoordinate swipeStart) {
         Line path = createHighlightPath(swipeStart, swipeEnd);
-
+        for (Transform transform : root.getTransforms()){
+            path.getTransforms().add(transform);
+        }
         touchTransition = AnimationUtils.touchInAction(path);
-        touchTransition.play();
+       // touchTransition.play();
     }
 
     private Line createHighlightPath(CanvasCoordinate swipeStart, CanvasCoordinate swipeEnd){
