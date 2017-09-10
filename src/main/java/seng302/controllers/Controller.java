@@ -278,7 +278,7 @@ public class Controller implements Initializable, Observer {
      */
     private void initDisplayDrag() {
         canvasAnchor.setOnMouseDragged(event -> {
-            if (DisplayUtils.zoomLevel != 1) {
+            if (DisplayUtils.zoomLevel != 1 && !event.isSynthesized()) {
                 DisplayUtils.dragDisplay((int) event.getX(), (int) event.getY());
                 raceViewController.redrawCourse();
                 raceViewController.redrawBoatPaths();
@@ -319,7 +319,7 @@ public class Controller implements Initializable, Observer {
                 root.getTransforms().clear();
                 mapImageView.setVisible(true);
                 nextMarkCircle.setVisible(false);
-                selectionController.setTrackingPoint(false);
+                //selectionController.setTrackingPoint(false);
                 DisplayUtils.resetOffsets();
             }
             raceViewController.redrawCourse();
