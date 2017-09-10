@@ -51,7 +51,7 @@ public class MainMenuClient extends Client {
 
                 boolean alreadyInList = false;
                 for(AvailableRace race : availableRaces){
-                    if(race.getIpAddress() == ((AvailableRace) arg).getIpAddress()){
+                    if(Objects.equals(race.getIpAddress(), ((AvailableRace) arg).getIpAddress())){
                         alreadyInList = true;
                     }
                 }
@@ -71,7 +71,11 @@ public class MainMenuClient extends Client {
 
     public void checkForRaces(){
         RegistrationType regoType = RegistrationType.REQUEST_RUNNING_GAMES;
-        this.sender = new ClientSender(clientListener.getClientSocket());
-        sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
+        try {
+            this.sender = new ClientSender(clientListener.getClientSocket());
+            sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
+        } catch (NullPointerException e){
+            System.out.println("Server is unreachable");
+        }
     }
 }

@@ -27,6 +27,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 public class MainMenuController implements Initializable{
@@ -279,8 +280,12 @@ public class MainMenuController implements Initializable{
         }else{
             AvailableRace race = tblAvailableRaces.getSelectionModel().getSelectedItem();
             System.out.println(race.getIpAddress() + " " + race.getPort());
+            String ipAddress = race.getIpAddress();
+            if (Objects.equals(ipAddress, ConnectionUtils.getPublicIp())){
+                ipAddress = "localhost";
+            }
             ClientOptions clientOptions =
-                    new ClientOptions(race.getIpAddress(), race.getPort(), GameMode.MULTIPLAYER, true, false);
+                    new ClientOptions(ipAddress, race.getPort(), GameMode.MULTIPLAYER, true, false);
             boolean clientStarted = main.startClient(clientOptions);
             if(clientStarted){
                 Thread.sleep(200);

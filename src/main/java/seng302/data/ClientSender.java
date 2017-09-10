@@ -23,7 +23,4 @@ public class ClientSender {
             e.printStackTrace();
         }
     }
-
-
-
 }
