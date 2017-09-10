@@ -248,16 +248,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if(!options.isTutorial() && !boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF)){
             displayCollisions(boatDisplay, point);
         }
-        if(nextMark && highlightMark && zoomLevel == 1){
-            highlightNextMark();
-            nextMark = false;
-        }
 
-        manageStartTiming(boatDisplay);
-        drawVirtualStartLine(boatDisplay);
-
-        moveSOGVector(boatDisplay);
-        moveVMGVector(boatDisplay);
         if(race.getRaceStatus() == STARTED) {
             addToBoatPath(boatDisplay, point);
         }
