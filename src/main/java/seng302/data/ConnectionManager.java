@@ -120,4 +120,18 @@ public class ConnectionManager extends Observable implements Runnable {
             sendToClient(id, xmlMessage);
         }
     }
+
+    /**
+     * Closes and removes the given connection
+     * @param connectionID
+     */
+    public void removeConnection(int connectionID) {
+        try {
+            Socket socket= clients.get(connectionID);
+            socket.close();
+            clients.remove(connectionID);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

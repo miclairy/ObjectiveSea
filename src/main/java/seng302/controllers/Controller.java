@@ -618,11 +618,13 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(nextMarkGrid, 430, true);
             AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
-            AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, false);
+            if (options.isParticipant()) {
+                AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, false);
+            }
             scoreboardVisible = false;
             raceViewController.shiftArrow(false);
             setUpTable();
-        }else{
+        } else {
             AnimationUtils.shiftPaneNodes(rightHandSide, -440, true);
             AnimationUtils.shiftPaneArrow(btnHide, -430, -1);
             AnimationUtils.shiftPaneNodes(imvSpeedScale, -430, true);
