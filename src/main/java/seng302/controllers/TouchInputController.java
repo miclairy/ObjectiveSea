@@ -117,6 +117,7 @@ import static java.lang.Math.hypot;
 
                 if (commandInt != -1) {
                     setChanged();
+                    notifyObservers();
                 }
             }
         }
@@ -139,21 +140,21 @@ import static java.lang.Math.hypot;
             return direction;
         }
 
-    public int changeOppositeRotationDirection(double windAngle, double oppositeWindAngle, double boatHeading, double touchAngle) {
+        public int changeOppositeRotationDirection(double windAngle, double oppositeWindAngle, double boatHeading, double touchAngle) {
 
-        int direction = -1;
+            int direction = -1;
 
-        if (boatHeading < windAngle && touchAngle > windAngle) {
-            direction = 6;
-        } else if (boatHeading < oppositeWindAngle && touchAngle > oppositeWindAngle) {
-            direction = 5;
-        } else if (((touchAngle - windAngle) < 180 && (touchAngle - windAngle) > 0) || ((touchAngle - windAngle) < -180 && (touchAngle - windAngle) > -360)) {
-            direction = 5;
-        } else if (((touchAngle - oppositeWindAngle) < 180 && (touchAngle - oppositeWindAngle) > 0) || ((touchAngle - oppositeWindAngle) < -180 && (touchAngle - oppositeWindAngle) > -360)) {
-            direction = 6;
+            if (boatHeading < windAngle && touchAngle > windAngle) {
+                direction = 6;
+            } else if (boatHeading < oppositeWindAngle && touchAngle > oppositeWindAngle) {
+                direction = 5;
+            } else if (((touchAngle - windAngle) < 180 && (touchAngle - windAngle) > 0) || ((touchAngle - windAngle) < -180 && (touchAngle - windAngle) > -360)) {
+                direction = 5;
+            } else if (((touchAngle - oppositeWindAngle) < 180 && (touchAngle - oppositeWindAngle) > 0) || ((touchAngle - oppositeWindAngle) < -180 && (touchAngle - oppositeWindAngle) > -360)) {
+                direction = 6;
+            }
+            return direction;
         }
-        return direction;
-    }
 
         public int getCommandInt() {
             return commandInt;
