@@ -10,6 +10,7 @@ import seng302.models.Race;
 import seng302.models.ServerOptions;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.Socket;
 import java.util.*;
 
@@ -39,6 +40,8 @@ public class Server implements Runnable, Observer {
     private ServerPacketBuilder packetBuilder;
     private CollisionManager collisionManager;
     private ServerOptions options;
+
+
 
     public Server(ServerOptions options) throws IOException {
         this.options = options;
@@ -340,8 +343,10 @@ public class Server implements Runnable, Observer {
     private void setBoatToDNF(int arg){
         for(Boat boat : raceUpdater.getRace().getCompetitors()){
             if(boat.getId().equals(arg)){
-                boat.setStatus(BoatStatus.DNF);
-                boat.changeSails();
+                if(!boat.getStatus().equals(BoatStatus.FINISHED)){
+                    boat.setStatus(BoatStatus.DNF);
+                    boat.changeSails();
+                }
             }
         }
     }

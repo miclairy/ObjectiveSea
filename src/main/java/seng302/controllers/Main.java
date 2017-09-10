@@ -21,6 +21,7 @@ import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplaySwitcher;
 import seng302.utilities.NoConnectionToServerException;
 import java.io.IOException;
+import java.net.BindException;
 
 
 public class Main extends Application {
@@ -133,13 +134,28 @@ public class Main extends Application {
         }
     }
 
-    public void startHostedRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions) throws Exception{
+    /**
+     * initilises a hosted race with the provided parameters
+     * @param course course name
+     * @param port port number to host
+     * @param isTutorial is hosted game a tutorial
+     * @param clientOptions client options
+     * @return whether starting hosted race was successful or not
+     * @throws Exception uncaught error
+     */
+    public boolean startHostedRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions) throws Exception{
         ServerOptions serverOptions = new ServerOptions();
         serverOptions.setPort(port);
         serverOptions.setRaceXML(course);
         serverOptions.setTutorial(isTutorial);
-        setupServer(serverOptions);
+        try{
+            setupServer(serverOptions);
+        } catch(BindException e){
+            showPortInUseError(port);
+            return false;
+        }
         startClient(clientOptions);
+        return true;
     }
 
     /**
@@ -207,6 +223,23 @@ public class Main extends Application {
         } else if (ex instanceof RaceUnavailableException) {
             message = "The race is not currently available.\n\n";
         }
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    /**
+     * shows a popup saying that port is in use.
+     * @param port port number to display
+     */
+    private void showPortInUseError(int port) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.getStylesheets().add("style/menuStyle.css");
+        dialogPane.getStyleClass().add("myDialog");
+        alert.setTitle("Failed to Host this Race");
+        alert.setHeaderText("Failed to Host this Race");
+        String message = "You already have a game running\n" +
+                "Please close that game to continue.";
         alert.setContentText(message);
         alert.showAndWait();
     }
