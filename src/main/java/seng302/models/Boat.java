@@ -63,6 +63,9 @@ public class Boat extends Observable implements Comparable<Boat>{
     private boolean boatColliding;
     private boolean markCollideSound = false;
     private boolean boatCollideSound = false;
+    private boolean outOfBounds;
+    private boolean outOfBoundsSound = false;
+
 
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StringProperty statusProperty = new SimpleStringProperty();
@@ -802,6 +805,22 @@ public class Boat extends Observable implements Comparable<Boat>{
                 tackOrGybe = false;
             }
         }
+    }
+
+    public boolean isOutOfBounds() {
+        return outOfBounds;
+    }
+
+    public void setOutOfBounds(boolean outOfBounds) {
+        this.outOfBounds = outOfBounds;
+    }
+
+    public boolean isOutOfBoundsSound() {
+        return outOfBoundsSound;
+    }
+
+    public void setOutOfBoundsSound(boolean outOfBoundsSound) {
+        this.outOfBoundsSound = outOfBoundsSound;
     }
 
     public boolean isSailsNeedUpdate() {

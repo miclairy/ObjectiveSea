@@ -30,9 +30,13 @@ public class Penalties {
 
     }
 
+    /**
+     * add damage to a boat that is out of bounds
+     * @param boat the boat out of bounds
+     */
     public void boatOutOfBounds(Boat boat){
-        if (System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 2500) {
-            boat.addDamage(10);
+        if (System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 250) {
+            boat.addDamage(1);
             boat.setTimeSinceLastCollision(System.currentTimeMillis());
         }
     }

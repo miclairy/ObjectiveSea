@@ -106,6 +106,26 @@ public class SoundController implements Runnable {
         }
     }
 
+    /**
+     * When a boat is out of bounds, boat damage sound and boundary sound plays
+     * @param boat
+     */
+    private void isOutOfBounds(Boat boat){
+        if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 5000) && boat.isOutOfBoundsSound()) {
+            if (boat.getBoatHealth() <= 20 && boat.getId().equals(clientID)) {
+                DisplaySwitcher.getGameSounds().boatDamage();
+                DisplaySwitcher.getGameSounds().playGameSound();
+            } else {
+                DisplaySwitcher.getGameSounds().playBuoySound();
+                DisplaySwitcher.getGameSounds().playGameSound();
+                DisplaySwitcher.getGameSounds().hitBoundary();
+                DisplaySwitcher.getGameSounds().playGameSound();
+            }
+            boat.setOutOfBoundsSound(false);
+            boat.setTimeSinceLastCollision(System.currentTimeMillis());
+        }
+    }
+
     @Override
     public void run() {
         while(running) {
@@ -114,6 +134,7 @@ public class SoundController implements Runnable {
                 checkPlacing(boat);
                 hasHitBoat(boat);
                 hasHitMark(boat);
+                isOutOfBounds(boat);
             }
             try {
                 Thread.sleep(500);

@@ -156,11 +156,15 @@ public class Server implements Runnable, Observer {
             for (Integer boatId : collision.getInvolvedBoats()) {
                 Boat boat = raceUpdater.getRace().getBoatById(boatId);
                 sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION);
-                if (collision.boatIsAtFault(boatId)) {
-                    sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION_PENALTY);
-                }
-                if(collision.getInvolvedBoats().size() == 1) {
-                    sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION_MARK);
+                if (collision.isOutOfBounds()){
+                    sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.OUT_OF_BOUNDS);
+                }else{
+                    if (collision.boatIsAtFault(boatId)) {
+                        sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION_PENALTY);
+                    }
+                    if(collision.getInvolvedBoats().size() == 1) {
+                        sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION_MARK);
+                    }
                 }
                 sendBoatStateMessage(boat);
             }

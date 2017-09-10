@@ -309,13 +309,15 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void displayCollisions(BoatDisplay displayBoat, CanvasCoordinate point) {
         Boat boat = displayBoat.getBoat();
 
-        if(boat.isMarkColliding() || boat.isBoatColliding()){
+        if(boat.isMarkColliding() || boat.isBoatColliding() || boat.isOutOfBounds()){
             if(!displayBoat.collisionInProgress){
                 highlightAnimation(point, displayBoat, true, "collisionCircle", 1);
                 displayBoat.setCollisionInProgress(true);
             }
             boat.setMarkColliding(false);
             boat.setBoatColliding(false);
+            boat.setOutOfBounds(false);
+
         }
 
         if (boat.isFinished() && boat.isJustFinished()){
@@ -455,6 +457,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     boat.setCollisionInProgress(false);
                     boat.getBoat().setBoatCollideSound(false);
                     boat.getBoat().setMarkCollideSound(false);
+                    boat.getBoat().setOutOfBoundsSound(false);
+
                 }
             });
         } else {
