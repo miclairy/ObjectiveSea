@@ -173,25 +173,13 @@
 }
 
 #lblBoatsNum{
-    -fx-font: 54px "Helvetica Neue";
+    -fx-font: 44px "Helvetica Neue";
     -fx-font-weight: 700;
     -fx-text-fill: #ffffff;
 }
 
 #lblSpeedNum{
-    -fx-font: 54px "Helvetica Neue";
-    -fx-font-weight: 700;
-    -fx-text-fill: white;
-}
-
-#lblSpeedNumBig{
-    -fx-font: 42px "Helvetica Neue";
-    -fx-font-weight: 700;
-    -fx-text-fill: white;
-}
-
-#lblSpeedNumBigger{
-    -fx-font: 42px "Helvetica Neue";
+    -fx-font: 44px "Helvetica Neue";
     -fx-font-weight: 700;
     -fx-text-fill: white;
 }
@@ -274,7 +262,7 @@
 }
 
 #lblTime{
-    -fx-font: 20px "Helvetica Neue";
+    -fx-font: 16px "Helvetica Neue";
     -fx-font-weight: 700;
     -fx-text-fill: white;
 }
