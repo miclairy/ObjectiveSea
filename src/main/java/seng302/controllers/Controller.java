@@ -7,6 +7,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -310,7 +311,7 @@ public class Controller implements Initializable, Observer {
     private void initTouchEventListener() {
         scene.addEventFilter(TouchEvent.ANY, touch -> {
             if(touch.getTouchPoints().size() == 2 && DisplayUtils.zoomLevel != 1 && !DisplayUtils.externalZoomEvent) {
-                DisplayUtils.externalDragEvent = false;
+/*                DisplayUtils.externalDragEvent = true;
                 DisplayUtils.externalTouchEvent = true;
                 double touchX = (touch.getTouchPoints().get(0).getX() + touch.getTouchPoints().get(1).getX()) / 2;
                 double touchY = (touch.getTouchPoints().get(0).getY() + touch.getTouchPoints().get(1).getY()) / 2;
@@ -318,6 +319,7 @@ public class Controller implements Initializable, Observer {
                 raceViewController.redrawCourse();
                 raceViewController.redrawBoatPaths();
                 selectionController.deselectBoat();
+                */
             } else if(touch.getTouchPoints().size() == 1) {
                 DisplayUtils.externalTouchEvent = zoomSlider.isValueChanging();
                 DisplayUtils.externalDragEvent = touch.getEventType() != TouchEvent.TOUCH_RELEASED;
@@ -326,10 +328,13 @@ public class Controller implements Initializable, Observer {
     }
 
     private void initZoomEventListener() {
-        scene.addEventFilter(ZoomEvent.ANY, zoom -> {
-            DisplayUtils.externalZoomEvent = (zoom.getTotalZoomFactor() > 0.9 && zoom.getTotalZoomFactor() < 1.1);
-            zoomSlider.adjustValue(zoom.getTotalZoomFactor() * zoomSlider.getValue());
-        });
+/*        scene.setOnZoom(new EventHandler<ZoomEvent>() {
+            @Override
+            public void handle(ZoomEvent zoom) {
+                DisplayUtils.externalZoomEvent = (zoom.getTotalZoomFactor() > 0.9 && zoom.getTotalZoomFactor() < 1.1);
+                zoomSlider.adjustValue(zoomSlider.getValue() * zoom.getZoomFactor());
+            }
+        });*/
     }
 
     /**
