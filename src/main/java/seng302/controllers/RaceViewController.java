@@ -437,18 +437,16 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void updateBoatHighlight(BoatDisplay displayBoat){
         Boat boat = displayBoat.getBoat();
-
         if(displayBoat.collisionInProgress){
             animateBoatHighlightColor(PenaltyStatus.PENALTY, "redBoatHighlight");
         } else if(boat.getLeg() == 0){
-            if(startedEarlyPenalty) {
-            }else if(!MathUtils.boatBeforeStartline(boat.getCurrentPosition(),
+            if (startedEarlyPenalty) return;
+            if (!MathUtils.boatBeforeStartline(boat.getCurrentPosition(),
                     race.getCourse().getStartLine(),
                     race.getCourse().getCompoundMarks().get(2))){
                 startedEarlyPenalty = true;
                 controller.setUserHelpLabel("Start line was crossed early. It must be crossed again.");
                 animateBoatHighlightColor(PenaltyStatus.PENALTY, "redBoatHighlight");
-
             } else if(boat.getTimeStatus().equals(StartTimingStatus.EARLY)) {
                 animateBoatHighlightColor(PenaltyStatus.WARNING, "orangeBoatHighlight");
             } else {
@@ -511,6 +509,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         ParallelTransition pt = new ParallelTransition(st1, ft1);
         pt.play();
+        parallelTransitions.add(pt);
     }
 
 
