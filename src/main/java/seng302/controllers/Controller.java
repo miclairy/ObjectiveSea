@@ -512,6 +512,7 @@ public class Controller implements Initializable, Observer {
 
     /**
      * displays the current time according to the UTC offset, in the GUI on the overlay
+     * @param UTCOffset offset of the time zone you want to use
      */
     public void setTimeZone(double UTCOffset) {
         clockString.set(TimeUtils.setTimeZone(UTCOffset, race.getCurrentTimeInEpochMs()));

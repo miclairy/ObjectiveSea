@@ -3,6 +3,7 @@ package seng302.data;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 
 /**
  * Sends data out on the client side

@@ -13,6 +13,8 @@ import seng302.views.AvailableRace;
 
 import java.util.*;
 
+import static seng302.data.AC35StreamMessage.GAME_CANCEL;
+
 /**
  * Created by lga50 on 7/09/17.
  *
@@ -138,7 +140,7 @@ public class GameClient extends Client{
     public void initiateClientDisconnect() {
         if (options.isHost()){
             System.out.println("Client: Cancelling race");
-            byte[] gameClosePacket = packetBuilder.createGameCancelPacket(AC35StreamMessage.GAME_CANCEL);
+            byte[] gameClosePacket = packetBuilder.createGameCancelPacket(GAME_CANCEL);
             sender.sendToVM(gameClosePacket);
         }
         clientListener.disconnectClient();
