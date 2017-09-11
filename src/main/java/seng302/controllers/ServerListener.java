@@ -2,12 +2,15 @@ package seng302.controllers;
 
 import seng302.data.AC35StreamMessage;
 import seng302.data.BoatAction;
+import seng302.data.CourseName;
 import seng302.data.Receiver;
 import seng302.data.registration.RegistrationType;
 import seng302.models.Boat;
 import seng302.models.PolarTable;
 import seng302.models.Race;
+import seng302.utilities.ConnectionUtils;
 import seng302.utilities.PolarReader;
+import seng302.views.AvailableRace;
 
 import java.io.DataInput;
 import java.io.DataInputStream;
@@ -15,6 +18,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static seng302.data.AC35StreamField.*;
 
@@ -81,9 +86,10 @@ public class ServerListener extends Receiver implements Runnable{
 
     private void recordHostGameMessage(byte[] body){
         System.out.println("Server: Recording game on VM");
-        System.out.println(socket.getInetAddress());
+        Map<AvailableRace, byte[]> availableRace = new HashMap<>();
+        availableRace.put(parseHostedGameMessage(body), body);
         setChanged();
-        notifyObservers(body);
+        notifyObservers(availableRace);
     }
 
     /**
@@ -95,6 +101,24 @@ public class ServerListener extends Receiver implements Runnable{
         byte registrationByte = body[REGISTRATION_REQUEST_TYPE.getStartIndex()];
         setChanged();
         notifyObservers(RegistrationType.getTypeFromByte(registrationByte));
+    }
+
+    /**
+     * Method to decode a host game packet from the server
+     * @param body body of the hosted game, containing all relevant information about a game
+     */
+    private AvailableRace parseHostedGameMessage(byte[] body){
+        long serverIpLong = byteArrayRangeToLong(body, HOST_GAME_IP.getStartIndex(), HOST_GAME_IP.getEndIndex());
+        String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
+        System.out.println(serverIpLong);
+        System.out.println(serverIP);
+        int serverPort = byteArrayRangeToInt(body, HOST_GAME_PORT.getStartIndex(), HOST_GAME_PORT.getEndIndex());
+        int courseIndex = byteArrayRangeToInt(body, HOST_GAME_MAP.getStartIndex(), HOST_GAME_MAP.getEndIndex());
+        long gameSpeed = byteArrayRangeToLong(body, HOST_GAME_SPEED.getStartIndex(), HOST_GAME_SPEED.getEndIndex());
+        int gameStatus = byteArrayRangeToInt(body, HOST_GAME_STATUS.getStartIndex(), HOST_GAME_STATUS.getEndIndex());
+        int gameMinPlayers = byteArrayRangeToInt(body, HOST_GAME_REQUIRED_PLAYERS.getStartIndex(), HOST_GAME_REQUIRED_PLAYERS.getEndIndex());
+        int gameCurrentPlayers = byteArrayRangeToInt(body, HOST_GAME_CURRENT_PLAYERS.getStartIndex(), HOST_GAME_CURRENT_PLAYERS.getEndIndex());
+        return new AvailableRace(CourseName.getCourseNameFromInt(courseIndex).getText(), gameCurrentPlayers, serverPort, serverIP);
     }
 
     /**

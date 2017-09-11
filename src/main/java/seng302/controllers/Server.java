@@ -7,12 +7,17 @@ import seng302.models.Boat;
 import seng302.models.Collision;
 import seng302.models.Race;
 import seng302.models.ServerOptions;
+import seng302.utilities.ConnectionUtils;
+import seng302.views.AvailableRace;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.util.*;
 
+import static seng302.data.AC35StreamField.*;
+import static seng302.data.AC35StreamField.HOST_GAME_CURRENT_PLAYERS;
+import static seng302.data.AC35StreamField.HOST_GAME_REQUIRED_PLAYERS;
 import static seng302.data.AC35StreamXMLMessage.BOAT_XML_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.RACE_XML_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.REGATTA_XML_MESSAGE;
@@ -29,7 +34,7 @@ public class Server implements Runnable, Observer {
     private Map<Boat, Integer> lastMarkRoundingSent = new HashMap<>();
     private int nextViewerID = 0;
 
-    private ArrayList<byte[]> availableRaces = new ArrayList<>();
+    private Map<AvailableRace, byte[]> availableRaces = new HashMap<>();
 
     private RaceUpdater raceUpdater;
     private Thread raceUpdaterThread;
@@ -284,7 +289,7 @@ public class Server implements Runnable, Observer {
             if(arg instanceof  RegistrationType){
                 manageRegistration((ServerListener) observable, (RegistrationType) arg);
             }else{
-                availableRaces.add((byte[])arg);
+                availableRaces.putAll((HashMap<AvailableRace, byte[]>) arg);
             }
         }
     }
@@ -318,7 +323,7 @@ public class Server implements Runnable, Observer {
             case REQUEST_RUNNING_GAMES:
                 System.out.println("Server: Client requesting games");
                 connectionManager.addConnection(nextViewerID, serverListener.getSocket());
-                for(byte[] race : availableRaces){
+                for(byte[] race : availableRaces.values()){
                     byte[] racePacket = packetBuilder.createGameRegistrationPacket(race);
                     connectionManager.sendToClient(nextViewerID, racePacket);
                 }

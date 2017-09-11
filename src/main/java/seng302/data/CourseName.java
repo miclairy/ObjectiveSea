@@ -2,7 +2,7 @@ package seng302.data;
 
 public enum CourseName {
 
-    AC35(0, "AC35"), AC33(1, "AC33"), ATHENS(2, "Athens"), LAKE_TEKAPO(3, "Lake Tekapo"), LAKE_TAUPO(4, "Lake Taupo"), MALMO(5, "Malmo");
+    AC35(0, "AC35"), AC33(1, "AC33"), LAKE_TEKAPO(3, "Lake Tekapo"), LAKE_TAUPO(4, "Lake Taupo"), MALMO(5, "Malmo"), ATHENS(2, "Athens");
 
     private final int value;
     private final String name;
