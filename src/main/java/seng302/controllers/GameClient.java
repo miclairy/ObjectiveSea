@@ -136,6 +136,10 @@ public class GameClient extends Client{
     }
 
     public void initiateClientDisconnect() {
+        if (options.isHost()){
+            byte[] gameClosePacket = packetBuilder.createGameCancelPacket(AC35StreamMessage.GAME_CANCEL);
+            this.sender.sendToVM(gameClosePacket);
+        }
         clientListener.disconnectClient();
         race.getBoatById(clientID).setStatus(BoatStatus.DNF);
     }

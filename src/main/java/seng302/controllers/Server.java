@@ -288,6 +288,16 @@ public class Server implements Runnable, Observer {
         } else if(observable instanceof ServerListener){
             if(arg instanceof  RegistrationType){
                 manageRegistration((ServerListener) observable, (RegistrationType) arg);
+            }else if(arg instanceof String){
+                AvailableRace foundRace = null;
+                for(AvailableRace race : availableRaces.keySet()){
+                    if(race.getIpAddress().equals(arg)){
+                       foundRace = race;
+                    }
+                }
+                if(foundRace != null){
+                    availableRaces.remove(foundRace);
+                }
             }else{
                 availableRaces.putAll((HashMap<AvailableRace, byte[]>) arg);
             }

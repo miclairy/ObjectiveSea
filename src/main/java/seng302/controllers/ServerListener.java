@@ -64,6 +64,9 @@ public class ServerListener extends Receiver implements Runnable{
                         case HOST_GAME_MESSAGE:
                             recordHostGameMessage(body);
                             break;
+                        case GAME_CANCEL:
+                            removeHostedGame(body);
+                            break;
                         case REGISTRATION_REQUEST:
                             parseRegistrationRequestMessage(body);
                             break;
@@ -110,8 +113,6 @@ public class ServerListener extends Receiver implements Runnable{
     private AvailableRace parseHostedGameMessage(byte[] body){
         long serverIpLong = byteArrayRangeToLong(body, HOST_GAME_IP.getStartIndex(), HOST_GAME_IP.getEndIndex());
         String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
-        System.out.println(serverIpLong);
-        System.out.println(serverIP);
         int serverPort = byteArrayRangeToInt(body, HOST_GAME_PORT.getStartIndex(), HOST_GAME_PORT.getEndIndex());
         int courseIndex = byteArrayRangeToInt(body, HOST_GAME_MAP.getStartIndex(), HOST_GAME_MAP.getEndIndex());
         long gameSpeed = byteArrayRangeToLong(body, HOST_GAME_SPEED.getStartIndex(), HOST_GAME_SPEED.getEndIndex());
@@ -171,5 +172,12 @@ public class ServerListener extends Receiver implements Runnable{
 
     public void setClientId(Integer clientId) {
         this.clientId = clientId;
+    }
+
+    private void removeHostedGame(byte[] body){
+        long serverIpLong = byteArrayRangeToLong(body, HOST_GAME_IP.getStartIndex(), HOST_GAME_IP.getEndIndex());
+        String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
+        setChanged();
+        notifyObservers(serverIP);
     }
 }

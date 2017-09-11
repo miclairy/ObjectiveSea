@@ -7,9 +7,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import static seng302.data.AC35StreamField.*;
-import static seng302.data.AC35StreamMessage.BOAT_ACTION_MESSAGE;
-import static seng302.data.AC35StreamMessage.HOST_GAME_MESSAGE;
-import static seng302.data.AC35StreamMessage.REGISTRATION_REQUEST;
+import static seng302.data.AC35StreamMessage.*;
 
 /**
  * Builds packets specific to the client
@@ -53,5 +51,13 @@ public class ClientPacketBuilder extends PacketBuilder {
         byte[] header = super.createHeader(type);
         addFieldToByteArray(header, HEADER_SOURCE_ID, sourceId);
         return header;
+    }
+
+    public byte[] createGameCancelPacket(AC35StreamMessage type) {
+        byte[] header = super.createHeader(type);
+        byte[] body = new byte[4];
+        long ip = ConnectionUtils.ipStringToLong(ConnectionUtils.getPublicIp());
+        addFieldToByteArray(body, HOST_GAME_IP, ip);
+        return generatePacket(header, body);
     }
 }
