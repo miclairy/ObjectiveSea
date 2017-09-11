@@ -19,7 +19,7 @@ public class ServerOptions {
     private String raceXML;
     private boolean isTutorial;
     private Integer numRacesToRun;
-    private boolean runAllServerTypes;
+    private boolean runRaceManager;
 
     /**
      * Constructor with default options
@@ -31,7 +31,7 @@ public class ServerOptions {
         raceXML = DEFAULT_COURSE;
         isTutorial = false;
         numRacesToRun = 1;
-        runAllServerTypes = false;
+        runRaceManager = false;
     }
 
     /**
@@ -44,7 +44,7 @@ public class ServerOptions {
         raceXML = DEFAULT_COURSE;
         isTutorial = false;
         numRacesToRun = 1;
-        runAllServerTypes = false;
+        runRaceManager = false;
     }
 
     public Double getSpeedScale() {
@@ -120,11 +120,11 @@ public class ServerOptions {
         return numRacesToRun == -1;
     }
 
-    public boolean isRunAllServerTypes() {
-        return runAllServerTypes;
+    public boolean isRunRaceManager() {
+        return runRaceManager;
     }
 
-    public void setRunAllServerTypes(boolean runAllServerTypes) {
-        this.runAllServerTypes = runAllServerTypes;
+    public void setRunRaceManager(boolean runRaceManager) {
+        this.runRaceManager = runRaceManager;
     }
 }

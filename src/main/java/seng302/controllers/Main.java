@@ -12,7 +12,6 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.geometry.Rectangle2D;
 import javafx.application.Platform;
-import seng302.data.ClientPacketBuilder;
 import seng302.data.registration.ServerFullException;
 import seng302.models.ClientOptions;
 import seng302.models.ServerOptions;
@@ -84,7 +83,7 @@ public class Main extends Application {
                             serverOptions.setNumRacesToRun(Integer.parseInt(args[i + 1]));
                             break;
                         case "-g":
-                            serverOptions.setRunAllServerTypes(true);
+                            serverOptions.setRunRaceManager(true);
                             break;
                         default:
                             throw new IllegalArgumentException(String.format("Unknown argument \"%s\"", args[i]));
@@ -108,16 +107,17 @@ public class Main extends Application {
      * Creates a Server object, puts it in it's own thread and starts the thread
      */
     private void setupServer(ServerOptions serverOptions) throws IOException {
-        server = new GameServer(serverOptions);
-        ConnectionUtils.setServer(server);
-        Thread serverThread = new Thread(server);
-        serverThread.setName("Server");
-        serverThread.start();
-        if(serverOptions.isRunAllServerTypes()){
+        if(serverOptions.isRunRaceManager()){
             managerServer = new RaceManagerServer(serverOptions);
             Thread raceManagerThread = new Thread(managerServer);
-            serverThread.setName("raceManagerServer");
+            raceManagerThread.setName("raceManagerServer");
             raceManagerThread.start();
+        }else{
+            server = new GameServer(serverOptions);
+            ConnectionUtils.setServer(server);
+            Thread serverThread = new Thread(server);
+            serverThread.setName("Server");
+            serverThread.start();
         }
     }
 

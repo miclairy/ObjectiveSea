@@ -2,7 +2,6 @@ package seng302.controllers;
 
 import seng302.data.ConnectionManager;
 import seng302.data.ServerPacketBuilder;
-import seng302.data.registration.RegistrationResponseStatus;
 import seng302.data.registration.RegistrationType;
 import seng302.models.ServerOptions;
 import seng302.views.AvailableRace;
@@ -25,7 +24,7 @@ public class RaceManagerServer extends Server {
     public RaceManagerServer(ServerOptions options) throws IOException {
         this.options = options;
         packetBuilder = new ServerPacketBuilder();
-        connectionManager = new ConnectionManager(2827);
+        connectionManager = new ConnectionManager(2828);
         connectionManager.addObserver(this);
     }
 
