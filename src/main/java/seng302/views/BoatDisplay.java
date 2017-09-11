@@ -297,7 +297,7 @@ public class BoatDisplay implements Observer {
     /**
      * updates display boat when boat passes a mark and positon updates. Adds new position to sparkline
      * @param boatObservable the boat that has an updated placing
-     * @param arg
+     * @param arg update variable
      */
     @Override
     public void update(Observable boatObservable, Object arg) {
