@@ -1,8 +1,11 @@
 package seng302.controllers;
 
 import javafx.event.EventType;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import seng302.data.BoatAction;
 import seng302.models.*;
 import seng302.utilities.DisplayUtils;
@@ -49,21 +52,20 @@ import static java.lang.Math.abs;
 //                    touch.consume();
 //                }
 //            });
+//
 
-//            scene.addEventFilter(SwipeEvent.ANY, swipe -> {
-//                displayTouchController.displaySwipe(swipe.getScreenX(), swipe.getScreenY());
-//            });
-
-            scene.addEventFilter(ScrollEvent.SCROLL_STARTED, swipe -> {
+            Pane touchPane = (Pane) scene.lookup("#touchPane");
+            touchPane.setOnScrollStarted(swipe -> {
                 swipeStart = new CanvasCoordinate(swipe.getScreenX(), swipe.getScreenY());
             });
 
-            scene.addEventFilter(ScrollEvent.SCROLL_FINISHED, swipe -> {
+            touchPane.setOnScrollFinished(swipe -> {
                 CanvasCoordinate swipeEnd = new CanvasCoordinate(swipe.getScreenX(), swipe.getScreenY());
                 displayTouchController.displaySwipe(swipeEnd, swipeStart);
                 double swipeBearing = MathUtils.getHeadingBetweenTwoCoodinates(swipeStart, swipeEnd);
                 swipeAction(swipe, swipeBearing);
             });
+
         }
 
         private void swipeAction(ScrollEvent swipe, double swipeBearing){
@@ -140,5 +142,6 @@ import static java.lang.Math.abs;
         public void setClientID(int clientID) {
             this.clientID = clientID;
         }
-    }
+
+}
 

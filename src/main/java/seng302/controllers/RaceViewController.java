@@ -600,6 +600,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
         drawNextMarkArrow();
         redrawRaceLines();
+        DisplayTouchController.setRoot(root);
     }
 
     /**

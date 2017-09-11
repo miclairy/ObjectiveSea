@@ -58,9 +58,9 @@ public class DisplayTouchController {
 
     public void displaySwipe(CanvasCoordinate swipeEnd, CanvasCoordinate swipeStart) {
         Line path = createHighlightPath(swipeStart, swipeEnd);
-        for (Transform transform : root.getTransforms()){
-            path.getTransforms().add(transform);
-        }
+//        for (Transform transform : root.getTransforms()){
+//            path.getTransforms().add(transform);
+//        }
         touchTransition = AnimationUtils.touchInAction(path);
        // touchTransition.play();
     }
