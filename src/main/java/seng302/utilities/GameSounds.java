@@ -76,6 +76,7 @@ public class GameSounds {
     private boolean endless = false;
     private MediaPlayer mediaPlayer;
     private int randomSeaGull;
+    private double volume = 1.0;
 
     public void mainMenuMusic() {
         selectedMusic = "/musicFiles/gameMusic/MainMenuMusic.wav";
@@ -259,10 +260,9 @@ public class GameSounds {
     /**
      * Plays single instance sounds (e.g.voice overs)
      */
-    public void playGameSound () {
+    public void playGameSound() {
         URL resource = getClass().getResource(selectedVoiceOver);
         mediaPlayer = new MediaPlayer(new Media(resource.toString()));
-        double volume = mediaPlayer.getVolume();
         mediaPlayer.setVolume(volume);
         mediaPlayer.play();
     }
@@ -294,5 +294,15 @@ public class GameSounds {
         endless = false;
         clip.setFramePosition(0);
     }
+
+    public void setVolume(double volume) {
+        this.volume = volume;
+    }
+
+
+//    public MediaPlayer getMediaPlayer() {
+//        return mediaPlayer;
+//    }
+
 }
 

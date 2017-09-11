@@ -29,6 +29,13 @@
     -fx-background-color: white;
 }
 
+#settingsGrid{
+    -fx-effect: dropshadow(gaussian, #BEBEBE, 20, 0, 0, 0);
+    -fx-border-radius: 40 40 40 40;
+    -fx-background-radius: 40 40 40 40;
+    -fx-background-color: white;
+}
+
 
 #liveGameGrid{
     -fx-effect: dropshadow(gaussian, #BEBEBE, 20, 0, 0, 0);

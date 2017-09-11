@@ -39,10 +39,17 @@ public class MainMenuController implements Initializable{
     @FXML Button btnBackPrac;
     @FXML Button btnCourseStart;
     @FXML Button btnBackHost;
+    @FXML Button btnBackSettings;
+    @FXML ImageView settingsIcon;
+    @FXML ImageView soundEffectsOn;
+    @FXML ImageView soundEffectsOff;
+    @FXML ImageView musicOn;
+    @FXML ImageView musicOff;
     @FXML GridPane liveGameGrid;
     @FXML GridPane btnGrid;
     @FXML GridPane practiceGrid;
     @FXML GridPane courseGrid;
+    @FXML GridPane settingsGrid;
     @FXML TextField txtIPAddress;
     @FXML TextField txtPortNumber;
     @FXML Label lblIP;
@@ -77,6 +84,7 @@ public class MainMenuController implements Initializable{
         liveGameGrid.setVisible(false);
         practiceGrid.setVisible(false);
         courseGrid.setVisible(false);
+        settingsGrid.setVisible(false);
     }
 
     private void showJoinProgressIndicator(){
@@ -122,6 +130,20 @@ public class MainMenuController implements Initializable{
         liveGameGrid.setVisible(true);
         AnimationUtils.slideOutTransition(courseGrid);
         AnimationUtils.slideInTransition(liveGameGrid);
+    }
+
+    @FXML private void showSettings() {
+        settingsGrid.setVisible(true);
+        settingsIcon.setVisible(false);
+        AnimationUtils.slideOutTransition(btnGrid);
+        AnimationUtils.slideInTransition(settingsGrid);
+    }
+
+    @FXML private void backToMainMenuSettings() {
+        btnGrid.setVisible(true);
+        settingsIcon.setVisible(true);
+        AnimationUtils.slideOutTransition(settingsGrid);
+        AnimationUtils.slideInTransition(btnGrid);
     }
 
     @FXML private void loadTutorial() throws Exception {
@@ -238,6 +260,8 @@ public class MainMenuController implements Initializable{
         joinGame(true);
     }
 
+    @FXML
+
     /**
      * attaches listeners to buttons to allow for hover and click animations
      */
@@ -254,6 +278,7 @@ public class MainMenuController implements Initializable{
         addButtonListeners(btnBackPrac);
         addButtonListeners(btnCourseStart);
         addButtonListeners(btnBackHost);
+        addButtonListeners(btnBackSettings);
     }
 
     private void setImageAnimations(){
@@ -269,6 +294,30 @@ public class MainMenuController implements Initializable{
         addButtonListeners(AC33);
         addButtonListeners(Athens);
         addButtonListeners(Malmo);
+        addButtonListeners(settingsIcon);
+        settingsIcon.setOnMouseClicked(( MouseEvent event ) ->{ showSettings();});
+        soundEffectsOn.setOnMouseClicked(( MouseEvent event ) ->{
+            try {
+                setSoundEffectsOff();
+            } catch (UnsupportedAudioFileException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (LineUnavailableException e) {
+                e.printStackTrace();
+            }
+        });
+        soundEffectsOff.setOnMouseClicked(( MouseEvent event ) ->{
+            try {
+                setSoundEffectsOn();
+            } catch (UnsupportedAudioFileException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (LineUnavailableException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void setLabelPromptAnimations(){
@@ -350,5 +399,27 @@ public class MainMenuController implements Initializable{
         DisplaySwitcher.getGameSounds().oceanWaves();
         DisplaySwitcher.getGameSounds().playEndlessMusic();
         DisplaySwitcher.getGameSounds().startSeaGullNoise();
+    }
+
+    private void muteMusic() throws UnsupportedAudioFileException, IOException, LineUnavailableException{
+        DisplaySwitcher.getGameSounds().setVolume(0.0);
+        musicOn.setVisible(false);
+        musicOff.setVisible(true);
+    }
+
+    private void unmuteMusic() {
+
+    }
+
+    private void setSoundEffectsOff() throws UnsupportedAudioFileException, IOException, LineUnavailableException{
+        DisplaySwitcher.getGameSounds().setVolume(0.0);
+        soundEffectsOn.setVisible(false);
+        soundEffectsOff.setVisible(true);
+    }
+
+    private void setSoundEffectsOn() throws UnsupportedAudioFileException, IOException, LineUnavailableException{
+        DisplaySwitcher.getGameSounds().setVolume(1.0);
+        soundEffectsOn.setVisible(true);
+        soundEffectsOff.setVisible(false);
     }
 }
