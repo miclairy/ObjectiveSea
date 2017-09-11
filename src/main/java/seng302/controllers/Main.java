@@ -127,7 +127,7 @@ public class Main extends Application {
         displaySwitcher.loadRaceView(options);
         if (options.isParticipant()) {
             KeyInputController keyInputController = new KeyInputController(DisplaySwitcher.getScene(), Client.getRace());
-            TouchInputController touchInputController = new TouchInputController(DisplaySwitcher.getScene(), Client.getRace());
+            TouchInputController touchInputController = new TouchInputController(DisplaySwitcher.getScene(), Client.getRace(), Client.getRace().getBoatById(getClient().getClientID()));
             client.setInputControllers(keyInputController, touchInputController);
             keyInputController.addObserver(client);
             touchInputController.addObserver(client);
