@@ -9,6 +9,7 @@ import javafx.event.EventTarget;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.TouchPoint;
+import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.transform.Transform;
@@ -24,7 +25,7 @@ import static seng302.utilities.DisplayUtils.zoomLevel;
 public class DisplayTouchController {
 
     private Scene scene;
-    public static Group root;
+    public static Pane root;
     private ScaleTransition touchTransition;
 
     public DisplayTouchController(Scene scene){
@@ -52,15 +53,15 @@ public class DisplayTouchController {
         return circle;
     }
 
-    public static void setRoot(Group root) {
+    public static void setRoot(Pane root) {
         DisplayTouchController.root = root;
     }
 
     public void displaySwipe(CanvasCoordinate swipeEnd, CanvasCoordinate swipeStart) {
         Line path = createHighlightPath(swipeStart, swipeEnd);
-//        for (Transform transform : root.getTransforms()){
-//            path.getTransforms().add(transform);
-//        }
+        for (Transform transform : root.getTransforms()){
+            path.getTransforms().add(transform);
+        }
         touchTransition = AnimationUtils.touchInAction(path);
        // touchTransition.play();
     }

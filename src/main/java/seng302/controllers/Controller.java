@@ -19,10 +19,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.TouchEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Callback;
@@ -122,6 +119,8 @@ public class Controller implements Initializable, Observer {
     private ScoreBoardController scoreBoardController = new ScoreBoardController();
     @FXML
     private SelectionController selectionController;
+    @FXML
+    private Pane touchPane;
 
     private boolean raceStatusChanged = true;
     private Race race;
@@ -257,7 +256,7 @@ public class Controller implements Initializable, Observer {
         raceViewController.setOptions(options);
         raceViewController.updateWindArrow();
         raceViewController.start();
-        DisplayTouchController.setRoot(root);
+        DisplayTouchController.setRoot(touchPane);
     }
 
     @FXML public void exitRunningRace() {
