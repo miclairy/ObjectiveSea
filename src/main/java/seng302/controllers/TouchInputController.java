@@ -34,6 +34,8 @@ import static java.lang.Math.hypot;
         private DisplayTouchController displayTouchController;
         private CanvasCoordinate swipeStart;
         private Boat playersBoat;
+        private double timeElapsed;
+        private double touchTime;
 
         /**
          * Sets up user key press handler.
@@ -44,28 +46,36 @@ import static java.lang.Math.hypot;
             this.race = race;
             this.displayTouchController = new DisplayTouchController(scene);
             touchEventListener();
-
         }
 
         private void touchEventListener() {
-//            scene.addEventFilter(TouchEvent.TOUCH_STATIONARY, touch -> {
-//                checkTouchMoved(touch);
-//                if ( consumedTouchEvents.contains(touch.getEventType())) {
-//                    touch.consume();
-//                }
-//            });
-//
-
             Pane touchPane = (Pane) scene.lookup("#touchPane");
+
+            touchPane.addEventFilter(TouchEvent.ANY, touch -> {
+                if(touch.getEventType() == TouchEvent.TOUCH_PRESSED) {
+                    touchTime = System.currentTimeMillis();
+                }
+                checkTouchMoved(touch);
+                if ( consumedTouchEvents.contains(touch.getEventType())) {
+                    touch.consume();
+                }
+            });
+
             touchPane.setOnScrollStarted(swipe -> {
                 swipeStart = new CanvasCoordinate(swipe.getScreenX(), swipe.getScreenY());
+                timeElapsed = System.currentTimeMillis();
             });
 
             touchPane.setOnScrollFinished(swipe -> {
                 CanvasCoordinate swipeEnd = new CanvasCoordinate(swipe.getScreenX(), swipe.getScreenY());
-                displayTouchController.displaySwipe(swipeEnd, swipeStart);
-                double swipeBearing = MathUtils.getHeadingBetweenTwoCoodinates(swipeStart, swipeEnd);
-                swipeAction(swipe, swipeBearing);
+                double differenceX = Math.pow((swipeStart.getX() - swipeEnd.getX()), 2);
+                double differenceY = Math.pow((swipeStart.getY() - swipeEnd.getY()), 2);
+                double lengthXY = Math.sqrt(differenceX + differenceY);
+                if(lengthXY > 130 && Math.abs(System.currentTimeMillis() - timeElapsed) < 300) {
+                    displayTouchController.displaySwipe(swipeEnd, swipeStart);
+                    double swipeBearing = MathUtils.getHeadingBetweenTwoCoodinates(swipeStart, swipeEnd);
+                    swipeAction(swipe, swipeBearing);
+                }
             });
 
         }
@@ -77,7 +87,6 @@ import static java.lang.Math.hypot;
             if (root.getTransforms().size() > 1){
                 headingDifference = swipeBearing;
             }
-            System.out.println(boatHeading + " swipe "  + swipeBearing + " difference " + headingDifference);
             if (headingDifference <= 15 || headingDifference >= 165){
                 commandInt = BoatAction.SAILS_IN.getType();
             } else {
@@ -89,7 +98,7 @@ import static java.lang.Math.hypot;
 
         private void checkTouchMoved(TouchEvent touchEvent) {
             Boat playersBoat = race.getBoatById(clientID);
-            if (touchEvent.getTouchPoints().size() == 1 && !DisplayUtils.externalTouchEvent) {
+            if (touchEvent.getTouchPoints().size() == 1 && !DisplayUtils.externalTouchEvent && (System.currentTimeMillis() - touchTime) > 200) {
                 CanvasCoordinate touchPoint = new CanvasCoordinate(touchEvent.getTouchPoint().getSceneX(), touchEvent.getTouchPoint().getSceneY());
                 CanvasCoordinate boatPosition = DisplayUtils.convertFromLatLon(playersBoat.getCurrentPosition());
                 double windAngle = race.getCourse().getWindDirection() + 180;
