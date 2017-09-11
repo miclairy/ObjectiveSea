@@ -176,10 +176,10 @@ public class Client implements Runnable, Observer {
             } else if (arg instanceof RegistrationResponse) {
                 serverRegistrationResponse = (RegistrationResponse) arg;
             }
-        } else if (o == keyInputController){
-            sendBoatKeyCommandPacket();
         } else if (o == touchInputController) {
             sendBoatTouchCommandPacket();
+        } else if (o == keyInputController){
+            sendBoatKeyCommandPacket();
         }
     }
 

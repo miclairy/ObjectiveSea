@@ -1,14 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.canvas.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Group?>
 <?import javafx.scene.canvas.Canvas?>
@@ -29,7 +20,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<StackPane fx:id="stackPane" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/generalStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.Controller">
+<StackPane fx:id="stackPane" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/generalStyle.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.Controller">
    <children>
    
            <AnchorPane fx:id="canvasAnchor" minHeight="200.0" minWidth="200.0" prefHeight="1080.0" prefWidth="1395.0" style="-fx-background-color: #aae7df;">
@@ -92,7 +83,7 @@
                            </Label>
                        </children>
                    </AnchorPane>
-                   <Button id="btnClose" fx:id="btnHide" layoutX="1391.0" layoutY="1001.0" mnemonicParsing="false" onAction="#hideScoreboard" opacity="0.7" AnchorPane.bottomAnchor="35.0">
+                   <Button id="btnClose" fx:id="btnHide" layoutX="1391.0" layoutY="1001.0" mnemonicParsing="false" onMouseClicked="#hideScoreboard" onTouchPressed="#hideScoreboard" opacity="0.7" AnchorPane.bottomAnchor="35.0">
                        <padding>
                            <Insets bottom="7.0" left="20.0" right="20.0" top="7.0" />
                        </padding>

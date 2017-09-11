@@ -1,5 +1,6 @@
 package seng302.controllers;
 
+import javafx.event.Event;
 import javafx.event.EventType;
 import javafx.scene.Scene;
 import javafx.scene.input.*;
@@ -50,7 +51,7 @@ import static java.lang.Math.hypot;
 
         private void checkTouchMoved(TouchEvent touchEvent) {
             Boat playersBoat = race.getBoatById(clientID);
-            if (touchEvent.getTouchPoints().size() == 1) {
+            if (touchEvent.getTouchPoints().size() == 1 && !DisplayUtils.externalTouchEvent) {
                 CanvasCoordinate touchPoint = new CanvasCoordinate(touchEvent.getTouchPoint().getSceneX(), touchEvent.getTouchPoint().getSceneY());
                 CanvasCoordinate boatPosition = DisplayUtils.convertFromLatLon(playersBoat.getCurrentPosition());
                 double windAngle = race.getCourse().getWindDirection() + 180;
