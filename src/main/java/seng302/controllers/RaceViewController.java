@@ -439,35 +439,48 @@ public class RaceViewController extends AnimationTimer implements Observer {
         Boat boat = displayBoat.getBoat();
 
         if(displayBoat.collisionInProgress){
-            boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
             animateBoatHighlightColor(PenaltyStatus.PENALTY, "redBoatHighlight");
         } else if(boat.getLeg() == 0){
             if(startedEarlyPenalty) {
-                boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
             }else if(!MathUtils.boatBeforeStartline(boat.getCurrentPosition(),
                     race.getCourse().getStartLine(),
                     race.getCourse().getCompoundMarks().get(2))){
                 startedEarlyPenalty = true;
-                boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
                 controller.setUserHelpLabel("Start line was crossed early. It must be crossed again.");
                 animateBoatHighlightColor(PenaltyStatus.PENALTY, "redBoatHighlight");
 
             } else if(boat.getTimeStatus().equals(StartTimingStatus.EARLY)) {
-                boatHighlight.setFill(ORANGE_HIGHTLIGHT_COLOR);
                 animateBoatHighlightColor(PenaltyStatus.WARNING, "orangeBoatHighlight");
             } else {
-                boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
                 animateBoatHighlightColor(PenaltyStatus.NO_PENALTY, "defaultBoatHighlight");
             }
         }else{
-            boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
             animateBoatHighlightColor(PenaltyStatus.NO_PENALTY, "defaultBoatHighlight");
             startedEarlyPenalty = false;
         }
     }
 
+    /**
+     * changes color of boat highlight with animation based upon the penalty of the boat
+     * @param status whether the boat has penalty/warning etc
+     * @param animationID id of the css class for the animation
+     */
     private void animateBoatHighlightColor(PenaltyStatus status, String animationID){
         if(!penaltyStatus.equals(status)){
+            switch(status){
+                case NO_PENALTY:
+                    boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
+                    break;
+                case PENALTY:
+                    boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
+                    break;
+                case WARNING:
+                    boatHighlight.setFill(ORANGE_HIGHTLIGHT_COLOR);
+                    break;
+                default:
+                    boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
+                    break;
+            }
             boatHighlightChangeAnimation(animationID);
             penaltyStatus = status;
         }
