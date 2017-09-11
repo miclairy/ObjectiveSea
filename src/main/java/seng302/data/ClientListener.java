@@ -236,9 +236,11 @@ public class ClientListener extends Receiver implements Runnable{
                 }
 
             } catch (IOException e) {
-                if(!race.isTerminated()){
-                    race.terminateRace();
-                    race.setAbruptEnd(true);
+                if(race != null){
+                    if(!race.isTerminated()){
+                        race.terminateRace();
+                        race.setAbruptEnd(true);
+                    }
                 }
                 serverRunning = false;
                 System.out.println("Client: disconnected from Server");

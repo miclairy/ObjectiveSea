@@ -25,6 +25,7 @@ import java.io.IOException;
 public class Main extends Application {
     private static GameClient client;
     private Server server;
+    private RaceManagerServer managerServer;
     private Stage primaryStage;
     private DisplaySwitcher displaySwitcher;
 
@@ -82,6 +83,9 @@ public class Main extends Application {
                         case "-r":
                             serverOptions.setNumRacesToRun(Integer.parseInt(args[i + 1]));
                             break;
+                        case "-g":
+                            serverOptions.setRunAllServerTypes(true);
+                            break;
                         default:
                             throw new IllegalArgumentException(String.format("Unknown argument \"%s\"", args[i]));
                     }
@@ -104,11 +108,17 @@ public class Main extends Application {
      * Creates a Server object, puts it in it's own thread and starts the thread
      */
     private void setupServer(ServerOptions serverOptions) throws IOException {
-        server = new Server(serverOptions);
+        server = new GameServer(serverOptions);
         ConnectionUtils.setServer(server);
         Thread serverThread = new Thread(server);
         serverThread.setName("Server");
         serverThread.start();
+        if(serverOptions.isRunAllServerTypes()){
+            managerServer = new RaceManagerServer(serverOptions);
+            Thread raceManagerThread = new Thread(managerServer);
+            serverThread.setName("raceManagerServer");
+            raceManagerThread.start();
+        }
     }
 
     public static GameClient getClient() {

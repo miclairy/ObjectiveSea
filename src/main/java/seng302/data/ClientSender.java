@@ -15,7 +15,7 @@ public class ClientSender {
     public ClientSender(Socket socket) {
         this.connection = socket;
         try {
-            this.vmConnection = new Socket("132.181.14.110", 2828);
+            this.vmConnection = new Socket("132.181.14.110", 2827);
         } catch (IOException e) {
             e.printStackTrace();
         }
