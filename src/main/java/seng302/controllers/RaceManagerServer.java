@@ -25,7 +25,7 @@ public class RaceManagerServer extends Server {
     public RaceManagerServer(ServerOptions options) throws IOException {
         this.options = options;
         packetBuilder = new ServerPacketBuilder();
-        connectionManager = new ConnectionManager(2827);
+        connectionManager = new ConnectionManager(2828);
         connectionManager.addObserver(this);
     }
 

@@ -3,6 +3,7 @@ package seng302.data;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 
 /**
  * Sends data out on the client side
@@ -15,7 +16,7 @@ public class ClientSender {
     public ClientSender(Socket socket) {
         this.connection = socket;
         try {
-            this.vmConnection = new Socket("132.181.14.110", 2827);
+            this.vmConnection = new Socket("132.181.14.110", 2828);
         } catch (IOException e) {
             e.printStackTrace();
         }
