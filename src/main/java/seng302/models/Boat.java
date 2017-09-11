@@ -714,6 +714,11 @@ public class Boat extends Observable implements Comparable<Boat>{
         return MathUtils.bilinearInterpolation(TWS0,TWS1,TWA0,TWA1,z00,z01,z10,z11,TWS,TWA);
     }
 
+    /**
+     * gets angle of the sail based upon wind direction and whether sails are in or out
+     * @param windDirection the wind direction
+     * @return angle of the sail
+     */
     public synchronized double getSailAngle(double windDirection){
         double sailAngle;
         if(!sailsIn){
@@ -729,7 +734,14 @@ public class Boat extends Observable implements Comparable<Boat>{
                 sailAngle = windDirection + 90;
             }
         }
-        return sailAngle;
+
+        if(((sailAngle - heading + 360 ) % 360) > 180){
+            return (sailAngle + 540) % 360;
+        }else{
+            return sailAngle;
+
+        }
+
     }
 
     public void setCollisionTime(double collisionTime) {
