@@ -209,7 +209,7 @@ public class MainMenuController implements Initializable{
     @FXML private void startHostGame() throws Exception {
         Double speed = speedScaleSlider.getValue();
         Integer minCompetitors = (int) boatsInRaceSlider.getValue();
-        ClientOptions clientOptions = new ClientOptions();
+        ClientOptions clientOptions = new ClientOptions(GameMode.MULTIPLAYER);
         main.startHostedRace(currentCourseMap.getXML(), speed, minCompetitors, clientOptions, currentMapIndex);
         timer.stop();
         Thread.sleep(200);
@@ -279,7 +279,6 @@ public class MainMenuController implements Initializable{
             joinGame(true);
         }else{
             AvailableRace race = tblAvailableRaces.getSelectionModel().getSelectedItem();
-            System.out.println(race.getIpAddress() + " " + race.getPort());
             String ipAddress = race.getIpAddress();
             if (Objects.equals(ipAddress, ConnectionUtils.getPublicIp())){
                 ipAddress = "localhost";

@@ -364,8 +364,6 @@ public class ClientListener extends Receiver implements Runnable{
     private void parseHostedGameMessage(byte[] body){
         long serverIpLong = byteArrayRangeToLong(body, HOST_GAME_IP.getStartIndex(), HOST_GAME_IP.getEndIndex());
         String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
-        System.out.println(serverIpLong);
-        System.out.println(serverIP);
         int serverPort = byteArrayRangeToInt(body, HOST_GAME_PORT.getStartIndex(), HOST_GAME_PORT.getEndIndex());
         int courseIndex = byteArrayRangeToInt(body, HOST_GAME_MAP.getStartIndex(), HOST_GAME_MAP.getEndIndex());
         long gameSpeed = byteArrayRangeToLong(body, HOST_GAME_SPEED.getStartIndex(), HOST_GAME_SPEED.getEndIndex());
