@@ -66,6 +66,7 @@ public class ServerListener extends Receiver implements Runnable{
                             if (sourceId != -1) {
                                 parseBoatActionMessage(body);
                             }
+                            break;
                     }
                 }
             } catch (SocketException e) {
@@ -80,6 +81,7 @@ public class ServerListener extends Receiver implements Runnable{
 
     private void recordHostGameMessage(byte[] body){
         System.out.println("Server: Recording game on VM");
+        System.out.println(socket.getInetAddress());
         setChanged();
         notifyObservers(body);
     }

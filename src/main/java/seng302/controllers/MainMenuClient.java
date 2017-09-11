@@ -26,7 +26,7 @@ public class MainMenuClient extends Client {
 
     public MainMenuClient() throws ServerFullException, NoConnectionToServerException {
         this.packetBuilder = new ClientPacketBuilder();
-        setUpDataStreamReader("localhost", 2828);
+        setUpDataStreamReader("132.181.14.110", 2828);
         try {
             manageWaitingConnection();
             RegistrationType regoType = RegistrationType.REQUEST_RUNNING_GAMES;
@@ -48,16 +48,16 @@ public class MainMenuClient extends Client {
                 if(availableRaces.size() == 0){
                     availableRaces.add((AvailableRace) arg);
                 }
-
-                boolean alreadyInList = false;
+                ArrayList<AvailableRace> newRaces = new ArrayList<>();
                 for(AvailableRace race : availableRaces){
                     if(Objects.equals(race.getIpAddress(), ((AvailableRace) arg).getIpAddress())){
-                        alreadyInList = true;
+                        newRaces.add((AvailableRace) arg);
+                    }else{
+                        newRaces.add(race);
                     }
                 }
-                if(!alreadyInList){
-                    availableRaces.add((AvailableRace) arg);
-                }
+                availableRaces.clear();
+                availableRaces.addAll(newRaces);
             }
         }
     }

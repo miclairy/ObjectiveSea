@@ -44,7 +44,7 @@ public class GameClient extends Client{
     public void updateVM(Double speedScale, Integer minParticipants, Integer serverPort, String publicIp, int currentCourseIndex){
         byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(speedScale, minParticipants, serverPort, publicIp, currentCourseIndex);
         System.out.println("Client: Updating VM");
-        sender.sendToServer(registerGamePacket);
+        sender.sendToVM(registerGamePacket);
     }
 
     @Override

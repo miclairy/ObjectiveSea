@@ -139,6 +139,7 @@ public abstract class PacketBuilder {
         byte[] header = createHeader(HOST_GAME_MESSAGE);
         byte[] body = new byte[HOST_GAME_MESSAGE.getLength()];
         long ip = ConnectionUtils.ipStringToLong(publicIp);
+        System.out.println(ip);
         addFieldToByteArray(body, HOST_GAME_IP, ip);
         addFieldToByteArray(body, HOST_GAME_PORT, serverPort);
         addFieldToByteArray(body, HOST_GAME_MAP, currentCourseIndex);
