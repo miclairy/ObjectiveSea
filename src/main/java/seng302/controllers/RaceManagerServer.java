@@ -34,12 +34,14 @@ public class RaceManagerServer extends Server {
     @Override
     public void run() throws NullPointerException {
         System.out.println("Server: Waiting for races");
+        Thread managerThread = new Thread(connectionManager);
+        managerThread.setName("Connection Manager");
+        managerThread.start();
         while (options.alwaysRerun()) {
             try {
-                Thread managerThread = new Thread(connectionManager);
-                managerThread.setName("Connection Manager");
-                managerThread.start();
-                Thread.sleep((long) (SECONDS_PER_UPDATE * 1000 / options.getSpeedScale()));
+
+
+                Thread.sleep((long) (SECONDS_PER_UPDATE * 1000));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -50,25 +52,29 @@ public class RaceManagerServer extends Server {
 
     @Override
     public void update(Observable observable, Object arg) {
-        if(observable instanceof ServerListener){
-            if(arg instanceof String){
+        if (observable.equals(connectionManager)) {
+            if (arg instanceof Socket) {
+                startServerListener((Socket) arg);
+            }
+        } else if(observable instanceof ServerListener){
+            if(arg instanceof String) {
                 AvailableRace foundRace = null;
                 System.out.println("Races size: " + availableRaces.size());
-                for(AvailableRace race : availableRaces.keySet()){
-                    if(race.getIpAddress().equals((String) arg)){
+                for (AvailableRace race : availableRaces.keySet()) {
+                    if (race.getIpAddress().equals((String) arg)) {
                         foundRace = race;
                     }
                 }
-                if(foundRace != null){
+                if (foundRace != null) {
                     availableRaces.remove(foundRace);
                     System.out.println("Server: removed canceled race: " + foundRace.getIpAddress());
                 }
-            }else{
+            } else if (arg instanceof RegistrationType) {
+                RegistrationType rego = (RegistrationType) arg;
+                manageRegistration((ServerListener) observable, rego);
+            } else {
                 availableRaces.putAll((HashMap<AvailableRace, byte[]>) arg);
             }
-        }
-        if(arg instanceof RegistrationType){
-            manageRegistration((ServerListener) observable, (RegistrationType) arg);
         }
     }
 
@@ -87,6 +93,7 @@ public class RaceManagerServer extends Server {
                     byte[] racePacket = packetBuilder.createGameRegistrationPacket(race);
                     connectionManager.sendToClient(nextViewerID, racePacket);
                 }
+                nextViewerID++;
                 break;
         }
     }
