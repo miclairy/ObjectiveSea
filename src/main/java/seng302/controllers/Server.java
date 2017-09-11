@@ -24,6 +24,7 @@ import static seng302.data.AC35StreamXMLMessage.REGATTA_XML_MESSAGE;
 
 /**
  * Created by mjt169 on 18/07/17.
+ *
  */
 public abstract class Server implements Runnable, Observer {
 
@@ -39,7 +40,6 @@ public abstract class Server implements Runnable, Observer {
     /**
      * Sends a header, body then generates and sends a CRC for that header and body
      * @param packet the packet to send
-     * @throws IOException
      */
     protected void sendPacket(byte[] packet) {
         connectionManager.sendToClients(packet);

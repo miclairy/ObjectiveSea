@@ -71,7 +71,7 @@ public class GameClient extends Client{
 
     /**
      * observing UserInputController and clientListener
-     * @param o
+     * @param o observable object
      */
     @Override
     public void update(Observable o, Object arg) {
