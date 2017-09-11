@@ -23,9 +23,41 @@ import java.util.*;
  */
 public class MainMenuClient extends Client {
     private ObservableList<AvailableRace> availableRaces = FXCollections.observableArrayList();
+    private boolean joinPaneVisible = false;
 
     public MainMenuClient() throws ServerFullException, NoConnectionToServerException {
         this.packetBuilder = new ClientPacketBuilder();
+    }
+
+    @Override
+    public void run() {
+        while(true){
+            try {
+                checkForRaces();
+                Thread.sleep(5000);
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if(o instanceof ClientListener){
+            if(arg instanceof AvailableRace){
+                availableRaces.add((AvailableRace) arg);
+            }
+        }
+    }
+
+    public ObservableList<AvailableRace> getAvailableRaces() {
+        return availableRaces;
+
+    }
+
+    public void checkForRaces(){
+        availableRaces.clear();
         setUpDataStreamReader("132.181.14.110", 2828);
         try {
             manageWaitingConnection();
@@ -37,45 +69,7 @@ public class MainMenuClient extends Client {
         }
     }
 
-    @Override
-    public void run() {
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-        if(o instanceof ClientListener){
-            if(arg instanceof AvailableRace){
-                if(availableRaces.size() == 0){
-                    availableRaces.add((AvailableRace) arg);
-                }
-                ArrayList<AvailableRace> newRaces = new ArrayList<>();
-                for(AvailableRace race : availableRaces){
-                    if(Objects.equals(race.getIpAddress(), ((AvailableRace) arg).getIpAddress())){
-                        newRaces.add((AvailableRace) arg);
-                    }else{
-                        newRaces.add(race);
-                    }
-                }
-                availableRaces.clear();
-                availableRaces.addAll(newRaces);
-            }
-        }
-    }
-
-    public ObservableList<AvailableRace> getAvailableRaces() {
-        ObservableList<AvailableRace> races = FXCollections.observableArrayList();
-        races.addAll(availableRaces);
-        return races;
-
-    }
-
-    public void checkForRaces(){
-        RegistrationType regoType = RegistrationType.REQUEST_RUNNING_GAMES;
-        try {
-            this.sender = new ClientSender(clientListener.getClientSocket());
-            sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
-        } catch (NullPointerException e){
-            System.out.println("Server is unreachable");
-        }
+    public void setJoinPaneVisible(boolean isVisible){
+        joinPaneVisible = isVisible;
     }
 }

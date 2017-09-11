@@ -52,6 +52,8 @@ public enum AC35StreamMessage {
                 return BOAT_STATE_MESSAGE;
             case 108:
                 return HOST_GAME_MESSAGE;
+            case 109:
+                return GAME_CANCEL;
             default:
                 return UNKNOWN;
         }

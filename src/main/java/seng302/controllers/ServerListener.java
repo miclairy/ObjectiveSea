@@ -59,6 +59,7 @@ public class ServerListener extends Receiver implements Runnable{
                 dataInput.readFully(body);
                 byte[] crc = new byte[CRC_LENGTH];
                 dataInput.readFully(crc);
+                System.out.println("packet type: " + messageType);
                 if (checkCRC(header, body, crc)) {
                     switch (messageType) {
                         case HOST_GAME_MESSAGE:
@@ -175,6 +176,7 @@ public class ServerListener extends Receiver implements Runnable{
     }
 
     private void removeHostedGame(byte[] body){
+        System.out.println("recived remove game message");
         long serverIpLong = byteArrayRangeToLong(body, HOST_GAME_IP.getStartIndex(), HOST_GAME_IP.getEndIndex());
         String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
         setChanged();

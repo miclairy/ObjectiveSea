@@ -118,6 +118,8 @@ public class MainMenuController implements Initializable{
     public void setApp(Main main) throws ServerFullException, NoConnectionToServerException {
         this.main = main;
         this.client = new MainMenuClient();
+        Thread thread = new Thread(client);
+        thread.start();
     }
 
     @FXML private void loadHostOptionsPane(){
@@ -153,7 +155,7 @@ public class MainMenuController implements Initializable{
     @FXML private void loadJoinPane(){
         setUpAvailableRaceTable();
         AnimationUtils.switchPaneFade(onlinePane, joinRacePane);
-        client.checkForRaces();
+        client.setJoinPaneVisible(true);
         tblAvailableRaces.setItems(client.getAvailableRaces());
     }
 
