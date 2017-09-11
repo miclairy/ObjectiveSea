@@ -8,6 +8,7 @@ import javafx.scene.input.*;
 import javafx.scene.layout.Pane;
 import seng302.data.BoatAction;
 import seng302.models.*;
+import seng302.utilities.DisplayUtils;
 import seng302.utilities.MathUtils;
 import seng302.utilities.MathUtils;
 
