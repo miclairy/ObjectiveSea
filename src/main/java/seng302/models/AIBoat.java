@@ -16,7 +16,7 @@ import static seng302.data.RoundingSide.PORT;
  * Created by atc60 on 8/09/17.
  */
 public class AIBoat {
-    private static final Double ROUNDING_DISTANCE = 0.06;
+    private static final Double ROUNDING_DISTANCE = 0.08;
     private static final Double ROUNDING_DELTA = 0.01;
     private static final Double COLLISION_CHECK_DISTANCE = 0.1;
 
@@ -59,7 +59,6 @@ public class AIBoat {
         CompoundMark currentMark = courseOrder.get(boat.getLastRoundedMarkIndex()+1);
         nextRoundingCoordinates.clear();
         Coordinate tackingGybingCoord = addTackandGybeMarks(boat.getCurrentPosition(), currentMark.getPosition());
-        System.out.println(tackingGybingCoord);
         if(tackingGybingCoord != null){
             nextRoundingCoordinates.add(tackingGybingCoord);
         }
@@ -95,20 +94,27 @@ public class AIBoat {
     public boolean checkFutureCollision(Mark mark) {
         Coordinate checkPointEnd = boat.getCurrentPosition().coordAt(COLLISION_CHECK_DISTANCE, boat.getHeading());
         Double distance = MathUtils.distanceToLineSegment(boat.getCurrentPosition(), checkPointEnd, mark.getPosition());
-        return distance <= CollisionManager.MARK_SENSITIVITY;
+        return distance <= CollisionManager.MARK_SENSITIVITY && boat.getCurrentPosition().greaterCircleDistance(targetPosition) > boat.getCurrentPosition().greaterCircleDistance(mark.getPosition());
     }
 
     public void avoidFutureCollision() {
         for(Integer markID : course.getAllMarks().keySet()){
             Mark mark = course.getAllMarks().get(markID);
             if(checkFutureCollision(mark)){
-                List<Coordinate> avoidCoords = RoundingMechanics.markRoundingCoordinates(mark, boat.getHeading(), boat.getHeading(), PORT, ROUNDING_DISTANCE);
-                nextRoundingCoordinates.add(targetPositionIndex, avoidCoords.get(1));
-                System.out.println(avoidCoords);
+
+                Coordinate avoidCoordinate = coordinateToAvoid(boat);
+                nextRoundingCoordinates.add(targetPositionIndex, avoidCoordinate);
+                System.out.println("Collision with: " + mark.getSourceID());
+                System.out.println("Avoiding to: " + avoidCoordinate);
                 targetPosition = nextRoundingCoordinates.get(targetPositionIndex);
                 updateHeading();
             }
         }
+    }
+
+    private Coordinate coordinateToAvoid(Boat boat) {
+        Double avoidHeading = (boat.getHeading() + 270) % 360;
+        return targetPosition.coordAt(ROUNDING_DISTANCE, avoidHeading);
     }
 
     public Coordinate addTackandGybeMarks(Coordinate lastMark, Coordinate nextMark) {
@@ -132,7 +138,6 @@ public class AIBoat {
     }
 
     public double calculateLengthOfTack(double TrueWindAngle, double alphaAngle,Coordinate nextMark, Coordinate lastMark){
-
         double lengthOfLeg = lastMark.greaterCircleDistance(nextMark);
         double betaAngle = (2*TrueWindAngle) - alphaAngle;
         double lengthOfTack = ((lengthOfLeg* Math.sin(Math.toRadians(betaAngle)))/Math.sin(Math.toRadians(180 - 2*TrueWindAngle)))/2.0;
