@@ -1,6 +1,7 @@
 package seng302.controllers;
 
 import seng302.data.*;
+import seng302.data.registration.RegistrationResponse;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.data.registration.RegistrationType;
 import seng302.models.Boat;
@@ -9,12 +10,16 @@ import seng302.models.Race;
 import seng302.models.ServerOptions;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.Socket;
 import java.util.*;
 
 import static seng302.data.AC35StreamXMLMessage.BOAT_XML_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.RACE_XML_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.REGATTA_XML_MESSAGE;
+import static seng302.data.registration.RegistrationResponseStatus.OUT_OF_SLOTS;
+import static seng302.data.registration.RegistrationResponseStatus.RACE_UNAVAILABLE;
+import static seng302.data.registration.RegistrationResponseStatus.SPECTATOR_SUCCESS;
 
 /**
  * Created by mjt169 on 18/07/17.
@@ -22,6 +27,7 @@ import static seng302.data.AC35StreamXMLMessage.REGATTA_XML_MESSAGE;
 public class Server implements Runnable, Observer {
 
     private final double SECONDS_PER_UPDATE = 0.2;
+    private final int MAX_SPECTATORS = 100; //mostly because our boats sourceIDs start at 101
 
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumber = new HashMap<>();
     private Map<Boat, Integer> boatSequenceNumbers = new HashMap<>();
@@ -34,6 +40,8 @@ public class Server implements Runnable, Observer {
     private ServerPacketBuilder packetBuilder;
     private CollisionManager collisionManager;
     private ServerOptions options;
+
+
 
     public Server(ServerOptions options) throws IOException {
         this.options = options;
@@ -230,38 +238,6 @@ public class Server implements Runnable, Observer {
     }
 
     /**
-     * Adds a competing client to the race model and sends new xml messages out to all clients
-     * @param serverListener the listener for the client
-     */
-    private void addClientToRace(ServerListener serverListener){
-        int newId = raceUpdater.addCompetitor();
-        boolean success = newId != -1;
-        byte[] packet;
-        if (success) {
-            Boat boat = raceUpdater.getRace().getBoatById(newId);
-            boatSequenceNumbers.put(boat, newId);
-            lastMarkRoundingSent.put(boat, -1);
-            packet = packetBuilder.createRegistrationResponsePacket(newId, RegistrationResponseStatus.PLAYER_SUCCESS);
-            if (!raceUpdaterThread.isAlive()){
-                int numCompetitors = raceUpdater.getRace().getCompetitors().size();
-                if (numCompetitors >= options.getMinParticipants()) {
-                    raceUpdaterThread.start();
-                }
-            }
-        } else {
-            packet = packetBuilder.createRegistrationResponsePacket(newId, RegistrationResponseStatus.OUT_OF_SLOTS);
-        }
-        connectionManager.addConnection(newId, serverListener.getSocket());
-        serverListener.setClientId(newId);
-        connectionManager.sendToClient(newId, packet);
-
-        if(success){
-            sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());
-            sendAllBoatStates();
-        }
-    }
-
-    /**
      * Method that gets called when Server is notified as an observer
      * If the observable is a ConnectionManager then a new client has connected and a server listener
      * is started for the client
@@ -294,13 +270,7 @@ public class Server implements Runnable, Observer {
                 addClientToRace(serverListener);
                 break;
             case SPECTATOR:
-                //we may want to put a limit on number of connections to preserve server responsiveness at some point
-                //but for now just always accept new spectators
-                byte[] packet = packetBuilder.createRegistrationResponsePacket(0, RegistrationResponseStatus.SPECTATOR_SUCCESS);
-                connectionManager.addConnection(nextViewerID, serverListener.getSocket());
-                connectionManager.sendToClient(nextViewerID, packet);
-                sendAllBoatStates();
-                nextViewerID++;
+                addSpectatorToRace(serverListener);
                 break;
             case GHOST:
                 System.out.println("Server: Client attempted to connect as ghost, ignoring.");
@@ -308,6 +278,60 @@ public class Server implements Runnable, Observer {
             case TUTORIAL:
                 System.out.println("Server: Client attempted to connect as control tutorial, ignoring.");
                 break;
+        }
+    }
+
+    /**
+     * Adds a competing client to the race model and sends new xml messages out to all clients
+     * @param serverListener the listener for the client
+     */
+    private void addClientToRace(ServerListener serverListener){
+        int newId = raceUpdater.addCompetitor();
+        boolean success = newId != -1;
+        byte[] packet;
+        if (success) {
+            Boat boat = raceUpdater.getRace().getBoatById(newId);
+            boatSequenceNumbers.put(boat, newId);
+            lastMarkRoundingSent.put(boat, -1);
+            packet = packetBuilder.createRegistrationResponsePacket(newId, RegistrationResponseStatus.PLAYER_SUCCESS);
+            if (!raceUpdaterThread.isAlive()){
+                int numCompetitors = raceUpdater.getRace().getCompetitors().size();
+                if (numCompetitors >= options.getMinParticipants()) {
+                    raceUpdaterThread.start();
+                }
+            }
+        } else {
+            packet = packetBuilder.createRegistrationResponsePacket(newId, RegistrationResponseStatus.OUT_OF_SLOTS);
+        }
+        connectionManager.addConnection(newId, serverListener.getSocket());
+        serverListener.setClientId(newId);
+        connectionManager.sendToClient(newId, packet);
+
+        if(success){
+            sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());
+            sendAllBoatStates();
+        }
+    }
+
+    /** Responds to a Spectator requesting to join
+     * Can fail due to the race not being started, otherwise we let them join
+     * @param serverListener
+     */
+    private void addSpectatorToRace(ServerListener serverListener) {
+        RegistrationResponseStatus response = SPECTATOR_SUCCESS;
+        if (!raceUpdaterThread.isAlive()) {
+            response = RACE_UNAVAILABLE;
+        } else if (nextViewerID >= MAX_SPECTATORS) {
+            response = OUT_OF_SLOTS;
+        }
+        byte[] packet = packetBuilder.createRegistrationResponsePacket(0, response);
+        connectionManager.addConnection(nextViewerID, serverListener.getSocket());
+        connectionManager.sendToClient(nextViewerID, packet);
+        if (response.equals(SPECTATOR_SUCCESS)) {
+            sendAllBoatStates();
+            nextViewerID++;
+        } else {
+            connectionManager.removeConnection(nextViewerID);
         }
     }
 
@@ -319,8 +343,10 @@ public class Server implements Runnable, Observer {
     private void setBoatToDNF(int arg){
         for(Boat boat : raceUpdater.getRace().getCompetitors()){
             if(boat.getId().equals(arg)){
-                boat.setStatus(BoatStatus.DNF);
-                boat.changeSails();
+                if(!boat.getStatus().equals(BoatStatus.FINISHED)){
+                    boat.setStatus(BoatStatus.DNF);
+                    boat.changeSails();
+                }
             }
         }
     }
