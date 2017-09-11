@@ -1,12 +1,6 @@
 package seng302.controllers;
 
-import javafx.animation.FadeTransition;
-import javafx.animation.ParallelTransition;
 import javafx.animation.ScaleTransition;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.event.EventTarget;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.TouchPoint;
 import javafx.scene.layout.Pane;
@@ -15,9 +9,6 @@ import javafx.scene.shape.Line;
 import javafx.scene.transform.Transform;
 import seng302.models.CanvasCoordinate;
 import seng302.utilities.AnimationUtils;
-import seng302.views.BoatDisplay;
-
-import static seng302.utilities.DisplayUtils.zoomLevel;
 
 /**
  * Created by Chris on 24/08/2017.
@@ -25,7 +16,7 @@ import static seng302.utilities.DisplayUtils.zoomLevel;
 public class DisplayTouchController {
 
     private Scene scene;
-    public static Pane root;
+    public static Pane touchPane;
     private ScaleTransition touchTransition;
 
     public DisplayTouchController(Scene scene){
@@ -49,26 +40,24 @@ public class DisplayTouchController {
         circle.setId("tapCircle");
         circle.setCenterX(point.getX());
         circle.setCenterY(point.getY());
-        root.getChildren().add(circle);
+        touchPane.getChildren().add(circle);
         return circle;
     }
 
-    public static void setRoot(Pane root) {
-        DisplayTouchController.root = root;
+    public static void setTouchPane(Pane touchPane) {
+        DisplayTouchController.touchPane = touchPane;
     }
 
     public void displaySwipe(CanvasCoordinate swipeEnd, CanvasCoordinate swipeStart) {
         Line path = createHighlightPath(swipeStart, swipeEnd);
-        for (Transform transform : root.getTransforms()){
-            path.getTransforms().add(transform);
-        }
+
         touchTransition = AnimationUtils.touchInAction(path);
        // touchTransition.play();
     }
 
     private Line createHighlightPath(CanvasCoordinate swipeStart, CanvasCoordinate swipeEnd){
         Line path = new Line(swipeStart.getX(), swipeStart.getY(), swipeEnd.getX(), swipeEnd.getY());
-        root.getChildren().add(path);
+        touchPane.getChildren().add(path);
         return path;
     }
 }

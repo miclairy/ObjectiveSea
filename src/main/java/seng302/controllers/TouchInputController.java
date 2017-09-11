@@ -4,11 +4,9 @@ import javafx.event.EventType;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.*;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import seng302.data.BoatAction;
 import seng302.models.*;
-import seng302.utilities.DisplayUtils;
 import seng302.utilities.MathUtils;
 
 import java.util.Arrays;
@@ -71,10 +69,10 @@ import static java.lang.Math.abs;
         private void swipeAction(ScrollEvent swipe, double swipeBearing){
             double boatHeading = race.getBoatById(clientID).getHeading();
             double headingDifference = abs(boatHeading - swipeBearing) % 180;
-//            if (headingDifference < -180.0)
-//                headingDifference += 360.0;
-//            else if (headingDifference >= 180.0)
-//                headingDifference -= 360.0;
+            Group root = (Group) scene.lookup("#root");
+            if (root.getTransforms().size() > 1){
+                headingDifference = swipeBearing;
+            }
             System.out.println(boatHeading + " swipe "  + swipeBearing + " difference " + headingDifference);
             if (headingDifference <= 15 || headingDifference >= 165){
                 commandInt = BoatAction.SAILS_IN.getType();

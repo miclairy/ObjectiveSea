@@ -17,7 +17,7 @@ public class Laylines {
     private boolean shouldDraw;
 
     /**
-     * Removes this objects laylines from root
+     * Removes this objects laylines from touchPane
      * @param root the node to remove the laylines from
      */
     public void removeDrawnLines(Group root) {
