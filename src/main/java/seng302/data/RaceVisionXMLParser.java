@@ -84,7 +84,7 @@ public class RaceVisionXMLParser {
 
     /**
      * Sets the race id in the course xml dom
-     * @param root The root tag ("Race") of the dom
+     * @param root The touchPane tag ("Race") of the dom
      * @param raceId The desired race id
      */
     private void setRaceId(Element root, String raceId){
@@ -94,7 +94,7 @@ public class RaceVisionXMLParser {
 
     /**
      * Sets the message creation date and time in the course xml dom
-     * @param root The root tag ("Race") of the dom
+     * @param root The touchPane tag ("Race") of the dom
      */
     private void setCreationTime(Element root){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
@@ -108,7 +108,7 @@ public class RaceVisionXMLParser {
 
     /**
      * Sets the race start time in the AC35-course.xml dom
-     * @param root The root tag ("Race") of the dom
+     * @param root The touchPane tag ("Race") of the dom
      * @param expectStartTimeEpochMs The expected race start time in epoch milliseconds
      */
     private void setStartTime(Element root, Long expectStartTimeEpochMs){
@@ -123,7 +123,7 @@ public class RaceVisionXMLParser {
 
     /**
      * Injects the correct participants into the raceXML field
-     * @param root The root tag ("Race") of the dom
+     * @param root The touchPane tag ("Race") of the dom
      * @param participantIds participant Ids to inject
      */
     private void setParticipants(Element root, ArrayList<Integer> participantIds) {
@@ -147,7 +147,7 @@ public class RaceVisionXMLParser {
             parseXMLStream(raceXML);
             Element root = dom.getDocumentElement();
 
-            //setRaceId(root, raceId);
+            //setRaceId(touchPane, raceId);
             setCreationTime(root);
             setStartTime(root, expectStartTimeEpochMs);
             setParticipants(root, participantIds);
@@ -215,7 +215,7 @@ public class RaceVisionXMLParser {
         try {
             Element root = dom.getDocumentElement();
             if (root.getTagName() != XMLTags.Course.RACE) {
-                String message = String.format("The root tag must be <%s>.", XMLTags.Course.RACE);
+                String message = String.format("The touchPane tag must be <%s>.", XMLTags.Course.RACE);
                 throw new XMLParseException(XMLTags.Course.RACE, message);
             }
 
@@ -411,7 +411,7 @@ public class RaceVisionXMLParser {
         try {
             Element root = dom.getDocumentElement();
             if (!Objects.equals(root.getTagName(), XMLTags.Boats.BOAT_CONFIG)) {
-                String message = String.format("The root tag must be <%s>.", XMLTags.Boats.BOAT_CONFIG);
+                String message = String.format("The touchPane tag must be <%s>.", XMLTags.Boats.BOAT_CONFIG);
                 throw new XMLParseException(XMLTags.Boats.BOAT_CONFIG, message);
             }
 
@@ -484,7 +484,7 @@ public class RaceVisionXMLParser {
         try {
             Element root = dom.getDocumentElement();
             if (!Objects.equals(root.getTagName(), XMLTags.Regatta.REGATTA_CONFIG)) {
-                String message = String.format("The root tag must be <%s>.", XMLTags.Regatta.REGATTA_CONFIG);
+                String message = String.format("The touchPane tag must be <%s>.", XMLTags.Regatta.REGATTA_CONFIG);
                 throw new XMLParseException(XMLTags.Regatta.REGATTA_CONFIG, message);
             }
 
@@ -524,7 +524,7 @@ public class RaceVisionXMLParser {
         InputStream inStream = null;
         OutputStream outStream = null;
         try {
-            inStream = RaceVisionXMLParser.class.getResourceAsStream(resourceName);//note that each / is a directory down in the "jar tree" been the jar the root of the tree
+            inStream = RaceVisionXMLParser.class.getResourceAsStream(resourceName);//note that each / is a directory down in the "jar tree" been the jar the touchPane of the tree
             if(inStream == null) {
                 throw new IOException("Cannot get resource \"" + resourceName + "\" from Jar file.");
             }
@@ -563,7 +563,7 @@ public class RaceVisionXMLParser {
         try {
             Element root = dom.getDocumentElement();
             if (root.getTagName() != XMLTags.Course.RACE) {
-                String message = String.format("The root tag must be <%s>.", XMLTags.Course.RACE);
+                String message = String.format("The touchPane tag must be <%s>.", XMLTags.Course.RACE);
                 throw new XMLParseException(XMLTags.Course.RACE, message);
             }
             competitorIds = new HashSet<>();

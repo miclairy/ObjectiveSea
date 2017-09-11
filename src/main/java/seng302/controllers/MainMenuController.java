@@ -128,10 +128,11 @@ public class MainMenuController implements Initializable{
         DisplaySwitcher.getGameSounds().stopEndlessMusic();
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.TUTORIAL);
-        main.startHostedRace("GuidedPractice-course.xml", DEFAULT_PORT, true, clientOptions);
-        Thread.sleep(200);
-        main.loadRaceView(clientOptions);
-        loadTutorialMusic();
+        if(main.startHostedRace("GuidedPractice-course.xml", DEFAULT_PORT, true, clientOptions)){
+            Thread.sleep(200);
+            main.loadRaceView(clientOptions);
+            loadTutorialMusic();
+        }
     }
 
     /**
@@ -141,20 +142,27 @@ public class MainMenuController implements Initializable{
     @FXML private void loadOfflinePlay() throws Exception{
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.SINGLEPLAYER);
-        main.startHostedRace(selectedCourse, DEFAULT_PORT, false, clientOptions);
-        Thread.sleep(200);
-        main.loadRaceView(clientOptions);
-        loadSinglePlayerMusic();
+        if(main.startHostedRace(selectedCourse, DEFAULT_PORT, false, clientOptions)){
+            Thread.sleep(200);
+            main.loadRaceView(clientOptions);
+            loadSinglePlayerMusic();
+        }else{
+            btnSinglePlay.setDisable(false);
+        }
     }
 
 
     @FXML private void loadPracticeStart() throws Exception {
-        btnSinglePlay.setDisable(true);
+        btnPracticeStart.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.PRACTICE);
-        main.startHostedRace("PracticeStart-course.xml", DEFAULT_PORT, false, clientOptions);
-        Thread.sleep(200);
-        main.loadRaceView(clientOptions);
-        loadSinglePlayerMusic();
+        if(main.startHostedRace("PracticeStart-course.xml", DEFAULT_PORT, false, clientOptions)){
+            Thread.sleep(200);
+            main.loadRaceView(clientOptions);
+            loadSinglePlayerMusic();
+        }else{
+            btnPracticeStart.setDisable(false);
+        }
+
     }
 
     /**
@@ -165,10 +173,11 @@ public class MainMenuController implements Initializable{
         ClientOptions clientOptions = new ClientOptions();
         Integer port = Integer.parseInt(txtPortNumber.getText());
         clientOptions.setServerPort(port);
-        main.startHostedRace(selectedCourse, port, false, clientOptions);
-        Thread.sleep(200);
-        main.loadRaceView(clientOptions);
-        loadRealGameSounds();
+        if(main.startHostedRace(selectedCourse, port, false, clientOptions)){
+            Thread.sleep(200);
+            main.loadRaceView(clientOptions);
+            loadRealGameSounds();
+        }
     }
 
     @FXML private void hostGame() {

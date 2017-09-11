@@ -2,10 +2,13 @@ package seng302.controllers;
 
 import javafx.event.Event;
 import javafx.event.EventType;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.*;
+import javafx.scene.layout.Pane;
+import seng302.data.BoatAction;
 import seng302.models.*;
-import seng302.utilities.DisplayUtils;
+import seng302.utilities.MathUtils;
 import seng302.utilities.MathUtils;
 
 import java.util.Arrays;
@@ -28,6 +31,8 @@ import static java.lang.Math.hypot;
         private final Set<EventType<TouchEvent>> consumedTouchEvents = new HashSet<>(Arrays.asList(TouchEvent.TOUCH_MOVED, TouchEvent.TOUCH_PRESSED));
         private final Set<EventType<SwipeEvent>> consumedSwipeEvents = new HashSet<>(Arrays.asList(SwipeEvent.SWIPE_LEFT, SwipeEvent.SWIPE_DOWN));
         private DisplayTouchController displayTouchController;
+        private CanvasCoordinate swipeStart;
+        private Boat playersBoat;
 
         /**
          * Sets up user key press handler.
@@ -38,15 +43,47 @@ import static java.lang.Math.hypot;
             this.race = race;
             this.displayTouchController = new DisplayTouchController(scene);
             touchEventListener();
+
         }
 
         private void touchEventListener() {
-            scene.addEventFilter(TouchEvent.ANY, touch -> {
-                checkTouchMoved(touch);
-                if ( consumedTouchEvents.contains(touch.getEventType())) {
-                    touch.consume();
-                }
+//            scene.addEventFilter(TouchEvent.TOUCH_STATIONARY, touch -> {
+//                checkTouchMoved(touch);
+//                if ( consumedTouchEvents.contains(touch.getEventType())) {
+//                    touch.consume();
+//                }
+//            });
+//
+
+            Pane touchPane = (Pane) scene.lookup("#touchPane");
+            touchPane.setOnScrollStarted(swipe -> {
+                swipeStart = new CanvasCoordinate(swipe.getScreenX(), swipe.getScreenY());
             });
+
+            touchPane.setOnScrollFinished(swipe -> {
+                CanvasCoordinate swipeEnd = new CanvasCoordinate(swipe.getScreenX(), swipe.getScreenY());
+                displayTouchController.displaySwipe(swipeEnd, swipeStart);
+                double swipeBearing = MathUtils.getHeadingBetweenTwoCoodinates(swipeStart, swipeEnd);
+                swipeAction(swipe, swipeBearing);
+            });
+
+        }
+
+        private void swipeAction(ScrollEvent swipe, double swipeBearing){
+            double boatHeading = race.getBoatById(clientID).getHeading();
+            double headingDifference = abs(boatHeading - swipeBearing) % 180;
+            Group root = (Group) scene.lookup("#root");
+            if (root.getTransforms().size() > 1){
+                headingDifference = swipeBearing;
+            }
+            System.out.println(boatHeading + " swipe "  + swipeBearing + " difference " + headingDifference);
+            if (headingDifference <= 15 || headingDifference >= 165){
+                commandInt = BoatAction.SAILS_IN.getType();
+            } else {
+                commandInt = BoatAction.TACK_GYBE.getType();
+            }
+            setChanged();
+            notifyObservers();
         }
 
         private void checkTouchMoved(TouchEvent touchEvent) {
@@ -164,5 +201,6 @@ import static java.lang.Math.hypot;
         public void setClientID(int clientID) {
             this.clientID = clientID;
         }
-    }
+
+}
 

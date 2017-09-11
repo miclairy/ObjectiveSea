@@ -19,12 +19,8 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.TouchEvent;
 import javafx.scene.input.ZoomEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Callback;
@@ -124,6 +120,8 @@ public class Controller implements Initializable, Observer {
     private ScoreBoardController scoreBoardController = new ScoreBoardController();
     @FXML
     private SelectionController selectionController;
+    @FXML
+    private Pane touchPane;
 
     private boolean raceStatusChanged = true;
     private Race race;
@@ -261,7 +259,7 @@ public class Controller implements Initializable, Observer {
         raceViewController.setOptions(options);
         raceViewController.updateWindArrow();
         raceViewController.start();
-        DisplayTouchController.setRoot(root);
+        DisplayTouchController.setTouchPane(touchPane);
     }
 
     @FXML public void exitRunningRace() {
@@ -282,7 +280,7 @@ public class Controller implements Initializable, Observer {
      */
     private void initDisplayDrag() {
         canvasAnchor.setOnMouseDragged(event -> {
-            if (DisplayUtils.zoomLevel != 1 && !DisplayUtils.externalDragEvent) {
+            if (DisplayUtils.zoomLevel != 1 && !event.isSynthesized() && !DisplayUtils.externalDragEvent) {
                 DisplayUtils.dragDisplay((int) event.getX(), (int) event.getY());
                 raceViewController.redrawCourse();
                 raceViewController.redrawBoatPaths();
@@ -343,6 +341,7 @@ public class Controller implements Initializable, Observer {
     private void initZoom() {
         //Zoomed out
         zoomSlider.valueProperty().addListener((arg0, arg1, arg2) -> {
+            raceViewController.stopHighlightAnimation();
             zoomSlider.setOpacity(FOCUSED_ZOOMSLIDER_OPACITY);
             DisplayUtils.setZoomLevel(zoomSlider.getValue());
             if (DisplayUtils.zoomLevel != 1) {
@@ -354,7 +353,7 @@ public class Controller implements Initializable, Observer {
                 root.getTransforms().clear();
                 mapImageView.setVisible(true);
                 nextMarkCircle.setVisible(false);
-                selectionController.setTrackingPoint(false);
+                //selectionController.setTrackingPoint(false);
                 DisplayUtils.resetOffsets();
             }
             raceViewController.redrawCourse();
@@ -640,7 +639,7 @@ public class Controller implements Initializable, Observer {
         lblUserHelp.setMaxWidth(canvasWidth);
         lblUserHelp.setMinWidth(canvasWidth);
         lblUserHelp.setText(helper);
-        DisplayUtils.fadeInFadeOutNodeTransition(lblUserHelp, 1);
+        DisplayUtils.fadeInFadeOutNodeTransition(lblUserHelp, 1, 2000);
     }
 
     /**
@@ -699,6 +698,7 @@ public class Controller implements Initializable, Observer {
     }
 
     public void setZoomSliderValue(double level) {
+        raceViewController.stopHighlightAnimation();
         zoomSlider.setValue(level);
     }
 
