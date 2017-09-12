@@ -308,32 +308,42 @@ public class Controller implements Initializable, Observer {
      * adds a listener to see if a touch event is occurring or not
      */
     private void initTouchEventListener() {
-        scene.addEventFilter(TouchEvent.ANY, touch -> {
-            if(touch.getTouchPoints().size() == 2 && DisplayUtils.zoomLevel != 1 && !DisplayUtils.externalZoomEvent) {
-/*                DisplayUtils.externalDragEvent = true;
-                DisplayUtils.externalTouchEvent = true;
-                double touchX = (touch.getTouchPoints().get(0).getX() + touch.getTouchPoints().get(1).getX()) / 2;
-                double touchY = (touch.getTouchPoints().get(0).getY() + touch.getTouchPoints().get(1).getY()) / 2;
-                DisplayUtils.dragDisplay((int) touchX, (int) touchY);
-                raceViewController.redrawCourse();
-                raceViewController.redrawBoatPaths();
-                selectionController.deselectBoat();
-                */
-            } else if(touch.getTouchPoints().size() == 1) {
+        touchPane.addEventFilter(TouchEvent.ANY, touch -> {
+            if (touch.getTouchPoints().size() == 1) {
                 DisplayUtils.externalTouchEvent = zoomSlider.isValueChanging();
                 DisplayUtils.externalDragEvent = touch.getEventType() != TouchEvent.TOUCH_RELEASED;
             }
         });
+
+        canvasAnchor.addEventFilter(TouchEvent.ANY, touch -> {
+            if (touch.getTouchPoints().size() == 2 && DisplayUtils.zoomLevel != 1 && DisplayUtils.externalZoomEvent) {
+                DisplayUtils.externalDragEvent = false;
+                DisplayUtils.externalTouchEvent = true;
+                double touchX = (touch.getTouchPoints().get(0).getX() + touch.getTouchPoints().get(1).getX()) / 2;
+                double touchY = (touch.getTouchPoints().get(0).getY() + touch.getTouchPoints().get(1).getY()) / 2;
+                System.out.println("Change X: " + touchX);
+                System.out.println("Change Y: " + touchY);
+                DisplayUtils.dragDisplay((int) touchX, (int) touchY);
+                raceViewController.redrawCourse();
+                raceViewController.redrawBoatPaths();
+                selectionController.deselectBoat();
+            }
+        });
     }
 
+
     private void initZoomEventListener() {
-/*        scene.setOnZoom(new EventHandler<ZoomEvent>() {
+        canvasAnchor.setOnZoom(new EventHandler<ZoomEvent>() {
             @Override
             public void handle(ZoomEvent zoom) {
-                DisplayUtils.externalZoomEvent = (zoom.getTotalZoomFactor() > 0.9 && zoom.getTotalZoomFactor() < 1.1);
-                zoomSlider.adjustValue(zoomSlider.getValue() * zoom.getZoomFactor());
+                DisplayUtils.externalZoomEvent = (zoom.getZoomFactor() > 0.96 && zoom.getZoomFactor() < 1.04);
+                if(!DisplayUtils.externalZoomEvent) {
+                    zoomSlider.adjustValue(zoomSlider.getValue() * zoom.getZoomFactor());
+                    System.out.println("ZoomFactor: " + zoom.getZoomFactor());
+                    System.out.println("TotalZoomFactor: " + zoom.getTotalZoomFactor());
+                }
             }
-        });*/
+        });
     }
 
     /**

@@ -19,6 +19,7 @@ import java.util.Set;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.hypot;
+import static java.lang.Math.multiplyExact;
 
 /**
      * handles user key presses.
@@ -36,6 +37,7 @@ import static java.lang.Math.hypot;
         private Boat playersBoat;
         private double timeElapsed;
         private double touchTime;
+        private boolean multipleFingers;
 
         /**
          * Sets up user key press handler.
@@ -63,6 +65,10 @@ import static java.lang.Math.hypot;
 
             touchPane.setOnScrollStarted(swipe -> {
                 swipeStart = new CanvasCoordinate(swipe.getScreenX(), swipe.getScreenY());
+                multipleFingers = false;
+                if(swipe.getTouchCount() != 1) {
+                    multipleFingers = true;
+                }
                 timeElapsed = System.currentTimeMillis();
             });
 
@@ -71,7 +77,7 @@ import static java.lang.Math.hypot;
                 double differenceX = Math.pow((swipeStart.getX() - swipeEnd.getX()), 2);
                 double differenceY = Math.pow((swipeStart.getY() - swipeEnd.getY()), 2);
                 double lengthXY = Math.sqrt(differenceX + differenceY);
-                if(lengthXY > 130 && Math.abs(System.currentTimeMillis() - timeElapsed) < 300) {
+                if(lengthXY > 130 && Math.abs(System.currentTimeMillis() - timeElapsed) < 300 && !multipleFingers && !DisplayUtils.externalTouchEvent) {
                     displayTouchController.displaySwipe(swipeEnd, swipeStart);
                     double swipeBearing = MathUtils.getHeadingBetweenTwoCoodinates(swipeStart, swipeEnd);
                     swipeAction(swipe, swipeBearing);
