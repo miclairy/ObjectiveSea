@@ -1,8 +1,10 @@
 package seng302.data;
 
+import java.util.Objects;
+
 public enum CourseName {
 
-    AC35(0, "AC35"), AC33(1, "AC33"), LAKE_TEKAPO(3, "Lake Tekapo"), LAKE_TAUPO(4, "Lake Taupo"), MALMO(5, "Malmo"), ATHENS(2, "Athens");
+    AC35(0, "AC35"), AC33(1, "AC33"), LAKE_TEKAPO(2, "Lake Tekapo"), LAKE_TAUPO(3, "Lake Taupo"), MALMO(4, "Malmo"), ATHENS(5, "Athens");
 
     private final int value;
     private final String name;
@@ -24,5 +26,16 @@ public enum CourseName {
             }
         }
         return returnCourse;
+    }
+
+    public static int getCourseIntFromName(String name){
+        int courseIndex = -1;
+        for (CourseName courseName : CourseName.values()){
+            if (Objects.equals(name, courseName.getText())){
+                System.out.println(name);
+                courseIndex = courseName.getValue();
+            }
+        }
+        return courseIndex;
     }
 }

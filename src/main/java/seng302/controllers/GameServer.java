@@ -3,10 +3,7 @@ package seng302.controllers;
 import seng302.data.*;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.data.registration.RegistrationType;
-import seng302.models.Boat;
-import seng302.models.Collision;
-import seng302.models.Race;
-import seng302.models.ServerOptions;
+import seng302.models.*;
 import seng302.utilities.ConnectionUtils;
 import seng302.views.AvailableRace;
 import sun.security.x509.AVA;
@@ -241,6 +238,7 @@ public class GameServer extends Server {
         connectionManager.sendToClient(newId, packet);
         if(success){
             try {
+                System.out.println(raceUpdater.getRace().getRegattaName());
                 updateVM(options.getSpeedScale(), options.getMinParticipants(), options.getPort(), ConnectionUtils.getPublicIp(), 1);
             } catch (IOException a) {
                 a.printStackTrace();
