@@ -456,7 +456,7 @@ public class MainMenuController implements Initializable{
      * creates maps from XML files
      */
     private void setUpMaps(){
-        availableCourseMaps.add(new CourseMap("AC35","24:59"));
+        availableCourseMaps.add(new CourseMap("AC35","25:02"));
         availableCourseMaps.add(new CourseMap("AC33","28:59"));
         availableCourseMaps.add(new CourseMap("Lake Tekapo","30:00"));
         availableCourseMaps.add(new CourseMap("Lake Taupo","25:40"));
