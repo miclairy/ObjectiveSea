@@ -4,6 +4,7 @@ import javafx.animation.ScaleTransition;
 import javafx.scene.Scene;
 import javafx.scene.input.TouchPoint;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.transform.Transform;
@@ -48,16 +49,12 @@ public class DisplayTouchController {
         DisplayTouchController.touchPane = touchPane;
     }
 
-    public void displaySwipe(CanvasCoordinate swipeEnd, CanvasCoordinate swipeStart) {
-        Line path = createHighlightPath(swipeStart, swipeEnd);
-
-        touchTransition = AnimationUtils.touchInAction(path);
-       // touchTransition.play();
+    public void displaySwipe(CanvasCoordinate swipe) {
+        Circle highlightCircle = new Circle(10.0);
+        highlightCircle.setCenterX(swipe.getX());
+        highlightCircle.setCenterY(swipe.getY());
+        highlightCircle.setFill(Color.color(150 / 255, 211 / 255, 203 / 255));
+        AnimationUtils.swipeAnimation(touchPane, highlightCircle);
     }
 
-    private Line createHighlightPath(CanvasCoordinate swipeStart, CanvasCoordinate swipeEnd){
-        Line path = new Line(swipeStart.getX(), swipeStart.getY(), swipeEnd.getX(), swipeEnd.getY());
-        touchPane.getChildren().add(path);
-        return path;
-    }
 }

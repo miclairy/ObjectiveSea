@@ -1,5 +1,6 @@
 package seng302.controllers;
 
+import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -62,9 +63,16 @@ import static java.lang.Math.abs;
                 swipeStart = new CanvasCoordinate(swipe.getScreenX(), swipe.getScreenY());
             });
 
+            touchPane.setOnScroll(new EventHandler<ScrollEvent>() {
+                @Override
+                public void handle(ScrollEvent swipe) {
+                    CanvasCoordinate swipeCoordinate = new CanvasCoordinate(swipe.getX(), swipe.getY());
+                    displayTouchController.displaySwipe(swipeCoordinate);
+                }
+            });
+
             touchPane.setOnScrollFinished(swipe -> {
                 CanvasCoordinate swipeEnd = new CanvasCoordinate(swipe.getScreenX(), swipe.getScreenY());
-                displayTouchController.displaySwipe(swipeEnd, swipeStart);
                 double swipeBearing = MathUtils.getHeadingBetweenTwoCoodinates(swipeStart, swipeEnd);
                 swipeAction(swipe, swipeBearing);
             });
