@@ -89,10 +89,10 @@ public class ServerListener extends Receiver implements Runnable{
 
     private void recordHostGameMessage(byte[] body){
         System.out.println("Server: Recording game on VM");
-        Map<AvailableRace, byte[]> availableRace = new HashMap<>();
-        availableRace.put(parseHostedGameMessage(body), body);
+        AvailableRace race = parseHostedGameMessage(body);
+        race.setPacket(body);
         setChanged();
-        notifyObservers(availableRace);
+        notifyObservers(race);
     }
 
     /**

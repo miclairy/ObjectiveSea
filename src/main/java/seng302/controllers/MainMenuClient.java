@@ -17,6 +17,7 @@ import java.util.*;
  */
 public class MainMenuClient extends Client {
     private ObservableList<AvailableRace> availableRaces = FXCollections.observableArrayList();
+    private ArrayList<AvailableRace> recievedRaces = new ArrayList<>();
     private boolean joinPaneVisible = false;
 
     public MainMenuClient() throws ServerFullException, NoConnectionToServerException {
@@ -29,6 +30,8 @@ public class MainMenuClient extends Client {
             try {
                 checkForRaces();
                 Thread.sleep(5000);
+                updateRaces();
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -44,13 +47,31 @@ public class MainMenuClient extends Client {
         }
     }
 
+    public void updateRaces(){
+        ArrayList<AvailableRace> racesToRemove = new ArrayList<>();
+        for(AvailableRace race : availableRaces){
+            if(!recievedRaces.contains(race)){
+                racesToRemove.add(race);
+            }
+        }
+
+        for(AvailableRace race : racesToRemove){
+            availableRaces.remove(race);
+        }
+
+        for(AvailableRace race : recievedRaces){
+            if(!availableRaces.contains(race)){
+                availableRaces.add(race);
+            }
+        }
+    }
+
     public ObservableList<AvailableRace> getAvailableRaces() {
         return availableRaces;
 
     }
 
     public void checkForRaces(){
-        availableRaces.clear();
         setUpDataStreamReader(ConnectionUtils.getVmIpAddress(), 2828);
         try {
             manageWaitingConnection();

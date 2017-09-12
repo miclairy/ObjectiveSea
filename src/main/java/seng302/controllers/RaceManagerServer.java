@@ -8,6 +8,7 @@ import seng302.views.AvailableRace;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
@@ -18,7 +19,7 @@ import java.util.Observable;
  */
 public class RaceManagerServer extends Server {
 
-    private Map<AvailableRace, byte[]> availableRaces = new HashMap<>();
+    private ArrayList<AvailableRace> availableRaces = new ArrayList();
     private int nextViewerID = 0;
 
     public RaceManagerServer(ServerOptions options) throws IOException {
@@ -64,7 +65,7 @@ public class RaceManagerServer extends Server {
             if(arg instanceof String) {
                 AvailableRace foundRace = null;
                 System.out.println("Races size: " + availableRaces.size());
-                for (AvailableRace race : availableRaces.keySet()) {
+                for (AvailableRace race : availableRaces) {
                     if (race.getIpAddress().equals((String) arg)) {
                         foundRace = race;
                     }
@@ -77,7 +78,7 @@ public class RaceManagerServer extends Server {
                 RegistrationType rego = (RegistrationType) arg;
                 manageRegistration((ServerListener) observable, rego);
             } else {
-                availableRaces.putAll((HashMap<AvailableRace, byte[]>) arg);
+                availableRaces.add((AvailableRace) arg);
             }
         }
     }
@@ -93,8 +94,8 @@ public class RaceManagerServer extends Server {
             case REQUEST_RUNNING_GAMES:
                 System.out.println("Server: Client requesting games");
                 connectionManager.addConnection(nextViewerID, serverListener.getSocket());
-                for(byte[] race : availableRaces.values()){
-                    byte[] racePacket = packetBuilder.createGameRegistrationPacket(race);
+                for(AvailableRace race : availableRaces){
+                    byte[] racePacket = packetBuilder.createGameRegistrationPacket(race.getPacket());
                     connectionManager.sendToClient(nextViewerID, racePacket);
                 }
                 nextViewerID++;

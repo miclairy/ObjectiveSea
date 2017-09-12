@@ -14,6 +14,7 @@ public class AvailableRace {
     private IntegerProperty numBoats;
     private int port;
     private String ipAddress;
+    private byte[] packet;
 
     public AvailableRace(String mapName, Integer numBoats, int port, String ipAddress){
         this.mapName = new SimpleStringProperty(mapName);
@@ -29,4 +30,12 @@ public class AvailableRace {
     public int getPort() { return port; }
 
     public String getIpAddress() { return ipAddress; }
+
+    public byte[] getPacket() {
+        return packet;
+    }
+
+    public void setPacket(byte[] packet) {
+        this.packet = packet;
+    }
 }
