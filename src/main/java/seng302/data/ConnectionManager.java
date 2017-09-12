@@ -38,9 +38,9 @@ public class ConnectionManager extends Observable implements Runnable {
                 Socket socket = serverSocket.accept();
                 if (isGameServer) {
                     System.out.println("Server: Accepted Connection");
-                    setChanged();
-                    notifyObservers(socket);
                 }
+                setChanged();
+                notifyObservers(socket);
             } catch (IOException e) {
                 if(e instanceof SocketException){
                     System.out.println("Server: Disconnected");

@@ -3,7 +3,6 @@ package seng302.controllers;
 /**
  * Main class. Sets up server and client and starts GUI.
  */
-import com.sun.xml.internal.bind.v2.TODO;
 import javafx.application.Application;
 import javafx.application.Preloader;
 import javafx.scene.control.Alert;
