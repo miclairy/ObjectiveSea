@@ -13,7 +13,8 @@ import java.net.UnknownHostException;
 
 public class ConnectionUtils {
     private static GameClient client;
-    private static String vmIpAddress = "132.181.13.96";
+    private static String vmIpAddress = "10.32.26.200";
+    private static int vmpPort = 2827;
     private static Server server;
     private static final String IP_REGEX = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
 
@@ -113,4 +114,6 @@ public class ConnectionUtils {
     public static String getVmIpAddress() {
         return vmIpAddress;
     }
+
+    public static int getVmPort() {return vmpPort;}
 }

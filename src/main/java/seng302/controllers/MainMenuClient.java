@@ -51,33 +51,31 @@ public class MainMenuClient extends Client {
      * races that no longer exist, keeps races that are still running
      */
     public void updateRaces(){
-        ArrayList<AvailableRace> racesToRemove = new ArrayList<>();
-        for(AvailableRace race : availableRaces){
+        for(AvailableRace newRace : recievedRaces){
             boolean foundRace = false;
-            for(AvailableRace newRace : recievedRaces){
-                if(race.getIpAddress().equals(newRace.getIpAddress())){
+            for(AvailableRace oldRace : availableRaces){
+                if(newRace.getIpAddress().equals(oldRace.getIpAddress())){
                     foundRace = true;
-                    racesToRemove.add(race);
                 }
             }
             if(!foundRace){
-                racesToRemove.add(race);
+                availableRaces.add(newRace);
             }
         }
 
-        for(AvailableRace race : racesToRemove){
-            availableRaces.remove(race);
-        }
+        Iterator<AvailableRace> iter = availableRaces.iterator();
 
-        for(AvailableRace race : recievedRaces){
-            boolean alreadyExists = false;
-            for(AvailableRace oldRace : availableRaces){
-                if(race.getIpAddress().equals(oldRace.getIpAddress())){
-                    alreadyExists = true;
+        while (iter.hasNext()) {
+            AvailableRace race = iter.next();
+            boolean exists = false;
+            for(AvailableRace newRace : recievedRaces){
+                if (newRace.getIpAddress().equals(race.getIpAddress())){
+                    exists = true;
                 }
+
             }
-            if(!alreadyExists){
-                availableRaces.add(race);
+            if(!exists){
+                iter.remove();
             }
         }
     }
@@ -88,7 +86,8 @@ public class MainMenuClient extends Client {
     }
 
     public void checkForRaces(){
-        setUpDataStreamReader(ConnectionUtils.getVmIpAddress(), 2828);
+        recievedRaces.clear();
+        setUpDataStreamReader(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
         try {
             manageWaitingConnection();
             RegistrationType regoType = RegistrationType.REQUEST_RUNNING_GAMES;

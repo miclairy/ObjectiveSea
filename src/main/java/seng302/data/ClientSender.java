@@ -19,7 +19,7 @@ public class ClientSender {
     public ClientSender(Socket socket) {
         this.connection = socket;
         try {
-            this.vmConnection = new Socket(ConnectionUtils.getVmIpAddress(), 2828);
+            this.vmConnection = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
         } catch (ConnectException e) {
             System.out.println("Client: Unable to reach VM server");
         } catch (IOException e) {
