@@ -155,7 +155,6 @@ public class MainMenuController implements Initializable{
     @FXML private void loadJoinPane(){
         setUpAvailableRaceTable();
         AnimationUtils.switchPaneFade(onlinePane, joinRacePane);
-        client.setJoinPaneVisible(true);
         tblAvailableRaces.setItems(client.getAvailableRaces());
     }
 

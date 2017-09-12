@@ -18,7 +18,6 @@ import java.util.*;
 public class MainMenuClient extends Client {
     private ObservableList<AvailableRace> availableRaces = FXCollections.observableArrayList();
     private ArrayList<AvailableRace> recievedRaces = new ArrayList<>();
-    private boolean joinPaneVisible = false;
 
     public MainMenuClient() throws ServerFullException, NoConnectionToServerException {
         this.packetBuilder = new ClientPacketBuilder();
@@ -42,15 +41,26 @@ public class MainMenuClient extends Client {
     public void update(Observable o, Object arg) {
         if(o instanceof MainMenuClientListener){
             if(arg instanceof AvailableRace){
-                availableRaces.add((AvailableRace) arg);
+                recievedRaces.add((AvailableRace) arg);
             }
         }
     }
 
+    /**
+     * hands the updating of the availble races array, removes
+     * races that no longer exist, keeps races that are still running
+     */
     public void updateRaces(){
         ArrayList<AvailableRace> racesToRemove = new ArrayList<>();
         for(AvailableRace race : availableRaces){
-            if(!recievedRaces.contains(race)){
+            boolean foundRace = false;
+            for(AvailableRace newRace : recievedRaces){
+                if(race.getIpAddress().equals(newRace.getIpAddress())){
+                    foundRace = true;
+                    racesToRemove.add(race);
+                }
+            }
+            if(!foundRace){
                 racesToRemove.add(race);
             }
         }
@@ -60,7 +70,13 @@ public class MainMenuClient extends Client {
         }
 
         for(AvailableRace race : recievedRaces){
-            if(!availableRaces.contains(race)){
+            boolean alreadyExists = false;
+            for(AvailableRace oldRace : availableRaces){
+                if(race.getIpAddress().equals(oldRace.getIpAddress())){
+                    alreadyExists = true;
+                }
+            }
+            if(!alreadyExists){
                 availableRaces.add(race);
             }
         }
@@ -81,10 +97,6 @@ public class MainMenuClient extends Client {
         } catch (NoConnectionToServerException e) {
             System.out.println("Cannot reach server on current address");
         }
-    }
-
-    public void setJoinPaneVisible(boolean isVisible){
-        joinPaneVisible = isVisible;
     }
 
     @Override
