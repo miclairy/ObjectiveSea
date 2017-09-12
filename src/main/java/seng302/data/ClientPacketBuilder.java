@@ -56,7 +56,12 @@ public class ClientPacketBuilder extends PacketBuilder {
     public byte[] createGameCancelPacket(AC35StreamMessage type) {
         byte[] header = super.createHeader(type);
         byte[] body = new byte[4];
-        long ip = ConnectionUtils.ipStringToLong(ConnectionUtils.getPublicIp());
+        long ip = 0;
+        try {
+            ip = ConnectionUtils.ipStringToLong(ConnectionUtils.getPublicIp());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
         addFieldToByteArray(body, HOST_GAME_IP, ip);
         return generatePacket(header, body);
     }

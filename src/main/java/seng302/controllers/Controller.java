@@ -42,6 +42,7 @@ import seng302.views.HeadsupDisplay;
 import java.io.*;
 
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.*;
 
 import static javafx.collections.FXCollections.observableArrayList;
@@ -228,7 +229,12 @@ public class Controller implements Initializable, Observer {
         this.options = options;
         this.scene = scene;
         if (this.options.isHost()) {
-            String ip = ConnectionUtils.getPublicIp();
+            String ip = null;
+            try {
+                ip = ConnectionUtils.getPublicIp();
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
             if (Objects.equals(ip, null)) {
                 startersOverlayTitle.setText(race.getRegattaName());
             } else {
