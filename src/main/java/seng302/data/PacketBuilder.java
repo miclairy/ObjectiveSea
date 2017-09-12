@@ -135,7 +135,7 @@ public abstract class PacketBuilder {
      * @param currentCourseIndex current course
      * @return a packet to be sent
      */
-    public byte[] createGameRegistrationPacket(Double speedScale, Integer minParticipants, Integer serverPort, String publicIp, int currentCourseIndex) {
+    public byte[] createGameRegistrationPacket(Double speedScale, Integer minParticipants, Integer serverPort, String publicIp, int currentCourseIndex, int currentPlayers) {
         byte[] header = createHeader(HOST_GAME_MESSAGE);
         byte[] body = new byte[HOST_GAME_MESSAGE.getLength()];
         long ip = ConnectionUtils.ipStringToLong(publicIp);
@@ -145,7 +145,7 @@ public abstract class PacketBuilder {
         addFieldToByteArray(body, HOST_GAME_SPEED, speedScale.longValue());
         addFieldToByteArray(body, HOST_GAME_STATUS, 1);
         addFieldToByteArray(body, HOST_GAME_REQUIRED_PLAYERS, minParticipants);
-        addFieldToByteArray(body, HOST_GAME_CURRENT_PLAYERS, 1);
+        addFieldToByteArray(body, HOST_GAME_CURRENT_PLAYERS, currentPlayers);
         return generatePacket(header, body);
     }
 

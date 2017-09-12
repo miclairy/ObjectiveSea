@@ -234,12 +234,7 @@ public class MainMenuController implements Initializable{
             ClientOptions clientOptions =
                     new ClientOptions(ipAddress, portNumber, GameMode.MULTIPLAYER, isParticipant, false);
             boolean clientStarted = main.startClient(clientOptions);
-            if(clientStarted){
-                stopMainMenuClientThread();
-                Thread.sleep(200);
-                main.loadRaceView(clientOptions);
-                loadRealGameSounds();
-            }
+            startGame(clientStarted, clientOptions);
         } else {
             if(!ConnectionUtils.IPRegExMatcher(txtIPAddress.getText()) && !txtIPAddress.getText().isEmpty()){
                 txtIPAddress.setStyle("-fx-text-inner-color: #ff5459;");
@@ -257,6 +252,15 @@ public class MainMenuController implements Initializable{
         }
     }
 
+    private void startGame(boolean clientStarted, ClientOptions clientOptions) throws InterruptedException, UnsupportedAudioFileException, IOException, LineUnavailableException {
+        if(clientStarted){
+            stopMainMenuClientThread();
+            Thread.sleep(200);
+            main.loadRaceView(clientOptions);
+            loadRealGameSounds();
+        }
+    }
+
     /**
      * Joins a race as a spectator
      * @throws Exception
@@ -269,12 +273,7 @@ public class MainMenuController implements Initializable{
             ClientOptions clientOptions =
                     new ClientOptions(race.getIpAddress(), race.getPort(), GameMode.MULTIPLAYER, false, false);
             boolean clientStarted = main.startClient(clientOptions);
-            if(clientStarted){
-                stopMainMenuClientThread();
-                Thread.sleep(200);
-                main.loadRaceView(clientOptions);
-                loadRealGameSounds();
-            }
+            startGame(clientStarted, clientOptions);
         }
     }
 
@@ -294,12 +293,7 @@ public class MainMenuController implements Initializable{
             ClientOptions clientOptions =
                     new ClientOptions(ipAddress, race.getPort(), GameMode.MULTIPLAYER, true, false);
             boolean clientStarted = main.startClient(clientOptions);
-            if(clientStarted){
-                stopMainMenuClientThread();
-                Thread.sleep(200);
-                main.loadRaceView(clientOptions);
-                loadRealGameSounds();
-            }
+            startGame(clientStarted, clientOptions);
         }
     }
 

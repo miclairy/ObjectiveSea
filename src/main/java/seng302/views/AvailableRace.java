@@ -38,4 +38,13 @@ public class AvailableRace {
     public void setPacket(byte[] packet) {
         this.packet = packet;
     }
+
+
+    public int getNumBoats() {
+        return numBoats.get();
+    }
+
+    public void setNumBoats(int numBoats) {
+        this.numBoats.set(numBoats);
+    }
 }

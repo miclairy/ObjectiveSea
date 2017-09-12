@@ -94,31 +94,28 @@ public class ClientListener extends Receiver implements Runnable{
         xmlBody = xmlBody.trim();
         InputStream xmlInputStream = new ByteArrayInputStream(xmlBody.getBytes());
         RaceVisionXMLParser raceVisionXMLParser = new RaceVisionXMLParser();
-        //Taken out since the new stream sends xmls not in order
-//        if (xmlSequenceNumbers.get(xmlSubtype) < xmlSequenceNumber) {
-            xmlSequenceNumbers.put(xmlSubtype, xmlSequenceNumber);
-            if (xmlSubtype == REGATTA_XML_MESSAGE) {
-                System.out.printf("Client: New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
-                raceVisionXMLParser.importRegatta(xmlInputStream, race);
-            } else if (xmlSubtype == RACE_XML_MESSAGE) {
-                System.out.printf("Client: New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
-                if (race != null) {
-                    setChanged();
-                    Race newRace = raceVisionXMLParser.importRace(xmlInputStream);
-                    notifyObservers(newRace);
-                } else {
-                    setRace(raceVisionXMLParser.importRace(xmlInputStream));
-                }
-            } else if (xmlSubtype == BOAT_XML_MESSAGE) {
-                System.out.printf("Client: New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
-                if(race.getCompetitors().size() == 0){
-                    List<Boat> competitors = raceVisionXMLParser.importStarters(xmlInputStream);
-                    race.setCompetitors(competitors);
-                    setChanged();
-                    notifyObservers(competitors);
-                }
+        xmlSequenceNumbers.put(xmlSubtype, xmlSequenceNumber);
+        if (xmlSubtype == REGATTA_XML_MESSAGE) {
+            System.out.printf("Client: New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
+            raceVisionXMLParser.importRegatta(xmlInputStream, race);
+        } else if (xmlSubtype == RACE_XML_MESSAGE) {
+            System.out.printf("Client: New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
+            if (race != null) {
+                setChanged();
+                Race newRace = raceVisionXMLParser.importRace(xmlInputStream);
+                notifyObservers(newRace);
+            } else {
+                setRace(raceVisionXMLParser.importRace(xmlInputStream));
             }
-//        }
+        } else if (xmlSubtype == BOAT_XML_MESSAGE) {
+            System.out.printf("Client: New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
+            if(race.getCompetitors().size() == 0){
+                List<Boat> competitors = raceVisionXMLParser.importStarters(xmlInputStream);
+                race.setCompetitors(competitors);
+                setChanged();
+                notifyObservers(competitors);
+            }
+        }
     }
 
     /**

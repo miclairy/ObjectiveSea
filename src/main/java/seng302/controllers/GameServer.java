@@ -7,10 +7,13 @@ import seng302.models.Boat;
 import seng302.models.Collision;
 import seng302.models.Race;
 import seng302.models.ServerOptions;
+import seng302.utilities.ConnectionUtils;
 import seng302.views.AvailableRace;
+import sun.security.x509.AVA;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
@@ -236,11 +239,22 @@ public class GameServer extends Server {
         connectionManager.addConnection(newId, serverListener.getSocket());
         serverListener.setClientId(newId);
         connectionManager.sendToClient(newId, packet);
-
         if(success){
+            try {
+                updateVM(options.getSpeedScale(), options.getMinParticipants(), options.getPort(), ConnectionUtils.getPublicIp(), 1);
+            } catch (IOException a) {
+                a.printStackTrace();
+            }
             sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());
             sendAllBoatStates();
         }
+    }
+
+    private void updateVM(Double speedScale, Integer minParticipants, Integer serverPort, String publicIp, int currentCourseIndex) throws IOException {
+        byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(speedScale, minParticipants, serverPort, publicIp, currentCourseIndex, raceUpdater.getRace().getCompetitors().size());
+        System.out.println("Client: Updating VM");
+        Socket vmSocket = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
+        connectionManager.updateVM(registerGamePacket, vmSocket);
     }
 
     /**
@@ -265,6 +279,7 @@ public class GameServer extends Server {
             }
         } else if(observable instanceof ServerListener){
             if(arg instanceof RegistrationType){
+                System.out.println("adding player to game");
                 manageRegistration((ServerListener) observable, (RegistrationType) arg);
             }
         }

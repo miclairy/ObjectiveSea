@@ -60,25 +60,22 @@ public class RaceManagerServer extends Server {
             }
         } else if(observable instanceof ServerListener){
             if(arg instanceof String) {
-                removeRace((String) arg);
+                removeAvailableRace(arg);
             } else if (arg instanceof RegistrationType) {
                 RegistrationType rego = (RegistrationType) arg;
                 manageRegistration((ServerListener) observable, rego);
-            } else {
+            } else if (arg instanceof AvailableRace) {
+                removeAvailableRace(((AvailableRace) arg).getIpAddress());
                 availableRaces.add((AvailableRace) arg);
             }
         }
     }
 
-    /**
-     * removes a race hosted by a given ip
-     * @param ip the ip at which the race to remove is hosted
-     */
-    private void removeRace(String ip){
+    private void removeAvailableRace(Object arg){
         AvailableRace foundRace = null;
         System.out.println("Races size: " + availableRaces.size());
         for (AvailableRace race : availableRaces) {
-            if (race.getIpAddress().equals(ip)) {
+            if (race.getIpAddress().equals(arg)) {
                 foundRace = race;
             }
         }
