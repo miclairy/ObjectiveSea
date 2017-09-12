@@ -306,6 +306,7 @@ public class Controller implements Initializable, Observer {
     private void initZoom() {
         //Zoomed out
         zoomSlider.valueProperty().addListener((arg0, arg1, arg2) -> {
+            raceViewController.stopHighlightAnimation();
             zoomSlider.setOpacity(FOCUSED_ZOOMSLIDER_OPACITY);
             DisplayUtils.setZoomLevel(zoomSlider.getValue());
             if (DisplayUtils.zoomLevel != 1) {
@@ -604,7 +605,7 @@ public class Controller implements Initializable, Observer {
         lblUserHelp.setMaxWidth(canvasWidth);
         lblUserHelp.setMinWidth(canvasWidth);
         lblUserHelp.setText(helper);
-        DisplayUtils.fadeInFadeOutNodeTransition(lblUserHelp, 1);
+        DisplayUtils.fadeInFadeOutNodeTransition(lblUserHelp, 1, 2000);
     }
 
     /**
@@ -619,11 +620,13 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(nextMarkGrid, 430, true);
             AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
-            AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, false);
+            if (options.isParticipant()) {
+                AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, false);
+            }
             scoreboardVisible = false;
             raceViewController.shiftArrow(false);
             setUpTable();
-        }else{
+        } else {
             rightHandSide.setVisible(true);
             AnimationUtils.shiftPaneNodes(rightHandSide, -440, true);
             AnimationUtils.shiftPaneArrow(btnHide, -430, -1);
@@ -664,6 +667,7 @@ public class Controller implements Initializable, Observer {
     }
 
     public void setZoomSliderValue(double level) {
+        raceViewController.stopHighlightAnimation();
         zoomSlider.setValue(level);
     }
 
