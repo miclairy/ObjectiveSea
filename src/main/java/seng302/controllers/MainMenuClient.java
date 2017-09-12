@@ -37,7 +37,7 @@ public class MainMenuClient extends Client {
 
     @Override
     public void update(Observable o, Object arg) {
-        if(o instanceof ClientListener){
+        if(o instanceof MainMenuClientListener){
             if(arg instanceof AvailableRace){
                 availableRaces.add((AvailableRace) arg);
             }
