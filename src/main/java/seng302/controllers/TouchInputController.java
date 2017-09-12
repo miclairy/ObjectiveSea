@@ -33,6 +33,7 @@ import static java.lang.Math.abs;
         private CanvasCoordinate swipeStart;
         private Boat playersBoat;
         private PolarTable polarTable;
+        private CanvasCoordinate previousCoordinate;
 
 
     /**
@@ -66,8 +67,15 @@ import static java.lang.Math.abs;
             touchPane.setOnScroll(new EventHandler<ScrollEvent>() {
                 @Override
                 public void handle(ScrollEvent swipe) {
-                    CanvasCoordinate swipeCoordinate = new CanvasCoordinate(swipe.getX(), swipe.getY());
-                    displayTouchController.displaySwipe(swipeCoordinate);
+                    CanvasCoordinate currentCoordinate = new CanvasCoordinate(swipe.getX(), swipe.getY());
+                    if(previousCoordinate == null){
+                        previousCoordinate = currentCoordinate;
+                    }
+                    if (swipe.getTouchCount() > 0){
+                        displayTouchController.displaySwipe(currentCoordinate, previousCoordinate);
+                        previousCoordinate = currentCoordinate;
+                    }
+
                 }
             });
 
@@ -75,8 +83,8 @@ import static java.lang.Math.abs;
                 CanvasCoordinate swipeEnd = new CanvasCoordinate(swipe.getScreenX(), swipe.getScreenY());
                 double swipeBearing = MathUtils.getHeadingBetweenTwoCoodinates(swipeStart, swipeEnd);
                 swipeAction(swipe, swipeBearing);
+                previousCoordinate = null;
             });
-
         }
 
         private void swipeAction(ScrollEvent swipe, double swipeBearing){

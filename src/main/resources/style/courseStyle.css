@@ -163,3 +163,8 @@
 #tapCircle{
     -fx-background-color: #8eb0b7;
 }
+
+#touchLine{
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+}

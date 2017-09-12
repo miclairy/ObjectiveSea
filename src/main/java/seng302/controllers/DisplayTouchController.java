@@ -10,6 +10,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.transform.Transform;
 import seng302.models.CanvasCoordinate;
 import seng302.utilities.AnimationUtils;
+import seng302.utilities.MathUtils;
 
 /**
  * Created by Chris on 24/08/2017.
@@ -26,7 +27,6 @@ public class DisplayTouchController {
 
     public void displayTouch(TouchPoint point){
             Circle highlightCircle1 = createHighlightCircle(point);
-
             touchTransition = AnimationUtils.touchInAction(highlightCircle1);
             touchTransition.play();
     }
@@ -49,12 +49,15 @@ public class DisplayTouchController {
         DisplayTouchController.touchPane = touchPane;
     }
 
-    public void displaySwipe(CanvasCoordinate swipe) {
-        Circle highlightCircle = new Circle(10.0);
-        highlightCircle.setCenterX(swipe.getX());
-        highlightCircle.setCenterY(swipe.getY());
-        highlightCircle.setFill(Color.color(150 / 255, 211 / 255, 203 / 255));
-        AnimationUtils.swipeAnimation(touchPane, highlightCircle);
+    public void displaySwipe(CanvasCoordinate currentCoordinate, CanvasCoordinate previousCoordinate) {
+        if(MathUtils.distanceBetweenTwoPoints(currentCoordinate, previousCoordinate) > 100){
+            previousCoordinate = currentCoordinate;
+        }
+        Line line = new Line(previousCoordinate.getX(), previousCoordinate.getY(), currentCoordinate.getX(), currentCoordinate.getY());
+        line.setStrokeWidth(10.0);
+        line.setStroke(Color.color(123.0/255.0, 209.0/255.0, 197.0/255.0));
+        line.setId("touchLine");
+        AnimationUtils.swipeAnimation(touchPane, line);
     }
 
 }
