@@ -26,7 +26,7 @@ public class ClientListenerTest {
 
         Assert.assertNull(testReader.getSocket());
 
-        testReader.setUpConnection();
+        testReader.setUpConnection(TEST_FEED_ADDRESS, TEST_FEED_PORT);
 
         Assert.assertNotNull(testReader.getSocket());
         InetAddress address = testReader.getSocket().getInetAddress();

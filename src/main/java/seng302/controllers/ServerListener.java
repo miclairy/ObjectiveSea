@@ -18,10 +18,9 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.HashMap;
-import java.util.Map;
 
 import static seng302.data.AC35StreamField.*;
+import static seng302.data.registration.RegistrationType.REQUEST_RUNNING_GAMES;
 
 /**
  * Created by mjt169 on 19/07/17.
@@ -88,7 +87,7 @@ public class ServerListener extends Receiver implements Runnable{
 
     private void recordHostGameMessage(byte[] body){
         System.out.println("Server: Recording game on VM");
-        AvailableRace race = parseHostedGameMessage(body);
+        AvailableRace race = createAvailableRace(body);
         race.setPacket(body);
         setChanged();
         notifyObservers(race);
@@ -99,17 +98,19 @@ public class ServerListener extends Receiver implements Runnable{
      * @param body the body of a RegistrationRequest message
      */
     private void parseRegistrationRequestMessage(byte[] body) {
-        System.out.println("Server: Received Registration Request");
         byte registrationByte = body[REGISTRATION_REQUEST_TYPE.getStartIndex()];
-        setChanged();
-        notifyObservers(RegistrationType.getTypeFromByte(registrationByte));
+        if (registrationByte != REQUEST_RUNNING_GAMES.value()){
+            System.out.println("Server: Received Registration Request");
+            setChanged();
+            notifyObservers(RegistrationType.getTypeFromByte(registrationByte));
+        }
     }
 
     /**
      * Method to decode a host game packet from the server
      * @param body body of the hosted game, containing all relevant information about a game
      */
-    private AvailableRace parseHostedGameMessage(byte[] body){
+    private AvailableRace createAvailableRace(byte[] body){
         long serverIpLong = byteArrayRangeToLong(body, HOST_GAME_IP.getStartIndex(), HOST_GAME_IP.getEndIndex());
         String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
         int serverPort = byteArrayRangeToInt(body, HOST_GAME_PORT.getStartIndex(), HOST_GAME_PORT.getEndIndex());
@@ -168,7 +169,6 @@ public class ServerListener extends Receiver implements Runnable{
 
     @Override
     public void disconnectClient() {
-
     }
 
     public void setRace(Race race) {
@@ -180,7 +180,7 @@ public class ServerListener extends Receiver implements Runnable{
     }
 
     private void removeHostedGame(byte[] body){
-        System.out.println("recived remove game message");
+        System.out.println("received remove game message");
         long serverIpLong = byteArrayRangeToLong(body, HOST_GAME_IP.getStartIndex(), HOST_GAME_IP.getEndIndex());
         String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
         setChanged();

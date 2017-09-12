@@ -112,7 +112,7 @@ public class Main extends Application {
             Thread raceManagerThread = new Thread(managerServer);
             raceManagerThread.setName("raceManagerServer");
             raceManagerThread.start();
-        }else{
+        } else {
             server = new GameServer(serverOptions);
             ConnectionUtils.setServer(server);
             Thread serverThread = new Thread(server);

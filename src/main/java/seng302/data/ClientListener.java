@@ -23,9 +23,6 @@ import static seng302.data.AC35StreamXMLMessage.*;
  * Created on 13/04/17.
  */
 public class ClientListener extends Receiver implements Runnable{
-
-
-    private InputStream dataStream;
     private String sourceAddress;
     private int sourcePort;
     private Race race;
@@ -48,23 +45,8 @@ public class ClientListener extends Receiver implements Runnable{
      */
     @Override
     public void run(){
-        if(setUpConnection()) readData();
-    }
-
-    /**
-     * Sets up the connection to the data source by creating a socket and creates a InputStream from the socket.
-     * returns whether connection was successful
-     */
-    boolean setUpConnection() {
-        try {
-            Socket socket = new Socket(sourceAddress, sourcePort);
-            setSocket(socket);
-//            clientSocket.setSoTimeout(SOCKET_TIMEOUT_MS);
-            dataStream = getSocket().getInputStream();
-            return true;
-        } catch (IOException e) {
-            setHasConnectionFailed(true);
-            return false;
+        if(setUpConnection(sourceAddress, sourcePort)) {
+            readData();
         }
     }
 
@@ -185,7 +167,7 @@ public class ClientListener extends Receiver implements Runnable{
      * corresponding method. Ignores the message if the message type is not needed.
      */
     private void readData(){
-        DataInput dataInput = new DataInputStream(dataStream);
+        DataInput dataInput = new DataInputStream(getDataStream());
         Boolean serverRunning = true;
         while(serverRunning) {
             try {
@@ -248,7 +230,6 @@ public class ClientListener extends Receiver implements Runnable{
                     e.printStackTrace();
                     System.out.println("Client: disconnected from Server");
                 }
-
             }
         }
     }
@@ -364,29 +345,11 @@ public class ClientListener extends Receiver implements Runnable{
         race.updateMarkRounded(sourceID, markIndex, time);
     }
 
-    /**
-     * Method to decode a host game packet from the server
-     * @param body body of the hosted game, containing all relevant information about a game
-     */
-    private void parseHostedGameMessage(byte[] body){
-        long serverIpLong = byteArrayRangeToLong(body, HOST_GAME_IP.getStartIndex(), HOST_GAME_IP.getEndIndex());
-        String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
-        int serverPort = byteArrayRangeToInt(body, HOST_GAME_PORT.getStartIndex(), HOST_GAME_PORT.getEndIndex());
-        int courseIndex = byteArrayRangeToInt(body, HOST_GAME_MAP.getStartIndex(), HOST_GAME_MAP.getEndIndex());
-        long gameSpeed = byteArrayRangeToLong(body, HOST_GAME_SPEED.getStartIndex(), HOST_GAME_SPEED.getEndIndex());
-        int gameStatus = byteArrayRangeToInt(body, HOST_GAME_STATUS.getStartIndex(), HOST_GAME_STATUS.getEndIndex());
-        int gameMinPlayers = byteArrayRangeToInt(body, HOST_GAME_REQUIRED_PLAYERS.getStartIndex(), HOST_GAME_REQUIRED_PLAYERS.getEndIndex());
-        int gameCurrentPlayers = byteArrayRangeToInt(body, HOST_GAME_CURRENT_PLAYERS.getStartIndex(), HOST_GAME_CURRENT_PLAYERS.getEndIndex());
-        AvailableRace availableRace = new AvailableRace(CourseName.getCourseNameFromInt(courseIndex).getText(), gameCurrentPlayers, serverPort, serverIP);
-        setChanged();
-        notifyObservers(availableRace);
-    }
-
     @Override
     public void disconnectClient() {
         try {
             getSocket().close();
-            dataStream.close();
+            getDataStream().close();
         } catch (IOException e) {
             e.printStackTrace();
         }

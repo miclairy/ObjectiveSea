@@ -5,6 +5,7 @@ import seng302.utilities.ConnectionUtils;
 
 /**
  * Created by mjt169 on 3/08/17.
+ *
  */
 public class ServerOptions {
 

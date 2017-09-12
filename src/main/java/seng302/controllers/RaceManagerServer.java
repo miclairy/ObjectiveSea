@@ -39,8 +39,6 @@ public class RaceManagerServer extends Server {
         managerThread.start();
         while (options.alwaysRerun()) {
             try {
-
-
                 Thread.sleep((long) (SECONDS_PER_UPDATE * 1000));
             } catch (InterruptedException e) {
                 e.printStackTrace();
