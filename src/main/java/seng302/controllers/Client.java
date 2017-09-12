@@ -37,7 +37,7 @@ public abstract class Client implements Runnable, Observer {
         int connectionAttempts = 0;
         while(clientListener.getSocket() == null) {
             if(clientListener.isHasConnectionFailed()){
-                stopDataStreamReader();
+//                stopDataStreamReader();
                 throw new NoConnectionToServerException(true, "Connection Failed. Port number is invalid.");
             }else if(connectionAttempts < MAX_CONNECTION_ATTEMPTS){
                 try {

@@ -20,10 +20,12 @@ public class ConnectionManager extends Observable implements Runnable {
     private Map<Integer, Socket> clients =  new ConcurrentHashMap<>();
     private TreeMap<AC35StreamXMLMessage, byte[]> xmlMessages = new TreeMap<>();
     private boolean running = true;
+    private boolean isGameServer;
 
 
-    public ConnectionManager(int port) throws IOException {
+    public ConnectionManager(int port, boolean isGameServer) throws IOException {
         serverSocket = new ServerSocket(port);
+        this.isGameServer = isGameServer;
     }
 
     /**
@@ -34,9 +36,11 @@ public class ConnectionManager extends Observable implements Runnable {
         while (running) {
             try {
                 Socket socket = serverSocket.accept();
-                System.out.println("Server: Accepted Connection");
-                setChanged();
-                notifyObservers(socket);
+                if (isGameServer) {
+                    System.out.println("Server: Accepted Connection");
+                    setChanged();
+                    notifyObservers(socket);
+                }
             } catch (IOException e) {
                 if(e instanceof SocketException){
                     System.out.println("Server: Disconnected");
@@ -88,6 +92,10 @@ public class ConnectionManager extends Observable implements Runnable {
     public void addConnection(int newId, Socket socket) {
         clients.put(newId, socket);
         sendAllXMLsToClient(newId);
+    }
+
+    public void addMainMenuConnection(int newId, Socket socket) {
+        clients.put(newId, socket);
     }
 
     /**

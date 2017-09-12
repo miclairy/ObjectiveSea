@@ -40,7 +40,7 @@ public class GameServer extends Server {
     public GameServer(ServerOptions options) throws IOException {
         this.options = options;
         packetBuilder = new ServerPacketBuilder();
-        connectionManager = new ConnectionManager(options.getPort());
+        connectionManager = new ConnectionManager(options.getPort(), true);
         connectionManager.addObserver(this);
         setupNewRaceUpdater(options);
     }

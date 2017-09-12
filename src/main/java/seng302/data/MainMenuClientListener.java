@@ -62,7 +62,7 @@ public class MainMenuClientListener extends Receiver implements Runnable{
                         System.err.println("Incorrect CRC. Message Ignored.");
                     }
                 } catch (SocketTimeoutException e){
-                    System.out.println("Client: Game has closed");
+                    disconnectClient();
                 } catch (IOException e) {
                     if(race != null){
                         if(!race.isTerminated()){

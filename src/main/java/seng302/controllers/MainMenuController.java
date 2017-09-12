@@ -79,6 +79,7 @@ public class MainMenuController implements Initializable{
     public static double paneWidth;
     private AnimationTimer timer;
     private MainMenuClient client;
+    private Thread mainMenuClientThread;
 
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
 
@@ -118,8 +119,8 @@ public class MainMenuController implements Initializable{
     public void setApp(Main main) throws ServerFullException, NoConnectionToServerException {
         this.main = main;
         this.client = new MainMenuClient();
-        Thread thread = new Thread(client);
-        thread.start();
+        mainMenuClientThread = new Thread(client);
+        mainMenuClientThread.start();
     }
 
     @FXML private void loadHostOptionsPane(){
@@ -174,6 +175,7 @@ public class MainMenuController implements Initializable{
         DisplaySwitcher.getGameSounds().stopEndlessMusic();
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.TUTORIAL);
+        stopMainMenuClientThread();
         main.startLocalRace("GuidedPractice-course.xml", DEFAULT_PORT, true, clientOptions);
         Thread.sleep(200);
         main.loadRaceView(clientOptions);
@@ -187,6 +189,7 @@ public class MainMenuController implements Initializable{
     @FXML private void loadOfflinePlay() throws Exception{
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.SINGLEPLAYER);
+        stopMainMenuClientThread();
         main.startLocalRace(selectedCourse, DEFAULT_PORT, false, clientOptions);
         Thread.sleep(200);
         main.loadRaceView(clientOptions);
@@ -197,6 +200,7 @@ public class MainMenuController implements Initializable{
     @FXML private void loadPracticeStart() throws Exception {
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.PRACTICE);
+        stopMainMenuClientThread();
         main.startLocalRace("PracticeStart-course.xml", DEFAULT_PORT, false, clientOptions);
         Thread.sleep(200);
         main.loadRaceView(clientOptions);
@@ -211,6 +215,7 @@ public class MainMenuController implements Initializable{
         Double speed = speedScaleSlider.getValue();
         Integer minCompetitors = (int) boatsInRaceSlider.getValue();
         ClientOptions clientOptions = new ClientOptions(GameMode.MULTIPLAYER);
+        stopMainMenuClientThread();
         main.startHostedRace(currentCourseMap.getXML(), speed, minCompetitors, clientOptions, currentMapIndex);
         timer.stop();
         Thread.sleep(200);
@@ -230,6 +235,7 @@ public class MainMenuController implements Initializable{
                     new ClientOptions(ipAddress, portNumber, GameMode.MULTIPLAYER, isParticipant, false);
             boolean clientStarted = main.startClient(clientOptions);
             if(clientStarted){
+                stopMainMenuClientThread();
                 Thread.sleep(200);
                 main.loadRaceView(clientOptions);
                 loadRealGameSounds();
@@ -264,6 +270,7 @@ public class MainMenuController implements Initializable{
                     new ClientOptions(race.getIpAddress(), race.getPort(), GameMode.MULTIPLAYER, false, false);
             boolean clientStarted = main.startClient(clientOptions);
             if(clientStarted){
+                stopMainMenuClientThread();
                 Thread.sleep(200);
                 main.loadRaceView(clientOptions);
                 loadRealGameSounds();
@@ -288,6 +295,7 @@ public class MainMenuController implements Initializable{
                     new ClientOptions(ipAddress, race.getPort(), GameMode.MULTIPLAYER, true, false);
             boolean clientStarted = main.startClient(clientOptions);
             if(clientStarted){
+                stopMainMenuClientThread();
                 Thread.sleep(200);
                 main.loadRaceView(clientOptions);
                 loadRealGameSounds();
@@ -565,5 +573,11 @@ public class MainMenuController implements Initializable{
 
     public static double getCanvasWidth(){
         return paneWidth;
+    }
+
+    private void stopMainMenuClientThread() {
+        if (mainMenuClientThread != null){
+            mainMenuClientThread.stop();
+        }
     }
 }

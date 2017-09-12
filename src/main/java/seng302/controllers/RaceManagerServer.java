@@ -24,7 +24,7 @@ public class RaceManagerServer extends Server {
     public RaceManagerServer(ServerOptions options) throws IOException {
         this.options = options;
         packetBuilder = new ServerPacketBuilder();
-        connectionManager = new ConnectionManager(ConnectionUtils.getVmPort());
+        connectionManager = new ConnectionManager(ConnectionUtils.getVmPort(), false);
         connectionManager.addObserver(this);
     }
 
@@ -90,7 +90,7 @@ public class RaceManagerServer extends Server {
         switch (registrationType) {
             case REQUEST_RUNNING_GAMES:
                 System.out.println("Server: Client requesting games");
-                connectionManager.addConnection(nextViewerID, serverListener.getSocket());
+                connectionManager.addMainMenuConnection(nextViewerID, serverListener.getSocket());
                 for(AvailableRace race : availableRaces){
                     byte[] racePacket = packetBuilder.createGameRegistrationPacket(race.getPacket());
                     connectionManager.sendToClient(nextViewerID, racePacket);

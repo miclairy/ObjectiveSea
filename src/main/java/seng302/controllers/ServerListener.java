@@ -101,9 +101,9 @@ public class ServerListener extends Receiver implements Runnable{
         byte registrationByte = body[REGISTRATION_REQUEST_TYPE.getStartIndex()];
         if (registrationByte != REQUEST_RUNNING_GAMES.value()){
             System.out.println("Server: Received Registration Request");
-            setChanged();
-            notifyObservers(RegistrationType.getTypeFromByte(registrationByte));
         }
+        setChanged();
+        notifyObservers(RegistrationType.getTypeFromByte(registrationByte));
     }
 
     /**
