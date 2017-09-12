@@ -54,7 +54,11 @@ public class RaceManagerServer extends Server {
     public void update(Observable observable, Object arg) {
         if (observable.equals(connectionManager)) {
             if (arg instanceof Socket) {
-                startServerListener((Socket) arg);
+                try {
+                    startServerListener((Socket) arg);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         } else if(observable instanceof ServerListener){
             if(arg instanceof String) {
