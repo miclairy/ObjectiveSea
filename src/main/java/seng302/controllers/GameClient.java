@@ -9,7 +9,6 @@ import seng302.models.Boat;
 import seng302.models.ClientOptions;
 import seng302.models.Race;
 import seng302.utilities.NoConnectionToServerException;
-import seng302.views.AvailableRace;
 
 import java.util.*;
 
@@ -37,7 +36,7 @@ public class GameClient extends Client{
         manageWaitingConnection();
         RegistrationType regoType = options.isParticipant() ? RegistrationType.PLAYER : RegistrationType.SPECTATOR;
         System.out.println("Client: Connected to Server");
-        this.sender = new ClientSender(clientListener.getClientSocket());
+        this.sender = new ClientSender(clientListener.getSocket());
         sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
         System.out.println("Client: Sent Registration Request");
         manageServerResponse();
@@ -145,6 +144,15 @@ public class GameClient extends Client{
         }
         clientListener.disconnectClient();
         race.getBoatById(clientID).setStatus(BoatStatus.DNF);
+    }
+
+    @Override
+    protected void setUpDataStreamReader(String serverAddress, int serverPort) {
+        this.clientListener = new ClientListener(serverAddress, serverPort);
+        dataStreamReaderThread = new Thread(clientListener);
+        dataStreamReaderThread.setName("ClientListener");
+        dataStreamReaderThread.start();
+        clientListener.addObserver(this);
     }
 
 }

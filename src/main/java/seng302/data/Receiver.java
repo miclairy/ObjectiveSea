@@ -1,5 +1,9 @@
 package seng302.data;
 
+import seng302.models.Race;
+
+import java.io.IOException;
+import java.net.Socket;
 import java.util.Observable;
 import java.util.zip.CRC32;
 
@@ -7,12 +11,13 @@ import java.util.zip.CRC32;
  * Created by mjt169 on 18/07/17.
  *
  */
-public abstract class Receiver extends Observable{
+public abstract class Receiver extends Observable implements Runnable{
     protected final int HEADER_LENGTH = 15;
     protected final int CRC_LENGTH = 4;
     protected final int BOAT_DEVICE_TYPE = 1;
     protected final int MARK_DEVICE_TYPE = 3;
-
+    private boolean hasConnectionFailed = false;
+    private Socket socket;
 
     /**
      * Converts a range of bytes in an array from beginIndex to endIndex - 1 to an integer in little endian order.
@@ -73,5 +78,23 @@ public abstract class Receiver extends Observable{
         return expectedCRCValue == actualCRC.getValue();
     }
 
+    public boolean isHasConnectionFailed() {
+        return hasConnectionFailed;
+    }
 
+    public void setHasConnectionFailed(boolean state) {
+        hasConnectionFailed = state;
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public void setSocket(Socket socket) throws IOException {
+        this.socket = socket;
+    }
+
+    abstract public Race getRace();
+
+    abstract public void disconnectClient();
 }

@@ -3,6 +3,7 @@ package seng302.controllers;
 import seng302.data.ClientPacketBuilder;
 import seng302.data.ClientSender;
 import seng302.data.ClientListener;
+import seng302.data.Receiver;
 import seng302.data.registration.RegistrationResponse;
 import seng302.data.registration.ServerFullException;
 import seng302.utilities.NoConnectionToServerException;
@@ -20,7 +21,7 @@ public abstract class Client implements Runnable, Observer {
     private double CONNECTION_TIMEOUT = TimeUtils.secondsToMilliseconds(10.0);
     private int WAIT_MILLISECONDS = 10;
 
-    protected ClientListener clientListener;
+    protected Receiver clientListener;
     protected ClientPacketBuilder packetBuilder;
     protected ClientSender sender;
     Thread dataStreamReaderThread;
@@ -34,7 +35,7 @@ public abstract class Client implements Runnable, Observer {
      */
     protected void manageWaitingConnection() throws NoConnectionToServerException {
         int connectionAttempts = 0;
-        while(clientListener.getClientSocket() == null) {
+        while(clientListener.getSocket() == null) {
             if(clientListener.isHasConnectionFailed()){
                 stopDataStreamReader();
                 throw new NoConnectionToServerException(true, "Connection Failed. Port number is invalid.");
@@ -84,13 +85,7 @@ public abstract class Client implements Runnable, Observer {
         }
     }
 
-    protected void setUpDataStreamReader(String serverAddress, int serverPort){
-        this.clientListener = new ClientListener(serverAddress, serverPort);
-        dataStreamReaderThread = new Thread(clientListener);
-        dataStreamReaderThread.setName("ClientListener");
-        dataStreamReaderThread.start();
-        clientListener.addObserver(this);
-    }
+    abstract protected void setUpDataStreamReader(String serverAddress, int serverPort);
 
     protected void stopDataStreamReader(){
         if(dataStreamReaderThread != null){

@@ -24,14 +24,14 @@ import static seng302.data.AC35StreamXMLMessage.*;
  */
 public class ClientListener extends Receiver implements Runnable{
 
-    private Socket clientSocket;
+
     private InputStream dataStream;
     private String sourceAddress;
     private int sourcePort;
     private Race race;
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumbers = new HashMap<>();
     private final Integer SOCKET_TIMEOUT_MS = 5000;
-    private boolean hasConnectionFailed = false;
+
 
     public ClientListener(String sourceAddress, int sourcePort){
         this.sourceAddress = sourceAddress;
@@ -57,12 +57,13 @@ public class ClientListener extends Receiver implements Runnable{
      */
     boolean setUpConnection() {
         try {
-            clientSocket = new Socket(sourceAddress, sourcePort);
-            clientSocket.setSoTimeout(SOCKET_TIMEOUT_MS);
-            dataStream = clientSocket.getInputStream();
+            Socket socket = new Socket(sourceAddress, sourcePort);
+            setSocket(socket);
+//            clientSocket.setSoTimeout(SOCKET_TIMEOUT_MS);
+            dataStream = getSocket().getInputStream();
             return true;
         } catch (IOException e) {
-            hasConnectionFailed = true;
+            setHasConnectionFailed(true);
             return false;
         }
     }
@@ -234,7 +235,6 @@ public class ClientListener extends Receiver implements Runnable{
                 } else {
                     System.err.println("Incorrect CRC. Message Ignored.");
                 }
-
             } catch (IOException e) {
                 if(race != null){
                     if(!race.isTerminated()){
@@ -242,8 +242,13 @@ public class ClientListener extends Receiver implements Runnable{
                         race.setAbruptEnd(true);
                     }
                 }
-                serverRunning = false;
-                System.out.println("Client: disconnected from Server");
+                Socket socket = getSocket();
+                if (!socket.isClosed()){
+                    serverRunning = false;
+                    e.printStackTrace();
+                    System.out.println("Client: disconnected from Server");
+                }
+
             }
         }
     }
@@ -377,28 +382,20 @@ public class ClientListener extends Receiver implements Runnable{
         notifyObservers(availableRace);
     }
 
+    @Override
     public void disconnectClient() {
         try {
-            clientSocket.close();
+            getSocket().close();
             dataStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-    public Socket getClientSocket() {
-        return clientSocket;
-    }
-
     public void setRace(Race race) {
         this.race = race;
     }
 
     public Race getRace() {
         return race;
-    }
-
-    public boolean isHasConnectionFailed() {
-        return hasConnectionFailed;
     }
 }

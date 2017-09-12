@@ -28,14 +28,13 @@ import static seng302.data.AC35StreamField.*;
  *
  */
 public class ServerListener extends Receiver implements Runnable{
-    
-    private Socket socket;
+
     private Race race;
     private Integer clientId;
     private boolean clientConnected = true;
 
-    public ServerListener(Socket socket){
-        this.socket = socket;
+    public ServerListener(Socket socket) throws IOException {
+        setSocket(socket);
     }
 
     /**
@@ -46,7 +45,7 @@ public class ServerListener extends Receiver implements Runnable{
     public void run() {
         while(clientConnected){
             try {
-                DataInput dataInput = new DataInputStream(socket.getInputStream());
+                DataInput dataInput = new DataInputStream(getSocket().getInputStream());
 
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
@@ -163,8 +162,14 @@ public class ServerListener extends Receiver implements Runnable{
         }
     }
 
-    public Socket getSocket() {
-        return socket;
+    @Override
+    public Race getRace() {
+        return null;
+    }
+
+    @Override
+    public void disconnectClient() {
+
     }
 
     public void setRace(Race race) {

@@ -102,7 +102,7 @@ public class RaceManagerServer extends Server {
      * Starts a new server listener on new thread for which listens to a client
      * @param socket the socket for the client
      */
-    protected void startServerListener(Socket socket){
+    protected void startServerListener(Socket socket) throws IOException {
         ServerListener serverListener = new ServerListener(socket);
         Thread serverListenerThread = new Thread(serverListener);
         serverListenerThread.setName("Server Listener");

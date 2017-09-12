@@ -255,7 +255,11 @@ public class GameServer extends Server {
     public void update(Observable observable, Object arg) {
         if (observable.equals(connectionManager)) {
             if(arg instanceof Socket){
-                startServerListener((Socket) arg);
+                try {
+                    startServerListener((Socket) arg);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             } else {
                 setBoatToDNF((int) arg);
             }
@@ -270,7 +274,7 @@ public class GameServer extends Server {
      * Starts a new server listener on new thread for which listens to a client
      * @param socket the socket for the client
      */
-    private void startServerListener(Socket socket){
+    private void startServerListener(Socket socket) throws IOException {
         ServerListener serverListener = new ServerListener(socket);
         serverListener.setRace(raceUpdater.getRace());
         Thread serverListenerThread = new Thread(serverListener);

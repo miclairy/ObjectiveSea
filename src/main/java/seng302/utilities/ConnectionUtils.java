@@ -11,6 +11,7 @@ import java.net.URL;
 
 public class ConnectionUtils {
     private static GameClient client;
+    private static String vmIpAddress = "132.181.13.96";
     private static Server server;
     private static final String IP_REGEX = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
 
@@ -101,5 +102,9 @@ public class ConnectionUtils {
             }
         }
         return (long) num;
+    }
+
+    public static String getVmIpAddress() {
+        return vmIpAddress;
     }
 }

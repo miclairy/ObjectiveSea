@@ -1,18 +1,12 @@
 package seng302.controllers;
 
-import com.sun.javafx.UnmodifiableArrayList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.input.KeyCode;
 import seng302.data.*;
-import seng302.data.registration.RegistrationResponse;
 import seng302.data.registration.RegistrationType;
 import seng302.data.registration.ServerFullException;
-import seng302.models.Boat;
-import seng302.models.ClientOptions;
-import seng302.models.Race;
+import seng302.utilities.ConnectionUtils;
 import seng302.utilities.NoConnectionToServerException;
-import seng302.utilities.TimeUtils;
 import seng302.views.AvailableRace;
 
 import java.util.*;
@@ -35,7 +29,6 @@ public class MainMenuClient extends Client {
             try {
                 checkForRaces();
                 Thread.sleep(5000);
-
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -58,11 +51,11 @@ public class MainMenuClient extends Client {
 
     public void checkForRaces(){
         availableRaces.clear();
-        setUpDataStreamReader("132.181.14.110", 2828);
+        setUpDataStreamReader(ConnectionUtils.getVmIpAddress(), 2828);
         try {
             manageWaitingConnection();
             RegistrationType regoType = RegistrationType.REQUEST_RUNNING_GAMES;
-            this.sender = new ClientSender(clientListener.getClientSocket());
+            this.sender = new ClientSender(clientListener.getSocket());
             sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
         } catch (NoConnectionToServerException e) {
             System.out.println("Cannot reach server on current address");
@@ -72,4 +65,14 @@ public class MainMenuClient extends Client {
     public void setJoinPaneVisible(boolean isVisible){
         joinPaneVisible = isVisible;
     }
+
+    @Override
+    protected void setUpDataStreamReader(String serverAddress, int serverPort) {
+        this.clientListener = new MainMenuClientListener(serverAddress, serverPort);
+        dataStreamReaderThread = new Thread(clientListener);
+        dataStreamReaderThread.setName("ClientListener");
+        dataStreamReaderThread.start();
+        clientListener.addObserver(this);
+    }
+
 }
