@@ -213,9 +213,11 @@ public class MainMenuClientListener extends Receiver implements Runnable{
                             race.setAbruptEnd(true);
                         }
                     }
-                    serverRunning = false;
-                    e.printStackTrace();
-                    System.out.println("Client: disconnected from Server");
+                    if (!getSocket().isClosed()) {
+                        serverRunning = false;
+                        e.printStackTrace();
+                        System.out.println("Client: disconnected from Server");
+                    }
                 }
             }
         }
