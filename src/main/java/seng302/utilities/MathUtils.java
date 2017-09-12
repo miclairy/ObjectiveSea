@@ -247,4 +247,15 @@ public class MathUtils {
         }
         return (bearing + 270) % 360;
     }
+
+    /**
+     * Returns distance between two points on a canvas (pixels)
+     * @param point1
+     * @param point2
+     * @return distance
+     */
+    public static double distanceBetweenTwoPoints(CanvasCoordinate point1, CanvasCoordinate point2) {
+        double distance = Math.sqrt(Math.pow(point1.getX()-point2.getX(), 2)+Math.pow(point1.getY()-point2.getY(), 2));
+        return distance;
+    }
 }

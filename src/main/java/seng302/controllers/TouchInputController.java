@@ -1,6 +1,7 @@
 package seng302.controllers;
 
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -11,6 +12,7 @@ import seng302.models.*;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.MathUtils;
 import seng302.utilities.MathUtils;
+import seng302.utilities.PolarReader;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -38,16 +40,22 @@ import static java.lang.Math.multiplyExact;
         private double timeElapsed;
         private double touchTime;
         private boolean multipleFingers;
+        private PolarTable polarTable;
+        private CanvasCoordinate previousCoordinate;
 
-        /**
+
+    /**
          * Sets up user key press handler.
-         * @param scene The scene of the client
-         */
-        public TouchInputController(Scene scene, Race race) {
+     * @param scene The scene of the client
+     * @param boat
+     */
+        public TouchInputController(Scene scene, Race race, Boat boat) {
             this.scene = scene;
             this.race = race;
             this.displayTouchController = new DisplayTouchController(scene);
             touchEventListener();
+            this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
+            this.playersBoat = boat;
         }
 
         private void touchEventListener() {
@@ -72,6 +80,21 @@ import static java.lang.Math.multiplyExact;
                 timeElapsed = System.currentTimeMillis();
             });
 
+            touchPane.setOnScroll(new EventHandler<ScrollEvent>() {
+                @Override
+                public void handle(ScrollEvent swipe) {
+                    CanvasCoordinate currentCoordinate = new CanvasCoordinate(swipe.getX(), swipe.getY());
+                    if(previousCoordinate == null){
+                        previousCoordinate = currentCoordinate;
+                    }
+                    if (swipe.getTouchCount() > 0){
+                        displayTouchController.displaySwipe(currentCoordinate, previousCoordinate);
+                        previousCoordinate = currentCoordinate;
+                    }
+
+                }
+            });
+
             touchPane.setOnScrollFinished(swipe -> {
                 CanvasCoordinate swipeEnd = new CanvasCoordinate(swipe.getScreenX(), swipe.getScreenY());
                 double differenceX = Math.pow((swipeStart.getX() - swipeEnd.getX()), 2);
@@ -81,9 +104,9 @@ import static java.lang.Math.multiplyExact;
                     displayTouchController.displaySwipe(swipeEnd, swipeStart);
                     double swipeBearing = MathUtils.getHeadingBetweenTwoCoodinates(swipeStart, swipeEnd);
                     swipeAction(swipe, swipeBearing);
+                    previousCoordinate = null;
                 }
             });
-
         }
 
         private void swipeAction(ScrollEvent swipe, double swipeBearing){
@@ -94,12 +117,27 @@ import static java.lang.Math.multiplyExact;
                 headingDifference = swipeBearing;
             }
             if (headingDifference <= 15 || headingDifference >= 165){
-                commandInt = BoatAction.SAILS_IN.getType();
+                if(Math.abs(boatHeading - swipeBearing) < 15 || Math.abs(boatHeading - swipeBearing) > 345) {
+                    if(playersBoat.isSailsIn()) {
+                        commandInt = BoatAction.SAILS_IN.getType();
+                        setChanged();
+                        notifyObservers();
+                    }
+                } else {
+                    if(!playersBoat.isSailsIn()) {
+                        commandInt = BoatAction.SAILS_IN.getType();
+                        setChanged();
+                        notifyObservers();
+                    }
+                }
             } else {
-                commandInt = BoatAction.TACK_GYBE.getType();
+                double optimumHeading = playersBoat.getTackOrGybeHeading(race.getCourse(), polarTable);
+                if(Math.abs(optimumHeading - swipeBearing) < 50 || Math.abs(optimumHeading - swipeBearing) > 310) {
+                    commandInt = BoatAction.TACK_GYBE.getType();
+                    setChanged();
+                    notifyObservers();
+                }
             }
-            setChanged();
-            notifyObservers();
         }
 
         private void checkTouchMoved(TouchEvent touchEvent) {

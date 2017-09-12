@@ -4,11 +4,13 @@ import javafx.animation.ScaleTransition;
 import javafx.scene.Scene;
 import javafx.scene.input.TouchPoint;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.transform.Transform;
 import seng302.models.CanvasCoordinate;
 import seng302.utilities.AnimationUtils;
+import seng302.utilities.MathUtils;
 
 /**
  * Created by Chris on 24/08/2017.
@@ -25,7 +27,6 @@ public class DisplayTouchController {
 
     public void displayTouch(TouchPoint point){
             Circle highlightCircle1 = createHighlightCircle(point);
-
             touchTransition = AnimationUtils.touchInAction(highlightCircle1);
             touchTransition.play();
     }
@@ -48,16 +49,15 @@ public class DisplayTouchController {
         DisplayTouchController.touchPane = touchPane;
     }
 
-    public void displaySwipe(CanvasCoordinate swipeEnd, CanvasCoordinate swipeStart) {
-        Line path = createHighlightPath(swipeStart, swipeEnd);
-
-        touchTransition = AnimationUtils.touchInAction(path);
-       // touchTransition.play();
+    public void displaySwipe(CanvasCoordinate currentCoordinate, CanvasCoordinate previousCoordinate) {
+        if(MathUtils.distanceBetweenTwoPoints(currentCoordinate, previousCoordinate) > 100){
+            previousCoordinate = currentCoordinate;
+        }
+        Line line = new Line(previousCoordinate.getX(), previousCoordinate.getY(), currentCoordinate.getX(), currentCoordinate.getY());
+        line.setStrokeWidth(10.0);
+        line.setStroke(Color.color(123.0/255.0, 209.0/255.0, 197.0/255.0));
+        line.setId("touchLine");
+        AnimationUtils.swipeAnimation(touchPane, line);
     }
 
-    private Line createHighlightPath(CanvasCoordinate swipeStart, CanvasCoordinate swipeEnd){
-        Line path = new Line(swipeStart.getX(), swipeStart.getY(), swipeEnd.getX(), swipeEnd.getY());
-        touchPane.getChildren().add(path);
-        return path;
-    }
 }
