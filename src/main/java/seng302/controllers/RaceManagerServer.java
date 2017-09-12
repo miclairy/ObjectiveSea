@@ -89,7 +89,6 @@ public class RaceManagerServer extends Server {
     private void manageRegistration(ServerListener serverListener, RegistrationType registrationType) {
         switch (registrationType) {
             case REQUEST_RUNNING_GAMES:
-                System.out.println("Server: Client requesting games");
                 connectionManager.addMainMenuConnection(nextViewerID, serverListener.getSocket());
                 for(AvailableRace race : availableRaces){
                     byte[] racePacket = packetBuilder.createGameRegistrationPacket(race.getPacket());
