@@ -10,10 +10,11 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.Objects;
 
 public class ConnectionUtils {
     private static GameClient client;
-    private static String vmIpAddress = "10.32.26.200";
+    private static String vmIpAddress = "132.181.13.124";
     private static int vmpPort = 2827;
     private static Server server;
     private static final String IP_REGEX = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
@@ -61,23 +62,22 @@ public class ConnectionUtils {
      * @return the IP address or regatta name if not found
      */
     public static String getPublicIp() throws UnknownHostException {
-        return InetAddress.getLocalHost().getHostAddress();
-//        try {
-//
-//
-//            System.out.println(InetAddress.getLocalHost().getHostAddress());
-//            URL ipURL = new URL("http://checkip.amazonaws.com");
-//            BufferedReader in = new BufferedReader(new InputStreamReader(
-//                    ipURL.openStream()));
-//            String ip = in.readLine(); //you get the IP as a String
-//            if (ConnectionUtils.IPRegExMatcher(ip)) {
-//                return (ip);
-//            } else {
-//                return null;
-//            }
-//        } catch (Exception e) {
-//            return null;
-//        }
+        String ipAddress = InetAddress.getLocalHost().getHostAddress();
+        if (Objects.equals(ipAddress.split("\\.")[0], "127")) {
+            try {
+                URL ipURL = new URL("http://checkip.amazonaws.com");
+                BufferedReader in = new BufferedReader(new InputStreamReader(
+                        ipURL.openStream()));
+                ipAddress = in.readLine(); //you get the IP as a String
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if (ipAddress.matches(IP_REGEX)) {
+            return ipAddress;
+        } else {
+            return InetAddress.getLocalHost().getHostAddress();
+        }
     }
 
     public static String ipLongToString(long longIp){

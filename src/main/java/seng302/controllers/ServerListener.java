@@ -58,7 +58,6 @@ public class ServerListener extends Receiver implements Runnable{
                 dataInput.readFully(body);
                 byte[] crc = new byte[CRC_LENGTH];
                 dataInput.readFully(crc);
-                System.out.println("packet type: " + messageType);
                 if (checkCRC(header, body, crc)) {
                     switch (messageType) {
                         case HOST_GAME_MESSAGE:
