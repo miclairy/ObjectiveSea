@@ -1,6 +1,7 @@
 package seng302.controllers;
 
 import seng302.data.ConnectionManager;
+import seng302.data.CourseName;
 import seng302.data.ServerPacketBuilder;
 import seng302.data.registration.RegistrationType;
 import seng302.models.ServerOptions;
@@ -77,12 +78,12 @@ public class RaceManagerServer extends Server {
         for (AvailableRace runningRace : availableRaces){
             if (Objects.equals(runningRace.getIpAddress(), race.getIpAddress())){
                 System.out.println("Updating running race");
-                System.out.println("Running race name: " + runningRace.mapNameProperty().toString());
                 updatedRace = true;
-                runningRace.setNumBoats(race.getNumBoats());
+                runningRace.setNumBoats(runningRace.getNumBoats() + 1);
             }
         }
-        if (!updatedRace) {
+        int raceMapIndex = CourseName.getCourseIntFromName(race.mapNameProperty().getValue());
+        if (!updatedRace && raceMapIndex != -1) {
             availableRaces.add(race);
         }
     }
