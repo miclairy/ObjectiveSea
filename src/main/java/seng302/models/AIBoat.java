@@ -1,5 +1,6 @@
 package seng302.models;
 
+import javafx.scene.shape.Polygon;
 import org.omg.CORBA.TRANSACTION_MODE;
 import seng302.controllers.CollisionManager;
 import seng302.controllers.RoundingMechanics;
@@ -27,6 +28,8 @@ public class AIBoat {
     private Coordinate targetPosition;
     private Course course;
     private PolarTable polarTable;
+    private Polygon boundary;
+
 
     public AIBoat(Boat boat, Course course) {
         this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), course);
@@ -36,6 +39,8 @@ public class AIBoat {
         setNextRoundingCoordinates();
         targetPositionIndex = 0;
         targetPosition = nextRoundingCoordinates.get(targetPositionIndex);
+        CollisionManager collisionManager = new CollisionManager();
+        this.boundary = collisionManager.createCourseBoundary(course.getBoundary());
     }
 
     public void checkRounding() {
@@ -166,7 +171,39 @@ public class AIBoat {
 
         Coordinate tackingCoord = lastMark.coordAt(lengthOfTack,optimumAngle);
 
+        if(!boundary.contains(tackingCoord.getLat(), tackingCoord.getLon())) {
+            Double distance = distanceToBoundary(lastMark, tackingCoord, course.getBoundary());
+            System.out.println("Distance: " + distance);
+            tackingCoord = lastMark.coordAt(distance, optimumAngle);
+        }
         return tackingCoord;
+    }
+
+    private Double distanceToBoundary(Coordinate lastMark, Coordinate tackingCoord, ArrayList<Coordinate> boundary) {
+        for(int i = 0; i < boundary.size(); i++){
+            Coordinate boundaryEnd1 = boundary.get(i);
+            Coordinate boundaryEnd2 = boundary.get((i+1) % boundary.size());
+            if(crossingBoundary(lastMark, tackingCoord, boundaryEnd1, boundaryEnd2)){
+                InfiniteLine infiniteLine1 = new InfiniteLine(lastMark, tackingCoord);
+                InfiniteLine infiniteLine2 = new InfiniteLine(boundaryEnd1, boundaryEnd2);
+                Coordinate intersectionPoint = InfiniteLine.intersectionPoint(infiniteLine1, infiniteLine2);
+                return lastMark.greaterCircleDistance(intersectionPoint);
+            }
+        }
+        return null;
+    }
+
+    private boolean crossingBoundary(Coordinate lastMark, Coordinate tackingCoord, Coordinate boundaryEnd1, Coordinate boundaryEnd2) {
+        InfiniteLine infiniteLine1 = new InfiniteLine(lastMark, tackingCoord);
+        InfiniteLine infiniteLine2 = new InfiniteLine(boundaryEnd1, boundaryEnd2);
+        Coordinate intersectionPoint = InfiniteLine.intersectionPoint(infiniteLine1, infiniteLine2);
+        double minLat = Math.min(boundaryEnd1.getLat(), boundaryEnd2.getLat());
+        double minLon = Math.min(boundaryEnd1.getLon(), boundaryEnd2.getLon());
+        double maxLat = Math.max(boundaryEnd1.getLat(), boundaryEnd2.getLat());
+        double maxLon = Math.max(boundaryEnd1.getLon(), boundaryEnd2.getLon());
+
+        return intersectionPoint.getLat() >= minLat && intersectionPoint.getLat() <= maxLat &&
+                intersectionPoint.getLon() >= minLon && intersectionPoint.getLon() <= maxLon;
     }
 
     public double calculateLengthOfTack(double TrueWindAngle,Coordinate nextMark, Coordinate lastMark){
