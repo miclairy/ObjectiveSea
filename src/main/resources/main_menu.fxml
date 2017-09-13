@@ -460,14 +460,15 @@
                 <Insets bottom="20.0" right="20.0" />
             </StackPane.margin>
         </ImageView>
-        <GridPane fx:id="settingsGrid" maxHeight="210.0" maxWidth="230.0" minWidth="150.0" prefHeight="311.0" prefWidth="230.0" stylesheets="@style/menuStyle.css" StackPane.alignment="BOTTOM_LEFT">
+        <GridPane fx:id="settingsGrid" maxHeight="273.0" maxWidth="254.0" minWidth="150.0" prefHeight="273.0" prefWidth="221.0" stylesheets="@style/menuStyle.css" StackPane.alignment="BOTTOM_LEFT">
             <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="243.750244140625" minWidth="10.0" prefWidth="95.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="371.8701171875" minWidth="10.0" prefWidth="135.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="243.750244140625" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="371.8701171875" minWidth="10.0" prefWidth="100.0" />
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints maxHeight="122.3333740234375" minHeight="10.0" prefHeight="56.0" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="273.0" minHeight="10.0" prefHeight="164.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="273.0" minHeight="10.0" prefHeight="162.3333740234375" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="273.0" minHeight="10.0" prefHeight="91.6666259765625" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
                 <Slider fx:id="musicSlider" blockIncrement="0.05" majorTickUnit="0.2" max="0.9" maxHeight="150.0" min="0.5" minorTickCount="1" orientation="VERTICAL" prefHeight="150.0" prefWidth="20.0" value="1.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
@@ -478,6 +479,26 @@
                 <Slider fx:id="fxSlider" blockIncrement="0.1" max="1.0" maxHeight="150.0" orientation="VERTICAL" prefHeight="150.0" prefWidth="20.0" value="1.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
                 <Label fx:id="lblMusic" text="Music" GridPane.halignment="CENTER" />
                 <Label fx:id="lblSoundEffects" text="Sound Effects" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+            <ImageView fx:id="musicOnImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+               <image>
+                  <Image url="@graphics/soundOn.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="musicOffImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" visible="false" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+               <image>
+                  <Image url="@graphics/soundOff.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="soundFxOnImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+               <image>
+                  <Image url="@graphics/soundOn.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="soundFxOffImage" fitHeight="50.0" fitWidth="50.0" layoutX="166.0" layoutY="218.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+               <image>
+                  <Image url="@graphics/soundOff.png" />
+               </image>
+            </ImageView>
             </children>
          <StackPane.margin>
             <Insets bottom="65.0" left="24.0" />
