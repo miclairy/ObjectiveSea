@@ -4,6 +4,7 @@ import javafx.scene.shape.Polygon;
 import seng302.controllers.CollisionManager;
 import seng302.controllers.RoundingMechanics;
 import seng302.data.BoatStatus;
+import seng302.data.RaceStatus;
 import seng302.data.RoundingSide;
 import seng302.utilities.MathUtils;
 import seng302.utilities.PolarReader;
@@ -206,7 +207,12 @@ public class AIBoat extends Boat{
      * @param raceSecondsPassed time passed since last update in seconds
      * @param course the course the boat is racing on
      */
-    public void move(double raceSecondsPassed, Course course) {
+    public void move(double raceSecondsPassed, Course course, RaceStatus raceStatus) {
+        if(raceStatus.equals(RaceStatus.PREPARATORY)){
+            setSailsIn(true);
+            return;
+        }
+        setSailsIn(false);
         updateHeading();
         avoidFutureCollision();
         updateLocation(raceSecondsPassed, course);

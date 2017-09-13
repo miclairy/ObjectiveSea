@@ -188,7 +188,7 @@ public class RaceUpdater implements Runnable {
         }
 
         if(race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
-            if (!boat.isAI() && collisionManager.boatIsInCollision(boat)) {
+            if (collisionManager.boatIsInCollision(boat)) {
                 //revert the last location update as it was a collision
                 boat.updateLocation(-raceSecondsPassed, race.getCourse());
                 boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
@@ -197,7 +197,7 @@ public class RaceUpdater implements Runnable {
             //TODO: Proper way to do this is to create abstract boat class that both Boat and AIBoat inherits
             if(boat instanceof AIBoat){
                 AIBoat aiBoat = (AIBoat) boat;
-                aiBoat.move(raceSecondsPassed, race.getCourse());
+                aiBoat.move(raceSecondsPassed, race.getCourse(), race.getRaceStatus());
             } else{
                 boat.move(raceSecondsPassed, race.getCourse());
                 Course course = race.getCourse();
