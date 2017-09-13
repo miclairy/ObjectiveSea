@@ -13,12 +13,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Math.min;
 import static java.lang.Double.max;
 import static java.lang.StrictMath.abs;
-import static seng302.data.RaceStatus.STARTED;
 
 /**
  * Class to encapsulate properties associated with a boat.
@@ -44,7 +42,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private int lastTackMarkPassed;
     private int lastGybeMarkPassed;
     private boolean finished;
-    private double heading;
+    protected double heading;
     private double targetHeading;
     private double maxSpeed;
     private double boatHealth = 100;
