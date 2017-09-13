@@ -512,5 +512,18 @@
             <Cursor fx:constant="HAND" />
          </cursor>
       </Button>
+      <Button fx:id="btnControls" mnemonicParsing="false" onAction="#showControls" StackPane.alignment="BOTTOM_LEFT">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <StackPane.margin>
+            <Insets bottom="15.0" left="70.0" />
+         </StackPane.margin>
+      </Button>
+      <ImageView fx:id="imvControls" fitHeight="507.0" fitWidth="713.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@graphics/controlsOverlay.png" />
+         </image>
+      </ImageView>
     </children>
 </StackPane>

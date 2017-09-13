@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -45,6 +46,7 @@ public class MainMenuController implements Initializable{
     @FXML private Button btnBackToOptions;
     @FXML private Button btnStartRace;
     @FXML private Button btnSettings;
+    @FXML private Button btnControls;
     @FXML private GridPane onlinePane;
     @FXML private GridPane offlinePane;
     @FXML private GridPane joinRacePane;
@@ -56,6 +58,7 @@ public class MainMenuController implements Initializable{
     @FXML private Label lblIP;
     @FXML private Label lblPort;
     @FXML private AnchorPane menuAnchor;
+    @FXML private AnchorPane dropShadowAnchor;
     @FXML private TableView<AvailableRace> tblAvailableRaces;
     @FXML private TableColumn<AvailableRace, String> columnMap;
     @FXML private TableColumn<AvailableRace, Integer> columnParticipants;
@@ -68,6 +71,7 @@ public class MainMenuController implements Initializable{
     @FXML private ImageView musicOffImage;
     @FXML private ImageView soundFxOnImage;
     @FXML private ImageView soundFxOffImage;
+    @FXML private ImageView imvControls;
     @FXML private Label lblSpeedNum;
     @FXML private Shape circleSpeed;
     @FXML private Shape circleBoats;
@@ -128,6 +132,7 @@ public class MainMenuController implements Initializable{
         selectMapPane.setVisible(false);
         menuAnchor.setVisible(true);
         settingsGrid.setVisible(false);
+        imvControls.setVisible(false);
     }
 
     public void setApp(Main main, GameSounds sounds) throws ServerFullException, NoConnectionToServerException {
@@ -333,6 +338,7 @@ public class MainMenuController implements Initializable{
         addButtonListeners(btnStartRace);
         addButtonListeners(btnManual);
         addButtonListeners(btnSettings);
+        addButtonListeners(btnControls);
     }
 
     private void setLabelPromptAnimations(){
@@ -592,6 +598,16 @@ public class MainMenuController implements Initializable{
         fxSlider.setValue(fxSliderValue);
     }
 
+    /**
+     * Shows controls overlay
+     */
+    @FXML private void showControls(){
+        AnimationUtils.fadeNode(imvControls, imvControls.isVisible());
+        AnimationUtils.fadeNode(menuAnchor, menuAnchor.isVisible());
+        AnimationUtils.fadeNode(dropShadowAnchor, dropShadowAnchor.isVisible());
+    }
+
+
     private void setUpSoundSliders(){
         musicSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             if(musicOnImage.isVisible()) {
@@ -680,6 +696,11 @@ public class MainMenuController implements Initializable{
         imvBackground.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
             if(settingsGrid.isVisible()){
                 AnimationUtils.fadeNode(settingsGrid, true);
+            }
+            if(imvControls.isVisible()) {
+                AnimationUtils.fadeNode(menuAnchor, false);
+                AnimationUtils.fadeNode(imvControls, true);
+                AnimationUtils.fadeNode(dropShadowAnchor, dropShadowAnchor.isVisible());
             }
         });
     }
