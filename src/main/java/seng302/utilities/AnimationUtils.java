@@ -355,6 +355,11 @@ public class AnimationUtils {
         pt.play();
     }
 
+    /**
+     * changes the colour of the stroke of a node to
+     * @param node the node to change
+     * @param color the colour of the new stroke
+     */
     public static void changeStrokeColor(Shape node, Color color){
         StrokeTransition strokeTransition = new StrokeTransition();
         strokeTransition.setShape(node);
@@ -363,12 +368,18 @@ public class AnimationUtils {
         strokeTransition.play();
     }
 
+    /**
+     * changes the fill colour of a node
+     * @param node the node to change the fill colour of
+     * @param color the end colour to change to
+     */
     public static void changeFillColor(Shape node, Color color){
         FillTransition fillTransition = new FillTransition();
         fillTransition.setShape(node);
         fillTransition.setToValue(color);
         fillTransition.setDuration(new Duration(200));
         fillTransition.play();
-    }
 
+
+    }
 }

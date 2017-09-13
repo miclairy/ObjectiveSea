@@ -618,7 +618,7 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(nextMarkGrid, 430, true);
             AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
-            if (options.isParticipant()) {
+            if (options.isParticipant() && infoDisplay != null) {
                 AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, false);
             }
             scoreboardVisible = false;
@@ -633,7 +633,9 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(nextMarkGrid, -430, true);
             AnimationUtils.shiftPaneNodes(quickMenu, 115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true);
-            AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, true);
+            if(infoDisplay != null){
+                AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, true);
+            }
             scoreboardVisible = true;
             raceViewController.shiftArrow(true);
         }
@@ -799,8 +801,12 @@ public class Controller implements Initializable, Observer {
         rightHandSide.setTranslateX(rightHandSide.getTranslateX() + 440);
         rightHandSide.setVisible(false);
         btnHide.setRotate(180);
-        lblNoBoardClock.setVisible(true);
         lblNoBoardClock.setOpacity(0.8);
+        if(options.isTutorial()){
+            lblNoBoardClock.setVisible(false);
+        }else{
+            lblNoBoardClock.setVisible(true);
+        }
         AnimationUtils.shiftPaneNodes(btnHide, 430, true);
         AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
         AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
