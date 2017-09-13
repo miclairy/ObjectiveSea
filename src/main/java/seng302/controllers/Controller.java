@@ -656,7 +656,7 @@ public class Controller implements Initializable, Observer {
     }
 
     public void setUpTouchInputController(TouchInputController touchInputController) {
-        touchInputController.setUp(root, touchPane);
+        touchInputController.setUp(root, touchPane, this);
     }
 
     public class ColoredTextListCell extends ListCell<String> {

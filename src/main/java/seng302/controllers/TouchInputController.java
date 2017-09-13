@@ -40,6 +40,7 @@ public class TouchInputController extends Observable {
     private CanvasCoordinate previousCoordinate;
     private Pane touchPane;
     private Group root;
+    private Controller controller;
 
     /**
      * Sets up user key press handler.
@@ -52,9 +53,10 @@ public class TouchInputController extends Observable {
         this.playersBoat = boat;
     }
 
+    /**
+     * Initilises the listeners for the swipe/touch/scroll events ons the touchpane
+     */
     private void touchEventListener() {
-        // Pane touchPane = (Pane) scene.lookup("#touchPane");
-
         touchPane.addEventFilter(TouchEvent.ANY, touch -> {
             if (touch.getEventType() == TouchEvent.TOUCH_PRESSED) {
                 touchTime = System.currentTimeMillis();
@@ -74,19 +76,16 @@ public class TouchInputController extends Observable {
             timeElapsed = System.currentTimeMillis();
         });
 
-        touchPane.setOnScroll(new EventHandler<ScrollEvent>() {
-            @Override
-            public void handle(ScrollEvent swipe) {
-                CanvasCoordinate currentCoordinate = new CanvasCoordinate(swipe.getX(), swipe.getY());
-                if (previousCoordinate == null) {
-                    previousCoordinate = currentCoordinate;
-                }
-                if (swipe.getTouchCount() > 0) {
-                    displayTouchController.displaySwipe(currentCoordinate, previousCoordinate);
-                    previousCoordinate = currentCoordinate;
-                }
-
+        touchPane.setOnScroll(swipe -> {
+            CanvasCoordinate currentCoordinate = new CanvasCoordinate(swipe.getX(), swipe.getY());
+            if (previousCoordinate == null) {
+                previousCoordinate = currentCoordinate;
             }
+            if (swipe.getTouchCount() > 0) {
+                displayTouchController.displaySwipe(currentCoordinate, previousCoordinate);
+                previousCoordinate = currentCoordinate;
+            }
+
         });
 
         touchPane.setOnScrollFinished(swipe -> {
@@ -97,7 +96,7 @@ public class TouchInputController extends Observable {
             if (lengthXY > 130 && Math.abs(System.currentTimeMillis() - timeElapsed) < 300 && !multipleFingers && !DisplayUtils.externalTouchEvent) {
                 displayTouchController.displaySwipe(swipeEnd, swipeStart);
                 double swipeBearing = MathUtils.getHeadingBetweenTwoCoodinates(swipeStart, swipeEnd);
-                swipeAction(swipe, swipeBearing);
+                swipeAction(swipeBearing);
                 previousCoordinate = null;
             }
         });
@@ -111,14 +110,16 @@ public class TouchInputController extends Observable {
                 System.out.println("Change X: " + touchX);
                 System.out.println("Change Y: " + touchY);
                 DisplayUtils.dragDisplay((int) touchX, (int) touchY);
-//                raceViewController.redrawCourse();
-//                raceViewController.redrawBoatPaths();
-//                selectionController.deselectBoat();
             }
         });
     }
 
-    private void swipeAction(ScrollEvent swipe, double swipeBearing) {
+    /**
+     * acts upon the action of a swipe gestures. Detects action from the swipe bearing and performs action.
+     * provides user feedback if action cannot be performed
+     * @param swipeBearing the bearing of the swipe gesture
+     */
+    private void swipeAction(double swipeBearing) {
         double boatHeading = race.getBoatById(clientID).getHeading();
         double headingDifference = abs(boatHeading - swipeBearing) % 180;
         if (root.getTransforms().size() > 1) {
@@ -130,12 +131,16 @@ public class TouchInputController extends Observable {
                     commandInt = BoatAction.SAILS_IN.getType();
                     setChanged();
                     notifyObservers();
+                }else{
+                    controller.setUserHelpLabel("Sails are already out");
                 }
             } else {
                 if (!playersBoat.isSailsIn()) {
                     commandInt = BoatAction.SAILS_IN.getType();
                     setChanged();
                     notifyObservers();
+                }else{
+                    controller.setUserHelpLabel("Sails are already in");
                 }
             }
         } else {
@@ -144,10 +149,16 @@ public class TouchInputController extends Observable {
                 commandInt = BoatAction.TACK_GYBE.getType();
                 setChanged();
                 notifyObservers();
+            }else{
+                controller.setUserHelpLabel("Cannot tack or gybe in that direction");
             }
         }
     }
 
+    /**
+     * moves the heading of the boat towards a touch on the screen
+     * @param touchEvent the touch on the screen
+     */
     private void checkTouchMoved(TouchEvent touchEvent) {
         Boat playersBoat = race.getBoatById(clientID);
         if (touchEvent.getTouchPoints().size() == 1 && !DisplayUtils.externalTouchEvent && (System.currentTimeMillis() - touchTime) > 200) {
@@ -165,9 +176,6 @@ public class TouchInputController extends Observable {
             }
 
             double boatHeading = playersBoat.getHeading();
-
-            //downWind towards wind arrow - 6
-            //upWind away from wind arrow - 5
 
             double oppositeWindAngle = windAngle - 180;
             if (oppositeWindAngle < 0) {
@@ -223,6 +231,14 @@ public class TouchInputController extends Observable {
     }
 
 
+    /**
+     * determines direction of boat rotation based upon touch location
+     * @param windAngle the angle of the wind
+     * @param oppositeWindAngle the inverse of the wind angle
+     * @param boatHeading the heading of the boat
+     * @param touchAngle the angle of the touch compared to the angle of the boat
+     * @return the direction of the rotation
+     */
     private int changeRotationDirection(double windAngle, double oppositeWindAngle, double boatHeading, double touchAngle) {
 
         int direction = -1;
@@ -240,6 +256,14 @@ public class TouchInputController extends Observable {
         return direction;
     }
 
+    /**
+     * determines the inverse direction of boat rotation based upon touch location
+     * @param windAngle the angle of the wind
+     * @param oppositeWindAngle the inverse of the wind angle
+     * @param boatHeading the heading of the boat
+     * @param touchAngle the angle of the touch compared to the angle of the boat
+     * @return the inverse direction of the rotation
+     */
     private int changeOppositeRotationDirection(double windAngle, double oppositeWindAngle, double boatHeading, double touchAngle) {
 
         int direction = -1;
@@ -260,10 +284,17 @@ public class TouchInputController extends Observable {
         return commandInt;
     }
 
-    public void setUp(Group root, Pane touchPane){
+    /**
+     * sets up parameters and inits listeners for the class
+     * @param root
+     * @param touchPane
+     * @param controller
+     */
+    public void setUp(Group root, Pane touchPane, Controller controller){
         this.touchPane = touchPane;
         this.root = root;
         this.displayTouchController = new DisplayTouchController(touchPane);
+        this.controller = controller;
         touchEventListener();
     }
 
