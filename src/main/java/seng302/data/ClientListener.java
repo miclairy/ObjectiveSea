@@ -27,7 +27,6 @@ public class ClientListener extends Receiver implements Runnable{
     private int sourcePort;
     private Race race;
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumbers = new HashMap<>();
-    private final Integer SOCKET_TIMEOUT_MS = 5000;
 
 
     public ClientListener(String sourceAddress, int sourcePort){

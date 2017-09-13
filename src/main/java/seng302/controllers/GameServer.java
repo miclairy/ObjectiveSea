@@ -31,8 +31,6 @@ public class GameServer extends Server {
     private Map<Boat, Integer> lastMarkRoundingSent = new HashMap<>();
     private int nextViewerID = 0;
 
-    private Map<AvailableRace, byte[]> availableRaces = new HashMap<>();
-
     private RaceUpdater raceUpdater;
     private Thread raceUpdaterThread;
     private CollisionManager collisionManager;
@@ -56,6 +54,7 @@ public class GameServer extends Server {
         raceUpdaterThread = new Thread(raceUpdater);
         raceUpdaterThread.setName("Race Updater");
         collisionManager = raceUpdater.getCollisionManager();
+        System.out.println("race updater running");
     }
 
     /**
@@ -250,7 +249,7 @@ public class GameServer extends Server {
 
     private void updateVM(Double speedScale, Integer minParticipants, Integer serverPort, String publicIp, int currentCourseIndex) throws IOException {
         byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(speedScale, minParticipants, serverPort, publicIp, currentCourseIndex, raceUpdater.getRace().getCompetitors().size());
-        System.out.println("Client: Updating VM");
+        System.out.println("Client: Updating VM" );
         Socket vmSocket = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
         connectionManager.updateVM(registerGamePacket, vmSocket);
     }

@@ -91,7 +91,7 @@ public abstract class Client implements Runnable, Observer {
         if(dataStreamReaderThread != null){
             dataStreamReaderThread.stop();
             this.clientListener = null;
-            System.out.println("Client: Server not found");
+            System.out.println("Client: Server not found \uD83D\uDD25 \uD83D\uDE2B");
         }
     }
 }
