@@ -1,5 +1,6 @@
 package seng302.models;
 
+import org.omg.CORBA.TRANSACTION_MODE;
 import seng302.controllers.CollisionManager;
 import seng302.controllers.RoundingMechanics;
 import seng302.data.BoatStatus;
@@ -59,7 +60,7 @@ public class AIBoat {
         CompoundMark currentMark = courseOrder.get(boat.getLastRoundedMarkIndex()+1);
         nextRoundingCoordinates.clear();
         Coordinate tackingGybingCoord = addTackandGybeMarks(boat.getCurrentPosition(), currentMark.getPosition());
-        if(tackingGybingCoord != null){
+        if(tackingGybingCoord != null && !currentMark.isStartLine()){
             nextRoundingCoordinates.add(tackingGybingCoord);
         }
         if(currentMark instanceof RaceLine){
@@ -102,7 +103,7 @@ public class AIBoat {
             Mark mark = course.getAllMarks().get(markID);
             if(checkFutureCollision(mark)){
 
-                Coordinate avoidCoordinate = coordinateToAvoid(boat);
+                Coordinate avoidCoordinate = coordinateToAvoid(boat, mark.getPosition());
                 nextRoundingCoordinates.add(targetPositionIndex, avoidCoordinate);
                 System.out.println("Collision with: " + mark.getSourceID());
                 System.out.println("Avoiding to: " + avoidCoordinate);
@@ -112,35 +113,65 @@ public class AIBoat {
         }
     }
 
-    private Coordinate coordinateToAvoid(Boat boat) {
+    private Coordinate coordinateToAvoid(Boat boat, Coordinate collisionPosition) {
         Double avoidHeading = (boat.getHeading() + 270) % 360;
-        return targetPosition.coordAt(ROUNDING_DISTANCE, avoidHeading);
+        Coordinate coord1 = collisionPosition.coordAt(ROUNDING_DISTANCE, avoidHeading);
+
+        Double avoidHeading2 = (boat.getHeading() + 90) % 360;
+        Coordinate coord2 = collisionPosition.coordAt(ROUNDING_DISTANCE, avoidHeading2);
+
+        Double dist1 = boat.getCurrentPosition().greaterCircleDistance(coord1) + coord1.greaterCircleDistance(targetPosition);
+        Double dist2 = boat.getCurrentPosition().greaterCircleDistance(coord2) + coord2.greaterCircleDistance(targetPosition);
+
+        return dist1 < dist2 ? coord1 : coord2;
     }
 
     public Coordinate addTackandGybeMarks(Coordinate lastMark, Coordinate nextMark) {
+        double TWD = course.getWindDirection();
+        double heading = boat.getHeading();
         double headingBetweenMarks = lastMark.headingToCoordinate(nextMark);
-        double TrueWindAngle;
-        double alphaAngle;
+        double TWA = Math.abs(TWD - headingBetweenMarks);
 
-        if(MathUtils.pointBetweenTwoAngle(course.getWindDirection(), polarTable.getOptimumTWA(true), headingBetweenMarks)){
+        double TrueWindAngle;
+
+        double optimumAngle;
+
+        double optimumHeadingA;
+        double optimumHeadingB;
+
+        if(MathUtils.pointBetweenTwoAngle(TWD, polarTable.getOptimumTWA(true), headingBetweenMarks)){
+            System.out.println("TACK");
             TrueWindAngle = polarTable.getOptimumTWA(true);
-            alphaAngle = getAlphaAngle(course.getWindDirection(), headingBetweenMarks, true);
-        } else if (MathUtils.pointBetweenTwoAngle((course.getWindDirection() + 180) % 360, 180 - polarTable.getOptimumTWA(false), headingBetweenMarks)){
+        } else if (MathUtils.pointBetweenTwoAngle((TWD + 180) % 360, 180 - polarTable.getOptimumTWA(false), headingBetweenMarks)){
             TrueWindAngle = polarTable.getOptimumTWA(false);
-            alphaAngle = getAlphaAngle(course.getWindDirection(), headingBetweenMarks, false);
+            System.out.println(TrueWindAngle);
+            System.out.println("GYBE " + TWD + "h " + headingBetweenMarks);
         } else {
             return null;
         }
-        double lengthOfTack = Math.abs(calculateLengthOfTack(TrueWindAngle,alphaAngle,nextMark,lastMark));
-        Coordinate tackingCoord = lastMark.coordAt(lengthOfTack,alphaAngle);
+
+        optimumHeadingA = (TWD - TrueWindAngle + 360) % 360;
+        optimumHeadingB = (TWD + TrueWindAngle + 360) % 360;
+
+        double angleToOptimumA = MathUtils.getAngleBetweenTwoHeadings(heading, optimumHeadingA);
+        double angleToOptimumB = MathUtils.getAngleBetweenTwoHeadings(heading, optimumHeadingB);
+
+        if (angleToOptimumA <= angleToOptimumB) {
+            optimumAngle = optimumHeadingB;
+        } else {
+            optimumAngle = optimumHeadingA;
+        }
+
+        double lengthOfTack = Math.abs(calculateLengthOfTack(TrueWindAngle,nextMark,lastMark));
+
+        Coordinate tackingCoord = lastMark.coordAt(lengthOfTack,optimumAngle);
 
         return tackingCoord;
     }
 
-    public double calculateLengthOfTack(double TrueWindAngle, double alphaAngle,Coordinate nextMark, Coordinate lastMark){
+    public double calculateLengthOfTack(double TrueWindAngle,Coordinate nextMark, Coordinate lastMark){
         double lengthOfLeg = lastMark.greaterCircleDistance(nextMark);
-        double betaAngle = (2*TrueWindAngle) - alphaAngle;
-        double lengthOfTack = ((lengthOfLeg* Math.sin(Math.toRadians(betaAngle)))/Math.sin(Math.toRadians(180 - 2*TrueWindAngle)))/2.0;
+        double lengthOfTack = (lengthOfLeg/2.0)/(Math.cos(Math.toRadians(TrueWindAngle)));
         return lengthOfTack;
     }
 

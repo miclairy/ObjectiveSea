@@ -25,6 +25,9 @@ public class MathUtils {
         if(Math.abs(targetDirection - actualDirection) <= deltaAngle){
             return true;
         }
+        if(targetDirection + deltaAngle < 350 && targetDirection - deltaAngle > 0) {
+            return actualDirection >= targetDirection - deltaAngle && actualDirection <= targetDirection + deltaAngle;
+        }
         if(targetDirection > 180){
             actualDirection -= 180;
             middle = targetDirection - 180;

@@ -601,11 +601,11 @@ public class Boat extends Observable implements Comparable<Boat>{
         return (point + 360 - start) % 360 <= (end + 360 - start) % 360;
     }
 
-    private boolean isTacking(double TWA) {
+    public boolean isTacking(double TWA) {
         return TWA < 89 || TWA > 271;
     }
 
-    private boolean isGybing(double TWA) {
+    public boolean isGybing(double TWA) {
         return TWA > 91 && TWA < 269;
     }
 
