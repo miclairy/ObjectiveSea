@@ -222,10 +222,7 @@ public class AnimationUtils {
         translateTransition.setByX(amount);
         translateTransition.setInterpolator(Interpolator.EASE_IN);
         if(!visible){
-            translateTransition.setOnFinished(new EventHandler<ActionEvent>(){
-                public void handle(ActionEvent AE){
-                    node.setVisible(false);
-                }});
+            translateTransition.setOnFinished(AE -> node.setVisible(false));
         }
         translateTransition.play();
     }
