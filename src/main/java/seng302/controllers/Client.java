@@ -1,6 +1,10 @@
 package seng302.controllers;
 
 import javafx.scene.input.KeyCode;
+import seng302.data.*;
+import seng302.data.registration.RegistrationResponse;
+import seng302.data.registration.RegistrationType;
+import seng302.data.registration.ServerFullException;
 import seng302.data.BoatAction;
 import seng302.data.BoatStatus;
 import seng302.data.ClientPacketBuilder;
@@ -187,8 +191,11 @@ public class Client implements Runnable, Observer {
         if(tutorialKeys.contains(userInputController.getCommandInt())) {
             tutorialFunction.run();
         }
-        byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
-        sender.sendToServer(boatCommandPacket);
+
+        if (race != null && !race.getRaceStatus().equals(RaceStatus.TERMINATED)) {
+            byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
+            sender.sendToServer(boatCommandPacket);
+        }
 
     }
 
