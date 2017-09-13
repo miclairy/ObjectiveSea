@@ -21,7 +21,7 @@
 
 <StackPane fx:id="stackPane" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/menuStyle.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.MainMenuController">
     <children>
-        <ImageView fitHeight="1080.0" fitWidth="1920.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <ImageView fx:id="imvBackground" fitHeight="1080.0" fitWidth="1920.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <image>
                 <Image url="@graphics/menuBackground.png" />
             </image></ImageView>
@@ -470,7 +470,7 @@
                 <RowConstraints maxHeight="273.0" minHeight="10.0" prefHeight="164.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
-                <Slider fx:id="musicSlider" blockIncrement="0.05" majorTickUnit="0.2" max="1.0" maxHeight="150.0" min="0.5" minorTickCount="1" orientation="VERTICAL" prefHeight="150.0" prefWidth="20.0" value="1.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                <Slider fx:id="musicSlider" blockIncrement="0.05" majorTickUnit="0.2" max="0.9" maxHeight="150.0" min="0.5" minorTickCount="1" orientation="VERTICAL" prefHeight="150.0" prefWidth="20.0" value="1.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
                     <GridPane.margin>
                         <Insets />
                     </GridPane.margin>

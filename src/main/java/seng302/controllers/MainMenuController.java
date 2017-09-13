@@ -69,6 +69,7 @@ public class MainMenuController implements Initializable{
     @FXML private Shape circleSpeed;
     @FXML private Shape circleBoats;
     @FXML private Polygon mapPolygon;
+    @FXML private ImageView imvBackground;
 
     @FXML private Label lblMarks;
     @FXML private Label lblMapName;
@@ -103,6 +104,7 @@ public class MainMenuController implements Initializable{
         setLabelPromptAnimations();
         setPaneVisibility();
         setUpSliders();
+        setUpDeselection();
         paneHeight = 400;
         paneWidth = 400;
         setUpMaps();
@@ -596,5 +598,13 @@ public class MainMenuController implements Initializable{
         if (mainMenuClientThread != null){
             mainMenuClientThread.stop();
         }
+    }
+
+    private void setUpDeselection(){
+        imvBackground.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if(settingsGrid.isVisible()){
+                AnimationUtils.fadeNode(settingsGrid, true);
+            }
+        });
     }
 }

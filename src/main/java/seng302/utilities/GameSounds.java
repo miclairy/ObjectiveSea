@@ -76,7 +76,7 @@ public class GameSounds {
     private boolean endless = false;
     private MediaPlayer mediaPlayer;
     private int randomSeaGull;
-    private double volume = 1.0;
+    private double volume = 0.9;
     private double fxVolume = 1.0;
     private FloatControl gainControl;
     private boolean playingSound = false;
@@ -318,7 +318,7 @@ public class GameSounds {
     public void setFxVolume(double volume){
         fxVolume = volume;
         if(!playingSound){
-            hitMark();
+            firstPlace();
             playGameSound();
         }
     }
