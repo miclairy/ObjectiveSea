@@ -5,7 +5,6 @@ import javafx.scene.media.MediaPlayer;
 
 import java.io.*;
 import java.net.URL;
-import java.time.Duration;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -77,6 +76,7 @@ public class GameSounds {
     private MediaPlayer mediaPlayer;
     private int randomSeaGull;
     private double volume = 1.0;
+    private boolean isMusicOn = true;
     private double fxVolume = 1.0;
     private FloatControl gainControl;
     private boolean playingSound = false;
@@ -278,7 +278,7 @@ public class GameSounds {
     }
 
     /**
-     * Plays looping music (e.g. lobby music)
+     * Plays looping isMusicOn (e.g. lobby isMusicOn)
      * @throws IOException
      * @throws LineUnavailableException
      * @throws UnsupportedAudioFileException
@@ -289,6 +289,15 @@ public class GameSounds {
         clip.open(inputStream);
         gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
         setSoundTrackVolume();
+        if(!isMusicOn) {
+            BooleanControl muteControl = (BooleanControl) clip
+                    .getControl(BooleanControl.Type.MUTE);
+            muteControl.setValue(true);
+        } else {
+            BooleanControl muteControl = (BooleanControl) clip
+                    .getControl(BooleanControl.Type.MUTE);
+            muteControl.setValue(false);
+        }
         clip.loop(Clip.LOOP_CONTINUOUSLY);
         clip.start();
     }
@@ -325,10 +334,7 @@ public class GameSounds {
 
     public double getVolume(){return volume;}
 
-
-//    public MediaPlayer getMediaPlayer() {
-//        return mediaPlayer;
-//    }
+    public double getFxVolume(){return volume;}
 
 }
 

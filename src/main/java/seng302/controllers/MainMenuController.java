@@ -1,7 +1,6 @@
 package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -65,6 +64,10 @@ public class MainMenuController implements Initializable{
     @FXML private Slider speedScaleSlider;
     @FXML private Slider musicSlider;
     @FXML private Slider fxSlider;
+    @FXML private ImageView musicOnImage;
+    @FXML private ImageView musicOffImage;
+    @FXML private ImageView soundFxOnImage;
+    @FXML private ImageView soundFxOffImage;
     @FXML private Label lblSpeedNum;
     @FXML private Shape circleSpeed;
     @FXML private Shape circleBoats;
@@ -84,7 +87,10 @@ public class MainMenuController implements Initializable{
     private AnimationTimer timer;
     private MainMenuClient client;
     private Thread mainMenuClientThread;
-    private GameSounds gameSounds;
+    private static GameSounds gameSounds;
+    private static double musicSliderValue = 1.0;
+    private static double fxSliderValue = 1.0;
+    private static boolean soundFxIsMute;
 
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
 
@@ -127,6 +133,7 @@ public class MainMenuController implements Initializable{
         this.gameSounds = sounds;
         this.client = new MainMenuClient();
         setUpSoundSliders();
+        setUpSoundImages();
         mainMenuClientThread = new Thread(client);
         mainMenuClientThread.start();
     }
@@ -161,7 +168,7 @@ public class MainMenuController implements Initializable{
             timer.stop();
         }}
 
-    @FXML private void loadJoinPane(){
+    @FXML private void loadJoinPane() {
         setUpAvailableRaceTable();
         AnimationUtils.switchPaneFade(onlinePane, joinRacePane);
         tblAvailableRaces.setItems(client.getAvailableRaces());
@@ -428,11 +435,10 @@ public class MainMenuController implements Initializable{
             updateSpeedLabel();
         });
     }
-
     /**
      * binds the lable text to the slider value and shifts circle to new loctation
      */
-    private void updateSpeedLabel(){
+    private void updateSpeedLabel() {
         Bounds bounds = speedScaleSlider.lookup(".thumb").getBoundsInParent();
 
         circleSpeed.setTranslateX(bounds.getMinX() + 10);
@@ -440,10 +446,10 @@ public class MainMenuController implements Initializable{
         lblSpeedNum.textProperty().setValue(
                 String.valueOf((int) speedScaleSlider.getValue()));
 
-        if(speedScaleSlider.getValue() >= 10){
+        if (speedScaleSlider.getValue() >= 10) {
             lblSpeedNum.setScaleX(0.8);
             lblSpeedNum.setScaleY(0.8);
-        }else{
+        } else {
             lblSpeedNum.setScaleX(1);
             lblSpeedNum.setScaleY(1);
         }
@@ -570,18 +576,88 @@ public class MainMenuController implements Initializable{
 
     }
 
+    /**
+     * Shows sound settings panel
+     */
+
     @FXML private void showSettings(){
         AnimationUtils.fadeNode(settingsGrid, settingsGrid.isVisible());
+        musicOnImage.setVisible(!(gameSounds.getVolume() == 0.0));
+        musicOffImage.setVisible(gameSounds.getVolume() == 0.0);
+        soundFxOnImage.setVisible(!soundFxIsMute);
+        soundFxOffImage.setVisible(soundFxIsMute);
+        musicSlider.setValue(musicSliderValue);
+        fxSlider.setValue(fxSliderValue);
     }
 
     private void setUpSoundSliders(){
         musicSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            gameSounds.setVolume((Double)newValue);
+            if(musicOnImage.isVisible()) {
+                System.out.println((Double)newValue);
+                gameSounds.setVolume((Double) newValue);
+                if (newValue.equals(0.0)) {
+                    toggleMusicImages(false);
+                }
+            }
+            musicSliderValue = (Double) newValue;
         });
 
         fxSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            gameSounds.setFxVolume((Double)newValue);
+            if(soundFxOnImage.isVisible()) {
+                gameSounds.setFxVolume((Double) newValue);
+                if (newValue.equals(0.0)) {
+                    toggleSoundFxImages(false);
+                }
+            }
+            fxSliderValue = (Double) newValue;
         });
+    }
+
+    private void toggleMusicImages(boolean showMusicOnImage){
+        musicOnImage.setVisible(showMusicOnImage);
+        musicOffImage.setVisible(!showMusicOnImage);
+    }
+
+    private void toggleSoundFxImages(boolean showSoundFxOnImage){
+        soundFxOnImage.setVisible(showSoundFxOnImage);
+        soundFxOffImage.setVisible(!showSoundFxOnImage);
+    }
+
+    private void setUpSoundImages(){
+        musicOnImage.setOnMouseClicked((MouseEvent event) ->{
+            muteMusic();
+        });
+        musicOffImage.setOnMouseClicked((MouseEvent event) ->{
+            unMuteMusic();
+        });
+        soundFxOnImage.setOnMouseClicked((MouseEvent event) ->{
+            muteSoundFx();
+        });
+        soundFxOffImage.setOnMouseClicked((MouseEvent event) ->{
+            unMuteSoundFx();
+        });
+    }
+
+    private void muteMusic(){
+        gameSounds.setVolume(0.0);
+        toggleMusicImages(false);
+    }
+
+    private void unMuteMusic(){
+        gameSounds.setVolume(musicSliderValue);
+        toggleMusicImages(true);
+    }
+
+    private void muteSoundFx(){
+        soundFxIsMute = true;
+        gameSounds.setFxVolume(0.0);
+        toggleSoundFxImages(false);
+    }
+
+    private void unMuteSoundFx(){
+        soundFxIsMute = false;
+        gameSounds.setFxVolume(fxSliderValue);
+        toggleSoundFxImages(true);
     }
 
     public static double getCanvasHeight(){
@@ -593,8 +669,9 @@ public class MainMenuController implements Initializable{
     }
 
     private void stopMainMenuClientThread() {
-        if (mainMenuClientThread != null){
+        if (mainMenuClientThread != null) {
             mainMenuClientThread.stop();
         }
     }
 }
+
