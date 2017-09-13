@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static java.lang.Math.min;
 import static java.lang.Double.max;
 import static java.lang.StrictMath.abs;
+import static seng302.data.RaceStatus.STARTED;
 
 /**
  * Class to encapsulate properties associated with a boat.
@@ -474,6 +475,10 @@ public class Boat extends Observable implements Comparable<Boat>{
         this.boatCollideSound = boatCollideSound;
     }
 
+    public void move(Double raceSecondsPassed, Course course) {
+        updateBoatHeading(raceSecondsPassed);
+        updateLocation(raceSecondsPassed, course);
+    }
 
     /**
      * Class to store optimum headings as a pair
@@ -820,6 +825,19 @@ public class Boat extends Observable implements Comparable<Boat>{
             }
         }
     }
+
+    /**
+     * Updates the location of a given boat to be displayed to the clients
+     * @param timePassed time passed since last update
+     * @param course the course the boat is racing on
+     */
+    public void updateLocation(double timePassed, Course course) {
+        double distanceGained = timePassed * getCurrentSpeed() / (60 * 60);
+        Coordinate newPos = currentPosition.coordAt(distanceGained, heading);
+        setPosition(new Coordinate(newPos.getLat(), newPos.getLon()));
+        currentVMG = calculateVMGToMark(course);
+    }
+
 
     public boolean isOutOfBounds() {
         return outOfBounds;

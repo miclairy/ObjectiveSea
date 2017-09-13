@@ -43,8 +43,6 @@ public class RaceUpdater implements Runnable {
     private double timeOfFirstFinisher, millisBeforeStart, raceSecondsPassed;
     private boolean oneBoatHasFinished, atLeastOneBoatNotFinished;
 
-    private AIBoat aiBoat;
-
     public RaceUpdater(String selectedCourse){
         collisionManager = new CollisionManager();
         //set race up with default files
@@ -86,6 +84,23 @@ public class RaceUpdater implements Runnable {
             race.addCompetitor(newCompetitor);
             prepareBoatForRace(newCompetitor);
             return newCompetitor.getId();
+        } else {
+            return -1;
+        }
+    }
+
+    /**
+     * Adds a competitor from the potential competitors collection into the race, changes the competitor to AI
+     * @return the id of the added competitor, or -1 if max number reached.
+     */
+    public int addAICompetitor() {
+        if (potentialCompetitors.iterator().hasNext()) {
+            Boat newCompetitor = potentialCompetitors.iterator().next();
+            potentialCompetitors.remove(newCompetitor);
+            Boat aiCompetitor = new AIBoat(newCompetitor.getId(), newCompetitor.getName() + " AI", newCompetitor.getNickName(), newCompetitor.getMaxSpeed(), race.getCourse());
+            race.addCompetitor(aiCompetitor);
+            prepareBoatForRace(aiCompetitor);
+            return aiCompetitor.getId();
         } else {
             return -1;
         }
@@ -173,23 +188,18 @@ public class RaceUpdater implements Runnable {
         }
 
         if(race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
-            Double raceHoursPassed = TimeUtils.convertSecondsToHours(raceSecondsPassed);
             if (!boat.isAI() && collisionManager.boatIsInCollision(boat)) {
                 //revert the last location update as it was a collision
-                updateLocation(-raceHoursPassed, boat);
+                boat.updateLocation(-raceSecondsPassed, race.getCourse());
                 boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
             }
             adjustSpeed(boat);
-            if(boat.isAI()){
-                if(!boat.isFinished()){
-                    aiBoat.updateHeading();
-                    aiBoat.avoidFutureCollision();
-                    updateLocation(raceHoursPassed, boat);
-                    aiBoat.checkRounding();
-                }
+            //TODO: Proper way to do this is to create abstract boat class that both Boat and AIBoat inherits
+            if(boat instanceof AIBoat){
+                AIBoat aiBoat = (AIBoat) boat;
+                aiBoat.move(raceSecondsPassed, race.getCourse());
             } else{
-                boat.updateBoatHeading(raceSecondsPassed);
-                updateLocation(raceHoursPassed, boat);
+                boat.move(raceSecondsPassed, race.getCourse());
                 Course course = race.getCourse();
                 if (course.getCourseOrder().size() > 0 && race.getRaceStatus().equals(STARTED)) {
                     checkMarkRounding(boat, course);
@@ -267,21 +277,6 @@ public class RaceUpdater implements Runnable {
         } else if(currentMark.hasTwoMarks()) {
             RoundingMechanics.boatHeadingToGate(boat, currentMark, previousMark, nextMark);
         }
-    }
-
-    /**
-     * Updates the location of a given boat to be displayed to the clients
-     * @param timePassed time passed since last update
-     * @param boat boat that needs location update
-     */
-    public void updateLocation(double timePassed, Boat boat) {
-        double boatHeading = boat.getHeading();
-        Coordinate boatPosition = boat.getCurrentPosition();
-        double distanceGained = timePassed * boat.getCurrentSpeed();
-        Coordinate newPos = boatPosition.coordAt(distanceGained, boatHeading);
-        boat.setPosition(new Coordinate(newPos.getLat(), newPos.getLon()));
-        double VMG = boat.calculateVMGToMark(race.getCourse());
-        boat.setCurrentVMG(VMG);
     }
 
     private void prepareBoatForRace(Boat boat) {
@@ -421,12 +416,5 @@ public class RaceUpdater implements Runnable {
 
     public CollisionManager getCollisionManager() {
         return collisionManager;
-    }
-
-    public void addAI() {
-        Integer aiID = addCompetitor();
-        Boat boat = race.getBoatById(aiID);
-        boat.setAI(true);
-        aiBoat = new AIBoat(boat, race.getCourse());
     }
 }

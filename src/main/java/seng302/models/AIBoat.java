@@ -17,12 +17,11 @@ import static seng302.data.RoundingSide.PORT;
 /**
  * Created by atc60 on 8/09/17.
  */
-public class AIBoat {
+public class AIBoat extends Boat{
     private static final Double ROUNDING_DISTANCE = 0.08;
     private static final Double ROUNDING_DELTA = 0.01;
     private static final Double COLLISION_CHECK_DISTANCE = 0.1;
 
-    private Boat boat;
     private List<Coordinate> nextRoundingCoordinates;
     private Integer targetPositionIndex;
     private Coordinate targetPosition;
@@ -31,9 +30,9 @@ public class AIBoat {
     private Polygon boundary;
 
 
-    public AIBoat(Boat boat, Course course) {
+    public AIBoat(Integer id, String name, String nickName, double speed, Course course) {
+        super(id, name, nickName, speed);
         this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), course);
-        this.boat = boat;
         this.course = course;
         nextRoundingCoordinates = new ArrayList<>();
         setNextRoundingCoordinates();
@@ -44,12 +43,12 @@ public class AIBoat {
     }
 
     public void checkRounding() {
-        if(boat.getCurrentPosition().greaterCircleDistance(targetPosition) < ROUNDING_DELTA){
+        if(getCurrentPosition().greaterCircleDistance(targetPosition) < ROUNDING_DELTA && getStatus() != BoatStatus.FINISHED){
             targetPositionIndex++;
             if(targetPositionIndex == nextRoundingCoordinates.size()){
                 targetPositionIndex = 0;
                 setNextRoundingCoordinates();
-                boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex()+1);
+                setLastRoundedMarkIndex(getLastRoundedMarkIndex()+1);
             }
             targetPosition = nextRoundingCoordinates.get(targetPositionIndex);
         }
@@ -57,22 +56,22 @@ public class AIBoat {
 
     private void setNextRoundingCoordinates(){
         List<CompoundMark> courseOrder = course.getCourseOrder();
-        Integer lastRoundedIndex = boat.getLastRoundedMarkIndex();
+        Integer lastRoundedIndex = getLastRoundedMarkIndex();
         if(lastRoundedIndex == courseOrder.size() - 1){
-            boat.setStatus(BoatStatus.FINISHED);
+            setStatus(BoatStatus.FINISHED);
             return;
         }
-        CompoundMark currentMark = courseOrder.get(boat.getLastRoundedMarkIndex()+1);
+        CompoundMark currentMark = courseOrder.get(getLastRoundedMarkIndex()+1);
         nextRoundingCoordinates.clear();
-        Coordinate tackingGybingCoord = addTackandGybeMarks(boat.getCurrentPosition(), currentMark.getPosition());
+        Coordinate tackingGybingCoord = addTackandGybeMarks(getCurrentPosition(), currentMark.getPosition());
         if(tackingGybingCoord != null && !currentMark.isStartLine()){
             nextRoundingCoordinates.add(tackingGybingCoord);
         }
         if(currentMark instanceof RaceLine){
             nextRoundingCoordinates.add(currentMark.getPosition());
         } else {
-            CompoundMark previousMark = courseOrder.get(boat.getLastRoundedMarkIndex());
-            CompoundMark nextMark = courseOrder.get(boat.getLastRoundedMarkIndex()+2);
+            CompoundMark previousMark = courseOrder.get(getLastRoundedMarkIndex());
+            CompoundMark nextMark = courseOrder.get(getLastRoundedMarkIndex()+2);
 
             if(currentMark.hasTwoMarks() && RoundingMechanics.nextCompoundMarkAfterGate(nextMark, currentMark, previousMark)) {
                 nextRoundingCoordinates.add(currentMark.getPosition());
@@ -80,12 +79,12 @@ public class AIBoat {
                 Double heading = previousMark.getPosition().headingToCoordinate(currentMark.getPosition());
                 Double nextHeading = currentMark.getPosition().headingToCoordinate(nextMark.getPosition());
 
-                String roundingSideString = course.getRoundingOrder().get(boat.getLastRoundedMarkIndex()+1).getRoundingSideString();
+                String roundingSideString = course.getRoundingOrder().get(getLastRoundedMarkIndex()+1).getRoundingSideString();
                 RoundingSide roundingSide;
                 if(currentMark.hasTwoMarks()){
                     roundingSide = roundingSideString.charAt(0) == 'P' ? RoundingSide.PORT : RoundingSide.STBD;
                 } else{
-                    roundingSide = course.getRoundingOrder().get(boat.getLastRoundedMarkIndex()+1);
+                    roundingSide = course.getRoundingOrder().get(getLastRoundedMarkIndex()+1);
                 }
                 nextRoundingCoordinates.addAll(RoundingMechanics.markRoundingCoordinates(currentMark.getMark1(), heading, nextHeading, roundingSide, ROUNDING_DISTANCE));
             }
@@ -93,22 +92,22 @@ public class AIBoat {
     }
 
     public void updateHeading() {
-        Double headingToNextMark = boat.getCurrentPosition().headingToCoordinate(targetPosition);
-        boat.setHeading(headingToNextMark);
+        Double headingToNextMark = getCurrentPosition().headingToCoordinate(targetPosition);
+        setHeading(headingToNextMark);
     }
 
     public boolean checkFutureCollision(Mark mark) {
-        Coordinate checkPointEnd = boat.getCurrentPosition().coordAt(COLLISION_CHECK_DISTANCE, boat.getHeading());
-        Double distance = MathUtils.distanceToLineSegment(boat.getCurrentPosition(), checkPointEnd, mark.getPosition());
-        return distance <= CollisionManager.MARK_SENSITIVITY && boat.getCurrentPosition().greaterCircleDistance(targetPosition) > boat.getCurrentPosition().greaterCircleDistance(mark.getPosition());
+        Coordinate checkPointEnd = getCurrentPosition().coordAt(COLLISION_CHECK_DISTANCE, getHeading());
+        Double distance = MathUtils.distanceToLineSegment(getCurrentPosition(), checkPointEnd, mark.getPosition());
+        return distance <= CollisionManager.MARK_SENSITIVITY &&
+                getCurrentPosition().greaterCircleDistance(targetPosition) > getCurrentPosition().greaterCircleDistance(mark.getPosition());
     }
 
     public void avoidFutureCollision() {
         for(Integer markID : course.getAllMarks().keySet()){
             Mark mark = course.getAllMarks().get(markID);
             if(checkFutureCollision(mark)){
-
-                Coordinate avoidCoordinate = coordinateToAvoid(boat, mark.getPosition());
+                Coordinate avoidCoordinate = coordinateToAvoid(mark.getPosition());
                 nextRoundingCoordinates.add(targetPositionIndex, avoidCoordinate);
                 System.out.println("Collision with: " + mark.getSourceID());
                 System.out.println("Avoiding to: " + avoidCoordinate);
@@ -118,27 +117,25 @@ public class AIBoat {
         }
     }
 
-    private Coordinate coordinateToAvoid(Boat boat, Coordinate collisionPosition) {
-        Double avoidHeading = (boat.getHeading() + 270) % 360;
+    private Coordinate coordinateToAvoid(Coordinate collisionPosition) {
+        Double avoidHeading = (getHeading() + 270) % 360;
         Coordinate coord1 = collisionPosition.coordAt(ROUNDING_DISTANCE, avoidHeading);
 
-        Double avoidHeading2 = (boat.getHeading() + 90) % 360;
+        Double avoidHeading2 = (getHeading() + 90) % 360;
         Coordinate coord2 = collisionPosition.coordAt(ROUNDING_DISTANCE, avoidHeading2);
 
-        Double dist1 = boat.getCurrentPosition().greaterCircleDistance(coord1) + coord1.greaterCircleDistance(targetPosition);
-        Double dist2 = boat.getCurrentPosition().greaterCircleDistance(coord2) + coord2.greaterCircleDistance(targetPosition);
+        Double dist1 = getCurrentPosition().greaterCircleDistance(coord1) + coord1.greaterCircleDistance(targetPosition);
+        Double dist2 = getCurrentPosition().greaterCircleDistance(coord2) + coord2.greaterCircleDistance(targetPosition);
 
         return dist1 < dist2 ? coord1 : coord2;
     }
 
     public Coordinate addTackandGybeMarks(Coordinate lastMark, Coordinate nextMark) {
         double TWD = course.getWindDirection();
-        double heading = boat.getHeading();
+        double heading = getHeading();
         double headingBetweenMarks = lastMark.headingToCoordinate(nextMark);
-        double TWA = Math.abs(TWD - headingBetweenMarks);
 
-        double TrueWindAngle;
-
+        double trueWindAngle;
         double optimumAngle;
 
         double optimumHeadingA;
@@ -146,17 +143,17 @@ public class AIBoat {
 
         if(MathUtils.pointBetweenTwoAngle(TWD, polarTable.getOptimumTWA(true), headingBetweenMarks)){
             System.out.println("TACK");
-            TrueWindAngle = polarTable.getOptimumTWA(true);
+            trueWindAngle = polarTable.getOptimumTWA(true);
         } else if (MathUtils.pointBetweenTwoAngle((TWD + 180) % 360, 180 - polarTable.getOptimumTWA(false), headingBetweenMarks)){
-            TrueWindAngle = polarTable.getOptimumTWA(false);
-            System.out.println(TrueWindAngle);
+            trueWindAngle = polarTable.getOptimumTWA(false);
+            System.out.println(trueWindAngle);
             System.out.println("GYBE " + TWD + "h " + headingBetweenMarks);
         } else {
             return null;
         }
 
-        optimumHeadingA = (TWD - TrueWindAngle + 360) % 360;
-        optimumHeadingB = (TWD + TrueWindAngle + 360) % 360;
+        optimumHeadingA = (TWD - trueWindAngle + 360) % 360;
+        optimumHeadingB = (TWD + trueWindAngle + 360) % 360;
 
         double angleToOptimumA = MathUtils.getAngleBetweenTwoHeadings(heading, optimumHeadingA);
         double angleToOptimumB = MathUtils.getAngleBetweenTwoHeadings(heading, optimumHeadingB);
@@ -167,11 +164,10 @@ public class AIBoat {
             optimumAngle = optimumHeadingA;
         }
 
-        double lengthOfTack = Math.abs(calculateLengthOfTack(TrueWindAngle,nextMark,lastMark));
+        double lengthOfTack = Math.abs(calculateLengthOfTack(trueWindAngle,nextMark,lastMark));
 
         Coordinate tackingCoord = lastMark.coordAt(lengthOfTack,optimumAngle);
-
-        if(!boundary.contains(tackingCoord.getLat(), tackingCoord.getLon())) {
+        if(boundary != null && !boundary.contains(tackingCoord.getLat(), tackingCoord.getLon())) {
             Double distance = distanceToBoundary(lastMark, tackingCoord, course.getBoundary());
             System.out.println("Distance: " + distance);
             tackingCoord = lastMark.coordAt(distance, optimumAngle);
@@ -226,5 +222,18 @@ public class AIBoat {
             alphaAngle = (360 + windDirection - bearing) % 360;
         }
         return onTack ? alphaAngle : 360 - alphaAngle;
+    }
+
+
+    /**
+     * Updates the location of a given boat to be displayed to the clients
+     * @param raceSecondsPassed time passed since last update in seconds
+     * @param course the course the boat is racing on
+     */
+    public void move(double raceSecondsPassed, Course course) {
+        updateHeading();
+        avoidFutureCollision();
+        updateLocation(raceSecondsPassed, course);
+        checkRounding();
     }
 }
