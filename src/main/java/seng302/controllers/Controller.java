@@ -36,6 +36,7 @@ import seng302.data.BoatStatus;
 import seng302.utilities.*;
 import seng302.utilities.TimeUtils;
 import seng302.views.BoatDisplay;
+import seng302.views.DisplayTouchController;
 import seng302.views.HeadsupDisplay;
 
 
@@ -254,13 +255,11 @@ public class Controller implements Initializable, Observer {
         } else {
             startersOverlayTitle.setText(race.getRegattaName());
         }
-        initTouchEventListener();
         initZoomEventListener();
         initKeyPressListener();
         raceViewController.setOptions(options);
         raceViewController.updateWindArrow();
         raceViewController.start();
-        DisplayTouchController.setTouchPane(touchPane);
     }
 
     @FXML public void exitRunningRace() {
@@ -300,33 +299,6 @@ public class Controller implements Initializable, Observer {
             }
             if(key.getCode().equals(Z) || key.getCode().equals(MINUS) || key.getCode().equals(UNDERSCORE)){
                 setZoomSliderValue(zoomSlider.getValue()- 0.1);
-            }
-        });
-    }
-
-    /**
-     * adds a listener to see if a touch event is occurring or not
-     */
-    private void initTouchEventListener() {
-        touchPane.addEventFilter(TouchEvent.ANY, touch -> {
-            if (touch.getTouchPoints().size() == 1) {
-                DisplayUtils.externalTouchEvent = zoomSlider.isValueChanging();
-                DisplayUtils.externalDragEvent = touch.getEventType() != TouchEvent.TOUCH_RELEASED;
-            }
-        });
-
-        canvasAnchor.addEventFilter(TouchEvent.ANY, touch -> {
-            if (touch.getTouchPoints().size() == 2 && DisplayUtils.zoomLevel != 1 && DisplayUtils.externalZoomEvent) {
-                DisplayUtils.externalDragEvent = false;
-                DisplayUtils.externalTouchEvent = true;
-                double touchX = (touch.getTouchPoints().get(0).getX() + touch.getTouchPoints().get(1).getX()) / 2;
-                double touchY = (touch.getTouchPoints().get(0).getY() + touch.getTouchPoints().get(1).getY()) / 2;
-                System.out.println("Change X: " + touchX);
-                System.out.println("Change Y: " + touchY);
-                DisplayUtils.dragDisplay((int) touchX, (int) touchY);
-                raceViewController.redrawCourse();
-                raceViewController.redrawBoatPaths();
-                selectionController.deselectBoat();
             }
         });
     }
@@ -681,6 +653,10 @@ public class Controller implements Initializable, Observer {
             scoreboardVisible = true;
             raceViewController.shiftArrow(true);
         }
+    }
+
+    public void setUpTouchInputController(TouchInputController touchInputController) {
+        touchInputController.setUp(root, touchPane);
     }
 
     public class ColoredTextListCell extends ListCell<String> {

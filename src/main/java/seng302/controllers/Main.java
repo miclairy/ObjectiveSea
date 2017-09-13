@@ -119,6 +119,7 @@ public class Main extends Application {
         displaySwitcher.loadMainMenu();
     }
 
+
     /**
      * Loads the visualiser and attaches a KeyInputController to the client and the JavaFX scene
      * @param options ClientOptions for the RaceView
@@ -127,10 +128,12 @@ public class Main extends Application {
         displaySwitcher.loadRaceView(options);
         if (options.isParticipant()) {
             KeyInputController keyInputController = new KeyInputController(DisplaySwitcher.getScene(), Client.getRace());
-            TouchInputController touchInputController = new TouchInputController(DisplaySwitcher.getScene(), Client.getRace(), Client.getRace().getBoatById(getClient().getClientID()));
+            TouchInputController touchInputController = new TouchInputController(Client.getRace(), Client.getRace().getBoatById(getClient().getClientID()));
+            displaySwitcher.setTouchInputController(touchInputController);
             client.setInputControllers(keyInputController, touchInputController);
             keyInputController.addObserver(client);
             touchInputController.addObserver(client);
+            displaySwitcher.setUpTouchInputController();
         }
     }
 

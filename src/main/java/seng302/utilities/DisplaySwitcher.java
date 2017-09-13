@@ -21,6 +21,8 @@ public class DisplaySwitcher {
     private Stage stage;
     private Main main;
     private static GameSounds gameSounds = new GameSounds();
+    private TouchInputController touchInputController;
+    private Controller raceController;
 
     public DisplaySwitcher(Main main, Stage stage){
         this.stage = stage;
@@ -56,7 +58,7 @@ public class DisplaySwitcher {
             soundController.setRunning(true);
             Thread soundControllerThread = new Thread(soundController);
             soundControllerThread.start();
-            Controller raceController = (Controller) replaceSceneContent("race_view.fxml");
+            raceController = (Controller) replaceSceneContent("race_view.fxml");
             raceController.setApp(options, this, scene);
             raceController.setSoundController(soundController);
         } catch (Exception ex) {
@@ -90,5 +92,14 @@ public class DisplaySwitcher {
 
     public static GameSounds getGameSounds() {
         return gameSounds;
+    }
+
+    public void setTouchInputController(TouchInputController touchInputController) {
+        this.touchInputController = touchInputController;
+    }
+
+    public void setUpTouchInputController(){
+        raceController.setUpTouchInputController(touchInputController);
+
     }
 }
