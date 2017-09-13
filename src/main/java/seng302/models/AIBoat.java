@@ -1,5 +1,6 @@
 package seng302.models;
 
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import org.omg.CORBA.TRANSACTION_MODE;
 import seng302.controllers.CollisionManager;
@@ -9,6 +10,7 @@ import seng302.data.RoundingSide;
 import seng302.utilities.MathUtils;
 import seng302.utilities.PolarReader;
 
+import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +23,7 @@ public class AIBoat extends Boat{
     private static final Double ROUNDING_DISTANCE = 0.08;
     private static final Double ROUNDING_DELTA = 0.01;
     private static final Double COLLISION_CHECK_DISTANCE = 0.1;
+    private static final Double BOUNDARY_OFFSET = 0.05;
 
     private List<Coordinate> nextRoundingCoordinates;
     private Integer targetPositionIndex;
@@ -63,10 +66,11 @@ public class AIBoat extends Boat{
         }
         CompoundMark currentMark = courseOrder.get(getLastRoundedMarkIndex()+1);
         nextRoundingCoordinates.clear();
-        Coordinate tackingGybingCoord = addTackandGybeMarks(getCurrentPosition(), currentMark.getPosition());
-        if(tackingGybingCoord != null && !currentMark.isStartLine()){
-            nextRoundingCoordinates.add(tackingGybingCoord);
+
+        if(currentMark != course.getStartLine()){
+            addTackandGybeMarks(getCurrentPosition(), currentMark.getPosition(), 0);
         }
+
         if(currentMark instanceof RaceLine){
             nextRoundingCoordinates.add(currentMark.getPosition());
         } else {
@@ -126,14 +130,13 @@ public class AIBoat extends Boat{
 
         Double dist1 = getCurrentPosition().greaterCircleDistance(coord1) + coord1.greaterCircleDistance(targetPosition);
         Double dist2 = getCurrentPosition().greaterCircleDistance(coord2) + coord2.greaterCircleDistance(targetPosition);
-
         return dist1 < dist2 ? coord1 : coord2;
     }
 
-    public Coordinate addTackandGybeMarks(Coordinate lastMark, Coordinate nextMark) {
+    public void addTackandGybeMarks(Coordinate lastCoordinate, Coordinate nextCoordinate, Integer headingOption) {
         double TWD = course.getWindDirection();
         double heading = getHeading();
-        double headingBetweenMarks = lastMark.headingToCoordinate(nextMark);
+        double headingBetweenMarks = lastCoordinate.headingToCoordinate(nextCoordinate);
 
         double trueWindAngle;
         double optimumAngle;
@@ -142,14 +145,11 @@ public class AIBoat extends Boat{
         double optimumHeadingB;
 
         if(MathUtils.pointBetweenTwoAngle(TWD, polarTable.getOptimumTWA(true), headingBetweenMarks)){
-            System.out.println("TACK");
             trueWindAngle = polarTable.getOptimumTWA(true);
         } else if (MathUtils.pointBetweenTwoAngle((TWD + 180) % 360, 180 - polarTable.getOptimumTWA(false), headingBetweenMarks)){
             trueWindAngle = polarTable.getOptimumTWA(false);
-            System.out.println(trueWindAngle);
-            System.out.println("GYBE " + TWD + "h " + headingBetweenMarks);
-        } else {
-            return null;
+        } else{
+            return;
         }
 
         optimumHeadingA = (TWD - trueWindAngle + 360) % 360;
@@ -157,22 +157,31 @@ public class AIBoat extends Boat{
 
         double angleToOptimumA = MathUtils.getAngleBetweenTwoHeadings(heading, optimumHeadingA);
         double angleToOptimumB = MathUtils.getAngleBetweenTwoHeadings(heading, optimumHeadingB);
-
-        if (angleToOptimumA <= angleToOptimumB) {
-            optimumAngle = optimumHeadingB;
-        } else {
+        if(headingOption == 1){
             optimumAngle = optimumHeadingA;
+        } else if(headingOption == -1){
+            optimumAngle = optimumHeadingB;
+        } else{
+            if (angleToOptimumA <= angleToOptimumB) {
+                optimumAngle = optimumHeadingB;
+                headingOption = -1;
+            } else {
+                optimumAngle = optimumHeadingA;
+                headingOption = 1;
+            }
         }
 
-        double lengthOfTack = Math.abs(calculateLengthOfTack(trueWindAngle,nextMark,lastMark));
+        double lengthOfTack = Math.abs(calculateLengthOfTack(trueWindAngle, nextCoordinate, lastCoordinate));
 
-        Coordinate tackingCoord = lastMark.coordAt(lengthOfTack,optimumAngle);
+        Coordinate tackingCoord = lastCoordinate.coordAt(lengthOfTack,optimumAngle);
         if(boundary != null && !boundary.contains(tackingCoord.getLat(), tackingCoord.getLon())) {
-            Double distance = distanceToBoundary(lastMark, tackingCoord, course.getBoundary());
-            System.out.println("Distance: " + distance);
-            tackingCoord = lastMark.coordAt(distance, optimumAngle);
+            Double distance = distanceToBoundary(lastCoordinate, tackingCoord, course.getBoundary());
+            tackingCoord = lastCoordinate.coordAt(distance - BOUNDARY_OFFSET, optimumAngle);
+            nextRoundingCoordinates.add(tackingCoord);
+            addTackandGybeMarks(tackingCoord, nextCoordinate, headingOption * -1);
+        } else{
+            nextRoundingCoordinates.add(tackingCoord);
         }
-        return tackingCoord;
     }
 
     private Double distanceToBoundary(Coordinate lastMark, Coordinate tackingCoord, ArrayList<Coordinate> boundary) {
@@ -190,16 +199,8 @@ public class AIBoat extends Boat{
     }
 
     private boolean crossingBoundary(Coordinate lastMark, Coordinate tackingCoord, Coordinate boundaryEnd1, Coordinate boundaryEnd2) {
-        InfiniteLine infiniteLine1 = new InfiniteLine(lastMark, tackingCoord);
-        InfiniteLine infiniteLine2 = new InfiniteLine(boundaryEnd1, boundaryEnd2);
-        Coordinate intersectionPoint = InfiniteLine.intersectionPoint(infiniteLine1, infiniteLine2);
-        double minLat = Math.min(boundaryEnd1.getLat(), boundaryEnd2.getLat());
-        double minLon = Math.min(boundaryEnd1.getLon(), boundaryEnd2.getLon());
-        double maxLat = Math.max(boundaryEnd1.getLat(), boundaryEnd2.getLat());
-        double maxLon = Math.max(boundaryEnd1.getLon(), boundaryEnd2.getLon());
-
-        return intersectionPoint.getLat() >= minLat && intersectionPoint.getLat() <= maxLat &&
-                intersectionPoint.getLon() >= minLon && intersectionPoint.getLon() <= maxLon;
+        return Line2D.linesIntersect(lastMark.getLon(), lastMark.getLat(), tackingCoord.getLon(), tackingCoord.getLat(),
+                                    boundaryEnd1.getLon(), boundaryEnd1.getLat(), boundaryEnd2.getLon(), boundaryEnd2.getLat());
     }
 
     public double calculateLengthOfTack(double TrueWindAngle,Coordinate nextMark, Coordinate lastMark){
