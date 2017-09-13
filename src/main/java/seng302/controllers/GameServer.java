@@ -237,7 +237,6 @@ public class GameServer extends Server {
         connectionManager.sendToClient(newId, packet);
         if(success){
             try {
-                System.out.println(raceUpdater.getRace().getRegattaName());
                 updateVM(options.getSpeedScale(), options.getMinParticipants(), options.getPort(), ConnectionUtils.getPublicIp(), 1);
             } catch (IOException a) {
                 a.printStackTrace();
@@ -249,7 +248,7 @@ public class GameServer extends Server {
 
     private void updateVM(Double speedScale, Integer minParticipants, Integer serverPort, String publicIp, int currentCourseIndex) throws IOException {
         byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(speedScale, minParticipants, serverPort, publicIp, currentCourseIndex, raceUpdater.getRace().getCompetitors().size());
-        System.out.println("Client: Updating VM" );
+        System.out.println("GameServer: Updating VM" );
         Socket vmSocket = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
         connectionManager.updateVM(registerGamePacket, vmSocket);
     }

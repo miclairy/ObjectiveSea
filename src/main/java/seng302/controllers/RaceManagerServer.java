@@ -10,6 +10,7 @@ import seng302.views.AvailableRace;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Observable;
 
 /**
@@ -65,17 +66,29 @@ public class RaceManagerServer extends Server {
                 RegistrationType rego = (RegistrationType) arg;
                 manageRegistration((ServerListener) observable, rego);
             } else if (arg instanceof AvailableRace) {
-                removeAvailableRace(((AvailableRace) arg).getIpAddress());
-                availableRaces.add((AvailableRace) arg);
+                updateAvailableRace(((AvailableRace) arg));
             }
         }
     }
 
-    private void removeAvailableRace(Object arg){
+    private void updateAvailableRace(AvailableRace race){
+        boolean updatedRace = false;
+        for (AvailableRace runningRace : availableRaces){
+            if (Objects.equals(runningRace.getIpAddress(), race.getIpAddress()) && runningRace.getPort() == race.getPort()){
+                updatedRace = true;
+                runningRace.setNumBoats(race.getNumBoats());
+            }
+        }
+        if (!updatedRace){
+            availableRaces.add(race);
+        }
+    }
+
+    private void removeAvailableRace(Object ipAddress){
         AvailableRace foundRace = null;
         System.out.println("Races size: " + availableRaces.size());
         for (AvailableRace race : availableRaces) {
-            if (race.getIpAddress().equals(arg)) {
+            if (race.getIpAddress().equals(ipAddress)) {
                 foundRace = race;
             }
         }
