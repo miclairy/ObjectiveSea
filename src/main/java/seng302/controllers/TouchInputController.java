@@ -107,8 +107,6 @@ public class TouchInputController extends Observable {
                 DisplayUtils.externalTouchEvent = true;
                 double touchX = (touch.getTouchPoints().get(0).getX() + touch.getTouchPoints().get(1).getX()) / 2;
                 double touchY = (touch.getTouchPoints().get(0).getY() + touch.getTouchPoints().get(1).getY()) / 2;
-                System.out.println("Change X: " + touchX);
-                System.out.println("Change Y: " + touchY);
                 DisplayUtils.dragDisplay((int) touchX, (int) touchY);
             }
         });
@@ -167,24 +165,15 @@ public class TouchInputController extends Observable {
             double windAngle = race.getCourse().getWindDirection() + 180;
             double touchAngle = touchPoint.getAngleFromSceneCentre(boatPosition) - 270;
 
-            if (touchAngle < 0) {
-                touchAngle += 360;
-            }
-
-            if (windAngle > 360) {
-                windAngle -= 360;
-            }
+            touchAngle = (touchAngle +360)%360;
+            windAngle = (windAngle +360)%360;
 
             double boatHeading = playersBoat.getHeading();
+            double oppositeWindAngle = (windAngle +540)%360;
 
-            double oppositeWindAngle = windAngle - 180;
-            if (oppositeWindAngle < 0) {
-                oppositeWindAngle += 360;
-            }
             double newWindAngle;
             double newBoatHeading;
             double newTouchAngle;
-
 
             if (!((boatHeading > (touchAngle - 2)) && (boatHeading < (touchAngle + 2)))) {
                 if ((((boatHeading - touchAngle) < 180) && ((boatHeading - touchAngle) > 0)) ||
@@ -213,7 +202,6 @@ public class TouchInputController extends Observable {
                             newWindAngle = windAngle;
                             oppositeWindAngle += 360;
                         }
-
                         newTouchAngle = touchAngle + 360;
 
                         commandInt = changeOppositeRotationDirection(newWindAngle, oppositeWindAngle, boatHeading, newTouchAngle);
@@ -255,6 +243,7 @@ public class TouchInputController extends Observable {
 
         return direction;
     }
+
 
     /**
      * determines the inverse direction of boat rotation based upon touch location
