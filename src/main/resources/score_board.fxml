@@ -35,7 +35,6 @@
                       <RowConstraints maxHeight="41.0" minHeight="10.0" prefHeight="41.0" vgrow="SOMETIMES" />
                       <RowConstraints maxHeight="244.0" minHeight="5.0" prefHeight="157.0" vgrow="SOMETIMES" />
                       <RowConstraints maxHeight="284.0" minHeight="10.0" prefHeight="156.0" vgrow="SOMETIMES" />
-                        <RowConstraints maxHeight="282.0" minHeight="10.0" prefHeight="52.0" vgrow="SOMETIMES" />
                         <RowConstraints maxHeight="282.0" minHeight="10.0" prefHeight="232.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
@@ -50,14 +49,27 @@
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                            </columnResizePolicy>
                         </TableView>
-                           <VBox fx:id="settingsPane" styleClass="settingsPane" stylesheets="@style/generalStyle.css" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS">
+                           <VBox fx:id="settingsPane" alignment="TOP_CENTER" styleClass="settingsPane" stylesheets="@style/generalStyle.css" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                               <children>
+                              <Label fx:id="healthLabel" text="Health" textAlignment="CENTER">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </Label>
+                              <ProgressBar fx:id="boatHealth" prefHeight="31.0" prefWidth="385.0" progress="1.0">
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                                 <padding>
+                                    <Insets bottom="20.0" left="20.0" right="20.0" />
+                                 </padding>
+                              </ProgressBar>
                                  <AnchorPane>
                                     <children>
                                        <Label fx:id="lblAnnotation" alignment="CENTER" prefHeight="17.0" prefWidth="128.0" text="Annotations" textAlignment="CENTER" textFill="WHITE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                     </children>
                                  </AnchorPane>
-                                 <Slider fx:id="annotationsSlider" majorTickUnit="1.0" max="2.0" minorTickCount="0" prefHeight="10.0" prefWidth="128.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="1.0">
+                                 <Slider fx:id="annotationsSlider" majorTickUnit="1.0" max="2.0" minorTickCount="0" prefHeight="10.0" prefWidth="128.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
                                     <padding>
                                        <Insets top="4.0" />
                                     </padding>
@@ -100,16 +112,6 @@
                               <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
                            </GridPane.margin>
                         </LineChart>
-                        <ProgressBar fx:id="boatHealth" prefHeight="11.0" prefWidth="357.0" progress="1.0" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="BOTTOM">
-                           <GridPane.margin>
-                              <Insets bottom="30.0" left="20.0" right="20.0" />
-                           </GridPane.margin>
-                        </ProgressBar>
-                        <Label fx:id="healthLabel" text="Health" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="TOP">
-                           <GridPane.margin>
-                              <Insets />
-                           </GridPane.margin>
-                        </Label>
                      </children>
                   </GridPane>
                   </children>
