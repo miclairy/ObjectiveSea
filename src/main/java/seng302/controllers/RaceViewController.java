@@ -13,7 +13,6 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
@@ -49,9 +48,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         NO_ANNOTATION, IMPORTANT_ANNOTATIONS, ALL_ANNOTATIONS
     }
 
-    private final ArrayList<Paint> WIND_COLORS = new ArrayList<>((Arrays.asList(Paint.valueOf("#92c9ff"), Paint.valueOf("#77b9f6"),
-            Paint.valueOf("#5aa4d8"), Paint.valueOf("#668ecb"), Paint.valueOf("#a57da3"), Paint.valueOf("#cb7387"),
-            Paint.valueOf("#e6666e"), Paint.valueOf("#ea4849"))));
+    private final ArrayList<Color> WIND_COLORS = new ArrayList<>((Arrays.asList(Color.valueOf("#92c9ff"), Color.valueOf("#77b9f6"),
+            Color.valueOf("#5aa4d8"), Color.valueOf("#668ecb"), Color.valueOf("#a57da3"), Color.valueOf("#cb7387"),
+            Color.valueOf("#e6666e"), Color.valueOf("#ea4849"))));
 
     private final double WAKE_SCALE_FACTOR = 17;
     private final double SOG_SCALE_FACTOR = 200.0;
@@ -126,6 +125,31 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     public void setupRaceView(ClientOptions options) {
         this.options = options;
+        if(options.isTutorial() || options.isPractice()) {
+            controller.hideStarterOverlay();
+            initBoatHighlight();
+            initializeBoats();
+            redrawCourse();
+        }
+        if(options.isTutorial()) {
+            tutorial = new Tutorial(controller, race);
+            shiftArrow(false);
+            initBoatPaths();
+        }
+        if (options.isPractice()) {
+            CompoundMark startLine = race.getCourse().getCourseOrder().get(0);
+            Mark centreMark = new Mark(0, "centre", startLine.getPosition());
+            selectionController.zoomToMark(centreMark);
+            controller.setZoomSliderValue(2.0);
+        }
+
+        if(!options.isTutorial() && !options.isPractice()) {
+            this.courseRouteArrows = new CourseRouteArrows(race.getCourse(), root);
+            courseRouteArrows.drawRaceRoute();
+        }
+
+        redrawCourse();
+        race.addObserver(this);
         if (options.isPractice()) {
             setupPracticeMode();
         } else if (options.isTutorial()) {
@@ -384,9 +408,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if(boatDisplay.getBoat().getId() == Main.getClient().getClientID()){
                 currentUserBoatDisplay = boatDisplay;
                 scoreBoardController.highlightUserBoat();
-                if(!options.isTutorial()){
-                    controller.addUserBoat();
-                }
             }
         }
     }
@@ -453,28 +474,28 @@ public class RaceViewController extends AnimationTimer implements Observer {
         Boat boat = displayBoat.getBoat();
 
         if(displayBoat.collisionInProgress){
-            boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
+            AnimationUtils.changeFillColor(boatHighlight, RED_HIGHTLIGHT_COLOR);
             animateBoatHighlightColor(PenaltyStatus.PENALTY, "redBoatHighlight");
         } else if(boat.getLeg() == 0){
             if(startedEarlyPenalty) {
-                boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
+                AnimationUtils.changeFillColor(boatHighlight, RED_HIGHTLIGHT_COLOR);
             }else if(!MathUtils.boatBeforeStartline(boat.getCurrentPosition(),
                     race.getCourse().getStartLine(),
                     race.getCourse().getCompoundMarks().get(2))){
                 startedEarlyPenalty = true;
-                boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
+                AnimationUtils.changeFillColor(boatHighlight, RED_HIGHTLIGHT_COLOR);
                 controller.setUserHelpLabel("Start line was crossed early. It must be crossed again.");
                 animateBoatHighlightColor(PenaltyStatus.PENALTY, "redBoatHighlight");
 
             } else if(boat.getTimeStatus().equals(StartTimingStatus.EARLY)) {
-                boatHighlight.setFill(ORANGE_HIGHTLIGHT_COLOR);
+                AnimationUtils.changeFillColor(boatHighlight, ORANGE_HIGHTLIGHT_COLOR);
                 animateBoatHighlightColor(PenaltyStatus.WARNING, "orangeBoatHighlight");
             } else {
-                boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
+                AnimationUtils.changeFillColor(boatHighlight, DEFAULT_HIGHTLIGHT_COLOR);
                 animateBoatHighlightColor(PenaltyStatus.NO_PENALTY, "defaultBoatHighlight");
             }
         }else{
-            boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
+            AnimationUtils.changeFillColor(boatHighlight, DEFAULT_HIGHTLIGHT_COLOR);
             animateBoatHighlightColor(PenaltyStatus.NO_PENALTY, "defaultBoatHighlight");
             startedEarlyPenalty = false;
         }
@@ -1366,7 +1387,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         st.setInterpolator(Interpolator.EASE_OUT);
         st.setCycleCount(2);
 
-        windArrow.setStroke(WIND_COLORS.get(colorNum));
+        AnimationUtils.changeStrokeColor(windArrow, WIND_COLORS.get(colorNum));
         prevWindColorNum = colorNum;
 
         if(!windTransitionPlaying){
