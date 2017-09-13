@@ -10,6 +10,7 @@ import seng302.views.AvailableRace;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Observable;
 
@@ -74,7 +75,9 @@ public class RaceManagerServer extends Server {
     private void updateAvailableRace(AvailableRace race){
         boolean updatedRace = false;
         for (AvailableRace runningRace : availableRaces){
-            if (Objects.equals(runningRace.getIpAddress(), race.getIpAddress()) && runningRace.getPort() == race.getPort()){
+            if (Objects.equals(runningRace.getIpAddress(), race.getIpAddress())){
+                System.out.println("Updating running race");
+                System.out.println("Running race name: " + runningRace.mapNameProperty().toString());
                 updatedRace = true;
                 runningRace.setNumBoats(race.getNumBoats());
             }

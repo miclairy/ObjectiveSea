@@ -237,7 +237,7 @@ public class GameServer extends Server {
         connectionManager.sendToClient(newId, packet);
         if(success){
             try {
-                updateVM(options.getSpeedScale(), options.getMinParticipants(), options.getPort(), ConnectionUtils.getPublicIp(), 1);
+                updateVM(options.getSpeedScale(), options.getMinParticipants(), options.getPort(), ConnectionUtils.getPublicIp(), CourseName.getCourseIntFromName(raceUpdater.getRace().getRegattaName()));
             } catch (IOException a) {
                 a.printStackTrace();
             }
