@@ -79,7 +79,7 @@ public class RaceManagerServer extends Server {
                 runningRace.setNumBoats(race.getNumBoats());
             }
         }
-        if (!updatedRace){
+        if (!updatedRace) {
             availableRaces.add(race);
         }
     }
