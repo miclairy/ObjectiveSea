@@ -423,5 +423,5 @@
 }
 
 #imvControls{
-    -fx-effect: dropshadow(gaussian, #7a7a7a, 10, 0, 0, 0);
+    -fx-effect: dropshadow(gaussian, #6c9292, 8, 0, 0, 0);
 }
