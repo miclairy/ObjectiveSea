@@ -310,13 +310,11 @@ public class Controller implements Initializable, Observer {
             DisplayUtils.setZoomLevel(zoomSlider.getValue());
             if (DisplayUtils.zoomLevel != 1) {
                 mapImageView.setVisible(false);
-                nextMarkCircle.setVisible(true);
             } else {
                 //Zoom out full, reset everything
                 selectionController.setRotationOffset(0);
                 root.getTransforms().clear();
                 mapImageView.setVisible(true);
-                nextMarkCircle.setVisible(false);
                 selectionController.setTrackingPoint(false);
                 DisplayUtils.resetOffsets();
             }

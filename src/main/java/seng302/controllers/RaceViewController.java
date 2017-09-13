@@ -34,11 +34,8 @@ import seng302.views.CourseRouteArrows;
 import seng302.views.RaceView;
 
 import java.util.*;
-
-import static java.lang.Math.abs;
 import static seng302.data.RaceStatus.STARTED;
 import static seng302.data.RaceStatus.TERMINATED;
-import static seng302.utilities.DisplayUtils.isOutsideBounds;
 import static seng302.utilities.DisplayUtils.zoomLevel;
 
 /**
@@ -1317,6 +1314,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     public void updateNextMarkArrow(Boolean isZoomed) {
         nextMarkArrow.setVisible(isZoomed);
+        controller.getNextMarkCircle().setVisible(isZoomed && !options.isTutorial());
         Course course = race.getCourse();
         Boat boat = currentUserBoatDisplay.getBoat();
         CompoundMark nextMark = course.getCourseOrder().get(boat.getLastRoundedMarkIndex() + 1);
@@ -1332,18 +1330,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
     public void updateNextMarkDistance(Boolean isZoomed) {
         controller.lblNextMark.setVisible(isZoomed);
         CompoundMark nextMark = race.getCourse().getCourseOrder().get(currentUserBoatDisplay.getBoat().getLastRoundedMarkIndex() + 1);
-        Coordinate target;
-        double distance;
-        if (nextMark.hasTwoMarks()) {
-            target = DisplayUtils.midPointFromTwoCoords(nextMark.getMark1().getPosition(), nextMark.getMark2().getPosition());
-            distance = target.greaterCircleDistance(currentUserBoatDisplay.getBoat().getCurrentPosition());
-        } else {
-            target = nextMark.getMark1().getPosition();
-            distance = target.greaterCircleDistance(currentUserBoatDisplay.getBoat().getCurrentPosition());
-        }
+        Coordinate target = nextMark.getPosition();
+        double distance = target.greaterCircleDistance(currentUserBoatDisplay.getBoat().getCurrentPosition());
         int distanceInMetres = (int) TimeUtils.convertNauticalMilesToMetres(distance);
         controller.lblNextMark.setText(String.valueOf(distanceInMetres + "m"));
-
     }
 
 
