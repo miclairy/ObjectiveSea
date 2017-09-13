@@ -195,12 +195,11 @@ public class Main extends Application {
         alert.setHeaderText("Cannot Connect to Server");
         if(err.isLocalError()){
             alert.setContentText("No connection to local server.\n\n" +
-                    "Please ensure that the Port number \n" +
-                    "you have entered is correct.");
+                    "Please try again or \n" +
+                    "restart the program ");
         }else{
             alert.setContentText("This server may not be running.\n\n" +
-                    "Please ensure that the IP and Port numbers \n" +
-                    "you have entered are correct.");
+                    "Please try again or restart the program \n");
         }
 
         alert.showAndWait();

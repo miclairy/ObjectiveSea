@@ -5,6 +5,7 @@ import javafx.scene.media.MediaPlayer;
 
 import java.io.*;
 import java.net.URL;
+import java.time.Duration;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -75,7 +76,7 @@ public class GameSounds {
     private boolean endless = false;
     private MediaPlayer mediaPlayer;
     private int randomSeaGull;
-    private double volume = 1.0;
+    private double volume = 0.9;
     private boolean isMusicOn = true;
     private double fxVolume = 1.0;
     private FloatControl gainControl;
@@ -327,7 +328,7 @@ public class GameSounds {
     public void setFxVolume(double volume){
         fxVolume = volume;
         if(!playingSound){
-            hitMark();
+            firstPlace();
             playGameSound();
         }
     }
