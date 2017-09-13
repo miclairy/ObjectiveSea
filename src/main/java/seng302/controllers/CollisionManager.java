@@ -3,7 +3,6 @@ package seng302.controllers;
 import seng302.data.BoatStatus;
 import seng302.data.RaceVisionXMLParser;
 import seng302.models.*;
-import seng302.utilities.DisplayUtils;
 import seng302.utilities.MathUtils;
 
 import java.util.*;
@@ -28,7 +27,7 @@ public class CollisionManager {
     /**
      * Checks all boats in the race to see if they are colliding with each other or course marks
      * Adds any collisions to a set.
-     * @param race
+     * @param race current race
      */
     public void checkForCollisions(Race race){
         boolean isPractice = RaceVisionXMLParser.courseFile.equals("PracticeStart-course.xml");

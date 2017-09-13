@@ -12,21 +12,19 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.geometry.Rectangle2D;
 import javafx.application.Platform;
-import seng302.data.registration.RaceUnavailableException;
 import seng302.data.registration.ServerFullException;
-import seng302.data.registration.ServerRegistrationException;
 import seng302.models.ClientOptions;
 import seng302.models.ServerOptions;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplaySwitcher;
 import seng302.utilities.NoConnectionToServerException;
 import java.io.IOException;
-import java.net.BindException;
 
 
 public class Main extends Application {
-    private static Client client;
+    private static GameClient client;
     private Server server;
+    private RaceManagerServer managerServer;
     private Stage primaryStage;
     private DisplaySwitcher displaySwitcher;
 
@@ -84,6 +82,9 @@ public class Main extends Application {
                         case "-r":
                             serverOptions.setNumRacesToRun(Integer.parseInt(args[i + 1]));
                             break;
+                        case "-g":
+                            serverOptions.setRunRaceManager(true);
+                            break;
                         default:
                             throw new IllegalArgumentException(String.format("Unknown argument \"%s\"", args[i]));
                     }
@@ -106,14 +107,21 @@ public class Main extends Application {
      * Creates a Server object, puts it in it's own thread and starts the thread
      */
     private void setupServer(ServerOptions serverOptions) throws IOException {
-        server = new Server(serverOptions);
-        ConnectionUtils.setServer(server);
-        Thread serverThread = new Thread(server);
-        serverThread.setName("Server");
-        serverThread.start();
+        if(serverOptions.isRunRaceManager()){
+            managerServer = new RaceManagerServer(serverOptions);
+            Thread raceManagerThread = new Thread(managerServer);
+            raceManagerThread.setName("raceManagerServer");
+            raceManagerThread.start();
+        } else {
+            server = new GameServer(serverOptions);
+            ConnectionUtils.setServer(server);
+            Thread serverThread = new Thread(server);
+            serverThread.setName("Server");
+            serverThread.start();
+        }
     }
 
-    public static Client getClient() {
+    public static GameClient getClient() {
         return client;
     }
 
@@ -128,34 +136,27 @@ public class Main extends Application {
     public void loadRaceView(ClientOptions options) {
         displaySwitcher.loadRaceView(options);
         if (options.isParticipant()) {
-            UserInputController userInputController = new UserInputController(DisplaySwitcher.getScene(), Client.getRace());
+            UserInputController userInputController = new UserInputController(DisplaySwitcher.getScene(), GameClient.getRace());
             client.setUserInputController(userInputController);
             userInputController.addObserver(client);
         }
     }
 
-    /**
-     * initilises a hosted race with the provided parameters
-     * @param course course name
-     * @param port port number to host
-     * @param isTutorial is hosted game a tutorial
-     * @param clientOptions client options
-     * @return whether starting hosted race was successful or not
-     * @throws Exception uncaught error
-     */
-    public boolean startHostedRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions) throws Exception{
+    public void startLocalRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions) throws Exception{
         ServerOptions serverOptions = new ServerOptions();
         serverOptions.setPort(port);
         serverOptions.setRaceXML(course);
         serverOptions.setTutorial(isTutorial);
-        try{
-            setupServer(serverOptions);
-        } catch(BindException e){
-            showPortInUseError(port);
-            return false;
-        }
+        setupServer(serverOptions);
         startClient(clientOptions);
-        return true;
+    }
+
+    public void startHostedRace(String course, Double speedScale, int numParticipants, ClientOptions clientOptions, int currentCourseIndex) throws Exception{
+        ServerOptions serverOptions = new ServerOptions(speedScale, numParticipants);
+        serverOptions.setRaceXML(course);
+        setupServer(serverOptions);
+        startClient(clientOptions);
+        client.updateVM(serverOptions.getSpeedScale(), serverOptions.getMinParticipants(), clientOptions.getServerPort(), ConnectionUtils.getPublicIp(), currentCourseIndex);
     }
 
     /**
@@ -167,7 +168,7 @@ public class Main extends Application {
      */
     public boolean startClient(ClientOptions options){
         try {
-            client = new Client(options);
+            client = new GameClient(options);
             ConnectionUtils.setClient(client);
             Thread clientThread = new Thread(client);
             clientThread.setName("Client");
@@ -175,8 +176,8 @@ public class Main extends Application {
         } catch (NoConnectionToServerException e) {
             showServerConnectionError(e);
             return false;
-        } catch (ServerRegistrationException e) {
-            showServerJoinError(options.isParticipant(), e);
+        } catch (ServerFullException e) {
+            showServerJoinError(options.isParticipant());
             return false;
         }
         return true;
@@ -185,7 +186,7 @@ public class Main extends Application {
     /**
      * Shows a popup informing user that they were unable to connect to the server
      */
-    private void showServerConnectionError(NoConnectionToServerException err){
+    private static void showServerConnectionError(NoConnectionToServerException err){
         Alert alert = new Alert(Alert.AlertType.ERROR);
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add("style/menuStyle.css");
@@ -196,11 +197,12 @@ public class Main extends Application {
             alert.setContentText("No connection to local server.\n\n" +
                     "Please ensure that the Port number \n" +
                     "you have entered is correct.");
-        } else {
+        }else{
             alert.setContentText("This server may not be running.\n\n" +
                     "Please ensure that the IP and Port numbers \n" +
                     "you have entered are correct.");
         }
+
         alert.showAndWait();
     }
 
@@ -209,37 +211,15 @@ public class Main extends Application {
      * If they attempted to join as a participant, suggests they try joining as a spectator
      * @param isParticipant whether or not an attempt was made to participate in the race
      */
-    private void showServerJoinError(boolean isParticipant, ServerRegistrationException ex) {
+    private void showServerJoinError(boolean isParticipant) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add("style/menuStyle.css");
         dialogPane.getStyleClass().add("myDialog");
         alert.setTitle("Failed to Join Server");
         alert.setHeaderText("Failed to Join Server");
-        String message = "";
-        if (ex instanceof ServerFullException) {
-            message = "There was not a free slot for you to join the server.\n\n";
-            if (isParticipant) message += "You may be able to join as a spectator instead.";
-        } else if (ex instanceof RaceUnavailableException) {
-            message = "The race is not currently available.\n\n";
-        }
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    /**
-     * shows a popup saying that port is in use.
-     * @param port port number to display
-     */
-    private void showPortInUseError(int port) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        DialogPane dialogPane = alert.getDialogPane();
-        dialogPane.getStylesheets().add("style/menuStyle.css");
-        dialogPane.getStyleClass().add("myDialog");
-        alert.setTitle("Failed to Host this Race");
-        alert.setHeaderText("Failed to Host this Race");
-        String message = "You already have a game running\n" +
-                "Please close that game to continue.";
+        String message = "There was not a free slot for you to join the server.\n\n";
+        if (isParticipant) message += "You may be able to join as a spectator instead.";
         alert.setContentText(message);
         alert.showAndWait();
     }

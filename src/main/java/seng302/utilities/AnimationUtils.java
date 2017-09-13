@@ -6,8 +6,10 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
+import seng302.views.Arrow;
 
 /**
  * Created by Devin on 25/07/17.
@@ -132,6 +134,27 @@ public class AnimationUtils {
         ParallelTransition pt = new ParallelTransition(fadeTransition, scaleTransition);
         pt.play();
         fadeTransition.setOnFinished(new EventHandler<ActionEvent>(){public void handle(ActionEvent AE){node.setVisible(false); }});
+    }
+
+    /**
+     * scales and fades a node to remove it from the scene
+     * @param node1 the node to fade out
+     * @param node2 the node to fade in
+     */
+    public static void switchPaneFade(Node node1, Node node2){
+        FadeTransition fadeTransition1 = new FadeTransition(new Duration(300), node1);
+        fadeTransition1.setFromValue(1);
+        fadeTransition1.setToValue(0);
+        fadeTransition1.setInterpolator(Interpolator.EASE_OUT);
+        fadeTransition1.setOnFinished(new EventHandler<ActionEvent>(){public void handle(ActionEvent AE){node1.setVisible(false); }});
+
+        FadeTransition fadeTransition2 = new FadeTransition(new Duration(300), node2);
+        fadeTransition2.setFromValue(0);
+        fadeTransition2.setToValue(1);
+        fadeTransition2.setInterpolator(Interpolator.EASE_OUT);
+        node2.setVisible(true);
+        ParallelTransition pt = new ParallelTransition(fadeTransition1, fadeTransition2);
+        pt.play();
     }
 
     /**
@@ -359,4 +382,68 @@ public class AnimationUtils {
         pt.play();
     }
 
+    /**
+     * adds an infinite hover effect to a node
+     * @param node the node that the transition is applied to
+     */
+    public static void nodeHover(Node node) {
+        ScaleTransition scaleTransition = new ScaleTransition(new Duration(1700), node);
+        scaleTransition.setByX(0.04);
+        scaleTransition.setByY(0.04);
+        scaleTransition.setInterpolator(Interpolator.EASE_OUT);
+        scaleTransition.setCycleCount(Animation.INDEFINITE);
+        scaleTransition.setAutoReverse(true);
+        scaleTransition.play();
+    }
+
+    public static void slideUpNode(Node node){
+        TranslateTransition translateTransition = new TranslateTransition(new Duration(300), node);
+        translateTransition.setInterpolator(Interpolator.EASE_OUT);
+        translateTransition.setByY(60);
+        translateTransition.setByX(200);
+
+        ScaleTransition scaleTransition = new ScaleTransition(new Duration(300), node);
+        scaleTransition.setByX(-0.1);
+        scaleTransition.setByY(-0.1);
+        scaleTransition.setInterpolator(Interpolator.EASE_OUT);
+
+        ParallelTransition pt = new ParallelTransition(translateTransition, scaleTransition);
+        pt.play();
+    }
+
+    /**
+     * fades in a menu pane
+     * @param node the pane to be faded
+     */
+    public static void fadeMenuPane(Node node){
+        node.setVisible(true);
+        FadeTransition fadeTransition = new FadeTransition(new Duration(300), node);
+        fadeTransition.setFromValue(0);
+        fadeTransition.setToValue(1);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        fadeTransition.play();
+    }
+
+    /**
+     * sets a nodes opcaity to the desried opacity
+     * @param node the node to be made fully opaque
+     * @param endOpacity the end opacity
+     */
+    public static void removeMenuButton(Node node, double endOpacity){
+        FadeTransition fadeTransition = new FadeTransition(new Duration(200), node);
+        fadeTransition.setFromValue(node.getOpacity());
+        fadeTransition.setToValue(endOpacity);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        if(endOpacity == 0){
+            fadeTransition.setOnFinished(new EventHandler<ActionEvent>(){
+                public void handle(ActionEvent AE){
+                    node.setVisible(false);
+                }});
+        }else{
+            node.setVisible(true);
+        }
+        fadeTransition.play();
+    }
 }
+
+

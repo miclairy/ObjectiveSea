@@ -5,6 +5,7 @@ import seng302.utilities.ConnectionUtils;
 
 /**
  * Created by mjt169 on 3/08/17.
+ *
  */
 public class ServerOptions {
 
@@ -19,6 +20,7 @@ public class ServerOptions {
     private String raceXML;
     private boolean isTutorial;
     private Integer numRacesToRun;
+    private boolean runRaceManager;
 
     /**
      * Constructor with default options
@@ -30,6 +32,20 @@ public class ServerOptions {
         raceXML = DEFAULT_COURSE;
         isTutorial = false;
         numRacesToRun = 1;
+        runRaceManager = false;
+    }
+
+    /**
+     * Constructor for custom host game
+     */
+    public ServerOptions(Double speedScale, int minParticipants){
+        this.speedScale = speedScale;
+        this.minParticipants = minParticipants;
+        port = DEFAULT_PORT;
+        raceXML = DEFAULT_COURSE;
+        isTutorial = false;
+        numRacesToRun = 1;
+        runRaceManager = false;
     }
 
     public Double getSpeedScale() {
@@ -103,5 +119,13 @@ public class ServerOptions {
      */
     public Boolean alwaysRerun() {
         return numRacesToRun == -1;
+    }
+
+    public boolean isRunRaceManager() {
+        return runRaceManager;
+    }
+
+    public void setRunRaceManager(boolean runRaceManager) {
+        this.runRaceManager = runRaceManager;
     }
 }

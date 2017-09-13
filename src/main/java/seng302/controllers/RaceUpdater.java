@@ -253,6 +253,7 @@ public class RaceUpdater implements Runnable {
      * Updates the boat's coordinates by how much it moved in timePassed hours on the course
      * @param timePassed the amount of race hours since the last update
      * @param course the course the boat is racing on
+     * @param boat the boat that needs to be updated
      */
     public void autoUpdateLocation(double timePassed, Course course, Boat boat) {
         if(boat.isFinished()) return;
@@ -322,7 +323,7 @@ public class RaceUpdater implements Runnable {
 
     /**
      * @param windDirection the current wind direction for the course
-     * @param bearing
+     * @param bearing the bearing of the boat
      * @param onTack whether calculateOptimumTack is happening, or calculateOptimumGybe
      * @return the alpha angle
      */
@@ -342,6 +343,8 @@ public class RaceUpdater implements Runnable {
      * @param distanceGained the distance gained by the boat since last update
      * @param courseOrder the order of the set marks
      * @param onTack this decides whether to calculate a tack or a gybe
+     * @param boat the boat that needs its tacking updated
+     * @return Coordinate of the new boat location
      */
     public Coordinate tackingUpdateLocation(double distanceGained, ArrayList<CompoundMark> courseOrder, Boolean onTack, double alphaAngle, Boat boat){
         double TrueWindAngle;
@@ -424,6 +427,7 @@ public class RaceUpdater implements Runnable {
 
     /**
      * Spreads the starting positions of the boats over the start line
+     * @param boat the boat that needs to starting position to be set
      */
     public void setStartingPosition(Boat boat){
         RaceLine startingLine = race.getCourse().getStartLine();

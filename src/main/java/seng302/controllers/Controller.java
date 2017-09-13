@@ -42,6 +42,7 @@ import seng302.views.HeadsupDisplay;
 import java.io.*;
 
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.*;
 
 import static javafx.collections.FXCollections.observableArrayList;
@@ -137,6 +138,7 @@ public class Controller implements Initializable, Observer {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        DisplayUtils.setIsRaceView(true);
         addRightHandSideListener();
         canvasAnchor.getStylesheets().addAll(COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, BOAT_CSS, DISTANCELINE_CSS, HEADSUP_DISPLAY_CSS);
         canvasWidth = canvas.getWidth();
@@ -144,7 +146,7 @@ public class Controller implements Initializable, Observer {
         anchorWidth = canvasAnchor.getWidth();
         anchorHeight = canvasAnchor.getHeight();
 
-        race = Client.getRace();
+        race = GameClient.getRace();
         race.addObserver(this);
         Course course = race.getCourse();
         course.initCourseLatLon();
@@ -203,27 +205,6 @@ public class Controller implements Initializable, Observer {
     }
 
     /**
-     * gets users public ip address from AWS ping servers.
-     *
-     * @return the IP address or regatta name if not found
-     */
-    private String getPublicIp() {
-        try {
-            URL ipURL = new URL("http://checkip.amazonaws.com");
-            BufferedReader in = new BufferedReader(new InputStreamReader(
-                    ipURL.openStream()));
-            String ip = in.readLine(); //you get the IP as a String
-            if (ConnectionUtils.IPRegExMatcher(ip)) {
-                return ("IP: " + ip);
-            } else {
-                return race.getRegattaName();
-            }
-        } catch (Exception e) {
-            return race.getRegattaName();
-        }
-    }
-
-    /**
      * shows a tutorial overlay on the screen
      * @param title the title shown in the overlay
      * @param content the tutorial content shown in the overlay
@@ -248,7 +229,17 @@ public class Controller implements Initializable, Observer {
         this.options = options;
         this.scene = scene;
         if (this.options.isHost()) {
-            startersOverlayTitle.setText(getPublicIp());
+            String ip = null;
+            try {
+                ip = ConnectionUtils.getPublicIp();
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+            if (Objects.equals(ip, null)) {
+                startersOverlayTitle.setText(race.getRegattaName());
+            } else {
+                startersOverlayTitle.setText("IP: " + ip);
+            }
         } else {
             startersOverlayTitle.setText(race.getRegattaName());
         }
@@ -256,6 +247,7 @@ public class Controller implements Initializable, Observer {
         raceViewController.setOptions(options);
         raceViewController.updateWindArrow();
         raceViewController.start();
+
     }
 
     @FXML public void exitRunningRace() {
@@ -527,6 +519,7 @@ public class Controller implements Initializable, Observer {
 
     /**
      * displays the current time according to the UTC offset, in the GUI on the overlay
+     * @param UTCOffset offset of the time zone you want to use
      */
     public void setTimeZone(double UTCOffset) {
         clockString.set(TimeUtils.setTimeZone(UTCOffset, race.getCurrentTimeInEpochMs()));

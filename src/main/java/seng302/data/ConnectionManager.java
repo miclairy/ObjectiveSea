@@ -1,7 +1,5 @@
 package seng302.data;
 
-import seng302.models.Race;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.BindException;
@@ -23,10 +21,12 @@ public class ConnectionManager extends Observable implements Runnable {
     private Map<Integer, Socket> clients =  new ConcurrentHashMap<>();
     private TreeMap<AC35StreamXMLMessage, byte[]> xmlMessages = new TreeMap<>();
     private boolean running = true;
+    private boolean isGameServer;
 
 
-    public ConnectionManager(int port) throws IOException {
+    public ConnectionManager(int port, boolean isGameServer) throws IOException {
         serverSocket = new ServerSocket(port);
+        this.isGameServer = isGameServer;
     }
 
     /**
@@ -37,7 +37,9 @@ public class ConnectionManager extends Observable implements Runnable {
         while (running) {
             try {
                 Socket socket = serverSocket.accept();
-                System.out.println("Server: Accepted Connection");
+                if (isGameServer) {
+                    System.out.println("Server: Accepted Connection");
+                }
                 setChanged();
                 notifyObservers(socket);
             } catch (IOException e) {
@@ -78,6 +80,17 @@ public class ConnectionManager extends Observable implements Runnable {
         }
     }
 
+    public void updateVM(byte[] packet, Socket socket){
+        try {
+            DataOutputStream clientOutput = new DataOutputStream(socket.getOutputStream());
+            clientOutput.write(packet);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e){
+            System.out.println("Client: Unable to reach VM server");
+        }
+    }
+
     /**
      * Sets the xml packets to be send directly after connection is made
      * @param messageType the type of message
@@ -91,6 +104,10 @@ public class ConnectionManager extends Observable implements Runnable {
     public void addConnection(int newId, Socket socket) {
         clients.put(newId, socket);
         sendAllXMLsToClient(newId);
+    }
+
+    public void addMainMenuConnection(int newId, Socket socket) {
+        clients.put(newId, socket);
     }
 
     /**
