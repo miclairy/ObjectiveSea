@@ -4,10 +4,10 @@ import javafx.animation.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Shape;
 import javafx.util.Duration;
-import seng302.controllers.Controller;
 
 /**
  * Created by Devin on 25/07/17.
@@ -215,15 +215,11 @@ public class AnimationUtils {
      * @param visible whether or not the node is visible
      */
     public static void shiftPaneNodes(Node node, int amount, boolean visible){
-        node.setVisible(true);
         TranslateTransition translateTransition = new TranslateTransition(new Duration(200), node);
         translateTransition.setByX(amount);
         translateTransition.setInterpolator(Interpolator.EASE_IN);
         if(!visible){
-            translateTransition.setOnFinished(new EventHandler<ActionEvent>(){
-                public void handle(ActionEvent AE){
-                    node.setVisible(false);
-                }});
+            translateTransition.setOnFinished(AE -> node.setVisible(false));
         }
         translateTransition.play();
     }
@@ -359,4 +355,31 @@ public class AnimationUtils {
         pt.play();
     }
 
+    /**
+     * changes the colour of the stroke of a node to
+     * @param node the node to change
+     * @param color the colour of the new stroke
+     */
+    public static void changeStrokeColor(Shape node, Color color){
+        StrokeTransition strokeTransition = new StrokeTransition();
+        strokeTransition.setShape(node);
+        strokeTransition.setToValue(color);
+        strokeTransition.setDuration(new Duration(200));
+        strokeTransition.play();
+    }
+
+    /**
+     * changes the fill colour of a node
+     * @param node the node to change the fill colour of
+     * @param color the end colour to change to
+     */
+    public static void changeFillColor(Shape node, Color color){
+        FillTransition fillTransition = new FillTransition();
+        fillTransition.setShape(node);
+        fillTransition.setToValue(color);
+        fillTransition.setDuration(new Duration(200));
+        fillTransition.play();
+
+
+    }
 }
