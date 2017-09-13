@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
 <?import java.lang.Double?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
@@ -26,7 +19,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Polygon?>
 
-<StackPane fx:id="stackPane" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/menuStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.MainMenuController">
+<StackPane fx:id="stackPane" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/menuStyle.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.MainMenuController">
     <children>
         <ImageView fitHeight="1080.0" fitWidth="1920.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <image>
@@ -467,5 +460,57 @@
                 <Insets bottom="20.0" right="20.0" />
             </StackPane.margin>
         </ImageView>
+        <GridPane fx:id="settingsGrid" maxHeight="350.0" maxWidth="327.0" minWidth="150.0" prefHeight="358.0" prefWidth="327.0" stylesheets="@style/menuStyle.css" StackPane.alignment="BOTTOM_LEFT">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="243.750244140625" minWidth="10.0" prefWidth="165.4954833984375" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="371.8701171875" minWidth="10.0" prefWidth="161.5045166015625" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="235.33331298828125" minHeight="10.0" prefHeight="189.3333740234375" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="122.3333740234375" minHeight="10.0" prefHeight="65.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="122.3333740234375" minHeight="10.0" prefHeight="65.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Slider fx:id="musicSlider" blockIncrement="0.05" majorTickUnit="0.2" max="1.0" maxHeight="150.0" min="0.5" minorTickCount="1" orientation="VERTICAL" prefHeight="150.0" prefWidth="20.0" value="1.0" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                    <GridPane.margin>
+                        <Insets />
+                    </GridPane.margin>
+                </Slider>
+                <Slider fx:id="fxSlider" blockIncrement="0.1" max="1.0" maxHeight="150.0" orientation="VERTICAL" prefHeight="150.0" prefWidth="20.0" value="1.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" />
+                <Label text="Music" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                <Label text="Sound Effects" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                <ImageView fx:id="musicOn" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+                    <image>
+                        <Image url="@graphics/soundOn.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="musicOff" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" visible="false" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+                    <image>
+                        <Image url="@graphics/soundOff.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="soundEffectsOn" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+                    <image>
+                        <Image url="@graphics/soundOn.png" />
+                    </image>
+                </ImageView>
+                <ImageView fx:id="soundEffectsOff" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+                    <image>
+                        <Image url="@graphics/soundOff.png" />
+                    </image>
+                </ImageView>
+            </children>
+         <StackPane.margin>
+            <Insets bottom="65.0" left="24.0" />
+         </StackPane.margin>
+        </GridPane>
+      <Button fx:id="btnSettings" mnemonicParsing="false" onAction="#showSettings" StackPane.alignment="BOTTOM_LEFT">
+         <StackPane.margin>
+            <Insets bottom="15.0" left="20.0" />
+         </StackPane.margin>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
     </children>
 </StackPane>

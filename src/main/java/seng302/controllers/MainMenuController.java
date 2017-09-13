@@ -45,11 +45,13 @@ public class MainMenuController implements Initializable{
     @FXML private Button btnLoadMap;
     @FXML private Button btnBackToOptions;
     @FXML private Button btnStartRace;
+    @FXML private Button btnSettings;
     @FXML private GridPane onlinePane;
     @FXML private GridPane offlinePane;
     @FXML private GridPane joinRacePane;
     @FXML private GridPane hostOptionsPane;
     @FXML private GridPane selectMapPane;
+    @FXML private GridPane settingsGrid;
     @FXML private TextField txtIPAddress;
     @FXML private TextField txtPortNumber;
     @FXML private Label lblIP;
@@ -61,6 +63,8 @@ public class MainMenuController implements Initializable{
     @FXML private Slider boatsInRaceSlider;
     @FXML private Label lblBoatsNum;
     @FXML private Slider speedScaleSlider;
+    @FXML private Slider musicSlider;
+    @FXML private Slider fxSlider;
     @FXML private Label lblSpeedNum;
     @FXML private Shape circleSpeed;
     @FXML private Shape circleBoats;
@@ -80,6 +84,7 @@ public class MainMenuController implements Initializable{
     private AnimationTimer timer;
     private MainMenuClient client;
     private Thread mainMenuClientThread;
+    private GameSounds gameSounds;
 
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
 
@@ -114,11 +119,14 @@ public class MainMenuController implements Initializable{
         hostOptionsPane.setVisible(false);
         selectMapPane.setVisible(false);
         menuAnchor.setVisible(true);
+        settingsGrid.setVisible(false);
     }
 
-    public void setApp(Main main) throws ServerFullException, NoConnectionToServerException {
+    public void setApp(Main main, GameSounds sounds) throws ServerFullException, NoConnectionToServerException {
         this.main = main;
+        this.gameSounds = sounds;
         this.client = new MainMenuClient();
+        setUpSoundSliders();
         mainMenuClientThread = new Thread(client);
         mainMenuClientThread.start();
     }
@@ -315,6 +323,7 @@ public class MainMenuController implements Initializable{
         addButtonListeners(btnBackToOptions);
         addButtonListeners(btnStartRace);
         addButtonListeners(btnManual);
+        addButtonListeners(btnSettings);
     }
 
     private void setLabelPromptAnimations(){
@@ -559,6 +568,20 @@ public class MainMenuController implements Initializable{
             btnManual.setText("Manual");
         }
 
+    }
+
+    @FXML private void showSettings(){
+        AnimationUtils.fadeNode(settingsGrid, settingsGrid.isVisible());
+    }
+
+    private void setUpSoundSliders(){
+        musicSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            gameSounds.setVolume((Double)newValue);
+        });
+
+        fxSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            gameSounds.setFxVolume((Double)newValue);
+        });
     }
 
     public static double getCanvasHeight(){

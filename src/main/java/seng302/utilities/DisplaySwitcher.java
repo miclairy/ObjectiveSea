@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import seng302.controllers.*;
+import seng302.data.registration.ServerFullException;
 import seng302.models.ClientOptions;
 
 import java.net.URL;
@@ -34,7 +35,7 @@ public class DisplaySwitcher {
     public void loadMainMenu() {
         try {
             MainMenuController mainMenu = (MainMenuController) replaceSceneContent("main_menu.fxml");
-            mainMenu.setApp(main);
+            mainMenu.setApp(main, gameSounds);
             try {
                 gameSounds.stopEndlessMusic();
             } catch (Exception e) { }
@@ -43,6 +44,8 @@ public class DisplaySwitcher {
 
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ServerFullException e) {
+            e.printStackTrace();
         }
     }
 

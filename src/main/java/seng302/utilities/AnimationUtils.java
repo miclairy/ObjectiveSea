@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
 import seng302.views.Arrow;
@@ -443,6 +444,32 @@ public class AnimationUtils {
             node.setVisible(true);
         }
         fadeTransition.play();
+    }
+
+    /**
+     * scales a pan up from the bottom as it opens
+     */
+    public static void openScaleOpenPane(Node node, boolean closed){
+        ScaleTransition scaleTransition = new ScaleTransition( new Duration(200), node);
+        scaleTransition.setInterpolator(Interpolator.EASE_OUT);
+
+        if(closed){
+            scaleTransition.setFromX(0);
+            scaleTransition.setFromY(0);
+            scaleTransition.setToX(327);
+            scaleTransition.setToY(400);
+            node.setVisible(true);
+        }else{scaleTransition.setFromX(327);
+            scaleTransition.setFromY(400);
+            scaleTransition.setToX(0);
+            scaleTransition.setToY(0);
+
+            scaleTransition.setOnFinished(new EventHandler<ActionEvent>(){
+                public void handle(ActionEvent AE){
+                    node.setVisible(false);
+                }});
+        }
+        scaleTransition.play();
     }
 }
 

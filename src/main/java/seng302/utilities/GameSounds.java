@@ -77,6 +77,9 @@ public class GameSounds {
     private MediaPlayer mediaPlayer;
     private int randomSeaGull;
     private double volume = 1.0;
+    private double fxVolume = 1.0;
+    private FloatControl gainControl;
+    private boolean playingSound = false;
 
     public void mainMenuMusic() {
         selectedMusic = "/musicFiles/gameMusic/MainMenuMusic.wav";
@@ -263,7 +266,14 @@ public class GameSounds {
     public void playGameSound() {
         URL resource = getClass().getResource(selectedVoiceOver);
         mediaPlayer = new MediaPlayer(new Media(resource.toString()));
-        mediaPlayer.setVolume(volume);
+        mediaPlayer.setVolume(fxVolume);
+        playingSound = true;
+        mediaPlayer.setOnEndOfMedia(new Runnable() {
+            @Override
+            public void run() {
+                playingSound = false;
+            }
+        });
         mediaPlayer.play();
     }
 
@@ -277,9 +287,8 @@ public class GameSounds {
         clip = AudioSystem.getClip();
         inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResource(selectedMusic));
         clip.open(inputStream);
-        FloatControl gainControl =
-                (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-        gainControl.setValue(-10.0f);
+        gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+        setSoundTrackVolume();
         clip.loop(Clip.LOOP_CONTINUOUSLY);
         clip.start();
     }
@@ -297,7 +306,24 @@ public class GameSounds {
 
     public void setVolume(double volume) {
         this.volume = volume;
+        setSoundTrackVolume();
     }
+
+    private void setSoundTrackVolume(){
+        double range = gainControl.getMaximum() - gainControl.getMinimum();
+        double gain = (range * volume) + gainControl.getMinimum();
+        gainControl.setValue((float)gain);
+    }
+
+    public void setFxVolume(double volume){
+        fxVolume = volume;
+        if(!playingSound){
+            hitMark();
+            playGameSound();
+        }
+    }
+
+    public double getVolume(){return volume;}
 
 
 //    public MediaPlayer getMediaPlayer() {
