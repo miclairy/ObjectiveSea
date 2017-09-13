@@ -358,15 +358,11 @@ public class AnimationUtils {
         pt.play();
     }
 
-    public static ScaleTransition touchInAction(Node point){
-        ScaleTransition scaleTransition = new ScaleTransition(new Duration(500), point);
-        scaleTransition.setByX(0.8);
-        scaleTransition.setByY(0.8);
-        scaleTransition.setAutoReverse(true);
-        scaleTransition.setCycleCount(Timeline.INDEFINITE);
-        return scaleTransition;
-    }
-
+    /**
+     * animates a portion of the swipe trail
+     * @param pane the pane on which the swipe is added to and removed from
+     * @param node the portion of swipe trail
+     */
     public static void swipeAnimation(Pane pane, Node node){
         ScaleTransition scaleTransition = new ScaleTransition(new Duration(200), node);
         scaleTransition.setByX(-0.5);

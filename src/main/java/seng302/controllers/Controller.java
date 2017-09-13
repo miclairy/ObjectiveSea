@@ -321,16 +321,14 @@ public class Controller implements Initializable, Observer {
     }
 
 
+    /**
+     * initilises zoom listener
+     */
     private void initZoomEventListener() {
-        canvasAnchor.setOnZoom(new EventHandler<ZoomEvent>() {
-            @Override
-            public void handle(ZoomEvent zoom) {
-                DisplayUtils.externalZoomEvent = (zoom.getZoomFactor() > 0.96 && zoom.getZoomFactor() < 1.04);
-                if(!DisplayUtils.externalZoomEvent) {
-                    zoomSlider.adjustValue(zoomSlider.getValue() * zoom.getZoomFactor());
-                    System.out.println("ZoomFactor: " + zoom.getZoomFactor());
-                    System.out.println("TotalZoomFactor: " + zoom.getTotalZoomFactor());
-                }
+        canvasAnchor.setOnZoom(zoom -> {
+            DisplayUtils.externalZoomEvent = (zoom.getZoomFactor() > 0.96 && zoom.getZoomFactor() < 1.04);
+            if(!DisplayUtils.externalZoomEvent) {
+                zoomSlider.adjustValue(zoomSlider.getValue() * zoom.getZoomFactor());
             }
         });
     }
@@ -352,7 +350,6 @@ public class Controller implements Initializable, Observer {
                 root.getTransforms().clear();
                 mapImageView.setVisible(true);
                 nextMarkCircle.setVisible(false);
-                //selectionController.setTrackingPoint(false);
                 DisplayUtils.resetOffsets();
             }
             raceViewController.redrawCourse();

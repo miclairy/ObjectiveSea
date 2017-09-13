@@ -19,6 +19,11 @@ public class DisplayTouchController {
         this.touchPane = touchPane;
     }
 
+    /**
+     * creates and displays a line of touch between two points
+     * @param currentCoordinate end of swipe point
+     * @param previousCoordinate start of swipe point
+     */
     public void displaySwipe(CanvasCoordinate currentCoordinate, CanvasCoordinate previousCoordinate) {
         if(MathUtils.distanceBetweenTwoPoints(currentCoordinate, previousCoordinate) > 100){
             previousCoordinate = currentCoordinate;
