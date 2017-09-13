@@ -194,14 +194,14 @@ public class RaceUpdater implements Runnable {
                 boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
             }
             adjustSpeed(boat);
-            //TODO: Proper way to do this is to create abstract boat class that both Boat and AIBoat inherits
+            //TODO: Proper way to do this is to create abstract boat class that both Boat and AIBoat inherits from
             if(boat instanceof AIBoat){
                 AIBoat aiBoat = (AIBoat) boat;
                 aiBoat.move(raceSecondsPassed, race.getCourse(), race.getRaceStatus());
             } else{
                 boat.move(raceSecondsPassed, race.getCourse());
                 Course course = race.getCourse();
-                if (course.getCourseOrder().size() > 0 && race.getRaceStatus().equals(STARTED)) {
+                if (race.getCourse().getCourseOrder().size() > 0 && race.getRaceStatus().equals(STARTED)) {
                     checkMarkRounding(boat, course);
                 }
             }
@@ -320,6 +320,7 @@ public class RaceUpdater implements Runnable {
         Double curLon = startPosition1.getLon() + (dLon * race.getCompetitors().size());
         boat.setPosition(curLat, curLon);
         boat.setHeading(boat.getCurrentPosition().headingToCoordinate(startingLine.getPosition()));
+        boat.setTargetHeading(boat.getHeading());
         startingPosition = new Coordinate(curLat, curLon);
     }
     /**

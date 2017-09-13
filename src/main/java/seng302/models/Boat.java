@@ -43,7 +43,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private int lastGybeMarkPassed;
     private boolean finished;
     protected double heading;
-    private double targetHeading;
+    protected double targetHeading;
     private double maxSpeed;
     private double boatHealth = 100;
     private double damageSpeed;
@@ -82,13 +82,11 @@ public class Boat extends Observable implements Comparable<Boat>{
 
 
     private double TWAofBoat;
-    private boolean rotate;
+    protected boolean rotate;
     private boolean tackOrGybe;
     private double totalRotatedAmount;
     private double currRotationAmount;
     private int rotateDirection;
-
-    private boolean isAI = false;
 
     public Boat(Integer id, String name, String nickName, double speed) {
         this.id = id;
@@ -793,7 +791,7 @@ public class Boat extends Observable implements Comparable<Boat>{
      */
     public void updateBoatHeading(double time){
         double angleOfRotation = 3 * time;
-        double headingDiff = targetHeading - heading;
+        double headingDiff = (targetHeading - heading) % 360;
         if (rotate) {
             if (headingDiff > 0 && headingDiff < 180) {
                 heading = heading % 360;
@@ -861,11 +859,7 @@ public class Boat extends Observable implements Comparable<Boat>{
         this.sailsNeedUpdate = sailsNeedUpdate;
     }
 
-    public boolean isAI() {
-        return isAI;
-    }
-
-    public void setAI(boolean AI) {
-        isAI = AI;
+    public void setTargetHeading(double targetHeading) {
+        this.targetHeading = targetHeading;
     }
 }

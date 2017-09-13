@@ -89,10 +89,12 @@ public class AIBoat extends Boat{
         }
     }
 
-    public void updateHeading() {
+    public void updateTargetHeading() {
         Coordinate targetPosition = nextCoordinates.get(targetPositionIndex);
         Double headingToNextMark = getCurrentPosition().headingToCoordinate(targetPosition);
-        setHeading(headingToNextMark);
+//        setHeading(headingToNextMark);
+        setTargetHeading(headingToNextMark);
+        rotate = true;
     }
 
     public boolean checkFutureCollision(Mark mark) {
@@ -111,7 +113,6 @@ public class AIBoat extends Boat{
                 nextCoordinates.add(targetPositionIndex, avoidCoordinate);
                 System.out.println("Collision with: " + mark.getSourceID());
                 System.out.println("Avoiding to: " + avoidCoordinate);
-                updateHeading();
             }
         }
     }
@@ -181,7 +182,7 @@ public class AIBoat extends Boat{
         for(int i = 0; i < boundary.size(); i++){
             Coordinate boundaryEnd1 = boundary.get(i);
             Coordinate boundaryEnd2 = boundary.get((i+1) % boundary.size());
-            if(crossingBoundary(lastMark, tackingCoord, boundaryEnd1, boundaryEnd2)){
+            if(crossingLines(lastMark, tackingCoord, boundaryEnd1, boundaryEnd2)){
                 InfiniteLine infiniteLine1 = new InfiniteLine(lastMark, tackingCoord);
                 InfiniteLine infiniteLine2 = new InfiniteLine(boundaryEnd1, boundaryEnd2);
                 Coordinate intersectionPoint = InfiniteLine.intersectionPoint(infiniteLine1, infiniteLine2);
@@ -191,7 +192,7 @@ public class AIBoat extends Boat{
         return null;
     }
 
-    private boolean crossingBoundary(Coordinate lastMark, Coordinate tackingCoord, Coordinate boundaryEnd1, Coordinate boundaryEnd2) {
+    private boolean crossingLines(Coordinate lastMark, Coordinate tackingCoord, Coordinate boundaryEnd1, Coordinate boundaryEnd2) {
         return Line2D.linesIntersect(lastMark.getLon(), lastMark.getLat(), tackingCoord.getLon(), tackingCoord.getLat(),
                                     boundaryEnd1.getLon(), boundaryEnd1.getLat(), boundaryEnd2.getLon(), boundaryEnd2.getLat());
     }
@@ -200,6 +201,19 @@ public class AIBoat extends Boat{
         double lengthOfLeg = lastMark.greaterCircleDistance(nextMark);
         double lengthOfTack = (lengthOfLeg/2.0)/(Math.cos(Math.toRadians(TrueWindAngle)));
         return lengthOfTack;
+    }
+
+    public void updateAIBoatHeading(double raceSecondsPassed){
+        Double defaultTurnAngle = 6 * raceSecondsPassed;
+        Double upDiff = (targetHeading - heading + 360) % 360;
+        Double downDiff = (heading - targetHeading + 360) % 360;
+        if(upDiff < downDiff){
+            Double angleOfRotation = Math.min(defaultTurnAngle, upDiff);
+            heading = (heading + angleOfRotation) % 360;
+        } else {
+            Double angleOfRotation = Math.min(defaultTurnAngle, downDiff);
+            heading = (heading - angleOfRotation + 360) % 360;
+        }
     }
 
     /**
@@ -212,8 +226,9 @@ public class AIBoat extends Boat{
             setSailsIn(true);
             return;
         }
+        updateTargetHeading();
         setSailsIn(false);
-        updateHeading();
+        updateAIBoatHeading(raceSecondsPassed);
         avoidFutureCollision();
         updateLocation(raceSecondsPassed, course);
         checkRounding();
