@@ -253,7 +253,8 @@ public class Controller implements Initializable, Observer {
             startersOverlayTitle.setText(race.getRegattaName());
         }
         initKeyPressListener();
-        raceViewController.setOptions(options);
+        raceViewController.setupRaceView(options);
+        initHiddenScoreboard();
         raceViewController.updateWindArrow();
         raceViewController.start();
     }
@@ -310,13 +311,11 @@ public class Controller implements Initializable, Observer {
             DisplayUtils.setZoomLevel(zoomSlider.getValue());
             if (DisplayUtils.zoomLevel != 1) {
                 mapImageView.setVisible(false);
-                nextMarkCircle.setVisible(true);
             } else {
                 //Zoom out full, reset everything
                 selectionController.setRotationOffset(0);
                 root.getTransforms().clear();
                 mapImageView.setVisible(true);
-                nextMarkCircle.setVisible(false);
                 selectionController.setTrackingPoint(false);
                 DisplayUtils.resetOffsets();
             }
@@ -428,6 +427,7 @@ public class Controller implements Initializable, Observer {
                 if(!raceViewController.hasInitializedBoats()) {
                     raceViewController.initBoatHighlight();
                     raceViewController.initializeBoats();
+                    addUserBoat();
                 }
                 break;
             case STARTED:
@@ -618,13 +618,14 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(nextMarkGrid, 430, true);
             AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
-            if (options.isParticipant()) {
+            if (options.isParticipant() && infoDisplay != null) {
                 AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, false);
             }
             scoreboardVisible = false;
             raceViewController.shiftArrow(false);
             setUpTable();
         } else {
+            rightHandSide.setVisible(true);
             AnimationUtils.shiftPaneNodes(rightHandSide, -440, true);
             AnimationUtils.shiftPaneArrow(btnHide, -430, -1);
             AnimationUtils.shiftPaneNodes(imvSpeedScale, -430, true);
@@ -632,7 +633,9 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(nextMarkGrid, -430, true);
             AnimationUtils.shiftPaneNodes(quickMenu, 115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true);
-            AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, true);
+            if(infoDisplay != null){
+                AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, true);
+            }
             scoreboardVisible = true;
             raceViewController.shiftArrow(true);
         }
@@ -792,6 +795,26 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.dullNode(button);
             AnimationUtils.toggleQuickMenuNodes(label, true);
         }
+    }
+
+    private void initHiddenScoreboard(){
+        rightHandSide.setTranslateX(rightHandSide.getTranslateX() + 440);
+        rightHandSide.setVisible(false);
+        btnHide.setRotate(180);
+        lblNoBoardClock.setOpacity(0.8);
+        if(options.isTutorial()){
+            lblNoBoardClock.setVisible(false);
+        }else{
+            lblNoBoardClock.setVisible(true);
+        }
+        AnimationUtils.shiftPaneNodes(btnHide, 430, true);
+        AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
+        AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
+        AnimationUtils.shiftPaneNodes(nextMarkGrid, 430, true);
+        AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
+        scoreboardVisible = false;
+        raceViewController.shiftArrow(false);
+        setUpTable();
     }
 
     public void setSoundController(SoundController soundController) {

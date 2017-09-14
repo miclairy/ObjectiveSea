@@ -212,7 +212,7 @@ public class BoatDisplay implements Observer {
     }
 
     /**
-     * Function to copmute the predicted place of a parallel virtual startline based on the boats
+     * Function to compute the predicted place of a parallel virtual startline based on the boats
      * current position and speed and what time the race start
      * Line will always be parallel to the startline and only shown if the boat is heading towards
      * the start line from the correct side and the race has not yet started.
@@ -225,19 +225,20 @@ public class BoatDisplay implements Observer {
         CompoundMark startingEnd1 = new CompoundMark(-1, "", new Mark(-1, "", startingLine.getMark2().getPosition()));
         double heading1 = (MathUtils.calculateBearingBetweenTwoPoints(startingEnd1,startingEnd2));
         double heading2 = (MathUtils.calculateBearingBetweenTwoPoints(startingEnd2,startingEnd1));
-        double heading3;
-        if(heading1 < heading2) {
-            heading3 = heading1;
-        } else {
-            heading3 = heading2;
-        }
 
         long secondsElapsed = (race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs()) / 1000;
         double distanceToVirtualStartLine = (boat.getCurrentSpeed() / 3600) * secondsElapsed;
         System.out.println(distanceToVirtualStartLine);
 
-        Coordinate startPosition1 = startingEnd1.getPosition().coordAt(distanceToVirtualStartLine, heading3 + 90);
-        Coordinate startPosition2 = startingEnd2.getPosition().coordAt(distanceToVirtualStartLine, heading3 + 90);
+        Coordinate startLineMidPoint = MathUtils.calculateMidPoint(startingLine);
+
+        double distanceToStartLine = boat.getCurrentPosition().greaterCircleDistance(startLineMidPoint);
+
+        Coordinate boatStartLinePos1 = startingEnd1.getPosition().coordAt(distanceToStartLine, heading2 + 90);
+        Coordinate boatStartLinePos2 = startingEnd2.getPosition().coordAt(distanceToStartLine, heading2 + 90);
+
+        Coordinate startPosition1 = boatStartLinePos1.coordAt(distanceToVirtualStartLine, heading1 + 90);
+        Coordinate startPosition2 = boatStartLinePos2.coordAt(distanceToVirtualStartLine, heading1 + 90);
 
         CanvasCoordinate point1 = DisplayUtils.convertFromLatLon(startPosition1);
         CanvasCoordinate point2 = DisplayUtils.convertFromLatLon(startPosition2);

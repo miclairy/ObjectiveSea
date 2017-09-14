@@ -20,6 +20,7 @@
 
 .tab .tab-label{
     -fx-text-fill: White;
+    -fx-font-weight: bold;
 }
 
 .tab {

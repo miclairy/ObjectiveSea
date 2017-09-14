@@ -28,6 +28,7 @@ public class HeadsupDisplay {
         display.setPickOnBounds(false);
         addInfoToDisplay();
         addListeners();
+        AnimationUtils.toggleHiddenBoardNodes(display, false);
     }
 
     private void addInfoToDisplay(){
@@ -60,7 +61,7 @@ public class HeadsupDisplay {
         healthLabel.setId("healthLabel");
 
         healthBar = new ProgressBar(boat.getBoat().getHealthProperty().doubleValue());
-        healthBar.setMinWidth(120);
+        healthBar.setMinWidth(140);
         boat.getBoat().getHealthProperty().addListener((obs, oldStatus, newStatus) ->
                 Platform.runLater(() -> updateHealth((Double)newStatus)));
         healthBar.setId("boatHealth");
