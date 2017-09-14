@@ -63,6 +63,9 @@ public class Boat extends Observable implements Comparable<Boat>{
     private boolean boatColliding;
     private boolean markCollideSound = false;
     private boolean boatCollideSound = false;
+    private boolean outOfBounds;
+    private boolean outOfBoundsSound = false;
+
 
     private BoatStatus status = BoatStatus.UNDEFINED;
     private StringProperty statusProperty = new SimpleStringProperty();
@@ -711,6 +714,11 @@ public class Boat extends Observable implements Comparable<Boat>{
         return MathUtils.bilinearInterpolation(TWS0,TWS1,TWA0,TWA1,z00,z01,z10,z11,TWS,TWA);
     }
 
+    /**
+     * gets angle of the sail based upon wind direction and whether sails are in or out
+     * @param windDirection the wind direction
+     * @return angle of the sail
+     */
     public synchronized double getSailAngle(double windDirection){
         double sailAngle;
         if(!sailsIn){
@@ -726,7 +734,14 @@ public class Boat extends Observable implements Comparable<Boat>{
                 sailAngle = windDirection + 90;
             }
         }
-        return sailAngle;
+
+        if(((sailAngle - heading + 360 ) % 360) > 180){
+            return (sailAngle + 540) % 360;
+        }else{
+            return sailAngle;
+
+        }
+
     }
 
     public void setCollisionTime(double collisionTime) {
@@ -802,6 +817,22 @@ public class Boat extends Observable implements Comparable<Boat>{
                 tackOrGybe = false;
             }
         }
+    }
+
+    public boolean isOutOfBounds() {
+        return outOfBounds;
+    }
+
+    public void setOutOfBounds(boolean outOfBounds) {
+        this.outOfBounds = outOfBounds;
+    }
+
+    public boolean isOutOfBoundsSound() {
+        return outOfBoundsSound;
+    }
+
+    public void setOutOfBoundsSound(boolean outOfBoundsSound) {
+        this.outOfBoundsSound = outOfBoundsSound;
     }
 
     public boolean isSailsNeedUpdate() {
