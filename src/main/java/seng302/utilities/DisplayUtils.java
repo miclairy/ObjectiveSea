@@ -25,6 +25,7 @@ public class DisplayUtils {
     public static Coordinate max, min;
     public static final String GOOGLE_API_KEY = "AIzaSyAQ8WSXVS1gXdhy5v9IpjeQL842wsMU1VQ";
     public static boolean externalDragEvent = false;
+    public static boolean externalTouchEvent = false;
     public static boolean externalZoomEvent = false;
     public static final int DRAG_TOLERANCE = 45;
     private static final int FIFTY_NINE_MINUTES_MS = 3540000;

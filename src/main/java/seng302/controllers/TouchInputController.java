@@ -93,7 +93,7 @@ public class TouchInputController extends Observable {
         touchPane.setOnScrollFinished(swipe -> {
             CanvasCoordinate swipeEnd = new CanvasCoordinate(swipe.getScreenX(), swipe.getScreenY());
             double swipeDistance = MathUtils.distanceBetweenTwoPoints(swipeStart, swipeEnd);
-            if (swipeDistance > MAXIMUM_SWIPE_DISTANCE && Math.abs(System.currentTimeMillis() - timeElapsed) < MAXIMUM_SWIPE_TIME && !multipleFingers) {
+            if (swipeDistance > MAXIMUM_SWIPE_DISTANCE && Math.abs(System.currentTimeMillis() - timeElapsed) < MAXIMUM_SWIPE_TIME && !multipleFingers && !DisplayUtils.externalTouchEvent) {
                 displayTouchController.displaySwipe(swipeEnd, swipeStart);
                 double swipeBearing = MathUtils.getHeadingBetweenTwoCoordinates(swipeStart, swipeEnd);
                 swipeAction(swipeBearing);
@@ -118,14 +118,14 @@ public class TouchInputController extends Observable {
         if (headingDifference <= SAILS_SWIPE_ANGLE || headingDifference >= (180 - SAILS_SWIPE_ANGLE)) {
             if (Math.abs(boatHeading - swipeBearing) < SAILS_SWIPE_ANGLE || Math.abs(boatHeading - swipeBearing) > (360 - SAILS_SWIPE_ANGLE)) {
                 if (playersBoat.isSailsIn()) {
-                    commandInt = BoatAction.SAILS_IN.getType();
+                    commandInt = BoatAction.SAILS_OUT.getType();
                     setChanged();
                 }else{
                     controller.setUserHelpLabel("Sails are already out");
                 }
             } else {
                 if (!playersBoat.isSailsIn()) {
-                    commandInt = BoatAction.SAILS_IN.getType();
+                    commandInt = BoatAction.SAILS_OUT.getType();
                     setChanged();
                 }else{
                     controller.setUserHelpLabel("Sails are already in");
@@ -149,7 +149,7 @@ public class TouchInputController extends Observable {
      */
     private void checkTouchMoved(TouchEvent touchEvent) {
         Boat playersBoat = race.getBoatById(clientID);
-        if (touchEvent.getTouchPoints().size() == 1 && (System.currentTimeMillis() - touchTime) > 200) {
+        if (touchEvent.getTouchPoints().size() == 1 && !DisplayUtils.externalTouchEvent && (System.currentTimeMillis() - touchTime) > 200) {
             CanvasCoordinate touchPoint = new CanvasCoordinate(touchEvent.getTouchPoint().getSceneX(), touchEvent.getTouchPoint().getSceneY());
             CanvasCoordinate boatPosition = DisplayUtils.convertFromLatLon(playersBoat.getCurrentPosition());
             double windAngle = race.getCourse().getWindDirection() + 180;

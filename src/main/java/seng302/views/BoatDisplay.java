@@ -41,7 +41,6 @@ public class BoatDisplay implements Observer {
     private Line predictedStartLine;
     private Series series;
     private final double FADEDBOAT = 0.3;
-    public Circle annoGrabHandle;
     public CubicCurve sail;
     public boolean collisionInProgress = false;
 
@@ -136,14 +135,6 @@ public class BoatDisplay implements Observer {
 
     public Color getColor() {
         return color;
-    }
-
-    public Circle getAnnoGrabHandle() {
-        return annoGrabHandle;
-    }
-
-    public void setAnnoGrabHandle(Circle annoGrabHandle) {
-        this.annoGrabHandle = annoGrabHandle;
     }
 
     public boolean isCollisionInProgress() {

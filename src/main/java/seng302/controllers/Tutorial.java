@@ -81,7 +81,9 @@ public class Tutorial {
     private void upwindTutorial(){
         controller.showTutorialOverlay("Upwind/Downwind", "Welcome to the Objective Sea Tutorial. Follow along to master all the keys. \n\n" +
                 "Press the UP and DOWN arrow keys to turn the boat to the upwind or downwind direction. \n\n" +
-                "Note the wind direction shown on the indicator to the right.");
+                "Note the wind direction shown on the indicator to the right.\n\n" +
+                "If you have a touch capable device, you can change the direction of your boat by touching and holding down on the screen.\n\n" +
+                "Your boat will follow wherever you move your finger. ");
         List<KeyCode> keycodes = new ArrayList<KeyCode>();
         keycodes.add(KeyCode.PAGE_DOWN);
         keycodes.add(KeyCode.DOWN);
@@ -141,7 +143,8 @@ public class Tutorial {
         keycodes.add(KeyCode.ENTER);
         if(!hasGybe){
             controller.showTutorialOverlay("Tack/Gybe", "Tacking and Gybing are manoeuvre that flips the heading of your boat towards the opposite VMG.\n\n" +
-                    "if you are not in the no-sail zone, press ENTER now to tack or gybe.");
+                    "if you are not in the no-sail zone, press ENTER now to tack or gybe.\n\n" +
+                    "If you have a touch capable device, you can tack or gybe by swiping the screen in the correct direction.");
             GameClient.setTutorialActions(keycodes, () -> tackGybeCallback(TutorialStage.GYBE, keycodes));
         }else{
             controller.showTutorialOverlay("Tack/Gybe", "Nice work. Lets do that again.\n\nTacking and Gybing are manoeuvre that flips the heading of your boat towards the opposite VMG.\n\n" +
@@ -175,7 +178,8 @@ public class Tutorial {
         GameClient.clearTutorialAction();
         keycodes.add(KeyCode.SHIFT);
         if(!isOut){
-            controller.showTutorialOverlay("Sails In", "Press the SHIFT key to bring your sails in. \n\nThis should cause your boat to luff and lose all velocity.");
+            controller.showTutorialOverlay("Sails In", "Press the SHIFT key to bring your sails in. \n\nThis should cause your boat to luff and lose all velocity.\n\n" +
+                                                "If you have a touch capable device, you can swipe up and down (parallel to the boat's direction) to put your boat's sails up or down.");
             GameClient.setTutorialActions(keycodes, () -> tutorialStage = TutorialStage.SAILSOUT);
         } else{
             controller.showTutorialOverlay("Sails Out", "Press the SHIFT key to put your sails out. \n\nThis should cause your boat to start gaining velocity.");
