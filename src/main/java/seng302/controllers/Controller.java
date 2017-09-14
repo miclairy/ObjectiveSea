@@ -45,8 +45,12 @@ import java.io.*;
 import java.net.URL;
 import java.util.*;
 
+import static java.lang.Math.abs;
 import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.scene.input.KeyCode.*;
+import static seng302.utilities.DisplayUtils.DRAG_TOLERANCE;
+import static seng302.utilities.DisplayUtils.isOutsideBounds;
+import static seng302.utilities.DisplayUtils.zoomLevel;
 
 public class Controller implements Initializable, Observer {
 
@@ -130,6 +134,10 @@ public class Controller implements Initializable, Observer {
     private ClientOptions options;
     private DisplaySwitcher displaySwitcher;
     private boolean scoreboardVisible = true;
+    private boolean moveAnnotation = false;
+    private ArrayList<BoatDisplay> boatDisplayArrayList = new ArrayList<>();
+    private BoatDisplay currentDisplayBoat;
+
 
 
     private final double FOCUSED_ZOOMSLIDER_OPACITY = 0.8;
@@ -274,6 +282,65 @@ public class Controller implements Initializable, Observer {
     public void exitTerminatedRace() {
         displaySwitcher.loadMainMenu();
     }
+
+    public void addDisplayBoat(BoatDisplay boatDisplay) {
+        boatDisplayArrayList.add(boatDisplay);
+    }
+
+    private static class Delta {
+        public static double x;
+        public static double y;
+    }
+
+    /**
+     * Takes the displayBoat and makes the annotation of that boat draggable. Via mouse or touch press.
+     */
+    public void makeAnnoDraggable() {
+
+        canvasAnchor.setOnMousePressed(event -> {
+            for(BoatDisplay boatDisplay : boatDisplayArrayList) {
+
+                VBox boatAnnotation = boatDisplay.getAnnotation();
+
+                double annotationXPosition = event.getX() - boatAnnotation.getLayoutX();
+                double annotationYPosition = event.getY() - boatAnnotation.getLayoutY();
+                double annotationWidth = boatAnnotation.getWidth();
+                double annotationHeight = boatAnnotation.getHeight();
+
+                if(annotationXPosition <= annotationWidth && annotationXPosition >= 0 &&
+                        annotationYPosition <= annotationHeight && annotationYPosition >= 0) {
+                    moveAnnotation = true;
+                    DisplayUtils.externalTouchEvent = true;
+                    currentDisplayBoat = boatDisplay;
+                }
+            }
+        });
+
+        canvasAnchor.setOnMouseDragged(event -> {
+
+            if(moveAnnotation && DisplayUtils.externalTouchEvent) {
+                if (zoomLevel > 1 || (zoomLevel <= 1 && !isOutsideBounds(currentDisplayBoat.getAnnotation()))) {
+                    if (abs(event.getX() - Delta.x) < DRAG_TOLERANCE &&
+                            abs(event.getY() - Delta.y) < DRAG_TOLERANCE) {
+                        double scaledChangeX = ((event.getX() - Delta.x) / zoomLevel);
+                        double scaledChangeY = ((event.getY() - Delta.y) / zoomLevel);
+                        currentDisplayBoat.setAnnoOffsetX(currentDisplayBoat.getAnnoOffsetX() + scaledChangeX);
+                        currentDisplayBoat.setAnnoOffsetY(currentDisplayBoat.getAnnoOffsetY() + scaledChangeY);
+                    }
+                }
+                Delta.x = event.getX();
+                Delta.y = event.getY();
+
+                DisplayUtils.externalDragEvent = true;
+            }
+        });
+
+        canvasAnchor.setOnMouseReleased(event -> {
+            moveAnnotation = false;
+            DisplayUtils.externalTouchEvent = false;
+        });
+    }
+
 
     /**
      * initilizes display listeners to detect dragging on display. Calls DisplayUtils to move display

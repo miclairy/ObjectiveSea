@@ -31,6 +31,11 @@ public class CanvasCoordinate {
         return Math.hypot(a.getX()-b.getX(), a.getY()-b.getY());
     }
 
+    /**
+     * This function makes a centre point and returns an angle of another point against the centre point from true 0
+     * @param canvasCoordinate canvasCoordinate of the centre point on which the angle is wanted
+     * @return Returns the angle from true 0 of the position of the canvasCoordinate against the centre canvasCoordinate
+     */
     public double getAngleFromSceneCentre(CanvasCoordinate canvasCoordinate) {
         final double deltaY = (this.y - canvasCoordinate.getY());
         final double deltaX = (this.x - canvasCoordinate.getX());

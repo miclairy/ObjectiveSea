@@ -404,16 +404,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawBoat(displayBoat);
         displayBoats.add(displayBoat);
         selectionController.addBoatSelectionHandler(displayBoat);
-
-        Circle grabHandle = new Circle(5);
-        grabHandle.setPickOnBounds(false);
-        grabHandle.setId("annoGrabHandle");
-        grabHandle.setCenterX(0);
-        grabHandle.setCenterY(0);
-        displayBoat.setAnnoGrabHandle(grabHandle);
-        root.getChildren().add(grabHandle);
-
-        selectionController.makeDraggable(grabHandle, displayBoat);
+        controller.addDisplayBoat(displayBoat);
+        controller.makeAnnoDraggable();
 
         CubicCurve sail = new CubicCurve(0,0, 0,0,0,0, 20*zoomLevel,0);
         sail.setId("boatSail");
@@ -788,10 +780,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     (point.getY() + boatDisplay.getAnnoOffsetY() * zoomLevel)
             );
         }
-        Circle grabHandle = boatDisplay.getAnnoGrabHandle();
-        grabHandle.setCenterX(point.getX() + boatDisplay.getAnnoOffsetX() * zoomLevel - ANNOTATION_HANDLE_OFFSET);
-        grabHandle.setCenterY(point.getY() + boatDisplay.getAnnoOffsetY() * zoomLevel - ANNOTATION_HANDLE_OFFSET);
-        grabHandle.toFront();
     }
 
     /**
@@ -810,10 +798,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 if (oldAnnotation != null) {
                     root.getChildren().remove(oldAnnotation);
                     root.getChildren().remove(displayBoat.getAnnotationLine());
-                    displayBoat.annoGrabHandle.setVisible(false);
                 }
                 if (level == AnnotationLevel.IMPORTANT_ANNOTATIONS) {
-                    displayBoat.annoGrabHandle.setVisible(true);
                     annotations.clear();
                     if(scoreBoardController.isNameSelected()){
                         annotations.add(boatName);
@@ -842,7 +828,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     }
                     drawBoatAnnotation(displayBoat, annotations);
                 } else if (level == AnnotationLevel.ALL_ANNOTATIONS) {
-                    displayBoat.annoGrabHandle.setVisible(true);
                     annotations.clear();
                     annotations.add(boatName);
                     annotations.add(displayBoat.getSpeed());
