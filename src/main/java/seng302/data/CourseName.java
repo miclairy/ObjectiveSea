@@ -18,6 +18,11 @@ public enum CourseName {
 
     public String getText(){return name;}
 
+    /**
+     * gets a course name from a given int
+     * @param value the integer value of the course name
+     * @return
+     */
     public static CourseName getCourseNameFromInt(int value){
         CourseName returnCourse = UNKNOWN;
         for (CourseName course : CourseName.values()){
@@ -28,6 +33,11 @@ public enum CourseName {
         return returnCourse;
     }
 
+    /**
+     * gets a course integer value from a given string
+     * @param name
+     * @return
+     */
     public static int getCourseIntFromName(String name){
         int courseIndex = -1;
         for (CourseName courseName : CourseName.values()){

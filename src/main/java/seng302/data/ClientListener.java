@@ -302,6 +302,10 @@ public class ClientListener extends Receiver implements Runnable{
         race.setCurrentTimeInEpochMs(currentTime);
     }
 
+    /**
+     * strips yacht event data from a given body of a packet and updates a boat
+     * @param body the body of a packet containing the data
+     */
     private void parseYachtEventMessage(byte[] body) {
         int eventID = byteArrayRangeToInt(body, EVENT_ID.getStartIndex(), EVENT_ID.getEndIndex());
         int boatID = byteArrayRangeToInt(body, DESTINATION_SOURCE_ID.getStartIndex(), DESTINATION_SOURCE_ID.getEndIndex());
@@ -344,6 +348,9 @@ public class ClientListener extends Receiver implements Runnable{
         race.updateMarkRounded(sourceID, markIndex, time);
     }
 
+    /**
+     * closes the running sockets and stream when the client disconnectes
+     */
     @Override
     public void disconnectClient() {
         try {

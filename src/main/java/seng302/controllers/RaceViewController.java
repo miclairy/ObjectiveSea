@@ -504,16 +504,16 @@ public class RaceViewController extends AnimationTimer implements Observer {
         if(!penaltyStatus.equals(status)){
             switch(status){
                 case NO_PENALTY:
-                    boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
+                    AnimationUtils.changeFillColor(boatHighlight, DEFAULT_HIGHTLIGHT_COLOR);
                     break;
                 case PENALTY:
-                    boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
+                    AnimationUtils.changeFillColor(boatHighlight, RED_HIGHTLIGHT_COLOR);
                     break;
                 case WARNING:
-                    boatHighlight.setFill(ORANGE_HIGHTLIGHT_COLOR);
+                    AnimationUtils.changeFillColor(boatHighlight, ORANGE_HIGHTLIGHT_COLOR);
                     break;
                 default:
-                    boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
+                    AnimationUtils.changeFillColor(boatHighlight, DEFAULT_HIGHTLIGHT_COLOR);
                     break;
             }
             boatHighlightChangeAnimation(animationID);

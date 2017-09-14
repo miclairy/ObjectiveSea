@@ -80,6 +80,11 @@ public class ConnectionManager extends Observable implements Runnable {
         }
     }
 
+    /**
+     * updates the VM with a packet of a new race or a race to update
+     * @param packet the packet of the updated race
+     * @param socket the socket to send the packet on
+     */
     public void updateVM(byte[] packet, Socket socket){
         try {
             DataOutputStream clientOutput = new DataOutputStream(socket.getOutputStream());

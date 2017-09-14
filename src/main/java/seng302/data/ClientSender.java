@@ -35,6 +35,11 @@ public class ClientSender {
         sendPacket(packet, vmConnection);
     }
 
+    /**
+     * sends a packet to a given socket
+     * @param packet the packet to send
+     * @param socket the socket to send the packet on
+     */
     private void sendPacket(byte[] packet, Socket socket){
         try {
             DataOutputStream clientOutput = new DataOutputStream(socket.getOutputStream());
