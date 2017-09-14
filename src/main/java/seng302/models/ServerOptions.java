@@ -19,8 +19,7 @@ public class ServerOptions {
     private String raceXML;
     private boolean isTutorial;
     private Integer numRacesToRun;
-    private boolean hasAI;
-    private int AIdifficulty = 0;
+    private AIDifficulty aiDifficulty = AIDifficulty.NO_AI;
     /**
      * Constructor with default options
      */
@@ -31,7 +30,6 @@ public class ServerOptions {
         raceXML = DEFAULT_COURSE;
         isTutorial = false;
         numRacesToRun = 1;
-        hasAI = false;
     }
 
     public Double getSpeedScale() {
@@ -107,19 +105,11 @@ public class ServerOptions {
         return numRacesToRun == -1;
     }
 
-    public boolean hasAI() {
-        return hasAI;
+    public void setAiDifficulty(AIDifficulty AIDifficulty) {
+        this.aiDifficulty = AIDifficulty;
     }
 
-    public void setHasAI(boolean hasAI) {
-        this.hasAI = hasAI;
-    }
-
-    public void setAIdifficulty(int AIdifficulty) {
-        this.AIdifficulty = AIdifficulty;
-    }
-
-    public int getAIDifficulty() {
-        return this.AIdifficulty;
+    public AIDifficulty getAIDifficulty() {
+        return this.aiDifficulty;
     }
 }

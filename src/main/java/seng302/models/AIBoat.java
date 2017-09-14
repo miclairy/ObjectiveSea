@@ -4,7 +4,6 @@ import javafx.scene.shape.Polygon;
 import seng302.controllers.CollisionManager;
 import seng302.controllers.RoundingMechanics;
 import seng302.data.BoatStatus;
-import seng302.data.RaceStatus;
 import seng302.data.RoundingSide;
 import seng302.utilities.MathUtils;
 import seng302.utilities.PolarReader;
@@ -12,6 +11,8 @@ import seng302.utilities.PolarReader;
 import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
+
+import static seng302.models.AIDifficulty.HARD;
 
 /**
  * Created by atc60 on 8/09/17.
@@ -31,11 +32,12 @@ public class AIBoat extends Boat{
     private Course course;
     private PolarTable polarTable;
     private Polygon boundary;
-    private int AIDifficulty;
+    private AIDifficulty difficulty;
+    private Boolean currentlyAvoiding;
 
-    public AIBoat(Integer id, String name, String nickName, double speed, Course course, int AIDifficulty) {
+    public AIBoat(Integer id, String name, String nickName, double speed, Course course, AIDifficulty difficulty) {
         super(id, name, nickName, speed);
-        this.AIDifficulty = AIDifficulty;
+        this.difficulty = difficulty;
         this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), course);
         this.course = course;
         nextCoordinates = new ArrayList<>();
@@ -43,6 +45,7 @@ public class AIBoat extends Boat{
         targetPositionIndex = 0;
         CollisionManager collisionManager = new CollisionManager();
         this.boundary = collisionManager.createCourseBoundary(course.getBoundary());
+        currentlyAvoiding = false;
     }
 
     /**
@@ -54,6 +57,7 @@ public class AIBoat extends Boat{
         Coordinate targetPosition = nextCoordinates.get(targetPositionIndex);
         if(getCurrentPosition().greaterCircleDistance(targetPosition) < PASSING_DELTA && getStatus() != BoatStatus.FINISHED){
             targetPositionIndex++;
+            currentlyAvoiding = false;
             if(targetPositionIndex == nextCoordinates.size()){
                 targetPositionIndex = 0;
                 setNextRoundingCoordinates();
@@ -78,7 +82,7 @@ public class AIBoat extends Boat{
         CompoundMark currentMark = courseOrder.get(getLastRoundedMarkIndex()+1);
         nextCoordinates.clear();
 
-        if(currentMark != course.getStartLine() && AIDifficulty == 2){
+        if(currentMark != course.getStartLine() && difficulty == HARD){
             addTackandGybeMarks(getCurrentPosition(), currentMark.getPosition(), 0);
         }
 
@@ -127,6 +131,7 @@ public class AIBoat extends Boat{
         Coordinate targetPosition = nextCoordinates.get(targetPositionIndex);
         Coordinate checkPointEnd = getCurrentPosition().coordAt(COLLISION_CHECK_DISTANCE, heading);
         Double distance = MathUtils.distanceToLineSegment(getCurrentPosition(), checkPointEnd, mark.getPosition());
+
         return distance <= CollisionManager.MARK_SENSITIVITY &&
                 getCurrentPosition().greaterCircleDistance(targetPosition) > getCurrentPosition().greaterCircleDistance(mark.getPosition());
     }
@@ -137,14 +142,14 @@ public class AIBoat extends Boat{
      * list.  This new mark will set the boat onto a non-colliding route
      */
     public void avoidFutureCollision() {
-        if(currentlyTurning()) return;
+        if(currentlyTurning() || currentlyAvoiding) return;
         for(Integer markID : course.getAllMarks().keySet()){
             Mark mark = course.getAllMarks().get(markID);
             if(checkFutureCollision(mark)){
+                Coordinate targetPosition = nextCoordinates.get(targetPositionIndex);
                 Coordinate avoidCoordinate = coordinateToAvoid(mark.getPosition());
                 nextCoordinates.add(targetPositionIndex, avoidCoordinate);
-                System.out.println("Collision with: " + mark.getSourceID());
-                System.out.println("Avoiding to: " + avoidCoordinate);
+                currentlyAvoiding = true;
             }
         }
     }

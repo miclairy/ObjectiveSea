@@ -14,6 +14,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
+import seng302.models.AIDifficulty;
 import seng302.models.ClientOptions;
 import seng302.models.GameMode;
 import seng302.utilities.AnimationUtils;
@@ -25,6 +26,10 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+import static seng302.models.AIDifficulty.EASY;
+import static seng302.models.AIDifficulty.HARD;
+import static seng302.models.AIDifficulty.NO_AI;
 
 public class MainMenuController implements Initializable{
     @FXML Button btnLiveGame;
@@ -135,7 +140,7 @@ public class MainMenuController implements Initializable{
         DisplaySwitcher.getGameSounds().stopEndlessMusic();
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.TUTORIAL);
-        if(main.startHostedRace("GuidedPractice-course.xml", DEFAULT_PORT, true, clientOptions, false, 0)){
+        if(main.startHostedRace("GuidedPractice-course.xml", DEFAULT_PORT, true, clientOptions, NO_AI)){
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
             loadTutorialMusic();
@@ -146,10 +151,10 @@ public class MainMenuController implements Initializable{
      * Allows user to host a game at the DEFAULT_PORT and current public IP
      * @throws Exception
      */
-    private void loadOfflinePlay(int AIDifficulty) throws Exception{
+    private void loadOfflinePlay(AIDifficulty AIDifficulty) throws Exception{
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.SINGLEPLAYER);
-        if(main.startHostedRace(selectedCourse, DEFAULT_PORT, false, clientOptions, true, AIDifficulty)){
+        if(main.startHostedRace(selectedCourse, DEFAULT_PORT, false, clientOptions, AIDifficulty)){
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
             loadSinglePlayerMusic();
@@ -168,7 +173,7 @@ public class MainMenuController implements Initializable{
     @FXML private void loadPracticeStart() throws Exception {
         btnPracticeStart.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.PRACTICE);
-        if(main.startHostedRace("PracticeStart-course.xml", DEFAULT_PORT, false, clientOptions, false, 0)){
+        if(main.startHostedRace("PracticeStart-course.xml", DEFAULT_PORT, false, clientOptions, NO_AI)){
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
             loadSinglePlayerMusic();
@@ -189,15 +194,15 @@ public class MainMenuController implements Initializable{
     }
 
     @FXML private void noAI() throws Exception {
-        loadOfflinePlay(0);
+        loadOfflinePlay(NO_AI);
     }
 
     @FXML private void easyAI() throws Exception {
-        loadOfflinePlay(1);
+        loadOfflinePlay(EASY);
     }
 
     @FXML private void hardAI() throws Exception {
-        loadOfflinePlay(2);
+        loadOfflinePlay(HARD);
     }
 
     /**
@@ -208,7 +213,7 @@ public class MainMenuController implements Initializable{
         ClientOptions clientOptions = new ClientOptions();
         Integer port = Integer.parseInt(txtPortNumber.getText());
         clientOptions.setServerPort(port);
-        if(main.startHostedRace(selectedCourse, port, false, clientOptions, false, 0)){
+        if(main.startHostedRace(selectedCourse, port, false, clientOptions, NO_AI)){
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
             loadRealGameSounds();

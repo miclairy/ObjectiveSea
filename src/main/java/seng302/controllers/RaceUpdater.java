@@ -91,11 +91,12 @@ public class RaceUpdater implements Runnable {
      * Adds a competitor from the potential competitors collection into the race, changes the competitor to AI
      * @return the id of the added competitor, or -1 if max number reached.
      */
-    public int addAICompetitor(int AIDifficulty) {
+    public int addAICompetitor(AIDifficulty AIDifficulty) {
         if (potentialCompetitors.iterator().hasNext()) {
             Boat newCompetitor = potentialCompetitors.iterator().next();
             potentialCompetitors.remove(newCompetitor);
-            Boat aiCompetitor = new AIBoat(newCompetitor.getId(), newCompetitor.getName() + " AI", newCompetitor.getNickName(), newCompetitor.getMaxSpeed(), race.getCourse(), AIDifficulty);
+            Boat aiCompetitor = new AIBoat(newCompetitor.getId(), newCompetitor.getName(), newCompetitor.getNickName(),
+                    newCompetitor.getMaxSpeed(), race.getCourse(), AIDifficulty);
             race.addCompetitor(aiCompetitor);
             aiCompetitor.setSailsIn(true);
             prepareBoatForRace(aiCompetitor);
