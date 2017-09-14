@@ -53,12 +53,12 @@ public class MainMenuController implements Initializable{
     @FXML Button noAIbtn;
     @FXML Button easyAIbtn;
     @FXML Button hardAIbtn;
-    @FXML GridPane AIChooser;
     @FXML private GridPane onlinePane;
     @FXML private GridPane offlinePane;
     @FXML private GridPane joinRacePane;
     @FXML private GridPane hostOptionsPane;
     @FXML private GridPane selectMapPane;
+    @FXML private GridPane selectAIPane;
     @FXML private TextField txtIPAddress;
     @FXML private TextField txtPortNumber;
     @FXML private Label lblIP;
@@ -128,6 +128,7 @@ public class MainMenuController implements Initializable{
         hostOptionsPane.setVisible(false);
         selectMapPane.setVisible(false);
         menuAnchor.setVisible(true);
+        selectAIPane.setVisible(false);
     }
 
     public void setApp(Main main) throws ServerFullException, NoConnectionToServerException {
@@ -138,6 +139,7 @@ public class MainMenuController implements Initializable{
     }
 
     @FXML private void loadHostOptionsPane(){
+        isSinglePlayer = false;
         AnimationUtils.switchPaneFade(onlinePane, hostOptionsPane);
     }
 
@@ -155,20 +157,23 @@ public class MainMenuController implements Initializable{
         updateMap();
     }
 
+    @FXML private void backToMapFromAI(){
+        AnimationUtils.switchPaneFade(selectAIPane, selectMapPane);
+        currentCourseMap = availableCourseMaps.get(currentMapIndex);
+        updateMap();
+    }
+
     /**
      * take the menu back to the options pane
      */
     @FXML private void backToOptions(){
-        AnimationUtils.switchPaneFade(selectMapPane, hostOptionsPane);
-        if(currentCourseMap != null){
-            for(Mark mark : currentCourseMap.getMarks().values()){
-                menuAnchor.getChildren().remove(mark.getIcon());
-            }
-            menuAnchor.getChildren().remove(currentCourseMap.getFinishLine());
-            menuAnchor.getChildren().remove(currentCourseMap.getStartLine());
-            currentCourseMap.removeArrowedRoute();
-            timer.stop();
-        }}
+        if(isSinglePlayer){
+            AnimationUtils.switchPaneFade(selectMapPane, offlinePane);
+        }else{
+            AnimationUtils.switchPaneFade(selectMapPane, hostOptionsPane);
+        }
+        removeMap();
+    }
 
     /**
      * loads the join pane
@@ -231,6 +236,8 @@ public class MainMenuController implements Initializable{
     @FXML private void loadMapsForSinglePlay() {
         isSinglePlayer = true;
         AnimationUtils.switchPaneFade(offlinePane, selectMapPane);
+        currentCourseMap = availableCourseMaps.get(currentMapIndex);
+        updateMap();
     }
 
 
@@ -254,10 +261,22 @@ public class MainMenuController implements Initializable{
 
     @FXML private void startGame() throws Exception {
         if(isSinglePlayer) {
-            AIChooser.setVisible(true);
-            AnimationUtils.switchPaneFade(selectMapPane, AIChooser);
+            AnimationUtils.switchPaneFade(selectMapPane, selectAIPane);
+            removeMap();
         } else {
             startHostGame();
+        }
+    }
+
+    private void removeMap(){
+        if(currentCourseMap != null){
+            for(Mark mark : currentCourseMap.getMarks().values()){
+                menuAnchor.getChildren().remove(mark.getIcon());
+            }
+            menuAnchor.getChildren().remove(currentCourseMap.getFinishLine());
+            menuAnchor.getChildren().remove(currentCourseMap.getStartLine());
+            currentCourseMap.removeArrowedRoute();
+            timer.stop();
         }
     }
 
