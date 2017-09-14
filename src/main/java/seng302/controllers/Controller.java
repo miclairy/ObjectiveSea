@@ -298,7 +298,6 @@ public class Controller implements Initializable, Observer {
         canvasAnchor.addEventFilter(TouchEvent.ANY, touch -> {
             if (touch.getTouchPoints().size() == 2 && DisplayUtils.zoomLevel != 1 && DisplayUtils.externalZoomEvent) {
                 DisplayUtils.externalDragEvent = false;
-                // DisplayUtils.externalTouchEvent = true;
                 double touchX = (touch.getTouchPoints().get(0).getX() + touch.getTouchPoints().get(1).getX()) / 2;
                 double touchY = (touch.getTouchPoints().get(0).getY() + touch.getTouchPoints().get(1).getY()) / 2;
                 DisplayUtils.dragDisplay((int) touchX, (int) touchY);

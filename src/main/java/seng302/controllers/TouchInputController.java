@@ -93,7 +93,7 @@ public class TouchInputController extends Observable {
         touchPane.setOnScrollFinished(swipe -> {
             CanvasCoordinate swipeEnd = new CanvasCoordinate(swipe.getScreenX(), swipe.getScreenY());
             double swipeDistance = MathUtils.distanceBetweenTwoPoints(swipeStart, swipeEnd);
-            if (swipeDistance > MAXIMUM_SWIPE_DISTANCE && Math.abs(System.currentTimeMillis() - timeElapsed) < MAXIMUM_SWIPE_TIME && !multipleFingers && !DisplayUtils.externalTouchEvent) {
+            if (swipeDistance > MAXIMUM_SWIPE_DISTANCE && Math.abs(System.currentTimeMillis() - timeElapsed) < MAXIMUM_SWIPE_TIME && !multipleFingers) {
                 displayTouchController.displaySwipe(swipeEnd, swipeStart);
                 double swipeBearing = MathUtils.getHeadingBetweenTwoCoordinates(swipeStart, swipeEnd);
                 swipeAction(swipeBearing);
@@ -149,7 +149,7 @@ public class TouchInputController extends Observable {
      */
     private void checkTouchMoved(TouchEvent touchEvent) {
         Boat playersBoat = race.getBoatById(clientID);
-        if (touchEvent.getTouchPoints().size() == 1 && !DisplayUtils.externalTouchEvent && (System.currentTimeMillis() - touchTime) > 200) {
+        if (touchEvent.getTouchPoints().size() == 1 && (System.currentTimeMillis() - touchTime) > 200) {
             CanvasCoordinate touchPoint = new CanvasCoordinate(touchEvent.getTouchPoint().getSceneX(), touchEvent.getTouchPoint().getSceneY());
             CanvasCoordinate boatPosition = DisplayUtils.convertFromLatLon(playersBoat.getCurrentPosition());
             double windAngle = race.getCourse().getWindDirection() + 180;
