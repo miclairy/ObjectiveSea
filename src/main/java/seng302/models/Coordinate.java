@@ -137,4 +137,12 @@ public class Coordinate {
 
         return val < 0;
     }
+
+    @Override
+    public String toString() {
+        return "Coordinate{" +
+                "lat=" + lat +
+                ", lon=" + lon +
+                '}';
+    }
 }

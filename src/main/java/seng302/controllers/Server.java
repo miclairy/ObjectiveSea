@@ -4,10 +4,7 @@ import seng302.data.*;
 import seng302.data.registration.RegistrationResponse;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.data.registration.RegistrationType;
-import seng302.models.Boat;
-import seng302.models.Collision;
-import seng302.models.Race;
-import seng302.models.ServerOptions;
+import seng302.models.*;
 
 import java.io.IOException;
 import java.net.BindException;
@@ -59,6 +56,7 @@ public class Server implements Runnable, Observer {
         raceUpdater = new RaceUpdater(options.getRaceXML());
         if(options.isTutorial()) raceUpdater.skipPrerace();
         raceUpdater.setScaleFactor(options.getSpeedScale());
+        if(options.getAIDifficulty() != AIDifficulty.NO_AI) raceUpdater.addAICompetitor(options.getAIDifficulty());
         raceUpdaterThread = new Thread(raceUpdater);
         raceUpdaterThread.setName("Race Updater");
         collisionManager = raceUpdater.getCollisionManager();
