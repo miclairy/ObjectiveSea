@@ -196,7 +196,7 @@ public class Client implements Runnable, Observer {
         }
 
         if (race != null && !race.getRaceStatus().equals(RaceStatus.TERMINATED)) {
-            byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
+            byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(keyInputController.getCommandInt(), this.clientID);
             sender.sendToServer(boatCommandPacket);
         }
 
