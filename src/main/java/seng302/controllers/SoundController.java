@@ -6,7 +6,9 @@ import seng302.models.Boat;
 import seng302.models.Race;
 import seng302.utilities.DisplaySwitcher;
 import seng302.utilities.GameSounds;
+import seng302.views.AvailableRace;
 
+import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -130,7 +132,9 @@ public class SoundController implements Runnable {
     @Override
     public void run() {
         while(running) {
-            for (Boat boat : race.getCompetitors()) {
+            Iterator<Boat> iter = race.getCompetitors().iterator();
+            while (iter.hasNext()) {
+                Boat boat = iter.next();
                 initialReadySound();
                 checkPlacing(boat);
                 hasHitBoat(boat);
