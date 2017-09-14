@@ -108,8 +108,11 @@ public class GameClient extends Client{
         if(tutorialKeys.contains(userInputController.getCommandInt())) {
             tutorialFunction.run();
         }
-        byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
-        sender.sendToServer(boatCommandPacket);
+        if (race != null && !race.getRaceStatus().equals(RaceStatus.TERMINATED)) {
+            byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
+            sender.sendToServer(boatCommandPacket);
+        }
+
 
     }
 

@@ -403,10 +403,8 @@ public class AnimationUtils {
         fillTransition.setToValue(color);
         fillTransition.setDuration(new Duration(200));
         fillTransition.play();
-
-
     }
-}
+
     /**
      * adds an infinite hover effect to a node
      * @param node the node that the transition is applied to
