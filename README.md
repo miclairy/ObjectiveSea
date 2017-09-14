@@ -1,13 +1,5 @@
 # Game X
 
-
-The first time the system is run, a config.txt file is generated.
-
-The first value in the config defines a scale speed for the Game to run the race at for convenience of playing.
-
-The next 2 fields define the address and port of the feed to connect to, which by default is the official America's Cup test feed.  
-The address to connect into another game is the IP address of the computer acting as server side.  
-
 To configure the system to connect to the Server side, set the SOURCE_ADDRESS to localhost and the SOURCE_PORT to 2828.
 
 Once connected as a player, one is assigned a boat (ID, colour and country).  This is the boat that the connected player can control.

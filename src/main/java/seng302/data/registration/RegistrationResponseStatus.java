@@ -6,7 +6,7 @@ package seng302.data.registration;
 public enum RegistrationResponseStatus {
     SPECTATOR_SUCCESS(0), PLAYER_SUCCESS(1), TUTORIAL_SUCCESS(2), GHOST_SUCCESS(3),
 
-    GENERAL_FAILURE(10), OUT_OF_SLOTS(11);
+    GENERAL_FAILURE(10), OUT_OF_SLOTS(11), INCORRECT_CLIENT_TYPE(12), RACE_UNAVAILABLE(13);
 
     private byte value;
 

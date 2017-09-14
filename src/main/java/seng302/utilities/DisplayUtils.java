@@ -1,5 +1,7 @@
 package seng302.utilities;
 import javafx.animation.FadeTransition;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
@@ -308,18 +310,37 @@ public class DisplayUtils {
 
     /**
      * adds a fade transition to a node, so that a node fades in and out over a period of time
-     * @param node a node in the scene that will be faded
-     * @param endOpacity a double that represents the nodes opacity at the end of the fade
+     * @param node the node that will be faded
+     * @param endOpacity the desired opacity the node will be faded too
+     * @param showTime the millis the node will be shown at endOpacity before it fades again
      */
-    public static void fadeInFadeOutNodeTransition(Node node, double endOpacity){
+    public static void fadeInFadeOutNodeTransition(Node node, double endOpacity, double showTime){
+        double previousOpacity = node.getOpacity();
+
         FadeTransition fadeTransition = new FadeTransition();
         fadeTransition.setNode(node);
         fadeTransition.setDuration(new Duration(800));
-        fadeTransition.setFromValue(node.getOpacity());
+        fadeTransition.setFromValue(previousOpacity);
         fadeTransition.setToValue(endOpacity);
-        fadeTransition.setAutoReverse(true);
-        fadeTransition.setCycleCount(2);
+
+        FadeTransition fadeTransition2 = new FadeTransition();
+        fadeTransition2.setNode(node);
+        fadeTransition2.setDuration(new Duration(showTime));
+        fadeTransition2.setFromValue(endOpacity);
+        fadeTransition2.setToValue(endOpacity);
+
+        FadeTransition fadeTransition3 = new FadeTransition();
+        fadeTransition3.setNode(node);
+        fadeTransition3.setDuration(new Duration(800));
+        fadeTransition3.setFromValue(endOpacity);
+        fadeTransition3.setToValue(previousOpacity);
+
         fadeTransition.play();
+        fadeTransition.setOnFinished(event -> {
+            fadeTransition2.play();
+            fadeTransition2.setOnFinished(event1 -> fadeTransition3.play());
+        });
+
     }
 
     /**

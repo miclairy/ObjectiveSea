@@ -196,6 +196,7 @@ public class ScoreBoardController {
 
     @FXML
     private void btnTrackPressed(){
+        raceViewController.stopHighlightAnimation();
         selectionController.trackBoat();
     }
 

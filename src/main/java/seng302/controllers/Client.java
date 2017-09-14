@@ -1,13 +1,16 @@
 package seng302.controllers;
 
-import seng302.data.ClientPacketBuilder;
-import seng302.data.ClientSender;
-import seng302.data.ClientListener;
-import seng302.data.Receiver;
-import seng302.data.registration.RegistrationResponse;
-import seng302.data.registration.ServerFullException;
+import seng302.data.*;
+import seng302.data.registration.*;
+import seng302.models.Boat;
+import seng302.models.ClientOptions;
+import seng302.models.Race;
 import seng302.utilities.NoConnectionToServerException;
 import seng302.utilities.TimeUtils;
+
+import java.util.*;
+
+import java.util.Observable;
 import java.util.Observer;
 
 /**
@@ -28,6 +31,23 @@ public abstract class Client implements Runnable, Observer {
     protected RegistrationResponse serverRegistrationResponse;
     protected int clientID;
 
+    /** TODO
+    private static List<Integer> tutorialKeys = new ArrayList<Integer>();
+    private static Runnable tutorialFunction = null;
+
+    public Client(ClientOptions options) throws ServerRegistrationException, NoConnectionToServerException {
+        this.packetBuilder = new ClientPacketBuilder();
+        this.options = options;
+        setUpDataStreamReader();
+        System.out.println("Client: Waiting for connection to Server");
+        manageWaitingConnection();
+        RegistrationType regoType = options.isParticipant() ? RegistrationType.PLAYER : RegistrationType.SPECTATOR;
+        System.out.println("Client: Connected to Server");
+        this.sender = new ClientSender(clientListener.getClientSocket());
+        sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
+        System.out.println("Client: Sent Registration Request");
+        manageServerResponse();
+    }**/
 
     /**
      * Waits for the server to accept the socket connection
@@ -58,7 +78,7 @@ public abstract class Client implements Runnable, Observer {
      * @throws ServerFullException if the Response from the server was received, but the server was full
      * @throws NoConnectionToServerException if we timeout whilst waiting for the response
      */
-    protected void manageServerResponse() throws ServerFullException, NoConnectionToServerException {
+    protected void manageServerResponse() throws ServerRegistrationException, NoConnectionToServerException {
         double waitTime = 0;
         while (serverRegistrationResponse == null) {
             try {
@@ -78,6 +98,8 @@ public abstract class Client implements Runnable, Observer {
                 break;
             case OUT_OF_SLOTS:
                 throw new ServerFullException();
+            case RACE_UNAVAILABLE:
+                throw new RaceUnavailableException();
             case GENERAL_FAILURE:
             case GHOST_SUCCESS:
             case TUTORIAL_SUCCESS:
@@ -92,6 +114,14 @@ public abstract class Client implements Runnable, Observer {
             dataStreamReaderThread.stop();
             this.clientListener = null;
             System.out.println("Client: Server not found \uD83D\uDD25 \uD83D\uDE2B");
+        }
+    }
+
+    //TODO
+    public void initiateClientDisconnect() {
+        clientListener.disconnectClient();
+        if (options.isParticipant()) {
+            race.getBoatById(clientID).setStatus(BoatStatus.DNF);
         }
     }
 }
