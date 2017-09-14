@@ -49,6 +49,7 @@ public class RaceUpdater implements Runnable {
         raceVisionXMLParser.setCourseFile(selectedCourse);
         potentialCompetitors = raceVisionXMLParser.importDefaultStarters();
         race = raceVisionXMLParser.importRace();
+        System.out.println("Actual race name: " + race.getRegattaName() + " " + selectedCourse);
         Course course = race.getCourse();
         course.setTrueWindSpeed(initialWindSpeed);
         course.setWindDirection(course.getWindDirectionBasedOnGates());

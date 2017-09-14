@@ -53,6 +53,7 @@ public abstract class Client implements Runnable, Observer {
                 connectionAttempts++;
             } else {
                 stopDataStreamReader();
+                System.out.println("Client: Server not found \uD83D\uDD25 \uD83D\uDE2B");
                 throw new NoConnectionToServerException(false, "Maximum connection attempts exceeded while trying to connect to server. Port or IP may not be valid.");
             }
         }
@@ -98,7 +99,6 @@ public abstract class Client implements Runnable, Observer {
         if(dataStreamReaderThread != null){
             dataStreamReaderThread.stop();
             this.clientListener = null;
-            System.out.println("Client: Server not found \uD83D\uDD25 \uD83D\uDE2B");
         }
     }
 }

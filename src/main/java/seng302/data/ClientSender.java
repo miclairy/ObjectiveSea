@@ -18,13 +18,13 @@ public class ClientSender {
 
     public ClientSender(Socket socket) {
         this.connection = socket;
-        try {
-            this.vmConnection = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
-        } catch (ConnectException e) {
-            System.out.println("Client: Unable to reach VM server");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            this.vmConnection = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
+//        } catch (ConnectException e) {
+//            System.out.println("Client: Unable to reach VM server");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public void sendToServer(byte[] packet) {
@@ -32,7 +32,7 @@ public class ClientSender {
     }
 
     public void sendToVM(byte[] packet){
-        sendPacket(packet, vmConnection);
+        sendPacket(packet, connection);
     }
 
     /**

@@ -120,6 +120,7 @@ public abstract class Receiver extends Observable implements Runnable{
         int gameStatus = byteArrayRangeToInt(body, HOST_GAME_STATUS.getStartIndex(), HOST_GAME_STATUS.getEndIndex());
         int gameMinPlayers = byteArrayRangeToInt(body, HOST_GAME_REQUIRED_PLAYERS.getStartIndex(), HOST_GAME_REQUIRED_PLAYERS.getEndIndex());
         int gameCurrentPlayers = byteArrayRangeToInt(body, HOST_GAME_CURRENT_PLAYERS.getStartIndex(), HOST_GAME_CURRENT_PLAYERS.getEndIndex());
+        System.out.println("Received: " + courseIndex);
         AvailableRace availableRace = new AvailableRace(CourseName.getCourseNameFromInt(courseIndex).getText(), gameCurrentPlayers, serverPort, serverIP);
         setChanged();
         notifyObservers(availableRace);
@@ -132,6 +133,7 @@ public abstract class Receiver extends Observable implements Runnable{
     public boolean setUpConnection(String sourceAddress, int sourcePort) {
         try {
             Socket socket = new Socket(sourceAddress, sourcePort);
+            System.out.println("setup connection");
             setSocket(socket);
             socket.setSoTimeout(SOCKET_TIMEOUT_MS);
             dataStream = getSocket().getInputStream();

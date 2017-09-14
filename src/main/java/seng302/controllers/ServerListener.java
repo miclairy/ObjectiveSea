@@ -18,6 +18,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Arrays;
 
 import static seng302.data.AC35StreamField.*;
 import static seng302.data.registration.RegistrationType.REQUEST_RUNNING_GAMES;
@@ -31,9 +32,16 @@ public class ServerListener extends Receiver implements Runnable{
     private Race race;
     private Integer clientId;
     private boolean clientConnected = true;
+    private Integer listenerId;
+    private boolean stop = false;
 
     public ServerListener(Socket socket) throws IOException {
         setSocket(socket);
+    }
+
+    public ServerListener(Integer listenerId, Socket socket) throws IOException {
+        setSocket(socket);
+        this.listenerId = listenerId;
     }
 
     /**
@@ -42,7 +50,7 @@ public class ServerListener extends Receiver implements Runnable{
      */
     @Override
     public void run() {
-        while(clientConnected){
+        while(clientConnected && !Thread.interrupted()){
             try {
                 DataInput dataInput = new DataInputStream(getSocket().getInputStream());
 
@@ -87,6 +95,7 @@ public class ServerListener extends Receiver implements Runnable{
 
     private void recordHostGameMessage(byte[] body){
         AvailableRace race = createAvailableRace(body);
+        System.out.println("hosting");
         race.setPacket(body);
         setChanged();
         notifyObservers(race);
@@ -118,6 +127,8 @@ public class ServerListener extends Receiver implements Runnable{
         int gameStatus = byteArrayRangeToInt(body, HOST_GAME_STATUS.getStartIndex(), HOST_GAME_STATUS.getEndIndex());
         int gameMinPlayers = byteArrayRangeToInt(body, HOST_GAME_REQUIRED_PLAYERS.getStartIndex(), HOST_GAME_REQUIRED_PLAYERS.getEndIndex());
         int gameCurrentPlayers = byteArrayRangeToInt(body, HOST_GAME_CURRENT_PLAYERS.getStartIndex(), HOST_GAME_CURRENT_PLAYERS.getEndIndex());
+        System.out.println("Creating " + courseIndex);
+        System.out.println(Arrays.toString(body));
         return new AvailableRace(CourseName.getCourseNameFromInt(courseIndex).getText(), gameCurrentPlayers, serverPort, serverIP);
     }
 
@@ -188,5 +199,13 @@ public class ServerListener extends Receiver implements Runnable{
         String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
         setChanged();
         notifyObservers(serverIP);
+    }
+
+    public Integer getListenerId() {
+        return listenerId;
+    }
+
+    public void stop(){
+        this.stop = true;
     }
 }

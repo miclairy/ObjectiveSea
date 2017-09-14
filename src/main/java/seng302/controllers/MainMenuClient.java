@@ -27,10 +27,10 @@ public class MainMenuClient extends Client {
     public void run() {
         while(true){
             try {
-                stopDataStreamReader();
                 checkForRaces();
                 Thread.sleep(5000);
                 updateRaces();
+                stopDataStreamReader();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

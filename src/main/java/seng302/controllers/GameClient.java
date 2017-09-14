@@ -50,6 +50,7 @@ public class GameClient extends Client{
         if(race != null){
             competitors = race.getCompetitors().size();
         }
+        System.out.println("Game Client " + currentCourseIndex);
         byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(speedScale, minParticipants, serverPort, publicIp, currentCourseIndex, competitors);
         System.out.println("Client: Updating VM");
         sender.sendToVM(registerGamePacket);

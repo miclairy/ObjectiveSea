@@ -266,7 +266,8 @@ public class GameServer implements Runnable, Observer {
 
     private void createPacketForVM(){
         try {
-            updateVM(options, ConnectionUtils.getPublicIp(), CourseName.getCourseIntFromName(raceUpdater.getRace().getRegattaName()));
+            System.out.println("Race name " + raceUpdater.getRace().getRegattaName());
+            updateVM(options, ConnectionUtils.getPublicIp(), 0);
         } catch (IOException a) {
             a.printStackTrace();
         }

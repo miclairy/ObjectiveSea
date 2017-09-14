@@ -3,6 +3,7 @@ package seng302.data;
 import seng302.utilities.ConnectionUtils;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
@@ -146,6 +147,7 @@ public abstract class PacketBuilder {
         addFieldToByteArray(body, HOST_GAME_STATUS, 1);
         addFieldToByteArray(body, HOST_GAME_REQUIRED_PLAYERS, minParticipants);
         addFieldToByteArray(body, HOST_GAME_CURRENT_PLAYERS, currentPlayers);
+        System.out.println("Sending " + Arrays.toString(body) + " " + currentCourseIndex);
         return generatePacket(header, body);
     }
 

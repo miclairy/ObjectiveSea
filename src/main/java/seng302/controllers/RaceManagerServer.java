@@ -26,12 +26,16 @@ public class RaceManagerServer implements Observer {
     private final ConnectionManager connectionManager;
     private ArrayList<AvailableRace> availableRaces = new ArrayList<>();
     private int nextHostID = 0;
+    private int serverListenerId = 0;
+    private Map<Integer, Thread> listenerThreads;
+    private Set<Socket> sockets = new HashSet<>();
 
     public RaceManagerServer() throws IOException {
         packetBuilder = new ServerPacketBuilder();
         connectionManager = new ConnectionManager(ConnectionUtils.getVmPort(), false);
         connectionManager.addObserver(this);
         System.out.println("Server: Waiting for races");
+        listenerThreads = new HashMap<>();
         Thread managerThread = new Thread(connectionManager);
         managerThread.setName("Connection Manager");
         managerThread.start();
@@ -41,22 +45,36 @@ public class RaceManagerServer implements Observer {
     public void update(Observable observable, Object arg) {
         if (observable.equals(connectionManager)) {
             if (arg instanceof Socket) {
-                try {
-                    startServerListener((Socket) arg);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                Socket socket = (Socket) arg;
+                if(sockets.contains(socket)){
+                    System.out.println("this is bad");
+                } else{
+                    sockets.add(socket);
+                    try {
+                        startServerListener((Socket) arg);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         } else if(observable instanceof ServerListener){
+            ServerListener serverListener = (ServerListener) observable;
             if(arg instanceof String) {
                 removeAvailableRace(arg);
             } else if (arg instanceof RegistrationType) {
                 if (arg.equals(REQUEST_RUNNING_GAMES)) {
+                    System.out.println("hi");
                     manageRegistration((ServerListener) observable);
                 }
             } else if (arg instanceof AvailableRace) {
+                System.out.println("received race");
                 updateAvailableRace(((AvailableRace) arg));
             }
+            Thread listenerThread = listenerThreads.get(serverListener.getListenerId());
+//            serverListener.stop();
+            listenerThread.interrupt();
+            listenerThreads.remove(serverListener.getListenerId());
+//            System.out.println("removed" + serverListener.getListenerId());
         }
     }
 
@@ -74,6 +92,7 @@ public class RaceManagerServer implements Observer {
             }
         }
         int raceMapIndex = CourseName.getCourseIntFromName(race.mapNameProperty().getValue());
+        System.out.println(race.mapNameProperty().getValue());
         if (!updatedRace && raceMapIndex != -1) {
             System.out.println("VmServer: Recording game on VM");
             incrementNumberOfBoats(race, 1);
@@ -120,6 +139,7 @@ public class RaceManagerServer implements Observer {
         for(AvailableRace race : availableRaces){
             byte[] racePacket = packetBuilder.createGameRegistrationPacket(race.getPacket());
             connectionManager.sendToClient(nextHostID, racePacket);
+            System.out.println(racePacket.toString());
         }
         nextHostID++;
     }
@@ -129,10 +149,12 @@ public class RaceManagerServer implements Observer {
      * @param socket the socket for the client
      */
     protected void startServerListener(Socket socket) throws IOException {
-        ServerListener serverListener = new ServerListener(socket);
+        ServerListener serverListener = new ServerListener(serverListenerId, socket);
         Thread serverListenerThread = new Thread(serverListener);
-        serverListenerThread.setName("Server Listener");
+        serverListenerThread.setName("Server Listener" + serverListenerId);
         serverListenerThread.start();
         serverListener.addObserver(this);
+        listenerThreads.put(serverListenerId, serverListenerThread);
+        serverListenerId++;
     }
 }
