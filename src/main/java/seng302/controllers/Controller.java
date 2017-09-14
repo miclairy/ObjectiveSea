@@ -357,6 +357,9 @@ public class Controller implements Initializable, Observer {
         });
     }
 
+    /**
+     * initilized two finger dragging of the course. allows for panning while zoomed.
+     */
     private void initTouchDisplayDrag() {
         canvasAnchor.addEventFilter(TouchEvent.ANY, touch -> {
             if (touch.getTouchPoints().size() == 2 && DisplayUtils.zoomLevel != 1 && DisplayUtils.externalZoomEvent) {
