@@ -163,8 +163,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * Ready the race view for a standard race mode
      */
     private void setupStandardRaceMode() {
-        this.courseRouteArrows = new CourseRouteArrows(race.getCourse(), root);
-        courseRouteArrows.drawRaceRoute();
         redrawCourse();
         drawMap();
     }
