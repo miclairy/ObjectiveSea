@@ -558,6 +558,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     void highlightAnimation(CanvasCoordinate point, BoatDisplay boat, Boolean isCollision, String highlightID, int scale){
         Circle highlightCircle1 = createHighlightCircle(point, highlightID);
         Circle highlightCircle2 = createHighlightCircle(point, highlightID);
+        highlightCircle1.toBack();
+        highlightCircle2.toBack();
 
         ScaleTransition st1 = AnimationUtils.scaleTransitionCollision(highlightCircle1, 500 * scale,
                 20/scale * zoomLevel);
