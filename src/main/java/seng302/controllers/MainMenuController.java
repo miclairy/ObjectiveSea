@@ -166,6 +166,7 @@ public class MainMenuController implements Initializable{
 
     @FXML private void backToOnline(){
         AnimationUtils.switchPaneFade(joinRacePane, onlinePane);
+        clearTableSelection();
     }
 
     @FXML private void backFromHost(){AnimationUtils.switchPaneFade(hostOptionsPane, onlinePane);
@@ -273,6 +274,7 @@ public class MainMenuController implements Initializable{
             ClientOptions clientOptions =
                     new ClientOptions(race.getIpAddress(), race.getPort(), GameMode.MULTIPLAYER, false, false);
             boolean clientStarted = main.startClient(clientOptions);
+            clearTableSelection();
             startGame(clientStarted, clientOptions);
         }
     }
@@ -293,6 +295,7 @@ public class MainMenuController implements Initializable{
             ClientOptions clientOptions =
                     new ClientOptions(ipAddress, race.getPort(), GameMode.MULTIPLAYER, true, false);
             boolean clientStarted = main.startClient(clientOptions);
+            clearTableSelection();
             startGame(clientStarted, clientOptions);
         }
     }
@@ -553,6 +556,7 @@ public class MainMenuController implements Initializable{
         lblIP.setVisible(manuallyJoinGame);
         lblPort.setVisible(manuallyJoinGame);
         tblAvailableRaces.setVisible(!manuallyJoinGame);
+        clearTableSelection();
         if(manuallyJoinGame){
             btnManual.setText("Auto");
         }else{
@@ -573,5 +577,9 @@ public class MainMenuController implements Initializable{
         if (mainMenuClientThread != null){
             mainMenuClientThread.stop();
         }
+    }
+
+    private void clearTableSelection(){
+        tblAvailableRaces.getSelectionModel().clearSelection();
     }
 }
