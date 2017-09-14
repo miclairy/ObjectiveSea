@@ -113,7 +113,7 @@ public class ScoreBoardController {
     }
 
     public void setUp(){
-        race = Client.getRace();
+        race = GameClient.getRace();
         setUpTable();
         raceTimerLabel.textProperty().bind(parent.raceTimerString);
         setupAnnotationControl();

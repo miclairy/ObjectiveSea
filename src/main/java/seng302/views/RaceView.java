@@ -118,6 +118,7 @@ public class RaceView {
                 convertedEnd2.getX(), convertedEnd2.getY()
         );
         line.setStroke(Color.web("#70aaa2"));
+        line.setStrokeWidth(2);
         return line;
     }
 

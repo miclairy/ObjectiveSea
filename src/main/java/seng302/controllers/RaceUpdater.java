@@ -44,7 +44,6 @@ public class RaceUpdater implements Runnable {
 
     public RaceUpdater(String selectedCourse){
         collisionManager = new CollisionManager();
-        //set race up with default files
         initialWindSpeedGenerator();
         RaceVisionXMLParser raceVisionXMLParser = new RaceVisionXMLParser();
         raceVisionXMLParser.setCourseFile(selectedCourse);
@@ -108,7 +107,7 @@ public class RaceUpdater implements Runnable {
 
     /**
      * Generates a race id from the current date and time
-     * @return
+     * @return a string of formated date
      */
     private String generateRaceId() {
         DateFormat dateFormat = new SimpleDateFormat("yyMMddHH");
@@ -313,6 +312,7 @@ public class RaceUpdater implements Runnable {
 
     /**
      * Spreads the starting positions of the boats behind the start line
+     * @param boat the boat that needs to starting position to be set
      */
     public void setStartingPosition(Boat boat){
         RaceLine startingLine = race.getCourse().getStartLine();

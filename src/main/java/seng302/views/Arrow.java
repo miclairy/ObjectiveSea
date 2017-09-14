@@ -4,8 +4,11 @@ import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polyline;
+import javafx.scene.shape.StrokeLineCap;
+import javafx.scene.shape.StrokeLineJoin;
 import javafx.scene.transform.Rotate;
 import seng302.models.CanvasCoordinate;
 import seng302.models.Coordinate;
@@ -30,7 +33,9 @@ public class Arrow extends Polyline {
                                 width / 2  + this.center.getX(), bottomY);
 
         arrowLine.relocate(center.getX() - width / 2, center.getY() - length);
-        arrowLine.setId("distanceArrow");
+        arrowLine.setStrokeLineCap(StrokeLineCap.ROUND);
+        arrowLine.setStrokeLineJoin(StrokeLineJoin.ROUND);
+        arrowLine.setOpacity(0);
         fade();
     }
 
@@ -63,6 +68,23 @@ public class Arrow extends Polyline {
         ft.play();
     }
 
+    public void addToMenu(Pane root){
+        root.getChildren().add(arrowLine);
+        arrowLine.setLayoutX(arrowLine.getLayoutX() + 155);
+        arrowLine.setLayoutY(arrowLine.getLayoutY() + 30);
+        FadeTransition ft = AnimationUtils.changeCourseRouteNode(arrowLine, true);
+        ft.play();
+    }
+
+    public void removeFromMenu(Pane root){
+        FadeTransition ft = AnimationUtils.changeCourseRouteNode(arrowLine, true);
+        ft.setOnFinished(new EventHandler<ActionEvent>(){
+            public void handle(ActionEvent AE){
+                root.getChildren().remove(arrowLine);
+            }});
+        ft.play();
+    }
+
     public void setColour(Color color){
         arrowLine.setStroke(color);
     }
@@ -71,8 +93,7 @@ public class Arrow extends Polyline {
      * Emphasizes the arrow
      */
     public void emphasize(){
-        AnimationUtils.fadeNodeCustom(arrowLine, 1);
-        //arrowLine.setOpacity(1.0);
+        AnimationUtils.fadeNodeCustom(arrowLine, 0.8);
         arrowLine.setStrokeWidth(5.0);
     }
 
@@ -80,8 +101,7 @@ public class Arrow extends Polyline {
      * Makes the arrow appear faded out
      */
     public void fade(){
-        AnimationUtils.fadeNodeCustom(arrowLine, 0.2);
-        //arrowLine.setOpacity(0.2);
+        AnimationUtils.fadeNodeCustom(arrowLine, 0);
         arrowLine.setStrokeWidth(4.0);
     }
 

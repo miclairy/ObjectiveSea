@@ -1,10 +1,13 @@
 package seng302.data;
 
 import seng302.data.registration.RegistrationType;
+import seng302.utilities.ConnectionUtils;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import static seng302.data.AC35StreamField.*;
-import static seng302.data.AC35StreamMessage.BOAT_ACTION_MESSAGE;
-import static seng302.data.AC35StreamMessage.REGISTRATION_REQUEST;
+import static seng302.data.AC35StreamMessage.*;
 
 /**
  * Builds packets specific to the client
@@ -23,6 +26,12 @@ public class ClientPacketBuilder extends PacketBuilder {
         return generatePacket(header, body);
     }
 
+    /**
+     * Creates the packets that contain the button presses from the client
+     * @param commandInt ID of the key pressed
+     * @param clientId id of the client that has pressed the button
+     * @return the full packet
+     */
     public byte[] createBoatCommandPacket(int commandInt, int clientId) {
         byte[] header = createHeader(BOAT_ACTION_MESSAGE, clientId);
         byte[] body = new byte[5];
@@ -42,5 +51,23 @@ public class ClientPacketBuilder extends PacketBuilder {
         byte[] header = super.createHeader(type);
         addFieldToByteArray(header, HEADER_SOURCE_ID, sourceId);
         return header;
+    }
+
+    /**
+     * creates a packet that is sent when a host quits a race, used to update the VM
+     * @param type the message type for the packet
+     * @return the packet to send to the VM
+     */
+    public byte[] createGameCancelPacket(AC35StreamMessage type) {
+        byte[] header = super.createHeader(type);
+        byte[] body = new byte[4];
+        long ip = 0;
+        try {
+            ip = ConnectionUtils.ipStringToLong(ConnectionUtils.getPublicIp());
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        addFieldToByteArray(body, HOST_GAME_IP, ip);
+        return generatePacket(header, body);
     }
 }

@@ -1,10 +1,13 @@
 package seng302.data;
 
+import seng302.utilities.ConnectionUtils;
+
 import java.time.Instant;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
 import static seng302.data.AC35StreamField.*;
+import static seng302.data.AC35StreamMessage.HOST_GAME_MESSAGE;
 
 /**
  * Created by mjt169 on 18/07/17.
@@ -33,7 +36,7 @@ public abstract class PacketBuilder {
      * @param item item to add
      * @param numBytes number of bytes to split the int into
      */
-    private void addIntIntoByteArray(byte[] array, int start, long item, int numBytes){
+    protected void addIntIntoByteArray(byte[] array, int start, long item, int numBytes){
         for (int i = 0; i < numBytes; i ++) {
             array[start + i] = (byte) (item >> i * 8);
         }
@@ -116,6 +119,34 @@ public abstract class PacketBuilder {
             combined[i+header.length + body.length] = crc[i];
         }
         return combined;
+    }
+
+    public byte[] createGameRegistrationPacket(byte[] payload){
+        byte[] header = createHeader(HOST_GAME_MESSAGE);
+        return generatePacket(header, payload);
+    }
+
+    /**
+     * Creates a game registeration packet to be sent to the VM
+     * @param speedScale speed of the game
+     * @param minParticipants number of participants for the game to start
+     * @param serverPort port of the server
+     * @param publicIp ip of the server
+     * @param currentCourseIndex current course
+     * @return a packet to be sent
+     */
+    public byte[] createGameRegistrationPacket(Double speedScale, Integer minParticipants, Integer serverPort, String publicIp, int currentCourseIndex, int currentPlayers) {
+        byte[] header = createHeader(HOST_GAME_MESSAGE);
+        byte[] body = new byte[HOST_GAME_MESSAGE.getLength()];
+        long ip = ConnectionUtils.ipStringToLong(publicIp);
+        addFieldToByteArray(body, HOST_GAME_IP, ip);
+        addFieldToByteArray(body, HOST_GAME_PORT, serverPort);
+        addFieldToByteArray(body, HOST_GAME_MAP, currentCourseIndex);
+        addFieldToByteArray(body, HOST_GAME_SPEED, speedScale.longValue());
+        addFieldToByteArray(body, HOST_GAME_STATUS, 1);
+        addFieldToByteArray(body, HOST_GAME_REQUIRED_PLAYERS, minParticipants);
+        addFieldToByteArray(body, HOST_GAME_CURRENT_PLAYERS, currentPlayers);
+        return generatePacket(header, body);
     }
 
 }

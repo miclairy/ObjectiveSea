@@ -24,14 +24,14 @@ public class ClientListenerTest {
     public void setUpConnectionTest(){
         ClientListener testReader = new ClientListener(TEST_FEED_ADDRESS, TEST_FEED_PORT);
 
-        Assert.assertNull(testReader.getClientSocket());
+        Assert.assertNull(testReader.getSocket());
 
-        testReader.setUpConnection();
+        testReader.setUpConnection(TEST_FEED_ADDRESS, TEST_FEED_PORT);
 
-        Assert.assertNotNull(testReader.getClientSocket());
-        InetAddress address = testReader.getClientSocket().getInetAddress();
+        Assert.assertNotNull(testReader.getSocket());
+        InetAddress address = testReader.getSocket().getInetAddress();
 
-        Assert.assertEquals(TEST_FEED_PORT, testReader.getClientSocket().getPort());
+        Assert.assertEquals(TEST_FEED_PORT, testReader.getSocket().getPort());
         Assert.assertEquals(TEST_FEED_ADDRESS, address.getHostAddress());
     }
 
