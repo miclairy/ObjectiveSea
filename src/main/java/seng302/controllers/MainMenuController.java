@@ -15,6 +15,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import seng302.models.AIDifficulty;
 import seng302.data.registration.ServerFullException;
 import seng302.models.*;
 import seng302.utilities.*;
@@ -29,13 +30,16 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
+import static seng302.models.AIDifficulty.EASY;
+import static seng302.models.AIDifficulty.HARD;
+import static seng302.models.AIDifficulty.NO_AI;
+
 public class MainMenuController implements Initializable{
     @FXML private Button btnOfflinePlay;
     @FXML private Button btnTutorial;
     @FXML private Button btnSpectate;
     @FXML private Button btnOnlineBack;
     @FXML private Button btnSinglePlay;
-    @FXML private Button btnPractiseStart;
     @FXML private Button btnManual;
     @FXML private Button btnCreateGame;
     @FXML private Button btnJoinGame;
@@ -45,12 +49,17 @@ public class MainMenuController implements Initializable{
     @FXML private Button btnBackToOptions;
     @FXML private Button btnStartRace;
     @FXML private Button btnSettings;
+    @FXML private Button btnPractiseStart;
+    @FXML Button noAIbtn;
+    @FXML Button easyAIbtn;
+    @FXML Button hardAIbtn;
     @FXML private GridPane onlinePane;
     @FXML private GridPane offlinePane;
     @FXML private GridPane joinRacePane;
     @FXML private GridPane hostOptionsPane;
     @FXML private GridPane selectMapPane;
     @FXML private GridPane settingsGrid;
+    @FXML private GridPane selectAIPane;
     @FXML private TextField txtIPAddress;
     @FXML private TextField txtPortNumber;
     @FXML private Label lblIP;
@@ -93,6 +102,8 @@ public class MainMenuController implements Initializable{
     private static double fxSliderValue = 1.0;
     private static boolean soundFxIsMute;
 
+    private Boolean isSinglePlayer = false;
+
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
 
     private Main main;
@@ -105,7 +116,6 @@ public class MainMenuController implements Initializable{
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        DisplayUtils.setIsRaceView(false);
         setButtonAnimations();
         setLabelPromptAnimations();
         setPaneVisibility();
@@ -120,6 +130,9 @@ public class MainMenuController implements Initializable{
         columnParticipants.setStyle( "-fx-alignment: CENTER;");
     }
 
+    /**
+     * sets the defualt visibility of all of the panes
+     */
     private void setPaneVisibility(){
         onlinePane.setVisible(true);
         offlinePane.setVisible(false);
@@ -127,6 +140,7 @@ public class MainMenuController implements Initializable{
         hostOptionsPane.setVisible(false);
         selectMapPane.setVisible(false);
         menuAnchor.setVisible(true);
+        selectAIPane.setVisible(false);
         settingsGrid.setVisible(false);
     }
 
@@ -141,6 +155,7 @@ public class MainMenuController implements Initializable{
     }
 
     @FXML private void loadHostOptionsPane(){
+        isSinglePlayer = false;
         AnimationUtils.switchPaneFade(onlinePane, hostOptionsPane);
     }
 
@@ -158,8 +173,118 @@ public class MainMenuController implements Initializable{
         updateMap();
     }
 
+    @FXML private void backToMapFromAI(){
+        AnimationUtils.switchPaneFade(selectAIPane, selectMapPane);
+        currentCourseMap = availableCourseMaps.get(currentMapIndex);
+        updateMap();
+    }
+
+    /**
+     * take the menu back to the options pane
+     */
     @FXML private void backToOptions(){
-        AnimationUtils.switchPaneFade(selectMapPane, hostOptionsPane);
+        if(isSinglePlayer){
+            AnimationUtils.switchPaneFade(selectMapPane, offlinePane);
+        }else{
+            AnimationUtils.switchPaneFade(selectMapPane, hostOptionsPane);
+        }
+        removeMap();
+    }
+
+    /**
+     * loads the join pane
+     */
+    @FXML private void loadJoinPane() {
+        setUpAvailableRaceTable();
+        AnimationUtils.switchPaneFade(onlinePane, joinRacePane);
+        tblAvailableRaces.setItems(client.getAvailableRaces());
+    }
+
+    /**
+     * sets up the available race table
+     */
+    private void setUpAvailableRaceTable(){
+        columnMap.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
+        columnParticipants.setCellValueFactory(cellData -> cellData.getValue().numBoatsProperty().asObject());
+    }
+
+    @FXML private void backToOnline(){
+        AnimationUtils.switchPaneFade(joinRacePane, onlinePane);
+        clearTableSelection();
+    }
+
+    @FXML private void backFromHost(){AnimationUtils.switchPaneFade(hostOptionsPane, onlinePane);
+    }
+
+    /**
+     * loads a tutorial when it is selected in the menu
+     * @throws Exception
+     */
+    @FXML private void loadTutorial() throws Exception {
+        DisplaySwitcher.getGameSounds().stopEndlessMusic();
+        btnSinglePlay.setDisable(true);
+        ClientOptions clientOptions = new ClientOptions(GameMode.TUTORIAL);
+        stopMainMenuClientThread();
+        if(main.startLocalRace("GuidedPractice-course.xml", DEFAULT_PORT, true, clientOptions, NO_AI)){
+            Thread.sleep(200);
+            main.loadRaceView(clientOptions);
+            loadTutorialMusic();
+        }
+    }
+
+    /**
+     * Allows user to host a game at the DEFAULT_PORT and current public IP
+     * @throws Exception
+     */
+    private void loadOfflinePlay(AIDifficulty AIDifficulty) throws Exception{
+        btnSinglePlay.setDisable(true);
+        ClientOptions clientOptions = new ClientOptions(GameMode.SINGLEPLAYER);
+        stopMainMenuClientThread();
+        if(main.startLocalRace(currentCourseMap.getXML(), DEFAULT_PORT, false, clientOptions, AIDifficulty)){
+            Thread.sleep(200);
+            main.loadRaceView(clientOptions);
+            loadSinglePlayerMusic();
+        }else{
+            btnSinglePlay.setDisable(false);
+        }
+    }
+
+    @FXML private void loadMapsForSinglePlay() {
+        isSinglePlayer = true;
+        AnimationUtils.switchPaneFade(offlinePane, selectMapPane);
+        currentCourseMap = availableCourseMaps.get(currentMapIndex);
+        updateMap();
+    }
+
+
+    /**
+     * loads the practise start mode
+     * @throws Exception
+     */
+    @FXML private void loadPracticeStart() throws Exception {
+        btnPractiseStart.setDisable(true);
+        ClientOptions clientOptions = new ClientOptions(GameMode.PRACTICE);
+        stopMainMenuClientThread();
+        if(main.startLocalRace("PracticeStart-course.xml", DEFAULT_PORT, false, clientOptions, NO_AI)){
+            Thread.sleep(200);
+            main.loadRaceView(clientOptions);
+            loadSinglePlayerMusic();
+        }else{
+            btnPractiseStart.setDisable(false);
+        }
+
+    }
+
+    @FXML private void startGame() throws Exception {
+        if(isSinglePlayer) {
+            AnimationUtils.switchPaneFade(selectMapPane, selectAIPane);
+            removeMap();
+        } else {
+            startHostGame();
+        }
+    }
+
+    private void removeMap(){
         if(currentCourseMap != null){
             for(Mark mark : currentCourseMap.getMarks().values()){
                 menuAnchor.getChildren().remove(mark.getIcon());
@@ -168,60 +293,19 @@ public class MainMenuController implements Initializable{
             menuAnchor.getChildren().remove(currentCourseMap.getStartLine());
             currentCourseMap.removeArrowedRoute();
             timer.stop();
-        }}
-
-    @FXML private void loadJoinPane() {
-        setUpAvailableRaceTable();
-        AnimationUtils.switchPaneFade(onlinePane, joinRacePane);
-        tblAvailableRaces.setItems(client.getAvailableRaces());
+        }
     }
 
-    private void setUpAvailableRaceTable(){
-        columnMap.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
-        columnParticipants.setCellValueFactory(cellData -> cellData.getValue().numBoatsProperty().asObject());
+    @FXML private void noAI() throws Exception {
+        loadOfflinePlay(NO_AI);
     }
 
-    @FXML private void backToOnline(){
-        AnimationUtils.switchPaneFade(joinRacePane, onlinePane);
+    @FXML private void easyAI() throws Exception {
+        loadOfflinePlay(EASY);
     }
 
-    @FXML private void backFromHost(){AnimationUtils.switchPaneFade(hostOptionsPane, onlinePane);
-    }
-
-    @FXML private void loadTutorial() throws Exception {
-        DisplaySwitcher.getGameSounds().stopEndlessMusic();
-        btnSinglePlay.setDisable(true);
-        ClientOptions clientOptions = new ClientOptions(GameMode.TUTORIAL);
-        stopMainMenuClientThread();
-        main.startLocalRace("GuidedPractice-course.xml", DEFAULT_PORT, true, clientOptions);
-        Thread.sleep(200);
-        main.loadRaceView(clientOptions);
-        loadTutorialMusic();
-    }
-
-    /**
-     * Allows user to host a game at the DEFAULT_PORT and current public IP
-     * @throws Exception
-     */
-    @FXML private void loadOfflinePlay() throws Exception{
-        btnSinglePlay.setDisable(true);
-        ClientOptions clientOptions = new ClientOptions(GameMode.SINGLEPLAYER);
-        stopMainMenuClientThread();
-        main.startLocalRace(selectedCourse, DEFAULT_PORT, false, clientOptions);
-        Thread.sleep(200);
-        main.loadRaceView(clientOptions);
-        loadSinglePlayerMusic();
-    }
-
-
-    @FXML private void loadPracticeStart() throws Exception {
-        btnSinglePlay.setDisable(true);
-        ClientOptions clientOptions = new ClientOptions(GameMode.PRACTICE);
-        stopMainMenuClientThread();
-        main.startLocalRace("PracticeStart-course.xml", DEFAULT_PORT, false, clientOptions);
-        Thread.sleep(200);
-        main.loadRaceView(clientOptions);
-        loadSinglePlayerMusic();
+    @FXML private void hardAI() throws Exception {
+        loadOfflinePlay(HARD);
     }
 
     /**
@@ -233,11 +317,12 @@ public class MainMenuController implements Initializable{
         Integer minCompetitors = (int) boatsInRaceSlider.getValue();
         ClientOptions clientOptions = new ClientOptions(GameMode.MULTIPLAYER);
         stopMainMenuClientThread();
-        main.startHostedRace(currentCourseMap.getXML(), speed, minCompetitors, clientOptions, currentMapIndex);
-        timer.stop();
-        Thread.sleep(200);
-        main.loadRaceView(clientOptions);
-        loadRealGameSounds();
+        if(main.startHostedRace(currentCourseMap.getXML(), speed, minCompetitors, clientOptions, currentMapIndex)){
+            timer.stop();
+            Thread.sleep(200);
+            main.loadRaceView(clientOptions);
+            loadRealGameSounds();
+        }
     }
 
     /**
@@ -269,8 +354,17 @@ public class MainMenuController implements Initializable{
         }
     }
 
+    /**
+     * starts a game with the given settings
+     * @param clientStarted if the client has already started
+     * @param clientOptions the options that have been set by the client
+     * @throws InterruptedException
+     * @throws UnsupportedAudioFileException
+     * @throws IOException
+     * @throws LineUnavailableException
+     */
     private void startGame(boolean clientStarted, ClientOptions clientOptions) throws InterruptedException, UnsupportedAudioFileException, IOException, LineUnavailableException {
-        if(clientStarted){
+        if(clientStarted) {
             stopMainMenuClientThread();
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
@@ -290,6 +384,7 @@ public class MainMenuController implements Initializable{
             ClientOptions clientOptions =
                     new ClientOptions(race.getIpAddress(), race.getPort(), GameMode.MULTIPLAYER, false, false);
             boolean clientStarted = main.startClient(clientOptions);
+            clearTableSelection();
             startGame(clientStarted, clientOptions);
         }
     }
@@ -310,6 +405,7 @@ public class MainMenuController implements Initializable{
             ClientOptions clientOptions =
                     new ClientOptions(ipAddress, race.getPort(), GameMode.MULTIPLAYER, true, false);
             boolean clientStarted = main.startClient(clientOptions);
+            clearTableSelection();
             startGame(clientStarted, clientOptions);
         }
     }
@@ -327,6 +423,9 @@ public class MainMenuController implements Initializable{
         addButtonListeners(btnOnlineBack);
         addButtonListeners(btnPractiseStart);
         addButtonListeners(btnSinglePlay);
+        addButtonListeners(noAIbtn);
+        addButtonListeners(easyAIbtn);
+        addButtonListeners(hardAIbtn);
         addButtonListeners(btnLoadMap);
         addButtonListeners(btnOnlineBackFromHost);
         addButtonListeners(btnBackToOptions);
@@ -384,18 +483,36 @@ public class MainMenuController implements Initializable{
         }
     }
 
+    /**
+     * sets up the sounds for single player mode
+     * @throws LineUnavailableException
+     * @throws IOException
+     * @throws UnsupportedAudioFileException
+     */
     private void loadSinglePlayerMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         DisplaySwitcher.getGameSounds().stopEndlessMusic();
         DisplaySwitcher.getGameSounds().singlePlayerMusic();
         DisplaySwitcher.getGameSounds().playEndlessMusic();
     }
 
+    /**
+     * sets up the sounds for the tutorial music
+     * @throws LineUnavailableException
+     * @throws IOException
+     * @throws UnsupportedAudioFileException
+     */
     private void loadTutorialMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         DisplaySwitcher.getGameSounds().stopEndlessMusic();
         DisplaySwitcher.getGameSounds().tutorialMusic();
         DisplaySwitcher.getGameSounds().playEndlessMusic();
     }
 
+    /**
+     * sets up the sound effects for the game
+     * @throws UnsupportedAudioFileException
+     * @throws IOException
+     * @throws LineUnavailableException
+     */
     private void loadRealGameSounds() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         DisplaySwitcher.getGameSounds().stopEndlessMusic();
         DisplaySwitcher.getGameSounds().oceanWaves();
@@ -570,6 +687,7 @@ public class MainMenuController implements Initializable{
         lblIP.setVisible(manuallyJoinGame);
         lblPort.setVisible(manuallyJoinGame);
         tblAvailableRaces.setVisible(!manuallyJoinGame);
+        clearTableSelection();
         if(manuallyJoinGame){
             btnManual.setText("Auto");
         }else{
@@ -674,6 +792,10 @@ public class MainMenuController implements Initializable{
         if (mainMenuClientThread != null) {
             mainMenuClientThread.stop();
         }
+    }
+
+    private void clearTableSelection(){
+        tblAvailableRaces.getSelectionModel().clearSelection();
     }
 
     private void setUpDeselection(){

@@ -99,19 +99,27 @@ public class SelectionController extends Observable {
      */
     void addDeselectEvents(Polygon boundary){
         boundary.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            deselectBoat();
+            if (!e.isSynthesized()){
+                deselectBoat();
+            }
         });
 
         boundary.addEventHandler(MouseEvent.MOUSE_DRAGGED, e -> {
-            deselectBoat();
+            if (!e.isSynthesized()){
+                deselectBoat();
+            }
         });
 
         controller.mapImageView.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            deselectBoat();
+            if (!e.isSynthesized()){
+                deselectBoat();
+            }
         });
 
         controller.mapImageView.addEventHandler(MouseEvent.MOUSE_DRAGGED, e -> {
-            deselectBoat();
+            if (!e.isSynthesized()){
+                deselectBoat();
+            }
         });
 
 

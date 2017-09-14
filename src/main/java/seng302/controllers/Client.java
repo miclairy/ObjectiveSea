@@ -1,13 +1,20 @@
 package seng302.controllers;
 
-import seng302.data.ClientPacketBuilder;
-import seng302.data.ClientSender;
-import seng302.data.ClientListener;
-import seng302.data.Receiver;
+import seng302.data.*;
 import seng302.data.registration.RegistrationResponse;
+import seng302.data.registration.RegistrationType;
 import seng302.data.registration.ServerFullException;
+import seng302.data.*;
+import seng302.data.registration.*;
+import seng302.models.Boat;
+import seng302.models.ClientOptions;
+import seng302.models.Race;
 import seng302.utilities.NoConnectionToServerException;
 import seng302.utilities.TimeUtils;
+
+import java.util.*;
+
+import java.util.Observable;
 import java.util.Observer;
 
 /**
@@ -21,13 +28,12 @@ public abstract class Client implements Runnable, Observer {
     private double CONNECTION_TIMEOUT = TimeUtils.secondsToMilliseconds(10.0);
     private int WAIT_MILLISECONDS = 10;
 
-    protected Receiver clientListener;
     protected ClientPacketBuilder packetBuilder;
     protected ClientSender sender;
+    protected Receiver clientListener;
     Thread dataStreamReaderThread;
     protected RegistrationResponse serverRegistrationResponse;
     protected int clientID;
-
 
     /**
      * Waits for the server to accept the socket connection
@@ -37,7 +43,6 @@ public abstract class Client implements Runnable, Observer {
         int connectionAttempts = 0;
         while(clientListener.getSocket() == null) {
             if(clientListener.isHasConnectionFailed()){
-//                stopDataStreamReader();
                 throw new NoConnectionToServerException(true, "Connection Failed. Port number is invalid.");
             }else if(connectionAttempts < MAX_CONNECTION_ATTEMPTS){
                 try {
@@ -58,7 +63,7 @@ public abstract class Client implements Runnable, Observer {
      * @throws ServerFullException if the Response from the server was received, but the server was full
      * @throws NoConnectionToServerException if we timeout whilst waiting for the response
      */
-    protected void manageServerResponse() throws ServerFullException, NoConnectionToServerException {
+    protected void manageServerResponse() throws ServerRegistrationException, NoConnectionToServerException {
         double waitTime = 0;
         while (serverRegistrationResponse == null) {
             try {
@@ -78,6 +83,8 @@ public abstract class Client implements Runnable, Observer {
                 break;
             case OUT_OF_SLOTS:
                 throw new ServerFullException();
+            case RACE_UNAVAILABLE:
+                throw new RaceUnavailableException();
             case GENERAL_FAILURE:
             case GHOST_SUCCESS:
             case TUTORIAL_SUCCESS:
@@ -91,7 +98,7 @@ public abstract class Client implements Runnable, Observer {
         if(dataStreamReaderThread != null){
             dataStreamReaderThread.stop();
             this.clientListener = null;
-            System.out.println("Client: Server not found");
+            System.out.println("Client: Server not found \uD83D\uDD25 \uD83D\uDE2B");
         }
     }
 }

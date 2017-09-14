@@ -2,10 +2,9 @@ package seng302.utilities;
 
 import seng302.controllers.Client;
 import seng302.controllers.GameClient;
-import seng302.controllers.Server;
+import seng302.controllers.GameServer;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URL;
@@ -14,9 +13,9 @@ import java.util.Objects;
 
 public class ConnectionUtils {
     private static GameClient client;
-    private static String vmIpAddress = "132.181.12.31";
-    private static int vmpPort = 2825;
-    private static Server server;
+    private static String vmIpAddress = "132.181.12.63";
+    private static int vmpPort = 2827;
+    private static GameServer server;
     private static final String IP_REGEX = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
 
 
@@ -45,7 +44,7 @@ public class ConnectionUtils {
         ConnectionUtils.client = client;
     }
 
-    public static void setServer(Server server) {
+    public static void setServer(GameServer server) {
         ConnectionUtils.server = server;
     }
 

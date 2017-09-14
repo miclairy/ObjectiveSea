@@ -1,38 +1,48 @@
 package seng302.controllers;
 
 import seng302.data.*;
+import seng302.data.registration.RegistrationResponse;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.data.registration.RegistrationType;
+import seng302.models.*;
 import seng302.models.*;
 import seng302.utilities.ConnectionUtils;
 import seng302.views.AvailableRace;
 import sun.security.x509.AVA;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.BindException;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Observer;
 
 import static seng302.data.AC35StreamXMLMessage.BOAT_XML_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.RACE_XML_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.REGATTA_XML_MESSAGE;
+import static seng302.data.registration.RegistrationResponseStatus.OUT_OF_SLOTS;
+import static seng302.data.registration.RegistrationResponseStatus.RACE_UNAVAILABLE;
+import static seng302.data.registration.RegistrationResponseStatus.SPECTATOR_SUCCESS;
 
 /**
  * Created by dda40 on 11/09/17.
  *
  */
-public class GameServer extends Server {
+public class GameServer implements Runnable, Observer {
     private final double SECONDS_PER_UPDATE = 0.2;
+    private final int MAX_SPECTATORS = 100; //mostly because our boats sourceIDs start at 101
 
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumber = new HashMap<>();
     private Map<Boat, Integer> boatSequenceNumbers = new HashMap<>();
     private Map<Boat, Integer> lastMarkRoundingSent = new HashMap<>();
     private int nextViewerID = 0;
-
-    private Map<AvailableRace, byte[]> availableRaces = new HashMap<>();
-
+    private ConnectionManager connectionManager;
+    private ServerPacketBuilder packetBuilder;
+    private ServerOptions options;
     private RaceUpdater raceUpdater;
     private Thread raceUpdaterThread;
     private CollisionManager collisionManager;
@@ -43,6 +53,7 @@ public class GameServer extends Server {
         connectionManager = new ConnectionManager(options.getPort(), true);
         connectionManager.addObserver(this);
         setupNewRaceUpdater(options);
+        createPacketForVM();
     }
 
     /**
@@ -53,14 +64,17 @@ public class GameServer extends Server {
         raceUpdater = new RaceUpdater(options.getRaceXML());
         if(options.isTutorial()) raceUpdater.skipPrerace();
         raceUpdater.setScaleFactor(options.getSpeedScale());
+        if(options.getAIDifficulty() != AIDifficulty.NO_AI) raceUpdater.addAICompetitor(options.getAIDifficulty());
         raceUpdaterThread = new Thread(raceUpdater);
         raceUpdaterThread.setName("Race Updater");
         collisionManager = raceUpdater.getCollisionManager();
+        System.out.println("race updater running");
     }
 
     /**
      * Initializes the sequence numbers for the boats and xml messages
-     * @throws IOException
+     * @throws IOException throws this
+     * @throws NullPointerException also throws this
      */
     private void initialize() throws IOException, NullPointerException  {
         xmlSequenceNumber.put(REGATTA_XML_MESSAGE, 0);
@@ -145,16 +159,24 @@ public class GameServer extends Server {
         sendYachtEventMessages();
     }
 
+    /**
+     * send a yacht event message to the server
+     * @throws IOException throws this because of sending data
+     */
     private void sendYachtEventMessages() throws IOException {
         for (Collision collision : collisionManager.getCollisions()) {
             for (Integer boatId : collision.getInvolvedBoats()) {
                 Boat boat = raceUpdater.getRace().getBoatById(boatId);
                 sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION);
-                if (collision.boatIsAtFault(boatId)) {
-                    sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION_PENALTY);
-                }
-                if(collision.getInvolvedBoats().size() == 1) {
-                    sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION_MARK);
+                if (collision.isOutOfBounds()){
+                    sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.OUT_OF_BOUNDS);
+                }else{
+                    if (collision.boatIsAtFault(boatId)) {
+                        sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION_PENALTY);
+                    }
+                    if(collision.getInvolvedBoats().size() == 1) {
+                        sendYachtEventMessage(boat, raceUpdater.getRace(), collision.getIncidentId(), YachtEventCode.COLLISION_MARK);
+                    }
                 }
                 sendBoatStateMessage(boat);
             }
@@ -173,13 +195,12 @@ public class GameServer extends Server {
     /**
      * Sends a Boat Location Message and possible a Mark Rounding message for a boat
      * @param boat the boat to send messages for
-     * @throws IOException
+     * @throws IOException throws this because of sending packet
      */
     private void sendBoatMessages(Boat boat) throws IOException {
         Integer currentSequenceNumber = boatSequenceNumbers.get(boat);
-        if (currentSequenceNumber != null) { //check required as a race condition can sometimes cause a NullPointerException
+        if (currentSequenceNumber != null) {
             boatSequenceNumbers.put(boat, currentSequenceNumber + 1);
-
             sendPacket(packetBuilder.createBoatLocationMessage(boat, raceUpdater.getRace(), currentSequenceNumber));
             if (lastMarkRoundingSent.get(boat) != boat.getLastRoundedMarkIndex()) {
                 lastMarkRoundingSent.put(boat, boat.getLastRoundedMarkIndex());
@@ -190,9 +211,9 @@ public class GameServer extends Server {
 
     /**
      * sends a Yacht Event message
-     * @param boat
-     * @param race
-     * @throws IOException
+     * @param boat a boat
+     * @param race a race
+     * @throws IOException needed for sending a packet that fails
      */
     private void sendYachtEventMessage(Boat boat, Race race, int incidentID, YachtEventCode eventCode) throws IOException {
         sendPacket(packetBuilder.createYachtEventMessage(boat, race, incidentID, eventCode));
@@ -237,22 +258,39 @@ public class GameServer extends Server {
         serverListener.setClientId(newId);
         connectionManager.sendToClient(newId, packet);
         if(success){
-            try {
-                System.out.println(raceUpdater.getRace().getRegattaName());
-                updateVM(options.getSpeedScale(), options.getMinParticipants(), options.getPort(), ConnectionUtils.getPublicIp(), 1);
-            } catch (IOException a) {
-                a.printStackTrace();
-            }
+            createPacketForVM();
             sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());
             sendAllBoatStates();
         }
     }
 
-    private void updateVM(Double speedScale, Integer minParticipants, Integer serverPort, String publicIp, int currentCourseIndex) throws IOException {
-        byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(speedScale, minParticipants, serverPort, publicIp, currentCourseIndex, raceUpdater.getRace().getCompetitors().size());
-        System.out.println("Client: Updating VM");
-        Socket vmSocket = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
-        connectionManager.updateVM(registerGamePacket, vmSocket);
+    private void createPacketForVM(){
+        try {
+            updateVM(options, ConnectionUtils.getPublicIp(), CourseName.getCourseIntFromName(raceUpdater.getRace().getRegattaName()));
+        } catch (IOException a) {
+            a.printStackTrace();
+        }
+    }
+
+    /**
+     * sends a packet to the Vm server notifying it that a game is being hosted
+     * @param options options for the hosted game
+     * @param publicIp public ip of the hosted game
+     * @param currentCourseIndex index of the current course running on the game
+     * @throws IOException needed for sending to the vm
+     */
+    private void updateVM(ServerOptions options, String publicIp, int currentCourseIndex) throws IOException {
+        try{
+            byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(options.getSpeedScale(), options.getMinParticipants(),
+                    options.getPort(), publicIp, currentCourseIndex, raceUpdater.getRace().getCompetitors().size());
+            System.out.println("GameServer: Updating VM" );
+            Socket vmSocket = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
+            DataOutputStream vmOutput = new DataOutputStream(vmSocket.getOutputStream());
+            vmOutput.write(registerGamePacket);
+        } catch (ConnectException e){
+            System.out.println("VM not reachable");
+        }
+
     }
 
     /**
@@ -274,6 +312,7 @@ public class GameServer extends Server {
                 }
             } else {
                 setBoatToDNF((int) arg);
+                createPacketForVM();
             }
         } else if(observable instanceof ServerListener){
             if(arg instanceof RegistrationType){
@@ -308,13 +347,7 @@ public class GameServer extends Server {
                 addClientToRace(serverListener);
                 break;
             case SPECTATOR:
-                //we may want to put a limit on number of connections to preserve server responsiveness at some point
-                //but for now just always accept new spectators
-                byte[] packet = packetBuilder.createRegistrationResponsePacket(0, RegistrationResponseStatus.SPECTATOR_SUCCESS);
-                connectionManager.addConnection(nextViewerID, serverListener.getSocket());
-                connectionManager.sendToClient(nextViewerID, packet);
-                sendAllBoatStates();
-                nextViewerID++;
+                addSpectatorToRace(serverListener);
                 break;
             case GHOST:
                 System.out.println("Server: Client attempted to connect as ghost, ignoring.");
@@ -322,6 +355,28 @@ public class GameServer extends Server {
             case TUTORIAL:
                 System.out.println("Server: Client attempted to connect as control tutorial, ignoring.");
                 break;
+        }
+    }
+
+    /** Responds to a Spectator requesting to join
+     * Can fail due to the race not being started, otherwise we let them join
+     * @param serverListener
+     */
+    private void addSpectatorToRace(ServerListener serverListener) {
+        RegistrationResponseStatus response = SPECTATOR_SUCCESS;
+        if (!raceUpdaterThread.isAlive()) {
+            response = RACE_UNAVAILABLE;
+        } else if (nextViewerID >= MAX_SPECTATORS) {
+            response = OUT_OF_SLOTS;
+        }
+        byte[] packet = packetBuilder.createRegistrationResponsePacket(0, response);
+        connectionManager.addConnection(nextViewerID, serverListener.getSocket());
+        connectionManager.sendToClient(nextViewerID, packet);
+        if (response.equals(SPECTATOR_SUCCESS)) {
+            sendAllBoatStates();
+            nextViewerID++;
+        } else {
+            connectionManager.removeConnection(nextViewerID);
         }
     }
 
@@ -333,9 +388,19 @@ public class GameServer extends Server {
     private void setBoatToDNF(int arg){
         for(Boat boat : raceUpdater.getRace().getCompetitors()){
             if(boat.getId().equals(arg)){
-                boat.setStatus(BoatStatus.DNF);
-                boat.changeSails();
+                if(!boat.getStatus().equals(BoatStatus.FINISHED)){
+                    boat.setStatus(BoatStatus.DNF);
+                    boat.changeSails();
+                }
             }
         }
+    }
+
+    /**
+     * Sends a header, body then generates and sends a CRC for that header and body
+     * @param packet the packet to send
+     */
+    private void sendPacket(byte[] packet) {
+        connectionManager.sendToClients(packet);
     }
 }

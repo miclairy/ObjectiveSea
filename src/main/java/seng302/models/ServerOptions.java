@@ -10,7 +10,7 @@ import seng302.utilities.ConnectionUtils;
 public class ServerOptions {
 
     private final String DEFAULT_COURSE = "AC35-course.xml";
-    private final Double DEFAULT_SPEED = 10.0;
+    private final Double DEFAULT_SPEED = 15.0;
     private final Integer DEFAULT_PORT = 2828;
     private Integer MAX_PARTICIPANTS = 6;
 
@@ -20,6 +20,7 @@ public class ServerOptions {
     private String raceXML;
     private boolean isTutorial;
     private Integer numRacesToRun;
+    private AIDifficulty aiDifficulty = AIDifficulty.NO_AI;
     private boolean runRaceManager;
 
     /**
@@ -127,5 +128,13 @@ public class ServerOptions {
 
     public void setRunRaceManager(boolean runRaceManager) {
         this.runRaceManager = runRaceManager;
+    }
+
+    public void setAiDifficulty(AIDifficulty AIDifficulty) {
+        this.aiDifficulty = AIDifficulty;
+    }
+
+    public AIDifficulty getAIDifficulty() {
+        return this.aiDifficulty;
     }
 }

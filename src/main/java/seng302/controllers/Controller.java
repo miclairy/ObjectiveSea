@@ -7,6 +7,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -18,10 +19,9 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.TouchEvent;
+import javafx.scene.input.ZoomEvent;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Callback;
@@ -36,6 +36,7 @@ import seng302.data.BoatStatus;
 import seng302.utilities.*;
 import seng302.utilities.TimeUtils;
 import seng302.views.BoatDisplay;
+import seng302.views.DisplayTouchController;
 import seng302.views.HeadsupDisplay;
 
 
@@ -45,8 +46,12 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.*;
 
+import static java.lang.Math.abs;
 import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.scene.input.KeyCode.*;
+import static seng302.utilities.DisplayUtils.DRAG_TOLERANCE;
+import static seng302.utilities.DisplayUtils.isOutsideBounds;
+import static seng302.utilities.DisplayUtils.zoomLevel;
 
 public class Controller implements Initializable, Observer {
 
@@ -122,12 +127,18 @@ public class Controller implements Initializable, Observer {
     private ScoreBoardController scoreBoardController = new ScoreBoardController();
     @FXML
     private SelectionController selectionController;
+    @FXML
+    private Pane touchPane;
 
     private boolean raceStatusChanged = true;
     private Race race;
     private ClientOptions options;
     private DisplaySwitcher displaySwitcher;
     private boolean scoreboardVisible = true;
+    private boolean moveAnnotation = false;
+    private ArrayList<BoatDisplay> boatDisplayArrayList = new ArrayList<>();
+    private BoatDisplay currentDisplayBoat;
+
 
 
     private final double FOCUSED_ZOOMSLIDER_OPACITY = 0.8;
@@ -138,7 +149,6 @@ public class Controller implements Initializable, Observer {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        DisplayUtils.setIsRaceView(true);
         addRightHandSideListener();
         canvasAnchor.getStylesheets().addAll(COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, BOAT_CSS, DISTANCELINE_CSS, HEADSUP_DISPLAY_CSS);
         canvasWidth = canvas.getWidth();
@@ -243,8 +253,11 @@ public class Controller implements Initializable, Observer {
         } else {
             startersOverlayTitle.setText(race.getRegattaName());
         }
+        initZoomEventListener();
         initKeyPressListener();
-        raceViewController.setOptions(options);
+        initTouchDisplayDrag();
+        raceViewController.setupRaceView(options);
+        initHiddenScoreboard();
         raceViewController.updateWindArrow();
         raceViewController.start();
 
@@ -262,13 +275,72 @@ public class Controller implements Initializable, Observer {
         displaySwitcher.loadMainMenu();
     }
 
+    public void addDisplayBoat(BoatDisplay boatDisplay) {
+        boatDisplayArrayList.add(boatDisplay);
+    }
+
+    private static class Delta {
+        public static double x;
+        public static double y;
+    }
+
+    /**
+     * Takes the displayBoat and makes the annotation of that boat draggable. Via mouse or touch press.
+     */
+    public void makeAnnoDraggable() {
+
+        canvasAnchor.setOnMousePressed(event -> {
+            for(BoatDisplay boatDisplay : boatDisplayArrayList) {
+
+                VBox boatAnnotation = boatDisplay.getAnnotation();
+
+                double annotationXPosition = event.getX() - boatAnnotation.getLayoutX();
+                double annotationYPosition = event.getY() - boatAnnotation.getLayoutY();
+                double annotationWidth = boatAnnotation.getWidth();
+                double annotationHeight = boatAnnotation.getHeight();
+
+                if(annotationXPosition <= annotationWidth && annotationXPosition >= 0 &&
+                        annotationYPosition <= annotationHeight && annotationYPosition >= 0) {
+                    moveAnnotation = true;
+                    DisplayUtils.externalTouchEvent = true;
+                    currentDisplayBoat = boatDisplay;
+                }
+            }
+        });
+
+        canvasAnchor.setOnMouseDragged(event -> {
+
+            if(moveAnnotation && DisplayUtils.externalTouchEvent) {
+                if (zoomLevel > 1 || (zoomLevel <= 1 && !isOutsideBounds(currentDisplayBoat.getAnnotation()))) {
+                    if (abs(event.getX() - Delta.x) < DRAG_TOLERANCE &&
+                            abs(event.getY() - Delta.y) < DRAG_TOLERANCE) {
+                        double scaledChangeX = ((event.getX() - Delta.x) / zoomLevel);
+                        double scaledChangeY = ((event.getY() - Delta.y) / zoomLevel);
+                        currentDisplayBoat.setAnnoOffsetX(currentDisplayBoat.getAnnoOffsetX() + scaledChangeX);
+                        currentDisplayBoat.setAnnoOffsetY(currentDisplayBoat.getAnnoOffsetY() + scaledChangeY);
+                    }
+                }
+                Delta.x = event.getX();
+                Delta.y = event.getY();
+
+                DisplayUtils.externalDragEvent = true;
+            }
+        });
+
+        canvasAnchor.setOnMouseReleased(event -> {
+            moveAnnotation = false;
+            DisplayUtils.externalTouchEvent = false;
+        });
+    }
+
+
     /**
      * initilizes display listeners to detect dragging on display. Calls DisplayUtils to move display
      * and redraw course and paths as appropriate.
      */
     private void initDisplayDrag() {
         canvasAnchor.setOnMouseDragged(event -> {
-            if (DisplayUtils.zoomLevel != 1) {
+            if (DisplayUtils.zoomLevel != 1 && !event.isSynthesized() && !DisplayUtils.externalDragEvent) {
                 DisplayUtils.dragDisplay((int) event.getX(), (int) event.getY());
                 raceViewController.redrawCourse();
                 raceViewController.redrawBoatPaths();
@@ -276,6 +348,24 @@ public class Controller implements Initializable, Observer {
             }
         });
     }
+
+    /**
+     * initilized two finger dragging of the course. allows for panning while zoomed.
+     */
+    private void initTouchDisplayDrag() {
+        canvasAnchor.addEventFilter(TouchEvent.ANY, touch -> {
+            if (touch.getTouchPoints().size() == 2 && DisplayUtils.zoomLevel != 1 && DisplayUtils.externalZoomEvent) {
+                DisplayUtils.externalDragEvent = false;
+                double touchX = (touch.getTouchPoints().get(0).getX() + touch.getTouchPoints().get(1).getX()) / 2;
+                double touchY = (touch.getTouchPoints().get(0).getY() + touch.getTouchPoints().get(1).getY()) / 2;
+                DisplayUtils.dragDisplay((int) touchX, (int) touchY);
+                raceViewController.redrawCourse();
+                raceViewController.redrawBoatPaths();
+                selectionController.deselectBoat();
+            }
+        });
+    }
+
 
     /**
      * adds a listener to the + and - keys to manage keyboard zooming
@@ -291,25 +381,34 @@ public class Controller implements Initializable, Observer {
         });
     }
 
+
+    /**
+     * initilises zoom listener
+     */
+    private void initZoomEventListener() {
+        canvasAnchor.setOnZoom(zoom -> {
+            DisplayUtils.externalZoomEvent = (zoom.getZoomFactor() > 0.96 && zoom.getZoomFactor() < 1.04);
+            if(!DisplayUtils.externalZoomEvent) {
+                zoomSlider.adjustValue(zoomSlider.getValue() * zoom.getZoomFactor());
+            }
+        });
+    }
+
     /**
      * Initilizes zoom slider on display. Resets zoom on slide out
      */
     private void initZoom() {
-        //Zoomed out
         zoomSlider.valueProperty().addListener((arg0, arg1, arg2) -> {
             raceViewController.stopHighlightAnimation();
             zoomSlider.setOpacity(FOCUSED_ZOOMSLIDER_OPACITY);
             DisplayUtils.setZoomLevel(zoomSlider.getValue());
             if (DisplayUtils.zoomLevel != 1) {
                 mapImageView.setVisible(false);
-                nextMarkCircle.setVisible(true);
             } else {
-                //Zoom out full, reset everything
                 selectionController.setRotationOffset(0);
                 root.getTransforms().clear();
                 mapImageView.setVisible(true);
                 nextMarkCircle.setVisible(false);
-                selectionController.setTrackingPoint(false);
                 DisplayUtils.resetOffsets();
             }
             raceViewController.redrawCourse();
@@ -324,34 +423,26 @@ public class Controller implements Initializable, Observer {
     private void createCanvasAnchorListeners() {
 
         final ChangeListener<Number> resizeListener = new ChangeListener<Number>() {
-            final Timer timer = new Timer(); // uses a timer to call your resize method
-            TimerTask task = null; // task to execute after defined delay
-            final long delayTime = 300; // delay that has to pass in order to consider an operation done
-
+            final Timer timer = new Timer();
+            TimerTask task = null;
+            final long delayTime = 300;
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue) {
                 if (task != null) {
-                    task.cancel(); // cancel it, we have a new size to consider
-                    //zoom and blur image
-
+                    task.cancel();
                     mapImageView.setEffect(new GaussianBlur(300));
                 }
-
                 task = new TimerTask() // create new task that calls your resize operation
                 {
                     @Override
                     public void run() {
-                        // resize after time is waited
                         raceViewController.drawMap();
                         mapImageView.setEffect(null);
                     }
                 };
-                // schedule new task
                 timer.schedule(task, delayTime);
             }
         };
-
-
         canvasAnchor.widthProperty().addListener(resizeListener);
         canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
             canvasWidth = (double) newValue;
@@ -420,6 +511,7 @@ public class Controller implements Initializable, Observer {
                 if(!raceViewController.hasInitializedBoats()) {
                     raceViewController.initBoatHighlight();
                     raceViewController.initializeBoats();
+                    addUserBoat();
                 }
                 break;
             case STARTED:
@@ -590,6 +682,10 @@ public class Controller implements Initializable, Observer {
         }
     }
 
+    /**
+     * sets up the user help label in the GUI
+     * @param helper helper title
+     */
     public void setUserHelpLabel(String helper) {
         lblUserHelp.setOpacity(0);
         lblUserHelp.setPrefWidth(canvasWidth);
@@ -611,13 +707,14 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(nextMarkGrid, 430, true);
             AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
-            if (options.isParticipant()) {
+            if (options.isParticipant() && infoDisplay != null) {
                 AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, false);
             }
             scoreboardVisible = false;
             raceViewController.shiftArrow(false);
             setUpTable();
         } else {
+            rightHandSide.setVisible(true);
             AnimationUtils.shiftPaneNodes(rightHandSide, -440, true);
             AnimationUtils.shiftPaneArrow(btnHide, -430, -1);
             AnimationUtils.shiftPaneNodes(imvSpeedScale, -430, true);
@@ -625,10 +722,16 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(nextMarkGrid, -430, true);
             AnimationUtils.shiftPaneNodes(quickMenu, 115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true);
-            AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, true);
+            if(infoDisplay != null){
+                AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, true);
+            }
             scoreboardVisible = true;
             raceViewController.shiftArrow(true);
         }
+    }
+
+    public void setUpTouchInputController(TouchInputController touchInputController) {
+        touchInputController.setUp(root, touchPane, this);
     }
 
     public class ColoredTextListCell extends ListCell<String> {
@@ -739,10 +842,8 @@ public class Controller implements Initializable, Observer {
      */
     public void refreshTable(){
         Callback<Boat, javafx.beans.Observable[]> cb =(Boat boat) -> new javafx.beans.Observable[]{boat.getCurrPlacingProperty()};
-
         ObservableList<Boat> observableList = FXCollections.observableArrayList(cb);
         observableList.addAll(race.getObservableCompetitors());
-
         SortedList<Boat> sortedList = new SortedList<>( observableList,
                 (Boat boat1, Boat boat2) -> {
                     if( boat1.getCurrPlacingProperty().get() < boat2.getCurrPlacingProperty().get() ) {
@@ -762,7 +863,9 @@ public class Controller implements Initializable, Observer {
     }
 
     public void refreshHUD(){
-        infoDisplay.competitorAdded();
+        if (infoDisplay != null) {
+            infoDisplay.competitorAdded();
+        }
     }
 
     /**
@@ -785,6 +888,26 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.dullNode(button);
             AnimationUtils.toggleQuickMenuNodes(label, true);
         }
+    }
+
+    private void initHiddenScoreboard(){
+        rightHandSide.setTranslateX(rightHandSide.getTranslateX() + 440);
+        rightHandSide.setVisible(false);
+        btnHide.setRotate(180);
+        lblNoBoardClock.setOpacity(0.8);
+        if(options.isTutorial()){
+            lblNoBoardClock.setVisible(false);
+        }else{
+            lblNoBoardClock.setVisible(true);
+        }
+        AnimationUtils.shiftPaneNodes(btnHide, 430, true);
+        AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
+        AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
+        AnimationUtils.shiftPaneNodes(nextMarkGrid, 430, true);
+        AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
+        scoreboardVisible = false;
+        raceViewController.shiftArrow(false);
+        setUpTable();
     }
 
     public void setSoundController(SoundController soundController) {

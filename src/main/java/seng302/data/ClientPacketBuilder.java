@@ -53,6 +53,11 @@ public class ClientPacketBuilder extends PacketBuilder {
         return header;
     }
 
+    /**
+     * creates a packet that is sent when a host quits a race, used to update the VM
+     * @param type the message type for the packet
+     * @return the packet to send to the VM
+     */
     public byte[] createGameCancelPacket(AC35StreamMessage type) {
         byte[] header = super.createHeader(type);
         byte[] body = new byte[4];

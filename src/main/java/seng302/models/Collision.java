@@ -15,6 +15,7 @@ public class Collision {
     private Set<Integer> involvedBoats = new HashSet<>();
     private Set<Integer> atFaultBoats = new HashSet<>();
     private Integer incidentId;
+    private boolean isOutOfBounds = false;
 
     public Collision(){
         incidentId = lastUsedIncidentId++;
@@ -56,5 +57,13 @@ public class Collision {
 
     public boolean isSingleBoatCollision() {
         return involvedBoats.size() == 1;
+    }
+
+    public boolean isOutOfBounds() {
+        return isOutOfBounds;
+    }
+
+    public void setOutOfBounds(boolean outOfBounds) {
+        isOutOfBounds = outOfBounds;
     }
 }
