@@ -253,7 +253,7 @@ public class MainMenuController implements Initializable{
     }
 
     private void startGame(boolean clientStarted, ClientOptions clientOptions) throws InterruptedException, UnsupportedAudioFileException, IOException, LineUnavailableException {
-        if(clientStarted){
+        if(clientStarted) {
             stopMainMenuClientThread();
             Thread.sleep(200);
             main.loadRaceView(clientOptions);

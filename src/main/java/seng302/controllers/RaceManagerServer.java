@@ -10,10 +10,13 @@ import seng302.views.AvailableRace;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Observable;
+
+import static seng302.data.AC35StreamField.HOST_GAME_CURRENT_PLAYERS;
 
 /**
  * Created by dda40 on 11/09/17.
@@ -80,11 +83,20 @@ public class RaceManagerServer extends Server {
                 System.out.println("Updating running race");
                 updatedRace = true;
                 runningRace.setNumBoats(runningRace.getNumBoats() + 1);
+                incrementNumberOfBoats(runningRace);
             }
         }
         int raceMapIndex = CourseName.getCourseIntFromName(race.mapNameProperty().getValue());
         if (!updatedRace && raceMapIndex != -1) {
             availableRaces.add(race);
+        }
+    }
+
+    private void incrementNumberOfBoats(AvailableRace race){
+        byte[] packet = race.getPacket();
+        System.out.println(Arrays.toString(packet));
+        for (int i = 0; i < 1; i ++) {
+            packet[HOST_GAME_CURRENT_PLAYERS.getStartIndex() + i] = (byte) (race.getNumBoats() >> i * 8);
         }
     }
 
