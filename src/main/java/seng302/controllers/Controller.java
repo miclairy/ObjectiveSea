@@ -757,7 +757,9 @@ public class Controller implements Initializable, Observer {
     }
 
     public void refreshHUD(){
-        infoDisplay.competitorAdded();
+        if (infoDisplay != null) {
+            infoDisplay.competitorAdded();
+        }
     }
 
     /**

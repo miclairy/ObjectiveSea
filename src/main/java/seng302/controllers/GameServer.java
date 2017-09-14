@@ -51,6 +51,7 @@ public class GameServer implements Runnable, Observer {
         connectionManager = new ConnectionManager(options.getPort(), true);
         connectionManager.addObserver(this);
         setupNewRaceUpdater(options);
+        createPacketForVM();
     }
 
     /**
