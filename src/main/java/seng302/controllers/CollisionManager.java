@@ -17,10 +17,10 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class CollisionManager {
 
-    private Double BOAT_SENSITIVITY = 0.045;
-    private Double MARK_SENSITIVITY = 0.03;
-    private Double AT_FAULT_DELTA = 30.0;
-    private Double COLLISION_DELTA = 60.0;
+    private static final Double BOAT_SENSITIVITY = 0.045;
+    public static final Double MARK_SENSITIVITY = 0.03;
+    private static final Double AT_FAULT_DELTA = 30.0;
+    private static final Double COLLISION_DELTA = 60.0;
     private Penalties penalties = new Penalties();
     private Polygon boundary = null;
 

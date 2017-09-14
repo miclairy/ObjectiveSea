@@ -15,6 +15,7 @@ import javafx.application.Platform;
 import seng302.data.registration.RaceUnavailableException;
 import seng302.data.registration.ServerFullException;
 import seng302.data.registration.ServerRegistrationException;
+import seng302.models.AIDifficulty;
 import seng302.models.ClientOptions;
 import seng302.models.ServerOptions;
 import seng302.utilities.ConnectionUtils;
@@ -147,11 +148,12 @@ public class Main extends Application {
      * @return whether starting hosted race was successful or not
      * @throws Exception uncaught error
      */
-    public boolean startHostedRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions) throws Exception{
+    public boolean startHostedRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions, AIDifficulty aiDifficulty) throws Exception{
         ServerOptions serverOptions = new ServerOptions();
         serverOptions.setPort(port);
         serverOptions.setRaceXML(course);
         serverOptions.setTutorial(isTutorial);
+        serverOptions.setAiDifficulty(aiDifficulty);
         try{
             setupServer(serverOptions);
         } catch(BindException e){
