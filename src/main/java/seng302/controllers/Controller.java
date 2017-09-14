@@ -378,8 +378,8 @@ public class Controller implements Initializable, Observer {
             DialogPane dialogPane = alert.getDialogPane();
             dialogPane.getStylesheets().add("style/menuStyle.css");
             dialogPane.getStyleClass().add("myDialog");
-            alert.setTitle("_Server Disconnected");
-            alert.setHeaderText("The _Server has disconnected");
+            alert.setTitle("Server Disconnected");
+            alert.setHeaderText("The Server has disconnected");
             alert.setContentText("The server appears to have " +
                     "disconnected. \nYou will be returned to " +
                     "the main menu");

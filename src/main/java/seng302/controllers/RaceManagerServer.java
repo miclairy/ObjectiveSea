@@ -31,7 +31,7 @@ public class RaceManagerServer implements Observer {
         packetBuilder = new ServerPacketBuilder();
         connectionManager = new ConnectionManager(ConnectionUtils.getVmPort(), false);
         connectionManager.addObserver(this);
-        System.out.println("_Server: Waiting for races");
+        System.out.println("Server: Waiting for races");
         Thread managerThread = new Thread(connectionManager);
         managerThread.setName("Connection Manager");
         managerThread.start();
@@ -92,7 +92,7 @@ public class RaceManagerServer implements Observer {
         }
         if (foundRace != null) {
             availableRaces.remove(foundRace);
-            System.out.println("_Server: removed canceled race: " + foundRace.getIpAddress());
+            System.out.println("Server: removed canceled race: " + foundRace.getIpAddress());
         }
     }
 
@@ -117,7 +117,7 @@ public class RaceManagerServer implements Observer {
     protected void startServerListener(Socket socket) throws IOException {
         ServerListener serverListener = new ServerListener(socket);
         Thread serverListenerThread = new Thread(serverListener);
-        serverListenerThread.setName("_Server Listener");
+        serverListenerThread.setName("Server Listener");
         serverListenerThread.start();
         serverListener.addObserver(this);
     }

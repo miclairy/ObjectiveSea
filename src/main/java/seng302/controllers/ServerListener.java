@@ -86,7 +86,7 @@ public class ServerListener extends Receiver implements Runnable{
     }
 
     private void recordHostGameMessage(byte[] body){
-        System.out.println("_Server: Recording game on VM");
+        System.out.println("Server: Recording game on VM");
         AvailableRace race = createAvailableRace(body);
         race.setPacket(body);
         setChanged();
@@ -100,7 +100,7 @@ public class ServerListener extends Receiver implements Runnable{
     private void parseRegistrationRequestMessage(byte[] body) {
         byte registrationByte = body[REGISTRATION_REQUEST_TYPE.getStartIndex()];
         if (registrationByte != REQUEST_RUNNING_GAMES.value()){
-            System.out.println("_Server: Received Registration Request");
+            System.out.println("Server: Received Registration Request");
         }
         setChanged();
         notifyObservers(RegistrationType.getTypeFromByte(registrationByte));

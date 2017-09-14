@@ -33,10 +33,10 @@ public class GameClient extends Client{
         this.options = options;
         options.isHost();
         setUpDataStreamReader(options.getServerAddress(), options.getServerPort());
-        System.out.println("Client: Waiting for connection to _Server");
+        System.out.println("Client: Waiting for connection to Server");
         manageWaitingConnection();
         RegistrationType regoType = options.isParticipant() ? RegistrationType.PLAYER : RegistrationType.SPECTATOR;
-        System.out.println("Client: Connected to _Server");
+        System.out.println("Client: Connected to Server");
         this.sender = new ClientSender(clientListener.getSocket());
         sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
         System.out.println("Client: Sent Registration Request");
