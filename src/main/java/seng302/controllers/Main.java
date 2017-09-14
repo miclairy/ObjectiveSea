@@ -159,8 +159,9 @@ public class Main extends Application {
      * @return boolean, true if the client starts successfully
      * @throws Exception throws this
      */
-    public boolean startLocalRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions) throws Exception {
+    public boolean startLocalRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions, AIDifficulty aiDifficulty) throws Exception {
         ServerOptions serverOptions = new ServerOptions();
+        serverOptions.setAiDifficulty(aiDifficulty);
         serverOptions.setPort(port);
         serverOptions.setRaceXML(course);
         serverOptions.setTutorial(isTutorial);
@@ -180,10 +181,10 @@ public class Main extends Application {
      * @return whether starting hosted race was successful or not
      * @throws Exception uncaught error
      */
-    public boolean startHostedRace(String course, Double speedScale, int numParticipants, ClientOptions clientOptions, int currentCourseIndex, AIDifficulty aiDifficulty) throws Exception {
+    public boolean startHostedRace(String course, Double speedScale, int numParticipants, ClientOptions clientOptions, int currentCourseIndex) throws Exception {
         ServerOptions serverOptions = new ServerOptions(speedScale, numParticipants);
         serverOptions.setRaceXML(course);
-        serverOptions.setAiDifficulty(aiDifficulty);
+
         try{
             setupServer(serverOptions);
         } catch(BindException e){

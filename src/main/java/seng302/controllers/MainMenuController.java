@@ -147,13 +147,7 @@ public class MainMenuController implements Initializable{
 
     @FXML private void loadOnlinePane() {
         AnimationUtils.switchPaneFade(offlinePane, onlinePane);
-
-//    @FXML private void loadPracticeGrid() {
-//        isSinglePlayer = true;
-//        practiceGrid.setVisible(true);
-//        AnimationUtils.slideOutTransition(btnGrid);
-//        AnimationUtils.slideInTransition(practiceGrid);
-//    }
+    }
 
     @FXML private void loadMapPane(){
         AnimationUtils.switchPaneFade(hostOptionsPane, selectMapPane);
@@ -235,9 +229,8 @@ public class MainMenuController implements Initializable{
     }
 
     @FXML private void loadMapsForSinglePlay() {
-        courseGrid.setVisible(true);
-        AnimationUtils.slideOutTransition(practiceGrid);
-        AnimationUtils.slideInTransition(courseGrid);
+        isSinglePlayer = true;
+        AnimationUtils.switchPaneFade(offlinePane, selectMapPane);
     }
 
 
@@ -262,8 +255,7 @@ public class MainMenuController implements Initializable{
     @FXML private void startGame() throws Exception {
         if(isSinglePlayer) {
             AIChooser.setVisible(true);
-            AnimationUtils.slideOutTransition(courseGrid);
-            AnimationUtils.slideInTransition(AIChooser);
+            AnimationUtils.switchPaneFade(selectMapPane, AIChooser);
         } else {
             startHostGame();
         }
@@ -396,10 +388,6 @@ public class MainMenuController implements Initializable{
         addButtonListeners(btnOnlineBack);
         addButtonListeners(btnPractiseStart);
         addButtonListeners(btnSinglePlay);
-        addButtonListeners(btnPracticeStart);
-        addButtonListeners(btnBackPrac);
-        addButtonListeners(btnCourseStart);
-        addButtonListeners(btnBackHost);
         addButtonListeners(noAIbtn);
         addButtonListeners(easyAIbtn);
         addButtonListeners(hardAIbtn);
