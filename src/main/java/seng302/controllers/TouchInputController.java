@@ -118,14 +118,14 @@ public class TouchInputController extends Observable {
         if (headingDifference <= SAILS_SWIPE_ANGLE || headingDifference >= (180 - SAILS_SWIPE_ANGLE)) {
             if (Math.abs(boatHeading - swipeBearing) < SAILS_SWIPE_ANGLE || Math.abs(boatHeading - swipeBearing) > (360 - SAILS_SWIPE_ANGLE)) {
                 if (playersBoat.isSailsIn()) {
-                    commandInt = BoatAction.SAILS_IN.getType();
+                    commandInt = BoatAction.SAILS_OUT.getType();
                     setChanged();
                 }else{
                     controller.setUserHelpLabel("Sails are already out");
                 }
             } else {
                 if (!playersBoat.isSailsIn()) {
-                    commandInt = BoatAction.SAILS_IN.getType();
+                    commandInt = BoatAction.SAILS_OUT.getType();
                     setChanged();
                 }else{
                     controller.setUserHelpLabel("Sails are already in");
