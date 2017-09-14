@@ -31,8 +31,6 @@ public class Boat extends Observable implements Comparable<Boat>{
     private String nickName;
     private DoubleProperty currentSpeed = new SimpleDoubleProperty();
     private double currentVMG;
-    private IntegerProperty currPlacing = new SimpleIntegerProperty();
-    private int leg;
 
     private Coordinate currentPosition;
     private Coordinate previousPosition;
@@ -41,6 +39,8 @@ public class Boat extends Observable implements Comparable<Boat>{
     private int lastRoundedMarkIndex;
     private long lastRoundedMarkTime;
     private int lastTackMarkPassed;
+    private IntegerProperty currPlacing = new SimpleIntegerProperty();
+    private int leg;
     private int lastGybeMarkPassed;
     private boolean finished;
     private double heading;

@@ -5,9 +5,12 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
 import javafx.util.Duration;
+import seng302.controllers.Controller;
+import seng302.models.CanvasCoordinate;
 
 /**
  * Created by Devin on 25/07/17.
@@ -356,6 +359,33 @@ public class AnimationUtils {
     }
 
     /**
+     * animates a portion of the swipe trail
+     * @param pane the pane on which the swipe is added to and removed from
+     * @param node the portion of swipe trail
+     */
+    public static void swipeAnimation(Pane pane, Node node){
+        ScaleTransition scaleTransition = new ScaleTransition(new Duration(200), node);
+        scaleTransition.setByX(-0.5);
+        scaleTransition.setByY(-0.5);
+        FadeTransition fadeTransition = new FadeTransition(new Duration(200), node);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        fadeTransition.setFromValue(node.getOpacity());
+        fadeTransition.setToValue(0);
+
+        ParallelTransition pt = new ParallelTransition(scaleTransition, fadeTransition);
+        pane.getChildren().add(node);
+        pt.play();
+
+        pt.setOnFinished(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                pane.getChildren().remove(node);
+            }
+        });
+    }
+
+
+    /**
      * changes the colour of the stroke of a node to
      * @param node the node to change
      * @param color the colour of the new stroke
@@ -382,4 +412,7 @@ public class AnimationUtils {
 
 
     }
+
 }
+
+
