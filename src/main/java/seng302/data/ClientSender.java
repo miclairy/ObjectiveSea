@@ -14,26 +14,26 @@ import java.net.SocketException;
 public class ClientSender {
 
     private Socket connection;
-    private Socket vmConnection;
+//    private Socket vmConnection;
 
     public ClientSender(Socket socket) {
         this.connection = socket;
-        try {
-            this.vmConnection = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
-        } catch (ConnectException e) {
-            System.out.println("Client: Unable to reach VM server");
-        } catch (IOException e) {
-            System.out.println("Client: Unable to reach VM server");
-        }
+//        try {
+//            this.vmConnection = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
+//        } catch (ConnectException e) {
+//            System.out.println("Client: Unable to reach VM server");
+//        } catch (IOException e) {
+//            System.out.println("Client: Unable to reach VM server");
+//        }
     }
 
     public void sendToServer(byte[] packet) {
         sendPacket(packet, connection);
     }
 
-    public void sendToVM(byte[] packet){
-        // sendPacket(packet, vmConnection);
-    }
+//    public void sendToVM(byte[] packet){
+//        // sendPacket(packet, vmConnection);
+//    }
 
     /**
      * sends a packet to a given socket

@@ -52,7 +52,7 @@ public class GameClient extends Client{
         }
         byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(speedScale, minParticipants, serverPort, publicIp, currentCourseIndex, competitors);
         System.out.println("Client: Updating VM");
-        sender.sendToVM(registerGamePacket);
+        //sender.sendToVM(registerGamePacket);
     }
 
     @Override
@@ -167,7 +167,7 @@ public class GameClient extends Client{
         if (options.isHost()){
             System.out.println("Client: Cancelling race");
             byte[] gameClosePacket = packetBuilder.createGameCancelPacket(GAME_CANCEL);
-            sender.sendToVM(gameClosePacket);
+            //sender.sendToVM(gameClosePacket);
         }
         clientListener.disconnectClient();
         if (options.isParticipant()) {

@@ -152,7 +152,7 @@ public class MainMenuController implements Initializable{
     public void setApp(Main main, GameSounds sounds) throws ServerFullException, NoConnectionToServerException {
         this.main = main;
         this.gameSounds = sounds;
-        this.client = new MainMenuClient();
+        //this.client = new MainMenuClient();
         setUpSoundSliders();
         setUpSoundImages();
         mainMenuClientThread = new Thread(client);
