@@ -141,7 +141,6 @@ public class Controller implements Initializable, Observer {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        DisplayUtils.setIsRaceView(true);
         addRightHandSideListener();
         canvasAnchor.getStylesheets().addAll(COURSE_CSS, STARTERS_CSS, SETTINGSPANE_CSS, BOAT_CSS, DISTANCELINE_CSS, HEADSUP_DISPLAY_CSS);
         canvasWidth = canvas.getWidth();

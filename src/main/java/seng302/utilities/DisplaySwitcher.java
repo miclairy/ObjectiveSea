@@ -35,6 +35,7 @@ public class DisplaySwitcher {
      */
     public void loadMainMenu() {
         try {
+            DisplayUtils.setIsRaceView(false);
             MainMenuController mainMenu = (MainMenuController) replaceSceneContent("main_menu.fxml");
             mainMenu.setApp(main);
             try {
@@ -56,6 +57,7 @@ public class DisplaySwitcher {
      */
     public void loadRaceView(ClientOptions options) {
         try {
+            DisplayUtils.setIsRaceView(true);
             SoundController soundController = new SoundController(Main.getClient().getClientID());
             soundController.setRunning(true);
             Thread soundControllerThread = new Thread(soundController);
