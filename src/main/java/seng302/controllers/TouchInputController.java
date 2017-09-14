@@ -1,9 +1,7 @@
 package seng302.controllers;
 
-import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.scene.Group;
-import javafx.scene.Scene;
 import javafx.scene.input.*;
 import javafx.scene.layout.Pane;
 import seng302.data.BoatAction;
@@ -22,7 +20,7 @@ import static java.lang.Math.abs;
 import static java.lang.Math.multiplyExact;
 
 /**
- * handles user key presses.
+ * handles user touches and swipes.
  */
 public class TouchInputController extends Observable {
 
@@ -42,10 +40,17 @@ public class TouchInputController extends Observable {
     private Group root;
     private Controller controller;
 
+
+    private int MAXIMUM_SWIPE_DISTANCE = 130;
+    private int MAXIMUM_SWIPE_TIME = 300; //ms
+    private int SAILS_SWIPE_ANGLE = 15;
+    private int TACK_GYBE_SWIPE_ANGLE = 50;
+
+
     /**
-     * Sets up user key press handler.
-     *
-     * @param boat
+     * constructor for class. assigns initial values
+     * @param race the current race
+     * @param boat the users boat
      */
     public TouchInputController(Race race, Boat boat) {
         this.race = race;
@@ -69,10 +74,7 @@ public class TouchInputController extends Observable {
 
         touchPane.setOnScrollStarted(swipe -> {
             swipeStart = new CanvasCoordinate(swipe.getScreenX(), swipe.getScreenY());
-            multipleFingers = false;
-            if (swipe.getTouchCount() != 1) {
-                multipleFingers = true;
-            }
+            multipleFingers = swipe.getTouchCount() != 1;
             timeElapsed = System.currentTimeMillis();
         });
 
@@ -90,17 +92,17 @@ public class TouchInputController extends Observable {
 
         touchPane.setOnScrollFinished(swipe -> {
             CanvasCoordinate swipeEnd = new CanvasCoordinate(swipe.getScreenX(), swipe.getScreenY());
-            double differenceX = Math.pow((swipeStart.getX() - swipeEnd.getX()), 2);
-            double differenceY = Math.pow((swipeStart.getY() - swipeEnd.getY()), 2);
-            double lengthXY = Math.sqrt(differenceX + differenceY);
-            if (lengthXY > 130 && Math.abs(System.currentTimeMillis() - timeElapsed) < 300 && !multipleFingers && !DisplayUtils.externalTouchEvent) {
+            double swipeDistance = MathUtils.distanceBetweenTwoPoints(swipeStart, swipeEnd);
+            if (swipeDistance > MAXIMUM_SWIPE_DISTANCE && Math.abs(System.currentTimeMillis() - timeElapsed) < MAXIMUM_SWIPE_TIME && !multipleFingers && !DisplayUtils.externalTouchEvent) {
                 displayTouchController.displaySwipe(swipeEnd, swipeStart);
-                double swipeBearing = MathUtils.getHeadingBetweenTwoCoodinates(swipeStart, swipeEnd);
+                double swipeBearing = MathUtils.getHeadingBetweenTwoCoordinates(swipeStart, swipeEnd);
                 swipeAction(swipeBearing);
                 previousCoordinate = null;
             }
         });
     }
+
+
 
     /**
      * acts upon the action of a swipe gestures. Detects action from the swipe bearing and performs action.
@@ -113,12 +115,11 @@ public class TouchInputController extends Observable {
         if (root.getTransforms().size() > 1) {
             headingDifference = swipeBearing;
         }
-        if (headingDifference <= 15 || headingDifference >= 165) {
-            if (Math.abs(boatHeading - swipeBearing) < 15 || Math.abs(boatHeading - swipeBearing) > 345) {
+        if (headingDifference <= SAILS_SWIPE_ANGLE || headingDifference >= (180 - SAILS_SWIPE_ANGLE)) {
+            if (Math.abs(boatHeading - swipeBearing) < SAILS_SWIPE_ANGLE || Math.abs(boatHeading - swipeBearing) > (360 - SAILS_SWIPE_ANGLE)) {
                 if (playersBoat.isSailsIn()) {
                     commandInt = BoatAction.SAILS_IN.getType();
                     setChanged();
-                    notifyObservers();
                 }else{
                     controller.setUserHelpLabel("Sails are already out");
                 }
@@ -126,21 +127,20 @@ public class TouchInputController extends Observable {
                 if (!playersBoat.isSailsIn()) {
                     commandInt = BoatAction.SAILS_IN.getType();
                     setChanged();
-                    notifyObservers();
                 }else{
                     controller.setUserHelpLabel("Sails are already in");
                 }
             }
         } else {
             double optimumHeading = playersBoat.getTackOrGybeHeading(race.getCourse(), polarTable);
-            if (Math.abs(optimumHeading - swipeBearing) < 50 || Math.abs(optimumHeading - swipeBearing) > 310) {
+            if (Math.abs(optimumHeading - swipeBearing) < TACK_GYBE_SWIPE_ANGLE || Math.abs(optimumHeading - swipeBearing) > (360 - TACK_GYBE_SWIPE_ANGLE)) {
                 commandInt = BoatAction.TACK_GYBE.getType();
                 setChanged();
-                notifyObservers();
             }else{
                 controller.setUserHelpLabel("Cannot tack or gybe in that direction");
             }
         }
+        notifyObservers();
     }
 
     /**
@@ -222,13 +222,13 @@ public class TouchInputController extends Observable {
         int direction = -1;
 
         if (boatHeading > windAngle && touchAngle < windAngle) {
-            direction = 6;
+            direction = BoatAction.DOWNWIND.getType();
         } else if (boatHeading > oppositeWindAngle && touchAngle < oppositeWindAngle) {
-            direction = 5;
+            direction = BoatAction.UPWIND.getType();
         } else if (((touchAngle - windAngle) < 180 && (touchAngle - windAngle) > 0) || ((touchAngle - windAngle) < -180 && (touchAngle - windAngle) > -360)) {
-            direction = 6;
+            direction = BoatAction.DOWNWIND.getType();
         } else if (((touchAngle - oppositeWindAngle) < 180 && (touchAngle - oppositeWindAngle) > 0) || ((touchAngle - oppositeWindAngle) < -180 && (touchAngle - oppositeWindAngle) > -360)) {
-            direction = 5;
+            direction = BoatAction.UPWIND.getType();
         }
 
         return direction;
@@ -248,13 +248,13 @@ public class TouchInputController extends Observable {
         int direction = -1;
 
         if (boatHeading < windAngle && touchAngle > windAngle) {
-            direction = 6;
+            direction = BoatAction.DOWNWIND.getType();
         } else if (boatHeading < oppositeWindAngle && touchAngle > oppositeWindAngle) {
-            direction = 5;
+            direction = BoatAction.UPWIND.getType();
         } else if (((touchAngle - windAngle) < 180 && (touchAngle - windAngle) > 0) || ((touchAngle - windAngle) < -180 && (touchAngle - windAngle) > -360)) {
-            direction = 5;
+            direction = BoatAction.UPWIND.getType();
         } else if (((touchAngle - oppositeWindAngle) < 180 && (touchAngle - oppositeWindAngle) > 0) || ((touchAngle - oppositeWindAngle) < -180 && (touchAngle - oppositeWindAngle) > -360)) {
-            direction = 6;
+            direction = BoatAction.DOWNWIND.getType();
         }
         return direction;
     }

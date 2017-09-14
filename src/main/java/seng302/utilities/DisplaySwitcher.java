@@ -21,7 +21,6 @@ public class DisplaySwitcher {
     private Stage stage;
     private Main main;
     private static GameSounds gameSounds = new GameSounds();
-    private TouchInputController touchInputController;
     private Controller raceController;
 
     public DisplaySwitcher(Main main, Stage stage){
@@ -94,11 +93,7 @@ public class DisplaySwitcher {
         return gameSounds;
     }
 
-    public void setTouchInputController(TouchInputController touchInputController) {
-        this.touchInputController = touchInputController;
-    }
-
-    public void setUpTouchInputController(){
+    public void setUpTouchInputController(TouchInputController touchInputController){
         raceController.setUpTouchInputController(touchInputController);
 
     }
