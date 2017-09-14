@@ -163,8 +163,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * Ready the race view for a standard race mode
      */
     private void setupStandardRaceMode() {
-        this.courseRouteArrows = new CourseRouteArrows(race.getCourse(), root);
-        courseRouteArrows.drawRaceRoute();
         redrawCourse();
         drawMap();
     }
@@ -469,7 +467,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
 
     /**
-     * changes the color of the boat highlight to update as the boat is about to recieve a penalty
+     * changes the color of the boat highlight to update as the boat is about to receive a penalty
      * and changes again if it does. Penalties occur when the player crosses the start line early,
      * the player is in a collision or the player is out of course bounds
      * @param displayBoat the boat to be monitoring for penalty.
@@ -482,7 +480,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if (startedEarlyPenalty) return;
             if (!MathUtils.boatBeforeStartline(boat.getCurrentPosition(),
                     race.getCourse().getStartLine(),
-                    race.getCourse().getCompoundMarks().get(2))){
+                    race.getCourse().getCompoundMarks().get(2)) && ((race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000) > 0){
                 startedEarlyPenalty = true;
                 controller.setUserHelpLabel("Start line was crossed early. It must be crossed again.");
                 animateBoatHighlightColor(PenaltyStatus.PENALTY, "redBoatHighlight");
@@ -560,6 +558,8 @@ public class RaceViewController extends AnimationTimer implements Observer {
     void highlightAnimation(CanvasCoordinate point, BoatDisplay boat, Boolean isCollision, String highlightID, int scale){
         Circle highlightCircle1 = createHighlightCircle(point, highlightID);
         Circle highlightCircle2 = createHighlightCircle(point, highlightID);
+        highlightCircle1.toBack();
+        highlightCircle2.toBack();
 
         ScaleTransition st1 = AnimationUtils.scaleTransitionCollision(highlightCircle1, 500 * scale,
                 20/scale * zoomLevel);
