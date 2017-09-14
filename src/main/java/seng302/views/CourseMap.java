@@ -49,6 +49,9 @@ public class CourseMap {
         this.mapBoundary = raceView.createCourseBoundary(course.getBoundary());
     }
 
+    /**
+     * sets up the start and finish lines in the main menu
+     */
     private void setUpLines(){
         this.startLine = raceView.createRaceLine(course.getStartLine().getMark1().getPosition(), course.getStartLine().getMark2().getPosition());
         this.finishLine = raceView.createRaceLine(course.getFinishLine().getMark1().getPosition(), course.getFinishLine().getMark2().getPosition());
@@ -73,6 +76,10 @@ public class CourseMap {
         }
     }
 
+    /**
+     * sets up the arrowed route in the main menu
+     * @param root
+     */
     public void setUpArrowRoute(Parent root){
         DisplayUtils.setMaxMinLatLon(course.getMinLat(), course.getMinLon(), course.getMaxLat(), course.getMaxLon());
         this.arrowedRoute = new CourseRouteArrows(course, root);
