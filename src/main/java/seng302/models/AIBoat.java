@@ -15,6 +15,8 @@ import java.util.List;
 
 /**
  * Created by atc60 on 8/09/17.
+ * A class to control an AI boat for the user
+ * to practice racing against
  */
 public class AIBoat extends Boat{
     private static final Double ROUNDING_DISTANCE = 0.08;
@@ -39,6 +41,11 @@ public class AIBoat extends Boat{
         this.boundary = collisionManager.createCourseBoundary(course.getBoundary());
     }
 
+    /**
+     * This function checks whether an AI boat has rounded a mark
+     * If it has, it updates the next mark to round to be the next mark
+     * in the course using setNextRoundingCoordinates
+     */
     public void checkRounding() {
         Coordinate targetPosition = nextCoordinates.get(targetPositionIndex);
         if(getCurrentPosition().greaterCircleDistance(targetPosition) < ROUNDING_DELTA && getStatus() != BoatStatus.FINISHED){
@@ -51,6 +58,12 @@ public class AIBoat extends Boat{
         }
     }
 
+    /**
+     * This function sets the next rounding coordinate of the AI
+     * boat to be that of the next mark in the course
+     * If the last rounded mark is the finish line
+     * the boat has its status set as finished.
+     */
     private void setNextRoundingCoordinates(){
         List<CompoundMark> courseOrder = course.getCourseOrder();
         Integer lastRoundedIndex = getLastRoundedMarkIndex();
@@ -89,14 +102,24 @@ public class AIBoat extends Boat{
         }
     }
 
+    /**
+     * Updates the target heading of the boat
+     * using the current position and the
+     * desired position of the boat
+     */
     public void updateTargetHeading() {
         Coordinate targetPosition = nextCoordinates.get(targetPositionIndex);
         Double headingToNextMark = getCurrentPosition().headingToCoordinate(targetPosition);
-//        setHeading(headingToNextMark);
         setTargetHeading(headingToNextMark);
         rotate = true;
     }
 
+    /**
+     * Checks whether the AI boat is in line to collide with future
+     * marks
+     * @param mark The mark the AI boat is potentially colliding with
+     * @return true if the AI boat will collide with mark, false otherwise
+     */
     public boolean checkFutureCollision(Mark mark) {
         Coordinate targetPosition = nextCoordinates.get(targetPositionIndex);
         Coordinate checkPointEnd = getCurrentPosition().coordAt(COLLISION_CHECK_DISTANCE, heading);
@@ -105,6 +128,11 @@ public class AIBoat extends Boat{
                 getCurrentPosition().greaterCircleDistance(targetPosition) > getCurrentPosition().greaterCircleDistance(mark.getPosition());
     }
 
+    /**
+     * If the AI boat is on course for a collision
+     * it will add a new mark to its target position
+     * list.  This new mark will set the boat onto a non-colliding route
+     */
     public void avoidFutureCollision() {
         for(Integer markID : course.getAllMarks().keySet()){
             Mark mark = course.getAllMarks().get(markID);
@@ -117,6 +145,13 @@ public class AIBoat extends Boat{
         }
     }
 
+    /**
+     * Function computes position of new avoidance
+     * target coordinate for the boat to head
+     * towards
+     * @param collisionPosition the position of the potential colliding mark
+     * @return the new target coordinate
+     */
     private Coordinate coordinateToAvoid(Coordinate collisionPosition) {
         Coordinate targetPosition = nextCoordinates.get(targetPositionIndex);
         Double avoidHeading = (heading + 270) % 360;
@@ -130,6 +165,14 @@ public class AIBoat extends Boat{
         return dist1 < dist2 ? coord1 : coord2;
     }
 
+    /**
+     * Checks whether the AI boat needs to be tacking or gybing
+     * and adds the new tacking/gybing marks to the target
+     * coordinate list if needed
+     * @param lastCoordinate the previous Coordinate
+     * @param nextCoordinate the next Coordinate
+     * @param headingOption the heading switch option (allows boat to zigzag)
+     */
     public void addTackandGybeMarks(Coordinate lastCoordinate, Coordinate nextCoordinate, Integer headingOption) {
         double TWD = course.getWindDirection();
         double headingBetweenMarks = lastCoordinate.headingToCoordinate(nextCoordinate);
@@ -178,6 +221,14 @@ public class AIBoat extends Boat{
         }
     }
 
+    /**
+     * Calculates the distance to the boundary that a boat
+     * on route to target position, may exit through
+     * @param lastMark the last position of the boat
+     * @param tackingCoord the current tacking coordinate (out of bounds)
+     * @param boundary the list of coordinates on the boundary
+     * @return if a crossing is found, returns the distance, otherwise returns null
+     */
     private Double distanceToBoundary(Coordinate lastMark, Coordinate tackingCoord, ArrayList<Coordinate> boundary) {
         for(int i = 0; i < boundary.size(); i++){
             Coordinate boundaryEnd1 = boundary.get(i);
@@ -192,11 +243,26 @@ public class AIBoat extends Boat{
         return null;
     }
 
+    /**
+     * Calculates if given coordinates (forming two lines) intersect
+     * @param lastMark the start of boats target position line
+     * @param tackingCoord the end of the boats target position line
+     * @param boundaryEnd1 the start of a boundary line
+     * @param boundaryEnd2 the end of a boundary line
+     * @return true if the two finite lines cross, false otherwise.
+     */
     private boolean crossingLines(Coordinate lastMark, Coordinate tackingCoord, Coordinate boundaryEnd1, Coordinate boundaryEnd2) {
         return Line2D.linesIntersect(lastMark.getLon(), lastMark.getLat(), tackingCoord.getLon(), tackingCoord.getLat(),
                                     boundaryEnd1.getLon(), boundaryEnd1.getLat(), boundaryEnd2.getLon(), boundaryEnd2.getLat());
     }
 
+    /**
+     * calculates the optimum length of a tack (one that gives minimum number of turns)
+     * @param TrueWindAngle the optimum angle the boat should head for maximum speed
+     * @param nextMark the target position of the boat
+     * @param lastMark the previous position of the boat
+     * @return length before next turn
+     */
     public double calculateLengthOfTack(double TrueWindAngle,Coordinate nextMark, Coordinate lastMark){
         double lengthOfLeg = lastMark.greaterCircleDistance(nextMark);
         double lengthOfTack = (lengthOfLeg/2.0)/(Math.cos(Math.toRadians(TrueWindAngle)));
@@ -204,7 +270,7 @@ public class AIBoat extends Boat{
     }
 
     public void updateAIBoatHeading(double raceSecondsPassed){
-        Double defaultTurnAngle = 6 * raceSecondsPassed;
+        Double defaultTurnAngle = 9 * raceSecondsPassed;
         Double upDiff = (targetHeading - heading + 360) % 360;
         Double downDiff = (heading - targetHeading + 360) % 360;
         if(upDiff < downDiff){
