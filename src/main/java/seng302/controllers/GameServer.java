@@ -13,6 +13,7 @@ import sun.security.x509.AVA;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.BindException;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -279,12 +280,17 @@ public class GameServer implements Runnable, Observer {
      * @throws IOException needed for sending to the vm
      */
     private void updateVM(ServerOptions options, String publicIp, int currentCourseIndex) throws IOException {
-        byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(options.getSpeedScale(), options.getMinParticipants(),
-                options.getPort(), publicIp, currentCourseIndex, raceUpdater.getRace().getCompetitors().size());
-        System.out.println("GameServer: Updating VM" );
-        Socket vmSocket = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
-        DataOutputStream vmOutput = new DataOutputStream(vmSocket.getOutputStream());
-        vmOutput.write(registerGamePacket);
+        try{
+            byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(options.getSpeedScale(), options.getMinParticipants(),
+                    options.getPort(), publicIp, currentCourseIndex, raceUpdater.getRace().getCompetitors().size());
+            System.out.println("GameServer: Updating VM" );
+            Socket vmSocket = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
+            DataOutputStream vmOutput = new DataOutputStream(vmSocket.getOutputStream());
+            vmOutput.write(registerGamePacket);
+        } catch (ConnectException e){
+            System.out.println("VM not reachable");
+        }
+
     }
 
     /**

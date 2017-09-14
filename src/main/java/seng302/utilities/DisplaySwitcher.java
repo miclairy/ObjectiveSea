@@ -29,7 +29,6 @@ public class DisplaySwitcher {
         this.main = main;
     }
 
-
     /**
      * loads the main menu into the stage
      */

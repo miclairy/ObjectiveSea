@@ -223,7 +223,7 @@ public class MainMenuController implements Initializable{
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.SINGLEPLAYER);
         stopMainMenuClientThread();
-        if(main.startLocalRace(selectedCourse, DEFAULT_PORT, false, clientOptions, AIDifficulty)){
+        if(main.startLocalRace(currentCourseMap.getXML(), DEFAULT_PORT, false, clientOptions, AIDifficulty)){
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
             loadSinglePlayerMusic();
