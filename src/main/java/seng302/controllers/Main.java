@@ -143,12 +143,13 @@ public class Main extends Application {
      * @return whether starting hosted race was successful or not
      * @throws Exception uncaught error
      */
-    public boolean startHostedRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions, Boolean hasAI) throws Exception{
+    public boolean startHostedRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions, Boolean hasAI, int AIdifficulty) throws Exception{
         ServerOptions serverOptions = new ServerOptions();
         serverOptions.setPort(port);
         serverOptions.setRaceXML(course);
         serverOptions.setTutorial(isTutorial);
         serverOptions.setHasAI(hasAI);
+        serverOptions.setAIdifficulty(AIdifficulty);
         try{
             setupServer(serverOptions);
         } catch(BindException e){

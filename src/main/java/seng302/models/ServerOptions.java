@@ -20,7 +20,7 @@ public class ServerOptions {
     private boolean isTutorial;
     private Integer numRacesToRun;
     private boolean hasAI;
-
+    private int AIdifficulty = 0;
     /**
      * Constructor with default options
      */
@@ -113,5 +113,13 @@ public class ServerOptions {
 
     public void setHasAI(boolean hasAI) {
         this.hasAI = hasAI;
+    }
+
+    public void setAIdifficulty(int AIdifficulty) {
+        this.AIdifficulty = AIdifficulty;
+    }
+
+    public int getAIDifficulty() {
+        return this.AIdifficulty;
     }
 }

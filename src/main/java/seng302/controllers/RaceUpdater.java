@@ -93,11 +93,11 @@ public class RaceUpdater implements Runnable {
      * Adds a competitor from the potential competitors collection into the race, changes the competitor to AI
      * @return the id of the added competitor, or -1 if max number reached.
      */
-    public int addAICompetitor() {
+    public int addAICompetitor(int AIDifficulty) {
         if (potentialCompetitors.iterator().hasNext()) {
             Boat newCompetitor = potentialCompetitors.iterator().next();
             potentialCompetitors.remove(newCompetitor);
-            Boat aiCompetitor = new AIBoat(newCompetitor.getId(), newCompetitor.getName() + " AI", newCompetitor.getNickName(), newCompetitor.getMaxSpeed(), race.getCourse());
+            Boat aiCompetitor = new AIBoat(newCompetitor.getId(), newCompetitor.getName() + " AI", newCompetitor.getNickName(), newCompetitor.getMaxSpeed(), race.getCourse(), AIDifficulty);
             race.addCompetitor(aiCompetitor);
             prepareBoatForRace(aiCompetitor);
             return aiCompetitor.getId();
@@ -360,21 +360,6 @@ public class RaceUpdater implements Runnable {
         }
     }
 
-    /**
-     * changes a boat's heading and speed when it collides into a mark
-     * @param boat the boat that has collided
-     */
-    private void markAvoider(Boat boat){
-        boat.setHeading(boat.getHeading() - 5);
-        boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
-        if(boat.getCurrentSpeed() < 0){
-            boat.setCurrentSpeed(0);
-        }
-        Coordinate currPos = boat.getCurrentPosition();
-        Coordinate newPos = currPos.coordAt(0.01, (boat.getHeading() + 180) % 360);
-        boat.setPosition(newPos);
-    }
-
 
     public Race getRace() {
         return race;
@@ -418,4 +403,5 @@ public class RaceUpdater implements Runnable {
     public CollisionManager getCollisionManager() {
         return collisionManager;
     }
+
 }

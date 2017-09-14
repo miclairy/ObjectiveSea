@@ -29,9 +29,11 @@ public class AIBoat extends Boat{
     private Course course;
     private PolarTable polarTable;
     private Polygon boundary;
+    private int AIDifficulty;
 
-    public AIBoat(Integer id, String name, String nickName, double speed, Course course) {
+    public AIBoat(Integer id, String name, String nickName, double speed, Course course, int AIDifficulty) {
         super(id, name, nickName, speed);
+        this.AIDifficulty = AIDifficulty;
         this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), course);
         this.course = course;
         nextCoordinates = new ArrayList<>();
@@ -74,7 +76,7 @@ public class AIBoat extends Boat{
         CompoundMark currentMark = courseOrder.get(getLastRoundedMarkIndex()+1);
         nextCoordinates.clear();
 
-        if(currentMark != course.getStartLine()){
+        if(currentMark != course.getStartLine() && AIDifficulty == 2){
             addTackandGybeMarks(getCurrentPosition(), currentMark.getPosition(), 0);
         }
 
