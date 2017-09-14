@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Math.min;
 import static java.lang.Double.max;
@@ -32,8 +31,8 @@ public class Boat extends Observable implements Comparable<Boat>{
     private DoubleProperty currentSpeed = new SimpleDoubleProperty();
     private double currentVMG;
 
-    private Coordinate currentPosition;
-    private Coordinate previousPosition;
+    protected Coordinate currentPosition;
+    protected Coordinate previousPosition;
     private PolarTable polarTable;
 
     private int lastRoundedMarkIndex;
@@ -43,8 +42,8 @@ public class Boat extends Observable implements Comparable<Boat>{
     private int leg;
     private int lastGybeMarkPassed;
     private boolean finished;
-    private double heading;
-    private double targetHeading;
+    protected double heading;
+    protected double targetHeading;
     private double maxSpeed;
     private double boatHealth = 100;
     private double damageSpeed;
@@ -83,7 +82,7 @@ public class Boat extends Observable implements Comparable<Boat>{
 
 
     private double TWAofBoat;
-    private boolean rotate;
+    protected boolean rotate;
     private boolean tackOrGybe;
     private double totalRotatedAmount;
     private double currRotationAmount;
@@ -472,6 +471,15 @@ public class Boat extends Observable implements Comparable<Boat>{
         this.boatCollideSound = boatCollideSound;
     }
 
+    /**
+     * Updates the boat's heading based on the target heading and moves the boat forward based on the time passed
+     * @param raceSecondsPassed The time passed since last updates
+     * @param course The course the boat is on
+     */
+    public void move(Double raceSecondsPassed, Course course) {
+        updateBoatHeading(raceSecondsPassed);
+        updateLocation(raceSecondsPassed, course);
+    }
 
     /**
      * Class to store optimum headings as a pair
@@ -602,11 +610,11 @@ public class Boat extends Observable implements Comparable<Boat>{
         return (point + 360 - start) % 360 <= (end + 360 - start) % 360;
     }
 
-    private boolean isTacking(double TWA) {
+    public boolean isTacking(double TWA) {
         return TWA < 89 || TWA > 271;
     }
 
-    private boolean isGybing(double TWA) {
+    public boolean isGybing(double TWA) {
         return TWA > 91 && TWA < 269;
     }
 
@@ -788,7 +796,7 @@ public class Boat extends Observable implements Comparable<Boat>{
      */
     public void updateBoatHeading(double time){
         double angleOfRotation = 3 * time;
-        double headingDiff = targetHeading - heading;
+        double headingDiff = (targetHeading - heading) % 360;
         if (rotate) {
             if (headingDiff > 0 && headingDiff < 180) {
                 heading = heading % 360;
@@ -819,6 +827,19 @@ public class Boat extends Observable implements Comparable<Boat>{
         }
     }
 
+    /**
+     * Updates the location of a given boat to be displayed to the clients
+     * @param timePassed time passed since last update
+     * @param course the course the boat is racing on
+     */
+    public void updateLocation(double timePassed, Course course) {
+        double distanceGained = timePassed * getCurrentSpeed() / (60 * 60);
+        Coordinate newPos = currentPosition.coordAt(distanceGained, heading);
+        setPosition(new Coordinate(newPos.getLat(), newPos.getLon()));
+        currentVMG = calculateVMGToMark(course);
+    }
+
+
     public boolean isOutOfBounds() {
         return outOfBounds;
     }
@@ -841,5 +862,9 @@ public class Boat extends Observable implements Comparable<Boat>{
 
     public void setSailsNeedUpdate(boolean sailsNeedUpdate) {
         this.sailsNeedUpdate = sailsNeedUpdate;
+    }
+
+    public void setTargetHeading(double targetHeading) {
+        this.targetHeading = targetHeading;
     }
 }

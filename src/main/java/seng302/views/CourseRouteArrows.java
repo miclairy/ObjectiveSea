@@ -24,6 +24,7 @@ public class CourseRouteArrows {
 
     private final int REFRESH_THRESHOLD = 6;
     private final int ARROW_ITERATIONS_SHOWN = 3;
+    private final double ARROW_DISTANCE_FROM_MARK = 0.05;
 
     private Course course;
     private Parent root;
@@ -166,19 +167,14 @@ public class CourseRouteArrows {
     private List<Arrow> createMarkRoundingArrows(Mark mark, double heading, double nextHeading, RoundingSide roundingSide) {
         List<Arrow> arrowList = new ArrayList<>();
 
-        Double distanceFromMark = roundingSide == PORT ? 0.05 : -0.05;
+        List<Coordinate> positions = RoundingMechanics.markRoundingCoordinates(mark, heading, nextHeading, roundingSide, ARROW_DISTANCE_FROM_MARK);
+        Double interpolatedHeading = positions.get(0).headingToCoordinate(positions.get(2));
 
-        Coordinate firstArrowPosition = mark.getPosition().coordAt(distanceFromMark, (heading + 90));
-        Coordinate finalArrowPosition = mark.getPosition().coordAt(distanceFromMark, (nextHeading + 90));
-
-        Double interpolatedHeading = firstArrowPosition.headingToCoordinate(finalArrowPosition);
-        Coordinate middleArrowPosition = mark.getPosition().coordAt(distanceFromMark, (interpolatedHeading + 90));
-
-        Arrow mark1Arrow = new Arrow(5, 10, firstArrowPosition, (heading + 180));
+        Arrow mark1Arrow = new Arrow(5, 10, positions.get(0), (heading + 180));
         arrowList.add(mark1Arrow);
-        Arrow mark1ArrowInterpolated = new Arrow(5, 10, middleArrowPosition, (interpolatedHeading + 180));
+        Arrow mark1ArrowInterpolated = new Arrow(5, 10, positions.get(1), (interpolatedHeading + 180));
         arrowList.add(mark1ArrowInterpolated);
-        Arrow mark1ArrowNext = new Arrow(5, 10, finalArrowPosition, (nextHeading + 180));
+        Arrow mark1ArrowNext = new Arrow(5, 10, positions.get(2), (nextHeading + 180));
         arrowList.add(mark1ArrowNext);
 
         arrowOrderGraph.addEdges(arrowList);

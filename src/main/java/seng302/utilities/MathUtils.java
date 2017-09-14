@@ -25,6 +25,9 @@ public class MathUtils {
         if(Math.abs(targetDirection - actualDirection) <= deltaAngle){
             return true;
         }
+        if(targetDirection + deltaAngle < 350 && targetDirection - deltaAngle > 0) {
+            return actualDirection >= targetDirection - deltaAngle && actualDirection <= targetDirection + deltaAngle;
+        }
         if(targetDirection > 180){
             actualDirection -= 180;
             middle = targetDirection - 180;
@@ -207,12 +210,23 @@ public class MathUtils {
         Coordinate startLine1 = course.getStartLine().getMark1().getPosition();
         Coordinate startLine2 = course.getStartLine().getMark2().getPosition();
 
-        InfiniteLine startlineInf = new InfiniteLine(startLine1,startLine2);
+        return distanceToLineSegment(startLine1, startLine2, position);
+    }
+
+    /**
+     * Returns the shortest distance from a line segment starting from a position
+     * @param lineStart The starting coordinate of the line segment
+     * @param lineEnd The ending coordinate of the line segment
+     * @param position The position to find the distance from
+     * @return The shortest distance from the line segment to the position
+     */
+    public static double distanceToLineSegment(Coordinate lineStart, Coordinate lineEnd, Coordinate position){
+        InfiniteLine startlineInf = new InfiniteLine(lineStart, lineEnd);
         Coordinate closestPoint = startlineInf.closestPoint(position);
         double distanceToStart;
-        if(closestPoint.getLat() < Math.min(startLine1.getLat(),startLine2.getLat()) || closestPoint.getLat() > Math.max(startLine1.getLat(),startLine2.getLat())){
-            double distanceToStartLine1 = position.greaterCircleDistance(startLine1);
-            double distanceToStartLine2 = position.greaterCircleDistance(startLine2);
+        if(closestPoint.getLat() < Math.min(lineStart.getLat(),lineEnd.getLat()) || closestPoint.getLat() > Math.max(lineStart.getLat(),lineEnd.getLat())){
+            double distanceToStartLine1 = position.greaterCircleDistance(lineStart);
+            double distanceToStartLine2 = position.greaterCircleDistance(lineEnd);
             distanceToStart = Math.min(distanceToStartLine1,distanceToStartLine2);
         } else {
             distanceToStart = position.greaterCircleDistance(closestPoint);

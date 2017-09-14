@@ -5,6 +5,7 @@ import seng302.data.registration.RegistrationResponse;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.data.registration.RegistrationType;
 import seng302.models.*;
+import seng302.models.*;
 import seng302.utilities.ConnectionUtils;
 import seng302.views.AvailableRace;
 import sun.security.x509.AVA;
@@ -62,6 +63,7 @@ public class GameServer implements Runnable, Observer {
         raceUpdater = new RaceUpdater(options.getRaceXML());
         if(options.isTutorial()) raceUpdater.skipPrerace();
         raceUpdater.setScaleFactor(options.getSpeedScale());
+        if(options.getAIDifficulty() != AIDifficulty.NO_AI) raceUpdater.addAICompetitor(options.getAIDifficulty());
         raceUpdaterThread = new Thread(raceUpdater);
         raceUpdaterThread.setName("Race Updater");
         collisionManager = raceUpdater.getCollisionManager();

@@ -1,7 +1,37 @@
 # Game X
 
-To configure the system to connect to the Server side, set the SOURCE_ADDRESS to localhost and the SOURCE_PORT to 2828.
+On startup a Menu is displayed.  The menu allows a user to choose between three options:
 
+Live Game:
+
+    On selecting live game, the user is allowed to choose to host, join or spectate a game.
+    
+    Host: User needs to enter a port number (e.g 2828).  The user then has the option of 6 maps,
+    each map offers a unique racing experience.  Once selected the user enters the game.
+    
+    Join: User must enter a valid IP address (that of a host) and the corresponding port.
+    Once selected, the user enters a game with other players (at least one) and begins the game.
+    
+    Spectate: User must enter a valid IP address (that of a host) and the corresponding port.
+    Once selected, the user enters a game with other players (at least one) and watches the game.
+
+Practice:
+
+    On selecting practice the user is allowed to choose to practice start or single play.
+    
+    Practice start: The user enters a starting practice game, with only a start line and
+    the goal is to start on time.  Pop ups are available to inform user of their progress
+    
+    Single Play: the user enters a map selection, with 6 courses to choose from.  The courses
+    are each unique.  On entering a course, the user has the option to race against a computer
+    simulated boat (easy or hard level).
+
+Tutorial:
+
+    Tutorial mode takes the user instantly into a game screen (no maps or marks) and teaches the
+    user the keys one by one, providing valuable feedback via the popups.
+
+General info:
 Once connected as a player, one is assigned a boat (ID, colour and country).  This is the boat that the connected player can control.
 The given boat is shown via a circular highlight, allowing for a player to easily identify themselves.
 
