@@ -241,18 +241,23 @@ public class GameServer implements Runnable, Observer {
         serverListener.setClientId(newId);
         connectionManager.sendToClient(newId, packet);
         if(success){
-            try {
-                updateVM(options.getSpeedScale(), options.getMinParticipants(), options.getPort(), ConnectionUtils.getPublicIp(), CourseName.getCourseIntFromName(raceUpdater.getRace().getRegattaName()));
-            } catch (IOException a) {
-                a.printStackTrace();
-            }
+            createPacketForVM();
             sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());
             sendAllBoatStates();
         }
     }
 
-    private void updateVM(Double speedScale, Integer minParticipants, Integer serverPort, String publicIp, int currentCourseIndex) throws IOException {
-        byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(speedScale, minParticipants, serverPort, publicIp, currentCourseIndex, raceUpdater.getRace().getCompetitors().size());
+    private void createPacketForVM(){
+        try {
+            updateVM(options, ConnectionUtils.getPublicIp(), CourseName.getCourseIntFromName(raceUpdater.getRace().getRegattaName()));
+        } catch (IOException a) {
+            a.printStackTrace();
+        }
+    }
+
+    private void updateVM(ServerOptions options, String publicIp, int currentCourseIndex) throws IOException {
+        byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(options.getSpeedScale(), options.getMinParticipants(),
+                options.getPort(), publicIp, currentCourseIndex, raceUpdater.getRace().getCompetitors().size());
         System.out.println("GameServer: Updating VM" );
         Socket vmSocket = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
         connectionManager.updateVM(registerGamePacket, vmSocket);
@@ -277,6 +282,7 @@ public class GameServer implements Runnable, Observer {
                 }
             } else {
                 setBoatToDNF((int) arg);
+                createPacketForVM();
             }
         } else if(observable instanceof ServerListener){
             if(arg instanceof RegistrationType){
