@@ -319,10 +319,13 @@ public class ClientListener extends Receiver implements Runnable{
     private void parseYachtEventMessage(byte[] body) {
         int eventID = byteArrayRangeToInt(body, EVENT_ID.getStartIndex(), EVENT_ID.getEndIndex());
         int boatID = byteArrayRangeToInt(body, DESTINATION_SOURCE_ID.getStartIndex(), DESTINATION_SOURCE_ID.getEndIndex());
-        if(eventID == YachtEventCode.COLLISION_MARK.code()) {
+        if(eventID == YachtEventCode.OUT_OF_BOUNDS.code()){
+            Boat boat = race.getBoatById(boatID);
+            boat.setOutOfBounds(true);
+            boat.setOutOfBoundsSound(true);
+        } else if(eventID == YachtEventCode.COLLISION_MARK.code()) {
             Boat boat = race.getBoatById(boatID);
             boat.setMarkColliding(true);
-            boat.setMarkCollideSound(true);
             boat.setMarkCollideSound(true);
         } else if (eventID == YachtEventCode.COLLISION_PENALTY.code()) {
             Boat boat = race.getBoatById(boatID);

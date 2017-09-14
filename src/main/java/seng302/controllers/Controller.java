@@ -267,6 +267,7 @@ public class Controller implements Initializable, Observer {
         initKeyPressListener();
         initTouchDisplayDrag();
         raceViewController.setupRaceView(options);
+        initHiddenScoreboard();
         raceViewController.updateWindArrow();
         raceViewController.start();
     }
@@ -364,7 +365,6 @@ public class Controller implements Initializable, Observer {
         canvasAnchor.addEventFilter(TouchEvent.ANY, touch -> {
             if (touch.getTouchPoints().size() == 2 && DisplayUtils.zoomLevel != 1 && DisplayUtils.externalZoomEvent) {
                 DisplayUtils.externalDragEvent = false;
-                DisplayUtils.externalTouchEvent = true;
                 double touchX = (touch.getTouchPoints().get(0).getX() + touch.getTouchPoints().get(1).getX()) / 2;
                 double touchY = (touch.getTouchPoints().get(0).getY() + touch.getTouchPoints().get(1).getY()) / 2;
                 DisplayUtils.dragDisplay((int) touchX, (int) touchY);
@@ -530,6 +530,7 @@ public class Controller implements Initializable, Observer {
                 if(!raceViewController.hasInitializedBoats()) {
                     raceViewController.initBoatHighlight();
                     raceViewController.initializeBoats();
+                    addUserBoat();
                 }
                 break;
             case STARTED:
@@ -720,13 +721,14 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(nextMarkGrid, 430, true);
             AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
-            if (options.isParticipant()) {
+            if (options.isParticipant() && infoDisplay != null) {
                 AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, false);
             }
             scoreboardVisible = false;
             raceViewController.shiftArrow(false);
             setUpTable();
         } else {
+            rightHandSide.setVisible(true);
             AnimationUtils.shiftPaneNodes(rightHandSide, -440, true);
             AnimationUtils.shiftPaneArrow(btnHide, -430, -1);
             AnimationUtils.shiftPaneNodes(imvSpeedScale, -430, true);
@@ -734,7 +736,9 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(nextMarkGrid, -430, true);
             AnimationUtils.shiftPaneNodes(quickMenu, 115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true);
-            AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, true);
+            if(infoDisplay != null){
+                AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, true);
+            }
             scoreboardVisible = true;
             raceViewController.shiftArrow(true);
         }
@@ -898,6 +902,26 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.dullNode(button);
             AnimationUtils.toggleQuickMenuNodes(label, true);
         }
+    }
+
+    private void initHiddenScoreboard(){
+        rightHandSide.setTranslateX(rightHandSide.getTranslateX() + 440);
+        rightHandSide.setVisible(false);
+        btnHide.setRotate(180);
+        lblNoBoardClock.setOpacity(0.8);
+        if(options.isTutorial()){
+            lblNoBoardClock.setVisible(false);
+        }else{
+            lblNoBoardClock.setVisible(true);
+        }
+        AnimationUtils.shiftPaneNodes(btnHide, 430, true);
+        AnimationUtils.shiftPaneNodes(imvSpeedScale, 430, true);
+        AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
+        AnimationUtils.shiftPaneNodes(nextMarkGrid, 430, true);
+        AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
+        scoreboardVisible = false;
+        raceViewController.shiftArrow(false);
+        setUpTable();
     }
 
     public void setSoundController(SoundController soundController) {
