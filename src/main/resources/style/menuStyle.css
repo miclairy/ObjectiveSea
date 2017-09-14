@@ -228,7 +228,7 @@
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
     -fx-opacity: 0.7;
-    -fx-effect: dropshadow(gaussian, rgba(108, 128, 128, 0.80), 15, 0, 0, 5);
+    -fx-effect: dropshadow(gaussian, rgba(108, 128, 128, 0.80), 10, 0, 0, 5);
 }
 
 #lblMarksTitle{
@@ -283,6 +283,13 @@
 
 #imvLogoShifted{
     -fx-effect: dropshadow(gaussian, rgba(115, 155, 155, 0.65), 20, 0, 0, 8);
+}
+
+#settingsGrid{
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-effect: dropshadow(gaussian, #6c9292, 20, 0, 0, 10);
 }
 
 
@@ -351,6 +358,72 @@
 .table-view > .virtual-flow > .scroll-bar > .increment-button,
 .table-view > .virtual-flow > .scroll-bar > .decrement-button {
     -fx-opacity: 0;
+}
+
+#fxSlider .track{
+    -fx-background-color: #dfdfdf;
+    -fx-padding: 2.5;
+}
+
+#fxSlider .thumb {
+    -fx-background-color: #ff776b;
+    -fx-effect: dropshadow(gaussian, rgba(143, 143, 143, 0.6), 8, 0, 0, 2);
+}
+
+#musicSlider .track{
+    -fx-background-color: #dfdfdf;
+    -fx-padding: 2.5;
+}
+
+#musicSlider .thumb {
+    -fx-background-color: #91acb3;
+    -fx-effect: dropshadow(gaussian, rgba(143, 143, 143, 0.6), 8, 0, 0, 2);
+}
+
+#btnSettings{
+    -fx-text-fill: white;
+    -fx-background-color: #9acfcf;
+    -fx-background-radius: 200px;
+    -fx-background-radius: 200px;
+    -fx-padding: 7 20 7 20px;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-background-image: url('/graphics/settingsIcon.png');
+    -fx-background-size: 22px 22px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-opacity: 0.7;
+    -fx-effect: dropshadow(gaussian, rgba(108, 128, 128, 0.80), 15, 0, 0, 5);
+}
+
+#btnControls{
+    -fx-text-fill: white;
+    -fx-background-color: #9acfcf;
+    -fx-background-radius: 200px;
+    -fx-background-radius: 200px;
+    -fx-padding: 7 20 7 20px;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-background-image: url('/graphics/controlsIcon.png');
+    -fx-background-size: 25px 25px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-opacity: 0.7;
+    -fx-effect: dropshadow(gaussian, rgba(108, 128, 128, 0.80), 15, 0, 0, 5);
+}
+
+#lblMusic{
+    -fx-font: 15px "Helvetica Neue";
+    -fx-font-weight: bold;
+}
+
+#lblSoundEffects{
+    -fx-font: 15px "Helvetica Neue";
+    -fx-font-weight: bold;
+}
+
+#imvControls{
+    -fx-effect: dropshadow(gaussian, #6c9292, 8, 0, 0, 0);
 }
 
 .AIBtn{
