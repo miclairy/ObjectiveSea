@@ -73,7 +73,7 @@ public class MainMenuClientListener extends Receiver implements Runnable{
                     if (!getSocket().isClosed()) {
                         serverRunning = false;
                         e.printStackTrace();
-                        System.out.println("Client: disconnected from Server");
+                        System.out.println("Client: disconnected from _Server");
                     }
                 }
             }

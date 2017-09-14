@@ -14,6 +14,7 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Observer;
 
 import static seng302.data.AC35StreamXMLMessage.BOAT_XML_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.RACE_XML_MESSAGE;
@@ -23,13 +24,17 @@ import static seng302.data.AC35StreamXMLMessage.REGATTA_XML_MESSAGE;
  * Created by dda40 on 11/09/17.
  *
  */
-public class GameServer extends Server {
+public class GameServer implements Runnable, Observer {
     private final double SECONDS_PER_UPDATE = 0.2;
 
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumber = new HashMap<>();
     private Map<Boat, Integer> boatSequenceNumbers = new HashMap<>();
     private Map<Boat, Integer> lastMarkRoundingSent = new HashMap<>();
     private int nextViewerID = 0;
+    private ConnectionManager connectionManager;
+    private ServerPacketBuilder packetBuilder;
+    private ServerOptions options;
+
 
     private RaceUpdater raceUpdater;
     private Thread raceUpdaterThread;
@@ -79,7 +84,7 @@ public class GameServer extends Server {
         Integer timesRun = 0;
         while (options.alwaysRerun() || timesRun < options.getNumRacesToRun()) {
             setupNewRaceUpdater(options);
-            System.out.println("Server: Ready to Run New Race");
+            System.out.println("_Server: Ready to Run New Race");
             try {
                 initialize();
                 sendInitialRaceMessages();
@@ -99,7 +104,7 @@ public class GameServer extends Server {
             }
             timesRun++;
         }
-        System.out.println("Server: Shutting Down");
+        System.out.println("_Server: Shutting Down");
         connectionManager.closeAllConnections();
     }
 
@@ -254,7 +259,7 @@ public class GameServer extends Server {
     }
 
     /**
-     * Method that gets called when Server is notified as an observer
+     * Method that gets called when _Server is notified as an observer
      * If the observable is a ConnectionManager then a new client has connected and a server listener
      * is started for the client
      * If the observable is a ServerListener then a registration message is received
@@ -289,7 +294,7 @@ public class GameServer extends Server {
         ServerListener serverListener = new ServerListener(socket);
         serverListener.setRace(raceUpdater.getRace());
         Thread serverListenerThread = new Thread(serverListener);
-        serverListenerThread.setName("Server Listener");
+        serverListenerThread.setName("_Server Listener");
         serverListenerThread.start();
         serverListener.addObserver(this);
     }
@@ -315,10 +320,10 @@ public class GameServer extends Server {
                 nextViewerID++;
                 break;
             case GHOST:
-                System.out.println("Server: Client attempted to connect as ghost, ignoring.");
+                System.out.println("_Server: Client attempted to connect as ghost, ignoring.");
                 break;
             case TUTORIAL:
-                System.out.println("Server: Client attempted to connect as control tutorial, ignoring.");
+                System.out.println("_Server: Client attempted to connect as control tutorial, ignoring.");
                 break;
         }
     }
@@ -335,5 +340,13 @@ public class GameServer extends Server {
                 boat.changeSails();
             }
         }
+    }
+
+    /**
+     * Sends a header, body then generates and sends a CRC for that header and body
+     * @param packet the packet to send
+     */
+    private void sendPacket(byte[] packet) {
+        connectionManager.sendToClients(packet);
     }
 }

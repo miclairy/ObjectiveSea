@@ -4,17 +4,15 @@ import seng302.data.ConnectionManager;
 import seng302.data.CourseName;
 import seng302.data.ServerPacketBuilder;
 import seng302.data.registration.RegistrationType;
-import seng302.models.ServerOptions;
 import seng302.utilities.ConnectionUtils;
 import seng302.views.AvailableRace;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Observable;
+import java.util.*;
+
+import static seng302.data.registration.RegistrationType.REQUEST_RUNNING_GAMES;
 
 import static seng302.data.AC35StreamField.HOST_GAME_CURRENT_PLAYERS;
 
@@ -22,36 +20,21 @@ import static seng302.data.AC35StreamField.HOST_GAME_CURRENT_PLAYERS;
  * Created by dda40 on 11/09/17.
  *
  */
-public class RaceManagerServer extends Server {
+public class RaceManagerServer implements Observer {
 
-    private ArrayList<AvailableRace> availableRaces = new ArrayList();
-    private int nextViewerID = 0;
+    private final ServerPacketBuilder packetBuilder;
+    private final ConnectionManager connectionManager;
+    private ArrayList<AvailableRace> availableRaces = new ArrayList<>();
+    private int nextHostID = 0;
 
-    public RaceManagerServer(ServerOptions options) throws IOException {
-        this.options = options;
+    public RaceManagerServer() throws IOException {
         packetBuilder = new ServerPacketBuilder();
         connectionManager = new ConnectionManager(ConnectionUtils.getVmPort(), false);
         connectionManager.addObserver(this);
-    }
-
-    /**
-     * Sends all the data to the socket while the boats have not all finished.
-     */
-    @Override
-    public void run() throws NullPointerException {
-        System.out.println("Server: Waiting for races");
+        System.out.println("_Server: Waiting for races");
         Thread managerThread = new Thread(connectionManager);
         managerThread.setName("Connection Manager");
         managerThread.start();
-        while (options.alwaysRerun()) {
-            try {
-                Thread.sleep((long) (SECONDS_PER_UPDATE * 1000));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        System.out.println("Server: Shutting Down");
-        connectionManager.closeAllConnections();
     }
 
     @Override
@@ -68,8 +51,9 @@ public class RaceManagerServer extends Server {
             if(arg instanceof String) {
                 removeAvailableRace(arg);
             } else if (arg instanceof RegistrationType) {
-                RegistrationType rego = (RegistrationType) arg;
-                manageRegistration((ServerListener) observable, rego);
+                if (arg.equals(REQUEST_RUNNING_GAMES)) {
+                    manageRegistration((ServerListener) observable);
+                }
             } else if (arg instanceof AvailableRace) {
                 updateAvailableRace(((AvailableRace) arg));
             }
@@ -110,7 +94,7 @@ public class RaceManagerServer extends Server {
         }
         if (foundRace != null) {
             availableRaces.remove(foundRace);
-            System.out.println("Server: removed canceled race: " + foundRace.getIpAddress());
+            System.out.println("_Server: removed canceled race: " + foundRace.getIpAddress());
         }
     }
 
@@ -118,19 +102,14 @@ public class RaceManagerServer extends Server {
      * Deal with the different types of registrations clients can attempt to connect with
      * Currently ignores GHOST or TUTORIAL connection attempts.
      * @param serverListener the serverListener with the clients socket
-     * @param registrationType the type of registration being attempted
      */
-    private void manageRegistration(ServerListener serverListener, RegistrationType registrationType) {
-        switch (registrationType) {
-            case REQUEST_RUNNING_GAMES:
-                connectionManager.addMainMenuConnection(nextViewerID, serverListener.getSocket());
-                for(AvailableRace race : availableRaces){
-                    byte[] racePacket = packetBuilder.createGameRegistrationPacket(race.getPacket());
-                    connectionManager.sendToClient(nextViewerID, racePacket);
-                }
-                nextViewerID++;
-                break;
+    private void manageRegistration(ServerListener serverListener) {
+        connectionManager.addMainMenuConnection(nextHostID, serverListener.getSocket());
+        for(AvailableRace race : availableRaces){
+            byte[] racePacket = packetBuilder.createGameRegistrationPacket(race.getPacket());
+            connectionManager.sendToClient(nextHostID, racePacket);
         }
+        nextHostID++;
     }
 
     /**
@@ -140,7 +119,7 @@ public class RaceManagerServer extends Server {
     protected void startServerListener(Socket socket) throws IOException {
         ServerListener serverListener = new ServerListener(socket);
         Thread serverListenerThread = new Thread(serverListener);
-        serverListenerThread.setName("Server Listener");
+        serverListenerThread.setName("_Server Listener");
         serverListenerThread.start();
         serverListener.addObserver(this);
     }

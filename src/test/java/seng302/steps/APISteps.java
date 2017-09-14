@@ -5,18 +5,15 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import javafx.scene.input.KeyCode;
 import seng302.controllers.RaceUpdater;
-import seng302.controllers.Server;
+import seng302.controllers.GameServer;
 import seng302.controllers.ServerListener;
 import seng302.data.*;
 import seng302.models.Boat;
-import seng302.models.Course;
 import seng302.models.PolarTable;
 import seng302.models.Race;
-import seng302.utilities.MathUtils;
 import seng302.utilities.PolarReader;
 
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -31,7 +28,7 @@ import static org.mockito.Mockito.when;
  */
 public class APISteps {
 
-    private Server server;
+    private GameServer server;
     private Boat sallysBoat;
     private Race race;
     private String selectedCourse = "AC35-course.xml";
@@ -67,7 +64,7 @@ public class APISteps {
         Thread runnerThread = new Thread(raceRunner);
         runnerThread.setName("Race Updater");
         runnerThread.start();
-        server = mock(Server.class);
+        server = mock(GameServer.class);
         Thread serverThread = new Thread(server);
         serverThread.start();
     }

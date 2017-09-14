@@ -224,7 +224,7 @@ public class ClientListener extends Receiver implements Runnable{
                 if (!socket.isClosed()){
                     serverRunning = false;
                     e.printStackTrace();
-                    System.out.println("Client: disconnected from Server");
+                    System.out.println("Client: disconnected from _Server");
                 }
             }
         }

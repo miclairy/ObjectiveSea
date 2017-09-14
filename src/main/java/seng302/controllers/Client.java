@@ -81,7 +81,7 @@ public abstract class Client implements Runnable, Observer {
             case GENERAL_FAILURE:
             case GHOST_SUCCESS:
             case TUTORIAL_SUCCESS:
-                System.out.println("Client: Server response not understood.");
+                System.out.println("Client: _Server response not understood.");
         }
     }
 
@@ -91,7 +91,7 @@ public abstract class Client implements Runnable, Observer {
         if(dataStreamReaderThread != null){
             dataStreamReaderThread.stop();
             this.clientListener = null;
-            System.out.println("Client: Server not found \uD83D\uDD25 \uD83D\uDE2B");
+            System.out.println("Client: _Server not found \uD83D\uDD25 \uD83D\uDE2B");
         }
     }
 }

@@ -37,13 +37,13 @@ public class ConnectionManager extends Observable implements Runnable {
             try {
                 Socket socket = serverSocket.accept();
                 if (isGameServer) {
-                    System.out.println("Server: Accepted Connection");
+                    System.out.println("_Server: Accepted Connection");
                 }
                 setChanged();
                 notifyObservers(socket);
             } catch (IOException e) {
                 if(e instanceof SocketException){
-                    System.out.println("Server: Disconnected");
+                    System.out.println("_Server: Disconnected");
                 }
             }
         }
@@ -70,7 +70,7 @@ public class ConnectionManager extends Observable implements Runnable {
             DataOutputStream clientOutput = new DataOutputStream(clients.get(id).getOutputStream());
             clientOutput.write(packet);
         } catch (java.net.SocketException e){
-            System.out.printf("Server: Client %d Disconnected\n", id);
+            System.out.printf("_Server: Client %d Disconnected\n", id);
             setChanged();
             notifyObservers(id);
             clients.remove(id);

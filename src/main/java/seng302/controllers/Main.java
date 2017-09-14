@@ -23,7 +23,7 @@ import java.io.IOException;
 
 public class Main extends Application {
     private static GameClient client;
-    private Server server;
+    private GameServer server;
     private RaceManagerServer managerServer;
     private Stage primaryStage;
     private DisplaySwitcher displaySwitcher;
@@ -107,19 +107,16 @@ public class Main extends Application {
     }
 
     /**
-     * Creates a Server object, puts it in it's own thread and starts the thread
+     * Creates a _Server object, puts it in it's own thread and starts the thread
      */
     private void setupServer(ServerOptions serverOptions) throws IOException {
         if(serverOptions.isRunRaceManager()){
-            managerServer = new RaceManagerServer(serverOptions);
-            Thread raceManagerThread = new Thread(managerServer);
-            raceManagerThread.setName("raceManagerServer");
-            raceManagerThread.start();
+            managerServer = new RaceManagerServer();
         } else {
             server = new GameServer(serverOptions);
             ConnectionUtils.setServer(server);
             Thread serverThread = new Thread(server);
-            serverThread.setName("Server");
+            serverThread.setName("_Server");
             serverThread.start();
         }
     }
@@ -194,8 +191,8 @@ public class Main extends Application {
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add("style/menuStyle.css");
         dialogPane.getStyleClass().add("myDialog");
-        alert.setTitle("Cannot Connect to Server");
-        alert.setHeaderText("Cannot Connect to Server");
+        alert.setTitle("Cannot Connect to _Server");
+        alert.setHeaderText("Cannot Connect to _Server");
         if(err.isLocalError()){
             alert.setContentText("No connection to local server.\n\n" +
                     "Please ensure that the Port number \n" +
@@ -219,8 +216,8 @@ public class Main extends Application {
         DialogPane dialogPane = alert.getDialogPane();
         dialogPane.getStylesheets().add("style/menuStyle.css");
         dialogPane.getStyleClass().add("myDialog");
-        alert.setTitle("Failed to Join Server");
-        alert.setHeaderText("Failed to Join Server");
+        alert.setTitle("Failed to Join _Server");
+        alert.setHeaderText("Failed to Join _Server");
         String message = "There was not a free slot for you to join the server.\n\n";
         if (isParticipant) message += "You may be able to join as a spectator instead.";
         alert.setContentText(message);
