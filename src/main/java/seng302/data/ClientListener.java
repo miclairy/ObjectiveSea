@@ -27,7 +27,6 @@ public class ClientListener extends Receiver implements Runnable{
     private int sourcePort;
     private Race race;
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumbers = new HashMap<>();
-    private final Integer SOCKET_TIMEOUT_MS = 5000;
 
 
     public ClientListener(String sourceAddress, int sourcePort){
@@ -303,13 +302,20 @@ public class ClientListener extends Receiver implements Runnable{
         race.setCurrentTimeInEpochMs(currentTime);
     }
 
+    /**
+     * strips yacht event data from a given body of a packet and updates a boat
+     * @param body the body of a packet containing the data
+     */
     private void parseYachtEventMessage(byte[] body) {
         int eventID = byteArrayRangeToInt(body, EVENT_ID.getStartIndex(), EVENT_ID.getEndIndex());
         int boatID = byteArrayRangeToInt(body, DESTINATION_SOURCE_ID.getStartIndex(), DESTINATION_SOURCE_ID.getEndIndex());
-        if(eventID == YachtEventCode.COLLISION_MARK.code()) {
+        if(eventID == YachtEventCode.OUT_OF_BOUNDS.code()){
+            Boat boat = race.getBoatById(boatID);
+            boat.setOutOfBounds(true);
+            boat.setOutOfBoundsSound(true);
+        } else if(eventID == YachtEventCode.COLLISION_MARK.code()) {
             Boat boat = race.getBoatById(boatID);
             boat.setMarkColliding(true);
-            boat.setMarkCollideSound(true);
             boat.setMarkCollideSound(true);
         } else if (eventID == YachtEventCode.COLLISION_PENALTY.code()) {
             Boat boat = race.getBoatById(boatID);
@@ -342,6 +348,9 @@ public class ClientListener extends Receiver implements Runnable{
         race.updateMarkRounded(sourceID, markIndex, time);
     }
 
+    /**
+     * closes the running sockets and stream when the client disconnectes
+     */
     @Override
     public void disconnectClient() {
         try {

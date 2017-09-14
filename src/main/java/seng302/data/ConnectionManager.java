@@ -80,17 +80,6 @@ public class ConnectionManager extends Observable implements Runnable {
         }
     }
 
-    public void updateVM(byte[] packet, Socket socket){
-        try {
-            DataOutputStream clientOutput = new DataOutputStream(socket.getOutputStream());
-            clientOutput.write(packet);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e){
-            System.out.println("Client: Unable to reach VM server");
-        }
-    }
-
     /**
      * Sets the xml packets to be send directly after connection is made
      * @param messageType the type of message

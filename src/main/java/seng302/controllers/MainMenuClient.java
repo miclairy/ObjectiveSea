@@ -62,9 +62,7 @@ public class MainMenuClient extends Client {
                 availableRaces.add(newRace);
             }
         }
-
         Iterator<AvailableRace> iter = availableRaces.iterator();
-
         while (iter.hasNext()) {
             AvailableRace race = iter.next();
             boolean exists = false;
@@ -81,9 +79,11 @@ public class MainMenuClient extends Client {
 
     public ObservableList<AvailableRace> getAvailableRaces() {
         return availableRaces;
-
     }
 
+    /**
+     * queries the known VM address for any running games
+     */
     public void checkForRaces(){
         receivedRaces.clear();
         setUpDataStreamReader(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());

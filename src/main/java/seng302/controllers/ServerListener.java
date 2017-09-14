@@ -86,7 +86,6 @@ public class ServerListener extends Receiver implements Runnable{
     }
 
     private void recordHostGameMessage(byte[] body){
-        System.out.println("Server: Recording game on VM");
         AvailableRace race = createAvailableRace(body);
         race.setPacket(body);
         setChanged();
@@ -119,7 +118,6 @@ public class ServerListener extends Receiver implements Runnable{
         int gameStatus = byteArrayRangeToInt(body, HOST_GAME_STATUS.getStartIndex(), HOST_GAME_STATUS.getEndIndex());
         int gameMinPlayers = byteArrayRangeToInt(body, HOST_GAME_REQUIRED_PLAYERS.getStartIndex(), HOST_GAME_REQUIRED_PLAYERS.getEndIndex());
         int gameCurrentPlayers = byteArrayRangeToInt(body, HOST_GAME_CURRENT_PLAYERS.getStartIndex(), HOST_GAME_CURRENT_PLAYERS.getEndIndex());
-        System.out.println("Game map: " + CourseName.getCourseNameFromInt(courseIndex).getText());
         return new AvailableRace(CourseName.getCourseNameFromInt(courseIndex).getText(), gameCurrentPlayers, serverPort, serverIP);
     }
 
@@ -180,8 +178,12 @@ public class ServerListener extends Receiver implements Runnable{
         this.clientId = clientId;
     }
 
+    /**
+     * notifes observes to remove a race by its IP address
+     * @param body body of the packet of the game to remove
+     */
     private void removeHostedGame(byte[] body){
-        System.out.println("received remove game message");
+        System.out.println("VmServer: Received remove game message");
         long serverIpLong = byteArrayRangeToLong(body, HOST_GAME_IP.getStartIndex(), HOST_GAME_IP.getEndIndex());
         String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
         setChanged();

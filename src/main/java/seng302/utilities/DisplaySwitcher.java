@@ -22,18 +22,19 @@ public class DisplaySwitcher {
     private Stage stage;
     private Main main;
     private static GameSounds gameSounds = new GameSounds();
+    private Controller raceController;
 
     public DisplaySwitcher(Main main, Stage stage){
         this.stage = stage;
         this.main = main;
     }
 
-
     /**
      * loads the main menu into the stage
      */
     public void loadMainMenu() {
         try {
+            DisplayUtils.setIsRaceView(false);
             MainMenuController mainMenu = (MainMenuController) replaceSceneContent("main_menu.fxml");
             mainMenu.setApp(main, gameSounds);
             try {
@@ -56,11 +57,12 @@ public class DisplaySwitcher {
      */
     public void loadRaceView(ClientOptions options) {
         try {
+            DisplayUtils.setIsRaceView(true);
             SoundController soundController = new SoundController(Main.getClient().getClientID());
             soundController.setRunning(true);
             Thread soundControllerThread = new Thread(soundController);
             soundControllerThread.start();
-            Controller raceController = (Controller) replaceSceneContent("race_view.fxml");
+            raceController = (Controller) replaceSceneContent("race_view.fxml");
             raceController.setApp(options, this, scene);
             raceController.setSoundController(soundController);
         } catch (Exception ex) {
@@ -94,5 +96,10 @@ public class DisplaySwitcher {
 
     public static GameSounds getGameSounds() {
         return gameSounds;
+    }
+
+    public void setUpTouchInputController(TouchInputController touchInputController){
+        raceController.setUpTouchInputController(touchInputController);
+
     }
 }

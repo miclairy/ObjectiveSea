@@ -19,7 +19,7 @@ import static javafx.scene.input.KeyCode.*;
 /**
  * handles user key presses.
  */
-public class UserInputController extends Observable {
+public class KeyInputController extends Observable {
 
     private Scene scene;
     private int commandInt;
@@ -31,7 +31,7 @@ public class UserInputController extends Observable {
      * Sets up user key press handler.
      * @param scene The scene of the client
      */
-    public UserInputController(Scene scene, Race race) {
+    public KeyInputController(Scene scene, Race race) {
         this.scene = scene;
         this.race = race;
         keyEventListener();
@@ -46,6 +46,10 @@ public class UserInputController extends Observable {
         });
     }
 
+    /**
+     * recorded the key that has been pressed and notifies the observes of this key
+     * @param key the key that has been pressed
+     */
     private void checkKeyPressed(KeyCode key){
         commandInt = BoatAction.getTypeFromKeyCode(key);
         if (commandInt != -1) {

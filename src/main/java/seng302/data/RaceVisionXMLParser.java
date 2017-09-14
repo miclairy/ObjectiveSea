@@ -147,7 +147,6 @@ public class RaceVisionXMLParser {
             parseXMLStream(raceXML);
             Element root = dom.getDocumentElement();
 
-            //setRaceId(root, raceId);
             setCreationTime(root);
             setStartTime(root, expectStartTimeEpochMs);
             setParticipants(root, participantIds);

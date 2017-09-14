@@ -4,12 +4,15 @@ import javafx.animation.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Shape;
+import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
+import seng302.models.CanvasCoordinate;
 import seng302.views.Arrow;
 
 /**
@@ -239,15 +242,11 @@ public class AnimationUtils {
      * @param visible whether or not the node is visible
      */
     public static void shiftPaneNodes(Node node, int amount, boolean visible){
-        node.setVisible(true);
         TranslateTransition translateTransition = new TranslateTransition(new Duration(200), node);
         translateTransition.setByX(amount);
         translateTransition.setInterpolator(Interpolator.EASE_IN);
         if(!visible){
-            translateTransition.setOnFinished(new EventHandler<ActionEvent>(){
-                public void handle(ActionEvent AE){
-                    node.setVisible(false);
-                }});
+            translateTransition.setOnFinished(AE -> node.setVisible(false));
         }
         translateTransition.play();
     }
@@ -384,6 +383,59 @@ public class AnimationUtils {
     }
 
     /**
+     * animates a portion of the swipe trail
+     * @param pane the pane on which the swipe is added to and removed from
+     * @param node the portion of swipe trail
+     */
+    public static void swipeAnimation(Pane pane, Node node){
+        ScaleTransition scaleTransition = new ScaleTransition(new Duration(200), node);
+        scaleTransition.setByX(-0.5);
+        scaleTransition.setByY(-0.5);
+        FadeTransition fadeTransition = new FadeTransition(new Duration(200), node);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        fadeTransition.setFromValue(node.getOpacity());
+        fadeTransition.setToValue(0);
+
+        ParallelTransition pt = new ParallelTransition(scaleTransition, fadeTransition);
+        pane.getChildren().add(node);
+        pt.play();
+
+        pt.setOnFinished(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                pane.getChildren().remove(node);
+            }
+        });
+    }
+
+
+    /**
+     * changes the colour of the stroke of a node to
+     * @param node the node to change
+     * @param color the colour of the new stroke
+     */
+    public static void changeStrokeColor(Shape node, Color color){
+        StrokeTransition strokeTransition = new StrokeTransition();
+        strokeTransition.setShape(node);
+        strokeTransition.setToValue(color);
+        strokeTransition.setDuration(new Duration(200));
+        strokeTransition.play();
+    }
+
+    /**
+     * changes the fill colour of a node
+     * @param node the node to change the fill colour of
+     * @param color the end colour to change to
+     */
+    public static void changeFillColor(Shape node, Color color){
+        FillTransition fillTransition = new FillTransition();
+        fillTransition.setShape(node);
+        fillTransition.setToValue(color);
+        fillTransition.setDuration(new Duration(200));
+        fillTransition.play();
+    }
+
+    /**
      * adds an infinite hover effect to a node
      * @param node the node that the transition is applied to
      */
@@ -411,8 +463,7 @@ public class AnimationUtils {
         ParallelTransition pt = new ParallelTransition(translateTransition, scaleTransition);
         pt.play();
     }
-
-    /**
+/**
      * fades in a menu pane
      * @param node the pane to be faded
      */
@@ -422,8 +473,7 @@ public class AnimationUtils {
         fadeTransition.setFromValue(0);
         fadeTransition.setToValue(1);
         fadeTransition.setInterpolator(Interpolator.EASE_OUT);
-        fadeTransition.play();
-    }
+        fadeTransition.play();}
 
     /**
      * sets a nodes opcaity to the desried opacity
@@ -472,5 +522,3 @@ public class AnimationUtils {
         scaleTransition.play();
     }
 }
-
-
