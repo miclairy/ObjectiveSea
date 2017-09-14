@@ -233,4 +233,29 @@ public class MathUtils {
         }
         return angle;
     }
+
+    /**
+     * Calculates the heading of the line starting at start Coordinate.
+     * @param startCoordinate point to start
+     * @param endCoordinate point to Coordinate
+     * @return heading between points
+     */
+    public static double getHeadingBetweenTwoCoordinates(CanvasCoordinate startCoordinate, CanvasCoordinate endCoordinate){
+        double bearing = Math.toDegrees(Math.atan2(startCoordinate.getY() - endCoordinate.getY(), startCoordinate.getX() - endCoordinate.getX()));
+        if (bearing < 0){
+            bearing += 360;
+        }
+        return (bearing + 270) % 360;
+    }
+
+    /**
+     * Returns distance between two points on a canvas (pixels)
+     * @param point1
+     * @param point2
+     * @return distance
+     */
+    public static double distanceBetweenTwoPoints(CanvasCoordinate point1, CanvasCoordinate point2) {
+        double distance = Math.sqrt(Math.pow(point1.getX()-point2.getX(), 2)+Math.pow(point1.getY()-point2.getY(), 2));
+        return distance;
+    }
 }

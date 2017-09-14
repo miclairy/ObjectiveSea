@@ -28,9 +28,15 @@ public abstract class Client implements Runnable, Observer {
     private double CONNECTION_TIMEOUT = TimeUtils.secondsToMilliseconds(10.0);
     private int WAIT_MILLISECONDS = 10;
 
-    protected Receiver clientListener;
-    protected ClientPacketBuilder packetBuilder;
-    protected ClientSender sender;
+    private static Race race;
+    private Receiver clientListener;
+    private ClientPacketBuilder packetBuilder;
+    private ClientSender sender;
+    private Map<Integer, Boat> potentialCompetitors;
+    private KeyInputController keyInputController;
+    private TouchInputController touchInputController;
+    private int clientID;
+    private ClientOptions options;
     Thread dataStreamReaderThread;
     protected RegistrationResponse serverRegistrationResponse;
     protected int clientID;
@@ -100,5 +106,48 @@ public abstract class Client implements Runnable, Observer {
             this.clientListener = null;
             System.out.println("Client: Server not found \uD83D\uDD25 \uD83D\uDE2B");
         }
+    }
+//TODO
+} else if (o == touchInputController) {
+        sendBoatTouchCommandPacket();
+        } else if (o == keyInputController){
+        sendBoatKeyCommandPacket();
+        }
+        }
+
+/**
+ * sends boat command packet to server. Sends keypress and runs tutorial callback function if required.
+ */
+private void sendBoatKeyCommandPacket(){
+        if(tutorialKeys.contains(keyInputController.getCommandInt())) {
+        tutorialFunction.run();
+        }
+
+        if (race != null && !race.getRaceStatus().equals(RaceStatus.TERMINATED)) {
+        byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(keyInputController.getCommandInt(), this.clientID);
+        sender.sendToServer(boatCommandPacket);
+        }
+
+        }
+    //TODO
+    private void sendBoatTouchCommandPacket(){
+        if(tutorialKeys.contains(touchInputController.getCommandInt())) {
+            tutorialFunction.run();
+        }
+        byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(touchInputController.getCommandInt(), this.clientID);
+        sender.sendToServer(boatCommandPacket);
+
+    }
+
+    //TODO
+    public void setInputControllers(KeyInputController keyInputController, TouchInputController touchInputController) {
+        this.keyInputController = keyInputController;
+        this.touchInputController = touchInputController;
+        touchInputController.setClientID(clientID);
+        keyInputController.setClientID(clientID);
+    }
+
+    public TouchInputController getTouchInputController() {
+        return touchInputController;
     }
 }

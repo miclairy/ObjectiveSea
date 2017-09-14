@@ -7,6 +7,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
@@ -18,10 +19,9 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.TouchEvent;
+import javafx.scene.input.ZoomEvent;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Callback;
@@ -36,6 +36,7 @@ import seng302.data.BoatStatus;
 import seng302.utilities.*;
 import seng302.utilities.TimeUtils;
 import seng302.views.BoatDisplay;
+import seng302.views.DisplayTouchController;
 import seng302.views.HeadsupDisplay;
 
 
@@ -122,6 +123,8 @@ public class Controller implements Initializable, Observer {
     private ScoreBoardController scoreBoardController = new ScoreBoardController();
     @FXML
     private SelectionController selectionController;
+    @FXML
+    private Pane touchPane;
 
     private boolean raceStatusChanged = true;
     private Race race;
@@ -243,7 +246,9 @@ public class Controller implements Initializable, Observer {
         } else {
             startersOverlayTitle.setText(race.getRegattaName());
         }
+        initZoomEventListener();
         initKeyPressListener();
+        initTouchDisplayDrag();
         raceViewController.setupRaceView(options);
         initHiddenScoreboard();
         raceViewController.updateWindArrow();
@@ -269,7 +274,7 @@ public class Controller implements Initializable, Observer {
      */
     private void initDisplayDrag() {
         canvasAnchor.setOnMouseDragged(event -> {
-            if (DisplayUtils.zoomLevel != 1) {
+            if (DisplayUtils.zoomLevel != 1 && !event.isSynthesized() && !DisplayUtils.externalDragEvent) {
                 DisplayUtils.dragDisplay((int) event.getX(), (int) event.getY());
                 raceViewController.redrawCourse();
                 raceViewController.redrawBoatPaths();
@@ -277,6 +282,24 @@ public class Controller implements Initializable, Observer {
             }
         });
     }
+
+    /**
+     * initilized two finger dragging of the course. allows for panning while zoomed.
+     */
+    private void initTouchDisplayDrag() {
+        canvasAnchor.addEventFilter(TouchEvent.ANY, touch -> {
+            if (touch.getTouchPoints().size() == 2 && DisplayUtils.zoomLevel != 1 && DisplayUtils.externalZoomEvent) {
+                DisplayUtils.externalDragEvent = false;
+                double touchX = (touch.getTouchPoints().get(0).getX() + touch.getTouchPoints().get(1).getX()) / 2;
+                double touchY = (touch.getTouchPoints().get(0).getY() + touch.getTouchPoints().get(1).getY()) / 2;
+                DisplayUtils.dragDisplay((int) touchX, (int) touchY);
+                raceViewController.redrawCourse();
+                raceViewController.redrawBoatPaths();
+                selectionController.deselectBoat();
+            }
+        });
+    }
+
 
     /**
      * adds a listener to the + and - keys to manage keyboard zooming
@@ -288,6 +311,19 @@ public class Controller implements Initializable, Observer {
             }
             if(key.getCode().equals(Z) || key.getCode().equals(MINUS) || key.getCode().equals(UNDERSCORE)){
                 setZoomSliderValue(zoomSlider.getValue()- 0.1);
+            }
+        });
+    }
+
+
+    /**
+     * initilises zoom listener
+     */
+    private void initZoomEventListener() {
+        canvasAnchor.setOnZoom(zoom -> {
+            DisplayUtils.externalZoomEvent = (zoom.getZoomFactor() > 0.96 && zoom.getZoomFactor() < 1.04);
+            if(!DisplayUtils.externalZoomEvent) {
+                zoomSlider.adjustValue(zoomSlider.getValue() * zoom.getZoomFactor());
             }
         });
     }
@@ -306,7 +342,7 @@ public class Controller implements Initializable, Observer {
                 selectionController.setRotationOffset(0);
                 root.getTransforms().clear();
                 mapImageView.setVisible(true);
-                selectionController.setTrackingPoint(false);
+                nextMarkCircle.setVisible(false);
                 DisplayUtils.resetOffsets();
             }
             raceViewController.redrawCourse();
@@ -626,6 +662,10 @@ public class Controller implements Initializable, Observer {
             scoreboardVisible = true;
             raceViewController.shiftArrow(true);
         }
+    }
+
+    public void setUpTouchInputController(TouchInputController touchInputController) {
+        touchInputController.setUp(root, touchPane, this);
     }
 
     public class ColoredTextListCell extends ListCell<String> {

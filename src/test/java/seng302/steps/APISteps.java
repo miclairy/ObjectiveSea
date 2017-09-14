@@ -42,7 +42,6 @@ public class APISteps {
     public void sallyHasABoat() throws Throwable {
         sallysBoat = new Boat(102, "Sally's Boat", "SB", 15.0);
         sallysBoat.setHeading(100.0);
-
         sallysBoat.setCurrentSpeed(15.0);
         RaceVisionXMLParser rc = new RaceVisionXMLParser();
         Race tempRace = rc.importRace();
