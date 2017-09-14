@@ -12,6 +12,7 @@ import java.util.Observer;
 
 /**
  * Created by cjd137 on 16/08/17.
+ *
  */
 public class SoundController implements Runnable {
 
@@ -70,7 +71,7 @@ public class SoundController implements Runnable {
 
     /**
      * When boat hits another boat, boat damage sound and hitting boat sounds are played
-     * @param boat
+     * @param boat boat that has been hit
      */
     public void hasHitBoat(Boat boat) {
         if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 5000) && boat.isBoatCollideSound()) {
@@ -88,7 +89,7 @@ public class SoundController implements Runnable {
 
     /**
      * When boat hits a mark, boat damage sound and hitting a mark sound plays
-     * @param boat
+     * @param boat boat that has hit a mark
      */
     public void hasHitMark(Boat boat) {
         if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 5000) && boat.isMarkCollideSound()) {
@@ -108,7 +109,7 @@ public class SoundController implements Runnable {
 
     /**
      * When a boat is out of bounds, boat damage sound and boundary sound plays
-     * @param boat
+     * @param boat boat that is out of bounds
      */
     private void isOutOfBounds(Boat boat){
         if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 5000) && boat.isOutOfBoundsSound()) {

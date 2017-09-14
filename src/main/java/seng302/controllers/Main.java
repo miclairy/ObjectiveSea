@@ -145,6 +145,15 @@ public class Main extends Application {
         }
     }
 
+    /**
+     * starts a local race with the given params
+     * @param course the course name
+     * @param port the host port of the game
+     * @param isTutorial boolean, true if it is a tutorial
+     * @param clientOptions client options for game
+     * @return boolean, true if the client starts successfully
+     * @throws Exception throws this
+     */
     public boolean startLocalRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions) throws Exception {
         ServerOptions serverOptions = new ServerOptions();
         serverOptions.setPort(port);

@@ -296,7 +296,6 @@ public class Controller implements Initializable, Observer {
      * Initilizes zoom slider on display. Resets zoom on slide out
      */
     private void initZoom() {
-        //Zoomed out
         zoomSlider.valueProperty().addListener((arg0, arg1, arg2) -> {
             raceViewController.stopHighlightAnimation();
             zoomSlider.setOpacity(FOCUSED_ZOOMSLIDER_OPACITY);
@@ -304,7 +303,6 @@ public class Controller implements Initializable, Observer {
             if (DisplayUtils.zoomLevel != 1) {
                 mapImageView.setVisible(false);
             } else {
-                //Zoom out full, reset everything
                 selectionController.setRotationOffset(0);
                 root.getTransforms().clear();
                 mapImageView.setVisible(true);
@@ -323,34 +321,26 @@ public class Controller implements Initializable, Observer {
     private void createCanvasAnchorListeners() {
 
         final ChangeListener<Number> resizeListener = new ChangeListener<Number>() {
-            final Timer timer = new Timer(); // uses a timer to call your resize method
-            TimerTask task = null; // task to execute after defined delay
-            final long delayTime = 300; // delay that has to pass in order to consider an operation done
-
+            final Timer timer = new Timer();
+            TimerTask task = null;
+            final long delayTime = 300;
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue) {
                 if (task != null) {
-                    task.cancel(); // cancel it, we have a new size to consider
-                    //zoom and blur image
-
+                    task.cancel();
                     mapImageView.setEffect(new GaussianBlur(300));
                 }
-
                 task = new TimerTask() // create new task that calls your resize operation
                 {
                     @Override
                     public void run() {
-                        // resize after time is waited
                         raceViewController.drawMap();
                         mapImageView.setEffect(null);
                     }
                 };
-                // schedule new task
                 timer.schedule(task, delayTime);
             }
         };
-
-
         canvasAnchor.widthProperty().addListener(resizeListener);
         canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
             canvasWidth = (double) newValue;
@@ -590,6 +580,10 @@ public class Controller implements Initializable, Observer {
         }
     }
 
+    /**
+     * sets up the user help label in the GUI
+     * @param helper helper title
+     */
     public void setUserHelpLabel(String helper) {
         lblUserHelp.setOpacity(0);
         lblUserHelp.setPrefWidth(canvasWidth);
@@ -742,10 +736,8 @@ public class Controller implements Initializable, Observer {
      */
     public void refreshTable(){
         Callback<Boat, javafx.beans.Observable[]> cb =(Boat boat) -> new javafx.beans.Observable[]{boat.getCurrPlacingProperty()};
-
         ObservableList<Boat> observableList = FXCollections.observableArrayList(cb);
         observableList.addAll(race.getObservableCompetitors());
-
         SortedList<Boat> sortedList = new SortedList<>( observableList,
                 (Boat boat1, Boat boat2) -> {
                     if( boat1.getCurrPlacingProperty().get() < boat2.getCurrPlacingProperty().get() ) {

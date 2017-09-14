@@ -46,6 +46,10 @@ public class UserInputController extends Observable {
         });
     }
 
+    /**
+     * recorded the key that has been pressed and notifies the observes of this key
+     * @param key the key that has been pressed
+     */
     private void checkKeyPressed(KeyCode key){
         commandInt = BoatAction.getTypeFromKeyCode(key);
         if (commandInt != -1) {

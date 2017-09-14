@@ -141,6 +141,9 @@ public class GameClient extends Client{
         return clientID;
     }
 
+    /**
+     * notfies the server if the disconnect person is the host
+     */
     public void initiateClientDisconnect() {
         if (options.isHost()){
             System.out.println("Client: Cancelling race");

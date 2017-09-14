@@ -41,7 +41,6 @@ public class RaceUpdater implements Runnable {
 
     public RaceUpdater(String selectedCourse){
         collisionManager = new CollisionManager();
-        //set race up with default files
         initialWindSpeedGenerator();
         RaceVisionXMLParser raceVisionXMLParser = new RaceVisionXMLParser();
         raceVisionXMLParser.setCourseFile(selectedCourse);
@@ -60,7 +59,6 @@ public class RaceUpdater implements Runnable {
     }
 
     public void initialize(){
-        //for now we assume all boats racing are AC35 class yachts such that we can use the polars we have for them
         this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
         race.updateRaceStatus(RaceStatus.PRESTART);
         long currentTime = Instant.now().toEpochMilli();
@@ -87,7 +85,7 @@ public class RaceUpdater implements Runnable {
 
     /**
      * Generates a race id from the current date and time
-     * @return
+     * @return a string of formated date
      */
     private String generateRaceId() {
         DateFormat dateFormat = new SimpleDateFormat("yyMMddHH");

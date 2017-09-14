@@ -163,17 +163,6 @@ public class CollisionManager {
         return false;
     }
 
-    public boolean boatIsCollidingWithMark(Boat boat) {
-        for (Collision collision : currentCollisions) {
-            if (collision.boatIsInCollision(boat.getId())) {
-                if (collision.isSingleBoatCollision()) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     public Set<Collision> getCollisions() {
         return Collections.unmodifiableSet(currentCollisions);
     }

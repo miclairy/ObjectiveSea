@@ -73,7 +73,6 @@ public class Tutorial {
             case TACKFAIL:
                 tackFailTutorial();
         }
-
     }
 
     /**
@@ -107,7 +106,6 @@ public class Tutorial {
         GameClient.setTutorialActions(keycodes, () -> {
             double vmhHeading = tutorialBoat.getVMGHeading(race.getCourse(), polarTable);
             if(vmhHeading != -1){
-                //while(tutorialBoat.getTargetHeading() != boatHeading){}
                 tutorialStage = TutorialStage.TACK;
             }else{
                 stepFailed = tutorialStage;
@@ -128,12 +126,9 @@ public class Tutorial {
         GameClient.setTutorialActions(keysFailed, () -> {
             double vmhHeading = tutorialBoat.getVMGHeading(race.getCourse(), polarTable);
             if(vmhHeading != -1){
-                //while(tutorialBoat.getTargetHeading() != boatHeading){}
                 tutorialStage = TutorialStage.values()[stepFailed.ordinal() + 1];
             }
         });
-
-
     }
 
     /**

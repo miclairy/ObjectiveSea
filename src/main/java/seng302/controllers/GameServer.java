@@ -9,6 +9,7 @@ import seng302.utilities.ConnectionUtils;
 import seng302.views.AvailableRace;
 import sun.security.x509.AVA;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.BindException;
 import java.net.Socket;
@@ -68,7 +69,8 @@ public class GameServer implements Runnable, Observer {
 
     /**
      * Initializes the sequence numbers for the boats and xml messages
-     * @throws IOException
+     * @throws IOException throws this
+     * @throws NullPointerException also throws this
      */
     private void initialize() throws IOException, NullPointerException  {
         xmlSequenceNumber.put(REGATTA_XML_MESSAGE, 0);
@@ -153,6 +155,10 @@ public class GameServer implements Runnable, Observer {
         sendYachtEventMessages();
     }
 
+    /**
+     * send a yacht event message to the server
+     * @throws IOException throws this because of sending data
+     */
     private void sendYachtEventMessages() throws IOException {
         for (Collision collision : collisionManager.getCollisions()) {
             for (Integer boatId : collision.getInvolvedBoats()) {
@@ -185,13 +191,12 @@ public class GameServer implements Runnable, Observer {
     /**
      * Sends a Boat Location Message and possible a Mark Rounding message for a boat
      * @param boat the boat to send messages for
-     * @throws IOException
+     * @throws IOException throws this because of sending packet
      */
     private void sendBoatMessages(Boat boat) throws IOException {
         Integer currentSequenceNumber = boatSequenceNumbers.get(boat);
-        if (currentSequenceNumber != null) { //check required as a race condition can sometimes cause a NullPointerException
+        if (currentSequenceNumber != null) {
             boatSequenceNumbers.put(boat, currentSequenceNumber + 1);
-
             sendPacket(packetBuilder.createBoatLocationMessage(boat, raceUpdater.getRace(), currentSequenceNumber));
             if (lastMarkRoundingSent.get(boat) != boat.getLastRoundedMarkIndex()) {
                 lastMarkRoundingSent.put(boat, boat.getLastRoundedMarkIndex());
@@ -202,9 +207,9 @@ public class GameServer implements Runnable, Observer {
 
     /**
      * sends a Yacht Event message
-     * @param boat
-     * @param race
-     * @throws IOException
+     * @param boat a boat
+     * @param race a race
+     * @throws IOException needed for sending a packet that fails
      */
     private void sendYachtEventMessage(Boat boat, Race race, int incidentID, YachtEventCode eventCode) throws IOException {
         sendPacket(packetBuilder.createYachtEventMessage(boat, race, incidentID, eventCode));
@@ -263,12 +268,20 @@ public class GameServer implements Runnable, Observer {
         }
     }
 
+    /**
+     * sends a packet to the Vm server notifying it that a game is being hosted
+     * @param options options for the hosted game
+     * @param publicIp public ip of the hosted game
+     * @param currentCourseIndex index of the current course running on the game
+     * @throws IOException needed for sending to the vm
+     */
     private void updateVM(ServerOptions options, String publicIp, int currentCourseIndex) throws IOException {
         byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(options.getSpeedScale(), options.getMinParticipants(),
                 options.getPort(), publicIp, currentCourseIndex, raceUpdater.getRace().getCompetitors().size());
         System.out.println("GameServer: Updating VM" );
         Socket vmSocket = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
-        connectionManager.updateVM(registerGamePacket, vmSocket);
+        DataOutputStream vmOutput = new DataOutputStream(vmSocket.getOutputStream());
+        vmOutput.write(registerGamePacket);
     }
 
     /**

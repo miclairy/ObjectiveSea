@@ -60,21 +60,32 @@ public class RaceManagerServer implements Observer {
         }
     }
 
+    /**
+     * Runs through the entire list of avaliable races, updating the ones that have had changes
+     * @param race the new avaliable race
+     */
     private void updateAvailableRace(AvailableRace race){
         boolean updatedRace = false;
         for (AvailableRace runningRace : availableRaces){
             if (Objects.equals(runningRace.getIpAddress(), race.getIpAddress())){
-                System.out.println("Updating running race");
+                System.out.println("VmServer: Updating running race");
                 updatedRace = true;
                 incrementNumberOfBoats(runningRace, race.getNumBoats());
             }
         }
         int raceMapIndex = CourseName.getCourseIntFromName(race.mapNameProperty().getValue());
         if (!updatedRace && raceMapIndex != -1) {
+            System.out.println("VmServer: Recording game on VM");
+            incrementNumberOfBoats(race, 1);
             availableRaces.add(race);
         }
     }
 
+    /**
+     * changes the number of boats in a known race to be stored on the vm
+     * @param race the new race
+     * @param numBoats the new number of boats in the race
+     */
     private void incrementNumberOfBoats(AvailableRace race, int numBoats){
         byte[] packet = race.getPacket();
         for (int i = 0; i < 1; i ++) {
@@ -82,9 +93,12 @@ public class RaceManagerServer implements Observer {
         }
     }
 
+    /**
+     * removes a race with a specific IP address
+     * @param ipAddress ip address of the race to remove
+     */
     private void removeAvailableRace(Object ipAddress){
         AvailableRace foundRace = null;
-        System.out.println("_Server: Number of races " + availableRaces.size());
         for (AvailableRace race : availableRaces) {
             if (race.getIpAddress().equals(ipAddress)) {
                 foundRace = race;
@@ -92,7 +106,7 @@ public class RaceManagerServer implements Observer {
         }
         if (foundRace != null) {
             availableRaces.remove(foundRace);
-            System.out.println("Server: removed canceled race: " + foundRace.getIpAddress());
+            System.out.println("VmServer: removed canceled race: " + foundRace.getIpAddress());
         }
     }
 
