@@ -66,8 +66,7 @@ public class RaceManagerServer implements Observer {
             if (Objects.equals(runningRace.getIpAddress(), race.getIpAddress())){
                 System.out.println("Updating running race");
                 updatedRace = true;
-                runningRace.setNumBoats(runningRace.getNumBoats() + 1);
-                incrementNumberOfBoats(runningRace);
+                incrementNumberOfBoats(runningRace, race.getNumBoats());
             }
         }
         int raceMapIndex = CourseName.getCourseIntFromName(race.mapNameProperty().getValue());
@@ -76,17 +75,16 @@ public class RaceManagerServer implements Observer {
         }
     }
 
-    private void incrementNumberOfBoats(AvailableRace race){
+    private void incrementNumberOfBoats(AvailableRace race, int numBoats){
         byte[] packet = race.getPacket();
-        System.out.println(Arrays.toString(packet));
         for (int i = 0; i < 1; i ++) {
-            packet[HOST_GAME_CURRENT_PLAYERS.getStartIndex() + i] = (byte) (race.getNumBoats() >> i * 8);
+            packet[HOST_GAME_CURRENT_PLAYERS.getStartIndex() + i] = (byte) (numBoats >> i * 8);
         }
     }
 
     private void removeAvailableRace(Object ipAddress){
         AvailableRace foundRace = null;
-        System.out.println("Races size: " + availableRaces.size());
+        System.out.println("_Server: Number of races " + availableRaces.size());
         for (AvailableRace race : availableRaces) {
             if (race.getIpAddress().equals(ipAddress)) {
                 foundRace = race;
