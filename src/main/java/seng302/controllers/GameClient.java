@@ -31,6 +31,7 @@ public class GameClient extends Client{
     public GameClient(ClientOptions options) throws ServerFullException, NoConnectionToServerException {
         this.packetBuilder = new ClientPacketBuilder();
         this.options = options;
+        options.isHost();
         setUpDataStreamReader(options.getServerAddress(), options.getServerPort());
         System.out.println("Client: Waiting for connection to Server");
         manageWaitingConnection();
@@ -155,4 +156,7 @@ public class GameClient extends Client{
         clientListener.addObserver(this);
     }
 
+    public ClientOptions getOptions() {
+        return options;
+    }
 }

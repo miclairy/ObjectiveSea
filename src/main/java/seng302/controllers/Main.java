@@ -42,6 +42,9 @@ public class Main extends Application {
         notifyPreloader(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
         this.primaryStage.show();
         this.primaryStage.setOnCloseRequest(e -> {
+            if(client != null){
+                client.initiateClientDisconnect();
+            }
             Platform.exit();
             System.exit(0);
         });
