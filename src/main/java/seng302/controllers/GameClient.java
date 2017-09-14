@@ -5,6 +5,7 @@ import seng302.data.*;
 import seng302.data.registration.RegistrationResponse;
 import seng302.data.registration.RegistrationType;
 import seng302.data.registration.ServerFullException;
+import seng302.data.registration.ServerRegistrationException;
 import seng302.models.Boat;
 import seng302.models.ClientOptions;
 import seng302.models.Race;
@@ -28,7 +29,7 @@ public class GameClient extends Client{
     private static Runnable tutorialFunction = null;
 
 
-    public GameClient(ClientOptions options) throws ServerFullException, NoConnectionToServerException {
+    public GameClient(ClientOptions options) throws NoConnectionToServerException, ServerRegistrationException {
         this.packetBuilder = new ClientPacketBuilder();
         this.options = options;
         options.isHost();
@@ -144,7 +145,9 @@ public class GameClient extends Client{
             sender.sendToVM(gameClosePacket);
         }
         clientListener.disconnectClient();
-        race.getBoatById(clientID).setStatus(BoatStatus.DNF);
+        if (options.isParticipant()) {
+            race.getBoatById(clientID).setStatus(BoatStatus.DNF);
+        }
     }
 
     @Override

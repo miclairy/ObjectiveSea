@@ -145,24 +145,7 @@ public class Main extends Application {
         }
     }
 
-    public void startLocalRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions) throws Exception{
-        ServerOptions serverOptions = new ServerOptions();
-        serverOptions.setPort(port);
-        serverOptions.setRaceXML(course);
-        serverOptions.setTutorial(isTutorial);
-        setupServer(serverOptions);
-        startClient(clientOptions);
-
-    /**
-     * initilises a hosted race with the provided parameters
-     * @param course course name
-     * @param port port number to host
-     * @param isTutorial is hosted game a tutorial
-     * @param clientOptions client options
-     * @return whether starting hosted race was successful or not
-     * @throws Exception uncaught error
-     */
-    public boolean startHostedRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions) throws Exception{
+    public boolean startLocalRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions) throws Exception {
         ServerOptions serverOptions = new ServerOptions();
         serverOptions.setPort(port);
         serverOptions.setRaceXML(course);
@@ -170,10 +153,30 @@ public class Main extends Application {
         try{
             setupServer(serverOptions);
         } catch(BindException e){
-            showPortInUseError(port);
             return false;
         }
         startClient(clientOptions);
+        return true;
+    }
+
+    /**
+     * initilises a hosted race with the provided parameters
+     * @param course course name
+     * @param clientOptions client options
+     * @return whether starting hosted race was successful or not
+     * @throws Exception uncaught error
+     */
+    public boolean startHostedRace(String course, Double speedScale, int numParticipants, ClientOptions clientOptions, int currentCourseIndex) throws Exception {
+        ServerOptions serverOptions = new ServerOptions(speedScale, numParticipants);
+        serverOptions.setRaceXML(course);
+        try{
+            setupServer(serverOptions);
+        } catch(BindException e){
+            showPortInUseError(serverOptions.getPort());
+            return false;
+        }
+        startClient(clientOptions);
+        client.updateVM(serverOptions.getSpeedScale(), serverOptions.getMinParticipants(), clientOptions.getServerPort(), ConnectionUtils.getPublicIp(), currentCourseIndex);
         return true;
     }
 

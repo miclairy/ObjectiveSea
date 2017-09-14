@@ -326,38 +326,6 @@ public class GameServer implements Runnable, Observer {
         }
     }
 
-    /**
-     * Adds a competing client to the race model and sends new xml messages out to all clients
-     * @param serverListener the listener for the client
-     */
-    private void addClientToRace(ServerListener serverListener){
-        int newId = raceUpdater.addCompetitor();
-        boolean success = newId != -1;
-        byte[] packet;
-        if (success) {
-            Boat boat = raceUpdater.getRace().getBoatById(newId);
-            boatSequenceNumbers.put(boat, newId);
-            lastMarkRoundingSent.put(boat, -1);
-            packet = packetBuilder.createRegistrationResponsePacket(newId, RegistrationResponseStatus.PLAYER_SUCCESS);
-            if (!raceUpdaterThread.isAlive()){
-                int numCompetitors = raceUpdater.getRace().getCompetitors().size();
-                if (numCompetitors >= options.getMinParticipants()) {
-                    raceUpdaterThread.start();
-                }
-            }
-        } else {
-            packet = packetBuilder.createRegistrationResponsePacket(newId, RegistrationResponseStatus.OUT_OF_SLOTS);
-        }
-        connectionManager.addConnection(newId, serverListener.getSocket());
-        serverListener.setClientId(newId);
-        connectionManager.sendToClient(newId, packet);
-
-        if(success){
-            sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());
-            sendAllBoatStates();
-        }
-    }
-
     /** Responds to a Spectator requesting to join
      * Can fail due to the race not being started, otherwise we let them join
      * @param serverListener

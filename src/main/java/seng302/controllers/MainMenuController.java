@@ -36,7 +36,6 @@ public class MainMenuController implements Initializable{
     @FXML private Button btnSpectate;
     @FXML private Button btnOnlineBack;
     @FXML private Button btnSinglePlay;
-    @FXML private Button btnPractiseStart;
     @FXML private Button btnManual;
     @FXML private Button btnCreateGame;
     @FXML private Button btnJoinGame;
@@ -45,6 +44,7 @@ public class MainMenuController implements Initializable{
     @FXML private Button btnLoadMap;
     @FXML private Button btnBackToOptions;
     @FXML private Button btnStartRace;
+    @FXML private Button btnPractiseStart;
     @FXML private GridPane onlinePane;
     @FXML private GridPane offlinePane;
     @FXML private GridPane joinRacePane;
@@ -177,7 +177,7 @@ public class MainMenuController implements Initializable{
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.TUTORIAL);
         stopMainMenuClientThread();
-        if(main.startHostedRace("GuidedPractice-course.xml", DEFAULT_PORT, true, clientOptions)){
+        if(main.startLocalRace("GuidedPractice-course.xml", DEFAULT_PORT, true, clientOptions)){
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
             loadTutorialMusic();
@@ -203,7 +203,7 @@ public class MainMenuController implements Initializable{
 
 
     @FXML private void loadPracticeStart() throws Exception {
-        btnPracticeStart.setDisable(true);
+        btnPractiseStart.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.PRACTICE);
         stopMainMenuClientThread();
         if(main.startLocalRace("PracticeStart-course.xml", DEFAULT_PORT, false, clientOptions)){
@@ -211,7 +211,7 @@ public class MainMenuController implements Initializable{
             main.loadRaceView(clientOptions);
             loadSinglePlayerMusic();
         }else{
-            btnPracticeStart.setDisable(false);
+            btnPractiseStart.setDisable(false);
         }
 
     }

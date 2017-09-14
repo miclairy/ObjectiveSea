@@ -31,24 +31,6 @@ public abstract class Client implements Runnable, Observer {
     protected RegistrationResponse serverRegistrationResponse;
     protected int clientID;
 
-    /** TODO
-    private static List<Integer> tutorialKeys = new ArrayList<Integer>();
-    private static Runnable tutorialFunction = null;
-
-    public Client(ClientOptions options) throws ServerRegistrationException, NoConnectionToServerException {
-        this.packetBuilder = new ClientPacketBuilder();
-        this.options = options;
-        setUpDataStreamReader();
-        System.out.println("Client: Waiting for connection to Server");
-        manageWaitingConnection();
-        RegistrationType regoType = options.isParticipant() ? RegistrationType.PLAYER : RegistrationType.SPECTATOR;
-        System.out.println("Client: Connected to Server");
-        this.sender = new ClientSender(clientListener.getClientSocket());
-        sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
-        System.out.println("Client: Sent Registration Request");
-        manageServerResponse();
-    }**/
-
     /**
      * Waits for the server to accept the socket connection
      * @throws NoConnectionToServerException if we timeout whilst waiting for the connection
@@ -57,7 +39,6 @@ public abstract class Client implements Runnable, Observer {
         int connectionAttempts = 0;
         while(clientListener.getSocket() == null) {
             if(clientListener.isHasConnectionFailed()){
-//                stopDataStreamReader();
                 throw new NoConnectionToServerException(true, "Connection Failed. Port number is invalid.");
             }else if(connectionAttempts < MAX_CONNECTION_ATTEMPTS){
                 try {
@@ -114,14 +95,6 @@ public abstract class Client implements Runnable, Observer {
             dataStreamReaderThread.stop();
             this.clientListener = null;
             System.out.println("Client: Server not found \uD83D\uDD25 \uD83D\uDE2B");
-        }
-    }
-
-    //TODO
-    public void initiateClientDisconnect() {
-        clientListener.disconnectClient();
-        if (options.isParticipant()) {
-            race.getBoatById(clientID).setStatus(BoatStatus.DNF);
         }
     }
 }
