@@ -23,7 +23,8 @@ public class GameClient extends Client{
 
     private static Race race;
     private Map<Integer, Boat> potentialCompetitors;
-    private UserInputController userInputController;
+    private KeyInputController keyInputController;
+    private TouchInputController touchInputController;
     private ClientOptions options;
     private static List<Integer> tutorialKeys = new ArrayList<Integer>();
     private static Runnable tutorialFunction = null;
@@ -94,26 +95,45 @@ public class GameClient extends Client{
             } else if (arg instanceof RegistrationResponse) {
                 serverRegistrationResponse = (RegistrationResponse) arg;
             }
-        } else if (o == userInputController){
-            sendBoatCommandPacket();
+        } else if (o == touchInputController) {
+            sendBoatTouchCommandPacket();
+        } else if (o == keyInputController){
+            sendBoatKeyCommandPacket();
         }
     }
-
-
 
     /**
      * sends boat command packet to server. Sends keypress and runs tutorial callback function if required.
      */
-    private void sendBoatCommandPacket(){
-        if(tutorialKeys.contains(userInputController.getCommandInt())) {
+    private void sendBoatKeyCommandPacket(){
+        if(tutorialKeys.contains(keyInputController.getCommandInt())) {
             tutorialFunction.run();
         }
+
         if (race != null && !race.getRaceStatus().equals(RaceStatus.TERMINATED)) {
-            byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(userInputController.getCommandInt(), this.clientID);
+            byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(keyInputController.getCommandInt(), this.clientID);
             sender.sendToServer(boatCommandPacket);
         }
+    }
 
+    private void sendBoatTouchCommandPacket(){
+        if(tutorialKeys.contains(touchInputController.getCommandInt())) {
+            tutorialFunction.run();
+        }
+        byte[] boatCommandPacket = packetBuilder.createBoatCommandPacket(touchInputController.getCommandInt(), this.clientID);
+        sender.sendToServer(boatCommandPacket);
 
+    }
+
+    public void setInputControllers(KeyInputController keyInputController, TouchInputController touchInputController) {
+        this.keyInputController = keyInputController;
+        this.touchInputController = touchInputController;
+        touchInputController.setClientID(clientID);
+        keyInputController.setClientID(clientID);
+    }
+
+    public TouchInputController getTouchInputController() {
+        return touchInputController;
     }
 
     public static void setTutorialActions(List<KeyCode> keys, Runnable callbackFunction){
@@ -126,11 +146,6 @@ public class GameClient extends Client{
     public static void clearTutorialAction(){
         tutorialKeys.clear();
         tutorialFunction = null;
-    }
-
-    public void setUserInputController(UserInputController userInputController) {
-        this.userInputController = userInputController;
-        userInputController.setClientID(clientID);
     }
 
     public static Race getRace() {
