@@ -1,6 +1,10 @@
 package seng302.controllers;
 
 import seng302.data.*;
+import seng302.data.registration.RegistrationResponse;
+import seng302.data.registration.RegistrationType;
+import seng302.data.registration.ServerFullException;
+import seng302.data.*;
 import seng302.data.registration.*;
 import seng302.models.Boat;
 import seng302.models.ClientOptions;

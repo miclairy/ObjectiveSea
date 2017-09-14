@@ -1,6 +1,8 @@
 package seng302.controllers;
 
+import javafx.scene.shape.Polygon;
 import seng302.data.BoatStatus;
+import seng302.data.RaceStatus;
 import seng302.data.RaceVisionXMLParser;
 import seng302.models.*;
 import seng302.utilities.MathUtils;
@@ -19,10 +21,26 @@ public class CollisionManager {
     private Double AT_FAULT_DELTA = 30.0;
     private Double COLLISION_DELTA = 60.0;
     private Penalties penalties = new Penalties();
+    private Polygon boundary = null;
 
     private Set<Collision> currentCollisions = new CopyOnWriteArraySet<>();
 
     public CollisionManager() {}
+
+
+    /**
+     * creates a polygon of the course boundary marks
+     * @param boundaryCoordinates the coordinates of the boundary
+     * @return the polygon
+     */
+    public Polygon createCourseBoundary(List<Coordinate> boundaryCoordinates){
+        Polygon boundary = new Polygon();
+        for(Coordinate coord : boundaryCoordinates){
+            boundary.getPoints().add(coord.getLat());
+            boundary.getPoints().add(coord.getLon());
+        }
+        return boundary;
+    }
 
     /**
      * Checks all boats in the race to see if they are colliding with each other or course marks
@@ -30,7 +48,9 @@ public class CollisionManager {
      * @param race current race
      */
     public void checkForCollisions(Race race){
+        if(boundary == null) boundary = createCourseBoundary(race.getCourse().getBoundary());
         boolean isPractice = RaceVisionXMLParser.courseFile.equals("PracticeStart-course.xml");
+        boolean isTutorial = RaceVisionXMLParser.courseFile.equals("GuidedPractice-course.xml");
         List<Boat> boats = new ArrayList<>();
         boats.addAll(race.getCompetitors());
         for (int i = 0; i < boats.size(); i++) {
@@ -41,6 +61,7 @@ public class CollisionManager {
                     checkForCollisionBetweenBoats(boat, otherBoat);
                 }
             }
+            if(!isPractice && !isTutorial) checkForOutOfBounds(boat, race.getRaceStatus());
             for (Mark mark : race.getCourse().getAllMarks().values()) {
                 if (!isPractice || mark.getSourceID() == 1 || mark.getSourceID() == 2) {
                     checkForCollisionBetweenBoatAndMark(boat, mark);
@@ -62,6 +83,21 @@ public class CollisionManager {
                 currentCollisions.add(collision);
                 penalties.markCollision(boat);
             }
+        }
+    }
+
+    /**
+     * determines whether boat is out of bounds and creates collision and penalties if so
+     * @param boat the boat to check
+     * @param raceStatus the status of the race
+     */
+    private void checkForOutOfBounds(Boat boat, RaceStatus raceStatus){
+        if  (raceStatus.equals(RaceStatus.STARTED) && !boundary.contains(boat.getCurrentLat(), boat.getCurrentLon())){
+            Collision collision = new Collision();
+            collision.setOutOfBounds(true);
+            collision.addBoat(boat.getId());
+            penalties.boatOutOfBounds(boat);
+            currentCollisions.add(collision);
         }
     }
 
@@ -120,7 +156,7 @@ public class CollisionManager {
      */
     public boolean boatIsInCollision(Boat boat) {
         for (Collision collision : currentCollisions) {
-            if (collision.boatIsInCollision(boat.getId())) {
+            if (!collision.isOutOfBounds() && collision.boatIsInCollision(boat.getId())) {
                 return true;
             }
         }
