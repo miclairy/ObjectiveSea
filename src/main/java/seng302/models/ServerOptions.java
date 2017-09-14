@@ -9,7 +9,7 @@ import seng302.utilities.ConnectionUtils;
 public class ServerOptions {
 
     private final String DEFAULT_COURSE = "AC35-course.xml";
-    private final Double DEFAULT_SPEED = 40.0;
+    private final Double DEFAULT_SPEED = 60.0;
     private final Integer DEFAULT_PORT = 2828;
     private Integer MAX_PARTICIPANTS = 6;
 

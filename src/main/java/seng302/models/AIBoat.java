@@ -19,10 +19,12 @@ import java.util.List;
  * to practice racing against
  */
 public class AIBoat extends Boat{
-    private static final Double ROUNDING_DISTANCE = 0.08;
-    private static final Double ROUNDING_DELTA = 0.01;
-    private static final Double COLLISION_CHECK_DISTANCE = 0.1;
+    private static final Double ROUNDING_DISTANCE = 0.08; //Distance out from mark to round it
+    private static final Double PASSING_DELTA = 0.01;
+    private static final Double COLLISION_CHECK_DISTANCE = 0.15; //Distance to look ahead for future collisions
     private static final Double BOUNDARY_OFFSET = 0.05;
+    public static final Integer START_MOVING_TIME_MS = 10000; // Milliseconds before race to start moving
+    private static final Double TURN_SPEED = 9.0;
 
     private List<Coordinate> nextCoordinates;
     private Integer targetPositionIndex;
@@ -50,7 +52,7 @@ public class AIBoat extends Boat{
      */
     public void checkRounding() {
         Coordinate targetPosition = nextCoordinates.get(targetPositionIndex);
-        if(getCurrentPosition().greaterCircleDistance(targetPosition) < ROUNDING_DELTA && getStatus() != BoatStatus.FINISHED){
+        if(getCurrentPosition().greaterCircleDistance(targetPosition) < PASSING_DELTA && getStatus() != BoatStatus.FINISHED){
             targetPositionIndex++;
             if(targetPositionIndex == nextCoordinates.size()){
                 targetPositionIndex = 0;
@@ -113,7 +115,6 @@ public class AIBoat extends Boat{
         Coordinate targetPosition = nextCoordinates.get(targetPositionIndex);
         Double headingToNextMark = getCurrentPosition().headingToCoordinate(targetPosition);
         setTargetHeading(headingToNextMark);
-        rotate = true;
     }
 
     /**
@@ -136,6 +137,7 @@ public class AIBoat extends Boat{
      * list.  This new mark will set the boat onto a non-colliding route
      */
     public void avoidFutureCollision() {
+        if(currentlyTurning()) return;
         for(Integer markID : course.getAllMarks().keySet()){
             Mark mark = course.getAllMarks().get(markID);
             if(checkFutureCollision(mark)){
@@ -145,6 +147,14 @@ public class AIBoat extends Boat{
                 System.out.println("Avoiding to: " + avoidCoordinate);
             }
         }
+    }
+
+    /**
+     * Returns true if boat is currently turning (if there is a difference between current heading and target heading
+     * @return boolean if boat is current turning
+     */
+    private boolean currentlyTurning() {
+        return Math.abs(heading - targetHeading) > 1e-6;
     }
 
     /**
@@ -259,6 +269,20 @@ public class AIBoat extends Boat{
     }
 
     /**
+     * Updates the location of a given boat to be displayed to the clients
+     * @param timePassed time passed since last update
+     * @param course the course the boat is racing on
+     */
+    public void updateLocation(double timePassed, Course course) {
+        double distanceGained = timePassed * getCurrentSpeed() / (60 * 60);
+        Coordinate targetPosition = nextCoordinates.get(targetPositionIndex);
+        distanceGained = Math.min(distanceGained, currentPosition.greaterCircleDistance(targetPosition));
+        Coordinate newPos = currentPosition.coordAt(distanceGained, heading);
+        setPosition(new Coordinate(newPos.getLat(), newPos.getLon()));
+        setCurrentVMG(calculateVMGToMark(course));
+    }
+
+    /**
      * calculates the optimum length of a tack (one that gives minimum number of turns)
      * @param TrueWindAngle the optimum angle the boat should head for maximum speed
      * @param nextMark the target position of the boat
@@ -271,8 +295,13 @@ public class AIBoat extends Boat{
         return lengthOfTack;
     }
 
-    public void updateAIBoatHeading(double raceSecondsPassed){
-        Double defaultTurnAngle = 9 * raceSecondsPassed;
+    /**
+     * Slowly turns the boat heading towards the target heading.
+     * Speed of turning depends on amount of time passed.
+     * @param raceSecondsPassed The time passed since last update.
+     */
+    public void updateBoatHeading(double raceSecondsPassed){
+        Double defaultTurnAngle = TURN_SPEED * raceSecondsPassed;
         Double upDiff = (targetHeading - heading + 360) % 360;
         Double downDiff = (heading - targetHeading + 360) % 360;
         if(upDiff < downDiff){
@@ -289,14 +318,9 @@ public class AIBoat extends Boat{
      * @param raceSecondsPassed time passed since last update in seconds
      * @param course the course the boat is racing on
      */
-    public void move(double raceSecondsPassed, Course course, RaceStatus raceStatus) {
-        if(raceStatus.equals(RaceStatus.PREPARATORY)){
-            setSailsIn(true);
-            return;
-        }
+    public void move(double raceSecondsPassed, Course course) {
         updateTargetHeading();
-        setSailsIn(false);
-        updateAIBoatHeading(raceSecondsPassed);
+        updateBoatHeading(raceSecondsPassed);
         avoidFutureCollision();
         updateLocation(raceSecondsPassed, course);
         checkRounding();

@@ -33,8 +33,8 @@ public class Boat extends Observable implements Comparable<Boat>{
     private IntegerProperty currPlacing = new SimpleIntegerProperty();
     private int leg;
 
-    private Coordinate currentPosition;
-    private Coordinate previousPosition;
+    protected Coordinate currentPosition;
+    protected Coordinate previousPosition;
     private PolarTable polarTable;
 
     private int lastRoundedMarkIndex;
