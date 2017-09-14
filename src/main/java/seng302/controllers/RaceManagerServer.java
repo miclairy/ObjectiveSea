@@ -26,6 +26,7 @@ public class RaceManagerServer implements Observer {
     private final ConnectionManager connectionManager;
     private ArrayList<AvailableRace> availableRaces = new ArrayList<>();
     private int nextHostID = 0;
+    private Thread serverListenerThread = null;
 
     public RaceManagerServer() throws IOException {
         packetBuilder = new ServerPacketBuilder();
@@ -61,8 +62,8 @@ public class RaceManagerServer implements Observer {
     }
 
     /**
-     * Runs through the entire list of avaliable races, updating the ones that have had changes
-     * @param race the new avaliable race
+     * Runs through the entire list of available races, updating the ones that have had changes
+     * @param race the new available race
      */
     private void updateAvailableRace(AvailableRace race){
         boolean updatedRace = false;
@@ -130,7 +131,7 @@ public class RaceManagerServer implements Observer {
      */
     protected void startServerListener(Socket socket) throws IOException {
         ServerListener serverListener = new ServerListener(socket);
-        Thread serverListenerThread = new Thread(serverListener);
+        serverListenerThread = new Thread(serverListener);
         serverListenerThread.setName("Server Listener");
         serverListenerThread.start();
         serverListener.addObserver(this);

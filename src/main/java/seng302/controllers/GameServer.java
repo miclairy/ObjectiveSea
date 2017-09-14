@@ -53,7 +53,7 @@ public class GameServer implements Runnable, Observer {
         connectionManager = new ConnectionManager(options.getPort(), true);
         connectionManager.addObserver(this);
         setupNewRaceUpdater(options);
-        createPacketForVM();
+        // createPacketForVM();
     }
 
     /**
@@ -258,7 +258,7 @@ public class GameServer implements Runnable, Observer {
         serverListener.setClientId(newId);
         connectionManager.sendToClient(newId, packet);
         if(success){
-            createPacketForVM();
+            // createPacketForVM();
             sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());
             sendAllBoatStates();
         }
@@ -312,7 +312,7 @@ public class GameServer implements Runnable, Observer {
                 }
             } else {
                 setBoatToDNF((int) arg);
-                createPacketForVM();
+                // createPacketForVM();
             }
         } else if(observable instanceof ServerListener){
             if(arg instanceof RegistrationType){

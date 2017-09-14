@@ -23,7 +23,7 @@ public class ClientSender {
         } catch (ConnectException e) {
             System.out.println("Client: Unable to reach VM server");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Client: Unable to reach VM server");
         }
     }
 
@@ -32,7 +32,7 @@ public class ClientSender {
     }
 
     public void sendToVM(byte[] packet){
-        sendPacket(packet, vmConnection);
+        // sendPacket(packet, vmConnection);
     }
 
     /**
