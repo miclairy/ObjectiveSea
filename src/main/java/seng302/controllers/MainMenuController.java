@@ -107,6 +107,9 @@ public class MainMenuController implements Initializable{
         columnParticipants.setStyle( "-fx-alignment: CENTER;");
     }
 
+    /**
+     * sets the defualt visibility of all of the panes
+     */
     private void setPaneVisibility(){
         onlinePane.setVisible(true);
         offlinePane.setVisible(false);
@@ -141,6 +144,9 @@ public class MainMenuController implements Initializable{
         updateMap();
     }
 
+    /**
+     * take the menu back to the options pane
+     */
     @FXML private void backToOptions(){
         AnimationUtils.switchPaneFade(selectMapPane, hostOptionsPane);
         if(currentCourseMap != null){
@@ -153,12 +159,18 @@ public class MainMenuController implements Initializable{
             timer.stop();
         }}
 
+    /**
+     * loads the join pane
+     */
     @FXML private void loadJoinPane(){
         setUpAvailableRaceTable();
         AnimationUtils.switchPaneFade(onlinePane, joinRacePane);
         tblAvailableRaces.setItems(client.getAvailableRaces());
     }
 
+    /**
+     * sets up the available race table
+     */
     private void setUpAvailableRaceTable(){
         columnMap.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
         columnParticipants.setCellValueFactory(cellData -> cellData.getValue().numBoatsProperty().asObject());
@@ -172,6 +184,10 @@ public class MainMenuController implements Initializable{
     @FXML private void backFromHost(){AnimationUtils.switchPaneFade(hostOptionsPane, onlinePane);
     }
 
+    /**
+     * loads a tutorial when it is selected in the menu
+     * @throws Exception
+     */
     @FXML private void loadTutorial() throws Exception {
         DisplaySwitcher.getGameSounds().stopEndlessMusic();
         btnSinglePlay.setDisable(true);
@@ -202,6 +218,10 @@ public class MainMenuController implements Initializable{
     }
 
 
+    /**
+     * loads the practise start mode
+     * @throws Exception
+     */
     @FXML private void loadPracticeStart() throws Exception {
         btnPractiseStart.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.PRACTICE);
@@ -262,6 +282,15 @@ public class MainMenuController implements Initializable{
         }
     }
 
+    /**
+     * starts a game with the given settings
+     * @param clientStarted if the client has already started
+     * @param clientOptions the options that have been set by the client
+     * @throws InterruptedException
+     * @throws UnsupportedAudioFileException
+     * @throws IOException
+     * @throws LineUnavailableException
+     */
     private void startGame(boolean clientStarted, ClientOptions clientOptions) throws InterruptedException, UnsupportedAudioFileException, IOException, LineUnavailableException {
         if(clientStarted) {
             stopMainMenuClientThread();
@@ -378,18 +407,36 @@ public class MainMenuController implements Initializable{
         }
     }
 
+    /**
+     * sets up the sounds for single player mode
+     * @throws LineUnavailableException
+     * @throws IOException
+     * @throws UnsupportedAudioFileException
+     */
     private void loadSinglePlayerMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         DisplaySwitcher.getGameSounds().stopEndlessMusic();
         DisplaySwitcher.getGameSounds().singlePlayerMusic();
         DisplaySwitcher.getGameSounds().playEndlessMusic();
     }
 
+    /**
+     * sets up the sounds for the tutorial music
+     * @throws LineUnavailableException
+     * @throws IOException
+     * @throws UnsupportedAudioFileException
+     */
     private void loadTutorialMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         DisplaySwitcher.getGameSounds().stopEndlessMusic();
         DisplaySwitcher.getGameSounds().tutorialMusic();
         DisplaySwitcher.getGameSounds().playEndlessMusic();
     }
 
+    /**
+     * sets up the sound effects for the game
+     * @throws UnsupportedAudioFileException
+     * @throws IOException
+     * @throws LineUnavailableException
+     */
     private void loadRealGameSounds() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         DisplaySwitcher.getGameSounds().stopEndlessMusic();
         DisplaySwitcher.getGameSounds().oceanWaves();
