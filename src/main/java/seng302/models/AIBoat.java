@@ -89,24 +89,27 @@ public class AIBoat extends Boat{
         if(currentMark instanceof RaceLine){
             nextCoordinates.add(currentMark.getPosition());
         } else {
-            CompoundMark previousMark = courseOrder.get(getLastRoundedMarkIndex());
-            CompoundMark nextMark = courseOrder.get(getLastRoundedMarkIndex()+2);
+            addMarkRoundingCoordinates(lastRoundedIndex+1);
+        }
+    }
 
-            if(currentMark.hasTwoMarks() && RoundingMechanics.nextCompoundMarkAfterGate(nextMark, currentMark, previousMark)) {
-                nextCoordinates.add(currentMark.getPosition());
-            } else {
-                Double heading = previousMark.getPosition().headingToCoordinate(currentMark.getPosition());
-                Double nextHeading = currentMark.getPosition().headingToCoordinate(nextMark.getPosition());
+    /**
+     * Adds the mark rounding coordinates for a mark to next coordinates
+     * @param markIndex The index of the mark to be rounded in the race order
+     */
+    private void addMarkRoundingCoordinates(Integer markIndex) {
+        List<CompoundMark> courseOrder = course.getCourseOrder();
+        CompoundMark previousMark = courseOrder.get(markIndex-1);
+        CompoundMark currentMark = courseOrder.get(markIndex);
+        CompoundMark nextMark = courseOrder.get(markIndex+1);
 
-                String roundingSideString = course.getRoundingOrder().get(getLastRoundedMarkIndex()+1).getRoundingSideString();
-                RoundingSide roundingSide;
-                if(currentMark.hasTwoMarks()){
-                    roundingSide = roundingSideString.charAt(0) == 'P' ? RoundingSide.PORT : RoundingSide.STBD;
-                } else{
-                    roundingSide = course.getRoundingOrder().get(getLastRoundedMarkIndex()+1);
-                }
-                nextCoordinates.addAll(RoundingMechanics.markRoundingCoordinates(currentMark.getMark1(), heading, nextHeading, roundingSide, ROUNDING_DISTANCE));
-            }
+        if(currentMark.hasTwoMarks() && RoundingMechanics.nextCompoundMarkAfterGate(nextMark, currentMark, previousMark)) {
+            nextCoordinates.add(currentMark.getPosition());
+        } else {
+            Double heading = previousMark.getPosition().headingToCoordinate(currentMark.getPosition());
+            Double nextHeading = currentMark.getPosition().headingToCoordinate(nextMark.getPosition());
+            RoundingSide roundingSide = course.getRoundingOrder().get(getLastRoundedMarkIndex()+1).firstMarkRoundingSide();
+            nextCoordinates.addAll(RoundingMechanics.markRoundingCoordinates(currentMark.getMark1(), heading, nextHeading, roundingSide, ROUNDING_DISTANCE));
         }
     }
 

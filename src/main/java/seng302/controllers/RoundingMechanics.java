@@ -168,6 +168,15 @@ public class RoundingMechanics {
     }
 
 
+    /**
+     * Generates a ordered list of three coordinates to round a single mark
+     * @param mark The mark to be rounded
+     * @param heading The heading toward the mark
+     * @param nextHeading The heading from the mark to the next mark
+     * @param roundingSide The rounding side (PORT or STBD) for the mark
+     * @param distanceFromMark The rounding distance from the mark
+     * @return A list of three coordinates in the order of for a boat to round the mark
+     */
     public static List<Coordinate> markRoundingCoordinates(Mark mark, Double heading, Double nextHeading, RoundingSide roundingSide, Double distanceFromMark){
         if(roundingSide == STBD){
             distanceFromMark = -distanceFromMark;

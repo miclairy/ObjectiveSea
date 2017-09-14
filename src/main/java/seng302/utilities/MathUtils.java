@@ -213,6 +213,13 @@ public class MathUtils {
         return distanceToLineSegment(startLine1, startLine2, position);
     }
 
+    /**
+     * Returns the shortest distance from a line segment starting from a position
+     * @param lineStart The starting coordinate of the line segment
+     * @param lineEnd The ending coordinate of the line segment
+     * @param position The position to find the distance from
+     * @return The shortest distance from the line segment to the position
+     */
     public static double distanceToLineSegment(Coordinate lineStart, Coordinate lineEnd, Coordinate position){
         InfiniteLine startlineInf = new InfiniteLine(lineStart, lineEnd);
         Coordinate closestPoint = startlineInf.closestPoint(position);

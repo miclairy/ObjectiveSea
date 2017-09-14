@@ -471,6 +471,11 @@ public class Boat extends Observable implements Comparable<Boat>{
         this.boatCollideSound = boatCollideSound;
     }
 
+    /**
+     * Updates the boat's heading based on the target heading and moves the boat forward based on the time passed
+     * @param raceSecondsPassed The time passed since last updates
+     * @param course The course the boat is on
+     */
     public void move(Double raceSecondsPassed, Course course) {
         updateBoatHeading(raceSecondsPassed);
         updateLocation(raceSecondsPassed, course);
