@@ -87,8 +87,6 @@ public class MainMenuController implements Initializable{
     @FXML private ImageView soundFxOnImage;
     @FXML private ImageView soundFxOffImage;
     @FXML private ImageView imvControls;
-    @FXML private ImageView imvSun;
-    @FXML private ImageView imvMoon;
     @FXML private Label lblSpeedNum;
     @FXML private Shape circleSpeed;
     @FXML private Shape circleBoats;
@@ -163,8 +161,6 @@ public class MainMenuController implements Initializable{
         selectAIPane.setVisible(false);
         settingsGrid.setVisible(false);
         imvControls.setVisible(false);
-        imvSun.setVisible(false);
-        imvMoon.setVisible(false);
     }
 
     public void setApp(Main main, GameSounds sounds) throws ServerFullException, NoConnectionToServerException {
@@ -299,7 +295,6 @@ public class MainMenuController implements Initializable{
     @FXML private void startGame() throws Exception {
         if(isSinglePlayer) {
             loadOfflinePlay();
-            //AnimationUtils.switchPaneFade(selectMapPane, selectAIPane);
             removeMap();
         } else {
             startHostGame();
