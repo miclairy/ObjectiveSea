@@ -854,33 +854,7 @@ public class MainMenuController implements Initializable{
     }
 
     @FXML private void enableNightMode(){
-        forward = true;
-        if(nightModeEnabled){
-            AnimationUtils.enableModeShift(imvSun);
-        }else{
-            AnimationUtils.enableModeShift(imvMoon);
-        }
-        timer = new AnimationTimer() {
-            @Override
-            public void handle(long l) {
-                if(forward){
-                    stackPane.setEffect(new GaussianBlur(blurAmount));
-                    blurAmount += 2;
-                    if(blurAmount >= 20){
-                        forward = false;
-                        changeCSS();
-                    }
-                }else{
-                    stackPane.setEffect(new GaussianBlur(blurAmount));
-                    blurAmount -= 2;
-                    if(blurAmount <= 0){
-                        timer.stop();
-                        stackPane.setEffect(null);
-                    }
-                }
-            }
-        };
-        timer.start();
+        changeCSS();
     }
 
     private void changeCSS(){
