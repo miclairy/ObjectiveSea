@@ -360,7 +360,7 @@
                                         <Insets left="52.0" right="350.0" top="140.0" />
                                     </GridPane.margin>
                                 </Label>
-                                <Button fx:id="btnSinglePlay" layoutX="90.0" layoutY="250.0" maxWidth="255.0" minWidth="255.0" mnemonicParsing="false" onAction="#loadMapsForSinglePlay" prefWidth="255.0" styleClass="btnSelection" text="Race" GridPane.rowIndex="1">
+                                <Button fx:id="btnSinglePlay" layoutX="90.0" layoutY="250.0" maxWidth="255.0" minWidth="255.0" mnemonicParsing="false" onAction="#loadAIOptions" prefWidth="255.0" styleClass="btnSelection" text="Race" GridPane.rowIndex="1">
                                     <padding>
                                         <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                                     </padding>
@@ -457,7 +457,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <Button fx:id="btnBackToOptions" mnemonicParsing="false" onAction="#backToMapFromAI" styleClass="btnNoStyle" text="Back" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+                        <Button fx:id="btnBackToOptions" mnemonicParsing="false" onAction="#backToOfflineFromAI" styleClass="btnNoStyle" text="Back" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
                            <GridPane.margin>
                               <Insets bottom="25.0" left="20.0" />
                            </GridPane.margin>
@@ -465,30 +465,40 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </Button>
-                        <Button fx:id="noAIbtn" mnemonicParsing="false" onAction="#noAI" prefHeight="35.0" prefWidth="127.0" styleClass="AIBtn" text="No AI" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                        <Button fx:id="noAIbtn" mnemonicParsing="false" onAction="#noAI" prefWidth="150.0" styleClass="AIBtn" text="No Competitor" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
                            <padding>
                               <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
-                           </padding>
-                           <GridPane.margin>
-                              <Insets top="130.0" />
-                           </GridPane.margin>
-                        </Button>
-                        <Button fx:id="easyAIbtn" mnemonicParsing="false" onAction="#easyAI" styleClass="AIBtn" text="Easy AI" GridPane.halignment="CENTER" GridPane.valignment="TOP">
-                           <padding>
-                              <Insets bottom="10.0" left="43.0" right="43.0" top="10.0" />
-                           </padding>
-                           <GridPane.margin>
-                              <Insets top="190.0" />
-                           </GridPane.margin>
-                        </Button>
-                        <Button fx:id="hardAIbtn" mnemonicParsing="false" onAction="#hardAI" styleClass="AIBtn" text="Hard AI" GridPane.halignment="CENTER" GridPane.valignment="TOP">
-                           <padding>
-                              <Insets bottom="10.0" left="42.0" right="42.0" top="10.0" />
                            </padding>
                            <GridPane.margin>
                               <Insets top="250.0" />
                            </GridPane.margin>
                         </Button>
+                        <Button fx:id="easyAIbtn" mnemonicParsing="false" onAction="#easyAI" prefWidth="150.0" styleClass="AIBtn" text="Easy" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                           <padding>
+                              <Insets bottom="10.0" left="43.0" right="43.0" top="10.0" />
+                           </padding>
+                           <GridPane.margin>
+                              <Insets top="130.0" />
+                           </GridPane.margin>
+                        </Button>
+                        <Button fx:id="hardAIbtn" mnemonicParsing="false" onAction="#hardAI" prefWidth="150.0" styleClass="AIBtn" text="Hard" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                           <padding>
+                              <Insets bottom="10.0" left="42.0" right="42.0" top="10.0" />
+                           </padding>
+                           <GridPane.margin>
+                              <Insets top="190.0" />
+                           </GridPane.margin>
+                        </Button>
+                        <Label styleClass="paneTitle" text="Select Difficulty">
+                           <GridPane.margin>
+                              <Insets left="40.0" top="20.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Label styleClass="paneDescription" text="racing on your own is boring, select a difficulty to race against the computer" wrapText="true" GridPane.halignment="LEFT" GridPane.rowSpan="2" GridPane.valignment="TOP">
+                           <GridPane.margin>
+                              <Insets left="40.0" right="360.0" top="55.0" />
+                           </GridPane.margin>
+                        </Label>
                      </children>
                   </GridPane>
                     </children>
@@ -566,7 +576,7 @@
             <Insets bottom="15.0" left="70.0" />
          </StackPane.margin>
       </Button>
-      <ImageView fx:id="imvControls" fitHeight="507.0" fitWidth="713.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="imvControls" fitHeight="507.0" fitWidth="713.0" pickOnBounds="true" preserveRatio="true" visible="false">
          <image>
             <Image url="@graphics/controlsOverlay.png" />
          </image>

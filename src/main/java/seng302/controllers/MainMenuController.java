@@ -107,6 +107,7 @@ public class MainMenuController implements Initializable{
     private static boolean soundFxIsMute;
 
     private Boolean isSinglePlayer = false;
+    private AIDifficulty aiDifficulty = NO_AI;
 
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
 
@@ -178,10 +179,8 @@ public class MainMenuController implements Initializable{
         updateMap();
     }
 
-    @FXML private void backToMapFromAI(){
-        AnimationUtils.switchPaneFade(selectAIPane, selectMapPane);
-        currentCourseMap = availableCourseMaps.get(currentMapIndex);
-        updateMap();
+    @FXML private void backToOfflineFromAI(){
+        AnimationUtils.switchPaneFade(selectAIPane, offlinePane);
     }
 
     /**
@@ -189,7 +188,7 @@ public class MainMenuController implements Initializable{
      */
     @FXML private void backToOptions(){
         if(isSinglePlayer){
-            AnimationUtils.switchPaneFade(selectMapPane, offlinePane);
+            AnimationUtils.switchPaneFade(selectMapPane, selectAIPane);
         }else{
             AnimationUtils.switchPaneFade(selectMapPane, hostOptionsPane);
         }
@@ -241,11 +240,11 @@ public class MainMenuController implements Initializable{
      * Allows user to host a game at the DEFAULT_PORT and current public IP
      * @throws Exception
      */
-    private void loadOfflinePlay(AIDifficulty AIDifficulty) throws Exception{
+    private void loadOfflinePlay() throws Exception{
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.SINGLEPLAYER);
         stopMainMenuClientThread();
-        if(main.startLocalRace(currentCourseMap.getXML(), DEFAULT_PORT, false, clientOptions, AIDifficulty)){
+        if(main.startLocalRace(currentCourseMap.getXML(), DEFAULT_PORT, false, clientOptions, aiDifficulty)){
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
             loadSinglePlayerMusic();
@@ -256,7 +255,7 @@ public class MainMenuController implements Initializable{
 
     @FXML private void loadMapsForSinglePlay() {
         isSinglePlayer = true;
-        AnimationUtils.switchPaneFade(offlinePane, selectMapPane);
+        AnimationUtils.switchPaneFade(selectAIPane, selectMapPane);
         currentCourseMap = availableCourseMaps.get(currentMapIndex);
         updateMap();
     }
@@ -282,11 +281,16 @@ public class MainMenuController implements Initializable{
 
     @FXML private void startGame() throws Exception {
         if(isSinglePlayer) {
-            AnimationUtils.switchPaneFade(selectMapPane, selectAIPane);
+            loadOfflinePlay();
+            //AnimationUtils.switchPaneFade(selectMapPane, selectAIPane);
             removeMap();
         } else {
             startHostGame();
         }
+    }
+
+    @FXML private void loadAIOptions(){
+        AnimationUtils.switchPaneFade(offlinePane, selectAIPane);
     }
 
     private void removeMap(){
@@ -302,15 +306,18 @@ public class MainMenuController implements Initializable{
     }
 
     @FXML private void noAI() throws Exception {
-        loadOfflinePlay(NO_AI);
+        aiDifficulty = NO_AI;
+        loadMapsForSinglePlay();
     }
 
     @FXML private void easyAI() throws Exception {
-        loadOfflinePlay(EASY);
+        aiDifficulty = EASY;
+        loadMapsForSinglePlay();
     }
 
     @FXML private void hardAI() throws Exception {
-        loadOfflinePlay(HARD);
+        aiDifficulty = HARD;
+        loadMapsForSinglePlay();
     }
 
     /**
