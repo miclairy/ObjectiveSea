@@ -13,6 +13,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
@@ -36,6 +37,7 @@ import static seng302.models.AIDifficulty.HARD;
 import static seng302.models.AIDifficulty.NO_AI;
 
 public class MainMenuController implements Initializable{
+    @FXML private StackPane stackPane;
     @FXML private Button btnOfflinePlay;
     @FXML private Button btnTutorial;
     @FXML private Button btnSpectate;
@@ -106,6 +108,10 @@ public class MainMenuController implements Initializable{
     private static double fxSliderValue = 1.0;
     private static boolean soundFxIsMute;
 
+    private final String DEFAULT_CSS = "/style/menuStyle.css";
+    private final String DARK_CSS = "/style/darkMenuStyle.css";
+    private boolean nightModeEnabled = false;
+
     private Boolean isSinglePlayer = false;
     private AIDifficulty aiDifficulty = NO_AI;
 
@@ -121,6 +127,7 @@ public class MainMenuController implements Initializable{
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        stackPane.getStylesheets().add(DEFAULT_CSS);
         setButtonAnimations();
         setLabelPromptAnimations();
         setPaneVisibility();
@@ -201,7 +208,7 @@ public class MainMenuController implements Initializable{
     @FXML private void loadJoinPane() {
         setUpAvailableRaceTable();
         AnimationUtils.switchPaneFade(onlinePane, joinRacePane);
-        tblAvailableRaces.setItems(client.getAvailableRaces());
+        //tblAvailableRaces.setItems(client.getAvailableRaces());
     }
 
     /**
@@ -832,6 +839,21 @@ public class MainMenuController implements Initializable{
                 AnimationUtils.fadeNode(dropShadowAnchor, dropShadowAnchor.isVisible());
             }
         });
+    }
+
+    @FXML private void enableNightMode(){
+        stackPane.getStylesheets().clear();
+        menuAnchor.getStylesheets().clear();
+
+        nightModeEnabled = !nightModeEnabled;
+        if(nightModeEnabled){
+            stackPane.getStylesheets().add(getClass().getResource(DARK_CSS).toExternalForm());
+            menuAnchor.getStylesheets().add(getClass().getResource(DARK_CSS).toExternalForm());
+        }else{
+            stackPane.getStylesheets().add(getClass().getResource(DEFAULT_CSS).toExternalForm());
+            menuAnchor.getStylesheets().add(getClass().getResource(DEFAULT_CSS).toExternalForm());
+        }
+
     }
 }
 

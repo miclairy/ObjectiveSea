@@ -494,7 +494,7 @@
                               <Insets left="40.0" top="20.0" />
                            </GridPane.margin>
                         </Label>
-                        <Label styleClass="paneDescription" text="racing on your own is boring, select a difficulty to race against the computer" wrapText="true" GridPane.halignment="LEFT" GridPane.rowSpan="2" GridPane.valignment="TOP">
+                        <Label styleClass="paneDescription" text="Racing on your own is boring, select a difficulty to race against the computer" wrapText="true" GridPane.halignment="LEFT" GridPane.rowSpan="2" GridPane.valignment="TOP">
                            <GridPane.margin>
                               <Insets left="40.0" right="360.0" top="55.0" />
                            </GridPane.margin>
@@ -508,7 +508,7 @@
                 <Insets bottom="180.0" left="450.0" right="450.0" top="180.0" />
             </StackPane.margin>
         </AnchorPane>
-        <ImageView fx:id="imvLogo" fitHeight="69.0" fitWidth="136.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="BOTTOM_RIGHT">
+        <ImageView fx:id="imvLogo" fitHeight="69.0" fitWidth="136.0" onMouseClicked="#enableNightMode" pickOnBounds="true" preserveRatio="true" StackPane.alignment="BOTTOM_RIGHT">
             <image>
                 <Image url="@graphics/menuTitle.png" />
             </image>
