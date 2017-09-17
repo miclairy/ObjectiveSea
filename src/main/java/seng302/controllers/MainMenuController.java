@@ -1,7 +1,9 @@
 package seng302.controllers;
 
-import javafx.animation.AnimationTimer;
+import javafx.animation.*;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
@@ -14,9 +16,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.util.Duration;
 import seng302.models.AIDifficulty;
 import seng302.data.registration.ServerFullException;
 import seng302.models.*;
@@ -83,6 +87,8 @@ public class MainMenuController implements Initializable{
     @FXML private ImageView soundFxOnImage;
     @FXML private ImageView soundFxOffImage;
     @FXML private ImageView imvControls;
+    @FXML private ImageView imvSun;
+    @FXML private ImageView imvMoon;
     @FXML private Label lblSpeedNum;
     @FXML private Shape circleSpeed;
     @FXML private Shape circleBoats;
@@ -107,6 +113,8 @@ public class MainMenuController implements Initializable{
     private static double musicSliderValue = 1.0;
     private static double fxSliderValue = 1.0;
     private static boolean soundFxIsMute;
+    private double blurAmount;
+    private boolean forward = true;
 
     private final String DEFAULT_CSS = "/style/menuStyle.css";
     private final String DARK_CSS = "/style/darkMenuStyle.css";
@@ -155,6 +163,8 @@ public class MainMenuController implements Initializable{
         selectAIPane.setVisible(false);
         settingsGrid.setVisible(false);
         imvControls.setVisible(false);
+        imvSun.setVisible(false);
+        imvMoon.setVisible(false);
     }
 
     public void setApp(Main main, GameSounds sounds) throws ServerFullException, NoConnectionToServerException {
@@ -691,6 +701,8 @@ public class MainMenuController implements Initializable{
             @Override
             public void handle(long l) {
                 currentCourseMap.updateArrowRoute();
+//                stackPane.setEffect(new GaussianBlur(blurAmount));
+//                blurAmount += 0.4;
             }
         };
         timer.start();
@@ -842,10 +854,39 @@ public class MainMenuController implements Initializable{
     }
 
     @FXML private void enableNightMode(){
+        forward = true;
+        if(nightModeEnabled){
+            AnimationUtils.enableModeShift(imvSun);
+        }else{
+            AnimationUtils.enableModeShift(imvMoon);
+        }
+        timer = new AnimationTimer() {
+            @Override
+            public void handle(long l) {
+                if(forward){
+                    stackPane.setEffect(new GaussianBlur(blurAmount));
+                    blurAmount += 2;
+                    if(blurAmount >= 20){
+                        forward = false;
+                        changeCSS();
+                    }
+                }else{
+                    stackPane.setEffect(new GaussianBlur(blurAmount));
+                    blurAmount -= 2;
+                    if(blurAmount <= 0){
+                        timer.stop();
+                        stackPane.setEffect(null);
+                    }
+                }
+            }
+        };
+        timer.start();
+    }
+
+    private void changeCSS(){
+        nightModeEnabled = !nightModeEnabled;
         stackPane.getStylesheets().clear();
         menuAnchor.getStylesheets().clear();
-
-        nightModeEnabled = !nightModeEnabled;
         if(nightModeEnabled){
             stackPane.getStylesheets().add(getClass().getResource(DARK_CSS).toExternalForm());
             menuAnchor.getStylesheets().add(getClass().getResource(DARK_CSS).toExternalForm());
@@ -853,7 +894,6 @@ public class MainMenuController implements Initializable{
             stackPane.getStylesheets().add(getClass().getResource(DEFAULT_CSS).toExternalForm());
             menuAnchor.getStylesheets().add(getClass().getResource(DEFAULT_CSS).toExternalForm());
         }
-
     }
 }
 

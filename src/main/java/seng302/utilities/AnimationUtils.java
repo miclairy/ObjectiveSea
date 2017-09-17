@@ -521,4 +521,62 @@ public class AnimationUtils {
         }
         scaleTransition.play();
     }
+
+    /**
+     * animation to shift between night mode and day mode
+     * @param node the node to apply the animation to
+     */
+    public static void enableModeShift(Node node){
+        node.setVisible(true);
+        FadeTransition fadeTransition = new FadeTransition(new Duration(200), node);
+        fadeTransition.setFromValue(0);
+        fadeTransition.setToValue(1);
+        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+        fadeTransition.setOnFinished(new EventHandler<ActionEvent>(){
+            public void handle(ActionEvent AE){
+                PauseTransition pauseTransition = new PauseTransition();
+                pauseTransition.setDuration(new Duration(150));
+                pauseTransition.setOnFinished(new EventHandler<ActionEvent>(){
+                    public void handle(ActionEvent AE){
+                        FadeTransition fadeTransition = new FadeTransition(new Duration(180), node);
+                        fadeTransition.setFromValue(1);
+                        fadeTransition.setToValue(0);
+                        fadeTransition.setInterpolator(Interpolator.EASE_OUT);
+                        fadeTransition.setOnFinished(new EventHandler<ActionEvent>(){
+                            public void handle(ActionEvent AE){
+                                node.setVisible(false);
+                            }});
+
+                        fadeTransition.play();
+                    }});
+                pauseTransition.play();
+            }});
+
+        RotateTransition rotateTransition = new RotateTransition(new Duration(650), node);
+        rotateTransition.setFromAngle(0);
+        rotateTransition.setToAngle(55);
+
+        ScaleTransition scaleTransition = new ScaleTransition(new Duration( 200), node);
+        scaleTransition.setByX(0.6);
+        scaleTransition.setByY(0.6);
+        scaleTransition.setInterpolator(Interpolator.EASE_OUT);
+        scaleTransition.setOnFinished(new EventHandler<ActionEvent>(){
+            public void handle(ActionEvent AE){
+                PauseTransition pauseTransition = new PauseTransition();
+                pauseTransition.setDuration(new Duration(150));
+                pauseTransition.setOnFinished(new EventHandler<ActionEvent>(){
+                    public void handle(ActionEvent AE){
+                        ScaleTransition scaleTransition = new ScaleTransition(new Duration( 200), node);
+                        scaleTransition.setByX(-0.6);
+                        scaleTransition.setByY(-0.6);
+                        scaleTransition.setInterpolator(Interpolator.EASE_OUT);
+                        scaleTransition.play();
+                    }});
+                pauseTransition.play();
+            }});
+
+        ParallelTransition pt = new ParallelTransition(fadeTransition, rotateTransition, scaleTransition);
+
+        pt.play();
+    }
 }
