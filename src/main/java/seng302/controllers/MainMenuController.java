@@ -1,7 +1,9 @@
 package seng302.controllers;
 
-import javafx.animation.AnimationTimer;
+import javafx.animation.*;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
@@ -13,9 +15,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.util.Duration;
 import seng302.models.AIDifficulty;
 import seng302.data.registration.ServerFullException;
 import seng302.models.*;
@@ -36,6 +41,7 @@ import static seng302.models.AIDifficulty.HARD;
 import static seng302.models.AIDifficulty.NO_AI;
 
 public class MainMenuController implements Initializable{
+    @FXML private StackPane stackPane;
     @FXML private Button btnOfflinePlay;
     @FXML private Button btnTutorial;
     @FXML private Button btnSpectate;
@@ -105,8 +111,15 @@ public class MainMenuController implements Initializable{
     private static double musicSliderValue = 1.0;
     private static double fxSliderValue = 1.0;
     private static boolean soundFxIsMute;
+    private double blurAmount;
+    private boolean forward = true;
+
+    private final String DEFAULT_CSS = "/style/menuStyle.css";
+    private final String DARK_CSS = "/style/darkMenuStyle.css";
+    private boolean nightModeEnabled = false;
 
     private Boolean isSinglePlayer = false;
+    private AIDifficulty aiDifficulty = NO_AI;
 
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
 
@@ -120,6 +133,7 @@ public class MainMenuController implements Initializable{
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        stackPane.getStylesheets().add(DEFAULT_CSS);
         setButtonAnimations();
         setLabelPromptAnimations();
         setPaneVisibility();
@@ -178,10 +192,8 @@ public class MainMenuController implements Initializable{
         updateMap();
     }
 
-    @FXML private void backToMapFromAI(){
-        AnimationUtils.switchPaneFade(selectAIPane, selectMapPane);
-        currentCourseMap = availableCourseMaps.get(currentMapIndex);
-        updateMap();
+    @FXML private void backToOfflineFromAI(){
+        AnimationUtils.switchPaneFade(selectAIPane, offlinePane);
     }
 
     /**
@@ -189,7 +201,7 @@ public class MainMenuController implements Initializable{
      */
     @FXML private void backToOptions(){
         if(isSinglePlayer){
-            AnimationUtils.switchPaneFade(selectMapPane, offlinePane);
+            AnimationUtils.switchPaneFade(selectMapPane, selectAIPane);
         }else{
             AnimationUtils.switchPaneFade(selectMapPane, hostOptionsPane);
         }
@@ -202,7 +214,7 @@ public class MainMenuController implements Initializable{
     @FXML private void loadJoinPane() {
         setUpAvailableRaceTable();
         AnimationUtils.switchPaneFade(onlinePane, joinRacePane);
-        tblAvailableRaces.setItems(client.getAvailableRaces());
+        //tblAvailableRaces.setItems(client.getAvailableRaces());
     }
 
     /**
@@ -241,11 +253,11 @@ public class MainMenuController implements Initializable{
      * Allows user to host a game at the DEFAULT_PORT and current public IP
      * @throws Exception
      */
-    private void loadOfflinePlay(AIDifficulty AIDifficulty) throws Exception{
+    private void loadOfflinePlay() throws Exception{
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.SINGLEPLAYER);
         stopMainMenuClientThread();
-        if(main.startLocalRace(currentCourseMap.getXML(), DEFAULT_PORT, false, clientOptions, AIDifficulty)){
+        if(main.startLocalRace(currentCourseMap.getXML(), DEFAULT_PORT, false, clientOptions, aiDifficulty)){
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
             loadSinglePlayerMusic();
@@ -256,7 +268,7 @@ public class MainMenuController implements Initializable{
 
     @FXML private void loadMapsForSinglePlay() {
         isSinglePlayer = true;
-        AnimationUtils.switchPaneFade(offlinePane, selectMapPane);
+        AnimationUtils.switchPaneFade(selectAIPane, selectMapPane);
         currentCourseMap = availableCourseMaps.get(currentMapIndex);
         updateMap();
     }
@@ -282,11 +294,15 @@ public class MainMenuController implements Initializable{
 
     @FXML private void startGame() throws Exception {
         if(isSinglePlayer) {
-            AnimationUtils.switchPaneFade(selectMapPane, selectAIPane);
+            loadOfflinePlay();
             removeMap();
         } else {
             startHostGame();
         }
+    }
+
+    @FXML private void loadAIOptions(){
+        AnimationUtils.switchPaneFade(offlinePane, selectAIPane);
     }
 
     private void removeMap(){
@@ -302,15 +318,18 @@ public class MainMenuController implements Initializable{
     }
 
     @FXML private void noAI() throws Exception {
-        loadOfflinePlay(NO_AI);
+        aiDifficulty = NO_AI;
+        loadMapsForSinglePlay();
     }
 
     @FXML private void easyAI() throws Exception {
-        loadOfflinePlay(EASY);
+        aiDifficulty = EASY;
+        loadMapsForSinglePlay();
     }
 
     @FXML private void hardAI() throws Exception {
-        loadOfflinePlay(HARD);
+        aiDifficulty = HARD;
+        loadMapsForSinglePlay();
     }
 
     /**
@@ -677,6 +696,8 @@ public class MainMenuController implements Initializable{
             @Override
             public void handle(long l) {
                 currentCourseMap.updateArrowRoute();
+//                stackPane.setEffect(new GaussianBlur(blurAmount));
+//                blurAmount += 0.4;
             }
         };
         timer.start();
@@ -825,6 +846,23 @@ public class MainMenuController implements Initializable{
                 AnimationUtils.fadeNode(dropShadowAnchor, dropShadowAnchor.isVisible());
             }
         });
+    }
+
+    @FXML private void enableNightMode(){
+        changeCSS();
+    }
+
+    private void changeCSS(){
+        nightModeEnabled = !nightModeEnabled;
+        stackPane.getStylesheets().clear();
+        menuAnchor.getStylesheets().clear();
+        if(nightModeEnabled){
+            stackPane.getStylesheets().add(getClass().getResource(DARK_CSS).toExternalForm());
+            menuAnchor.getStylesheets().add(getClass().getResource(DARK_CSS).toExternalForm());
+        }else{
+            stackPane.getStylesheets().add(getClass().getResource(DEFAULT_CSS).toExternalForm());
+            menuAnchor.getStylesheets().add(getClass().getResource(DEFAULT_CSS).toExternalForm());
+        }
     }
 }
 
