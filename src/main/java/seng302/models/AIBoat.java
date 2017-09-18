@@ -55,7 +55,7 @@ public class AIBoat extends Boat{
      */
     public void checkRounding() {
         Coordinate targetPosition = nextCoordinates.get(targetPositionIndex);
-        if(getCurrentPosition().greaterCircleDistance(targetPosition) < PASSING_DELTA && getStatus() != BoatStatus.FINISHED){
+        if(getCurrentPosition().greaterCircleDistance(targetPosition) < PASSING_DELTA){
             targetPositionIndex++;
             currentlyAvoiding = false;
             if(targetPositionIndex == nextCoordinates.size()){
@@ -76,6 +76,13 @@ public class AIBoat extends Boat{
         List<CompoundMark> courseOrder = course.getCourseOrder();
         Integer lastRoundedIndex = getLastRoundedMarkIndex();
         if(lastRoundedIndex == courseOrder.size() - 1){
+            Mark nextMark = courseOrder.get(getLastRoundedMarkIndex()).getMark1(); // gets mark of finish line
+            double lon = nextMark.getPosition().getLon() + 0.01;
+            double lat = nextMark.getPosition().getLat() + 0.01;
+            nextCoordinates.clear();
+            nextCoordinates.add(new Coordinate(lat, lon));
+            System.out.println(getCurrentPosition().getLat() + " " + getCurrentPosition().getLon());
+            System.out.println(lat + " " + lon);
             setStatus(BoatStatus.FINISHED);
             return;
         }
