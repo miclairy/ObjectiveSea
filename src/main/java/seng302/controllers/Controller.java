@@ -136,6 +136,8 @@ public class Controller implements Initializable, Observer {
     private DisplaySwitcher displaySwitcher;
     private boolean scoreboardVisible = true;
     private boolean moveAnnotation = false;
+    private boolean moveClock = false;
+    private boolean moveHUD = false;
     private ArrayList<BoatDisplay> boatDisplayArrayList = new ArrayList<>();
     private BoatDisplay currentDisplayBoat;
 
@@ -182,7 +184,7 @@ public class Controller implements Initializable, Observer {
 
         raceCompetitorOverview();
         startersOverlay.toFront();
-        initDisplayDrag();
+//        initDisplayDrag();
         initZoom();
     }
 
@@ -256,6 +258,7 @@ public class Controller implements Initializable, Observer {
         initZoomEventListener();
         initKeyPressListener();
         initTouchDisplayDrag();
+        initMoveClock();
         raceViewController.setupRaceView(options);
         initHiddenScoreboard();
         raceViewController.updateWindArrow();
@@ -279,6 +282,34 @@ public class Controller implements Initializable, Observer {
         boatDisplayArrayList.add(boatDisplay);
     }
 
+    private void initMoveClock() {
+
+//        canvasAnchor.setOnMousePressed(event -> {
+//            double clockXPosition = event.getX() - lblNoBoardClock.getLayoutX();
+//            double clockYPosition = event.getY() - lblNoBoardClock.getLayoutY();
+//            double clockWidth = lblNoBoardClock.getWidth();
+//            double clockHeight = lblNoBoardClock.getHeight();
+//
+//            if(clockXPosition <= clockWidth && clockXPosition >= 0 &&
+//                    clockYPosition <= clockHeight && clockYPosition >= 0) {
+//                moveClock = true;
+//                DisplayUtils.externalTouchEvent = true;
+//            }
+//        });
+//
+//        canvasAnchor.setOnMouseDragged(event -> {
+//                if(moveClock) {
+//                    lblNoBoardClock.setLayoutX(event.getX());
+//                    lblNoBoardClock.setLayoutY(event.getY());
+//                }
+//        });
+//        canvasAnchor.setOnMouseReleased(event -> {
+//                    moveClock = false;
+//                    DisplayUtils.externalTouchEvent = false;
+//        });
+
+    }
+
     private static class Delta {
         public static double x;
         public static double y;
@@ -299,11 +330,25 @@ public class Controller implements Initializable, Observer {
                 double annotationWidth = boatAnnotation.getWidth();
                 double annotationHeight = boatAnnotation.getHeight();
 
+                double clockXPosition = event.getX() - lblNoBoardClock.getLayoutX();
+                double clockYPosition = event.getY() - lblNoBoardClock.getLayoutY();
+                double clockWidth = lblNoBoardClock.getWidth();
+                double clockHeight = lblNoBoardClock.getHeight();
+
                 if(annotationXPosition <= annotationWidth && annotationXPosition >= 0 &&
                         annotationYPosition <= annotationHeight && annotationYPosition >= 0) {
                     moveAnnotation = true;
                     DisplayUtils.externalTouchEvent = true;
                     currentDisplayBoat = boatDisplay;
+                } else if(clockXPosition <= clockWidth && clockXPosition >= 0 &&
+                        clockYPosition <= clockHeight && clockYPosition >= 0) {
+                    System.out.println("I'm clicking on the clock!");
+                    System.out.println(clockXPosition);
+                    System.out.println(clockWidth);
+                    System.out.println(clockYPosition);
+                    System.out.println(clockHeight);
+                    moveClock = true;
+                    DisplayUtils.externalTouchEvent = true;
                 }
             }
         });
@@ -324,12 +369,35 @@ public class Controller implements Initializable, Observer {
                 Delta.y = event.getY();
 
                 DisplayUtils.externalDragEvent = true;
+            } else if(moveClock) {
+                System.out.println("I made it!");
+                System.out.println(event.getX() + " " + event.getY());
+                System.out.println(lblNoBoardClock.getLayoutX() + " " + lblNoBoardClock.getLayoutY());
+
+                if (abs(event.getX() - Delta.x) < DRAG_TOLERANCE &&
+                        abs(event.getY() - Delta.y) < DRAG_TOLERANCE) {
+                    double scaledChangeX = ((event.getX() - Delta.x) / zoomLevel);
+                    double scaledChangeY = ((event.getY() - Delta.y) / zoomLevel);
+                    lblNoBoardClock.relocate(lblNoBoardClock.getLayoutX() + scaledChangeX, lblNoBoardClock.getLayoutY() + scaledChangeY);
+                }
+
+                Delta.x = event.getX();
+                Delta.y = event.getY();
+
+                DisplayUtils.externalDragEvent = true;
+            } else if (DisplayUtils.zoomLevel != 1 && !event.isSynthesized() && !DisplayUtils.externalDragEvent) {
+                displayDrag(event);
             }
+
         });
 
         canvasAnchor.setOnMouseReleased(event -> {
             moveAnnotation = false;
+            moveClock = false;
+            lblNoBoardClock.setVisible(true);
+
             DisplayUtils.externalTouchEvent = false;
+            DisplayUtils.externalDragEvent = false;
         });
     }
 
@@ -338,15 +406,11 @@ public class Controller implements Initializable, Observer {
      * initilizes display listeners to detect dragging on display. Calls DisplayUtils to move display
      * and redraw course and paths as appropriate.
      */
-    private void initDisplayDrag() {
-        canvasAnchor.setOnMouseDragged(event -> {
-            if (DisplayUtils.zoomLevel != 1 && !event.isSynthesized() && !DisplayUtils.externalDragEvent) {
-                DisplayUtils.dragDisplay((int) event.getX(), (int) event.getY());
-                raceViewController.redrawCourse();
-                raceViewController.redrawBoatPaths();
-                selectionController.deselectBoat();
-            }
-        });
+    private void displayDrag(MouseEvent event) {
+        DisplayUtils.dragDisplay((int) event.getX(), (int) event.getY());
+        raceViewController.redrawCourse();
+        raceViewController.redrawBoatPaths();
+        selectionController.deselectBoat();
     }
 
     /**
