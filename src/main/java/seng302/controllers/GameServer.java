@@ -262,7 +262,6 @@ public class GameServer implements Runnable, Observer {
     }
 
     private void createPacketForGameRecorder(){
-        System.out.println("Race name " + raceUpdater.getRace().getRegattaName());
         updateGameRecorder(options, ConnectionUtils.getPublicIp(), CourseName.getCourseIntFromName(raceUpdater.getRace().getRegattaName()));
     }
 

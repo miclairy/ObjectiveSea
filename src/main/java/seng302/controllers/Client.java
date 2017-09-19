@@ -43,7 +43,7 @@ public abstract class Client implements Runnable, Observer {
         int connectionAttempts = 0;
         while(clientListener.getSocket() == null) {
             if(clientListener.isHasConnectionFailed()){
-                throw new NoConnectionToServerException(true, "Connection Failed. Port number is invalid.");
+                throw new NoConnectionToServerException(true, "Connection Failed.");
             }else if(connectionAttempts < MAX_CONNECTION_ATTEMPTS){
                 try {
                     Thread.sleep(WAIT_MILLISECONDS);

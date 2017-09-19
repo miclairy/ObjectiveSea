@@ -79,13 +79,12 @@ public class ServerListener extends Receiver implements Runnable{
                 }
             } catch (SocketException e) {
                 break;
-            } catch (EOFException e) {
-                //No client input
             }catch (IOException e) {
-                System.out.println("Game Recorder: client closed");
+                System.out.println("Server Listener: connection closed");
                 clientConnected = false;
             }
         }
+        System.out.println("Game Recorder ServerListener Stopped");
     }
 
     private void recordHostGameMessage(byte[] body){
@@ -122,8 +121,6 @@ public class ServerListener extends Receiver implements Runnable{
         int gameStatus = byteArrayRangeToInt(body, HOST_GAME_STATUS.getStartIndex(), HOST_GAME_STATUS.getEndIndex());
         int gameMinPlayers = byteArrayRangeToInt(body, HOST_GAME_REQUIRED_PLAYERS.getStartIndex(), HOST_GAME_REQUIRED_PLAYERS.getEndIndex());
         int gameCurrentPlayers = byteArrayRangeToInt(body, HOST_GAME_CURRENT_PLAYERS.getStartIndex(), HOST_GAME_CURRENT_PLAYERS.getEndIndex());
-        System.out.println("Creating " + courseIndex);
-        System.out.println(Arrays.toString(body));
         return new AvailableRace(CourseName.getCourseNameFromInt(courseIndex).getText(), gameCurrentPlayers, serverPort, serverIP);
     }
 

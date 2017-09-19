@@ -80,9 +80,8 @@ public class GameRecorder implements Observer {
             }
         }
         int raceMapIndex = CourseName.getCourseIntFromName(race.mapNameProperty().getValue());
-        System.out.println(race.mapNameProperty().getValue());
         if (!updatedRace && raceMapIndex != -1) {
-            System.out.println("VmServer: Recording game on VM");
+            System.out.println("Game Recorder: Recording game on VM");
             incrementNumberOfBoats(race, 1);
             availableRaces.add(race);
         }
@@ -113,7 +112,7 @@ public class GameRecorder implements Observer {
         }
         if (foundRace != null) {
             availableRaces.remove(foundRace);
-            System.out.println("VmServer: removed canceled race: " + foundRace.getIpAddress());
+            System.out.println("Game Recorder: removed canceled race: " + foundRace.getIpAddress());
         }
     }
 
@@ -127,7 +126,6 @@ public class GameRecorder implements Observer {
         for(AvailableRace race : availableRaces){
             byte[] racePacket = packetBuilder.createGameRegistrationPacket(race.getPacket());
             connectionManager.sendToClient(nextHostID, racePacket);
-            System.out.println(racePacket.toString());
         }
         nextHostID++;
     }
@@ -139,7 +137,7 @@ public class GameRecorder implements Observer {
     protected void startServerListener(Socket socket) throws IOException {
         ServerListener serverListener = new ServerListener(socket);
         Thread serverListenerThread = new Thread(serverListener);
-        serverListenerThread.setName("Server Listener");
+        serverListenerThread.setName("Game Recorder Listener");
         serverListenerThread.start();
         serverListener.addObserver(this);
     }
