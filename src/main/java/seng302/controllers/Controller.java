@@ -136,8 +136,9 @@ public class Controller implements Initializable, Observer {
     private DisplaySwitcher displaySwitcher;
     private boolean scoreboardVisible = true;
     private boolean moveAnnotation = false;
-    private boolean moveClock = false;
     private boolean moveHUD = false;
+    private boolean hasHUDXMoved = false;
+    private boolean hasHUDYMoved = false;
     private ArrayList<BoatDisplay> boatDisplayArrayList = new ArrayList<>();
     private BoatDisplay currentDisplayBoat;
 
@@ -258,7 +259,7 @@ public class Controller implements Initializable, Observer {
         initZoomEventListener();
         initKeyPressListener();
         initTouchDisplayDrag();
-        initMoveClock();
+        resetHUDPosition();
         raceViewController.setupRaceView(options);
         initHiddenScoreboard();
         raceViewController.updateWindArrow();
@@ -282,32 +283,20 @@ public class Controller implements Initializable, Observer {
         boatDisplayArrayList.add(boatDisplay);
     }
 
-    private void initMoveClock() {
+    public boolean hasHUDXMoved() {
+        return hasHUDXMoved;
+    }
 
-//        canvasAnchor.setOnMousePressed(event -> {
-//            double clockXPosition = event.getX() - lblNoBoardClock.getLayoutX();
-//            double clockYPosition = event.getY() - lblNoBoardClock.getLayoutY();
-//            double clockWidth = lblNoBoardClock.getWidth();
-//            double clockHeight = lblNoBoardClock.getHeight();
-//
-//            if(clockXPosition <= clockWidth && clockXPosition >= 0 &&
-//                    clockYPosition <= clockHeight && clockYPosition >= 0) {
-//                moveClock = true;
-//                DisplayUtils.externalTouchEvent = true;
-//            }
-//        });
-//
-//        canvasAnchor.setOnMouseDragged(event -> {
-//                if(moveClock) {
-//                    lblNoBoardClock.setLayoutX(event.getX());
-//                    lblNoBoardClock.setLayoutY(event.getY());
-//                }
-//        });
-//        canvasAnchor.setOnMouseReleased(event -> {
-//                    moveClock = false;
-//                    DisplayUtils.externalTouchEvent = false;
-//        });
+    public void setHUDXMoved(boolean hasHUDXMoved) {
+        this.hasHUDXMoved = hasHUDXMoved;
+    }
 
+    public boolean hasHUDYMoved() {
+        return hasHUDYMoved;
+    }
+
+    public void setHUDYMoved(boolean hasHUDYMoved) {
+        this.hasHUDYMoved = hasHUDYMoved;
     }
 
     private static class Delta {
@@ -316,9 +305,11 @@ public class Controller implements Initializable, Observer {
     }
 
     /**
-     * Takes the displayBoat and makes the annotation of that boat draggable. Via mouse or touch press.
+     * Takes the displayBoat and makes the annotation of that boat draggable.
+     * As well as making the HUD draggable.
+     * Via mouse or touch press.
      */
-    public void makeAnnoDraggable() {
+    public void makeItemsDraggable() {
 
         canvasAnchor.setOnMousePressed(event -> {
             for(BoatDisplay boatDisplay : boatDisplayArrayList) {
@@ -330,26 +321,23 @@ public class Controller implements Initializable, Observer {
                 double annotationWidth = boatAnnotation.getWidth();
                 double annotationHeight = boatAnnotation.getHeight();
 
-                double clockXPosition = event.getX() - lblNoBoardClock.getLayoutX();
-                double clockYPosition = event.getY() - lblNoBoardClock.getLayoutY();
-                double clockWidth = lblNoBoardClock.getWidth();
-                double clockHeight = lblNoBoardClock.getHeight();
-
                 if(annotationXPosition <= annotationWidth && annotationXPosition >= 0 &&
                         annotationYPosition <= annotationHeight && annotationYPosition >= 0) {
                     moveAnnotation = true;
                     DisplayUtils.externalTouchEvent = true;
                     currentDisplayBoat = boatDisplay;
-                } else if(clockXPosition <= clockWidth && clockXPosition >= 0 &&
-                        clockYPosition <= clockHeight && clockYPosition >= 0) {
-                    System.out.println("I'm clicking on the clock!");
-                    System.out.println(clockXPosition);
-                    System.out.println(clockWidth);
-                    System.out.println(clockYPosition);
-                    System.out.println(clockHeight);
-                    moveClock = true;
-                    DisplayUtils.externalTouchEvent = true;
                 }
+            }
+
+            double HUDXPosition = event.getX() - headsUpDisplay.getLayoutX();
+            double HUDYPosition = event.getY() - headsUpDisplay.getLayoutY();
+            double HUDWidth = headsUpDisplay.getWidth();
+            double HUDHeight = headsUpDisplay.getHeight();
+
+            if(HUDXPosition <= HUDWidth && HUDXPosition >= 0 &&
+                    HUDYPosition <= HUDHeight && HUDYPosition >= 0) {
+                moveHUD = true;
+                DisplayUtils.externalTouchEvent = true;
             }
         });
 
@@ -369,22 +357,21 @@ public class Controller implements Initializable, Observer {
                 Delta.y = event.getY();
 
                 DisplayUtils.externalDragEvent = true;
-            } else if(moveClock) {
-                System.out.println("I made it!");
-                System.out.println(event.getX() + " " + event.getY());
-                System.out.println(lblNoBoardClock.getLayoutX() + " " + lblNoBoardClock.getLayoutY());
-
-                if (abs(event.getX() - Delta.x) < DRAG_TOLERANCE &&
-                        abs(event.getY() - Delta.y) < DRAG_TOLERANCE) {
-                    double scaledChangeX = ((event.getX() - Delta.x) / zoomLevel);
-                    double scaledChangeY = ((event.getY() - Delta.y) / zoomLevel);
-                    lblNoBoardClock.relocate(lblNoBoardClock.getLayoutX() + scaledChangeX, lblNoBoardClock.getLayoutY() + scaledChangeY);
+            } else if(moveHUD) {
+                if(zoomLevel > 1 || (zoomLevel <= 1 && !isOutsideBounds(headsUpDisplay))) {
+                    if (abs(event.getX() - Delta.x) < DRAG_TOLERANCE &&
+                            abs(event.getY() - Delta.y) < DRAG_TOLERANCE) {
+                        double scaledChangeX = (event.getX() - Delta.x);
+                        double scaledChangeY = (event.getY() - Delta.y);
+                        headsUpDisplay.relocate(headsUpDisplay.getLayoutX() + scaledChangeX, headsUpDisplay.getLayoutY() + scaledChangeY);
+                    }
                 }
-
                 Delta.x = event.getX();
                 Delta.y = event.getY();
 
                 DisplayUtils.externalDragEvent = true;
+                hasHUDXMoved = false;
+                hasHUDYMoved = false;
             } else if (DisplayUtils.zoomLevel != 1 && !event.isSynthesized() && !DisplayUtils.externalDragEvent) {
                 displayDrag(event);
             }
@@ -393,14 +380,20 @@ public class Controller implements Initializable, Observer {
 
         canvasAnchor.setOnMouseReleased(event -> {
             moveAnnotation = false;
-            moveClock = false;
-            lblNoBoardClock.setVisible(true);
+            moveHUD = false;
 
             DisplayUtils.externalTouchEvent = false;
             DisplayUtils.externalDragEvent = false;
         });
     }
 
+    private void resetHUDPosition() {
+        canvasAnchor.setOnMouseClicked(event -> {
+            if(event.getClickCount() == 2) {
+                headsUpDisplay.relocate(150, 10);
+            }
+        });
+    }
 
     /**
      * initilizes display listeners to detect dragging on display. Calls DisplayUtils to move display
@@ -976,5 +969,9 @@ public class Controller implements Initializable, Observer {
 
     public void setSoundController(SoundController soundController) {
         this.soundController = soundController;
+    }
+
+    public VBox getHUD() {
+        return headsUpDisplay;
     }
 }
