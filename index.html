@@ -5,6 +5,7 @@
 
   <title>Objective Sea</title>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="website/style/style.css">
     <script src="website/js/scripts.js"></script>
   <link rel="shortcut icon" href="website/img/favicon.ico">
@@ -27,15 +28,16 @@
   <meta name="msapplication-TileColor" content="#FFFFFF">
   <meta name="msapplication-TileImage" content="img/favicon-144.png">
   <meta name="msapplication-config" content="img/browserconfig.xml">
-
 </head>
 
 <body>
-<form>
-  Code<br>
-  <input type="text" name="raceCode"><br>
-  <input type="submit" value="Submit">
+<div class="form" id="codeForm">
+    <form>
+    <br>
+    <input type="text" name="raceCode" id="codeBox" placeholder="Code">
+    <input type="submit" value="&#xf0a9" id="submitCode">
+    <br>
 </form>
-
+</div>
 </body>
 </html>
