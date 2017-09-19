@@ -691,6 +691,7 @@ public class Controller implements Initializable, Observer {
         lblUserHelp.setPrefWidth(canvasWidth);
         lblUserHelp.setMaxWidth(canvasWidth);
         lblUserHelp.setMinWidth(canvasWidth);
+        lblUserHelp.setTextFill(Color.RED);
         lblUserHelp.setText(helper);
         DisplayUtils.fadeInFadeOutNodeTransition(lblUserHelp, 1, 4000);
     }
