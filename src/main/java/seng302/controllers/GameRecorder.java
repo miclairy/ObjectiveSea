@@ -56,11 +56,9 @@ public class GameRecorder implements Observer {
                 removeAvailableRace(arg);
             } else if (arg instanceof RegistrationType) {
                 if (arg.equals(REQUEST_RUNNING_GAMES)) {
-                    System.out.println("received request for games");
                     manageRegistration((ServerListener) observable);
                 }
             } else if (arg instanceof AvailableRace) {
-                System.out.println("received race");
                 updateAvailableRace(((AvailableRace) arg));
             }
         }

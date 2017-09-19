@@ -32,6 +32,8 @@ public class ClientSender {
         try {
             DataOutputStream clientOutput = new DataOutputStream(socket.getOutputStream());
             clientOutput.write(packet);
+        } catch (SocketException e) {
+            System.out.println("Client: Unable to reach game server");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NullPointerException e){

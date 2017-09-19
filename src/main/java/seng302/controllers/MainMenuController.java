@@ -1,14 +1,12 @@
 package seng302.controllers;
 
 import javafx.animation.AnimationTimer;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -112,9 +110,9 @@ public class MainMenuController implements Initializable{
         paneWidth = 400;
         setUpMaps();
         clipChildren(menuAnchor, 2*10);
-        tblAvailableRaces.setPlaceholder(new Label("No Available Races"));
         columnMap.setStyle( "-fx-alignment: CENTER;");
         columnParticipants.setStyle( "-fx-alignment: CENTER;");
+        tblAvailableRaces.setPlaceholder(new Label("No Available Races"));
     }
 
     /**
@@ -182,7 +180,7 @@ public class MainMenuController implements Initializable{
      * loads the join pane
      */
     @FXML private void loadJoinPane(){
-        setUpAvailableRaceTable();
+        setupJoinRaceScreen();
         AnimationUtils.switchPaneFade(onlinePane, joinRacePane);
         if (client != null) {
             tblAvailableRaces.setItems(client.getAvailableRaces());
@@ -190,11 +188,17 @@ public class MainMenuController implements Initializable{
     }
 
     /**
-     * sets up the available race table
+     * Disable join buttons by default, and create listener to enable them only
+     * when a valid race is selected from the available races table, or when an
+     * attempt is being made to join a manual race.
      */
-    private void setUpAvailableRaceTable(){
+    private void setupJoinRaceScreen(){
         columnMap.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
         columnParticipants.setCellValueFactory(cellData -> cellData.getValue().numBoatsProperty().asObject());
+        disableJoinButtons(true);
+        tblAvailableRaces.getSelectionModel().selectedItemProperty().addListener(
+                (obs, oldRace, newRace) -> disableJoinButtons(newRace == null)
+        );
     }
 
     @FXML private void backToOnline(){
@@ -378,9 +382,9 @@ public class MainMenuController implements Initializable{
      * @throws Exception
      */
     @FXML private void joinAsParticipant() throws Exception {
-        if(manuallyJoinGame){
+        if(manuallyJoinGame) {
             joinGame(true);
-        }else{
+        } else {
             AvailableRace race = tblAvailableRaces.getSelectionModel().getSelectedItem();
             String ipAddress = race.getIpAddress();
             if (Objects.equals(ipAddress, ConnectionUtils.getPublicIp())){
@@ -660,6 +664,11 @@ public class MainMenuController implements Initializable{
         timer.start();
     }
 
+    private void disableJoinButtons(Boolean disable) {
+        btnSpectate.setDisable(disable);
+        btnCompete.setDisable(disable);
+    }
+
     /**
      * changes from the table view to a manual view with text fields for port and IP
      * entry
@@ -672,6 +681,7 @@ public class MainMenuController implements Initializable{
         lblPort.setVisible(manuallyJoinGame);
         tblAvailableRaces.setVisible(!manuallyJoinGame);
         clearTableSelection();
+        disableJoinButtons(!manuallyJoinGame);
         if(manuallyJoinGame){
             btnManual.setText("Auto");
         }else{

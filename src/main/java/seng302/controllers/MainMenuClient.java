@@ -98,7 +98,6 @@ public class MainMenuClient extends Client {
     public void checkForRaces(){
         receivedRaces.clear();
         RegistrationType regoType = RegistrationType.REQUEST_RUNNING_GAMES;
-        System.out.println("Sending request games packet");
         sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
     }
 
