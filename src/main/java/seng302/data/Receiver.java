@@ -133,9 +133,7 @@ public abstract class Receiver extends Observable implements Runnable{
     public boolean setUpConnection(String sourceAddress, int sourcePort) {
         try {
             Socket socket = new Socket(sourceAddress, sourcePort);
-            System.out.println("setup connection");
             setSocket(socket);
-//            socket.setSoTimeout(SOCKET_TIMEOUT_MS);
             dataStream = getSocket().getInputStream();
             return true;
         } catch (IOException e) {
