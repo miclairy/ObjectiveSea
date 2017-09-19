@@ -50,7 +50,7 @@ div.form{
     border-style: none;
     background-color: #ffffff;
     margin-left: 0rem;
-    -webkit-appearance: none;
+    -webkit-appearance: none;\
 }
 
 #submitCode:hover{
@@ -72,3 +72,5 @@ input {
     display: block;
     margin-bottom: .5em;
 }
+
+input[type=submit], input[type=Reset]{ -webkit-appearance:none; }
