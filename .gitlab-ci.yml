@@ -8,12 +8,14 @@ generate_artifacts:
   script:
     - mvn -B clean site package
 
-production:
-    type: deploy
-    script:
-    - apt-get update -qy
-    - apt-get install -y ruby-dev
-    - gem install dpl
-    - dpl --provider=heroku --app=gitlab-ci-python-test-prod --api-key=$dca37d36-ddb4-4e8e-8afa-cdd249ab510a
-    only:
-    - tags
+pages:
+  stage: deploy
+  script:
+  - mkdir .public
+  - cp -r * .public
+  - mv .public public
+  artifacts:
+    paths:
+    - public
+  only:
+  - 28-20.4_website
