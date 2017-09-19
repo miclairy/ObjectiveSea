@@ -1,26 +1,19 @@
 package seng302.controllers;
 
 import seng302.data.*;
-import seng302.data.registration.RegistrationResponse;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.data.registration.RegistrationType;
 import seng302.models.*;
-import seng302.models.*;
 import seng302.utilities.ConnectionUtils;
-import seng302.views.AvailableRace;
-import sun.security.x509.AVA;
 
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.BindException;
-import java.net.ConnectException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
+import static seng302.data.AC35StreamMessage.GAME_CANCEL;
 import static seng302.data.AC35StreamXMLMessage.BOAT_XML_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.RACE_XML_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.REGATTA_XML_MESSAGE;
@@ -46,14 +39,17 @@ public class GameServer implements Runnable, Observer {
     private RaceUpdater raceUpdater;
     private Thread raceUpdaterThread;
     private CollisionManager collisionManager;
+    private ClientSender gameRecorderConnection;
 
     public GameServer(ServerOptions options) throws IOException {
         this.options = options;
         packetBuilder = new ServerPacketBuilder();
         connectionManager = new ConnectionManager(options.getPort(), true);
         connectionManager.addObserver(this);
+        Socket gameRecorderSocket = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
+        gameRecorderConnection = new ClientSender(gameRecorderSocket);
         setupNewRaceUpdater(options);
-        createPacketForVM();
+        createPacketForGameRecorder();
     }
 
     /**
@@ -65,6 +61,7 @@ public class GameServer implements Runnable, Observer {
         if(options.isTutorial()) raceUpdater.skipPrerace();
         raceUpdater.setScaleFactor(options.getSpeedScale());
         if(options.getAIDifficulty() != AIDifficulty.NO_AI) raceUpdater.addAICompetitor(options.getAIDifficulty());
+
         raceUpdaterThread = new Thread(raceUpdater);
         raceUpdaterThread.setName("Race Updater");
         collisionManager = raceUpdater.getCollisionManager();
@@ -258,19 +255,15 @@ public class GameServer implements Runnable, Observer {
         serverListener.setClientId(newId);
         connectionManager.sendToClient(newId, packet);
         if(success){
-            createPacketForVM();
+            createPacketForGameRecorder();
             sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());
             sendAllBoatStates();
         }
     }
 
-    private void createPacketForVM(){
-        try {
-            System.out.println("Race name " + raceUpdater.getRace().getRegattaName());
-            updateVM(options, ConnectionUtils.getPublicIp(), 0);
-        } catch (IOException a) {
-            a.printStackTrace();
-        }
+    private void createPacketForGameRecorder(){
+        System.out.println("Race name " + raceUpdater.getRace().getRegattaName());
+        updateGameRecorder(options, ConnectionUtils.getPublicIp(), CourseName.getCourseIntFromName(raceUpdater.getRace().getRegattaName()));
     }
 
     /**
@@ -280,18 +273,11 @@ public class GameServer implements Runnable, Observer {
      * @param currentCourseIndex index of the current course running on the game
      * @throws IOException needed for sending to the vm
      */
-    private void updateVM(ServerOptions options, String publicIp, int currentCourseIndex) throws IOException {
-        try{
-            byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(options.getSpeedScale(), options.getMinParticipants(),
-                    options.getPort(), publicIp, currentCourseIndex, raceUpdater.getRace().getCompetitors().size());
-            System.out.println("GameServer: Updating VM" );
-            Socket vmSocket = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
-            DataOutputStream vmOutput = new DataOutputStream(vmSocket.getOutputStream());
-            vmOutput.write(registerGamePacket);
-        } catch (ConnectException e){
-            System.out.println("VM not reachable");
-        }
-
+    private void updateGameRecorder(ServerOptions options, String publicIp, int currentCourseIndex) {
+        byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(options.getSpeedScale(), options.getMinParticipants(),
+                options.getPort(), publicIp, currentCourseIndex, raceUpdater.getRace().getCompetitors().size());
+        System.out.println("GameServer: Updating VM" );
+        gameRecorderConnection.sendToServer(registerGamePacket);
     }
 
     /**
@@ -313,7 +299,7 @@ public class GameServer implements Runnable, Observer {
                 }
             } else {
                 setBoatToDNF((int) arg);
-                createPacketForVM();
+                createPacketForGameRecorder();
             }
         } else if(observable instanceof ServerListener){
             if(arg instanceof RegistrationType){
@@ -382,6 +368,11 @@ public class GameServer implements Runnable, Observer {
     }
 
     public void initiateServerDisconnect() {
+        System.out.println("Client: Cancelling race");
+        byte[] gameClosePacket = packetBuilder.createGameCancelPacket(GAME_CANCEL);
+        gameRecorderConnection.sendToServer(gameClosePacket);
+
+        gameRecorderConnection.closeConnection();
         connectionManager.closeAllConnections();
         raceUpdater.stopRunning();
     }

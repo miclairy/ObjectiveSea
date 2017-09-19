@@ -32,16 +32,10 @@ public class ServerListener extends Receiver implements Runnable{
     private Race race;
     private Integer clientId;
     private boolean clientConnected = true;
-    private Integer listenerId;
-    private boolean stop = false;
+
 
     public ServerListener(Socket socket) throws IOException {
         setSocket(socket);
-    }
-
-    public ServerListener(Integer listenerId, Socket socket) throws IOException {
-        setSocket(socket);
-        this.listenerId = listenerId;
     }
 
     /**
@@ -50,7 +44,7 @@ public class ServerListener extends Receiver implements Runnable{
      */
     @Override
     public void run() {
-        while(clientConnected && !Thread.interrupted()){
+        while(clientConnected){
             try {
                 DataInput dataInput = new DataInputStream(getSocket().getInputStream());
 
@@ -88,6 +82,7 @@ public class ServerListener extends Receiver implements Runnable{
             } catch (EOFException e) {
                 //No client input
             }catch (IOException e) {
+                System.out.println("Game Recorder: client closed");
                 clientConnected = false;
             }
         }
@@ -199,13 +194,5 @@ public class ServerListener extends Receiver implements Runnable{
         String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
         setChanged();
         notifyObservers(serverIP);
-    }
-
-    public Integer getListenerId() {
-        return listenerId;
-    }
-
-    public void stop(){
-        this.stop = true;
     }
 }

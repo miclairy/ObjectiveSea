@@ -101,4 +101,8 @@ public abstract class Client implements Runnable, Observer {
             this.clientListener = null;
         }
     }
+
+    public ClientSender getSender() {
+        return sender;
+    }
 }

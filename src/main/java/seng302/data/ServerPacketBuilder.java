@@ -2,9 +2,11 @@ package seng302.data;
 
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.models.*;
+import seng302.utilities.ConnectionUtils;
 import seng302.utilities.TimeUtils;
 
 import java.io.*;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.*;
 
@@ -289,4 +291,16 @@ public class ServerPacketBuilder extends PacketBuilder {
         return generatePacket(header, body);
     }
 
+    /**
+     * creates a packet that is sent when a host quits a race, used to update the VM
+     * @param type the message type for the packet
+     * @return the packet to send to the VM
+     */
+    public byte[] createGameCancelPacket(AC35StreamMessage type) {
+        byte[] header = super.createHeader(type);
+        byte[] body = new byte[4];
+        long ip = ConnectionUtils.ipStringToLong(ConnectionUtils.getPublicIp());
+        addFieldToByteArray(body, HOST_GAME_IP, ip);
+        return generatePacket(header, body);
+    }
 }

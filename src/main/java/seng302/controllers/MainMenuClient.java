@@ -9,6 +9,7 @@ import seng302.utilities.ConnectionUtils;
 import seng302.utilities.NoConnectionToServerException;
 import seng302.views.AvailableRace;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -18,22 +19,32 @@ import java.util.*;
 public class MainMenuClient extends Client {
     private ObservableList<AvailableRace> availableRaces = FXCollections.observableArrayList();
     private ArrayList<AvailableRace> receivedRaces = new ArrayList<>();
+    private Boolean pollForRaces;
 
     public MainMenuClient() throws ServerFullException, NoConnectionToServerException {
         this.packetBuilder = new ClientPacketBuilder();
+        setUpDataStreamReader(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
+        manageWaitingConnection();
+        pollForRaces = true;
     }
 
     @Override
-    public void run() {
-        while(true){
+    public void run(){
+        this.sender = new ClientSender(clientListener.getSocket());
+        while(pollForRaces){
             try {
                 checkForRaces();
-                Thread.sleep(5000);
+                Thread.sleep(1000);
                 updateRaces();
-                stopDataStreamReader();
+                Thread.sleep(4000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+        try {
+            clientListener.getSocket().close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -48,7 +59,7 @@ public class MainMenuClient extends Client {
 
     /**
      * hands the updating of the available races array, removes
-     * races that no longer exist, keeps races that are still running
+     * races that no longer exist, keeps races that are still pollForRaces
      */
     public void updateRaces(){
         for(AvailableRace newRace : receivedRaces){
@@ -82,20 +93,13 @@ public class MainMenuClient extends Client {
     }
 
     /**
-     * queries the known VM address for any running games
+     * queries the known VM address for any pollForRaces games
      */
     public void checkForRaces(){
         receivedRaces.clear();
-        setUpDataStreamReader(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
-        try {
-            manageWaitingConnection();
-            RegistrationType regoType = RegistrationType.REQUEST_RUNNING_GAMES;
-            this.sender = new ClientSender(clientListener.getSocket());
-            System.out.println("Sending request games packet");
-            sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
-        } catch (NoConnectionToServerException e) {
-            System.out.println("Cannot reach server on current address");
-        }
+        RegistrationType regoType = RegistrationType.REQUEST_RUNNING_GAMES;
+        System.out.println("Sending request games packet");
+        sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
     }
 
     @Override
@@ -107,4 +111,7 @@ public class MainMenuClient extends Client {
         clientListener.addObserver(this);
     }
 
+    public void stopPolling(){
+        pollForRaces = false;
+    }
 }

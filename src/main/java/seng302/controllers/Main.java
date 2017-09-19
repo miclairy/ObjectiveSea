@@ -28,7 +28,7 @@ import java.net.BindException;
 public class Main extends Application {
     private static GameClient client;
     private GameServer server;
-    private RaceManagerServer managerServer;
+    private GameRecorder managerServer;
     private Stage primaryStage;
     private DisplaySwitcher displaySwitcher;
 
@@ -49,6 +49,10 @@ public class Main extends Application {
             if(client != null){
                 client.initiateClientDisconnect();
             }
+            if(server != null){
+                server.initiateServerDisconnect();
+            }
+
             Platform.exit();
             System.exit(0);
         });
@@ -115,7 +119,7 @@ public class Main extends Application {
      */
     private void setupServer(ServerOptions serverOptions) throws IOException {
         if(serverOptions.isRunRaceManager()){
-            managerServer = new RaceManagerServer();
+            managerServer = new GameRecorder();
         } else {
             server = new GameServer(serverOptions);
             ConnectionUtils.setServer(server);
@@ -192,7 +196,6 @@ public class Main extends Application {
             return false;
         }
         startClient(clientOptions);
-        client.updateVM(serverOptions.getSpeedScale(), serverOptions.getMinParticipants(), clientOptions.getServerPort(), ConnectionUtils.getPublicIp(), currentCourseIndex);
         return true;
     }
 

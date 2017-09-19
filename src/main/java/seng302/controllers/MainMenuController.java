@@ -207,7 +207,7 @@ public class MainMenuController implements Initializable{
         DisplaySwitcher.getGameSounds().stopEndlessMusic();
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.TUTORIAL);
-        stopMainMenuClientThread();
+        client.stopPolling();
         if(main.startLocalRace("GuidedPractice-course.xml", DEFAULT_PORT, true, clientOptions, NO_AI)){
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
@@ -222,7 +222,7 @@ public class MainMenuController implements Initializable{
     private void loadOfflinePlay(AIDifficulty AIDifficulty) throws Exception{
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.SINGLEPLAYER);
-        stopMainMenuClientThread();
+        client.stopPolling();
         if(main.startLocalRace(currentCourseMap.getXML(), DEFAULT_PORT, false, clientOptions, AIDifficulty)){
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
@@ -247,7 +247,7 @@ public class MainMenuController implements Initializable{
     @FXML private void loadPracticeStart() throws Exception {
         btnPractiseStart.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.PRACTICE);
-        stopMainMenuClientThread();
+        client.stopPolling();
         if(main.startLocalRace("PracticeStart-course.xml", DEFAULT_PORT, false, clientOptions, NO_AI)){
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
@@ -299,7 +299,7 @@ public class MainMenuController implements Initializable{
         Double speed = speedScaleSlider.getValue();
         Integer minCompetitors = (int) boatsInRaceSlider.getValue();
         ClientOptions clientOptions = new ClientOptions(GameMode.MULTIPLAYER);
-        stopMainMenuClientThread();
+        client.stopPolling();
         if(main.startHostedRace(currentCourseMap.getXML(), speed, minCompetitors, clientOptions, currentMapIndex)){
             timer.stop();
             Thread.sleep(200);
@@ -348,7 +348,7 @@ public class MainMenuController implements Initializable{
      */
     private void startGame(boolean clientStarted, ClientOptions clientOptions) throws InterruptedException, UnsupportedAudioFileException, IOException, LineUnavailableException {
         if(clientStarted) {
-            stopMainMenuClientThread();
+            client.stopPolling();
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
             loadRealGameSounds();
@@ -687,10 +687,8 @@ public class MainMenuController implements Initializable{
         return paneWidth;
     }
 
-    private void stopMainMenuClientThread() {
-        if (mainMenuClientThread != null){
-            mainMenuClientThread.stop();
-        }
+    public MainMenuClient getClient() {
+        return client;
     }
 
     private void clearTableSelection(){

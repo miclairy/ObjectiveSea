@@ -20,22 +20,19 @@ import static seng302.data.AC35StreamField.HOST_GAME_CURRENT_PLAYERS;
  * Created by dda40 on 11/09/17.
  *
  */
-public class RaceManagerServer implements Observer {
+public class GameRecorder implements Observer {
 
     private final ServerPacketBuilder packetBuilder;
     private final ConnectionManager connectionManager;
     private ArrayList<AvailableRace> availableRaces = new ArrayList<>();
     private int nextHostID = 0;
-    private int serverListenerId = 0;
-    private Map<Integer, Thread> listenerThreads;
     private Set<Socket> sockets = new HashSet<>();
 
-    public RaceManagerServer() throws IOException {
+    public GameRecorder() throws IOException {
         packetBuilder = new ServerPacketBuilder();
         connectionManager = new ConnectionManager(ConnectionUtils.getVmPort(), false);
         connectionManager.addObserver(this);
         System.out.println("Server: Waiting for races");
-        listenerThreads = new HashMap<>();
         Thread managerThread = new Thread(connectionManager);
         managerThread.setName("Connection Manager");
         managerThread.start();
@@ -46,35 +43,26 @@ public class RaceManagerServer implements Observer {
         if (observable.equals(connectionManager)) {
             if (arg instanceof Socket) {
                 Socket socket = (Socket) arg;
-                if(sockets.contains(socket)){
-                    System.out.println("this is bad");
-                } else{
-                    sockets.add(socket);
-                    try {
-                        startServerListener((Socket) arg);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                sockets.add(socket);
+                try {
+                    startServerListener((Socket) arg);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+
             }
         } else if(observable instanceof ServerListener){
-            ServerListener serverListener = (ServerListener) observable;
             if(arg instanceof String) {
                 removeAvailableRace(arg);
             } else if (arg instanceof RegistrationType) {
                 if (arg.equals(REQUEST_RUNNING_GAMES)) {
-                    System.out.println("hi");
+                    System.out.println("received request for games");
                     manageRegistration((ServerListener) observable);
                 }
             } else if (arg instanceof AvailableRace) {
                 System.out.println("received race");
                 updateAvailableRace(((AvailableRace) arg));
             }
-            Thread listenerThread = listenerThreads.get(serverListener.getListenerId());
-//            serverListener.stop();
-            listenerThread.interrupt();
-            listenerThreads.remove(serverListener.getListenerId());
-//            System.out.println("removed" + serverListener.getListenerId());
         }
     }
 
@@ -149,12 +137,10 @@ public class RaceManagerServer implements Observer {
      * @param socket the socket for the client
      */
     protected void startServerListener(Socket socket) throws IOException {
-        ServerListener serverListener = new ServerListener(serverListenerId, socket);
+        ServerListener serverListener = new ServerListener(socket);
         Thread serverListenerThread = new Thread(serverListener);
-        serverListenerThread.setName("Server Listener" + serverListenerId);
+        serverListenerThread.setName("Server Listener");
         serverListenerThread.start();
         serverListener.addObserver(this);
-        listenerThreads.put(serverListenerId, serverListenerThread);
-        serverListenerId++;
     }
 }
