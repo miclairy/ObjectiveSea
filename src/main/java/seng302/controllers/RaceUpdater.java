@@ -184,6 +184,8 @@ public class RaceUpdater implements Runnable {
                     }
                 }
                 race.updateRaceStatus(RaceStatus.TERMINATED);
+            } else if(race.getCompetitors().size() == 1) {
+                race.updateRaceStatus(RaceStatus.TERMINATED);
             }
         } else if (race.getCompetitors().size() > 0 && !atLeastOneBoatNotFinished) {
             race.updateRaceStatus(RaceStatus.TERMINATED);
@@ -201,7 +203,7 @@ public class RaceUpdater implements Runnable {
      */
     private void updateBoat(Boat boat){
         if(race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
-            if (collisionManager.boatIsInCollision(boat)) {
+            if (collisionManager.boatIsInCollision(boat) && !boat.isFinished()) {
                 //revert the last location update as it was a collision
                 boat.updateLocation(-raceSecondsPassed, race.getCourse());
                 boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
@@ -214,7 +216,7 @@ public class RaceUpdater implements Runnable {
                     aiBoat.setSailsIn(false);
                     aiBoat.move(raceSecondsPassed, race.getCourse());
                 }
-            } else{
+            } else {
                 boat.move(raceSecondsPassed, race.getCourse());
                 Course course = race.getCourse();
                 if (race.getCourse().getCourseOrder().size() > 0 && race.getRaceStatus().equals(STARTED)) {
