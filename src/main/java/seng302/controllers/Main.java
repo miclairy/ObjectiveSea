@@ -165,6 +165,7 @@ public class Main extends Application {
      */
     public boolean startLocalRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions, AIDifficulty aiDifficulty) throws Exception {
         ServerOptions serverOptions = new ServerOptions();
+        serverOptions.setMaxParticipants(1);
         serverOptions.setAiDifficulty(aiDifficulty);
         serverOptions.setPort(port);
         serverOptions.setRaceXML(course);

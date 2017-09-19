@@ -46,8 +46,10 @@ public class GameServer implements Runnable, Observer {
         packetBuilder = new ServerPacketBuilder();
         connectionManager = new ConnectionManager(options.getPort(), true);
         connectionManager.addObserver(this);
-        Socket gameRecorderSocket = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
-        gameRecorderConnection = new ClientSender(gameRecorderSocket);
+        if (options.isMultiplayer()) {
+            Socket gameRecorderSocket = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
+            gameRecorderConnection = new ClientSender(gameRecorderSocket);
+        }
         setupNewRaceUpdater(options);
         createPacketForGameRecorder();
     }
@@ -234,16 +236,20 @@ public class GameServer implements Runnable, Observer {
      * @param serverListener the listener for the client
      */
     private void addClientToRace(ServerListener serverListener){
-        int newId = raceUpdater.addCompetitor();
+        int numCompetitors = raceUpdater.getRace().getCompetitors().size();
+        int newId = -1;
+        if (numCompetitors < options.getMaxParticipants()) {
+            newId = raceUpdater.addCompetitor();
+        }
         boolean success = newId != -1;
         byte[] packet;
         if (success) {
+            numCompetitors++;
             Boat boat = raceUpdater.getRace().getBoatById(newId);
             boatSequenceNumbers.put(boat, newId);
             lastMarkRoundingSent.put(boat, -1);
             packet = packetBuilder.createRegistrationResponsePacket(newId, RegistrationResponseStatus.PLAYER_SUCCESS);
             if (!raceUpdaterThread.isAlive()){
-                int numCompetitors = raceUpdater.getRace().getCompetitors().size();
                 if (numCompetitors >= options.getMinParticipants()) {
                     raceUpdaterThread.start();
                 }
@@ -262,7 +268,9 @@ public class GameServer implements Runnable, Observer {
     }
 
     private void createPacketForGameRecorder(){
-        updateGameRecorder(options, ConnectionUtils.getPublicIp(), CourseName.getCourseIntFromName(raceUpdater.getRace().getRegattaName()));
+        if (gameRecorderConnection != null) {
+            updateGameRecorder(options, ConnectionUtils.getPublicIp(), CourseName.getCourseIntFromName(raceUpdater.getRace().getRegattaName()));
+        }
     }
 
     /**
@@ -350,7 +358,7 @@ public class GameServer implements Runnable, Observer {
      */
     private void addSpectatorToRace(ServerListener serverListener) {
         RegistrationResponseStatus response = SPECTATOR_SUCCESS;
-        if (!raceUpdaterThread.isAlive()) {
+        if (!raceUpdaterThread.isAlive() || !options.isMultiplayer()) {
             response = RACE_UNAVAILABLE;
         } else if (nextViewerID >= MAX_SPECTATORS) {
             response = OUT_OF_SLOTS;
@@ -369,9 +377,10 @@ public class GameServer implements Runnable, Observer {
     public void initiateServerDisconnect() {
         System.out.println("Client: Cancelling race");
         byte[] gameClosePacket = packetBuilder.createGameCancelPacket(GAME_CANCEL);
-        gameRecorderConnection.sendToServer(gameClosePacket);
-
-        gameRecorderConnection.closeConnection();
+        if (gameRecorderConnection != null) {
+            gameRecorderConnection.sendToServer(gameClosePacket);
+            gameRecorderConnection.closeConnection();
+        }
         connectionManager.closeAllConnections();
         raceUpdater.stopRunning();
     }

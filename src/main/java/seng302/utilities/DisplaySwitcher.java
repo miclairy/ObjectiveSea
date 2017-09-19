@@ -63,8 +63,10 @@ public class DisplaySwitcher {
             Thread soundControllerThread = new Thread(soundController);
             soundControllerThread.start();
 
-            mainMenu.getClient().stopPolling();
-            mainMenu.getClient().getSender().closeConnection();
+            if (mainMenu.getClient() != null) {
+                mainMenu.getClient().stopPolling();
+                mainMenu.getClient().getSender().closeConnection();
+            }
 
             raceController = (Controller) replaceSceneContent("race_view.fxml");
             raceController.setApp(options, this, scene);

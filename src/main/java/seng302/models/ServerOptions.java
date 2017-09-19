@@ -12,10 +12,10 @@ public class ServerOptions {
     private final String DEFAULT_COURSE = "AC35-course.xml";
     private final Double DEFAULT_SPEED = 15.0;
     private final Integer DEFAULT_PORT = 2828;
-    private Integer MAX_PARTICIPANTS = 6;
-
     private Double speedScale;
+
     private Integer minParticipants;
+    private Integer maxParticipants = 6;
     private Integer port;
     private String raceXML;
     private boolean isTutorial;
@@ -82,11 +82,11 @@ public class ServerOptions {
     }
 
     public void setMinParticipants(int minParticipants) throws IllegalArgumentException {
-        if (minParticipants > 0 && minParticipants <= MAX_PARTICIPANTS) {
+        if (minParticipants > 0 && minParticipants <= maxParticipants) {
             this.minParticipants = minParticipants;
         } else {
             throw new IllegalArgumentException(
-                    String.format("Minimum number of participants must be between 1 and %d", MAX_PARTICIPANTS));
+                    String.format("Minimum number of participants must be between 1 and %d", maxParticipants));
         }
     }
 
@@ -136,5 +136,17 @@ public class ServerOptions {
 
     public AIDifficulty getAIDifficulty() {
         return this.aiDifficulty;
+    }
+
+    public void setMaxParticipants(Integer maxParticipants) {
+        this.maxParticipants = maxParticipants;
+    }
+
+    public Boolean isMultiplayer() {
+        return maxParticipants > 1;
+    }
+
+    public Integer getMaxParticipants() {
+        return maxParticipants;
     }
 }

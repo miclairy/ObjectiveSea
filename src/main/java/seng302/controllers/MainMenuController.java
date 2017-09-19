@@ -130,11 +130,15 @@ public class MainMenuController implements Initializable{
         selectAIPane.setVisible(false);
     }
 
-    public void setApp(Main main) throws ServerFullException, NoConnectionToServerException {
+    public void setApp(Main main) throws ServerFullException {
         this.main = main;
-        this.client = new MainMenuClient();
-        mainMenuClientThread = new Thread(client);
-        mainMenuClientThread.start();
+        try {
+            this.client = new MainMenuClient();
+            mainMenuClientThread = new Thread(client);
+            mainMenuClientThread.start();
+        } catch (NoConnectionToServerException e) {
+            System.err.println("No connection to Game Recorder.");
+        }
     }
 
     @FXML private void loadHostOptionsPane(){
@@ -180,7 +184,9 @@ public class MainMenuController implements Initializable{
     @FXML private void loadJoinPane(){
         setUpAvailableRaceTable();
         AnimationUtils.switchPaneFade(onlinePane, joinRacePane);
-        tblAvailableRaces.setItems(client.getAvailableRaces());
+        if (client != null) {
+            tblAvailableRaces.setItems(client.getAvailableRaces());
+        }
     }
 
     /**
@@ -207,7 +213,6 @@ public class MainMenuController implements Initializable{
         DisplaySwitcher.getGameSounds().stopEndlessMusic();
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.TUTORIAL);
-        client.stopPolling();
         if(main.startLocalRace("GuidedPractice-course.xml", DEFAULT_PORT, true, clientOptions, NO_AI)){
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
@@ -222,7 +227,6 @@ public class MainMenuController implements Initializable{
     private void loadOfflinePlay(AIDifficulty AIDifficulty) throws Exception{
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.SINGLEPLAYER);
-        client.stopPolling();
         if(main.startLocalRace(currentCourseMap.getXML(), DEFAULT_PORT, false, clientOptions, AIDifficulty)){
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
@@ -247,7 +251,6 @@ public class MainMenuController implements Initializable{
     @FXML private void loadPracticeStart() throws Exception {
         btnPractiseStart.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.PRACTICE);
-        client.stopPolling();
         if(main.startLocalRace("PracticeStart-course.xml", DEFAULT_PORT, false, clientOptions, NO_AI)){
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
@@ -299,7 +302,6 @@ public class MainMenuController implements Initializable{
         Double speed = speedScaleSlider.getValue();
         Integer minCompetitors = (int) boatsInRaceSlider.getValue();
         ClientOptions clientOptions = new ClientOptions(GameMode.MULTIPLAYER);
-        client.stopPolling();
         if(main.startHostedRace(currentCourseMap.getXML(), speed, minCompetitors, clientOptions, currentMapIndex)){
             timer.stop();
             Thread.sleep(200);
@@ -348,7 +350,6 @@ public class MainMenuController implements Initializable{
      */
     private void startGame(boolean clientStarted, ClientOptions clientOptions) throws InterruptedException, UnsupportedAudioFileException, IOException, LineUnavailableException {
         if(clientStarted) {
-            client.stopPolling();
             Thread.sleep(200);
             main.loadRaceView(clientOptions);
             loadRealGameSounds();
