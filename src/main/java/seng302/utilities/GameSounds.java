@@ -309,9 +309,11 @@ public class GameSounds {
     }
 
     public void stopEndlessMusic() throws LineUnavailableException {
-        clip.stop();
-        endless = false;
-        clip.setFramePosition(0);
+        if (clip != null) {
+            clip.stop();
+            endless = false;
+            clip.setFramePosition(0);
+        }
     }
 
     public void setVolume(double volume) {

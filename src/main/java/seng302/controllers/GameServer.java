@@ -68,7 +68,6 @@ public class GameServer implements Runnable, Observer {
         raceUpdaterThread = new Thread(raceUpdater);
         raceUpdaterThread.setName("Race Updater");
         collisionManager = raceUpdater.getCollisionManager();
-        System.out.println("race updater running");
     }
 
     /**
@@ -316,7 +315,7 @@ public class GameServer implements Runnable, Observer {
             }
         } else if(observable instanceof ServerListener){
             if(arg instanceof RegistrationType){
-                System.out.println("adding player to game");
+                System.out.println("Server: Adding player to game");
                 manageRegistration((ServerListener) observable, (RegistrationType) arg);
             }
         }

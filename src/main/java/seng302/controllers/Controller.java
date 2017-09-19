@@ -691,12 +691,14 @@ public class Controller implements Initializable, Observer {
         lblUserHelp.setPrefWidth(canvasWidth);
         lblUserHelp.setMaxWidth(canvasWidth);
         lblUserHelp.setMinWidth(canvasWidth);
+        lblUserHelp.setUnderline(true);
+        lblUserHelp.setTextFill(Color.RED);
         lblUserHelp.setText(helper);
         DisplayUtils.fadeInFadeOutNodeTransition(lblUserHelp, 1, 2000);
     }
 
     /**
-     * handles the toggling of screen elemnts when the side panel is toggled on and off
+     * handles the toggling of screen elements when the side panel is toggled on and off
      */
     @FXML private void hideScoreboard(){
         if(scoreboardVisible){
