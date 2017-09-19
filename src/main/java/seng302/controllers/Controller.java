@@ -687,7 +687,6 @@ public class Controller implements Initializable, Observer {
      * @param helper helper title
      */
     public void setUserHelpLabel(String helper) {
-        System.out.println(helper);
         lblUserHelp.setOpacity(0);
         lblUserHelp.setPrefWidth(canvasWidth);
         lblUserHelp.setMaxWidth(canvasWidth);
