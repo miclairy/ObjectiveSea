@@ -17,6 +17,7 @@ div.form{
 }
 
 #codeBox{
+    max-width: 100%;
     border-radius: 3.125rem 0rem 0rem 3.125rem;
     height: 2.5rem;
     width: 7.5rem;
@@ -28,6 +29,7 @@ div.form{
     color: #4FC1E9;
     margin-right: 0rem;
     float: left;
+    -webkit-appearance: none;
 }
 
 #codeBox:focus, input:focus{
@@ -47,6 +49,7 @@ div.form{
     border-style: none;
     background-color: #ffffff;
     margin-left: 0rem;
+    -webkit-appearance: none;
 }
 
 #submitCode:hover{
