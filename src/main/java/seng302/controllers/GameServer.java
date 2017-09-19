@@ -238,7 +238,7 @@ public class GameServer implements Runnable, Observer {
     private void addClientToRace(ServerListener serverListener){
         int numCompetitors = raceUpdater.getRace().getCompetitors().size();
         int newId = -1;
-        if (numCompetitors < options.getMaxParticipants()) {
+        if (anotherCompetitorAllowed(numCompetitors)) {
             newId = raceUpdater.addCompetitor();
         }
         boolean success = newId != -1;
@@ -265,6 +265,23 @@ public class GameServer implements Runnable, Observer {
             sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());
             sendAllBoatStates();
         }
+    }
+
+    /**
+     * Checks whether the maximum number of competitors are in the race to determine
+     * whether another competitor should be allowed.
+     * @param numCompetitors the number already in the race
+     * @return true if another competitor can be added, false otherwise
+     */
+    private Boolean anotherCompetitorAllowed(int numCompetitors) {
+        int competitorsAllowed = 1;
+        if (options.isMultiplayer()) {
+            return true;
+        }
+        if (!options.getAIDifficulty().equals(AIDifficulty.NO_AI)) {
+            competitorsAllowed++;
+        }
+        return numCompetitors < competitorsAllowed;
     }
 
     private void createPacketForGameRecorder(){

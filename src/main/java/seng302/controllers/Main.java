@@ -17,6 +17,7 @@ import seng302.data.registration.ServerFullException;
 import seng302.data.registration.ServerRegistrationException;
 import seng302.models.AIDifficulty;
 import seng302.models.ClientOptions;
+import seng302.models.GameMode;
 import seng302.models.ServerOptions;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplaySwitcher;
@@ -28,7 +29,7 @@ import java.net.BindException;
 public class Main extends Application {
     private static GameClient client;
     private GameServer server;
-    private GameRecorder managerServer;
+    private GameRecorder gameRecorder;
     private Stage primaryStage;
     private DisplaySwitcher displaySwitcher;
 
@@ -74,34 +75,36 @@ public class Main extends Application {
     private void launchWithArguments(String[] args) {
         if (args[0].equals("server")){
             try {
-                ServerOptions serverOptions = new ServerOptions();
-                serverOptions.setNumRacesToRun(-1);
-                for (int i = 1; i < args.length; i+=2) {
-                    switch(args[i]) {
-                        case "-p":
-                            serverOptions.setPort(Integer.parseInt(args[i + 1]));
-                            break;
-                        case "-n":
-                            serverOptions.setMinParticipants(Integer.parseInt(args[i + 1]));
-                            break;
-                        case "-m":
-                            serverOptions.setRaceXML(args[i + 1]);
-                            break;
-                        case "-s":
-                            serverOptions.setSpeedScale(Double.parseDouble(args[i + 1]));
-                            break;
-                        case "-r":
-                            serverOptions.setNumRacesToRun(Integer.parseInt(args[i + 1]));
-                            break;
-                        case "-g":
-                            serverOptions.setRunRaceManager(true);
-                            break;
-                        default:
-                            throw new IllegalArgumentException(String.format("Unknown argument \"%s\"", args[i]));
+                if (args.length > 1 && args[1].equals("-g")) {
+                    gameRecorder = new GameRecorder();
+                    System.out.println("Game recorder started");
+                } else {
+                    ServerOptions serverOptions = new ServerOptions(GameMode.MULTIPLAYER);
+                    serverOptions.setNumRacesToRun(-1);
+                    for (int i = 1; i < args.length; i += 2) {
+                        switch (args[i]) {
+                            case "-p":
+                                serverOptions.setPort(Integer.parseInt(args[i + 1]));
+                                break;
+                            case "-n":
+                                serverOptions.setMinParticipants(Integer.parseInt(args[i + 1]));
+                                break;
+                            case "-m":
+                                serverOptions.setRaceXML(args[i + 1]);
+                                break;
+                            case "-s":
+                                serverOptions.setSpeedScale(Double.parseDouble(args[i + 1]));
+                                break;
+                            case "-r":
+                                serverOptions.setNumRacesToRun(Integer.parseInt(args[i + 1]));
+                                break;
+                            default:
+                                throw new IllegalArgumentException(String.format("Unknown argument \"%s\"", args[i]));
+                        }
                     }
+                    setupServer(serverOptions);
+                    System.out.println("Headless server started.");
                 }
-                setupServer(serverOptions);
-                System.out.println("Headless server started.");
             } catch (IllegalArgumentException iae) {
                 System.out.print("Invalid server arguments. ");
                 System.out.println(iae.getMessage());
@@ -118,15 +121,11 @@ public class Main extends Application {
      * Creates a Server object, puts it in it's own thread and starts the thread
      */
     private void setupServer(ServerOptions serverOptions) throws IOException {
-        if(serverOptions.isRunRaceManager()){
-            managerServer = new GameRecorder();
-        } else {
-            server = new GameServer(serverOptions);
-            ConnectionUtils.setServer(server);
-            Thread serverThread = new Thread(server);
-            serverThread.setName("Server");
-            serverThread.start();
-        }
+        server = new GameServer(serverOptions);
+        ConnectionUtils.setServer(server);
+        Thread serverThread = new Thread(server);
+        serverThread.setName("Server");
+        serverThread.start();
     }
 
     public static GameClient getClient() {
@@ -163,9 +162,8 @@ public class Main extends Application {
      * @return boolean, true if the client starts successfully
      * @throws Exception throws this
      */
-    public boolean startLocalRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions, AIDifficulty aiDifficulty) throws Exception {
-        ServerOptions serverOptions = new ServerOptions();
-        serverOptions.setMaxParticipants(1);
+    public boolean startLocalRace(String course, Integer port, Boolean isTutorial, ClientOptions clientOptions, AIDifficulty aiDifficulty, GameMode gameMode) throws Exception {
+        ServerOptions serverOptions = new ServerOptions(gameMode);
         serverOptions.setAiDifficulty(aiDifficulty);
         serverOptions.setPort(port);
         serverOptions.setRaceXML(course);

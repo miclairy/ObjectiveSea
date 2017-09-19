@@ -8,14 +8,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.Objects;
 
 public class ConnectionUtils {
     private static GameClient client;
-    private static String vmIpAddress = "127.0.0.1";
+    private static String vmIpAddress = "132.181.15.123";
     private static int vmpPort = 2827;
     private static GameServer server;
     private static final String IP_REGEX = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
