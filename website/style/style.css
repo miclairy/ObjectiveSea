@@ -17,16 +17,16 @@ div.form{
 }
 
 #codeBox{
-    border-radius: 50px 0px 0px 50px;
-    height: 40px;
-    width: 120px;
-    padding: 10px;
-    font-size: 40px;
+    border-radius: 3.125rem 0rem 0rem 3.125rem;
+    height: 2.5rem;
+    width: 7.5rem;
+    padding: 0.625rem;
+    font-size: 2.5rem;
     font-weight: bold;
     text-shadow: none;
     border-style: none;
     color: #4FC1E9;
-    margin-right: 0px;
+    margin-right: 0rem;
     float: left;
 }
 
@@ -37,16 +37,16 @@ div.form{
 #submitCode{
     font-family: FontAwesome;
     text-align: right;
-    padding-right: 10px;
+    padding-right: 0.625rem;
     float: left;
     color: #4FC1E9;
-    font-size: 40px;
-    height: 60px;
-    width: 60px;
-    border-radius: 0px 50px 50px 0px;
+    font-size: 2.5rem;
+    height: 3.75rem;
+    width: 3.75rem;
+    border-radius: 0rem 3.125rem 3.125rem 0rem;
     border-style: none;
     background-color: #ffffff;
-    margin-left: 0px;
+    margin-left: 0rem;
 }
 
 #submitCode:hover{
