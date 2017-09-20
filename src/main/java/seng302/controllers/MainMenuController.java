@@ -57,6 +57,7 @@ public class MainMenuController implements Initializable{
     @FXML private Button btnStartRace;
     @FXML private Button btnSettings;
     @FXML private Button btnPractiseStart;
+    @FXML private Button btnPartyMode;
     @FXML Button noAIbtn;
     @FXML Button easyAIbtn;
     @FXML Button hardAIbtn;
@@ -120,6 +121,7 @@ public class MainMenuController implements Initializable{
 
     private Boolean isSinglePlayer = false;
     private AIDifficulty aiDifficulty = NO_AI;
+    private boolean isPartyMode = false;
 
     private String selectedCourse = "AC35-course.xml"; //default to the AC35
 
@@ -230,7 +232,9 @@ public class MainMenuController implements Initializable{
         clearTableSelection();
     }
 
-    @FXML private void backFromHost(){AnimationUtils.switchPaneFade(hostOptionsPane, onlinePane);
+    @FXML private void backFromHost(){
+        isPartyMode = false;
+        AnimationUtils.switchPaneFade(hostOptionsPane, onlinePane);
     }
 
     /**
@@ -457,6 +461,7 @@ public class MainMenuController implements Initializable{
         addButtonListeners(btnManual);
         addButtonListeners(btnSettings);
         addButtonListeners(btnControls);
+        addButtonListeners(btnPartyMode);
     }
 
     private void setLabelPromptAnimations(){
@@ -735,6 +740,11 @@ public class MainMenuController implements Initializable{
         soundFxOffImage.setVisible(soundFxIsMute);
         musicSlider.setValue(musicSliderValue);
         fxSlider.setValue(fxSliderValue);
+    }
+
+    @FXML private void loadPartyMode(){
+        isPartyMode = true;
+        loadHostOptionsPane();
     }
 
     /**
