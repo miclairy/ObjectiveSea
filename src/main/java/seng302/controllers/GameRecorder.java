@@ -9,7 +9,6 @@ import seng302.views.AvailableRace;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.nio.ByteBuffer;
 import java.util.*;
 
 import static seng302.data.registration.RegistrationType.REQUEST_RUNNING_GAMES;
@@ -30,7 +29,7 @@ public class GameRecorder implements Observer {
 
     public GameRecorder() throws IOException {
         packetBuilder = new ServerPacketBuilder();
-        connectionManager = new ConnectionManager(ConnectionUtils.getVmPort(), false);
+        connectionManager = new ConnectionManager(ConnectionUtils.getGameRecorderPort(), false);
         connectionManager.addObserver(this);
         System.out.println("Server: Waiting for races");
         Thread managerThread = new Thread(connectionManager);
@@ -56,7 +55,7 @@ public class GameRecorder implements Observer {
                 removeAvailableRace(arg);
             } else if (arg instanceof RegistrationType) {
                 if (arg.equals(REQUEST_RUNNING_GAMES)) {
-                    manageRegistration((ServerListener) observable);
+                    respondToRequestForGames((ServerListener) observable);
                 }
             } else if (arg instanceof AvailableRace) {
                 updateAvailableRace(((AvailableRace) arg));
@@ -66,22 +65,22 @@ public class GameRecorder implements Observer {
 
     /**
      * Runs through the entire list of avaliable races, updating the ones that have had changes
-     * @param race the new avaliable race
+     * @param newRace the new avaliable race
      */
-    private void updateAvailableRace(AvailableRace race){
+    private void updateAvailableRace(AvailableRace newRace){
         boolean updatedRace = false;
         for (AvailableRace runningRace : availableRaces){
-            if (Objects.equals(runningRace.getIpAddress(), race.getIpAddress())){
-                System.out.println("VmServer: Updating running race");
+            if (Objects.equals(runningRace.getIpAddress(), newRace.getIpAddress())){
+                System.out.println("Game Recorder: Updating running race");
                 updatedRace = true;
-                incrementNumberOfBoats(runningRace, race.getNumBoats());
+                updateNumberOfBoats(runningRace, newRace.getNumBoats());
             }
         }
-        int raceMapIndex = CourseName.getCourseIntFromName(race.mapNameProperty().getValue());
+        int raceMapIndex = CourseName.getCourseIntFromName(newRace.mapNameProperty().getValue());
         if (!updatedRace && raceMapIndex != -1) {
-            System.out.println("Game Recorder: Recording game on VM");
-            incrementNumberOfBoats(race, 1);
-            availableRaces.add(race);
+            System.out.println("Game Recorder: Recording new server");
+            updateNumberOfBoats(newRace, newRace.getNumBoats());
+            availableRaces.add(newRace);
         }
     }
 
@@ -90,11 +89,9 @@ public class GameRecorder implements Observer {
      * @param race the new race
      * @param numBoats the new number of boats in the race
      */
-    private void incrementNumberOfBoats(AvailableRace race, int numBoats){
+    private void updateNumberOfBoats(AvailableRace race, int numBoats){
         byte[] packet = race.getPacket();
-        for (int i = 0; i < 1; i ++) {
-            packet[HOST_GAME_CURRENT_PLAYERS.getStartIndex() + i] = (byte) (numBoats >> i * 8);
-        }
+        packet[HOST_GAME_CURRENT_PLAYERS.getStartIndex()] = (byte) numBoats;
     }
 
     /**
@@ -115,13 +112,12 @@ public class GameRecorder implements Observer {
     }
 
     /**
-     * Deal with the different types of registrations clients can attempt to connect with
-     * Currently ignores GHOST or TUTORIAL connection attempts.
+     * Respond to a request for running games
      * @param serverListener the serverListener with the clients socket
      */
-    private void manageRegistration(ServerListener serverListener) {
+    private void respondToRequestForGames(ServerListener serverListener) {
         connectionManager.addMainMenuConnection(nextHostID, serverListener.getSocket());
-        for(AvailableRace race : availableRaces){
+        for(AvailableRace race : availableRaces) {
             byte[] racePacket = packetBuilder.createGameRegistrationPacket(race.getPacket());
             connectionManager.sendToClient(nextHostID, racePacket);
         }

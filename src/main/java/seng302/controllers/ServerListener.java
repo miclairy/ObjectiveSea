@@ -89,7 +89,6 @@ public class ServerListener extends Receiver implements Runnable{
 
     private void recordHostGameMessage(byte[] body){
         AvailableRace race = createAvailableRace(body);
-        System.out.println("hosting");
         race.setPacket(body);
         setChanged();
         notifyObservers(race);

@@ -23,7 +23,7 @@ public class MainMenuClient extends Client {
 
     public MainMenuClient() throws ServerFullException, NoConnectionToServerException {
         this.packetBuilder = new ClientPacketBuilder();
-        setUpDataStreamReader(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
+        setUpDataStreamReader(ConnectionUtils.getGameRecorderIP(), ConnectionUtils.getGameRecorderPort());
         manageWaitingConnection();
         pollForRaces = true;
     }
@@ -59,20 +59,29 @@ public class MainMenuClient extends Client {
 
     /**
      * hands the updating of the available races array, removes
-     * races that no longer exist, keeps races that are still pollForRaces
+     * races that no longer exist, keeps races that are still running
      */
-    public void updateRaces(){
-        for(AvailableRace newRace : receivedRaces){
-            boolean foundRace = false;
-            for(AvailableRace oldRace : availableRaces){
-                if(newRace.getIpAddress().equals(oldRace.getIpAddress()) && newRace.getNumBoats() == oldRace.getNumBoats()){
-                    foundRace = true;
+    private void updateRaces(){
+        for(AvailableRace newRace : receivedRaces) {
+            Boolean updatedRace = false;
+            for (AvailableRace oldRace : availableRaces) {
+                if (oldRace.getIpAddress().equals(newRace.getIpAddress())) {
+                    updatedRace = true;
+                    oldRace.setNumBoats(newRace.getNumBoats());
                 }
             }
-            if(!foundRace){
+            if (!updatedRace) {
                 availableRaces.add(newRace);
             }
         }
+        removeDeadRaces();
+    }
+
+    /**
+     * Clears any races that were not in the last receivedRaces list
+     * from the availableRaces list
+     */
+    private void removeDeadRaces() {
         Iterator<AvailableRace> iter = availableRaces.iterator();
         while (iter.hasNext()) {
             AvailableRace race = iter.next();
@@ -81,9 +90,9 @@ public class MainMenuClient extends Client {
                 if (newRace.getIpAddress().equals(race.getIpAddress()) && newRace.getNumBoats() == race.getNumBoats()){
                     exists = true;
                 }
-                if(!exists){
-                    iter.remove();
-                }
+            }
+            if(!exists){
+                iter.remove();
             }
         }
     }
@@ -95,7 +104,7 @@ public class MainMenuClient extends Client {
     /**
      * queries the known VM address for any pollForRaces games
      */
-    public void checkForRaces(){
+    private void checkForRaces(){
         receivedRaces.clear();
         RegistrationType regoType = RegistrationType.REQUEST_RUNNING_GAMES;
         sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));

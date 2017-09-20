@@ -47,7 +47,7 @@ public class GameServer implements Runnable, Observer {
         connectionManager = new ConnectionManager(options.getPort(), true);
         connectionManager.addObserver(this);
         if (options.isMultiplayer()) {
-            Socket gameRecorderSocket = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
+            Socket gameRecorderSocket = new Socket(ConnectionUtils.getGameRecorderIP(), ConnectionUtils.getGameRecorderPort());
             gameRecorderConnection = new ClientSender(gameRecorderSocket);
         }
         setupNewRaceUpdater(options);
@@ -67,7 +67,6 @@ public class GameServer implements Runnable, Observer {
         raceUpdaterThread = new Thread(raceUpdater);
         raceUpdaterThread.setName("Race Updater");
         collisionManager = raceUpdater.getCollisionManager();
-        System.out.println("race updater running");
     }
 
     /**
@@ -114,7 +113,7 @@ public class GameServer implements Runnable, Observer {
             timesRun++;
         }
         System.out.println("Server: Shutting Down");
-        connectionManager.closeAllConnections();
+        initiateServerDisconnect();
     }
 
     /**

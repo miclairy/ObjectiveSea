@@ -147,7 +147,6 @@ public abstract class PacketBuilder {
         addFieldToByteArray(body, HOST_GAME_STATUS, 1);
         addFieldToByteArray(body, HOST_GAME_REQUIRED_PLAYERS, minParticipants);
         addFieldToByteArray(body, HOST_GAME_CURRENT_PLAYERS, currentPlayers);
-        System.out.println("Sending " + Arrays.toString(body) + " " + currentCourseIndex);
         return generatePacket(header, body);
     }
 
