@@ -1,5 +1,9 @@
 
 body{
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
 }
 .container-fluid{
 
@@ -109,10 +113,10 @@ body{
 }
 
 #tackGybeControl:hover{
-    opacity:0.7;
+    opacity: 0.9;
 }
 #tackGybeControl:active{
-    opacity:0.7;
+    opacity: 0.7;
 }
 
 #vmgControl{
@@ -133,10 +137,10 @@ body{
 }
 
 #vmgControl:hover{
-    opacity:0.7;
+    opacity: 0.9;
 }
 #vmgControl:active{
-    opacity:0.7;
+    opacity: 0.7;
 }
 
 #upwindControl{
@@ -155,7 +159,6 @@ body{
 }
 
 #downWindControl{
-
     -webkit-box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
     -moz-box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
     box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
@@ -169,16 +172,16 @@ body{
 
 }
 #downWindControl:hover{
-    opacity:0.75;
+    opacity: 0.9;
 }
 #downWindControl:active{
-    opacity:0.75;
+    opacity: 0.7;
 }
 #upwindControl:hover{
-    opacity:0.75;
+    opacity: 0.9;
 }
 #upwindControl:active{
-    opacity:0.75;
+    opacity: 0.7;
 }
 
 
@@ -190,25 +193,23 @@ body{
 
 }
 
-
-
 #sailsOutControl{
-    display: block;
-    border-radius: 2rem 2rem 2rem 2rem;
-    margin: 2rem 15% 0% 15%;
-    height: 40%;
-    border-style: solid;
-    border-width: 4px 4px 4px 4px;
-    border-color: white;
-    background-color: transparent;
-    -webkit-box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
-    -moz-box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
-    box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+display: block;
+border-radius: 2rem 2rem 2rem 2rem;
+margin: 2rem 15% 0% 15%;
+height: 40%;
+border-style: solid;
+border-width: 4px 4px 4px 4px;
+border-color: white;
+background-color: transparent;
+-webkit-box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+-moz-box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
 
 }
 
-#sailsOutControl:hover{
-    opacity:0.7;
+#sailsOutControl:hover {
+    opacity: 0.9
 }
 #sailsOutControl:active{
     opacity:0.7;
@@ -250,6 +251,10 @@ body{
     flex:auto !important;
 }
 
+.backgroundColor {
+    background-color: #54ca95;
+}
+
 #infoScreen{
     z-index: 3;
     width: 100%;
@@ -259,6 +264,10 @@ body{
     left:0;
     padding: 2rem;
     display: none;
+}
+
+.directionArrow {
+    color: #54ca95;
 }
 
 #infoScreenText{
