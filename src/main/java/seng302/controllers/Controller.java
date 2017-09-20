@@ -185,7 +185,6 @@ public class Controller implements Initializable, Observer {
 
         raceCompetitorOverview();
         startersOverlay.toFront();
-//        initDisplayDrag();
         initZoom();
     }
 
