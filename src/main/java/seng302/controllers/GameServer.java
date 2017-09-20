@@ -102,7 +102,7 @@ public class GameServer implements Runnable, Observer {
                 managerThread.setName("Connection Manager");
                 managerThread.start();
                 while (!raceUpdater.raceHasEnded()) {
-                    if (!raceUpdater.getRace().getCompetitors().isEmpty()) {
+                    if (!raceUpdater.getRace().getCompetitors().isEmpty() || options.getMode().equals(GameMode.PARTYGAME)) {
                         sendRaceUpdates();
                     }
                     Thread.sleep((long) (SECONDS_PER_UPDATE * 1000 / options.getSpeedScale()));
@@ -364,10 +364,12 @@ public class GameServer implements Runnable, Observer {
      */
     private void addSpectatorToRace(ServerListener serverListener) {
         RegistrationResponseStatus response = SPECTATOR_SUCCESS;
-        if (!raceUpdaterThread.isAlive()) {
-            response = RACE_UNAVAILABLE;
-        } else if (nextViewerID >= MAX_SPECTATORS) {
-            response = OUT_OF_SLOTS;
+        if(!options.getMode().equals(GameMode.PARTYGAME)){
+            if (!raceUpdaterThread.isAlive()) {
+                response = RACE_UNAVAILABLE;
+            } else if (nextViewerID >= MAX_SPECTATORS) {
+                response = OUT_OF_SLOTS;
+            }
         }
         byte[] packet = packetBuilder.createRegistrationResponsePacket(0, response);
         connectionManager.addConnection(nextViewerID, serverListener.getSocket());

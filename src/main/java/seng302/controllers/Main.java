@@ -17,6 +17,7 @@ import seng302.data.registration.ServerFullException;
 import seng302.data.registration.ServerRegistrationException;
 import seng302.models.AIDifficulty;
 import seng302.models.ClientOptions;
+import seng302.models.GameMode;
 import seng302.models.ServerOptions;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplaySwitcher;
@@ -183,6 +184,9 @@ public class Main extends Application {
      */
     public boolean startHostedRace(String course, Double speedScale, int numParticipants, ClientOptions clientOptions, int currentCourseIndex) throws Exception {
         ServerOptions serverOptions = new ServerOptions(speedScale, numParticipants);
+        if(clientOptions.getGameMode().equals(GameMode.PARTYGAME)){
+            serverOptions = new ServerOptions(speedScale, numParticipants, GameMode.PARTYGAME);
+        }
         serverOptions.setRaceXML(course);
 
         try{

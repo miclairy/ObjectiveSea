@@ -344,6 +344,9 @@ public class MainMenuController implements Initializable{
         Double speed = speedScaleSlider.getValue();
         Integer minCompetitors = (int) boatsInRaceSlider.getValue();
         ClientOptions clientOptions = new ClientOptions(GameMode.MULTIPLAYER);
+        if(isPartyMode){
+            clientOptions = new ClientOptions(GameMode.PARTYGAME);
+        }
         stopMainMenuClientThread();
         if(main.startHostedRace(currentCourseMap.getXML(), speed, minCompetitors, clientOptions, currentMapIndex)){
             timer.stop();

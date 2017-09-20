@@ -5,5 +5,5 @@ package seng302.models;
  * Enum to track the different types of GameModes we have
  */
 public enum GameMode {
-    TUTORIAL, PRACTICE, SINGLEPLAYER, MULTIPLAYER
+    TUTORIAL, PRACTICE, SINGLEPLAYER, MULTIPLAYER, PARTYGAME
 }
