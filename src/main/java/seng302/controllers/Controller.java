@@ -10,6 +10,7 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -141,6 +142,7 @@ public class Controller implements Initializable, Observer {
     private boolean hasHUDYMoved = false;
     private ArrayList<BoatDisplay> boatDisplayArrayList = new ArrayList<>();
     private BoatDisplay currentDisplayBoat;
+    private boolean dragging = false;
 
 
 
@@ -320,6 +322,8 @@ public class Controller implements Initializable, Observer {
                 }
             }
             if(checkHUDClick(event)) {
+                dragging = true;
+                headsUpDisplay.setCursor(Cursor.MOVE);
                 moveHUD = true;
                 DisplayUtils.externalTouchEvent = true;
             }
@@ -342,11 +346,18 @@ public class Controller implements Initializable, Observer {
         });
 
         canvasAnchor.setOnMouseReleased(event -> {
+            dragging = false;
+            headsUpDisplay.setCursor(Cursor.HAND);
             moveAnnotation = false;
             moveHUD = false;
-
             DisplayUtils.externalTouchEvent = false;
             DisplayUtils.externalDragEvent = false;
+        });
+
+        headsUpDisplay.setOnMouseMoved(event -> {
+            if(!dragging) {
+                headsUpDisplay.setCursor(Cursor.HAND);
+            }
         });
     }
 
