@@ -265,7 +265,7 @@ public class MainMenuController implements Initializable{
      * Allows user to host a game at the DEFAULT_PORT and current public IP
      * @throws Exception
      */
-    private void loadOfflinePlay(AIDifficulty aiDifficulty) throws Exception{
+    private void loadOfflinePlay() throws Exception{
         btnSinglePlay.setDisable(true);
         ClientOptions clientOptions = new ClientOptions(GameMode.SINGLEPLAYER);
         if(main.startLocalRace(currentCourseMap.getXML(), DEFAULT_PORT, false, clientOptions, aiDifficulty, GameMode.SINGLEPLAYER)){
