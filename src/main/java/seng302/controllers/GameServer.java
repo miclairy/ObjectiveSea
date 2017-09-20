@@ -299,7 +299,7 @@ public class GameServer implements Runnable, Observer {
     private void updateGameRecorder(ServerOptions options, String publicIp, int currentCourseIndex) {
         byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(options.getSpeedScale(), options.getMinParticipants(),
                 options.getPort(), publicIp, currentCourseIndex, raceUpdater.getRace().getCompetitors().size());
-        System.out.println("GameServer: Updating VM" );
+        System.out.println("GameServer: Send updates to Game Recorder" );
         gameRecorderConnection.sendToServer(registerGamePacket);
     }
 
@@ -392,7 +392,7 @@ public class GameServer implements Runnable, Observer {
 
     public void initiateServerDisconnect() {
         System.out.println("Client: Cancelling race");
-        byte[] gameClosePacket = packetBuilder.createGameCancelPacket(GAME_CANCEL);
+        byte[] gameClosePacket = packetBuilder.createGameCancelPacket(options.getPort());
         if (gameRecorderConnection != null) {
             gameRecorderConnection.sendToServer(gameClosePacket);
             gameRecorderConnection.closeConnection();

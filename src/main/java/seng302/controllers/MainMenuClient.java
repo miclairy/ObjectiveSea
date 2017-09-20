@@ -65,7 +65,7 @@ public class MainMenuClient extends Client {
         for(AvailableRace newRace : receivedRaces) {
             Boolean updatedRace = false;
             for (AvailableRace oldRace : availableRaces) {
-                if (oldRace.getIpAddress().equals(newRace.getIpAddress())) {
+                if (oldRace.equals(newRace)) {
                     updatedRace = true;
                     oldRace.setNumBoats(newRace.getNumBoats());
                 }
@@ -87,7 +87,7 @@ public class MainMenuClient extends Client {
             AvailableRace race = iter.next();
             boolean exists = false;
             for(AvailableRace newRace : receivedRaces){
-                if (newRace.getIpAddress().equals(race.getIpAddress()) && newRace.getNumBoats() == race.getNumBoats()){
+                if (newRace.equals(race) && newRace.getNumBoats() == race.getNumBoats()){
                     exists = true;
                 }
             }

@@ -185,10 +185,13 @@ public class ServerListener extends Receiver implements Runnable{
      * @param body body of the packet of the game to remove
      */
     private void removeHostedGame(byte[] body){
-        System.out.println("VmServer: Received remove game message");
+        System.out.println("GameRecorder: Received remove game message");
         long serverIpLong = byteArrayRangeToLong(body, HOST_GAME_IP.getStartIndex(), HOST_GAME_IP.getEndIndex());
         String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
+        int port = byteArrayRangeToInt(body, HOST_GAME_PORT.getStartIndex(), HOST_GAME_PORT.getEndIndex());
+        AvailableRace raceToRemove = new AvailableRace("", 0, port, serverIP);
+        raceToRemove.setDeleted(true);
         setChanged();
-        notifyObservers(serverIP);
+        notifyObservers(raceToRemove);
     }
 }
