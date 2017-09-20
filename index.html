@@ -65,7 +65,6 @@
               <div class="col-md-4 statBox">
                   <div class="statField center" id="boatSpeed">35kn</div>
                   <div class="statSubtitle">boat speed</div>
-
               </div>
               <div class="col-md-4 statBox">
                   <div class="statField center" id="placing">2nd</div>
@@ -75,16 +74,9 @@
               <div class="col-md-4 statBox noBorder">
                   <div class="statField center" id="boatHealth">50%</div>
                   <div class="statSubtitle">health</div>
-
               </div>
           </div>
-
-
-
         </div>
-
-
-
       </div>
       <div class="row">
         <div class="col-md-6" id="vmgControl">
@@ -101,7 +93,7 @@
           </div>
         </div>
         <div class="col-md-4" id="sailsControls">
-          <div class="row" id="sailsOutControl">
+          <div class="row" id="sailsOutControl" onclick="loadInfoScreen()">
             <div class="buttonText center">Change Sails</div>
           </div>
         </div>
@@ -111,6 +103,14 @@
           </div>
         </div>
       </div>
+
+
+      <div id="infoScreen">
+        <div id="infoScreenText" class="center">You have been disqualified from the race.</div>
+      </div>
+
+
+
     </div>
   </div>
 </body>

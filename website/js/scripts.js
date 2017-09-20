@@ -37,9 +37,16 @@ function loadControls(){
     $("#controls").fadeIn(1000);
 }
 
+function loadInfoScreen(){
+    $("#infoScreenText").html("This is an info screen. It can be used to tell user they are disqualified or that the server broke");
+    $("#infoScreen").fadeIn(1000);
+}
+
 function changeColor(color){
     $("#controlsPage").css("background-color", color);
     $(".directionArrow").css("color", color);
+    $("#infoScreen").css("background-color", color);
+
 
 }
 
