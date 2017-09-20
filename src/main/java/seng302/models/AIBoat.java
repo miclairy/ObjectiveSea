@@ -77,6 +77,7 @@ public class AIBoat extends Boat{
         Integer lastRoundedIndex = getLastRoundedMarkIndex();
         if(lastRoundedIndex == courseOrder.size() - 1){
             setStatus(BoatStatus.FINISHED);
+            setFinalTargetCoordinate();
             return;
         }
         CompoundMark currentMark = courseOrder.get(getLastRoundedMarkIndex()+1);
@@ -91,6 +92,15 @@ public class AIBoat extends Boat{
         } else {
             addMarkRoundingCoordinates(lastRoundedIndex+1);
         }
+    }
+
+    /**
+     * Sets the final coordinate for the AI to be some distance behind the finish line
+     */
+    private void setFinalTargetCoordinate() {
+        nextCoordinates.clear();
+        CompoundMark finishLine = course.getFinishLine();
+        nextCoordinates.add(finishLine.getPosition().coordAt(1, getHeading()));
     }
 
     /**
@@ -281,7 +291,8 @@ public class AIBoat extends Boat{
      * @param timePassed time passed since last update
      * @param course the course the boat is racing on
      */
-    public void updateLocation(double timePassed, Course course) {
+    @Override
+    public void updateLocation(Double timePassed, Course course) {
         double distanceGained = timePassed * getCurrentSpeed() / (60 * 60);
         Coordinate targetPosition = nextCoordinates.get(targetPositionIndex);
         distanceGained = Math.min(distanceGained, currentPosition.greaterCircleDistance(targetPosition));
@@ -326,7 +337,8 @@ public class AIBoat extends Boat{
      * @param raceSecondsPassed time passed since last update in seconds
      * @param course the course the boat is racing on
      */
-    public void move(double raceSecondsPassed, Course course) {
+    @Override
+    public void move(Double raceSecondsPassed, Course course) {
         updateTargetHeading();
         updateBoatHeading(raceSecondsPassed);
         avoidFutureCollision();
