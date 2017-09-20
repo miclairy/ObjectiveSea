@@ -6,12 +6,40 @@
 // });
 
 
-function loadControls(){
+function submitButtonPressed(){
 
-  console.log("hello");
+  //TODO: authenitifaction and game connection logic goes here
+
+    if(true){
+        initControls("Emerites Team New Zealand");
+        changeColor("skyblue");
+        loadControls();
+    }
+
+}
+
+function updateStats(speed, placing, health){
+    console.log("updating");
+    $("#boatSpeed").html(speed+"kn");
+    $("#placing").html(placing);
+    $("#boatHealth").html(health+"%");
+}
+
+function initControls(teamName){
+    $("#boatNameText").html(teamName);
+    $("#boatSpeed").html("0kn");
+    $("#placing").html("-");
+    $("#boatHealth").html("100%");
+}
+
+function loadControls(){
   $("#codeForm").fadeOut(1000);
     $("#controls").fadeIn(1000);
+}
 
+function changeColor(color){
+    $("#controlsPage").css("background-color", color);
+    $(".directionArrow").css("color", color);
 
 }
 

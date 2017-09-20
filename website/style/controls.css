@@ -249,10 +249,3 @@ body{
 .col-md-6{
     flex:auto !important;
 }
-
-.backgroundColor{
-    background-color: #f5deb3;
-}
-.directionArrow{
-    color: #f5deb3;
-}
