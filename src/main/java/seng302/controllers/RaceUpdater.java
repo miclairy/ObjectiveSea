@@ -213,8 +213,13 @@ public class RaceUpdater implements Runnable {
             if(boat instanceof AIBoat){
                 if(millisBeforeStart < AIBoat.START_MOVING_TIME_MS){
                     AIBoat aiBoat = (AIBoat) boat;
-                    aiBoat.setSailsIn(false);
-                    aiBoat.move(raceSecondsPassed, race.getCourse());
+                    if(aiBoat.getStatus() != BoatStatus.FINISHED) {
+                        aiBoat.setSailsIn(false);
+                        aiBoat.move(raceSecondsPassed, race.getCourse());
+                    } else {
+                        aiBoat.setSailsIn(true);
+                        aiBoat.move(raceSecondsPassed, race.getCourse());
+                    }
                 }
             } else {
                 boat.move(raceSecondsPassed, race.getCourse());

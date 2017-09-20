@@ -5,6 +5,7 @@ import seng302.controllers.CollisionManager;
 import seng302.controllers.RoundingMechanics;
 import seng302.data.BoatStatus;
 import seng302.data.RoundingSide;
+import seng302.utilities.DisplayUtils;
 import seng302.utilities.MathUtils;
 import seng302.utilities.PolarReader;
 
@@ -55,7 +56,7 @@ public class AIBoat extends Boat{
      */
     public void checkRounding() {
         Coordinate targetPosition = nextCoordinates.get(targetPositionIndex);
-        if(getCurrentPosition().greaterCircleDistance(targetPosition) < PASSING_DELTA){
+        if(getCurrentPosition().greaterCircleDistance(targetPosition) < PASSING_DELTA && getStatus() != BoatStatus.FINISHED){
             targetPositionIndex++;
             currentlyAvoiding = false;
             if(targetPositionIndex == nextCoordinates.size()){
@@ -76,13 +77,6 @@ public class AIBoat extends Boat{
         List<CompoundMark> courseOrder = course.getCourseOrder();
         Integer lastRoundedIndex = getLastRoundedMarkIndex();
         if(lastRoundedIndex == courseOrder.size() - 1){
-            Mark nextMark = courseOrder.get(getLastRoundedMarkIndex()).getMark1(); // gets mark of finish line
-            double lon = nextMark.getPosition().getLon() + 0.01;
-            double lat = nextMark.getPosition().getLat() + 0.01;
-            nextCoordinates.clear();
-            nextCoordinates.add(new Coordinate(lat, lon));
-            System.out.println(getCurrentPosition().getLat() + " " + getCurrentPosition().getLon());
-            System.out.println(lat + " " + lon);
             setStatus(BoatStatus.FINISHED);
             return;
         }
@@ -328,6 +322,15 @@ public class AIBoat extends Boat{
         }
     }
 
+    public void checkFinished(double timePassed, Course course) {
+        if(getStatus() == BoatStatus.FINISHED) {
+            double distanceGained = timePassed * getCurrentSpeed() / (60 * 60);
+            Coordinate newPos = currentPosition.coordAt(distanceGained, heading);
+            setPosition(new Coordinate(newPos.getLat(), newPos.getLon()));
+            setCurrentVMG(calculateVMGToMark(course));
+        }
+    }
+
     /**
      * Updates the location of a given boat to be displayed to the clients
      * @param raceSecondsPassed time passed since last update in seconds
@@ -339,5 +342,6 @@ public class AIBoat extends Boat{
         avoidFutureCollision();
         updateLocation(raceSecondsPassed, course);
         checkRounding();
+        checkFinished(raceSecondsPassed, course);
     }
 }
