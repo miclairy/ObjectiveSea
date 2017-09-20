@@ -174,7 +174,7 @@ public class Race extends Observable{
         Collections.sort(raceOrder);
         for (int i = 0; i < raceOrder.size(); i++) {
             Boat boat = raceOrder.get(i);
-            System.out.println(boat.getLeg());
+//            System.out.println(boat.getLeg());
             boat.setCurrPlacing(i + 1);
         }
     }
