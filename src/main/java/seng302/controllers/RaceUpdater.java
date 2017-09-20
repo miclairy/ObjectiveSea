@@ -5,7 +5,6 @@ import seng302.data.RaceStatus;
 import seng302.data.RaceVisionXMLParser;
 import seng302.models.*;
 import seng302.utilities.MathUtils;
-import seng302.utilities.PolarReader;
 import seng302.utilities.TimeUtils;
 
 import java.text.DateFormat;
@@ -221,7 +220,7 @@ public class RaceUpdater implements Runnable {
                         aiBoat.move(raceSecondsPassed, race.getCourse());
                     } else {
                         aiBoat.setSailsIn(true);
-                        aiBoat.move(raceSecondsPassed, race.getCourse());
+                        boat.updateLocation(raceSecondsPassed, race.getCourse());
                     }
                 }
             } else {
