@@ -11,7 +11,6 @@ body{
     padding-right: 0px !important;
     padding-left: 0px !important;
     margin: 0;
-    background-color: #71d3f7;
 }
 
 #header{
@@ -191,12 +190,10 @@ body{
 
 }
 
-.directionArrow{
-    color: #71d3f7;
-}
+
 
 #sailsOutControl{
-
+    display: block;
     border-radius: 2rem 2rem 2rem 2rem;
     margin: 2rem 15% 0% 15%;
     height: 40%;
@@ -249,4 +246,13 @@ body{
     font-size: 0.8rem;
 }
 
+.col-md-6{
+    flex:auto !important;
+}
 
+.backgroundColor{
+    background-color: #f5deb3;
+}
+.directionArrow{
+    color: #f5deb3;
+}
