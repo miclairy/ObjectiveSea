@@ -60,7 +60,7 @@
 
 #btnPartyMode{
     -fx-padding: 10 153 10 25;
-    -fx-background-image: url('/graphics/hostArrow.png');
+    -fx-background-image: url('/graphics/partyArrow.png');
 }
 
 .btnSelection{
