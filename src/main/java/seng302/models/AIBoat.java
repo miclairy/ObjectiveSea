@@ -60,8 +60,8 @@ public class AIBoat extends Boat{
             currentlyAvoiding = false;
             if(targetPositionIndex == nextCoordinates.size()){
                 targetPositionIndex = 0;
-                setNextRoundingCoordinates();
                 setLastRoundedMarkIndex(getLastRoundedMarkIndex()+1);
+                setNextRoundingCoordinates();
             }
         }
     }

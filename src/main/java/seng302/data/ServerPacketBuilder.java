@@ -68,8 +68,7 @@ public class ServerPacketBuilder extends PacketBuilder {
         addFieldToByteArray(body, MARK_BOAT_STATUS, boat.getStatus().getValue());
         addFieldToByteArray(body, ROUNDING_SIDE, 0); //todo present correct side
 
-        CompoundMark lastRoundedMark = boat.getLastRoundedMarkIndex() < course.getCourseOrder().size() ?
-                course.getCourseOrder().get(boat.getLastRoundedMarkIndex()) : course.getCourseOrder().get(course.getCourseOrder().size() - 1);
+        CompoundMark lastRoundedMark = course.getCourseOrder().get(boat.getLastRoundedMarkIndex());
         if (lastRoundedMark.hasTwoMarks()) {
             addFieldToByteArray(body, MARK_TYPE, GATE_TYPE);
         } else {

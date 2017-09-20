@@ -211,7 +211,6 @@ public class RaceUpdater implements Runnable {
                 boat.setSailsIn(true);
             }
             adjustSpeed(boat);
-            //TODO: Proper way to do this is to create abstract boat class that both Boat and AIBoat inherits from
             if(boat instanceof AIBoat){
                 if(millisBeforeStart < AIBoat.START_MOVING_TIME_MS){
                     AIBoat aiBoat = (AIBoat) boat;
