@@ -5,6 +5,8 @@
 //
 // });
 
+var insults = ["probably never play this game again.", "No one has ever sailed as badly as you just did.", "you suck.", "rookie.",
+    "better luck next time. Not that any of your friends will let you sail with them again.", "you died.", "Shutting down device"]
 
 function submitButtonPressed(){
 
@@ -38,7 +40,8 @@ function loadControls(){
 }
 
 function loadInfoScreen(){
-    $("#infoScreenText").html("This is an info screen. It can be used to tell user they are disqualified or that the server broke");
+    var rand = insults[Math.floor(Math.random() * insults.length)];
+    $("#infoScreenText").html(rand);
     $("#infoScreen").fadeIn(1000);
 }
 
