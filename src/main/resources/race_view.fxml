@@ -135,7 +135,7 @@
                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                        </columnResizePolicy>
                    </TableView>
-            <VBox fx:id="headsUpDisplay" layoutX="1775.0" opacity="0.0" prefHeight="146.0" prefWidth="160.0" visible="false" AnchorPane.leftAnchor="150.0" AnchorPane.topAnchor="10.0" />
+            <VBox fx:id="headsUpDisplay" layoutX="150.0" layoutY="10.0" opacity="0.0" prefHeight="146.0" prefWidth="160.0" visible="false" />
                    <GridPane fx:id="nextMarkGrid" layoutX="30.0" layoutY="886.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="580.0">
                        <columnConstraints>
                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
