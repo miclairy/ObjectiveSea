@@ -428,6 +428,8 @@ public class Controller implements Initializable, Observer {
         canvasAnchor.setOnMouseClicked(event -> {
             if(checkHUDClick(event)) {
                 if (event.getClickCount() == 2) {
+                    hasHUDXMoved = false;
+                    hasHUDYMoved = false;
                     headsUpDisplay.relocate(150, 10);
                 }
             }
