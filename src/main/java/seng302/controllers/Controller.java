@@ -405,6 +405,7 @@ public class Controller implements Initializable, Observer {
                 mapImageView.setVisible(true);
                 nextMarkCircle.setVisible(false);
                 DisplayUtils.resetOffsets();
+                selectionController.setTrackingPoint(false);
             }
             raceViewController.redrawCourse();
             raceViewController.redrawBoatPaths();
