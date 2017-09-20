@@ -11,7 +11,7 @@ public class ServerOptions {
 
     private final String DEFAULT_COURSE = "AC35-course.xml";
     private final Double DEFAULT_SPEED = 15.0;
-    private final Integer DEFAULT_PORT = 2828;
+    private final Integer DEFAULT_PORT = ConnectionUtils.DEFAULT_GAME_PORT;
     private Integer MAX_PARTICIPANTS = 6;
 
     private Double speedScale;
