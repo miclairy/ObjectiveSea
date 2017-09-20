@@ -1,8 +1,14 @@
 package seng302.controllers;
 
+import seng302.data.RoundingSide;
 import seng302.models.*;
 
 import java.awt.geom.Line2D;
+import java.util.ArrayList;
+import java.util.List;
+
+import static seng302.data.RoundingSide.PORT;
+import static seng302.data.RoundingSide.STBD;
 
 /**
  * Created by cjd137 on 2/08/17.
@@ -121,10 +127,12 @@ public class RoundingMechanics {
         return !nextCompoundMarkDir.equals(prevMarkDir);
     }
 
-    public static void boatHeadingToMark(Boat boat, CompoundMark currentMark, CompoundMark previousMark, CompoundMark nextMark){
+    public static boolean boatHeadingToMark(Boat boat, CompoundMark currentMark, CompoundMark previousMark, CompoundMark nextMark){
         if(RoundingMechanics.boatPassedMark(boat, currentMark, previousMark.getPosition(), nextMark.getPosition())) {
             boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
+            return true;
         }
+        return false;
     }
 
     /**
@@ -134,24 +142,57 @@ public class RoundingMechanics {
      * @param previousMark last course feature the boat passed
      * @param nextMark course feature the boat is heading to
      */
-    public static void boatHeadingToGate(Boat boat, CompoundMark currentMark, CompoundMark previousMark, CompoundMark nextMark){
+    public static boolean boatHeadingToGate(Boat boat, CompoundMark currentMark, CompoundMark previousMark, CompoundMark nextMark){
         if(boat.isInGate()){
             if(boatPassedThroughCompoundMark(boat, currentMark, previousMark.getPosition(), false)){
                 boat.setInGate(false);
+                return true;
             } else if(!nextMark.isFinishLine() && boatPassedThroughExternalGate(boat, currentMark, previousMark.getPosition())){
                 boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
                 boat.setInGate(false);
+                return true;
             }
         } else {
             if(boatPassedThroughCompoundMark(boat, currentMark, previousMark.getPosition(), true)){
                 if (nextCompoundMarkAfterGate(nextMark, currentMark, previousMark)) {
                     boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
                     boat.setInGate(false);
+                    return true;
                 } else{
                     boat.setInGate(true);
+                    return true;
                 }
             }
         }
+        return false;
     }
 
+
+    /**
+     * Generates a ordered list of three coordinates to round a single mark
+     * @param mark The mark to be rounded
+     * @param heading The heading toward the mark
+     * @param nextHeading The heading from the mark to the next mark
+     * @param roundingSide The rounding side (PORT or STBD) for the mark
+     * @param distanceFromMark The rounding distance from the mark
+     * @return A list of three coordinates in the order of for a boat to round the mark
+     */
+    public static List<Coordinate> markRoundingCoordinates(Mark mark, Double heading, Double nextHeading, RoundingSide roundingSide, Double distanceFromMark){
+        if(roundingSide == STBD){
+            distanceFromMark = -distanceFromMark;
+        }
+
+        Coordinate firstCoordinate = mark.getPosition().coordAt(distanceFromMark, (heading + 90));
+        Coordinate finalCoordinate = mark.getPosition().coordAt(distanceFromMark, (nextHeading + 90));
+
+        Double interpolatedHeading = firstCoordinate.headingToCoordinate(finalCoordinate);
+        Coordinate middleCoordinate = mark.getPosition().coordAt(distanceFromMark, (interpolatedHeading + 90));
+
+        List<Coordinate> positions = new ArrayList<>();
+        positions.add(firstCoordinate);
+        positions.add(middleCoordinate);
+        positions.add(finalCoordinate);
+        return positions;
+
+    }
 }

@@ -6,12 +6,15 @@ import seng302.models.Boat;
 import seng302.models.Race;
 import seng302.utilities.DisplaySwitcher;
 import seng302.utilities.GameSounds;
+import seng302.views.AvailableRace;
 
+import java.util.Iterator;
 import java.util.Observable;
 import java.util.Observer;
 
 /**
  * Created by cjd137 on 16/08/17.
+ *
  */
 public class SoundController implements Runnable {
 
@@ -20,7 +23,7 @@ public class SoundController implements Runnable {
     private boolean firstPlaceTaken = false;
     private boolean lastPlace = false;
     private int clientID;
-    private Race race = Client.getRace();
+    private Race race = GameClient.getRace();
     private int noOfBoats = race.getCompetitors().size();
     private boolean running;
 
@@ -70,7 +73,7 @@ public class SoundController implements Runnable {
 
     /**
      * When boat hits another boat, boat damage sound and hitting boat sounds are played
-     * @param boat
+     * @param boat boat that has been hit
      */
     public void hasHitBoat(Boat boat) {
         if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 5000) && boat.isBoatCollideSound()) {
@@ -88,7 +91,7 @@ public class SoundController implements Runnable {
 
     /**
      * When boat hits a mark, boat damage sound and hitting a mark sound plays
-     * @param boat
+     * @param boat boat that has hit a mark
      */
     public void hasHitMark(Boat boat) {
         if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 5000) && boat.isMarkCollideSound()) {
@@ -108,7 +111,7 @@ public class SoundController implements Runnable {
 
     /**
      * When a boat is out of bounds, boat damage sound and boundary sound plays
-     * @param boat
+     * @param boat boat that is out of bounds
      */
     private void isOutOfBounds(Boat boat){
         if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 5000) && boat.isOutOfBoundsSound()) {
@@ -129,7 +132,9 @@ public class SoundController implements Runnable {
     @Override
     public void run() {
         while(running) {
-            for (Boat boat : race.getCompetitors()) {
+            Iterator<Boat> iter = race.getCompetitors().iterator();
+            while (iter.hasNext()) {
+                Boat boat = iter.next();
                 initialReadySound();
                 checkPlacing(boat);
                 hasHitBoat(boat);

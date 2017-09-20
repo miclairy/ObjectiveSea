@@ -1,16 +1,15 @@
 package seng302.data;
 
-import seng302.controllers.Controller;
-import seng302.controllers.SoundController;
 import seng302.data.registration.RegistrationResponse;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.models.Boat;
 import seng302.models.Race;
+import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.TimeUtils;
+import seng302.views.AvailableRace;
 
 import java.io.*;
-import java.net.ConnectException;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,15 +23,11 @@ import static seng302.data.AC35StreamXMLMessage.*;
  * Created on 13/04/17.
  */
 public class ClientListener extends Receiver implements Runnable{
-
-    private Socket clientSocket;
-    private InputStream dataStream;
     private String sourceAddress;
     private int sourcePort;
     private Race race;
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumbers = new HashMap<>();
-    private final Integer SOCKET_TIMEOUT_MS = 5000;
-    private boolean hasConnectionFailed = false;
+
 
     public ClientListener(String sourceAddress, int sourcePort){
         this.sourceAddress = sourceAddress;
@@ -49,22 +44,8 @@ public class ClientListener extends Receiver implements Runnable{
      */
     @Override
     public void run(){
-        if(setUpConnection()) readData();
-    }
-
-    /**
-     * Sets up the connection to the data source by creating a socket and creates a InputStream from the socket.
-     * returns whether connection was successful
-     */
-    boolean setUpConnection() {
-        try {
-            clientSocket = new Socket(sourceAddress, sourcePort);
-            clientSocket.setSoTimeout(SOCKET_TIMEOUT_MS);
-            dataStream = clientSocket.getInputStream();
-            return true;
-        } catch (IOException e) {
-            hasConnectionFailed = true;
-            return false;
+        if(setUpConnection(sourceAddress, sourcePort)) {
+            readData();
         }
     }
 
@@ -112,31 +93,28 @@ public class ClientListener extends Receiver implements Runnable{
         xmlBody = xmlBody.trim();
         InputStream xmlInputStream = new ByteArrayInputStream(xmlBody.getBytes());
         RaceVisionXMLParser raceVisionXMLParser = new RaceVisionXMLParser();
-        //Taken out since the new stream sends xmls not in order
-//        if (xmlSequenceNumbers.get(xmlSubtype) < xmlSequenceNumber) {
-            xmlSequenceNumbers.put(xmlSubtype, xmlSequenceNumber);
-            if (xmlSubtype == REGATTA_XML_MESSAGE) {
-                System.out.printf("Client: New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
-                raceVisionXMLParser.importRegatta(xmlInputStream, race);
-            } else if (xmlSubtype == RACE_XML_MESSAGE) {
-                System.out.printf("Client: New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
-                if (race != null) {
-                    setChanged();
-                    Race newRace = raceVisionXMLParser.importRace(xmlInputStream);
-                    notifyObservers(newRace);
-                } else {
-                    setRace(raceVisionXMLParser.importRace(xmlInputStream));
-                }
-            } else if (xmlSubtype == BOAT_XML_MESSAGE) {
-                System.out.printf("Client: New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
-                if(race.getCompetitors().size() == 0){
-                    List<Boat> competitors = raceVisionXMLParser.importStarters(xmlInputStream);
-                    race.setCompetitors(competitors);
-                    setChanged();
-                    notifyObservers(competitors);
-                }
+        xmlSequenceNumbers.put(xmlSubtype, xmlSequenceNumber);
+        if (xmlSubtype == REGATTA_XML_MESSAGE) {
+            System.out.printf("Client: New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
+            raceVisionXMLParser.importRegatta(xmlInputStream, race);
+        } else if (xmlSubtype == RACE_XML_MESSAGE) {
+            System.out.printf("Client: New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
+            if (race != null) {
+                setChanged();
+                Race newRace = raceVisionXMLParser.importRace(xmlInputStream);
+                notifyObservers(newRace);
+            } else {
+                setRace(raceVisionXMLParser.importRace(xmlInputStream));
             }
-//        }
+        } else if (xmlSubtype == BOAT_XML_MESSAGE) {
+            System.out.printf("Client: New Boat XML Received, Sequence No: %d\n", xmlSequenceNumber);
+            if(race.getCompetitors().size() == 0){
+                List<Boat> competitors = raceVisionXMLParser.importStarters(xmlInputStream);
+                race.setCompetitors(competitors);
+                setChanged();
+                notifyObservers(competitors);
+            }
+        }
     }
 
     /**
@@ -185,7 +163,7 @@ public class ClientListener extends Receiver implements Runnable{
      * corresponding method. Ignores the message if the message type is not needed.
      */
     private void readData(){
-        DataInput dataInput = new DataInputStream(dataStream);
+        DataInput dataInput = new DataInputStream(getDataStream());
         Boolean serverRunning = true;
         while(serverRunning) {
             try {
@@ -226,20 +204,28 @@ public class ClientListener extends Receiver implements Runnable{
                                     case BOAT_STATE_MESSAGE:
                                         parseBoatStateMessage(body);
                                         break;
+                                    case HOST_GAME_MESSAGE:
+                                        parseHostedGameMessage(body);
+                                        break;
                                 }
                             }
                     }
                 } else {
                     System.err.println("Incorrect CRC. Message Ignored.");
                 }
-
             } catch (IOException e) {
-                if(!race.isTerminated()){
-                    race.terminateRace();
-                    race.setAbruptEnd(true);
+                if(race != null){
+                    if(!race.isTerminated()){
+                        race.terminateRace();
+                        race.setAbruptEnd(true);
+                    }
                 }
-                serverRunning = false;
-                System.out.println("Client: disconnected from Server");
+                Socket socket = getSocket();
+                if (!socket.isClosed()){
+                    serverRunning = false;
+                    e.printStackTrace();
+                    System.out.println("Client: disconnected from Server");
+                }
             }
         }
     }
@@ -316,6 +302,10 @@ public class ClientListener extends Receiver implements Runnable{
         race.setCurrentTimeInEpochMs(currentTime);
     }
 
+    /**
+     * strips yacht event data from a given body of a packet and updates a boat
+     * @param body the body of a packet containing the data
+     */
     private void parseYachtEventMessage(byte[] body) {
         int eventID = byteArrayRangeToInt(body, EVENT_ID.getStartIndex(), EVENT_ID.getEndIndex());
         int boatID = byteArrayRangeToInt(body, DESTINATION_SOURCE_ID.getStartIndex(), DESTINATION_SOURCE_ID.getEndIndex());
@@ -358,28 +348,23 @@ public class ClientListener extends Receiver implements Runnable{
         race.updateMarkRounded(sourceID, markIndex, time);
     }
 
+    /**
+     * closes the running sockets and stream when the client disconnectes
+     */
+    @Override
     public void disconnectClient() {
         try {
-            clientSocket.close();
-            dataStream.close();
+            getSocket().close();
+            getDataStream().close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-    public Socket getClientSocket() {
-        return clientSocket;
-    }
-
     public void setRace(Race race) {
         this.race = race;
     }
 
     public Race getRace() {
         return race;
-    }
-
-    public boolean isHasConnectionFailed() {
-        return hasConnectionFailed;
     }
 }

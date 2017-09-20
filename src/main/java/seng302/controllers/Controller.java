@@ -43,10 +43,15 @@ import seng302.views.HeadsupDisplay;
 import java.io.*;
 
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.*;
 
+import static java.lang.Math.abs;
 import static javafx.collections.FXCollections.observableArrayList;
 import static javafx.scene.input.KeyCode.*;
+import static seng302.utilities.DisplayUtils.DRAG_TOLERANCE;
+import static seng302.utilities.DisplayUtils.isOutsideBounds;
+import static seng302.utilities.DisplayUtils.zoomLevel;
 
 public class Controller implements Initializable, Observer {
 
@@ -130,6 +135,10 @@ public class Controller implements Initializable, Observer {
     private ClientOptions options;
     private DisplaySwitcher displaySwitcher;
     private boolean scoreboardVisible = true;
+    private boolean moveAnnotation = false;
+    private ArrayList<BoatDisplay> boatDisplayArrayList = new ArrayList<>();
+    private BoatDisplay currentDisplayBoat;
+
 
 
     private final double FOCUSED_ZOOMSLIDER_OPACITY = 0.8;
@@ -147,7 +156,7 @@ public class Controller implements Initializable, Observer {
         anchorWidth = canvasAnchor.getWidth();
         anchorHeight = canvasAnchor.getHeight();
 
-        race = Client.getRace();
+        race = GameClient.getRace();
         race.addObserver(this);
         Course course = race.getCourse();
         course.initCourseLatLon();
@@ -206,27 +215,6 @@ public class Controller implements Initializable, Observer {
     }
 
     /**
-     * gets users public ip address from AWS ping servers.
-     *
-     * @return the IP address or regatta name if not found
-     */
-    private String getPublicIp() {
-        try {
-            URL ipURL = new URL("http://checkip.amazonaws.com");
-            BufferedReader in = new BufferedReader(new InputStreamReader(
-                    ipURL.openStream()));
-            String ip = in.readLine(); //you get the IP as a String
-            if (ConnectionUtils.IPRegExMatcher(ip)) {
-                return ("IP: " + ip);
-            } else {
-                return race.getRegattaName();
-            }
-        } catch (Exception e) {
-            return race.getRegattaName();
-        }
-    }
-
-    /**
      * shows a tutorial overlay on the screen
      * @param title the title shown in the overlay
      * @param content the tutorial content shown in the overlay
@@ -251,7 +239,17 @@ public class Controller implements Initializable, Observer {
         this.options = options;
         this.scene = scene;
         if (this.options.isHost()) {
-            startersOverlayTitle.setText(getPublicIp());
+            String ip = null;
+            try {
+                ip = ConnectionUtils.getPublicIp();
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+            if (Objects.equals(ip, null)) {
+                startersOverlayTitle.setText(race.getRegattaName());
+            } else {
+                startersOverlayTitle.setText("IP: " + ip);
+            }
         } else {
             startersOverlayTitle.setText(race.getRegattaName());
         }
@@ -262,6 +260,7 @@ public class Controller implements Initializable, Observer {
         initHiddenScoreboard();
         raceViewController.updateWindArrow();
         raceViewController.start();
+
     }
 
     @FXML public void exitRunningRace() {
@@ -275,6 +274,65 @@ public class Controller implements Initializable, Observer {
     public void exitTerminatedRace() {
         displaySwitcher.loadMainMenu();
     }
+
+    public void addDisplayBoat(BoatDisplay boatDisplay) {
+        boatDisplayArrayList.add(boatDisplay);
+    }
+
+    private static class Delta {
+        public static double x;
+        public static double y;
+    }
+
+    /**
+     * Takes the displayBoat and makes the annotation of that boat draggable. Via mouse or touch press.
+     */
+    public void makeAnnoDraggable() {
+
+        canvasAnchor.setOnMousePressed(event -> {
+            for(BoatDisplay boatDisplay : boatDisplayArrayList) {
+
+                VBox boatAnnotation = boatDisplay.getAnnotation();
+
+                double annotationXPosition = event.getX() - boatAnnotation.getLayoutX();
+                double annotationYPosition = event.getY() - boatAnnotation.getLayoutY();
+                double annotationWidth = boatAnnotation.getWidth();
+                double annotationHeight = boatAnnotation.getHeight();
+
+                if(annotationXPosition <= annotationWidth && annotationXPosition >= 0 &&
+                        annotationYPosition <= annotationHeight && annotationYPosition >= 0) {
+                    moveAnnotation = true;
+                    DisplayUtils.externalTouchEvent = true;
+                    currentDisplayBoat = boatDisplay;
+                }
+            }
+        });
+
+        canvasAnchor.setOnMouseDragged(event -> {
+
+            if(moveAnnotation && DisplayUtils.externalTouchEvent) {
+                if (zoomLevel > 1 || (zoomLevel <= 1 && !isOutsideBounds(currentDisplayBoat.getAnnotation()))) {
+                    if (abs(event.getX() - Delta.x) < DRAG_TOLERANCE &&
+                            abs(event.getY() - Delta.y) < DRAG_TOLERANCE) {
+                        double scaledChangeX = ((event.getX() - Delta.x) / zoomLevel);
+                        double scaledChangeY = ((event.getY() - Delta.y) / zoomLevel);
+                        currentDisplayBoat.setAnnoOffsetX(currentDisplayBoat.getAnnoOffsetX() + scaledChangeX);
+                        currentDisplayBoat.setAnnoOffsetY(currentDisplayBoat.getAnnoOffsetY() + scaledChangeY);
+                    }
+                }
+                Delta.x = event.getX();
+                Delta.y = event.getY();
+
+                DisplayUtils.externalDragEvent = true;
+            }
+        });
+
+        canvasAnchor.setOnMouseReleased(event -> {
+            moveAnnotation = false;
+            DisplayUtils.externalTouchEvent = false;
+        });
+    }
+
 
     /**
      * initilizes display listeners to detect dragging on display. Calls DisplayUtils to move display
@@ -298,7 +356,6 @@ public class Controller implements Initializable, Observer {
         canvasAnchor.addEventFilter(TouchEvent.ANY, touch -> {
             if (touch.getTouchPoints().size() == 2 && DisplayUtils.zoomLevel != 1 && DisplayUtils.externalZoomEvent) {
                 DisplayUtils.externalDragEvent = false;
-                DisplayUtils.externalTouchEvent = true;
                 double touchX = (touch.getTouchPoints().get(0).getX() + touch.getTouchPoints().get(1).getX()) / 2;
                 double touchY = (touch.getTouchPoints().get(0).getY() + touch.getTouchPoints().get(1).getY()) / 2;
                 DisplayUtils.dragDisplay((int) touchX, (int) touchY);
@@ -341,7 +398,6 @@ public class Controller implements Initializable, Observer {
      * Initilizes zoom slider on display. Resets zoom on slide out
      */
     private void initZoom() {
-        //Zoomed out
         zoomSlider.valueProperty().addListener((arg0, arg1, arg2) -> {
             raceViewController.stopHighlightAnimation();
             zoomSlider.setOpacity(FOCUSED_ZOOMSLIDER_OPACITY);
@@ -349,7 +405,6 @@ public class Controller implements Initializable, Observer {
             if (DisplayUtils.zoomLevel != 1) {
                 mapImageView.setVisible(false);
             } else {
-                //Zoom out full, reset everything
                 selectionController.setRotationOffset(0);
                 root.getTransforms().clear();
                 mapImageView.setVisible(true);
@@ -368,34 +423,26 @@ public class Controller implements Initializable, Observer {
     private void createCanvasAnchorListeners() {
 
         final ChangeListener<Number> resizeListener = new ChangeListener<Number>() {
-            final Timer timer = new Timer(); // uses a timer to call your resize method
-            TimerTask task = null; // task to execute after defined delay
-            final long delayTime = 300; // delay that has to pass in order to consider an operation done
-
+            final Timer timer = new Timer();
+            TimerTask task = null;
+            final long delayTime = 300;
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, final Number newValue) {
                 if (task != null) {
-                    task.cancel(); // cancel it, we have a new size to consider
-                    //zoom and blur image
-
+                    task.cancel();
                     mapImageView.setEffect(new GaussianBlur(300));
                 }
-
                 task = new TimerTask() // create new task that calls your resize operation
                 {
                     @Override
                     public void run() {
-                        // resize after time is waited
                         raceViewController.drawMap();
                         mapImageView.setEffect(null);
                     }
                 };
-                // schedule new task
                 timer.schedule(task, delayTime);
             }
         };
-
-
         canvasAnchor.widthProperty().addListener(resizeListener);
         canvasAnchor.widthProperty().addListener((observable, oldValue, newValue) -> {
             canvasWidth = (double) newValue;
@@ -564,6 +611,7 @@ public class Controller implements Initializable, Observer {
 
     /**
      * displays the current time according to the UTC offset, in the GUI on the overlay
+     * @param UTCOffset offset of the time zone you want to use
      */
     public void setTimeZone(double UTCOffset) {
         clockString.set(TimeUtils.setTimeZone(UTCOffset, race.getCurrentTimeInEpochMs()));
@@ -634,6 +682,10 @@ public class Controller implements Initializable, Observer {
         }
     }
 
+    /**
+     * sets up the user help label in the GUI
+     * @param helper helper title
+     */
     public void setUserHelpLabel(String helper) {
         lblUserHelp.setOpacity(0);
         lblUserHelp.setPrefWidth(canvasWidth);
@@ -790,10 +842,8 @@ public class Controller implements Initializable, Observer {
      */
     public void refreshTable(){
         Callback<Boat, javafx.beans.Observable[]> cb =(Boat boat) -> new javafx.beans.Observable[]{boat.getCurrPlacingProperty()};
-
         ObservableList<Boat> observableList = FXCollections.observableArrayList(cb);
         observableList.addAll(race.getObservableCompetitors());
-
         SortedList<Boat> sortedList = new SortedList<>( observableList,
                 (Boat boat1, Boat boat2) -> {
                     if( boat1.getCurrPlacingProperty().get() < boat2.getCurrPlacingProperty().get() ) {
@@ -813,7 +863,9 @@ public class Controller implements Initializable, Observer {
     }
 
     public void refreshHUD(){
-        infoDisplay.competitorAdded();
+        if (infoDisplay != null) {
+            infoDisplay.competitorAdded();
+        }
     }
 
     /**

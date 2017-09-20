@@ -1,18 +1,19 @@
 #menuAnchor{
-    -fx-background-color: white;
+    -fx-background-color: #393939;
     -fx-background-radius: 10;
     -fx-border-radius: 10;
 }
 
 #dropShadowAnchor{
-    -fx-background-color: white;
+    -fx-background-color: #393939;
     -fx-background-radius: 10;
     -fx-border-radius: 10;
     -fx-effect: dropshadow(gaussian, #6c9292, 20, 0, 0, 10);
 }
 
 .btnNoStyle{
-    -fx-background-color:  transparent;
+    -fx-text-fill: white;
+    -fx-background-color: rgba(255, 255, 255, 0);
     -fx-font: 11px "Helvetica Neue";
     -fx-font-weight: bold;
 }
@@ -59,11 +60,12 @@
 }
 
 .btnSelection{
+    -fx-text-fill: white;
     -fx-padding: 10 195 10 25;
-    -fx-background-color:  white;
+    -fx-background-color: #484848;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
-    -fx-effect: dropshadow(gaussian, #D6D6D6, 15, 0, 0, 5);
+    -fx-effect: dropshadow(gaussian, rgba(50, 50, 50, 0.97), 15, 0, 0, 5);
     -fx-background-size: 22px 22px;
     -fx-background-repeat: no-repeat;
     -fx-background-position: right 18 center;
@@ -78,12 +80,12 @@
 .paneTitle{
     -fx-font: 32px "Helvetica Neue";
     -fx-font-weight: 700;
-    -fx-text-fill: #2e2e2e;
+    -fx-text-fill: #ffffff;
 }
 
 .paneDescription{
     -fx-font: 12px "Helvetica Neue Normal";
-    -fx-text-fill: #6a6a6a;
+    -fx-text-fill: #e8e8e8;
 }
 
 #txtPortNumber{
@@ -128,7 +130,7 @@
 
 #mapTitle {
     -fx-font: 16px "Helvetica Neue Heavy";
-    -fx-text-fill: #2a2a2a;
+    -fx-text-fill: #ffffff;
 }
 
 #imvLogo{
@@ -146,30 +148,30 @@
 .sliderLabels{
     -fx-font: 14px "Helvetica Neue";
     -fx-font-weight: bold;
-    -fx-text-fill: #2e2e2e;
+    -fx-text-fill: #ffffff;
     -fx-opacity: 0.7;
 }
 
 #boatsInRaceSlider .track{
     -fx-background-color: #dfdfdf;
     -fx-padding: 2.5;
-    -fx-effect: dropshadow(gaussian, #e2e2e2, 12, 0, 0, 3);
+    -fx-effect: dropshadow(gaussian, rgba(50, 50, 50, 0.97), 12, 0, 0, 3);
 }
 
 #boatsInRaceSlider .thumb {
     -fx-background-color: #888888;
-    -fx-effect: dropshadow(gaussian, #e2e2e2, 12, 0, 0, 3);
+    -fx-effect: dropshadow(gaussian, rgba(50, 50, 50, 0.97), 12, 0, 0, 3);
 }
 
 #speedScaleSlider .track{
     -fx-background-color: #dfdfdf;
     -fx-padding: 2.5;
-    -fx-effect: dropshadow(gaussian, #e2e2e2, 12, 0, 0, 3);
+    -fx-effect: dropshadow(gaussian, rgba(50, 50, 50, 0.97), 2, 12, 0, 0, 3);
 }
 
 #speedScaleSlider .thumb {
     -fx-background-color: #888888;
-    -fx-effect: dropshadow(gaussian, #e2e2e2, 12, 0, 0, 3);
+    -fx-effect: dropshadow(gaussian, rgba(50, 50, 50, 0.97), 12, 0, 0, 3);
 }
 
 #lblBoatsNum{
@@ -186,12 +188,12 @@
 
 #circleBoats{
     -fx-fill: #ff776b;
-    -fx-effect: dropshadow(gaussian, #d0d0d0, 15, 0, 0, 4);
+    -fx-effect: dropshadow(gaussian, rgba(50, 50, 50, 0.97), 15, 0, 0, 4);
 }
 
 #circleSpeed{
     -fx-fill: #91acb3;
-    -fx-effect: dropshadow(gaussian, #d0d0d0, 15, 0, 0, 4);
+    -fx-effect: dropshadow(gaussian, rgba(50, 50, 50, 0.97), 15, 0, 0, 4);
 }
 
 #imvMapPreview{
@@ -272,9 +274,13 @@
 }
 
 #mapPolygon{
-    -fx-effect: dropshadow(gaussian, #70a3a3, 40, 0, 0, 8);
+    -fx-effect: dropshadow(gaussian, #3f5d5d, 40, 0, 0, 8);
     -fx-fill: #8fcecc;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
     -fx-stroke-width: 0;
+    -fx-background-radius: 100;
+    -fx-border-radius: 100;
 }
 
 #imvLogoCircle{
@@ -427,11 +433,12 @@
 }
 
 .AIBtn{
+    -fx-text-fill: white;
     -fx-padding: 10 25 10 25;
-    -fx-background-color:  white;
+    -fx-background-color:  #484848;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
-    -fx-effect: dropshadow(gaussian, #D6D6D6, 15, 0, 0, 5);
+    -fx-effect: dropshadow(gaussian, rgba(50, 50, 50, 0.97), 15, 0, 0, 5);
     -fx-background-size: 22px 22px;
     -fx-background-repeat: no-repeat;
     -fx-background-position: right 18 center;

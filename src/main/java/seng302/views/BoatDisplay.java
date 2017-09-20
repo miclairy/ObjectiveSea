@@ -41,7 +41,6 @@ public class BoatDisplay implements Observer {
     private Line predictedStartLine;
     private Series series;
     private final double FADEDBOAT = 0.3;
-    public Circle annoGrabHandle;
     public CubicCurve sail;
     public boolean collisionInProgress = false;
 
@@ -138,14 +137,6 @@ public class BoatDisplay implements Observer {
         return color;
     }
 
-    public Circle getAnnoGrabHandle() {
-        return annoGrabHandle;
-    }
-
-    public void setAnnoGrabHandle(Circle annoGrabHandle) {
-        this.annoGrabHandle = annoGrabHandle;
-    }
-
     public boolean isCollisionInProgress() {
         return collisionInProgress;
     }
@@ -228,6 +219,7 @@ public class BoatDisplay implements Observer {
 
         long secondsElapsed = (race.getStartTimeInEpochMs() - race.getCurrentTimeInEpochMs()) / 1000;
         double distanceToVirtualStartLine = (boat.getCurrentSpeed() / 3600) * secondsElapsed;
+        System.out.println(distanceToVirtualStartLine);
 
         Coordinate startLineMidPoint = MathUtils.calculateMidPoint(startingLine);
 
@@ -298,7 +290,7 @@ public class BoatDisplay implements Observer {
     /**
      * updates display boat when boat passes a mark and positon updates. Adds new position to sparkline
      * @param boatObservable the boat that has an updated placing
-     * @param arg
+     * @param arg update variable
      */
     @Override
     public void update(Observable boatObservable, Object arg) {

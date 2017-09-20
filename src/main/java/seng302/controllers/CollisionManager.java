@@ -5,7 +5,6 @@ import seng302.data.BoatStatus;
 import seng302.data.RaceStatus;
 import seng302.data.RaceVisionXMLParser;
 import seng302.models.*;
-import seng302.utilities.DisplayUtils;
 import seng302.utilities.MathUtils;
 
 import java.util.*;
@@ -17,10 +16,10 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class CollisionManager {
 
-    private Double BOAT_SENSITIVITY = 0.045;
-    private Double MARK_SENSITIVITY = 0.03;
-    private Double AT_FAULT_DELTA = 30.0;
-    private Double COLLISION_DELTA = 60.0;
+    private static final Double BOAT_SENSITIVITY = 0.045;
+    public static final Double MARK_SENSITIVITY = 0.03;
+    private static final Double AT_FAULT_DELTA = 30.0;
+    private static final Double COLLISION_DELTA = 60.0;
     private Penalties penalties = new Penalties();
     private Polygon boundary = null;
 
@@ -46,7 +45,7 @@ public class CollisionManager {
     /**
      * Checks all boats in the race to see if they are colliding with each other or course marks
      * Adds any collisions to a set.
-     * @param race
+     * @param race current race
      */
     public void checkForCollisions(Race race){
         if(boundary == null) boundary = createCourseBoundary(race.getCourse().getBoundary());
@@ -159,17 +158,6 @@ public class CollisionManager {
         for (Collision collision : currentCollisions) {
             if (!collision.isOutOfBounds() && collision.boatIsInCollision(boat.getId())) {
                 return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean boatIsCollidingWithMark(Boat boat) {
-        for (Collision collision : currentCollisions) {
-            if (collision.boatIsInCollision(boat.getId())) {
-                if (collision.isSingleBoatCollision()) {
-                    return true;
-                }
             }
         }
         return false;

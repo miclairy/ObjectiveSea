@@ -5,7 +5,7 @@ package seng302.data.registration;
  * Holds the different types of Registrations that exist and their byte values for messages
  */
 public enum RegistrationType {
-    SPECTATOR(0), PLAYER(1), TUTORIAL(2), GHOST(3);
+    SPECTATOR(0), PLAYER(1), TUTORIAL(2), GHOST(3), REQUEST_RUNNING_GAMES(4);
 
     private final byte requestValue;
 

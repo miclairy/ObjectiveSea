@@ -1,6 +1,8 @@
 package seng302.views;
 
 import javafx.scene.Group;
+import javafx.scene.Parent;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import seng302.controllers.RoundingMechanics;
 import seng302.data.RoundingSide;
@@ -20,11 +22,12 @@ import static seng302.data.RoundingSide.STBD;
  */
 public class CourseRouteArrows {
 
-    private final int REFRESH_THRESHOLD = 4;
+    private final int REFRESH_THRESHOLD = 6;
     private final int ARROW_ITERATIONS_SHOWN = 3;
+    private final double ARROW_DISTANCE_FROM_MARK = 0.05;
 
     private Course course;
-    private Group root;
+    private Parent root;
     private Integer refreshTimer;
     private Color ARROW_PATH_COLOR = Color.color(0.25, 0.8, 0.25); //Light Green
 
@@ -32,7 +35,7 @@ public class CourseRouteArrows {
     private List<Set<Arrow>> shownArrows;
     private Map<CompoundMark, List<Arrow>> roundingArrowMap;
 
-    public CourseRouteArrows(Course course, Group root) {
+    public CourseRouteArrows(Course course, Parent root) {
         this.course = course;
         this.root = root;
         createArrowedRoute();
@@ -164,19 +167,14 @@ public class CourseRouteArrows {
     private List<Arrow> createMarkRoundingArrows(Mark mark, double heading, double nextHeading, RoundingSide roundingSide) {
         List<Arrow> arrowList = new ArrayList<>();
 
-        Double distanceFromMark = roundingSide == PORT ? 0.05 : -0.05;
+        List<Coordinate> positions = RoundingMechanics.markRoundingCoordinates(mark, heading, nextHeading, roundingSide, ARROW_DISTANCE_FROM_MARK);
+        Double interpolatedHeading = positions.get(0).headingToCoordinate(positions.get(2));
 
-        Coordinate firstArrowPosition = mark.getPosition().coordAt(distanceFromMark, (heading + 90));
-        Coordinate finalArrowPosition = mark.getPosition().coordAt(distanceFromMark, (nextHeading + 90));
-
-        Double interpolatedHeading = firstArrowPosition.headingToCoordinate(finalArrowPosition);
-        Coordinate middleArrowPosition = mark.getPosition().coordAt(distanceFromMark, (interpolatedHeading + 90));
-
-        Arrow mark1Arrow = new Arrow(5, 10, firstArrowPosition, (heading + 180));
+        Arrow mark1Arrow = new Arrow(5, 10, positions.get(0), (heading + 180));
         arrowList.add(mark1Arrow);
-        Arrow mark1ArrowInterpolated = new Arrow(5, 10, middleArrowPosition, (interpolatedHeading + 180));
+        Arrow mark1ArrowInterpolated = new Arrow(5, 10, positions.get(1), (interpolatedHeading + 180));
         arrowList.add(mark1ArrowInterpolated);
-        Arrow mark1ArrowNext = new Arrow(5, 10, finalArrowPosition, (nextHeading + 180));
+        Arrow mark1ArrowNext = new Arrow(5, 10, positions.get(2), (nextHeading + 180));
         arrowList.add(mark1ArrowNext);
 
         arrowOrderGraph.addEdges(arrowList);
@@ -228,7 +226,12 @@ public class CourseRouteArrows {
      */
     public void removeRaceRoute(){
         for(Arrow arrow : arrowOrderGraph.getAllArrows()){
-            arrow.removeFromCanvas(root);
+            if(root instanceof Group){
+                arrow.removeFromCanvas((Group)root);
+            }else{
+                arrow.removeFromMenu((Pane) root);
+            }
+
         }
     }
 
@@ -239,8 +242,13 @@ public class CourseRouteArrows {
         removeRaceRoute();
         createArrowedRoute();
         for (Arrow arrow : arrowOrderGraph.getAllArrows()){
-            arrow.addToCanvas(root);
-            arrow.setScale(DisplayUtils.zoomLevel);
+            if(root instanceof Group){
+                arrow.addToCanvas((Group)root);
+                arrow.setScale(DisplayUtils.zoomLevel);
+            }else{
+                arrow.addToMenu((Pane) root);
+                arrow.setScale(0.7);
+            }
             arrow.setColour(ARROW_PATH_COLOR);
             arrow.fade();
         }

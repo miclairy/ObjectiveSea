@@ -76,6 +76,11 @@ public class GameSounds {
     private boolean endless = false;
     private MediaPlayer mediaPlayer;
     private int randomSeaGull;
+    private double volume = 0.9;
+    private boolean isMusicOn = true;
+    private double fxVolume = 1.0;
+    private FloatControl gainControl;
+    private boolean playingSound = false;
 
     public void mainMenuMusic() {
         selectedMusic = "/musicFiles/gameMusic/MainMenuMusic.wav";
@@ -259,16 +264,22 @@ public class GameSounds {
     /**
      * Plays single instance sounds (e.g.voice overs)
      */
-    public void playGameSound () {
+    public void playGameSound() {
         URL resource = getClass().getResource(selectedVoiceOver);
         mediaPlayer = new MediaPlayer(new Media(resource.toString()));
-        double volume = mediaPlayer.getVolume();
-        mediaPlayer.setVolume(volume);
+        mediaPlayer.setVolume(fxVolume);
+        playingSound = true;
+        mediaPlayer.setOnEndOfMedia(new Runnable() {
+            @Override
+            public void run() {
+                playingSound = false;
+            }
+        });
         mediaPlayer.play();
     }
 
     /**
-     * Plays looping music (e.g. lobby music)
+     * Plays looping isMusicOn (e.g. lobby isMusicOn)
      * @throws IOException
      * @throws LineUnavailableException
      * @throws UnsupportedAudioFileException
@@ -277,9 +288,17 @@ public class GameSounds {
         clip = AudioSystem.getClip();
         inputStream = AudioSystem.getAudioInputStream(DisplayUtils.class.getResource(selectedMusic));
         clip.open(inputStream);
-        FloatControl gainControl =
-                (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-        gainControl.setValue(-10.0f);
+        gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+        setSoundTrackVolume();
+        if(!isMusicOn) {
+            BooleanControl muteControl = (BooleanControl) clip
+                    .getControl(BooleanControl.Type.MUTE);
+            muteControl.setValue(true);
+        } else {
+            BooleanControl muteControl = (BooleanControl) clip
+                    .getControl(BooleanControl.Type.MUTE);
+            muteControl.setValue(false);
+        }
         clip.loop(Clip.LOOP_CONTINUOUSLY);
         clip.start();
     }
@@ -294,5 +313,29 @@ public class GameSounds {
         endless = false;
         clip.setFramePosition(0);
     }
+
+    public void setVolume(double volume) {
+        this.volume = volume;
+        setSoundTrackVolume();
+    }
+
+    private void setSoundTrackVolume(){
+        double range = gainControl.getMaximum() - gainControl.getMinimum();
+        double gain = (range * volume) + gainControl.getMinimum();
+        gainControl.setValue((float)gain);
+    }
+
+    public void setFxVolume(double volume){
+        fxVolume = volume;
+        if(!playingSound){
+            firstPlace();
+            playGameSound();
+        }
+    }
+
+    public double getVolume(){return volume;}
+
+    public double getFxVolume(){return volume;}
+
 }
 

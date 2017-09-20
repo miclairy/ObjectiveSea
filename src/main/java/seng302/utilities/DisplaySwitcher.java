@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import seng302.controllers.*;
+import seng302.data.registration.ServerFullException;
 import seng302.models.ClientOptions;
 
 import java.net.URL;
@@ -28,22 +29,25 @@ public class DisplaySwitcher {
         this.main = main;
     }
 
-
     /**
      * loads the main menu into the stage
      */
     public void loadMainMenu() {
         try {
+            DisplayUtils.setIsRaceView(false);
             MainMenuController mainMenu = (MainMenuController) replaceSceneContent("main_menu.fxml");
-            mainMenu.setApp(main);
+            mainMenu.setApp(main, gameSounds);
             try {
                 gameSounds.stopEndlessMusic();
-            } catch (Exception e) { }
+            } catch (Exception e) {
+            }
             gameSounds.mainMenuMusic();
             gameSounds.playEndlessMusic();
 
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ServerFullException e) {
+            e.printStackTrace();
         }
     }
 
@@ -53,6 +57,7 @@ public class DisplaySwitcher {
      */
     public void loadRaceView(ClientOptions options) {
         try {
+            DisplayUtils.setIsRaceView(true);
             SoundController soundController = new SoundController(Main.getClient().getClientID());
             soundController.setRunning(true);
             Thread soundControllerThread = new Thread(soundController);

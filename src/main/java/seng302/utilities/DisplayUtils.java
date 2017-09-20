@@ -5,6 +5,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
+import seng302.controllers.MainMenuController;
 import seng302.models.*;
 
 import java.time.Instant;
@@ -28,6 +29,7 @@ public class DisplayUtils {
     public static boolean externalZoomEvent = false;
     public static final int DRAG_TOLERANCE = 45;
     private static final int FIFTY_NINE_MINUTES_MS = 3540000;
+    public static boolean isRaceView = true;
 
     public static double zoomLevel = 1;
     private static int prevDragX=0;
@@ -44,8 +46,15 @@ public class DisplayUtils {
      * @return Returns CanvasCoordinate with an x and a y coordinate for use in placement of boats and/or marks/gates.
      */
     public static CanvasCoordinate convertFromLatLon(double lat, double lon) {
-        double canvasY = Controller.getCanvasHeight();
-        double canvasX = Controller.getCanvasWidth();
+        double canvasY;
+        double canvasX;
+        if(isRaceView){
+            canvasY = Controller.getCanvasHeight();
+            canvasX = Controller.getCanvasWidth();
+        }else{
+            canvasY = MainMenuController.getCanvasHeight();
+            canvasX = MainMenuController.getCanvasWidth();
+        }
 
         double changeInLat = max.getLat() - min.getLat();
         double changeInLon = max.getLon() - min.getLon();
@@ -384,5 +393,9 @@ public class DisplayUtils {
             timeTillMark = "...";
         }
         return timeTillMark;
+    }
+
+    public static void setIsRaceView(boolean sceneChanged){
+        isRaceView = sceneChanged;
     }
 }

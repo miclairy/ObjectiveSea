@@ -25,4 +25,19 @@ public enum RoundingSide {
     public String getRoundingSideString() {
         return roundingSideString;
     }
+
+    /**
+     * Returns the rounding side for the first mark in a compound mark
+     * @return A rounding side (either port or stbd) for the first mark
+     */
+    public RoundingSide firstMarkRoundingSide(){
+        if(this == PORT_STBD){
+            return PORT;
+        } else if(this == STBD_PORT){
+            return STBD;
+        } else{
+            //Single mark rounding.
+            return this;
+        }
+    }
 }
