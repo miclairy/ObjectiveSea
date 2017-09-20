@@ -1,9 +1,10 @@
 body{
     background-color: #b6e6e7;
     font-family: "Helvetica Neue";
+    height: 100vh;
 }
 
-form{
+#codeEntryForm{
     display: inline-block;
     text-align: left;;
     margin-left: auto;
@@ -74,3 +75,7 @@ input {
 }
 
 input[type=submit], input[type=Reset]{ -webkit-appearance:none; }
+
+.hidden{
+    display: none;
+}

@@ -1,0 +1,183 @@
+
+body{
+}
+.container-fluid{
+
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+    margin: 0;
+    background-color: #71d3f7;
+}
+
+#header{
+    -webkit-box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+    -moz-box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+    box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+    height: 8vh;
+    background-color: white;
+    top:0;
+    left: 0;
+    right:0;
+}
+
+#statsPanel{
+    height:42vh;
+    width: 100%;
+}
+
+#tackGybeControl{
+    border-radius: 0rem 2rem 2rem 0rem;
+    margin: 1.5% 5% 1.5% 0rem;
+    height: 10vh;
+    float:right;
+    width:44%;
+
+    border-style: solid;
+    border-width: 5px 5px 5px 0px;
+    border-color: white;
+
+    background-color: transparent;
+    -webkit-box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+    -moz-box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+    box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+
+}
+
+#tackGybeControl:hover{
+    opacity:0.7;
+}
+#tackGybeControl:active{
+    opacity:0.7;
+}
+
+#vmgControl{
+    border-radius: 2rem 0rem 0rem 2rem;
+    margin: 1.5% 0% 1.5% 5%;
+    height: 10vh;
+    width:44%;
+
+
+    float:left;
+    border-style: solid;
+    border-width: 5px 5px 5px 5px;
+    border-color: white;
+    background-color: transparent;
+    -webkit-box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+    -moz-box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+    box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+}
+
+#vmgControl:hover{
+    opacity:0.7;
+}
+#vmgControl:active{
+    opacity:0.7;
+}
+
+#upwindControl{
+
+    -webkit-box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+    -moz-box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+    box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+
+    border-radius: 0rem 100rem 0rem 0px;
+
+    height:37vh;
+    width: 33.5%;
+    float:left;
+    background-color: white;
+    padding: 0px;
+}
+
+#downWindControl{
+
+    -webkit-box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+    -moz-box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+    box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+
+    border-radius: 100rem 0px 0px 0px;
+    height:37vh;
+    width: 33.5%;
+    float:right;
+    background-color: white;
+    padding: 0px;
+
+}
+#downWindControl:hover{
+    opacity:0.75;
+}
+#downWindControl:active{
+    opacity:0.75;
+}
+#upwindControl:hover{
+    opacity:0.75;
+}
+#upwindControl:active{
+    opacity:0.75;
+}
+
+
+
+#sailsControls{
+    height:30vh;
+    width: 33%;
+    padding: 0px;
+
+}
+
+.directionArrow{
+    color: #71d3f7;
+}
+
+#sailsOutControl{
+
+    border-radius: 1rem 1rem 2rem 2rem;
+    margin: 2rem 15% 0% 15%;
+    height: 80%;
+    border-style: solid;
+    border-width: 5px 5px 5px 5px;
+    border-color: white;
+    background-color: transparent;
+    -webkit-box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+    -moz-box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+    box-shadow: 0px 0px 31px 0px rgba(0,0,0,0.15);
+
+}
+
+#sailsOutControl:hover{
+    opacity:0.7;
+}
+#sailsOutControl:active{
+    opacity:0.7;
+}
+
+
+.row {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.center{
+    margin: 0;
+    padding: 0;
+    position: relative;
+    top: 50%;
+    text-align: center;
+    transform: translateY(-50%);
+}
+
+#headerTitle{
+    text-align: center;
+    margin: 0;
+    padding: 1.5rem;
+    width: 100%;
+    font-weight: bold;
+
+}
+
+.buttonText{
+    color: white;
+    font-weight: bold;
+
+}
