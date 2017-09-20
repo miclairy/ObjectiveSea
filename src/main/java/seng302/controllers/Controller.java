@@ -17,10 +17,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.TouchEvent;
-import javafx.scene.input.ZoomEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -182,7 +179,6 @@ public class Controller implements Initializable, Observer {
 
         raceCompetitorOverview();
         startersOverlay.toFront();
-        initDisplayDrag();
         initZoom();
     }
 
@@ -324,6 +320,8 @@ public class Controller implements Initializable, Observer {
                 Delta.y = event.getY();
 
                 DisplayUtils.externalDragEvent = true;
+            } else {
+                dragCourse(event);
             }
         });
 
@@ -335,18 +333,15 @@ public class Controller implements Initializable, Observer {
 
 
     /**
-     * initilizes display listeners to detect dragging on display. Calls DisplayUtils to move display
-     * and redraw course and paths as appropriate.
+     * Calls DisplayUtils to move display and redraw course and paths as appropriate.
      */
-    private void initDisplayDrag() {
-        canvasAnchor.setOnMouseDragged(event -> {
-            if (DisplayUtils.zoomLevel != 1 && !event.isSynthesized() && !DisplayUtils.externalDragEvent) {
-                DisplayUtils.dragDisplay((int) event.getX(), (int) event.getY());
-                raceViewController.redrawCourse();
-                raceViewController.redrawBoatPaths();
-                selectionController.deselectBoat();
-            }
-        });
+    private void dragCourse(MouseEvent event) {
+        if (DisplayUtils.zoomLevel != 1 && !event.isSynthesized() && !DisplayUtils.externalDragEvent) {
+            DisplayUtils.dragDisplay((int) event.getX(), (int) event.getY());
+            raceViewController.redrawCourse();
+            raceViewController.redrawBoatPaths();
+            selectionController.deselectBoat();
+        }
     }
 
     /**
