@@ -186,9 +186,7 @@ public class GameServer implements Runnable, Observer {
 
     private void sendBoatMessagesForAllBoats() throws IOException {
         for (Boat boat : raceUpdater.getRace().getCompetitors()) {
-            if (!boat.isFinished()) {
-                sendBoatMessages(boat);
-            }
+            sendBoatMessages(boat);
         }
     }
 

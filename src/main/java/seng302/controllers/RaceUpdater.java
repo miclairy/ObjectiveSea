@@ -208,6 +208,9 @@ public class RaceUpdater implements Runnable {
                 boat.updateLocation(-raceSecondsPassed, race.getCourse());
                 boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
             }
+            if(boat.isFinished()) {
+                boat.setSailsIn(true);
+            }
             adjustSpeed(boat);
             //TODO: Proper way to do this is to create abstract boat class that both Boat and AIBoat inherits from
             if(boat instanceof AIBoat){
@@ -291,7 +294,7 @@ public class RaceUpdater implements Runnable {
             }
         } else if (currentMark.isFinishLine()) {
             if(RoundingMechanics.boatPassedThroughCompoundMark(boat, course.getFinishLine(), previousMark.getPosition(), true)) {
-                boat.setCurrentSpeed(0);
+                boat.setSailsIn(true);
                 boat.setStatus(BoatStatus.FINISHED);
             }
         } else if (!currentMark.hasTwoMarks()){

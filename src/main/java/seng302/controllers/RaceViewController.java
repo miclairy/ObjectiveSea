@@ -285,7 +285,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         moveBoat(boatDisplay, point);
         moveWake(boatDisplay, point);
         moveSail(boatDisplay, point);
-        if(!options.isTutorial() && !boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF)){
+        if(!options.isTutorial() && !boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF) && !boatDisplay.getBoat().isFinished()){
             displayCollisions(boatDisplay, point);
         }
 
@@ -294,7 +294,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
         moveBoatAnnotation(boatDisplay.getAnnotation(), point, boatDisplay);
         manageStartTiming(boatDisplay);
-        if(boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF)){
+        if(boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF) || boatDisplay.getBoat().isFinished()){
             boatDisplay.unFocus();
         }
     }
