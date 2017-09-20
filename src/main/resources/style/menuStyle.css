@@ -58,6 +58,11 @@
     -fx-background-image: url('/graphics/joinArrow.png');
 }
 
+#btnPartyMode{
+    -fx-padding: 10 153 10 25;
+    -fx-background-image: url('/graphics/hostArrow.png');
+}
+
 .btnSelection{
     -fx-padding: 10 195 10 25;
     -fx-background-color:  white;

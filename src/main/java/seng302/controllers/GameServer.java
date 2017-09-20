@@ -102,7 +102,7 @@ public class GameServer implements Runnable, Observer {
                 managerThread.setName("Connection Manager");
                 managerThread.start();
                 while (!raceUpdater.raceHasEnded()) {
-                    if (!raceUpdater.getRace().getCompetitors().isEmpty() || options.getMode().equals(GameMode.PARTYGAME)) {
+                    if (!raceUpdater.getRace().getCompetitors().isEmpty() || isPartyMode()) {
                         sendRaceUpdates();
                     }
                     Thread.sleep((long) (SECONDS_PER_UPDATE * 1000 / options.getSpeedScale()));
@@ -116,6 +116,14 @@ public class GameServer implements Runnable, Observer {
         }
         System.out.println("Server: Shutting Down");
         connectionManager.closeAllConnections();
+    }
+
+    private boolean isPartyMode() {
+        if(options.getMode() != null){
+            return  options.getMode().equals(GameMode.PARTYGAME);
+        }else{
+            return false;
+        }
     }
 
     /**
