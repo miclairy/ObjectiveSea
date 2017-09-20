@@ -293,14 +293,15 @@ public class ServerPacketBuilder extends PacketBuilder {
 
     /**
      * creates a packet that is sent when a host quits a race, used to update the VM
-     * @param type the message type for the packet
+     * @param port the port the server being cancelled is run on
      * @return the packet to send to the VM
      */
-    public byte[] createGameCancelPacket(AC35StreamMessage type) {
-        byte[] header = super.createHeader(type);
-        byte[] body = new byte[4];
+    public byte[] createGameCancelPacket(int port) {
+        byte[] header = super.createHeader(GAME_CANCEL);
+        byte[] body = new byte[GAME_CANCEL.getLength()];
         long ip = ConnectionUtils.ipStringToLong(ConnectionUtils.getPublicIp());
         addFieldToByteArray(body, HOST_GAME_IP, ip);
+        addFieldToByteArray(body, HOST_GAME_PORT, port);
         return generatePacket(header, body);
     }
 }

@@ -51,9 +51,7 @@ public class GameRecorder implements Observer {
 
             }
         } else if(observable instanceof ServerListener){
-            if(arg instanceof String) {
-                removeAvailableRace(arg);
-            } else if (arg instanceof RegistrationType) {
+            if (arg instanceof RegistrationType) {
                 if (arg.equals(REQUEST_RUNNING_GAMES)) {
                     respondToRequestForGames((ServerListener) observable);
                 }
@@ -68,9 +66,13 @@ public class GameRecorder implements Observer {
      * @param newRace the new avaliable race
      */
     private void updateAvailableRace(AvailableRace newRace){
+        if (newRace.isDeleted()) {
+            removeAvailableRace(newRace);
+            return;
+        }
         boolean updatedRace = false;
         for (AvailableRace runningRace : availableRaces){
-            if (Objects.equals(runningRace.getIpAddress(), newRace.getIpAddress())){
+            if (runningRace.equals(newRace)){
                 System.out.println("Game Recorder: Updating running race");
                 updatedRace = true;
                 updateNumberOfBoats(runningRace, newRace.getNumBoats());
@@ -96,18 +98,18 @@ public class GameRecorder implements Observer {
 
     /**
      * removes a race with a specific IP address
-     * @param ipAddress ip address of the race to remove
+     * @param deletedRace dummy race with matching IP and port to remove
      */
-    private void removeAvailableRace(Object ipAddress){
-        AvailableRace foundRace = null;
+    private void removeAvailableRace(AvailableRace deletedRace){
+        AvailableRace raceToDelete = null;
         for (AvailableRace race : availableRaces) {
-            if (race.getIpAddress().equals(ipAddress)) {
-                foundRace = race;
+            if (race.equals(deletedRace)) {
+                raceToDelete = race;
             }
         }
-        if (foundRace != null) {
-            availableRaces.remove(foundRace);
-            System.out.println("Game Recorder: removed canceled race: " + foundRace.getIpAddress());
+        if (raceToDelete != null) {
+            availableRaces.remove(raceToDelete);
+            System.out.println("Game Recorder: removed canceled race: " + raceToDelete.getIpAddress());
         }
     }
 
