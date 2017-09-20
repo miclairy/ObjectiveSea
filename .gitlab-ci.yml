@@ -7,13 +7,3 @@ generate_artifacts:
   stage: deploy
   script:
     - mvn -B clean site package
-
-production:
-  type: deploy
-  script:
-  - apt-get update -qy
-  - apt-get install -y ruby-dev
-  - gem install dpl
-  - dpl --provider=heroku --app=gitlab-ci-python-test-prod --api-key=$HEROKU_PRODUCTION_API_KEY
-  only:
-  - tags
