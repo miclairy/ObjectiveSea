@@ -338,7 +338,7 @@ public class Controller implements Initializable, Observer {
                 hasHUDXMoved = false;
                 hasHUDYMoved = false;
             } else if (DisplayUtils.zoomLevel != 1 && !event.isSynthesized() && !DisplayUtils.externalDragEvent) {
-                displayDrag(event);
+                dragCourse(event);
             }
 
         });
