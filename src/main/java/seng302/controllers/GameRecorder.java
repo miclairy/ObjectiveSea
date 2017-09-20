@@ -26,6 +26,7 @@ public class GameRecorder implements Observer {
     private ArrayList<AvailableRace> availableRaces = new ArrayList<>();
     private int nextHostID = 0;
     private Set<Socket> sockets = new HashSet<>();
+    private Thread serverListenerThread = null;
 
     public GameRecorder() throws IOException {
         packetBuilder = new ServerPacketBuilder();
@@ -62,8 +63,8 @@ public class GameRecorder implements Observer {
     }
 
     /**
-     * Runs through the entire list of avaliable races, updating the ones that have had changes
-     * @param newRace the new avaliable race
+     * Runs through the entire list of available races, updating the ones that have had changes
+     * @param newRace the new available race
      */
     private void updateAvailableRace(AvailableRace newRace){
         if (newRace.isDeleted()) {
@@ -132,7 +133,7 @@ public class GameRecorder implements Observer {
      */
     protected void startServerListener(Socket socket) throws IOException {
         ServerListener serverListener = new ServerListener(socket);
-        Thread serverListenerThread = new Thread(serverListener);
+        serverListenerThread = new Thread(serverListener);
         serverListenerThread.setName("Game Recorder Listener");
         serverListenerThread.start();
         serverListener.addObserver(this);

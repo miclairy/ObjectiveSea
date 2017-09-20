@@ -21,10 +21,11 @@
 
 <StackPane fx:id="stackPane" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/menuStyle.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.MainMenuController">
     <children>
-        <ImageView fitHeight="1080.0" fitWidth="1920.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <ImageView fx:id="imvBackground" fitHeight="1080.0" fitWidth="1920.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <image>
                 <Image url="@graphics/menuBackground.png" />
-            </image></ImageView>
+            </image>
+      </ImageView>
         <AnchorPane fx:id="dropShadowAnchor" layoutX="620.0" layoutY="325.0" maxHeight="450.0" maxWidth="700.0" minHeight="450.0" minWidth="700.0" prefHeight="500.0" prefWidth="450.0" />
         <AnchorPane fx:id="menuAnchor" maxHeight="450.0" maxWidth="700.0" minHeight="450.0" minWidth="700.0" prefHeight="500.0" prefWidth="450.0" AnchorPane.bottomAnchor="150.0" AnchorPane.leftAnchor="500.0" AnchorPane.rightAnchor="500.0" AnchorPane.topAnchor="150.0">
             <children>
@@ -360,7 +361,7 @@
                                         <Insets left="52.0" right="350.0" top="140.0" />
                                     </GridPane.margin>
                                 </Label>
-                                <Button fx:id="btnSinglePlay" layoutX="90.0" layoutY="250.0" maxWidth="255.0" minWidth="255.0" mnemonicParsing="false" onAction="#loadMapsForSinglePlay" prefWidth="255.0" styleClass="btnSelection" text="Race" GridPane.rowIndex="1">
+                                <Button fx:id="btnSinglePlay" layoutX="90.0" layoutY="250.0" maxWidth="255.0" minWidth="255.0" mnemonicParsing="false" onAction="#loadAIOptions" prefWidth="255.0" styleClass="btnSelection" text="Race" GridPane.rowIndex="1">
                                     <padding>
                                         <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
                                     </padding>
@@ -457,7 +458,7 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <Button fx:id="btnBackToOptions" mnemonicParsing="false" onAction="#backToMapFromAI" styleClass="btnNoStyle" text="Back" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+                        <Button fx:id="btnBackToOptions" mnemonicParsing="false" onAction="#backToOfflineFromAI" styleClass="btnNoStyle" text="Back" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
                            <GridPane.margin>
                               <Insets bottom="25.0" left="20.0" />
                            </GridPane.margin>
@@ -465,30 +466,40 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </Button>
-                        <Button fx:id="noAIbtn" mnemonicParsing="false" onAction="#noAI" prefHeight="35.0" prefWidth="127.0" styleClass="AIBtn" text="No AI" GridPane.halignment="CENTER" GridPane.valignment="TOP">
+                        <Button fx:id="noAIbtn" mnemonicParsing="false" onAction="#noAI" prefWidth="150.0" styleClass="AIBtn" text="No Competitor" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
                            <padding>
                               <Insets bottom="10.0" left="40.0" right="40.0" top="10.0" />
-                           </padding>
-                           <GridPane.margin>
-                              <Insets top="130.0" />
-                           </GridPane.margin>
-                        </Button>
-                        <Button fx:id="easyAIbtn" mnemonicParsing="false" onAction="#easyAI" styleClass="AIBtn" text="Easy AI" GridPane.halignment="CENTER" GridPane.valignment="TOP">
-                           <padding>
-                              <Insets bottom="10.0" left="43.0" right="43.0" top="10.0" />
-                           </padding>
-                           <GridPane.margin>
-                              <Insets top="190.0" />
-                           </GridPane.margin>
-                        </Button>
-                        <Button fx:id="hardAIbtn" mnemonicParsing="false" onAction="#hardAI" styleClass="AIBtn" text="Hard AI" GridPane.halignment="CENTER" GridPane.valignment="TOP">
-                           <padding>
-                              <Insets bottom="10.0" left="42.0" right="42.0" top="10.0" />
                            </padding>
                            <GridPane.margin>
                               <Insets top="250.0" />
                            </GridPane.margin>
                         </Button>
+                        <Button fx:id="easyAIbtn" mnemonicParsing="false" onAction="#easyAI" prefWidth="150.0" styleClass="AIBtn" text="Easy" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                           <padding>
+                              <Insets bottom="10.0" left="43.0" right="43.0" top="10.0" />
+                           </padding>
+                           <GridPane.margin>
+                              <Insets top="130.0" />
+                           </GridPane.margin>
+                        </Button>
+                        <Button fx:id="hardAIbtn" mnemonicParsing="false" onAction="#hardAI" prefWidth="150.0" styleClass="AIBtn" text="Hard" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                           <padding>
+                              <Insets bottom="10.0" left="42.0" right="42.0" top="10.0" />
+                           </padding>
+                           <GridPane.margin>
+                              <Insets top="190.0" />
+                           </GridPane.margin>
+                        </Button>
+                        <Label styleClass="paneTitle" text="Select Difficulty">
+                           <GridPane.margin>
+                              <Insets left="40.0" top="20.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Label styleClass="paneDescription" text="Racing on your own is boring, select a difficulty to race against the computer" wrapText="true" GridPane.halignment="LEFT" GridPane.rowSpan="2" GridPane.valignment="TOP">
+                           <GridPane.margin>
+                              <Insets left="40.0" right="360.0" top="55.0" />
+                           </GridPane.margin>
+                        </Label>
                      </children>
                   </GridPane>
                     </children>
@@ -498,7 +509,7 @@
                 <Insets bottom="180.0" left="450.0" right="450.0" top="180.0" />
             </StackPane.margin>
         </AnchorPane>
-        <ImageView fx:id="imvLogo" fitHeight="69.0" fitWidth="136.0" pickOnBounds="true" preserveRatio="true" StackPane.alignment="BOTTOM_RIGHT">
+        <ImageView fx:id="imvLogo" fitHeight="69.0" fitWidth="136.0" onMouseClicked="#enableNightMode" pickOnBounds="true" preserveRatio="true" StackPane.alignment="BOTTOM_RIGHT">
             <image>
                 <Image url="@graphics/menuTitle.png" />
             </image>
@@ -506,5 +517,70 @@
                 <Insets bottom="20.0" right="20.0" />
             </StackPane.margin>
         </ImageView>
+        <GridPane fx:id="settingsGrid" maxHeight="273.0" maxWidth="254.0" minWidth="150.0" prefHeight="273.0" prefWidth="221.0" stylesheets="@style/menuStyle.css" StackPane.alignment="BOTTOM_LEFT">
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="243.750244140625" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="371.8701171875" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints maxHeight="122.3333740234375" minHeight="10.0" prefHeight="56.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="273.0" minHeight="10.0" prefHeight="162.3333740234375" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="273.0" minHeight="10.0" prefHeight="91.6666259765625" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <children>
+                <Slider fx:id="musicSlider" blockIncrement="0.05" majorTickUnit="0.2" max="0.9" maxHeight="150.0" min="0.5" minorTickCount="1" orientation="VERTICAL" prefHeight="150.0" prefWidth="20.0" value="1.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                    <GridPane.margin>
+                        <Insets />
+                    </GridPane.margin>
+                </Slider>
+                <Slider fx:id="fxSlider" blockIncrement="0.1" max="1.0" maxHeight="150.0" orientation="VERTICAL" prefHeight="150.0" prefWidth="20.0" value="1.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+                <Label fx:id="lblMusic" text="Music" GridPane.halignment="CENTER" />
+                <Label fx:id="lblSoundEffects" text="Sound Effects" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+            <ImageView fx:id="musicOnImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+               <image>
+                  <Image url="@graphics/soundOn.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="musicOffImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" visible="false" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+               <image>
+                  <Image url="@graphics/soundOff.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="soundFxOnImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+               <image>
+                  <Image url="@graphics/soundOn.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="soundFxOffImage" fitHeight="50.0" fitWidth="50.0" layoutX="166.0" layoutY="218.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+               <image>
+                  <Image url="@graphics/soundOff.png" />
+               </image>
+            </ImageView>
+            </children>
+         <StackPane.margin>
+            <Insets bottom="65.0" left="24.0" />
+         </StackPane.margin>
+        </GridPane>
+      <Button fx:id="btnSettings" mnemonicParsing="false" onAction="#showSettings" StackPane.alignment="BOTTOM_LEFT">
+         <StackPane.margin>
+            <Insets bottom="15.0" left="20.0" />
+         </StackPane.margin>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+      </Button>
+      <Button fx:id="btnControls" mnemonicParsing="false" onAction="#showControls" StackPane.alignment="BOTTOM_LEFT">
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <StackPane.margin>
+            <Insets bottom="15.0" left="70.0" />
+         </StackPane.margin>
+      </Button>
+      <ImageView fx:id="imvControls" fitHeight="507.0" fitWidth="713.0" pickOnBounds="true" preserveRatio="true" visible="false">
+         <image>
+            <Image url="@graphics/controlsOverlay.png" />
+         </image>
+      </ImageView>
     </children>
 </StackPane>

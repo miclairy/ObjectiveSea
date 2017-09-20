@@ -37,10 +37,11 @@ public class DisplaySwitcher {
         try {
             DisplayUtils.setIsRaceView(false);
             mainMenu = (MainMenuController) replaceSceneContent("main_menu.fxml");
-            mainMenu.setApp(main);
+            mainMenu.setApp(main, gameSounds);
             try {
                 gameSounds.stopEndlessMusic();
-            } catch (Exception e) { }
+            } catch (Exception e) {
+            }
             gameSounds.mainMenuMusic();
             gameSounds.playEndlessMusic();
 
