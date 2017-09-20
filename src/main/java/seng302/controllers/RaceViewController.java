@@ -819,6 +819,11 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
     }
 
+    /**
+     * This function checks to see if the HUD is outside of the game screen and if so snaps it inside onto either
+     * the X or the Y axies.
+     * @param headsUpDisplay The VBox of the HUD which is being clicked on.
+     */
     private void moveHUD(VBox headsUpDisplay) {
         //check if outside bounds
         double outsideX = 0;
