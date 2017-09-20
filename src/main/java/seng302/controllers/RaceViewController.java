@@ -428,7 +428,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         displayBoats.add(displayBoat);
         selectionController.addBoatSelectionHandler(displayBoat);
         controller.addDisplayBoat(displayBoat);
-        controller.makeAnnoDraggable();
+        controller.initCanvasAnchorListeners();
 
         CubicCurve sail = new CubicCurve(0,0, 0,0,0,0, 20*zoomLevel,0);
         sail.setId("boatSail");

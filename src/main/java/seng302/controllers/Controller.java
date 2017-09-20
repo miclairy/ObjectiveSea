@@ -261,10 +261,10 @@ public class Controller implements Initializable, Observer {
 
     @FXML public void exitRunningRace() {
         ConnectionUtils.initiateDisconnect(options.isHost());
+        DisplayUtils.resetZoom();
         displaySwitcher.loadMainMenu();
         soundController.setRunning(false);
         raceViewController.stop();
-        DisplayUtils.resetZoom();
     }
 
     public void exitTerminatedRace() {
@@ -282,8 +282,9 @@ public class Controller implements Initializable, Observer {
 
     /**
      * Takes the displayBoat and makes the annotation of that boat draggable. Via mouse or touch press.
+     * Also sets up the click and drag panning of the course functionality
      */
-    public void makeAnnoDraggable() {
+    public void initCanvasAnchorListeners() {
 
         canvasAnchor.setOnMousePressed(event -> {
             for(BoatDisplay boatDisplay : boatDisplayArrayList) {
