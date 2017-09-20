@@ -10,6 +10,7 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Cursor;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -136,8 +137,12 @@ public class Controller implements Initializable, Observer {
     private DisplaySwitcher displaySwitcher;
     private boolean scoreboardVisible = true;
     private boolean moveAnnotation = false;
+    private boolean moveHUD = false;
+    private boolean hasHUDXMoved = false;
+    private boolean hasHUDYMoved = false;
     private ArrayList<BoatDisplay> boatDisplayArrayList = new ArrayList<>();
     private BoatDisplay currentDisplayBoat;
+    private boolean dragging = false;
 
 
 
@@ -182,7 +187,6 @@ public class Controller implements Initializable, Observer {
 
         raceCompetitorOverview();
         startersOverlay.toFront();
-        initDisplayDrag();
         initZoom();
     }
 
@@ -256,6 +260,7 @@ public class Controller implements Initializable, Observer {
         initZoomEventListener();
         initKeyPressListener();
         initTouchDisplayDrag();
+        resetHUDPosition();
         raceViewController.setupRaceView(options);
         initHiddenScoreboard();
         raceViewController.updateWindArrow();
@@ -279,74 +284,178 @@ public class Controller implements Initializable, Observer {
         boatDisplayArrayList.add(boatDisplay);
     }
 
+    public boolean hasHUDXMoved() {
+        return hasHUDXMoved;
+    }
+
+    public void setHUDXMoved(boolean hasHUDXMoved) {
+        this.hasHUDXMoved = hasHUDXMoved;
+    }
+
+    public boolean hasHUDYMoved() {
+        return hasHUDYMoved;
+    }
+
+    public void setHUDYMoved(boolean hasHUDYMoved) {
+        this.hasHUDYMoved = hasHUDYMoved;
+    }
+
     private static class Delta {
         public static double x;
         public static double y;
     }
 
     /**
-     * Takes the displayBoat and makes the annotation of that boat draggable. Via mouse or touch press.
+     * Takes the displayBoat and makes the annotation of that boat draggable.
+     * As well as making the HUD draggable.
+     * Via mouse or touch press.
      */
-    public void makeAnnoDraggable() {
+    public void makeItemsDraggable() {
 
         canvasAnchor.setOnMousePressed(event -> {
             for(BoatDisplay boatDisplay : boatDisplayArrayList) {
 
-                VBox boatAnnotation = boatDisplay.getAnnotation();
-
-                double annotationXPosition = event.getX() - boatAnnotation.getLayoutX();
-                double annotationYPosition = event.getY() - boatAnnotation.getLayoutY();
-                double annotationWidth = boatAnnotation.getWidth();
-                double annotationHeight = boatAnnotation.getHeight();
-
-                if(annotationXPosition <= annotationWidth && annotationXPosition >= 0 &&
-                        annotationYPosition <= annotationHeight && annotationYPosition >= 0) {
+                if(checkAnnotationClick(event, boatDisplay)) {
                     moveAnnotation = true;
                     DisplayUtils.externalTouchEvent = true;
                     currentDisplayBoat = boatDisplay;
                 }
+            }
+            if(checkHUDClick(event)) {
+                dragging = true;
+                headsUpDisplay.setCursor(Cursor.MOVE);
+                moveHUD = true;
+                DisplayUtils.externalTouchEvent = true;
             }
         });
 
         canvasAnchor.setOnMouseDragged(event -> {
 
             if(moveAnnotation && DisplayUtils.externalTouchEvent) {
-                if (zoomLevel > 1 || (zoomLevel <= 1 && !isOutsideBounds(currentDisplayBoat.getAnnotation()))) {
-                    if (abs(event.getX() - Delta.x) < DRAG_TOLERANCE &&
-                            abs(event.getY() - Delta.y) < DRAG_TOLERANCE) {
-                        double scaledChangeX = ((event.getX() - Delta.x) / zoomLevel);
-                        double scaledChangeY = ((event.getY() - Delta.y) / zoomLevel);
-                        currentDisplayBoat.setAnnoOffsetX(currentDisplayBoat.getAnnoOffsetX() + scaledChangeX);
-                        currentDisplayBoat.setAnnoOffsetY(currentDisplayBoat.getAnnoOffsetY() + scaledChangeY);
-                    }
-                }
-                Delta.x = event.getX();
-                Delta.y = event.getY();
-
+                moveAnnotation(event);
                 DisplayUtils.externalDragEvent = true;
+            } else if(moveHUD) {
+                moveHUD(event);
+                DisplayUtils.externalDragEvent = true;
+                hasHUDXMoved = false;
+                hasHUDYMoved = false;
+            } else if (DisplayUtils.zoomLevel != 1 && !event.isSynthesized() && !DisplayUtils.externalDragEvent) {
+                displayDrag(event);
             }
+
         });
 
         canvasAnchor.setOnMouseReleased(event -> {
+            dragging = false;
+            headsUpDisplay.setCursor(Cursor.HAND);
             moveAnnotation = false;
+            moveHUD = false;
             DisplayUtils.externalTouchEvent = false;
+            DisplayUtils.externalDragEvent = false;
+        });
+
+        headsUpDisplay.setOnMouseMoved(event -> {
+            if(!dragging) {
+                headsUpDisplay.setCursor(Cursor.HAND);
+            }
         });
     }
 
+    /**
+     * Checks to see if the mouse is clicked onto the annotation of a boat or not.
+     * @param event Mouse event that is clicking on the annotation.
+     * @param boatDisplay Boat that the annotation belongs to.
+     * @return boolean that is true if the mouse click is on the annotation or false if it is not.
+     */
+    private boolean checkAnnotationClick(MouseEvent event, BoatDisplay boatDisplay) {
+        VBox boatAnnotation = boatDisplay.getAnnotation();
+
+        double annotationXPosition = event.getX() - boatAnnotation.getLayoutX();
+        double annotationYPosition = event.getY() - boatAnnotation.getLayoutY();
+        double annotationWidth = boatAnnotation.getWidth();
+        double annotationHeight = boatAnnotation.getHeight();
+
+        return (annotationXPosition <= annotationWidth && annotationXPosition >= 0 &&
+                annotationYPosition <= annotationHeight && annotationYPosition >= 0);
+    }
+
+    /**
+     * Checks to see if the mouse is clicked onto the HUD or not.
+     * @param event Mouse event to check if the mouse is clicked on the HUD
+     * @return boolean that is true if the mouse click is on the HUD or false if it is not.
+     */
+    private boolean checkHUDClick(MouseEvent event) {
+        double HUDXPosition = event.getX() - headsUpDisplay.getLayoutX();
+        double HUDYPosition = event.getY() - headsUpDisplay.getLayoutY();
+        double HUDWidth = headsUpDisplay.getWidth();
+        double HUDHeight = headsUpDisplay.getHeight();
+
+        return (HUDXPosition <= HUDWidth && HUDXPosition >= 0 &&
+                HUDYPosition <= HUDHeight && HUDYPosition >= 0);
+    }
+
+    /**
+     * Takes the mouse event x and y coordinates if the mouse is clicked on an annotation and moves the annotation
+     * correctly in accordance to the position of the mouse.
+     * @param event Mouse event to get the x and y coordinates of the mouse to set correct placement.
+     */
+    private void moveAnnotation(MouseEvent event) {
+        if (zoomLevel > 1 || (zoomLevel <= 1 && !isOutsideBounds(currentDisplayBoat.getAnnotation()))) {
+            if (abs(event.getX() - Delta.x) < DRAG_TOLERANCE &&
+                    abs(event.getY() - Delta.y) < DRAG_TOLERANCE) {
+                double scaledChangeX = ((event.getX() - Delta.x) / zoomLevel);
+                double scaledChangeY = ((event.getY() - Delta.y) / zoomLevel);
+                currentDisplayBoat.setAnnoOffsetX(currentDisplayBoat.getAnnoOffsetX() + scaledChangeX);
+                currentDisplayBoat.setAnnoOffsetY(currentDisplayBoat.getAnnoOffsetY() + scaledChangeY);
+            }
+        }
+        Delta.x = event.getX();
+        Delta.y = event.getY();
+    }
+
+    /**
+     * Takes the mouse event x and y coordinates if the mouse is clicked on the HUD and moves the annotation
+     * correctly in accordance to the position of the mouse.
+     * @param event Mouse event to get the x and y coordinates of the mouse to set correct placement.
+     */
+    private void moveHUD(MouseEvent event) {
+        if(zoomLevel > 1 || (zoomLevel <= 1 && !isOutsideBounds(headsUpDisplay))) {
+            if (abs(event.getX() - Delta.x) < DRAG_TOLERANCE &&
+                    abs(event.getY() - Delta.y) < DRAG_TOLERANCE) {
+                double scaledChangeX = (event.getX() - Delta.x);
+                double scaledChangeY = (event.getY() - Delta.y);
+                headsUpDisplay.relocate(headsUpDisplay.getLayoutX() + scaledChangeX, headsUpDisplay.getLayoutY() + scaledChangeY);
+            }
+        }
+        Delta.x = event.getX();
+        Delta.y = event.getY();
+    }
+
+    /**
+     * Checks to see if the mouse is clicked on the HUD, and if so, if double click resets the HUD to its default
+     * position in the top left corner.
+     */
+    private void resetHUDPosition() {
+        canvasAnchor.setOnMouseClicked(event -> {
+            if(checkHUDClick(event)) {
+                if (event.getClickCount() == 2) {
+                    hasHUDXMoved = false;
+                    hasHUDYMoved = false;
+                    headsUpDisplay.relocate(150, 10);
+                }
+            }
+        });
+    }
 
     /**
      * initilizes display listeners to detect dragging on display. Calls DisplayUtils to move display
      * and redraw course and paths as appropriate.
      */
-    private void initDisplayDrag() {
-        canvasAnchor.setOnMouseDragged(event -> {
-            if (DisplayUtils.zoomLevel != 1 && !event.isSynthesized() && !DisplayUtils.externalDragEvent) {
-                DisplayUtils.dragDisplay((int) event.getX(), (int) event.getY());
-                raceViewController.redrawCourse();
-                raceViewController.redrawBoatPaths();
-                selectionController.deselectBoat();
-            }
-        });
+    private void displayDrag(MouseEvent event) {
+        DisplayUtils.dragDisplay((int) event.getX(), (int) event.getY());
+        raceViewController.redrawCourse();
+        raceViewController.redrawBoatPaths();
+        selectionController.deselectBoat();
     }
 
     /**
@@ -708,7 +817,7 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
             if (options.isParticipant() && infoDisplay != null) {
-                AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, false);
+                headsUpDisplay.setVisible(true);
             }
             scoreboardVisible = false;
             raceViewController.shiftArrow(false);
@@ -723,7 +832,7 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(quickMenu, 115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true);
             if(infoDisplay != null){
-                AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, true);
+                headsUpDisplay.setVisible(false);
             }
             scoreboardVisible = true;
             raceViewController.shiftArrow(true);
@@ -912,5 +1021,9 @@ public class Controller implements Initializable, Observer {
 
     public void setSoundController(SoundController soundController) {
         this.soundController = soundController;
+    }
+
+    public VBox getHUD() {
+        return headsUpDisplay;
     }
 }
