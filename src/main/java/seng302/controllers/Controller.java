@@ -389,8 +389,16 @@ public class Controller implements Initializable, Observer {
 
     private void resetHUDPosition() {
         canvasAnchor.setOnMouseClicked(event -> {
-            if(event.getClickCount() == 2) {
-                headsUpDisplay.relocate(150, 10);
+            double HUDXPosition = event.getX() - headsUpDisplay.getLayoutX();
+            double HUDYPosition = event.getY() - headsUpDisplay.getLayoutY();
+            double HUDWidth = headsUpDisplay.getWidth();
+            double HUDHeight = headsUpDisplay.getHeight();
+
+            if(HUDXPosition <= HUDWidth && HUDXPosition >= 0 &&
+                    HUDYPosition <= HUDHeight && HUDYPosition >= 0) {
+                if (event.getClickCount() == 2) {
+                    headsUpDisplay.relocate(150, 10);
+                }
             }
         });
     }
@@ -765,7 +773,7 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
             if (options.isParticipant() && infoDisplay != null) {
-                AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, false);
+                headsUpDisplay.setVisible(true);
             }
             scoreboardVisible = false;
             raceViewController.shiftArrow(false);
@@ -780,7 +788,7 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(quickMenu, 115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true);
             if(infoDisplay != null){
-                AnimationUtils.toggleHiddenBoardNodes(headsUpDisplay, true);
+                headsUpDisplay.setVisible(false);
             }
             scoreboardVisible = true;
             raceViewController.shiftArrow(true);
