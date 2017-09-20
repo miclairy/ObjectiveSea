@@ -7,13 +7,13 @@ import seng302.models.*;
 import seng302.utilities.ConnectionUtils;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import static seng302.data.AC35StreamMessage.GAME_CANCEL;
 import static seng302.data.AC35StreamXMLMessage.BOAT_XML_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.RACE_XML_MESSAGE;
 import static seng302.data.AC35StreamXMLMessage.REGATTA_XML_MESSAGE;
@@ -47,11 +47,26 @@ public class GameServer implements Runnable, Observer {
         connectionManager = new ConnectionManager(options.getPort(), true);
         connectionManager.addObserver(this);
         if (options.isMultiplayer()) {
-            Socket gameRecorderSocket = new Socket(ConnectionUtils.getGameRecorderIP(), ConnectionUtils.getGameRecorderPort());
-            gameRecorderConnection = new ClientSender(gameRecorderSocket);
+            connectToGameRecorder();
         }
         setupNewRaceUpdater(options);
         createPacketForGameRecorder();
+    }
+
+    /**
+     * Attempts to connect to the Game Recorder server as defined in ConnectionUtils.
+     * If there's no connection to the Game Recorder, catches the Exception and leaves gameRecorderConnection as null
+     */
+    private void connectToGameRecorder() {
+        Socket gameRecorderSocket = null;
+        try {
+            gameRecorderSocket = new Socket(ConnectionUtils.getGameRecorderIP(), ConnectionUtils.getGameRecorderPort());
+            gameRecorderConnection = new ClientSender(gameRecorderSocket);
+        } catch (ConnectException e) {
+            System.err.println("Game Server cannot connect to Game Recorder.");
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     /**
