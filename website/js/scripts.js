@@ -9,8 +9,8 @@
 function loadControls(){
 
   console.log("hello");
-  $("#codeForm").toggle(2000);
-    $("#controls").toggle(2000);
+  $("#codeForm").fadeOut(1000);
+    $("#controls").fadeIn(1000);
 
 
 }
