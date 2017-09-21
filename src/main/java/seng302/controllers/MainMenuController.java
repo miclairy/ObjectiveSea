@@ -712,8 +712,8 @@ public class MainMenuController implements Initializable{
     }
 
     private void disableJoinButtons(Boolean disable) {
-        btnSpectate.setDisable(disable);
-        btnCompete.setDisable(disable);
+        btnSpectate.setMouseTransparent(disable);
+        btnCompete.setMouseTransparent(disable);
     }
 
     /**
