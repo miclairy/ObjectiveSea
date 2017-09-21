@@ -21,6 +21,8 @@ import static seng302.data.registration.RegistrationResponseStatus.OUT_OF_SLOTS;
 import static seng302.data.registration.RegistrationResponseStatus.RACE_UNAVAILABLE;
 import static seng302.data.registration.RegistrationResponseStatus.SPECTATOR_SUCCESS;
 
+import java.util.Random;
+
 /**
  * Created by dda40 on 11/09/17.
  *
@@ -443,5 +445,14 @@ public class GameServer implements Runnable, Observer {
      */
     private void sendPacket(byte[] packet) {
         connectionManager.sendToClients(packet);
+    }
+
+    /**
+     * Generates a random 4 digit code
+     * @return 4 digit code between [0000, 9999]
+     */
+    private String generateFourDigitPartyCode() {
+        Random rand = new Random();
+        return String.format("%04d", rand.nextInt(10000));
     }
 }
