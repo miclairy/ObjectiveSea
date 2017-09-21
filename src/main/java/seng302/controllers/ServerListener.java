@@ -45,7 +45,6 @@ public class ServerListener extends Receiver implements Runnable{
         while(clientConnected){
             try {
                 DataInput dataInput = new DataInputStream(getSocket().getInputStream());
-
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
                 int messageLength = byteArrayRangeToInt(header, MESSAGE_LENGTH.getStartIndex(), MESSAGE_LENGTH.getEndIndex());

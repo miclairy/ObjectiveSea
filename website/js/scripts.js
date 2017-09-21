@@ -11,7 +11,6 @@ var insults = ["probably never play this game again.", "No one has ever sailed a
 function submitButtonPressed(){
 
   //TODO: authenitifaction and game connection logic goes here
-
     if(true){
         initControls("Emerites Team New Zealand");
         changeColor("skyblue");
@@ -52,10 +51,3 @@ function changeColor(color){
 
 
 }
-
-
-let socket = new WebSocket("ws://132.181.13.96:2828", "checkingLifeWorks");
-
-socket.onopen = function (event) {
-  socket.sendBytes("hello");
-};
