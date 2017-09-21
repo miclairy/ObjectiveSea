@@ -66,7 +66,6 @@ public class Controller implements Initializable, Observer {
     @FXML public ImageView mapImageView;
     @FXML private Slider zoomSlider;
     @FXML public Label lblUserHelp;
-    @FXML public Label lblUserFinish;
     @FXML public Label lblWindSpeed;
     @FXML public Circle windCircle;
     @FXML public Circle nextMarkCircle;
