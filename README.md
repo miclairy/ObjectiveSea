@@ -103,3 +103,12 @@ Example usage:
 <code>java -jar target/app-0.0.jar server -p 4941 -n 2 -s 30 -m Race.xml -r 3</code>
 
 
+<h2>Running a Game Recorder Server UI</h2>
+
+A Game Recorder server will keep track of currently available games and inform clients of them.
+There is a GAME_RECORDER_IP and PORT in ConnectionUtils which should point to a running Game Recorder<br>
+The game can be used normally if there is no Game Recorder running, however you won't be able to see any other games on the join game screen<br>
+
+The command to run the jar as a game recorder server is as follows:<br>
+<code>java -jar [jar location] server -g</code>
+<br><br>

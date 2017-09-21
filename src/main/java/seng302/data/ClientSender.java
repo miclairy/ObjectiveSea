@@ -14,26 +14,14 @@ import java.net.SocketException;
 public class ClientSender {
 
     private Socket connection;
-//    private Socket vmConnection;
 
     public ClientSender(Socket socket) {
         this.connection = socket;
-//        try {
-//            this.vmConnection = new Socket(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
-//        } catch (ConnectException e) {
-//            System.out.println("Client: Unable to reach VM server");
-//        } catch (IOException e) {
-//            System.out.println("Client: Unable to reach VM server");
-//        }
     }
 
     public void sendToServer(byte[] packet) {
         sendPacket(packet, connection);
     }
-
-//    public void sendToVM(byte[] packet){
-//        // sendPacket(packet, vmConnection);
-//    }
 
     /**
      * sends a packet to a given socket
@@ -44,6 +32,8 @@ public class ClientSender {
         try {
             DataOutputStream clientOutput = new DataOutputStream(socket.getOutputStream());
             clientOutput.write(packet);
+        } catch (SocketException e) {
+            System.out.println("Client: Unable to reach game server");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (NullPointerException e){
@@ -51,4 +41,11 @@ public class ClientSender {
         }
     }
 
+    public void closeConnection() {
+        try {
+            connection.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

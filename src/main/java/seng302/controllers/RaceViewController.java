@@ -293,6 +293,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             addToBoatPath(boatDisplay, point);
         }
         moveBoatAnnotation(boatDisplay.getAnnotation(), point, boatDisplay);
+        moveHUD(controller.getHUD());
         manageStartTiming(boatDisplay);
         if(boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF)){
             boatDisplay.unFocus();
@@ -428,7 +429,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         displayBoats.add(displayBoat);
         selectionController.addBoatSelectionHandler(displayBoat);
         controller.addDisplayBoat(displayBoat);
-        controller.makeAnnoDraggable();
+        controller.makeItemsDraggable();
 
         CubicCurve sail = new CubicCurve(0,0, 0,0,0,0, 20*zoomLevel,0);
         sail.setId("boatSail");
@@ -793,24 +794,21 @@ public class RaceViewController extends AnimationTimer implements Observer {
 
         annotation.getTransforms().clear();
         annotation.getTransforms().add(new Rotate(-selectionController.getRotationOffset(), annotation.getWidth()/2, annotation.getHeight()/2));
-
-        if (zoomLevel <=1){
-            //check if outside bounds
-            double outsideX = 0;
-            double outsideY = 0;
-            if(annotation.getBoundsInParent().getMaxX() > Controller.getCanvasWidth()){
-                outsideX += annotation.getBoundsInParent().getMaxX() - Controller.getCanvasWidth();
-            } else if (annotation.getBoundsInParent().getMinX() < 0){
-                outsideX += annotation.getBoundsInParent().getMinX();
-            }
-            if(annotation.getBoundsInParent().getMaxY() > Controller.getCanvasHeight()){
-                outsideY += annotation.getBoundsInParent().getMaxY() - Controller.getCanvasHeight();
-            } else if (annotation.getBoundsInParent().getMinY() < 0){
-                outsideY += annotation.getBoundsInParent().getMinY();
-            }
-            boatDisplay.setAnnoOffsetX(boatDisplay.getAnnoOffsetX() - outsideX);
-            boatDisplay.setAnnoOffsetY(boatDisplay.getAnnoOffsetY() - outsideY);
+        //check if outside bounds
+        double outsideX = 0;
+        double outsideY = 0;
+        if(annotation.getBoundsInParent().getMaxX() > Controller.getCanvasWidth()){
+            outsideX += annotation.getBoundsInParent().getMaxX() - Controller.getCanvasWidth();
+        } else if (annotation.getBoundsInParent().getMinX() < 0){
+            outsideX += annotation.getBoundsInParent().getMinX();
         }
+        if(annotation.getBoundsInParent().getMaxY() > Controller.getCanvasHeight()){
+            outsideY += annotation.getBoundsInParent().getMaxY() - Controller.getCanvasHeight();
+        } else if (annotation.getBoundsInParent().getMinY() < 0){
+            outsideY += annotation.getBoundsInParent().getMinY();
+        }
+        boatDisplay.setAnnoOffsetX(boatDisplay.getAnnoOffsetX() - outsideX);
+        boatDisplay.setAnnoOffsetY(boatDisplay.getAnnoOffsetY() - outsideY);
 
 
         if(!boatDisplay.getAnnoHasMoved()){
@@ -819,6 +817,36 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     (point.getY() + boatDisplay.getAnnoOffsetY() * zoomLevel)
             );
         }
+    }
+
+    /**
+     * This function checks to see if the HUD is outside of the game screen and if so snaps it inside onto either
+     * the X or the Y axies.
+     * @param headsUpDisplay The VBox of the HUD which is being clicked on.
+     */
+    private void moveHUD(VBox headsUpDisplay) {
+        //check if outside bounds
+        double outsideX = 0;
+        double outsideY = 0;
+
+        if(headsUpDisplay.getBoundsInParent().getMaxX() > Controller.getCanvasWidth()){
+            outsideX += headsUpDisplay.getBoundsInParent().getMaxX() - Controller.getCanvasWidth();
+            controller.setHUDXMoved(true);
+        } else if (headsUpDisplay.getBoundsInParent().getMinX() < 0){
+            outsideX += headsUpDisplay.getBoundsInParent().getMinX();
+        }
+        if(headsUpDisplay.getBoundsInParent().getMaxY() > Controller.getCanvasHeight()){
+            outsideY += headsUpDisplay.getBoundsInParent().getMaxY() - Controller.getCanvasHeight();
+            controller.setHUDYMoved(true);
+        } else if (headsUpDisplay.getBoundsInParent().getMinY() < 0){
+            outsideY += headsUpDisplay.getBoundsInParent().getMinY();
+        }
+        if(controller.hasHUDXMoved()) {
+            outsideX += headsUpDisplay.getBoundsInParent().getMaxX() - Controller.getCanvasWidth();
+        } else if(controller.hasHUDYMoved()) {
+            outsideY += headsUpDisplay.getBoundsInParent().getMaxY() - Controller.getCanvasHeight();
+        }
+        headsUpDisplay.relocate((headsUpDisplay.getLayoutX() - outsideX), (headsUpDisplay.getLayoutY() - outsideY));
     }
 
     /**

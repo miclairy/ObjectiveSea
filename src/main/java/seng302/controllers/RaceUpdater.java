@@ -1,6 +1,7 @@
 package seng302.controllers;
 
 import seng302.data.BoatStatus;
+import seng302.data.CourseName;
 import seng302.data.RaceStatus;
 import seng302.data.RaceVisionXMLParser;
 import seng302.models.*;
@@ -49,6 +50,7 @@ public class RaceUpdater implements Runnable {
         raceVisionXMLParser.setCourseFile(selectedCourse);
         potentialCompetitors = raceVisionXMLParser.importDefaultStarters();
         race = raceVisionXMLParser.importRace();
+        race.setRegattaName(CourseName.courseNameFromXMLName(selectedCourse));
         Course course = race.getCourse();
         course.setTrueWindSpeed(initialWindSpeed);
         course.setWindDirection(course.getWindDirectionBasedOnGates());
@@ -428,5 +430,6 @@ public class RaceUpdater implements Runnable {
     public CollisionManager getCollisionManager() {
         return collisionManager;
     }
+
 
 }
