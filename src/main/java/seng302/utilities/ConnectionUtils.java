@@ -58,8 +58,7 @@ public class ConnectionUtils {
 
     /**
      * gets users public ip address from AWS ping servers.
-     *
-     * @return the IP address or regatta name if not found
+     * @return the user's public IP address or null if there was issue connecting to AWS.
      */
     public static String getPublicIp() {
         try{

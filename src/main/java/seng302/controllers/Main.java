@@ -261,7 +261,7 @@ public class Main extends Application {
             message = "There was not a free slot for you to join the server.\n\n";
             if (isParticipant) message += "You may be able to join as a spectator instead.";
         } else if (ex instanceof RaceUnavailableException) {
-            message = "The race is not currently available.\n\n";
+            message = "The race has not started yet.\n\n";
         }
         alert.setContentText(message);
         alert.showAndWait();
