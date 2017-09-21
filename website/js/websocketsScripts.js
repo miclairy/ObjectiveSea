@@ -2,39 +2,60 @@
  * Created by cba62 on 21/09/17.
  */
 
-
-var mySocket = new WebSocket("ws://132.181.14.60:2828");
+var mySocket = new WebSocket("ws://132.181.15.179:2827");
 
 mySocket.onerror = function (event) {
   console.log(event);
 }
 
 mySocket.onopen = function () {
-  console.log("baa baa black sheep");
-
-    let header = [];
-    header = addIntToByteArray(header, 0, 0x47, 1);
-    header = addIntToByteArray(header, 1, 0x83, 1);
-    header = addIntToByteArray(header, 2, 55, 1);
-    // header.push(135462345);
-    // header.push(101);
-    // header.push(4);
-    alert(header);
-    mySocket.send(header);
+    console.log("WebSocket connection established.");
 };
 
 mySocket.onmessage = function() {
-  alert("onmeassage");
+  alert("onmessage");
 }
 
 mySocket.onclose = function () {
      alert("onclose");
 }
 
-function addIntToByteArray(array, start, item, numBytes) {
-    for (let i = 0; i < numBytes; i ++) {
-        array[start + i] = (byte) (item >> i * 8);
+createHeader = function (type, messageLength) {
+    let HEADER_LENGTH = 15;
+    let header = (function (s) {
+        let a = [];
+        while (s-- > 0)
+            a.push(0);
+        return a;
+    })(HEADER_LENGTH);
+    header[0] = (71 | 0);
+    header[1] = (131 | 0);
+    this.addIntIntoByteArray(header, 2, 1, type);
+    this.addIntIntoByteArray(header, 13, 2, messageLength);
+    return header;
+}
 
-      }
-    return array
+
+addIntIntoByteArray = function (array, start, numBytes, item) {
+    for (let i = 0; i < numBytes; i++) {
+        array[start + i] = (item >> (i * 8)) & (0xFF);
+    }
+};
+
+requestGame = function(code) {
+    var header = createHeader(114, 2);
+    let body = [0, 0];
+    addIntIntoByteArray(body, 0, 2, code);
+    var crc = createCrc(header, body);
+    var packet = header.concat(body).concat(crc);
+    console.log(packet);
+    mySocket.send(packet);
+}
+
+createCrc = function(header, body){
+    let both = header.concat(body);
+    let crc = parseInt(crc32(both), 16);
+    let array = [0, 0, 0, 0];
+    addIntIntoByteArray(array, 0, 4, crc);
+    return array;
 }

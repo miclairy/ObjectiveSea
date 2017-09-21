@@ -10,7 +10,7 @@ var insults = ["probably never play this game again.", "No one has ever sailed a
 
 function submitButtonPressed(){
 
-  //TODO: authenitifaction and game connection logic goes here
+    requestGame($("#codeBox").val());
     if(true){
         initControls("Emerites Team New Zealand");
         changeColor("skyblue");
@@ -50,7 +50,4 @@ function changeColor(color){
     $(".directionArrow").css("color", color);
     $("#infoScreen").css("background-color", color);
     $("body").css("background-color", color);
-
-
-
 }
