@@ -228,67 +228,6 @@ public class SelectionController extends Observable {
     }
 
     /**
-     * Assigns drag listeners to Drag handle objects
-     * @param dragHandle the object that is dragged
-     * @param boatDisplay the boat the object is attached to
-     */
-    void makeDraggable(Node dragHandle, BoatDisplay boatDisplay){
-        dragHandle.requestFocus();
-
-        root.onKeyPressedProperty().bind(dragHandle.onKeyPressedProperty());
-
-        dragHandle.setOnMouseDragged(me -> {
-            root.setCursor(Cursor.CLOSED_HAND);
-            VBox annotation = boatDisplay.getAnnotation();
-
-            if(zoomLevel > 1 || (zoomLevel <=1 && !isOutsideBounds(annotation))){
-                //inside bounds
-                if(abs(me.getX() - Delta.x) < DRAG_TOLERANCE &&
-                        abs(me.getY() - Delta.y) < DRAG_TOLERANCE) {
-                    double scaledChangeX = ((me.getX() - Delta.x)/zoomLevel);
-                    double scaledChangeY = ((me.getY() - Delta.y)/zoomLevel);
-                    boatDisplay.setAnnoOffsetX(boatDisplay.getAnnoOffsetX() + scaledChangeX);
-                    boatDisplay.setAnnoOffsetY(boatDisplay.getAnnoOffsetY() + scaledChangeY);
-                }
-            }
-            Delta.x = me.getX();
-            Delta.y = me.getY();
-
-            DisplayUtils.externalDragEvent = true;
-        });
-
-        dragHandle.setOnMouseExited(me ->{
-            root.setCursor(Cursor.DEFAULT);
-        });
-
-        dragHandle.setOnMouseEntered(me ->{
-            root.setCursor(Cursor.OPEN_HAND);
-        });
-
-        dragHandle.setOnMousePressed(me ->{
-            root.setCursor(Cursor.CLOSED_HAND);
-            dragHandle.setScaleX(1.2);
-            dragHandle.setScaleY(1.2);
-            boatDisplay.getAnnotation().setScaleX(1.2);
-            boatDisplay.getAnnotation().setScaleY(1.2);
-        });
-
-        dragHandle.setOnMouseReleased(me ->{
-            root.setCursor(Cursor.OPEN_HAND);
-
-            dragHandle.setScaleX(1);
-            dragHandle.setScaleY(1);
-            boatDisplay.getAnnotation().setScaleX(1);
-            boatDisplay.getAnnotation().setScaleY(1);
-        });
-    }
-
-    private static class Delta {
-        public static double x;
-        public static double y;
-    }
-
-    /**
      * adds event hadnlers so we can detect if the user has selected a boat
      * @param boat
      */

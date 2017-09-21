@@ -45,16 +45,6 @@ public class GameClient extends Client{
         manageServerResponse();
     }
 
-    public void updateVM(Double speedScale, Integer minParticipants, Integer serverPort, String publicIp, int currentCourseIndex){
-        int competitors = 0;
-        if(race != null){
-            competitors = race.getCompetitors().size();
-        }
-        byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(speedScale, minParticipants, serverPort, publicIp, currentCourseIndex, competitors);
-        System.out.println("Client: Updating VM");
-        //sender.sendToVM(registerGamePacket);
-    }
-
     @Override
     public void run() {
         System.out.println("Client: Successfully Joined Game");
@@ -164,11 +154,6 @@ public class GameClient extends Client{
      * notfies the server if the disconnect person is the host
      */
     public void initiateClientDisconnect() {
-        if (options.isHost()){
-            System.out.println("Client: Cancelling race");
-            byte[] gameClosePacket = packetBuilder.createGameCancelPacket(GAME_CANCEL);
-            //sender.sendToVM(gameClosePacket);
-        }
         clientListener.disconnectClient();
         if (options.isParticipant()) {
             race.getBoatById(clientID).setStatus(BoatStatus.DNF);

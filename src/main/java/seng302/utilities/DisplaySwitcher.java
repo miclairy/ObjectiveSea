@@ -23,6 +23,7 @@ public class DisplaySwitcher {
     private Main main;
     private static GameSounds gameSounds = new GameSounds();
     private Controller raceController;
+    private MainMenuController mainMenu;
 
     public DisplaySwitcher(Main main, Stage stage){
         this.stage = stage;
@@ -35,7 +36,7 @@ public class DisplaySwitcher {
     public void loadMainMenu() {
         try {
             DisplayUtils.setIsRaceView(false);
-            MainMenuController mainMenu = (MainMenuController) replaceSceneContent("main_menu.fxml");
+            mainMenu = (MainMenuController) replaceSceneContent("main_menu.fxml");
             mainMenu.setApp(main, gameSounds);
             try {
                 gameSounds.stopEndlessMusic();
@@ -62,6 +63,12 @@ public class DisplaySwitcher {
             soundController.setRunning(true);
             Thread soundControllerThread = new Thread(soundController);
             soundControllerThread.start();
+
+            if (mainMenu.getClient() != null) {
+                mainMenu.getClient().stopPolling();
+                mainMenu.getClient().getSender().closeConnection();
+            }
+
             raceController = (Controller) replaceSceneContent("race_view.fxml");
             raceController.setApp(options, this, scene);
             raceController.setSoundController(soundController);

@@ -43,7 +43,7 @@ public abstract class Client implements Runnable, Observer {
         int connectionAttempts = 0;
         while(clientListener.getSocket() == null) {
             if(clientListener.isHasConnectionFailed()){
-                throw new NoConnectionToServerException(true, "Connection Failed. Port number is invalid.");
+                throw new NoConnectionToServerException(true, "Connection Failed.");
             }else if(connectionAttempts < MAX_CONNECTION_ATTEMPTS){
                 try {
                     Thread.sleep(WAIT_MILLISECONDS);
@@ -53,6 +53,7 @@ public abstract class Client implements Runnable, Observer {
                 connectionAttempts++;
             } else {
                 stopDataStreamReader();
+                System.out.println("Client: Server not found \uD83D\uDD25 \uD83D\uDE2B");
                 throw new NoConnectionToServerException(false, "Maximum connection attempts exceeded while trying to connect to server. Port or IP may not be valid.");
             }
         }
@@ -98,7 +99,10 @@ public abstract class Client implements Runnable, Observer {
         if(dataStreamReaderThread != null){
             dataStreamReaderThread.stop();
             this.clientListener = null;
-            System.out.println("Client: Server not found \uD83D\uDD25 \uD83D\uDE2B");
         }
+    }
+
+    public ClientSender getSender() {
+        return sender;
     }
 }
