@@ -802,15 +802,6 @@ public class Controller implements Initializable, Observer {
         DisplayUtils.fadeInFadeOutNodeTransition(lblUserHelp, 1, 2000);
     }
 
-    public void setUserFinishLabel() {
-        lblUserFinish.setOpacity(0);
-        lblUserFinish.setPrefWidth(canvasWidth);
-        lblUserFinish.setMaxWidth(canvasWidth);
-        lblUserFinish.setMinWidth(canvasWidth);
-        lblUserFinish.setText("Congratulations, you have finished the race!!");
-        DisplayUtils.fadeInFadeOutNodeTransition(lblUserFinish, 1, 2000);
-    }
-
     /**
      * handles the toggling of screen elemnts when the side panel is toggled on and off
      */
