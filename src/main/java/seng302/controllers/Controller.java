@@ -68,6 +68,7 @@ public class Controller implements Initializable, Observer {
     @FXML public ImageView mapImageView;
     @FXML private Slider zoomSlider;
     @FXML public Label lblUserHelp;
+    @FXML public Label lblUserFinish;
     @FXML public Label lblWindSpeed;
     @FXML public Circle windCircle;
     @FXML public Circle nextMarkCircle;
@@ -693,6 +694,15 @@ public class Controller implements Initializable, Observer {
         lblUserHelp.setMinWidth(canvasWidth);
         lblUserHelp.setText(helper);
         DisplayUtils.fadeInFadeOutNodeTransition(lblUserHelp, 1, 2000);
+    }
+
+    public void setUserFinishLabel() {
+        lblUserFinish.setOpacity(0);
+        lblUserFinish.setPrefWidth(canvasWidth);
+        lblUserFinish.setMaxWidth(canvasWidth);
+        lblUserFinish.setMinWidth(canvasWidth);
+        lblUserFinish.setText("Congratulations, you have finished the race!!");
+        DisplayUtils.fadeInFadeOutNodeTransition(lblUserFinish, 1, 2000);
     }
 
     /**

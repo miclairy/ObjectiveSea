@@ -104,6 +104,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private Color RED_HIGHTLIGHT_COLOR = Color.valueOf("#c55d4d");
     private Color ORANGE_HIGHTLIGHT_COLOR = Color.valueOf("#c5974d");
     private boolean startedEarlyPenalty = false;
+    private boolean finished = false;
     private enum PenaltyStatus {NO_PENALTY, WARNING, PENALTY}
     private PenaltyStatus penaltyStatus = PenaltyStatus.NO_PENALTY;
 
@@ -481,9 +482,16 @@ public class RaceViewController extends AnimationTimer implements Observer {
             } else {
                 animateBoatHighlightColor(PenaltyStatus.NO_PENALTY, "defaultBoatHighlight");
             }
-        }else{
+        } else {
             animateBoatHighlightColor(PenaltyStatus.NO_PENALTY, "defaultBoatHighlight");
             startedEarlyPenalty = false;
+            if(finished) {
+                return;
+            }
+            if(boat.isFinished()) {
+                controller.setUserFinishLabel();
+                finished = true;
+            }
         }
     }
 
