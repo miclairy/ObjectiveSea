@@ -59,7 +59,6 @@ public class ServerOptions {
         raceXML = DEFAULT_COURSE;
         isTutorial = false;
         numRacesToRun = 1;
-        runRaceManager = false;
         this.mode = mode;
     }
 
