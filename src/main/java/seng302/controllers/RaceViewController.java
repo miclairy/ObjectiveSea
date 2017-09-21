@@ -640,7 +640,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawWindArrow();
 
         if(!options.isTutorial() && !options.isPractice()) {
-            if (scoreBoardController.getCoursePathToggle().isSelected()) {
+            if (scoreBoardController.getCoursePathToggle().isSelected() && !selectionController.isTrackingPoint()) {
                 courseRouteArrows.drawRaceRoute();
             }else {
                 courseRouteArrows.removeRaceRoute();
@@ -1234,7 +1234,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
             if (tracking){
                 redrawCourse();
-                redrawBoatPaths();
+                if(race.getRaceStatus().equals(STARTED)) redrawBoatPaths();
             }
             selectedBoats = selectionController.getSelectedBoats();
         }
