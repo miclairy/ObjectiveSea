@@ -9,6 +9,7 @@ import seng302.controllers.*;
 import seng302.data.registration.ServerFullException;
 import seng302.models.ClientOptions;
 
+import javax.sound.sampled.LineUnavailableException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,7 +40,8 @@ public class DisplaySwitcher {
             mainMenu.setApp(main, gameSounds);
             try {
                 gameSounds.stopEndlessMusic();
-            } catch (Exception e) {
+            } catch (LineUnavailableException e) {
+                e.printStackTrace();
             }
             gameSounds.mainMenuMusic();
             gameSounds.playEndlessMusic();
