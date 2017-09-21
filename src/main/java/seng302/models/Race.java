@@ -62,13 +62,14 @@ public class Race extends Observable{
             Boat boat = boatIdMap.get(sourceID);
             boat.setPosition(lat, lon);
 
-            if((raceStatus.equals(STARTED) && !raceStatus.equals(TERMINATED)) && boat.getPathCoords().size() == 0){
-                boat.addPathCoord(new Coordinate(lat, lon));
+            if(raceStatus.equals(STARTED) && !raceStatus.equals(TERMINATED)){
+                if(boat.getPathCoords().size() == 0){
+                    boat.addPathCoord(new Coordinate(lat, lon));
+                } else if (boat.getHeading() != heading){
+                    boat.addPathCoord(new Coordinate(boat.getCurrentLat(), boat.getCurrentLon()));
+                }
             }
 
-            if ((raceStatus.equals(STARTED) && !raceStatus.equals(TERMINATED)) && (boat.getHeading() != heading)){
-                boat.addPathCoord(new Coordinate(boat.getCurrentLat(), boat.getCurrentLon()));
-            }
             boat.setHeading(heading);
             boat.setCurrentSpeed(speed);
             boat.setTWAofBoat(twa);
