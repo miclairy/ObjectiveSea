@@ -202,31 +202,40 @@ public class RaceViewController extends AnimationTimer implements Observer {
             previousTime = currentTime;
             return;
         }
-        if (race.isTerminated()){
-            if(race.getAbruptEnd()){
-                controller.blurScreen(true);
-                controller.showServerDisconnectError();
-                this.stop();
-            } else if (!options.isPractice()){
-                controller.raceCompetitorOverview();
-                controller.showStarterOverlay();
-                this.stop();
-            } else if (options.isPractice()){
-                controller.displayFinishedPracticePopUp();
-            }
-        } else if (!options.isTutorial()) {
+        if (!options.isTutorial()) {
             controller.updateRaceClock();
+        }
+        if(race.getAbruptEnd()){
+            controller.blurScreen(true);
+            controller.showServerDisconnectError();
+            this.stop();
         }
         if(controller.hasRaceStatusChanged()){
             if(!options.isTutorial() && !options.isPractice()){
                 controller.updatePreRaceScreen();
                 controller.setRaceStatusChanged(false);
             }
+            checkForRaceTermination();
         }
         controller.setTimeZone(race.getUTCOffset());
         controller.updateFPSCounter(currentTime);
         run();
         previousTime = currentTime;
+    }
+
+    /**
+     * checks for termination.
+     * if so, shows finishing overlays or popups as appropriate.
+     */
+    private void checkForRaceTermination() {
+        if (race.isTerminated()){
+            if (!options.isPractice()){
+                controller.raceCompetitorOverview();
+                controller.showStarterOverlay();
+            } else if (options.isPractice()){
+                controller.displayFinishedPracticePopUp();
+            }
+        }
     }
 
     /**
