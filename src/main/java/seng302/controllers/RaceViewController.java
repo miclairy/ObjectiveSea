@@ -241,6 +241,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
             manageBoatInformationFeatures(displayBoat);
             if(displayBoat == currentUserBoatDisplay) {
                 manageNextMarkVisuals();
+                if(displayBoat.getBoat().getStatus() == BoatStatus.FINISHED){
+                    controller.setUserHelpLabel("Congratulations, you have finished the race!");
+                }
             }
         }
 
