@@ -41,6 +41,7 @@ function loadControls(){
 function loadInfoScreen(){
     var rand = insults[Math.floor(Math.random() * insults.length)];
     $("#infoScreenText").html(rand);
+    $("#controls").fadeOut(1000);
     $("#infoScreen").fadeIn(1000);
 }
 
@@ -48,6 +49,8 @@ function changeColor(color){
     $("#controlsPage").css("background-color", color);
     $(".directionArrow").css("color", color);
     $("#infoScreen").css("background-color", color);
+    $("body").css("background-color", color);
+
 
 
 }

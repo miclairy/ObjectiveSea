@@ -18,6 +18,7 @@ div.form{
 }
 
 #codeBox{
+
     max-width: 100%;
     border-radius: 3.125rem 0rem 0rem 3.125rem;
     height: 2.5rem;
@@ -72,6 +73,28 @@ input {
     caret-color: #2a2a2a;
     display: block;
     margin-bottom: .5em;
+}
+
+#codeForm{
+    height: 50vh;
+    background-color: transparent;
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    transition: all 1s ease;
+}
+
+.header{
+    background-color: white !important;
+    width: 100%;
+    height: 3rem !important;
+    top:0;
+    display:block;
+}
+.headerDisappear{
+    display: none !important;
+    top: 0;
+
 }
 
 input[type=submit], input[type=Reset]{ -webkit-appearance:none; }
