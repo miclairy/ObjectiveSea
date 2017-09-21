@@ -9,6 +9,7 @@ import seng302.utilities.ConnectionUtils;
 import seng302.utilities.NoConnectionToServerException;
 import seng302.views.AvailableRace;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -18,22 +19,32 @@ import java.util.*;
 public class MainMenuClient extends Client {
     private ObservableList<AvailableRace> availableRaces = FXCollections.observableArrayList();
     private ArrayList<AvailableRace> receivedRaces = new ArrayList<>();
+    private Boolean pollForRaces;
 
     public MainMenuClient() throws ServerFullException, NoConnectionToServerException {
         this.packetBuilder = new ClientPacketBuilder();
+        setUpDataStreamReader(ConnectionUtils.getGameRecorderIP(), ConnectionUtils.getGameRecorderPort());
+        manageWaitingConnection();
+        pollForRaces = true;
     }
 
     @Override
-    public void run() {
-        while(true){
+    public void run(){
+        this.sender = new ClientSender(clientListener.getSocket());
+        while(pollForRaces){
             try {
-                stopDataStreamReader();
                 checkForRaces();
-                Thread.sleep(5000);
+                Thread.sleep(1000);
                 updateRaces();
+                Thread.sleep(4000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+        try {
+            clientListener.getSocket().close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -50,29 +61,38 @@ public class MainMenuClient extends Client {
      * hands the updating of the available races array, removes
      * races that no longer exist, keeps races that are still running
      */
-    public void updateRaces(){
-        for(AvailableRace newRace : receivedRaces){
-            boolean foundRace = false;
-            for(AvailableRace oldRace : availableRaces){
-                if(newRace.getIpAddress().equals(oldRace.getIpAddress()) && newRace.getNumBoats() == oldRace.getNumBoats()){
-                    foundRace = true;
+    private void updateRaces(){
+        for(AvailableRace newRace : receivedRaces) {
+            Boolean updatedRace = false;
+            for (AvailableRace oldRace : availableRaces) {
+                if (oldRace.equals(newRace)) {
+                    updatedRace = true;
+                    oldRace.setNumBoats(newRace.getNumBoats());
                 }
             }
-            if(!foundRace){
+            if (!updatedRace) {
                 availableRaces.add(newRace);
             }
         }
+        removeDeadRaces();
+    }
+
+    /**
+     * Clears any races that were not in the last receivedRaces list
+     * from the availableRaces list
+     */
+    private void removeDeadRaces() {
         Iterator<AvailableRace> iter = availableRaces.iterator();
         while (iter.hasNext()) {
             AvailableRace race = iter.next();
             boolean exists = false;
             for(AvailableRace newRace : receivedRaces){
-                if (newRace.getIpAddress().equals(race.getIpAddress()) && newRace.getNumBoats() == race.getNumBoats()){
+                if (newRace.equals(race) && newRace.getNumBoats() == race.getNumBoats()){
                     exists = true;
                 }
-                if(!exists){
-                    iter.remove();
-                }
+            }
+            if(!exists){
+                iter.remove();
             }
         }
     }
@@ -82,20 +102,12 @@ public class MainMenuClient extends Client {
     }
 
     /**
-     * queries the known VM address for any running games
+     * queries the known VM address for any pollForRaces games
      */
-    public void checkForRaces(){
+    private void checkForRaces(){
         receivedRaces.clear();
-        setUpDataStreamReader(ConnectionUtils.getVmIpAddress(), ConnectionUtils.getVmPort());
-        try {
-            manageWaitingConnection();
-            RegistrationType regoType = RegistrationType.REQUEST_RUNNING_GAMES;
-            this.sender = new ClientSender(clientListener.getSocket());
-            System.out.println("Sending request games packet");
-            sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
-        } catch (NoConnectionToServerException e) {
-            System.out.println("Cannot reach server on current address");
-        }
+        RegistrationType regoType = RegistrationType.REQUEST_RUNNING_GAMES;
+        sender.sendToServer(this.packetBuilder.createRegistrationRequestPacket(regoType));
     }
 
     @Override
@@ -107,4 +119,7 @@ public class MainMenuClient extends Client {
         clientListener.addObserver(this);
     }
 
+    public void stopPolling(){
+        pollForRaces = false;
+    }
 }

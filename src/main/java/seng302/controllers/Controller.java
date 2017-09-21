@@ -243,12 +243,7 @@ public class Controller implements Initializable, Observer {
         this.options = options;
         this.scene = scene;
         if (this.options.isHost()) {
-            String ip = null;
-            try {
-                ip = ConnectionUtils.getPublicIp();
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
+            String ip = ConnectionUtils.getPublicIp();
             if (Objects.equals(ip, null)) {
                 startersOverlayTitle.setText(race.getRegattaName());
             } else {

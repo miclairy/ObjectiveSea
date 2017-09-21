@@ -19,4 +19,19 @@ public class ConnectionUtilsTest {
         Assert.assertFalse(ConnectionUtils.IPRegExMatcher("124.674.3.2.1"));
         Assert.assertFalse(ConnectionUtils.IPRegExMatcher("123...2"));
     }
+
+    @Test
+    public void ipStringToLongTest(){
+        Assert.assertEquals(3232235521L, ConnectionUtils.ipStringToLong("192.168.0.1"));
+    }
+
+    @Test
+    public void ipLongToStringTest(){
+        Assert.assertEquals("192.168.0.1", ConnectionUtils.ipLongToString(3232235521L));
+    }
+
+    @Test
+    public void ipConversionTest(){
+        Assert.assertEquals("127.0.0.1", ConnectionUtils.ipLongToString(ConnectionUtils.ipStringToLong("127.0.0.1")));
+    }
 }

@@ -5,16 +5,17 @@ import seng302.controllers.GameClient;
 import seng302.controllers.GameServer;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.Objects;
 
 public class ConnectionUtils {
     private static GameClient client;
-    private static String vmIpAddress = "132.181.12.10";
-    private static int vmpPort = 2827;
+    private static final String GAME_RECORDER_IP = "132.181.16.17";
+    private static final int GAME_RECORDER_PORT = 2827;
+    public static final int DEFAULT_GAME_PORT = 2828;
     private static GameServer server;
     private static final String IP_REGEX = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
 
@@ -57,26 +58,26 @@ public class ConnectionUtils {
 
     /**
      * gets users public ip address from AWS ping servers.
-     *
-     * @return the IP address or regatta name if not found
+     * @return the user's public IP address or null if there was issue connecting to AWS.
      */
-    public static String getPublicIp() throws UnknownHostException {
-        String ipAddress = InetAddress.getLocalHost().getHostAddress();
-        if (Objects.equals(ipAddress.split("\\.")[0], "127")) {
-            try {
+    public static String getPublicIp() {
+        try{
+            String ipAddress = InetAddress.getLocalHost().getHostAddress();
+            if (Objects.equals(ipAddress.split("\\.")[0], "127")) {
                 URL ipURL = new URL("http://checkip.amazonaws.com");
                 BufferedReader in = new BufferedReader(new InputStreamReader(
                         ipURL.openStream()));
                 ipAddress = in.readLine(); //you get the IP as a String
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+            if (ipAddress.matches(IP_REGEX)) {
+                return ipAddress;
+            } else {
+                return InetAddress.getLocalHost().getHostAddress();
+            }
+        } catch (IOException e){
+            e.printStackTrace();
         }
-        if (ipAddress.matches(IP_REGEX)) {
-            return ipAddress;
-        } else {
-            return InetAddress.getLocalHost().getHostAddress();
-        }
+        return null;
     }
 
     public static String ipLongToString(long longIp){
@@ -110,9 +111,9 @@ public class ConnectionUtils {
         return (long) num;
     }
 
-    public static String getVmIpAddress() {
-        return vmIpAddress;
+    public static String getGameRecorderIP() {
+        return GAME_RECORDER_IP;
     }
 
-    public static int getVmPort() {return vmpPort;}
+    public static int getGameRecorderPort() {return GAME_RECORDER_PORT;}
 }
