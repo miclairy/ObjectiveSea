@@ -2,7 +2,8 @@
  * Created by cba62 on 21/09/17.
  */
 
-var mySocket = new WebSocket("ws://132.181.15.93:2827"); // 2827 is the port game server runs on
+var mySocket = new WebSocket("ws://127.0.0.1:2827"); // 2827 is the port game server runs on
+mySocket.binaryType = 'arraybuffer';
 
 mySocket.onerror = function (event) {
   console.log(event);
@@ -49,7 +50,9 @@ requestGame = function(code) {
     var crc = createCrc(header, body);
     var packet = header.concat(body).concat(crc);
     console.log(packet);
-    mySocket.send(packet);
+    var byteArray = new Uint8Array(packet);
+    console.log(byteArray.buffer);
+    mySocket.send(byteArray.buffer);
 }
 
 createCrc = function(header, body){
