@@ -51,10 +51,12 @@ public class ServerListener extends Receiver implements Runnable{
 
         while(clientConnected){
             try {
+                printAll(socketData);
                 DataInput dataInput = new DataInputStream(socketData);
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
                 System.out.println("reading in join packet");
+                System.out.println(Arrays.toString(header));
 
                 int messageLength = byteArrayRangeToInt(header, MESSAGE_LENGTH.getStartIndex(), MESSAGE_LENGTH.getEndIndex());
                 int messageTypeValue = byteArrayRangeToInt(header, MESSAGE_TYPE.getStartIndex(), MESSAGE_TYPE.getEndIndex());
@@ -64,6 +66,7 @@ public class ServerListener extends Receiver implements Runnable{
                 byte[] body = new byte[messageLength];
                 dataInput.readFully(body);
                 byte[] crc = new byte[CRC_LENGTH];
+                System.out.println(Arrays.toString(body));
                 dataInput.readFully(crc);
                 if (checkCRC(header, body, crc)) {
                     switch (messageType) {
@@ -80,8 +83,12 @@ public class ServerListener extends Receiver implements Runnable{
                             if (sourceId != -1) {
                                 parseBoatActionMessage(body);
                             }
+                        case REQUEST_AVAILABLE_RACES:
+                            System.out.println(body);
                             break;
                     }
+                } else{
+                    System.out.println("Incorrect CRC");
                 }
             } catch (SocketException e) {
                 break;
@@ -91,6 +98,41 @@ public class ServerListener extends Receiver implements Runnable{
             }
         }
         System.out.println("Game Recorder ServerListener Stopped");
+    }
+
+    private void printAll(BufferedInputStream socketData) {
+        //test();
+        try {
+            byte[] key = new byte[4];
+            int onetwonine = socketData.read();
+            int length = socketData.read();
+            System.out.println(onetwonine +  " " + length);
+            for(int i = 0; i < 4; i++){
+                key[i] = (byte)socketData.read();
+            }
+            System.out.println(Arrays.toString(key));
+            int c = 0;
+            while(true) {
+                byte unencoded = (byte)socketData.read();
+                byte encoded = (byte) (unencoded ^ key[c & 0x3]);
+                System.out.println(unencoded + " " + encoded);
+                c++;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void test() {
+        byte[] decoded = new byte[6];
+        byte[] encoded = new byte[] {(byte) 198, (byte) 131, (byte) 130, (byte) 182, (byte) 194, (byte) 135};
+        byte[] key = new byte[] {(byte)167, (byte)225, (byte)225, (byte)210};
+
+        for (int i = 0; i < encoded.length; i++) {
+            decoded[i] = (byte)(encoded[i] ^ key[i & 0x3]);
+        }
+        System.out.println(Arrays.toString(decoded));
     }
 
     private BufferedInputStream connectToSocket() {
