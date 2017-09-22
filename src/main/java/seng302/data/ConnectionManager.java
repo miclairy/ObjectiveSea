@@ -1,20 +1,14 @@
 package seng302.data;
 
-import javax.xml.bind.DatatypeConverter;
-import java.io.BufferedInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 import java.util.Observable;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by Gemma Lamont on 10/07/17.

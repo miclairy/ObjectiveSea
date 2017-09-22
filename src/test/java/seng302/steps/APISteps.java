@@ -4,6 +4,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import javafx.scene.input.KeyCode;
+import seng302.controllers.AbstractServerListener;
 import seng302.controllers.RaceUpdater;
 import seng302.controllers.GameServer;
 import seng302.controllers.ServerListener;
@@ -75,7 +76,7 @@ public class APISteps {
         ClientPacketBuilder packetBuilder = new ClientPacketBuilder();
         serverSocket = mock(Socket.class);
 
-        ServerListener listener = new ServerListener(serverSocket);
+        AbstractServerListener listener = new ServerListener(serverSocket, new BufferedInputStream(serverSocket.getInputStream()));
         listener.setClientId(102);
         listener.setRace(race);
         KeyCode keyCode = KeyCode.valueOf(key.toUpperCase());

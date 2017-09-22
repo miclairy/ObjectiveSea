@@ -99,7 +99,7 @@ public abstract class Receiver extends Observable implements Runnable{
         return socket;
     }
 
-    public void setSocket(Socket socket) throws IOException {
+    public void setSocket(Socket socket) {
         this.socket = socket;
     }
 
