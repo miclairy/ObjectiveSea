@@ -12,13 +12,16 @@ import seng302.utilities.ConnectionUtils;
 import seng302.utilities.PolarReader;
 import seng302.views.AvailableRace;
 
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.IOException;
+import javax.xml.bind.DatatypeConverter;
+import java.io.*;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Arrays;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static seng302.data.AC35StreamField.*;
 import static seng302.data.registration.RegistrationType.REQUEST_RUNNING_GAMES;
@@ -44,12 +47,15 @@ public class ServerListener extends Receiver implements Runnable{
      */
     @Override
     public void run() {
+        BufferedInputStream socketData = connectToSocket();
+
         while(clientConnected){
             try {
-                DataInput dataInput = new DataInputStream(getSocket().getInputStream());
-
+                DataInput dataInput = new DataInputStream(socketData);
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
+                System.out.println("reading in join packet");
+
                 int messageLength = byteArrayRangeToInt(header, MESSAGE_LENGTH.getStartIndex(), MESSAGE_LENGTH.getEndIndex());
                 int messageTypeValue = byteArrayRangeToInt(header, MESSAGE_TYPE.getStartIndex(), MESSAGE_TYPE.getEndIndex());
                 int sourceId = byteArrayRangeToInt(header, HEADER_SOURCE_ID.getStartIndex(), HEADER_SOURCE_ID.getEndIndex());
@@ -85,6 +91,50 @@ public class ServerListener extends Receiver implements Runnable{
             }
         }
         System.out.println("Game Recorder ServerListener Stopped");
+    }
+
+    private BufferedInputStream connectToSocket() {
+        BufferedInputStream socketData = null;
+        try{
+            socketData = new BufferedInputStream(socket.getInputStream());
+            socketData.mark(10);
+            int sync1 = socketData.read();
+            int sync2 = socketData.read();
+            socketData.reset();
+            if (sync1 != 0x47 || sync2 != 0x83) {
+                connectToWebSocket(socketData);
+            } else {
+                System.out.println("Server: Accepted Connection");
+            }
+        } catch(IOException e){
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return socketData;
+    }
+
+    private void connectToWebSocket(BufferedInputStream socketData) throws NoSuchAlgorithmException, IOException {
+        String data = new Scanner(socketData, "UTF-8").useDelimiter("\\r\\n\\r\\n").next();
+        Matcher get = Pattern.compile("^GET").matcher(data);
+        System.out.println("Server: Accepted websocket Connection");
+        if (get.find()) {
+            Matcher match = Pattern.compile("Sec-WebSocket-Key: (.*)").matcher(data);
+            match.find();
+            byte[] response = ("HTTP/1.1 101 Switching Protocols\r\n"
+                    + "Connection: Upgrade\r\n"
+                    + "Upgrade: websocket\r\n"
+                    + "Sec-WebSocket-Accept: "
+                    + DatatypeConverter
+                    .printBase64Binary(
+                            MessageDigest.getInstance("SHA-1")
+                                    .digest((match.group(1) + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11")
+                                            .getBytes("UTF-8")))
+                    + "\r\n\r\n")
+                    .getBytes("UTF-8");
+
+            socket.getOutputStream().write(response, 0, response.length);
+        }
     }
 
     private void recordHostGameMessage(byte[] body){
