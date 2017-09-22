@@ -24,7 +24,7 @@ public abstract class Receiver extends Observable implements Runnable{
     protected final int BOAT_DEVICE_TYPE = 1;
     protected final int MARK_DEVICE_TYPE = 3;
     private boolean hasConnectionFailed = false;
-    private Socket socket;
+    protected Socket socket;
     private final Integer SOCKET_TIMEOUT_MS = 5000;
     private InputStream dataStream;
 

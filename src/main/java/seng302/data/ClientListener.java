@@ -169,7 +169,6 @@ public class ClientListener extends Receiver implements Runnable{
             try {
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
-
                 int messageLength = byteArrayRangeToInt(header, MESSAGE_LENGTH.getStartIndex(), MESSAGE_LENGTH.getEndIndex());
                 int messageTypeValue = byteArrayRangeToInt(header, MESSAGE_TYPE.getStartIndex(), MESSAGE_TYPE.getEndIndex());
                 AC35StreamMessage messageType = AC35StreamMessage.fromInteger(messageTypeValue);

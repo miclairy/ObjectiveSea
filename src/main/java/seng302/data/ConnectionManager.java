@@ -1,6 +1,7 @@
 package seng302.data;
 
 import javax.xml.bind.DatatypeConverter;
+import java.io.BufferedInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -41,34 +42,12 @@ public class ConnectionManager extends Observable implements Runnable {
         while (running) {
             try {
                 Socket socket = serverSocket.accept();
-                String data = new Scanner(socket.getInputStream(),"UTF-8").useDelimiter("\\r\\n\\r\\n").next();
-                Matcher get = Pattern.compile("^GET").matcher(data);
-                System.out.println("Server: Accepted Connection");
-                if (get.find()) {
-                    Matcher match = Pattern.compile("Sec-WebSocket-Key: (.*)").matcher(data);
-                    match.find();
-                    byte[] response = ("HTTP/1.1 101 Switching Protocols\r\n"
-                            + "Connection: Upgrade\r\n"
-                            + "Upgrade: websocket\r\n"
-                            + "Sec-WebSocket-Accept: "
-                            + DatatypeConverter
-                            .printBase64Binary(
-                                    MessageDigest.getInstance("SHA-1")
-                                            .digest((match.group(1) + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11")
-                                                    .getBytes("UTF-8")))
-                            + "\r\n\r\n")
-                            .getBytes("UTF-8");
-
-                    socket.getOutputStream().write(response, 0, response.length);
-                }
                 setChanged();
                 notifyObservers(socket);
             } catch (IOException e) {
-                if(e instanceof SocketException){
+                if (e instanceof SocketException) {
                     System.out.println("Server: Disconnected");
                 }
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
             }
         }
     }

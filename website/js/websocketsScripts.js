@@ -2,7 +2,7 @@
  * Created by cba62 on 21/09/17.
  */
 
-var mySocket = new WebSocket("ws://132.181.15.179:2827");
+var mySocket = new WebSocket("ws://132.181.15.93:2827"); // 2827 is the port game server runs on
 
 mySocket.onerror = function (event) {
   console.log(event);
