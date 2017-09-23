@@ -1,5 +1,7 @@
 package seng302.models;
 
+import seng302.utilities.ConnectionUtils;
+
 /**
  * Created by mjt169 on 15/08/17.
  * Class to hold the various options for a Client so that we can pass them around easily
@@ -7,7 +9,7 @@ package seng302.models;
 public class ClientOptions {
 
     private final String DEFAULT_ADDRESS = "localhost";
-    private final Integer DEFAULT_PORT = 2828;
+    private final Integer DEFAULT_PORT = ConnectionUtils.DEFAULT_GAME_PORT;
 
     private String serverAddress;
     private Integer serverPort;

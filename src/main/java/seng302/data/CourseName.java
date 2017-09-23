@@ -24,13 +24,12 @@ public enum CourseName {
      * @return
      */
     public static CourseName getCourseNameFromInt(int value){
-        CourseName returnCourse = UNKNOWN;
         for (CourseName course : CourseName.values()){
             if (course.getValue() == value){
-                returnCourse = course;
+                return course;
             }
         }
-        return returnCourse;
+        return UNKNOWN;
     }
 
     /**
@@ -39,12 +38,23 @@ public enum CourseName {
      * @return
      */
     public static int getCourseIntFromName(String name){
-        int courseIndex = -1;
+        String strippedGivenName = name.replace(" ", "");
         for (CourseName courseName : CourseName.values()){
-            if (Objects.equals(name, courseName.getText())){
-                courseIndex = courseName.getValue();
+            String strippedCourseName = courseName.getText().replace(" ", "");
+            if (Objects.equals(strippedGivenName, strippedCourseName)){
+                return courseName.getValue();
             }
         }
-        return courseIndex;
+        return -1;
+    }
+
+    /**
+     * Converts a course xml name to a normal course name (e.g. Malmo-course.xml to Malmo)
+     * @param xmlName A String that ends in "-course.xml"
+     * @return A String with the "-course.xml" stripped out
+     */
+    public static String courseNameFromXMLName(String xmlName){
+        Integer courseNameEndIndex = xmlName.length() - "-course.xml".length();
+        return xmlName.substring(0, courseNameEndIndex);
     }
 }

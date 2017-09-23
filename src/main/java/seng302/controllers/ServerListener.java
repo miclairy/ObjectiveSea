@@ -18,6 +18,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Arrays;
 
 import static seng302.data.AC35StreamField.*;
 import static seng302.data.registration.RegistrationType.REQUEST_RUNNING_GAMES;
@@ -31,6 +32,7 @@ public class ServerListener extends Receiver implements Runnable{
     private Race race;
     private Integer clientId;
     private boolean clientConnected = true;
+
 
     public ServerListener(Socket socket) throws IOException {
         setSocket(socket);
@@ -77,12 +79,12 @@ public class ServerListener extends Receiver implements Runnable{
                 }
             } catch (SocketException e) {
                 break;
-            } catch (EOFException e) {
-                //No client input
             }catch (IOException e) {
+                System.out.println("Server Listener: connection closed");
                 clientConnected = false;
             }
         }
+        System.out.println("Game Recorder ServerListener Stopped");
     }
 
     private void recordHostGameMessage(byte[] body){
@@ -183,10 +185,13 @@ public class ServerListener extends Receiver implements Runnable{
      * @param body body of the packet of the game to remove
      */
     private void removeHostedGame(byte[] body){
-        System.out.println("VmServer: Received remove game message");
+        System.out.println("GameRecorder: Received remove game message");
         long serverIpLong = byteArrayRangeToLong(body, HOST_GAME_IP.getStartIndex(), HOST_GAME_IP.getEndIndex());
         String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
+        int port = byteArrayRangeToInt(body, HOST_GAME_PORT.getStartIndex(), HOST_GAME_PORT.getEndIndex());
+        AvailableRace raceToRemove = new AvailableRace("", 0, port, serverIP);
+        raceToRemove.setDeleted(true);
         setChanged();
-        notifyObservers(serverIP);
+        notifyObservers(raceToRemove);
     }
 }

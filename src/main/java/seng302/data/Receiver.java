@@ -133,7 +133,6 @@ public abstract class Receiver extends Observable implements Runnable{
         try {
             Socket socket = new Socket(sourceAddress, sourcePort);
             setSocket(socket);
-            socket.setSoTimeout(SOCKET_TIMEOUT_MS);
             dataStream = getSocket().getInputStream();
             return true;
         } catch (IOException e) {
