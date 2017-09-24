@@ -22,11 +22,6 @@
     -fx-font-weight: 700;
 }
 
-#userFinish{
-    -fx-text-fill: red;
-    -fx-font-weight: 700;
-}
-
 #windArrow{
     -fx-stroke-line-cap: round;
     -fx-stroke-line-join: round;
