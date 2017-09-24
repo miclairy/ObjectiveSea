@@ -106,6 +106,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean startedEarlyPenalty = false;
     private enum PenaltyStatus {NO_PENALTY, WARNING, PENALTY}
     private PenaltyStatus penaltyStatus = PenaltyStatus.NO_PENALTY;
+    private boolean congratulated = false;
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController, SelectionController selectionController) {
         this.root = root;
@@ -240,8 +241,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
             manageBoatInformationFeatures(displayBoat);
             if(displayBoat == currentUserBoatDisplay) {
                 manageNextMarkVisuals();
-                if(displayBoat.getBoat().getStatus() == BoatStatus.FINISHED){
+                if(!congratulated && displayBoat.getBoat().getStatus() == BoatStatus.FINISHED){
                     controller.setUserHelpLabel("Congratulations, you have finished the race!");
+                    congratulated = true;
                 }
             }
         }

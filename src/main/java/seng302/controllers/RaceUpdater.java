@@ -188,7 +188,8 @@ public class RaceUpdater implements Runnable {
             } else if(race.getCompetitors().size() == 1) {
                 race.updateRaceStatus(RaceStatus.TERMINATED);
             }
-        } else if (race.getCompetitors().size() > 0 && !atLeastOneBoatNotFinished) {
+        }
+        if (race.getCompetitors().size() > 0 && !atLeastOneBoatNotFinished) {
             race.updateRaceStatus(RaceStatus.TERMINATED);
         } else if(isPractice){
             Boat boat = race.getCompetitors().get(0); // Should be only one boat in practice mode
