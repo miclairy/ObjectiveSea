@@ -106,6 +106,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private boolean startedEarlyPenalty = false;
     private enum PenaltyStatus {NO_PENALTY, WARNING, PENALTY}
     private PenaltyStatus penaltyStatus = PenaltyStatus.NO_PENALTY;
+    private boolean congratulated = false;
 
     public RaceViewController(Group root, Race race, Controller controller, ScoreBoardController scoreBoardController, SelectionController selectionController) {
         this.root = root;
@@ -240,6 +241,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
             manageBoatInformationFeatures(displayBoat);
             if(displayBoat == currentUserBoatDisplay) {
                 manageNextMarkVisuals();
+                if(!congratulated && displayBoat.getBoat().getStatus() == BoatStatus.FINISHED){
+                    controller.setUserHelpLabel("Congratulations, you have finished the race!");
+                    congratulated = true;
+                }
             }
         }
 
@@ -285,7 +290,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         moveBoat(boatDisplay, point);
         moveWake(boatDisplay, point);
         moveSail(boatDisplay, point);
-        if(!options.isTutorial() && !boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF)){
+        if(!options.isTutorial() && !boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF) && !boatDisplay.getBoat().isFinished()){
             displayCollisions(boatDisplay, point);
         }
 
@@ -295,7 +300,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         moveBoatAnnotation(boatDisplay.getAnnotation(), point, boatDisplay);
         moveHUD(controller.getHUD());
         manageStartTiming(boatDisplay);
-        if(boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF)){
+        if(boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF) || boatDisplay.getBoat().isFinished()){
             boatDisplay.unFocus();
         }
     }
@@ -482,7 +487,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             } else {
                 animateBoatHighlightColor(PenaltyStatus.NO_PENALTY, "defaultBoatHighlight");
             }
-        }else{
+        } else {
             animateBoatHighlightColor(PenaltyStatus.NO_PENALTY, "defaultBoatHighlight");
             startedEarlyPenalty = false;
         }
