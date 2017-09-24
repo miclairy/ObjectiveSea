@@ -55,7 +55,7 @@ public class CollisionManager {
         boats.addAll(race.getCompetitors());
         for (int i = 0; i < boats.size(); i++) {
             Boat boat = boats.get(i);
-            if(boat.getStatus() != BoatStatus.DNF && !boat.isFinished()) {
+            if(boat.getStatus() != BoatStatus.DNF && !boat.isFinished() && boat.getStatus() != BoatStatus.DISQUALIFIED) {
                 for (int j = i + 1; j < boats.size(); j++) {
                     Boat otherBoat = boats.get(j);
                     if (otherBoat.getStatus() != BoatStatus.DNF && !otherBoat.isFinished()) {
