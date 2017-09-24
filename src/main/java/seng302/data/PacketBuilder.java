@@ -3,6 +3,7 @@ package seng302.data;
 import seng302.utilities.ConnectionUtils;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 

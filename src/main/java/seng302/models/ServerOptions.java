@@ -11,7 +11,7 @@ public class ServerOptions {
 
     private final String DEFAULT_COURSE = "AC35-course.xml";
     private final Double DEFAULT_SPEED = 15.0;
-    private final Integer DEFAULT_PORT = 2828;
+    private final Integer DEFAULT_PORT = ConnectionUtils.DEFAULT_GAME_PORT;
     private Integer MAX_PARTICIPANTS = 6;
 
     private Double speedScale;
@@ -21,19 +21,19 @@ public class ServerOptions {
     private boolean isTutorial;
     private Integer numRacesToRun;
     private AIDifficulty aiDifficulty = AIDifficulty.NO_AI;
-    private boolean runRaceManager;
+    private GameMode gameMode = GameMode.MULTIPLAYER;
 
     /**
      * Constructor with default options
      */
-    public ServerOptions(){
+    public ServerOptions(GameMode gameMode){
         speedScale = DEFAULT_SPEED;
         minParticipants = 1;
         port = DEFAULT_PORT;
         raceXML = DEFAULT_COURSE;
         isTutorial = false;
         numRacesToRun = 1;
-        runRaceManager = false;
+        this.gameMode = gameMode;
     }
 
     /**
@@ -46,7 +46,6 @@ public class ServerOptions {
         raceXML = DEFAULT_COURSE;
         isTutorial = false;
         numRacesToRun = 1;
-        runRaceManager = false;
     }
 
     public Double getSpeedScale() {
@@ -122,19 +121,15 @@ public class ServerOptions {
         return numRacesToRun == -1;
     }
 
-    public boolean isRunRaceManager() {
-        return runRaceManager;
-    }
-
-    public void setRunRaceManager(boolean runRaceManager) {
-        this.runRaceManager = runRaceManager;
-    }
-
     public void setAiDifficulty(AIDifficulty AIDifficulty) {
         this.aiDifficulty = AIDifficulty;
     }
 
     public AIDifficulty getAIDifficulty() {
         return this.aiDifficulty;
+    }
+
+    public Boolean isMultiplayer() {
+        return gameMode.equals(GameMode.MULTIPLAYER);
     }
 }
