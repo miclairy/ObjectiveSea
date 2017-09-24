@@ -476,13 +476,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void updateBoatHighlight(BoatDisplay displayBoat){
         Boat boat = displayBoat.getBoat();
+
         if(displayBoat.collisionInProgress){
             animateBoatHighlightColor(PenaltyStatus.PENALTY, "redBoatHighlight");
         } else if(boat.getLeg() == 0){
             if (startedEarlyPenalty) return;
             if (!MathUtils.boatBeforeStartline(boat.getCurrentPosition(),
                     race.getCourse().getStartLine(),
-                    race.getCourse().getCompoundMarks().get(2)) && ((race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000) > 0){
+                    race.getCourse().getCompoundMarks().get(2)) && ((race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000) < 0){
                 startedEarlyPenalty = true;
                 controller.setUserHelpLabel("Start line was crossed early. It must be crossed again.");
                 animateBoatHighlightColor(PenaltyStatus.PENALTY, "redBoatHighlight");
