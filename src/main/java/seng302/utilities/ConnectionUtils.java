@@ -13,7 +13,7 @@ import java.util.Objects;
 
 public class ConnectionUtils {
     private static GameClient client;
-    private static final String GAME_RECORDER_IP = "192.168.20.7"; //"132.181.16.17";
+    private static final String GAME_RECORDER_IP = "132.181.16.17";
     private static final int GAME_RECORDER_PORT = 2827;
     public static final int DEFAULT_GAME_PORT = 2828;
     private static GameServer server;
