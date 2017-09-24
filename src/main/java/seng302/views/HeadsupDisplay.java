@@ -79,6 +79,7 @@ public class HeadsupDisplay {
 
         positionLabel = new Label("...");
         positionLabel.setId("positionLabel");
+        updatePlacing(1);
         boat.getBoat().getCurrPlacingProperty().addListener((obs, oldStatus, newStatus) ->
                 Platform.runLater(() -> updatePlacing((int)newStatus)));
 

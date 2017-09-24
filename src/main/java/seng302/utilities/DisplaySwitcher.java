@@ -42,7 +42,7 @@ public class DisplaySwitcher {
             try {
                 gameSounds.stopEndlessMusic();
             } catch (LineUnavailableException e) {
-                e.printStackTrace();
+                System.out.println("Error with stopping endless music loop");
             }
             gameSounds.mainMenuMusic();
             gameSounds.playEndlessMusic();

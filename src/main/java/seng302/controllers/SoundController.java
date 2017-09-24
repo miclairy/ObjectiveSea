@@ -136,10 +136,12 @@ public class SoundController implements Runnable {
             while (iter.hasNext()) {
                 Boat boat = iter.next();
                 initialReadySound();
-                checkPlacing(boat);
-                hasHitBoat(boat);
-                hasHitMark(boat);
-                isOutOfBounds(boat);
+                if (boat.getStatus() != BoatStatus.DNF && boat.getStatus() != BoatStatus.DISQUALIFIED) {
+                    checkPlacing(boat);
+                    hasHitBoat(boat);
+                    hasHitMark(boat);
+                    isOutOfBounds(boat);
+                }
             }
             try {
                 Thread.sleep(500);

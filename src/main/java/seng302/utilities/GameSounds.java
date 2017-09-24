@@ -309,7 +309,7 @@ public class GameSounds {
     }
 
     public void stopEndlessMusic() throws LineUnavailableException {
-        if(clip != null){
+        if (clip != null) {
             clip.stop();
             endless = false;
             clip.setFramePosition(0);
