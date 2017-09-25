@@ -162,3 +162,19 @@
     -fx-stroke-line-cap: round;
     -fx-stroke-line-join: round;
 }
+
+#partyModeBox{
+    -fx-background-color: #2a2a2a;
+    -fx-opacity: 0.9;
+    -fx-border-radius: 30;
+    -fx-background-radius: 30;
+    -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
+}
+
+#lblPartyCode{
+
+}
+
+#lblPartyTitle{
+
+}
