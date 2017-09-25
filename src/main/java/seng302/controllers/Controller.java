@@ -18,10 +18,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.TouchEvent;
-import javafx.scene.input.ZoomEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -265,10 +262,10 @@ public class Controller implements Initializable, Observer {
 
     @FXML public void exitRunningRace() {
         ConnectionUtils.initiateDisconnect(options.isHost());
+        DisplayUtils.resetZoom();
         displaySwitcher.loadMainMenu();
         soundController.setRunning(false);
         raceViewController.stop();
-        DisplayUtils.resetZoom();
     }
 
     public void exitTerminatedRace() {
@@ -304,8 +301,9 @@ public class Controller implements Initializable, Observer {
      * Takes the displayBoat and makes the annotation of that boat draggable.
      * As well as making the HUD draggable.
      * Via mouse or touch press.
+     * Also sets up the click and drag panning of the course functionality
      */
-    public void makeItemsDraggable() {
+    public void initCanvasAnchorListeners() {
 
         canvasAnchor.setOnMousePressed(event -> {
             for(BoatDisplay boatDisplay : boatDisplayArrayList) {
@@ -335,7 +333,7 @@ public class Controller implements Initializable, Observer {
                 hasHUDXMoved = false;
                 hasHUDYMoved = false;
             } else if (DisplayUtils.zoomLevel != 1 && !event.isSynthesized() && !DisplayUtils.externalDragEvent) {
-                displayDrag(event);
+                dragCourse(event);
             }
 
         });
@@ -420,6 +418,8 @@ public class Controller implements Initializable, Observer {
                 double scaledChangeX = (event.getX() - Delta.x);
                 double scaledChangeY = (event.getY() - Delta.y);
                 headsUpDisplay.relocate(headsUpDisplay.getLayoutX() + scaledChangeX, headsUpDisplay.getLayoutY() + scaledChangeY);
+            } else {
+                dragCourse(event);
             }
         }
         Delta.x = event.getX();
@@ -443,14 +443,15 @@ public class Controller implements Initializable, Observer {
     }
 
     /**
-     * initilizes display listeners to detect dragging on display. Calls DisplayUtils to move display
-     * and redraw course and paths as appropriate.
+     * Calls DisplayUtils to move display and redraw course and paths as appropriate.
      */
-    private void displayDrag(MouseEvent event) {
-        DisplayUtils.dragDisplay((int) event.getX(), (int) event.getY());
-        raceViewController.redrawCourse();
-        raceViewController.redrawBoatPaths();
-        selectionController.deselectBoat();
+    private void dragCourse(MouseEvent event) {
+        if (DisplayUtils.zoomLevel != 1 && !event.isSynthesized() && !DisplayUtils.externalDragEvent) {
+            DisplayUtils.dragDisplay((int) event.getX(), (int) event.getY());
+            raceViewController.redrawCourse();
+            raceViewController.redrawBoatPaths();
+            selectionController.deselectBoat();
+        }
     }
 
     /**
@@ -514,6 +515,7 @@ public class Controller implements Initializable, Observer {
                 mapImageView.setVisible(true);
                 nextMarkCircle.setVisible(false);
                 DisplayUtils.resetOffsets();
+                selectionController.setTrackingPoint(false);
             }
             raceViewController.redrawCourse();
             raceViewController.redrawBoatPaths();
@@ -795,12 +797,13 @@ public class Controller implements Initializable, Observer {
         lblUserHelp.setPrefWidth(canvasWidth);
         lblUserHelp.setMaxWidth(canvasWidth);
         lblUserHelp.setMinWidth(canvasWidth);
+        lblUserHelp.setTextFill(Color.RED);
         lblUserHelp.setText(helper);
-        DisplayUtils.fadeInFadeOutNodeTransition(lblUserHelp, 1, 2000);
+        DisplayUtils.fadeInFadeOutNodeTransition(lblUserHelp, 1, 4000);
     }
 
     /**
-     * handles the toggling of screen elemnts when the side panel is toggled on and off
+     * handles the toggling of screen elements when the side panel is toggled on and off
      */
     @FXML private void hideScoreboard(){
         if(scoreboardVisible){

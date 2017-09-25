@@ -9,6 +9,7 @@ import seng302.controllers.*;
 import seng302.data.registration.ServerFullException;
 import seng302.models.ClientOptions;
 
+import javax.sound.sampled.LineUnavailableException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,6 +25,7 @@ public class DisplaySwitcher {
     private static GameSounds gameSounds = new GameSounds();
     private Controller raceController;
     private MainMenuController mainMenu;
+    private boolean mainMenuLoaded = false;
 
     public DisplaySwitcher(Main main, Stage stage){
         this.stage = stage;
@@ -40,7 +42,8 @@ public class DisplaySwitcher {
             mainMenu.setApp(main, gameSounds);
             try {
                 gameSounds.stopEndlessMusic();
-            } catch (Exception e) {
+            } catch (LineUnavailableException e) {
+                System.out.println("Error with stopping endless music loop");
             }
             gameSounds.mainMenuMusic();
             gameSounds.playEndlessMusic();
@@ -88,7 +91,13 @@ public class DisplaySwitcher {
         URL fxmlLocation = getClass().getClassLoader().getResource(fxml);
         loader.setLocation(fxmlLocation);
         Parent root = loader.load();
-        scene = new Scene(root);
+        if(mainMenuLoaded) {
+            scene.setRoot(root);
+        } else {
+            mainMenuLoaded = true;
+            scene = new Scene(root);
+            if (!System.getProperty("os.name").startsWith("Mac")) stage.setMaximized(true);
+        }
         setScene(scene);
         AnimationUtils.transitionFXML(root);
         stage.setScene(scene);

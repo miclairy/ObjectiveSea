@@ -1,16 +1,11 @@
 package seng302.controllers;
 
 import seng302.data.BoatStatus;
-import seng302.data.ClientListener;
 import seng302.models.Boat;
 import seng302.models.Race;
 import seng302.utilities.DisplaySwitcher;
-import seng302.utilities.GameSounds;
-import seng302.views.AvailableRace;
 
 import java.util.Iterator;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Created by cjd137 on 16/08/17.
@@ -136,10 +131,12 @@ public class SoundController implements Runnable {
             while (iter.hasNext()) {
                 Boat boat = iter.next();
                 initialReadySound();
-                checkPlacing(boat);
-                hasHitBoat(boat);
-                hasHitMark(boat);
-                isOutOfBounds(boat);
+                if (boat.getStatus() != BoatStatus.DNF && boat.getStatus() != BoatStatus.DISQUALIFIED) {
+                    checkPlacing(boat);
+                    hasHitBoat(boat);
+                    hasHitMark(boat);
+                    isOutOfBounds(boat);
+                }
             }
             try {
                 Thread.sleep(500);

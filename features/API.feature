@@ -19,7 +19,7 @@ Feature: Sending and understanding key presses
     Given Sally has a boat
     When Sally presses the "Page_up" key
     Then the boats heading should be decreased
-#
+
   Scenario: User presses the page down key to rotate the boat
     Given Sally has a boat
     When Sally presses the "Page_down" key

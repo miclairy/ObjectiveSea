@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Map;
 import java.util.Observable;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.*;
 
 /**
  * Created by Gemma Lamont on 10/07/17.
@@ -36,9 +36,6 @@ public class ConnectionManager extends Observable implements Runnable {
         while (running) {
             try {
                 Socket socket = serverSocket.accept();
-                if (isGameServer) {
-                    System.out.println("Server: Accepted Connection");
-                }
                 setChanged();
                 notifyObservers(socket);
             } catch (IOException e) {

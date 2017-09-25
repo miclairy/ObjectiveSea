@@ -4,9 +4,10 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import javafx.scene.input.KeyCode;
+import seng302.controllers.listeners.AbstractServerListener;
 import seng302.controllers.RaceUpdater;
 import seng302.controllers.GameServer;
-import seng302.controllers.ServerListener;
+import seng302.controllers.listeners.ServerListener;
 import seng302.data.*;
 import seng302.models.Boat;
 import seng302.models.PolarTable;
@@ -71,11 +72,10 @@ public class APISteps {
     @When("^Sally presses the \"([^\"]*)\" key$")
     public void sallyPressesTheKey(String key) throws Throwable {
         previousHeading = sallysBoat.getHeading();
-
         ClientPacketBuilder packetBuilder = new ClientPacketBuilder();
         serverSocket = mock(Socket.class);
 
-        ServerListener listener = new ServerListener(serverSocket);
+        AbstractServerListener listener = new ServerListener(serverSocket, new BufferedInputStream(serverSocket.getInputStream()));
         listener.setClientId(102);
         listener.setRace(race);
         KeyCode keyCode = KeyCode.valueOf(key.toUpperCase());
@@ -83,7 +83,6 @@ public class APISteps {
         when(serverSocket.getInputStream()).thenReturn(new ByteArrayInputStream(packet));
         Thread serverListenerThread = new Thread(listener);
         serverListenerThread.start();
-
     }
 
     @Then("^the heading of Sally's boat has been changed$")
@@ -104,7 +103,6 @@ public class APISteps {
     @Then("^the boats heading should move towards the optimal angle$")
     public void theBoatsHeadingShouldMoveTowardsTheOptimalAngle() throws Throwable {
         Thread.sleep(100);
-
         double headingDifference = sallysBoat.getHeading() - VMGHeading;
         assert(Math.abs(headingDifference) < Math.abs(100 - VMGHeading));
     }

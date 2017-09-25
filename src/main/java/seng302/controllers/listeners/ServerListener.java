@@ -1,19 +1,18 @@
-package seng302.controllers;
+package seng302.controllers.listeners;
 
+
+import seng302.controllers.listeners.AbstractServerListener;
 import seng302.data.AC35StreamMessage;
-import seng302.data.BoatAction;
 import seng302.data.CourseName;
-import seng302.data.Receiver;
-import seng302.data.registration.RegistrationType;
-import seng302.models.Boat;
-import seng302.models.PolarTable;
-import seng302.models.Race;
 import seng302.utilities.ConnectionUtils;
-import seng302.utilities.PolarReader;
 import seng302.views.AvailableRace;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Arrays;
@@ -24,21 +23,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static seng302.data.AC35StreamField.*;
-import static seng302.data.registration.RegistrationType.REQUEST_RUNNING_GAMES;
+import static seng302.data.AC35StreamField.HOST_GAME_CURRENT_PLAYERS;
 
 /**
- * Created by mjt169 on 19/07/17.
- *
+ * Created by atc60 on 22/09/17.
  */
-public class ServerListener extends Receiver implements Runnable{
+public class ServerListener extends AbstractServerListener {
 
-    private Race race;
-    private Integer clientId;
-    private boolean clientConnected = true;
+    private DataInput dataInput;
 
-
-    public ServerListener(Socket socket) throws IOException {
+    public ServerListener(Socket socket, BufferedInputStream socketData) throws IOException {
         setSocket(socket);
+        dataInput = new DataInputStream(socketData);
     }
 
     /**
@@ -55,6 +51,7 @@ public class ServerListener extends Receiver implements Runnable{
                 DataInput dataInput = new DataInputStream(socketData);
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
+
                 System.out.println("reading in join packet");
                 System.out.println(Arrays.toString(header));
 
@@ -97,7 +94,7 @@ public class ServerListener extends Receiver implements Runnable{
                 clientConnected = false;
             }
         }
-        System.out.println("Game Recorder ServerListener Stopped");
+        System.out.println("ServerListener Stopped");
     }
 
     private void printAll(BufferedInputStream socketData) {
@@ -187,19 +184,6 @@ public class ServerListener extends Receiver implements Runnable{
     }
 
     /**
-     * parses body of the a registration request message by extracting request type and notifying
-     * @param body the body of a RegistrationRequest message
-     */
-    private void parseRegistrationRequestMessage(byte[] body) {
-        byte registrationByte = body[REGISTRATION_REQUEST_TYPE.getStartIndex()];
-        if (registrationByte != REQUEST_RUNNING_GAMES.value()){
-            System.out.println("Server: Received Registration Request");
-        }
-        setChanged();
-        notifyObservers(RegistrationType.getTypeFromByte(registrationByte));
-    }
-
-    /**
      * Method to decode a host game packet from the server
      * @param body body of the hosted game, containing all relevant information about a game
      */
@@ -216,63 +200,6 @@ public class ServerListener extends Receiver implements Runnable{
     }
 
     /**
-     * parses body of the boat action message that is incoming from the client.
-     * @param body currently a single number that corresponds to a control from the client
-     */
-    private void parseBoatActionMessage(byte[] body){
-        int sourceId = byteArrayRangeToInt(body, BOAT_ACTION_SOURCE_ID.getStartIndex(), BOAT_ACTION_SOURCE_ID.getEndIndex());
-        if(sourceId != clientId){
-            System.out.printf("Incorrect Client Id Received: Expected: %d Actual: %d\n", clientId, sourceId);
-            return;
-        }
-        int action = byteArrayRangeToInt(body, BOAT_ACTION_BODY.getStartIndex(), BOAT_ACTION_BODY.getEndIndex());
-        Boat boat = race.getBoatById(sourceId);
-        PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
-        BoatAction boatAction = BoatAction.getBoatActionFromInt(action);
-        switch (boatAction){
-            case BOAT_VMG:
-                boat.VMG(race.getCourse(), polarTable);
-                break;
-            case SAILS_IN:
-                boat.changeSails();
-                boat.setSailsNeedUpdate(true);
-                break;
-            case SAILS_OUT:
-                boat.changeSails();
-                boat.setSailsNeedUpdate(true);
-                break;
-            case TACK_GYBE:
-                boat.tackOrGybe(race.getCourse(), polarTable);
-                break;
-            case UPWIND:
-                boat.upWind(race.getCourse().getWindDirection());
-                break;
-            case DOWNWIND:
-                boat.downWind(race.getCourse().getWindDirection());
-                break;
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public Race getRace() {
-        return null;
-    }
-
-    @Override
-    public void disconnectClient() {
-    }
-
-    public void setRace(Race race) {
-        this.race = race;
-    }
-
-    public void setClientId(Integer clientId) {
-        this.clientId = clientId;
-    }
-
-    /**
      * notifes observes to remove a race by its IP address
      * @param body body of the packet of the game to remove
      */
@@ -286,4 +213,5 @@ public class ServerListener extends Receiver implements Runnable{
         setChanged();
         notifyObservers(raceToRemove);
     }
+
 }

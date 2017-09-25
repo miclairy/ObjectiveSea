@@ -1,5 +1,7 @@
 package seng302.controllers;
 
+import seng302.controllers.listeners.AbstractServerListener;
+import seng302.controllers.listeners.ServerListener;
 import seng302.data.*;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.data.registration.RegistrationType;
@@ -8,6 +10,7 @@ import seng302.utilities.ConnectionUtils;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +65,8 @@ public class GameServer implements Runnable, Observer {
     private void connectToGameRecorder() {
         Socket gameRecorderSocket = null;
         try {
-            gameRecorderSocket = new Socket(ConnectionUtils.getGameRecorderIP(), ConnectionUtils.getGameRecorderPort());
+            gameRecorderSocket = new Socket();
+            gameRecorderSocket.connect(new InetSocketAddress(ConnectionUtils.getGameRecorderIP(), ConnectionUtils.getGameRecorderPort()), 1000);
             gameRecorderConnection = new ClientSender(gameRecorderSocket);
         } catch (ConnectException e) {
             System.err.println("Game Server cannot connect to Game Recorder.");
@@ -209,9 +213,7 @@ public class GameServer implements Runnable, Observer {
 
     private void sendBoatMessagesForAllBoats() throws IOException {
         for (Boat boat : raceUpdater.getRace().getCompetitors()) {
-            if (!boat.isFinished()) {
-                sendBoatMessages(boat);
-            }
+            sendBoatMessages(boat);
         }
     }
 
@@ -259,7 +261,7 @@ public class GameServer implements Runnable, Observer {
      * Adds a competing client to the race model and sends new xml messages out to all clients
      * @param serverListener the listener for the client
      */
-    private void addClientToRace(ServerListener serverListener){
+    private void addClientToRace(AbstractServerListener serverListener){
         int numCompetitors = raceUpdater.getRace().getCompetitors().size();
         int newId = -1;
         if (anotherCompetitorAllowed(numCompetitors)) {
@@ -332,8 +334,8 @@ public class GameServer implements Runnable, Observer {
      * Method that gets called when Server is notified as an observer
      * If the observable is a ConnectionManager then a new client has connected and a server listener
      * is started for the client
-     * If the observable is a ServerListener then a registration message is received
-     * @param observable The observable either a ConnectionManager or ServerListener
+     * If the observable is a AbstractServerListener then a registration message is received
+     * @param observable The observable either a ConnectionManager or AbstractServerListener
      * @param arg A Socket or Boat ID if observable is a ConnectionManager else it is the registration type of the client
      */
     @Override
@@ -341,7 +343,8 @@ public class GameServer implements Runnable, Observer {
         if (observable.equals(connectionManager)) {
             if(arg instanceof Socket){
                 try {
-                    startServerListener((Socket) arg);
+                    AbstractServerListener serverListener = ServerListener.createServerListener((Socket) arg);
+                    startServerListener(serverListener);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -349,20 +352,19 @@ public class GameServer implements Runnable, Observer {
                 setBoatToDNF((int) arg);
                 createPacketForGameRecorder();
             }
-        } else if(observable instanceof ServerListener){
+        } else if(observable instanceof AbstractServerListener){
             if(arg instanceof RegistrationType){
-                System.out.println("adding player to game");
-                manageRegistration((ServerListener) observable, (RegistrationType) arg);
+                System.out.println("Server: Adding player to game");
+                manageRegistration((AbstractServerListener) observable, (RegistrationType) arg);
             }
         }
     }
 
     /**
      * Starts a new server listener on new thread for which listens to a client
-     * @param socket the socket for the client
+     * @param serverListener the serverListener for the client socket
      */
-    private void startServerListener(Socket socket) throws IOException {
-        ServerListener serverListener = new ServerListener(socket);
+    private void startServerListener(AbstractServerListener serverListener) throws IOException {
         serverListener.setRace(raceUpdater.getRace());
         Thread serverListenerThread = new Thread(serverListener);
         serverListenerThread.setName("Server Listener");
@@ -376,7 +378,7 @@ public class GameServer implements Runnable, Observer {
      * @param serverListener the serverListener with the clients socket
      * @param registrationType the type of registration being attempted
      */
-    private void manageRegistration(ServerListener serverListener, RegistrationType registrationType) {
+    private void manageRegistration(AbstractServerListener serverListener, RegistrationType registrationType) {
         switch (registrationType) {
             case PLAYER:
                 addClientToRace(serverListener);
@@ -397,7 +399,7 @@ public class GameServer implements Runnable, Observer {
      * Can fail due to the race not being started, otherwise we let them join
      * @param serverListener
      */
-    private void addSpectatorToRace(ServerListener serverListener) {
+    private void addSpectatorToRace(AbstractServerListener serverListener) {
         RegistrationResponseStatus response = SPECTATOR_SUCCESS;
         if(!options.getMode().equals(GameMode.PARTYGAME)){
             if (!raceUpdaterThread.isAlive() || !options.isMultiplayer()) {

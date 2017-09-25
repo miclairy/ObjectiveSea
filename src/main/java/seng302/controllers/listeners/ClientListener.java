@@ -1,13 +1,13 @@
-package seng302.data;
+package seng302.controllers.listeners;
 
+import seng302.controllers.listeners.Listener;
+import seng302.data.*;
 import seng302.data.registration.RegistrationResponse;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.models.Boat;
 import seng302.models.Race;
-import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplayUtils;
 import seng302.utilities.TimeUtils;
-import seng302.views.AvailableRace;
 
 import java.io.*;
 import java.net.Socket;
@@ -22,7 +22,7 @@ import static seng302.data.AC35StreamXMLMessage.*;
 /**
  * Created on 13/04/17.
  */
-public class ClientListener extends Receiver implements Runnable{
+public class ClientListener extends Listener implements Runnable{
     private String sourceAddress;
     private int sourcePort;
     private Race race;
@@ -56,7 +56,7 @@ public class ClientListener extends Receiver implements Runnable{
      * @param value the latitude/longitude as a scaled integer
      * @return the actual latitude/longitude angle
      */
-    static double intToLatLon(int value){
+    public static double intToLatLon(int value){
         return (double)value * 180 / Math.pow(2, 31);
     }
 
@@ -75,7 +75,7 @@ public class ClientListener extends Receiver implements Runnable{
      * @param value the heading as a scaled integer
      * @return the actual angle of the heading
      */
-    static double intToHeading(int value){
+    public static double intToHeading(int value){
         return (double)value * 360 / Math.pow(2, 16);
     }
 

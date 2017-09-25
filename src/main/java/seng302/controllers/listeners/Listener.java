@@ -1,5 +1,6 @@
-package seng302.data;
+package seng302.controllers.listeners;
 
+import seng302.data.CourseName;
 import seng302.models.Race;
 import seng302.utilities.ConnectionUtils;
 import seng302.views.AvailableRace;
@@ -18,14 +19,13 @@ import static seng302.data.AC35StreamField.HOST_GAME_REQUIRED_PLAYERS;
  * Created by mjt169 on 18/07/17.
  *
  */
-public abstract class Receiver extends Observable implements Runnable{
+public abstract class Listener extends Observable implements Runnable{
     protected final int HEADER_LENGTH = 15;
     protected final int CRC_LENGTH = 4;
     protected final int BOAT_DEVICE_TYPE = 1;
     protected final int MARK_DEVICE_TYPE = 3;
     private boolean hasConnectionFailed = false;
     protected Socket socket;
-    private final Integer SOCKET_TIMEOUT_MS = 5000;
     private InputStream dataStream;
 
     /**
@@ -59,7 +59,7 @@ public abstract class Receiver extends Observable implements Runnable{
      * @param endIndex The ending index (exclusive) of the range of bytes to be converted
      * @return The long converted from the range of bytes in little endian order
      */
-    protected static long byteArrayRangeToLong(byte[] array, int beginIndex, int endIndex){
+    public static long byteArrayRangeToLong(byte[] array, int beginIndex, int endIndex){
         int length = endIndex - beginIndex;
         if(length <= 0 || length > 8){
             throw new IllegalArgumentException("The length of the range must be between 1 and 8 inclusive");
@@ -99,7 +99,7 @@ public abstract class Receiver extends Observable implements Runnable{
         return socket;
     }
 
-    public void setSocket(Socket socket) throws IOException {
+    public void setSocket(Socket socket) {
         this.socket = socket;
     }
 

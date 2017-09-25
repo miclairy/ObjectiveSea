@@ -832,8 +832,8 @@ public class Boat extends Observable implements Comparable<Boat>{
      * @param timePassed time passed since last update
      * @param course the course the boat is racing on
      */
-    public void updateLocation(double timePassed, Course course) {
-        double distanceGained = timePassed * getCurrentSpeed() / (60 * 60);
+    public void updateLocation(Double timePassed, Course course) {
+        Double distanceGained = timePassed * getCurrentSpeed() / (60 * 60);
         Coordinate newPos = currentPosition.coordAt(distanceGained, heading);
         setPosition(new Coordinate(newPos.getLat(), newPos.getLon()));
         currentVMG = calculateVMGToMark(course);
