@@ -8,8 +8,7 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 import static seng302.data.AC35StreamField.*;
 import static seng302.data.AC35StreamMessage.BOAT_ACTION_MESSAGE;
-import static seng302.data.AC35StreamMessage.REGISTRATION_REQUEST;
-import static seng302.data.Receiver.byteArrayRangeToInt;
+import static seng302.controllers.listeners.Listener.byteArrayRangeToInt;
 
 /**
  * Created by dhl25 on 20/07/17.

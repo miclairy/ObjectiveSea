@@ -1,4 +1,4 @@
-package seng302.controllers;
+package seng302.controllers.listeners;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.BufferedInputStream;
@@ -35,7 +35,6 @@ public class WebSocketServerListener extends AbstractServerListener {
                 if(packet == null){
                     clientConnected = false;
                 }
-                System.out.println(Arrays.toString(packet));
             } catch (IOException e) {
                 clientConnected = false;
                 e.printStackTrace();
@@ -46,7 +45,7 @@ public class WebSocketServerListener extends AbstractServerListener {
 
     /**
      * Sends the required WebSocket HTTP response to establish the handshake.
-     * Code stolen from https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_a_WebSocket_server_in_Java
+     * Code sourced from https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_a_WebSocket_server_in_Java
      */
     private void sendWebSocketResponse() {
         try{
@@ -54,25 +53,38 @@ public class WebSocketServerListener extends AbstractServerListener {
             Matcher get = Pattern.compile("^GET").matcher(data);
             System.out.println("Server: Accepted websocket Connection");
             if (get.find()) {
-                Matcher match = Pattern.compile("Sec-WebSocket-Key: (.*)").matcher(data);
-                match.find();
-                byte[] response = ("HTTP/1.1 101 Switching Protocols\r\n"
-                        + "Connection: Upgrade\r\n"
-                        + "Upgrade: websocket\r\n"
-                        + "Sec-WebSocket-Accept: "
-                        + DatatypeConverter
-                        .printBase64Binary(
-                                MessageDigest.getInstance("SHA-1")
-                                        .digest((match.group(1) + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11")
-                                                .getBytes("UTF-8")))
-                        + "\r\n\r\n")
-                        .getBytes("UTF-8");
-
+                byte[] response = generateResponseText(data);
                 socket.getOutputStream().write(response, 0, response.length);
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Generates the HTTP response sent to establish the handshake.
+     * @param data The data scanned from the socket scanner
+     * @return The response in a byte array
+     */
+    private byte[] generateResponseText(String data) {
+        Matcher match = Pattern.compile("Sec-WebSocket-Key: (.*)").matcher(data);
+        byte[] response = null;
+        try{
+            response = ("HTTP/1.1 101 Switching Protocols\r\n"
+                    + "Connection: Upgrade\r\n"
+                    + "Upgrade: websocket\r\n"
+                    + "Sec-WebSocket-Accept: "
+                    + DatatypeConverter
+                    .printBase64Binary(
+                            MessageDigest.getInstance("SHA-1")
+                                    .digest((match.group(1) + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11")
+                                            .getBytes("UTF-8")))
+                    + "\r\n\r\n")
+                    .getBytes("UTF-8");
         } catch (NoSuchAlgorithmException | IOException e) {
             e.printStackTrace();
         }
+        return response;
     }
 
     /**

@@ -1,5 +1,7 @@
 package seng302.controllers;
 
+import seng302.controllers.listeners.AbstractServerListener;
+import seng302.controllers.listeners.ServerListener;
 import seng302.data.*;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.data.registration.RegistrationType;
@@ -344,7 +346,7 @@ public class GameServer implements Runnable, Observer {
             }
         } else if(observable instanceof AbstractServerListener){
             if(arg instanceof RegistrationType){
-                System.out.println("Adding player to game");
+                System.out.println("Server: Adding player to game");
                 manageRegistration((AbstractServerListener) observable, (RegistrationType) arg);
             }
         }

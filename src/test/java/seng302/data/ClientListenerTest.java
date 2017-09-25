@@ -3,6 +3,7 @@ package seng302.data;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import seng302.controllers.listeners.ClientListener;
 
 import java.io.IOException;
 import java.net.InetAddress;

@@ -1,6 +1,7 @@
 package seng302.data;
 
 import org.junit.Test;
+import seng302.controllers.listeners.Listener;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.models.Boat;
 import seng302.models.CompoundMark;
@@ -17,8 +18,8 @@ import static org.mockito.Mockito.when;
 import static seng302.data.AC35StreamField.*;
 import static seng302.data.AC35StreamField.START_TIME;
 import static seng302.data.AC35StreamField.WIND_SPEED;
-import static seng302.data.Receiver.byteArrayRangeToInt;
-import static seng302.data.Receiver.byteArrayRangeToLong;
+import static seng302.controllers.listeners.Listener.byteArrayRangeToInt;
+import static seng302.controllers.listeners.Listener.byteArrayRangeToLong;
 
 /**
  * Created by Michael Trotter on 7/24/2017.

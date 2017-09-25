@@ -1,5 +1,6 @@
-package seng302.data;
+package seng302.controllers.listeners;
 
+import seng302.data.AC35StreamMessage;
 import seng302.models.Race;
 import java.io.*;
 import java.net.SocketTimeoutException;
@@ -11,7 +12,7 @@ import static seng302.data.AC35StreamField.*;
  * Created by lga50 on 12/09/17.
  *
  */
-public class MainMenuClientListener extends Receiver implements Runnable{
+public class MainMenuClientListener extends Listener implements Runnable{
 
     private String sourceAddress;
     private int sourcePort;

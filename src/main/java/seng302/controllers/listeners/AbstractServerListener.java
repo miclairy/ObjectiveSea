@@ -1,13 +1,11 @@
-package seng302.controllers;
+package seng302.controllers.listeners;
 
 import seng302.data.*;
 import seng302.data.registration.RegistrationType;
 import seng302.models.Boat;
 import seng302.models.PolarTable;
 import seng302.models.Race;
-import seng302.utilities.ConnectionUtils;
 import seng302.utilities.PolarReader;
-import seng302.views.AvailableRace;
 
 import java.io.*;
 import java.net.Socket;
@@ -19,7 +17,7 @@ import static seng302.data.registration.RegistrationType.REQUEST_RUNNING_GAMES;
  * Created by mjt169 on 19/07/17.
  *
  */
-public abstract class AbstractServerListener extends Receiver implements Runnable{
+public abstract class AbstractServerListener extends Listener implements Runnable{
 
     protected Race race;
     protected Integer clientId;
@@ -33,13 +31,6 @@ public abstract class AbstractServerListener extends Receiver implements Runnabl
     @Override
     public abstract void run();
 
-    protected void recordHostGameMessage(byte[] body){
-        AvailableRace race = createAvailableRace(body);
-        race.setPacket(body);
-        setChanged();
-        notifyObservers(race);
-    }
-
     /**
      * parses body of the a registration request message by extracting request type and notifying
      * @param body the body of a RegistrationRequest message
@@ -51,22 +42,6 @@ public abstract class AbstractServerListener extends Receiver implements Runnabl
         }
         setChanged();
         notifyObservers(RegistrationType.getTypeFromByte(registrationByte));
-    }
-
-    /**
-     * Method to decode a host game packet from the server
-     * @param body body of the hosted game, containing all relevant information about a game
-     */
-    protected AvailableRace createAvailableRace(byte[] body){
-        long serverIpLong = byteArrayRangeToLong(body, HOST_GAME_IP.getStartIndex(), HOST_GAME_IP.getEndIndex());
-        String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
-        int serverPort = byteArrayRangeToInt(body, HOST_GAME_PORT.getStartIndex(), HOST_GAME_PORT.getEndIndex());
-        int courseIndex = byteArrayRangeToInt(body, HOST_GAME_MAP.getStartIndex(), HOST_GAME_MAP.getEndIndex());
-        long gameSpeed = byteArrayRangeToLong(body, HOST_GAME_SPEED.getStartIndex(), HOST_GAME_SPEED.getEndIndex());
-        int gameStatus = byteArrayRangeToInt(body, HOST_GAME_STATUS.getStartIndex(), HOST_GAME_STATUS.getEndIndex());
-        int gameMinPlayers = byteArrayRangeToInt(body, HOST_GAME_REQUIRED_PLAYERS.getStartIndex(), HOST_GAME_REQUIRED_PLAYERS.getEndIndex());
-        int gameCurrentPlayers = byteArrayRangeToInt(body, HOST_GAME_CURRENT_PLAYERS.getStartIndex(), HOST_GAME_CURRENT_PLAYERS.getEndIndex());
-        return new AvailableRace(CourseName.getCourseNameFromInt(courseIndex).getText(), gameCurrentPlayers, serverPort, serverIP);
     }
 
     /**
@@ -124,21 +99,6 @@ public abstract class AbstractServerListener extends Receiver implements Runnabl
 
     public void setClientId(Integer clientId) {
         this.clientId = clientId;
-    }
-
-    /**
-     * notifes observes to remove a race by its IP address
-     * @param body body of the packet of the game to remove
-     */
-    protected void removeHostedGame(byte[] body){
-        System.out.println("GameRecorder: Received remove game message");
-        long serverIpLong = byteArrayRangeToLong(body, HOST_GAME_IP.getStartIndex(), HOST_GAME_IP.getEndIndex());
-        String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
-        int port = byteArrayRangeToInt(body, HOST_GAME_PORT.getStartIndex(), HOST_GAME_PORT.getEndIndex());
-        AvailableRace raceToRemove = new AvailableRace("", 0, port, serverIP);
-        raceToRemove.setDeleted(true);
-        setChanged();
-        notifyObservers(raceToRemove);
     }
 
     /**
