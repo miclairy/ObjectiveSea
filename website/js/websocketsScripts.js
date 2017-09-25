@@ -103,6 +103,7 @@ sendBoatActionMessage = function(actionCode, boatId){
     let packet = header.concat(body).concat(crc);
     let byteArray = new Uint8Array(packet);
     mySocket.send(byteArray.buffer);
+    console.log("packet sent");
 }
 
 
