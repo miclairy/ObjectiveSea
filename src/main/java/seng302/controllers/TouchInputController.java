@@ -4,6 +4,7 @@ import javafx.event.EventType;
 import javafx.scene.Group;
 import javafx.scene.input.*;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import seng302.data.BoatAction;
 import seng302.models.*;
 import seng302.utilities.DisplayUtils;
@@ -121,14 +122,14 @@ public class TouchInputController extends Observable {
                     commandInt = BoatAction.SAILS_OUT.getType();
                     setChanged();
                 }else{
-                    controller.setUserHelpLabel("Sails are already out");
+                    controller.setUserHelpLabel("Sails are already out", Color.web("#f47777"));
                 }
             } else {
                 if (!playersBoat.isSailsIn()) {
                     commandInt = BoatAction.SAILS_OUT.getType();
                     setChanged();
                 }else{
-                    controller.setUserHelpLabel("Sails are already in");
+                    controller.setUserHelpLabel("Sails are already in", Color.web("#f47777"));
                 }
             }
         } else {
@@ -137,7 +138,7 @@ public class TouchInputController extends Observable {
                 commandInt = BoatAction.TACK_GYBE.getType();
                 setChanged();
             }else{
-                controller.setUserHelpLabel("Cannot tack or gybe in that direction");
+                controller.setUserHelpLabel("Cannot tack or gybe in that direction", Color.web("#f47777"));
             }
         }
         notifyObservers();
