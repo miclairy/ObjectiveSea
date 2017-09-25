@@ -1,10 +1,10 @@
 package seng302.controllers;
 
 import javafx.scene.input.KeyCode;
+import seng302.controllers.listeners.ClientListener;
 import seng302.data.*;
 import seng302.data.registration.RegistrationResponse;
 import seng302.data.registration.RegistrationType;
-import seng302.data.registration.ServerFullException;
 import seng302.data.registration.ServerRegistrationException;
 import seng302.models.Boat;
 import seng302.models.ClientOptions;
@@ -12,8 +12,6 @@ import seng302.models.Race;
 import seng302.utilities.NoConnectionToServerException;
 
 import java.util.*;
-
-import static seng302.data.AC35StreamMessage.GAME_CANCEL;
 
 /**
  * Created by lga50 on 7/09/17.

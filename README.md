@@ -35,7 +35,11 @@ Tutorial:
     Tutorial mode takes the user instantly into a game screen (no maps or marks) and teaches the
     user the keys one by one, providing valuable feedback via the pop-ups.
 
-
+Party Mode:
+    
+    When Party Mode is selected, a room code will be displayed. Head to racevision.pro on your devices
+    and enter the code displayed to join the game! You will be able to control a boat from the website!
+    
 <br>
 Once connected as a player, one is assigned a boat (ID, colour and country).  This is the boat that the connected player can control.
 The given boat is shown via a circular highlight, allowing for a player to easily identify themselves.

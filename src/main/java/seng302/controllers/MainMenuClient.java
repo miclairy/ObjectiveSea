@@ -2,6 +2,7 @@ package seng302.controllers;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import seng302.controllers.listeners.MainMenuClientListener;
 import seng302.data.*;
 import seng302.data.registration.RegistrationType;
 import seng302.data.registration.ServerFullException;

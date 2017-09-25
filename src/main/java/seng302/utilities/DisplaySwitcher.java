@@ -48,6 +48,7 @@ public class DisplaySwitcher {
             gameSounds.mainMenuMusic();
             gameSounds.playEndlessMusic();
 
+
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ServerFullException e) {
@@ -96,7 +97,7 @@ public class DisplaySwitcher {
         } else {
             mainMenuLoaded = true;
             scene = new Scene(root);
-            stage.setMaximized(true);
+            if (!System.getProperty("os.name").startsWith("Mac")) stage.setMaximized(true);
         }
         setScene(scene);
         AnimationUtils.transitionFXML(root);
