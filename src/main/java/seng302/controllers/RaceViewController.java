@@ -203,31 +203,40 @@ public class RaceViewController extends AnimationTimer implements Observer {
             previousTime = currentTime;
             return;
         }
-        if (race.isTerminated()){
-            if(race.getAbruptEnd()){
-                controller.blurScreen(true);
-                controller.showServerDisconnectError();
-                this.stop();
-            } else if (!options.isPractice()){
-                controller.raceCompetitorOverview();
-                controller.showStarterOverlay();
-                this.stop();
-            } else if (options.isPractice()){
-                controller.displayFinishedPracticePopUp();
-            }
-        } else if (!options.isTutorial()) {
+        if (!options.isTutorial()) {
             controller.updateRaceClock();
+        }
+        if(race.getAbruptEnd()){
+            controller.blurScreen(true);
+            controller.showServerDisconnectError();
+            this.stop();
         }
         if(controller.hasRaceStatusChanged()){
             if(!options.isTutorial() && !options.isPractice()){
                 controller.updatePreRaceScreen();
                 controller.setRaceStatusChanged(false);
             }
+            checkForRaceTermination();
         }
         controller.setTimeZone(race.getUTCOffset());
         controller.updateFPSCounter(currentTime);
         run();
         previousTime = currentTime;
+    }
+
+    /**
+     * checks for termination.
+     * if so, shows finishing overlays or popups as appropriate.
+     */
+    private void checkForRaceTermination() {
+        if (race.isTerminated()){
+            if (!options.isPractice()){
+                controller.raceCompetitorOverview();
+                controller.showStarterOverlay();
+            } else if (options.isPractice()){
+                controller.displayFinishedPracticePopUp();
+            }
+        }
     }
 
     /**
@@ -472,13 +481,14 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void updateBoatHighlight(BoatDisplay displayBoat){
         Boat boat = displayBoat.getBoat();
+
         if(displayBoat.collisionInProgress){
             animateBoatHighlightColor(PenaltyStatus.PENALTY, "redBoatHighlight");
         } else if(boat.getLeg() == 0){
             if (startedEarlyPenalty) return;
             if (!MathUtils.boatBeforeStartline(boat.getCurrentPosition(),
                     race.getCourse().getStartLine(),
-                    race.getCourse().getCompoundMarks().get(2)) && ((race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000) > 0){
+                    race.getCourse().getCompoundMarks().get(2)) && ((race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000) < 0){
                 startedEarlyPenalty = true;
                 controller.setUserHelpLabel("Start line was crossed early. It must be crossed again.");
                 animateBoatHighlightColor(PenaltyStatus.PENALTY, "redBoatHighlight");
@@ -645,11 +655,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
         drawWindArrow();
 
         if(!options.isTutorial() && !options.isPractice()) {
-            if (DisplayUtils.zoomLevel > 1) {
-                courseRouteArrows.removeRaceRoute();
-            } else if (scoreBoardController.getCoursePathToggle().isSelected()) {
+            if (scoreBoardController.getCoursePathToggle().isSelected() && !selectionController.isTrackingPoint()) {
                 courseRouteArrows.drawRaceRoute();
+            }else {
+                courseRouteArrows.removeRaceRoute();
             }
+
         }
     }
 
@@ -1239,7 +1250,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             }
             if (tracking){
                 redrawCourse();
-                redrawBoatPaths();
+                if(race.getRaceStatus().equals(STARTED)) redrawBoatPaths();
             }
             selectedBoats = selectionController.getSelectedBoats();
         }
