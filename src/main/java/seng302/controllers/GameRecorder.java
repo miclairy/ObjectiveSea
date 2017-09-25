@@ -1,5 +1,7 @@
 package seng302.controllers;
 
+import seng302.controllers.listeners.AbstractServerListener;
+import seng302.controllers.listeners.ServerListener;
 import seng302.data.ConnectionManager;
 import seng302.data.CourseName;
 import seng302.data.ServerPacketBuilder;
@@ -45,16 +47,17 @@ public class GameRecorder implements Observer {
                 Socket socket = (Socket) arg;
                 sockets.add(socket);
                 try {
-                    startServerListener((Socket) arg);
+                    AbstractServerListener serverListener = ServerListener.createServerListener((Socket) arg);
+                    startServerListener(serverListener);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
             }
-        } else if(observable instanceof ServerListener){
+        } else if(observable instanceof AbstractServerListener){
             if (arg instanceof RegistrationType) {
                 if (arg.equals(REQUEST_RUNNING_GAMES)) {
-                    respondToRequestForGames((ServerListener) observable);
+                    respondToRequestForGames((AbstractServerListener) observable);
                 }
             } else if (arg instanceof AvailableRace) {
                 updateAvailableRace(((AvailableRace) arg));
@@ -118,7 +121,7 @@ public class GameRecorder implements Observer {
      * Respond to a request for running games
      * @param serverListener the serverListener with the clients socket
      */
-    private void respondToRequestForGames(ServerListener serverListener) {
+    private void respondToRequestForGames(AbstractServerListener serverListener) {
         connectionManager.addMainMenuConnection(nextHostID, serverListener.getSocket());
         for(AvailableRace race : availableRaces) {
             byte[] racePacket = packetBuilder.createGameRegistrationPacket(race.getPacket());
@@ -129,10 +132,9 @@ public class GameRecorder implements Observer {
 
     /**
      * Starts a new server listener on new thread for which listens to a client
-     * @param socket the socket for the client
+     * @param serverListener the serverListener for the client socket
      */
-    protected void startServerListener(Socket socket) throws IOException {
-        ServerListener serverListener = new ServerListener(socket);
+    protected void startServerListener(AbstractServerListener serverListener) throws IOException {
         serverListenerThread = new Thread(serverListener);
         serverListenerThread.setName("Game Recorder Listener");
         serverListenerThread.start();
