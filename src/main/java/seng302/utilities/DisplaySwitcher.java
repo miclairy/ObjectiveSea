@@ -96,7 +96,7 @@ public class DisplaySwitcher {
         } else {
             mainMenuLoaded = true;
             scene = new Scene(root);
-            stage.setMaximized(true);
+            if (!System.getProperty("os.name").startsWith("Mac")) stage.setMaximized(true);
         }
         setScene(scene);
         AnimationUtils.transitionFXML(root);
