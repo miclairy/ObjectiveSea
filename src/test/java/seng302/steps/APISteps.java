@@ -72,7 +72,6 @@ public class APISteps {
     @When("^Sally presses the \"([^\"]*)\" key$")
     public void sallyPressesTheKey(String key) throws Throwable {
         previousHeading = sallysBoat.getHeading();
-
         ClientPacketBuilder packetBuilder = new ClientPacketBuilder();
         serverSocket = mock(Socket.class);
 
@@ -84,7 +83,6 @@ public class APISteps {
         when(serverSocket.getInputStream()).thenReturn(new ByteArrayInputStream(packet));
         Thread serverListenerThread = new Thread(listener);
         serverListenerThread.start();
-
     }
 
     @Then("^the heading of Sally's boat has been changed$")
@@ -105,7 +103,6 @@ public class APISteps {
     @Then("^the boats heading should move towards the optimal angle$")
     public void theBoatsHeadingShouldMoveTowardsTheOptimalAngle() throws Throwable {
         Thread.sleep(100);
-
         double headingDifference = sallysBoat.getHeading() - VMGHeading;
         assert(Math.abs(headingDifference) < Math.abs(100 - VMGHeading));
     }

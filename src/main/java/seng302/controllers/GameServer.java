@@ -8,6 +8,7 @@ import seng302.utilities.ConnectionUtils;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +61,8 @@ public class GameServer implements Runnable, Observer {
     private void connectToGameRecorder() {
         Socket gameRecorderSocket = null;
         try {
-            gameRecorderSocket = new Socket(ConnectionUtils.getGameRecorderIP(), ConnectionUtils.getGameRecorderPort());
+            gameRecorderSocket = new Socket();
+            gameRecorderSocket.connect(new InetSocketAddress(ConnectionUtils.getGameRecorderIP(), ConnectionUtils.getGameRecorderPort()), 1000);
             gameRecorderConnection = new ClientSender(gameRecorderSocket);
         } catch (ConnectException e) {
             System.err.println("Game Server cannot connect to Game Recorder.");
@@ -342,7 +344,7 @@ public class GameServer implements Runnable, Observer {
             }
         } else if(observable instanceof AbstractServerListener){
             if(arg instanceof RegistrationType){
-                System.out.println("adding player to game");
+                System.out.println("Adding player to game");
                 manageRegistration((AbstractServerListener) observable, (RegistrationType) arg);
             }
         }

@@ -764,7 +764,6 @@ public class MainMenuController implements Initializable{
     private void setUpSoundSliders(){
         musicSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             if(musicOnImage.isVisible()) {
-                System.out.println((Double)newValue);
                 gameSounds.setVolume((Double) newValue);
                 if (newValue.equals(0.0)) {
                     toggleMusicImages(false);
