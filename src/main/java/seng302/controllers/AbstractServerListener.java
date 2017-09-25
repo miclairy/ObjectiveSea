@@ -150,8 +150,8 @@ public abstract class AbstractServerListener extends Receiver implements Runnabl
      */
     public static AbstractServerListener createServerListener(Socket socket){
         BufferedInputStream socketData;
-        byte expectedSyncByte1 = (byte) 0x47;
-        byte expectedSyncByte2 = (byte) 0x83;
+        int expectedSyncByte1 = 71;
+        int expectedSyncByte2 = 131;
         try{
             socketData = new BufferedInputStream(socket.getInputStream());
             socketData.mark(10);
