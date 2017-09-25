@@ -1024,4 +1024,8 @@ public class Controller implements Initializable, Observer {
     public VBox getHUD() {
         return headsUpDisplay;
     }
+
+    public void redrawCourse() {
+        raceViewController.redrawCourse();
+    }
 }

@@ -88,6 +88,7 @@ public class SelectionController extends Observable {
             setChanged();
             notifyObservers(true);
             DisplayUtils.moveToPoint(trackingBoat.getBoat().getCurrentPosition());
+            controller.redrawCourse();
         }
 
     }
