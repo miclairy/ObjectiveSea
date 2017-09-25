@@ -70,6 +70,7 @@ public class WebSocketServerListener extends AbstractServerListener {
         Matcher match = Pattern.compile("Sec-WebSocket-Key: (.*)").matcher(data);
         byte[] response = null;
         try{
+            match.find();
             response = ("HTTP/1.1 101 Switching Protocols\r\n"
                     + "Connection: Upgrade\r\n"
                     + "Upgrade: websocket\r\n"

@@ -1,19 +1,45 @@
 var insults = ["probably never play this game again.", "No one has ever sailed as badly as you just did.", "you suck.", "rookie.",
     "better luck next time. Not that any of your friends will let you sail with them again.", "you died.", "Shutting down device"]
 
+let BOAT_ID = 1;
+
+
 /**
  * Upon button press, sends a request game packet and changes the screen to control screen.
  */
 function submitButtonPressed(){
+
+
 
     requestGame($("#codeBox").val());
     if(true){
         initControls("Emerites Team New Zealand");
         changeColor("skyblue");
         loadControls();
-    }
+        initButtonListeners();
 
+    }
 }
+
+function initButtonListeners(){
+    var timeout;
+    $(".boatActionPress, .boatActionHold").click(function (event) {
+        let id = $("#"+event.target.id).attr('name');
+        console.log(id);
+
+    })
+    $(".boatActionHold").mousedown(function (event) {
+        timeout = setInterval(function(){
+            let id = $("#"+event.target.id).attr('name');
+            console.log(id);
+        }, 100);
+    })
+    $(".boatActionHold").mouseup(function(){
+        clearInterval(timeout);
+        return false;
+    });
+}
+
 
 function updateStats(speed, placing, health){
     console.log("updating");

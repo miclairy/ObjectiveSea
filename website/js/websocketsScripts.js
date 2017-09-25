@@ -15,10 +15,13 @@ let HEADER_FIELDS = {
 
 let MESSAGE_TYPE = {
     GAME_REQUEST: {type:114, length:2},
+    BOAT_ACTION_MESSAGE:{type:7, length:5},
 }
 
 let MESSAGE_FIELD = {
-    GAME_CODE: {index:0, length:2}
+    GAME_CODE: {index:0, length:2},
+    BOAT_ACTION_SOURCE_ID:{index:0, length:4},
+    BOAT_ACTION_BODY:{index:4, length:1},
 }
 
 /**
@@ -58,7 +61,7 @@ addIntIntoByteArray = function (array, start, numBytes, item) {
  * Creates a WebSocket connection to the Game Recorder Server
  */
 function createGameRecorderSocket() {
-    mySocket = new WebSocket("ws://132.181.16.17:2827"); // 2827 is the port game server runs on
+    mySocket = new WebSocket("ws://127.0.0.1:2827"); // 2827 is the port game server runs on
     mySocket.binaryType = 'arraybuffer';
 
     mySocket.onerror = function (event) {
@@ -90,6 +93,19 @@ requestGame = function(code) {
     let byteArray = new Uint8Array(packet);
     mySocket.send(byteArray.buffer);
 }
+
+sendBoatActionMessage = function(actionCode, boatId){
+    let header = createHeader(MESSAGE_TYPE.BOAT_ACTION_MESSAGE.type, MESSAGE_TYPE.BOAT_ACTION_MESSAGE.length);
+    let body = [0, 0, 0, 0, 0];
+    addIntIntoByteArray(body, MESSAGE_FIELD.BOAT_ACTION_SOURCE_ID.index, MESSAGE_FIELD.BOAT_ACTION_SOURCE_ID.length, boatId);
+    addIntIntoByteArray(body, MESSAGE_FIELD.BOAT_ACTION_BODY.index, MESSAGE_FIELD.BOAT_ACTION_BODY.length, actionCode);
+    let crc = createCrc(header, body);
+    let packet = header.concat(body).concat(crc);
+    let byteArray = new Uint8Array(packet);
+    mySocket.send(byteArray.buffer);
+}
+
+
 
 /**
  * Calculates and return the CRC over the header and body
