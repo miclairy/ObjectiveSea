@@ -6,7 +6,6 @@ import seng302.data.RaceStatus;
 import seng302.data.RaceVisionXMLParser;
 import seng302.models.*;
 import seng302.utilities.MathUtils;
-import seng302.utilities.PolarReader;
 import seng302.utilities.TimeUtils;
 
 import java.text.DateFormat;
@@ -186,8 +185,11 @@ public class RaceUpdater implements Runnable {
                     }
                 }
                 race.updateRaceStatus(RaceStatus.TERMINATED);
+            } else if(race.getCompetitors().size() == 1) {
+                race.updateRaceStatus(RaceStatus.TERMINATED);
             }
-        } else if (race.getCompetitors().size() > 0 && !atLeastOneBoatNotFinished) {
+        }
+        if (race.getCompetitors().size() > 0 && !atLeastOneBoatNotFinished) {
             race.updateRaceStatus(RaceStatus.TERMINATED);
         } else if(isPractice){
             Boat boat = race.getCompetitors().get(0); // Should be only one boat in practice mode
@@ -203,7 +205,7 @@ public class RaceUpdater implements Runnable {
      */
     private void updateBoat(Boat boat){
         if(race.hasStarted() || race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
-            if (collisionManager.boatIsInCollision(boat)) {
+            if (collisionManager.boatIsInCollision(boat) && !boat.isFinished()) {
                 //revert the last location update as it was a collision
                 boat.updateLocation(-raceSecondsPassed, race.getCourse());
                 boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
@@ -213,8 +215,10 @@ public class RaceUpdater implements Runnable {
                     timer = 0;
                 }
             }
+            if(boat.isFinished()) {
+                boat.setSailsIn(true);
+            }
             adjustSpeed(boat);
-            //TODO: Proper way to do this is to create abstract boat class that both Boat and AIBoat inherits from
             if(boat instanceof AIBoat){
                 if(millisBeforeStart < AIBoat.START_MOVING_TIME_MS){
                     AIBoat aiBoat = (AIBoat) boat;
@@ -224,7 +228,7 @@ public class RaceUpdater implements Runnable {
                     timer += raceSecondsPassed;
                     aiBoat.move(raceSecondsPassed, race.getCourse());
                 }
-            } else{
+            } else {
                 boat.move(raceSecondsPassed, race.getCourse());
                 Course course = race.getCourse();
                 if (race.getCourse().getCourseOrder().size() > 0 && race.getRaceStatus().equals(STARTED)) {
@@ -299,7 +303,7 @@ public class RaceUpdater implements Runnable {
             }
         } else if (currentMark.isFinishLine()) {
             if(RoundingMechanics.boatPassedThroughCompoundMark(boat, course.getFinishLine(), previousMark.getPosition(), true)) {
-                boat.setCurrentSpeed(0);
+                boat.setSailsIn(true);
                 boat.setStatus(BoatStatus.FINISHED);
             }
         } else if (!currentMark.hasTwoMarks()){

@@ -25,6 +25,7 @@ public class DisplaySwitcher {
     private static GameSounds gameSounds = new GameSounds();
     private Controller raceController;
     private MainMenuController mainMenu;
+    private boolean mainMenuLoaded = false;
 
     public DisplaySwitcher(Main main, Stage stage){
         this.stage = stage;
@@ -46,6 +47,7 @@ public class DisplaySwitcher {
             }
             gameSounds.mainMenuMusic();
             gameSounds.playEndlessMusic();
+
 
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -90,7 +92,13 @@ public class DisplaySwitcher {
         URL fxmlLocation = getClass().getClassLoader().getResource(fxml);
         loader.setLocation(fxmlLocation);
         Parent root = loader.load();
-        scene = new Scene(root);
+        if(mainMenuLoaded) {
+            scene.setRoot(root);
+        } else {
+            mainMenuLoaded = true;
+            scene = new Scene(root);
+            if (!System.getProperty("os.name").startsWith("Mac")) stage.setMaximized(true);
+        }
         setScene(scene);
         AnimationUtils.transitionFXML(root);
         stage.setScene(scene);

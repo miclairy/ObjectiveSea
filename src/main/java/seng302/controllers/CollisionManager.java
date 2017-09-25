@@ -55,10 +55,12 @@ public class CollisionManager {
         boats.addAll(race.getCompetitors());
         for (int i = 0; i < boats.size(); i++) {
             Boat boat = boats.get(i);
-            for (int j = i + 1; j < boats.size(); j++) {
-                Boat otherBoat = boats.get(j);
-                if(otherBoat.getStatus() != BoatStatus.DNF){
-                    checkForCollisionBetweenBoats(boat, otherBoat);
+            if(boat.getStatus() != BoatStatus.DNF && !boat.isFinished() && boat.getStatus() != BoatStatus.DISQUALIFIED) {
+                for (int j = i + 1; j < boats.size(); j++) {
+                    Boat otherBoat = boats.get(j);
+                    if (otherBoat.getStatus() != BoatStatus.DNF && !otherBoat.isFinished()) {
+                        checkForCollisionBetweenBoats(boat, otherBoat);
+                    }
                 }
             }
             if(!isPractice && !isTutorial) checkForOutOfBounds(boat, race.getRaceStatus());
@@ -92,7 +94,7 @@ public class CollisionManager {
      * @param raceStatus the status of the race
      */
     private void checkForOutOfBounds(Boat boat, RaceStatus raceStatus){
-        if  (raceStatus.equals(RaceStatus.STARTED) && !boundary.contains(boat.getCurrentLat(), boat.getCurrentLon())){
+        if  (raceStatus.equals(RaceStatus.STARTED) && !boat.isFinished() && !boundary.contains(boat.getCurrentLat(), boat.getCurrentLon())){
             Collision collision = new Collision();
             collision.setOutOfBounds(true);
             collision.addBoat(boat.getId());

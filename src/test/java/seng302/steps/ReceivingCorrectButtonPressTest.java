@@ -11,11 +11,9 @@ import seng302.data.ClientPacketBuilder;
 import static org.junit.Assert.assertEquals;
 import static seng302.data.AC35StreamField.BOAT_ACTION_BODY;
 import static seng302.data.AC35StreamField.BOAT_ACTION_SOURCE_ID;
-import static seng302.data.AC35StreamField.HEADER_SOURCE_ID;
 import static seng302.data.AC35StreamMessage.BOAT_ACTION_MESSAGE;
-import static seng302.data.AC35StreamMessage.BOAT_LOCATION_MESSAGE;
 import static seng302.data.BoatAction.DOWNWIND;
-import static seng302.data.Receiver.byteArrayRangeToInt;
+import static seng302.controllers.listeners.Listener.byteArrayRangeToInt;
 
 /**
  * Created by gla42 on 21/07/17.
