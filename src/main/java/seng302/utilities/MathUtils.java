@@ -280,8 +280,8 @@ public class MathUtils {
      * Generates a random 4 digit code
      * @return 4 digit code between [0000, 9999]
      */
-    public static String generateFourDigitPartyCode() {
+    public static Integer generateFourDigitPartyCode() {
         Random rand = new Random();
-        return String.format("%4d", rand.nextInt(10000));
+        return rand.nextInt(10000);
     }
 }
