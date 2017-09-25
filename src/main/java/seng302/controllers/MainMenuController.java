@@ -108,10 +108,10 @@ public class MainMenuController implements Initializable{
     private AnimationTimer timer;
     private MainMenuClient client;
     private Thread mainMenuClientThread;
-    private GameSounds gameSounds;
-    private double musicSliderValue = 1.0;
-    private double fxSliderValue = 1.0;
-    private boolean soundFxIsMute;
+    private static GameSounds gameSounds;
+    private static double musicSliderValue = 1.0;
+    private static double fxSliderValue = 1.0;
+    private static boolean soundFxIsMute;
     private double blurAmount;
     private boolean forward = true;
 
@@ -743,8 +743,8 @@ public class MainMenuController implements Initializable{
 
     @FXML private void showSettings(){
         AnimationUtils.fadeNode(settingsGrid, settingsGrid.isVisible());
-        //musicOnImage.setVisible(!(gameSounds.getVolume() == 0.0));
-        //musicOffImage.setVisible(gameSounds.getVolume() == 0.0);
+        musicOnImage.setVisible(!(gameSounds.getVolume() == 0.0));
+        musicOffImage.setVisible(gameSounds.getVolume() == 0.0);
         soundFxOnImage.setVisible(!soundFxIsMute);
         soundFxOffImage.setVisible(soundFxIsMute);
         musicSlider.setValue(musicSliderValue);
