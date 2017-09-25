@@ -1,13 +1,17 @@
 package seng302.controllers;
 
 import javafx.event.EventHandler;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import seng302.data.BoatAction;
 import seng302.models.Boat;
 import seng302.models.Race;
 import seng302.utilities.DisplayUtils;
+import seng302.views.DisplayTouchController;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -25,6 +29,7 @@ public class KeyInputController extends Observable {
     private int commandInt;
     private int clientID;
     private Race race;
+    private Controller controller;
     private final Set<KeyCode> cosumedKeyCodes = new HashSet<>(Arrays.asList(KeyCode.SPACE, KeyCode.UP, KeyCode.DOWN));
 
     /**
@@ -53,6 +58,9 @@ public class KeyInputController extends Observable {
     private void checkKeyPressed(KeyCode key){
         commandInt = BoatAction.getTypeFromKeyCode(key);
         if (commandInt != -1) {
+            if(key.equals(KeyCode.ENTER)){
+                controller.setUserHelpLabel("Tacking", Color.web("#4DC58B"));
+            }
             setChanged();
             notifyObservers();
         }
@@ -69,4 +77,6 @@ public class KeyInputController extends Observable {
     public void setClientID(int clientID) {
         this.clientID = clientID;
     }
+
+    public void setController(Controller controller){ this.controller = controller;}
 }

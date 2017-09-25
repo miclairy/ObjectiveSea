@@ -841,6 +841,11 @@ public class Controller implements Initializable, Observer {
         touchInputController.setUp(root, touchPane, this);
     }
 
+    public void setUpKeyInputController(KeyInputController keyInputController) {
+        keyInputController.setController(this);
+    }
+
+
     public class ColoredTextListCell extends ListCell<String> {
         @Override
         protected void updateItem(String item, boolean empty) {

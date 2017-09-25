@@ -150,6 +150,7 @@ public class Main extends Application {
             keyInputController.addObserver(client);
             touchInputController.addObserver(client);
             displaySwitcher.setUpTouchInputController(touchInputController);
+            displaySwitcher.setUpKeyInputController(keyInputController);
         }
     }
 
