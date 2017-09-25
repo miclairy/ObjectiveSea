@@ -457,7 +457,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param boat the BoatDisplay object that is to be drawn
      */
     private void drawBoat(BoatDisplay boat){
-        Polyline boatImage = raceView.createNewBoatImage(boat.getColor());
+        Polyline boatImage = raceView.createBoatImage(boat.getColor());
         root.getChildren().add(boatImage);
         boat.setIcon(boatImage);
         drawBoatWake(boat);
