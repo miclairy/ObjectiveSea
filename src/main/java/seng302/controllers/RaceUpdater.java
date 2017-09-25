@@ -38,7 +38,6 @@ public class RaceUpdater implements Runnable {
     private Coordinate startingPosition;
     private boolean serverRunning;
     private boolean isPractice;
-
     private long secondsElapsed;
     private double timeOfFirstFinisher, millisBeforeStart, raceSecondsPassed;
     private boolean oneBoatHasFinished, atLeastOneBoatNotFinished;
@@ -207,13 +206,18 @@ public class RaceUpdater implements Runnable {
                 //revert the last location update as it was a collision
                 boat.updateLocation(-raceSecondsPassed, race.getCourse());
                 boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
+                if (boat instanceof AIBoat){
+                    boat.setSailsIn(true);
+                }
             }
             adjustSpeed(boat);
             //TODO: Proper way to do this is to create abstract boat class that both Boat and AIBoat inherits from
             if(boat instanceof AIBoat){
                 if(millisBeforeStart < AIBoat.START_MOVING_TIME_MS){
                     AIBoat aiBoat = (AIBoat) boat;
-                    aiBoat.setSailsIn(false);
+                    if (!(collisionManager.boatIsInCollision(boat))) {
+                        aiBoat.setSailsIn(false);
+                    }
                     aiBoat.move(raceSecondsPassed, race.getCourse());
                 }
             } else{
