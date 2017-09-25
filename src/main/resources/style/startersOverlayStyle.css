@@ -62,12 +62,12 @@
 
 #lblPartyTitle{
     -fx-text-fill: #93DA9F;
-    -fx-font-size: 100px;
+    -fx-font-size: 70px;
     -fx-font-weight: bold;
 }
 
 #lblPartyModeHelp{
     -fx-text-fill: white;
-    -fx-font-size: 20px;
+    -fx-font-size: 18px;
     -fx-font-weight: bold;
 }

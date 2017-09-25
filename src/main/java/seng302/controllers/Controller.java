@@ -81,6 +81,7 @@ public class Controller implements Initializable, Observer {
     @FXML private Label lblTrackRV;
     @FXML private VBox headsUpDisplay;
     @FXML private VBox partyModeBox;
+    @FXML private VBox partyModeBoxWrapper;
     private HeadsupDisplay infoDisplay;
 
     @FXML public StackPane stackPane;
@@ -180,6 +181,7 @@ public class Controller implements Initializable, Observer {
         lblTrackRV.setVisible(false);
         lblExitRV.setVisible(false);
         partyModeBox.setVisible(false);
+        setPartyBoxPosition();
 
         raceCompetitorOverview();
         startersOverlay.toFront();
@@ -222,6 +224,13 @@ public class Controller implements Initializable, Observer {
         raceViewController.updateWindArrow();
         raceViewController.start();
 
+    }
+
+    private void setPartyBoxPosition(){
+        partyModeBoxWrapper.toFront();
+        partyModeBox.toFront();
+        partyModeBox.setLayoutX(canvasWidth / 2);
+        partyModeBox.setLayoutY(canvasHeight / 2);
     }
 
     /**
@@ -561,6 +570,7 @@ public class Controller implements Initializable, Observer {
             anchorWidth = canvasAnchor.getWidth();
             raceViewController.redrawCourse();
             raceViewController.redrawBoatPaths();
+            setPartyBoxPosition();
             btnHide.setLayoutX(canvasWidth - 485.0);
         });
         canvasAnchor.heightProperty().addListener(resizeListener);
@@ -568,6 +578,7 @@ public class Controller implements Initializable, Observer {
             canvasHeight = (double) newValue;
             anchorHeight = canvasAnchor.getHeight();
             raceViewController.redrawCourse();
+            setPartyBoxPosition();
             raceViewController.redrawBoatPaths();
 
         });
