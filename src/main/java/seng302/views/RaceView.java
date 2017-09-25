@@ -51,6 +51,38 @@ public class RaceView {
     }
 
     /**
+     * Creates a boat image, which is a triangle with a line through the middle, parallel to the direction the image
+     * is facing
+     * @param color the color to draw the boat
+     * @return a rendered boat image
+     */
+    public Polyline createNewBoatImage(Color color){
+        Polyline boatImage = new Polyline();
+        boatImage.getPoints().addAll(
+                0.0,9.0,
+                -5.0,9.0,
+                -5.0,0.0,
+                -4.9,-1.0,
+                -4.5,-4.0,
+                -3.5,-6.5,
+                -2.0,-8.3,
+                0.0,-10.0,
+                2.0,-8.3,
+                3.5,-6.5,
+                4.5,-4.0,
+                4.9,-1.0,
+                5.0,0.0,
+                5.0,9.0,
+                0.0,9.0,
+                0.0,-10.0);
+
+
+        boatImage.setFill(color);
+        boatImage.setId("boatIcon");
+        return boatImage;
+    }
+
+    /**
      * Creates a boat wake image, which is a triangular shape with highlights
      * @return a rendered boat wake image
      */
