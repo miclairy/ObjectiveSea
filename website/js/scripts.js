@@ -47,3 +47,16 @@ function changeColor(color){
     $("#infoScreen").css("background-color", color);
     $("body").css("background-color", color);
 }
+
+function setBoatHealth(percentage) {
+    $("#boatHealth").html(percentage + "%");
+}
+
+function setPlacing(placing, numParticipants) {
+    $("#placing").html(placing + " / " + numParticipants);
+}
+
+function setBoatSpeed(speed) {
+    $("#boatSpeed").html(speed + "kn");
+}
+
