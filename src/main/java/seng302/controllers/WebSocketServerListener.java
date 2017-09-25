@@ -91,7 +91,6 @@ public class WebSocketServerListener extends AbstractServerListener {
         for(int i = 0; i < 4; i++){
             key[i] = (byte)socketData.read();
         }
-        System.out.println("Length " + length);
         byte[] encodedPacket = new byte[length];
         for(int i = 0; i < length; i++){
             encodedPacket[i] = (byte)socketData.read();
@@ -109,7 +108,6 @@ public class WebSocketServerListener extends AbstractServerListener {
      */
     private int readPacketLength() throws IOException {
         int length = socketData.read() - 128;
-        System.out.println(length);
         if(length < 125) {
             return length;
         } else {
