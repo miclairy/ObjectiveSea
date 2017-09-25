@@ -41,6 +41,7 @@ public class RaceUpdater implements Runnable {
     private long secondsElapsed;
     private double timeOfFirstFinisher, millisBeforeStart, raceSecondsPassed;
     private boolean oneBoatHasFinished, atLeastOneBoatNotFinished;
+    private double timer;
 
     public RaceUpdater(String selectedCourse){
         collisionManager = new CollisionManager();
@@ -208,6 +209,8 @@ public class RaceUpdater implements Runnable {
                 boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
                 if (boat instanceof AIBoat){
                     boat.setSailsIn(true);
+                    boat.setCurrentSpeed(0);
+                    timer = 0;
                 }
             }
             adjustSpeed(boat);
@@ -215,9 +218,10 @@ public class RaceUpdater implements Runnable {
             if(boat instanceof AIBoat){
                 if(millisBeforeStart < AIBoat.START_MOVING_TIME_MS){
                     AIBoat aiBoat = (AIBoat) boat;
-                    if (!(collisionManager.boatIsInCollision(boat))) {
+                    if (!(collisionManager.boatIsInCollision(boat)) && timer > 5) {
                         aiBoat.setSailsIn(false);
                     }
+                    timer += raceSecondsPassed;
                     aiBoat.move(raceSecondsPassed, race.getCourse());
                 }
             } else{
