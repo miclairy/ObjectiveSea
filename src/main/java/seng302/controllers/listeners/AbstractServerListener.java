@@ -22,6 +22,7 @@ public abstract class AbstractServerListener extends Listener implements Runnabl
     protected Race race;
     protected Integer clientId;
     protected boolean clientConnected = true;
+    protected final Integer CRC_LENGTH = 4;
 
 
     /**
