@@ -2,7 +2,6 @@ package seng302.data;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -43,7 +42,7 @@ public class ConnectionManager extends Observable implements Runnable {
                 setChanged();
                 notifyObservers(socket);
             } catch (IOException e) {
-                if(e instanceof SocketException){
+                if (e instanceof SocketException) {
                     System.out.println("Server: Disconnected");
                 }
             }
