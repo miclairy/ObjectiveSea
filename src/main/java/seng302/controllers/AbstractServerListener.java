@@ -141,15 +141,24 @@ public abstract class AbstractServerListener extends Receiver implements Runnabl
         notifyObservers(raceToRemove);
     }
 
+    /**
+     * Creates a server listener based on what type of connection it is. If the first two bytes meets the expected
+     * sync bytes of the AC35 protocol, then a normal socket is assumed, otherwise assumes it is a WebSocket and
+     * the corresponding server listener is created.
+     * @param socket The connection socket
+     * @return The corresponding server listener for the socket type
+     */
     public static AbstractServerListener createServerListener(Socket socket){
-        BufferedInputStream socketData = null;
+        BufferedInputStream socketData;
+        byte expectedSyncByte1 = (byte) 0x47;
+        byte expectedSyncByte2 = (byte) 0x83;
         try{
             socketData = new BufferedInputStream(socket.getInputStream());
             socketData.mark(10);
             int sync1 = socketData.read();
             int sync2 = socketData.read();
             socketData.reset();
-            if (sync1 != 0x47 || sync2 != 0x83) {
+            if (sync1 != expectedSyncByte1 || sync2 != expectedSyncByte2) {
                 return new WebSocketServerListener(socket, socketData);
             } else {
                 return new ServerListener(socket, socketData);

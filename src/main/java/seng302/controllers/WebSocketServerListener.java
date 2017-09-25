@@ -6,38 +6,49 @@ import java.io.IOException;
 import java.net.Socket;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by atc60 on 22/09/17.
+ * Server listener to connect and communicate with a web socket client.
+ * A lot of the code is "based on" https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_a_WebSocket_server_in_Java
  */
 public class WebSocketServerListener extends AbstractServerListener {
 
     private BufferedInputStream socketData;
 
-    public WebSocketServerListener(Socket socket, BufferedInputStream socketData) throws IOException {
+    WebSocketServerListener(Socket socket, BufferedInputStream socketData) throws IOException {
         setSocket(socket);
         this.socketData = socketData;
         sendWebSocketResponse();
     }
 
+    /**
+     * Currently only prints out what is received for testing, need to parse the packet in the future.
+     */
     @Override
     public void run() {
-        while(true){
+        while(clientConnected){
             try {
                 byte[] packet = readPacket();
+                if(packet == null){
+                    clientConnected = false;
+                }
                 System.out.println(Arrays.toString(packet));
             } catch (IOException e) {
+                clientConnected = false;
                 e.printStackTrace();
             }
         }
-
+        System.out.println("Web Socket Server Listener Terminated");
     }
 
-    protected void sendWebSocketResponse() {
+    /**
+     * Sends the required WebSocket HTTP response to establish the handshake.
+     * Code stolen from https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API/Writing_a_WebSocket_server_in_Java
+     */
+    private void sendWebSocketResponse() {
         try{
             String data = new Scanner(socketData, "UTF-8").useDelimiter("\\r\\n\\r\\n").next();
             Matcher get = Pattern.compile("^GET").matcher(data);
@@ -64,21 +75,73 @@ public class WebSocketServerListener extends AbstractServerListener {
         }
     }
 
+    /**
+     * Reads a whole packet in, parsing the WebSocket header and decoding the bytes in the process.
+     * Assumes the first byte read is the first byte of the packet. (Is not out of sync).
+     * @return The payload of the packet
+     * @throws IOException If there is an issue with the connection/reading in data
+     */
     private byte[] readPacket() throws IOException{
         byte[] key = new byte[4];
-        int type = socketData.read();
-        int length = socketData.read() - 128;
-        System.out.println(length);
+        int opcode = socketData.read();
+        if(opcode == -1){
+            return null;
+        }
+        int length = readPacketLength();
         for(int i = 0; i < 4; i++){
             key[i] = (byte)socketData.read();
         }
-        byte[] packet = new byte[length];
-        int c = 0;
-        for(int i = 0; i < length; i++) {
-            packet[i] = (byte) (socketData.read() ^ key[c & 0x3]);
-            c++;
+        System.out.println("Length " + length);
+        byte[] encodedPacket = new byte[length];
+        for(int i = 0; i < length; i++){
+            encodedPacket[i] = (byte)socketData.read();
         }
-        return packet;
+        return decodePacket(encodedPacket, key);
     }
 
+    /**
+     * Parses the packet length as it is reading it in from the socket. Dealing with multiple cases
+     * as part of the WebSocket protocol.
+     * Assumes length will fit in a 32 bit signed integer (Integer.MAX_VALUE), otherwise
+     * we'll be creating a byte array far too large anyways
+     * @return The length of the packet.
+     * @throws IOException If there is an issue with the connection/reading in data
+     */
+    private int readPacketLength() throws IOException {
+        int length = socketData.read() - 128;
+        System.out.println(length);
+        if(length < 125) {
+            return length;
+        } else {
+            int fieldLength = length == 126 ? 2 : 8;
+            byte[] packetLength = new byte[fieldLength];
+            for (int i = 0; i < fieldLength; i++) {
+                packetLength[i] = (byte) socketData.read();
+            }
+            long lengthValue = byteArrayRangeToLong(packetLength, 0, fieldLength);
+            if (lengthValue > Integer.MAX_VALUE){
+                //Safety check, we should not receive a packet length this large
+                throw new IllegalArgumentException("Packet length is too large");
+            } else{
+                return (int) lengthValue;
+            }
+        }
+    }
+
+    /**
+     * Decodes the packet payload read in using the key given.
+     * @param encodedPacket The packet payload with encoded bytes
+     * @param key Array with 4 bytes for the 4 possible key values
+     * @return A new byte array with the decoded payload
+     * @throws IOException If there is an issue with the connection/reading in data
+     */
+    private byte[] decodePacket(byte[] encodedPacket, byte[] key)  {
+        byte[] decodedPacket = new byte[encodedPacket.length];
+        int keyIndex = 0;
+        for(int i = 0; i < encodedPacket.length; i++) {
+            decodedPacket[i] = (byte) (encodedPacket[i] ^ key[keyIndex & 0x3]);
+            keyIndex++;
+        }
+        return decodedPacket;
+    }
 }

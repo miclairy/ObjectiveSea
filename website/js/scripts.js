@@ -1,13 +1,9 @@
-
-
-// $(document).ready(function(){
-//     $( "#codeEntryForm" ).on( "c", loadControls());
-//
-// });
-
 var insults = ["probably never play this game again.", "No one has ever sailed as badly as you just did.", "you suck.", "rookie.",
     "better luck next time. Not that any of your friends will let you sail with them again.", "you died.", "Shutting down device"]
 
+/**
+ * Upon button press, sends a request game packet and changes the screen to control screen.
+ */
 function submitButtonPressed(){
 
     requestGame($("#codeBox").val());

@@ -1,9 +1,8 @@
 package seng302.controllers;
 
-import seng302.controllers.AbstractServerListener;
+
 import seng302.data.AC35StreamMessage;
 
-import javax.xml.crypto.Data;
 import java.io.BufferedInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
@@ -27,6 +26,10 @@ public class ServerListener extends AbstractServerListener{
         dataInput = new DataInputStream(socketData);
     }
 
+    /**
+     * The main run method of the serverListener. Continuously loops listening on a socket and then decoding it
+     * and calling the needed method. Deals with client registration
+     */
     @Override
     public void run() {
         while(clientConnected){
@@ -68,6 +71,6 @@ public class ServerListener extends AbstractServerListener{
                 clientConnected = false;
             }
         }
-        System.out.println("Game Recorder ServerListener Stopped");
+        System.out.println("ServerListener Stopped");
     }
 }
