@@ -3,6 +3,8 @@ package seng302.utilities;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
+import seng302.controllers.GameServer;
 import seng302.data.RoundingSide;
 import seng302.models.CompoundMark;
 import seng302.models.Coordinate;
@@ -168,5 +170,13 @@ public class MathUtilsTest {
 
         Assert.assertEquals(0.048033120, distanceToStartLine(defaultCourse, boat), DELTA);
 
+    }
+
+    @Test
+    public void generateFourDigitPartyCodeTest() {
+        String regex = "\\d{4}";
+        String fourDigitCode = generateFourDigitPartyCode();
+        System.out.println(fourDigitCode);
+        Assert.assertTrue(fourDigitCode.matches(regex));
     }
 }
