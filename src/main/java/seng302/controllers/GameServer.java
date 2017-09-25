@@ -30,6 +30,7 @@ import static seng302.data.registration.RegistrationResponseStatus.SPECTATOR_SUC
  */
 public class GameServer implements Runnable, Observer {
     private final double SECONDS_PER_UPDATE = 0.2;
+    private final double SPEED_SCALE = 15;
     private final int MAX_SPECTATORS = 100; //mostly because our boats sourceIDs start at 101
 
     private Map<AC35StreamXMLMessage, Integer> xmlSequenceNumber = new HashMap<>();
@@ -122,7 +123,7 @@ public class GameServer implements Runnable, Observer {
                     if (!raceUpdater.getRace().getCompetitors().isEmpty()) {
                         sendRaceUpdates();
                     }
-                    Thread.sleep((long) (SECONDS_PER_UPDATE * 1000 / options.getSpeedScale()));
+                    Thread.sleep((long) (SECONDS_PER_UPDATE * 1000 / SPEED_SCALE));
                 }
                 sendRaceUpdates(); //send one last message block with ending data
                 connectionManager.closeClientConnections();
