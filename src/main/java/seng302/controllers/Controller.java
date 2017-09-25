@@ -1025,7 +1025,4 @@ public class Controller implements Initializable, Observer {
         return headsUpDisplay;
     }
 
-    public void redrawCourse() {
-        raceViewController.redrawCourse();
-    }
 }
