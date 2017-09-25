@@ -1,20 +1,13 @@
 package seng302.controllers;
 
+import seng302.controllers.listeners.Listener;
 import seng302.data.*;
 import seng302.data.registration.RegistrationResponse;
-import seng302.data.registration.RegistrationType;
 import seng302.data.registration.ServerFullException;
-import seng302.data.*;
 import seng302.data.registration.*;
-import seng302.models.Boat;
-import seng302.models.ClientOptions;
-import seng302.models.Race;
 import seng302.utilities.NoConnectionToServerException;
 import seng302.utilities.TimeUtils;
 
-import java.util.*;
-
-import java.util.Observable;
 import java.util.Observer;
 
 /**
@@ -30,7 +23,7 @@ public abstract class Client implements Runnable, Observer {
 
     protected ClientPacketBuilder packetBuilder;
     protected ClientSender sender;
-    protected Receiver clientListener;
+    protected Listener clientListener;
     Thread dataStreamReaderThread;
     protected RegistrationResponse serverRegistrationResponse;
     protected int clientID;
