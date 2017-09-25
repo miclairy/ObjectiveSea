@@ -251,7 +251,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if(displayBoat == currentUserBoatDisplay) {
                 manageNextMarkVisuals();
                 if(!congratulated && displayBoat.getBoat().getStatus() == BoatStatus.FINISHED){
-                    controller.setUserHelpLabel("Congratulations, you have finished the race!");
+                    controller.setUserHelpLabel("Congratulations, you have finished the race!", Color.web("#4DC58B"));
                     congratulated = true;
                 }
             }
@@ -457,7 +457,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param boat the BoatDisplay object that is to be drawn
      */
     private void drawBoat(BoatDisplay boat){
-        Polyline boatImage = raceView.createNewBoatImage(boat.getColor());
+        Polyline boatImage = raceView.createBoatImage(boat.getColor());
         root.getChildren().add(boatImage);
         boat.setIcon(boatImage);
         drawBoatWake(boat);
@@ -490,7 +490,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                     race.getCourse().getStartLine(),
                     race.getCourse().getCompoundMarks().get(2)) && ((race.getCurrentTimeInEpochMs() - race.getStartTimeInEpochMs()) / 1000) < 0){
                 startedEarlyPenalty = true;
-                controller.setUserHelpLabel("Start line was crossed early. It must be crossed again.");
+                controller.setUserHelpLabel("Start line was crossed early. It must be crossed again.", Color.web("#f47777"));
                 animateBoatHighlightColor(PenaltyStatus.PENALTY, "redBoatHighlight");
             } else if(boat.getTimeStatus().equals(StartTimingStatus.EARLY)) {
                 animateBoatHighlightColor(PenaltyStatus.WARNING, "orangeBoatHighlight");
@@ -1461,7 +1461,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
                 index = boat1.getLeg();
             } else {
                 if (drawDistanceLine){
-                    controller.setUserHelpLabel("Distance line will display when boats are on the same leg");
+                    controller.setUserHelpLabel("Distance line will display when boats are on the same leg", Color.web("#f47777"));
                 }
             }
         } else {

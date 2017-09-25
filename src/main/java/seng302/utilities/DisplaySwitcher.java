@@ -48,6 +48,7 @@ public class DisplaySwitcher {
             gameSounds.mainMenuMusic();
             gameSounds.playEndlessMusic();
 
+
         } catch (Exception ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ServerFullException e) {

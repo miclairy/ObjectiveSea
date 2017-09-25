@@ -32,53 +32,37 @@ public class RaceView {
     private final String MARK_COLOR = "#fff";
     private final String MARK_STROKE_COLOR = "#cdfaf4";
 
+
     /**
-     * Creates a boat image, which is a triangle with a line through the middle, parallel to the direction the image
+     * Creates a boat image, which is a boat shaped polygon with a line through the middle, parallel to the direction the image
      * is facing
      * @param color the color to draw the boat
      * @return a rendered boat image
      */
     public Polyline createBoatImage(Color color){
         Polyline boatImage = new Polyline();
-        boatImage.getPoints().addAll(5.0, 10.0,
-                -5.0, 10.0,
-                0.0, -10.0,
-                5.0, 10.0,
-                0.0, 10.0,
-                0.0, -10.0);
-
-
-        boatImage.setFill(color);
-        boatImage.setId("boatIcon");
-        return boatImage;
-    }
-
-    /**
-     * Creates a boat image, which is a triangle with a line through the middle, parallel to the direction the image
-     * is facing
-     * @param color the color to draw the boat
-     * @return a rendered boat image
-     */
-    public Polyline createNewBoatImage(Color color){
-        Polyline boatImage = new Polyline();
         boatImage.getPoints().addAll(
                 0.0,10.0,
                 -3.8,10.0,
+                -4.2, 8.75,
                 -4.4,7.5,
-                -4.5, 5.0,
+                -4.6, 5.0,
                 -4.7, 2.5,
                 -4.8,0.0,
                 -4.3,-2.5,
                 -3.6,-5.0,
                 -2.5,-7.5,
+                -1.0, -9.0,
                 0.0,-10.0,
+                1.0, -9.0,
                 2.5,-7.5,
                 3.6,-5.0,
                 4.3,-2.5,
                 4.8,0.0,
                 4.7,2.5,
-                4.5, 5.0,
+                4.6, 5.0,
                 4.4, 7.5,
+                4.2, 8.75,
                 3.8, 10.0,
                 0.0, 10.0,
                 0.0,-10.0);
