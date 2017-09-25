@@ -731,6 +731,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         boundary = raceView.createCourseBoundary(race.getCourse().getBoundary());
         root.getChildren().add(boundary);
         boundary.toBack();
+        boundary.setMouseTransparent(true);
         selectionController.addDeselectEvents(boundary);
     }
 
