@@ -174,9 +174,7 @@ public class MathUtilsTest {
 
     @Test
     public void generateFourDigitPartyCodeTest() {
-        String regex = "\\d{4}";
-        String fourDigitCode = generateFourDigitPartyCode();
-        System.out.println(fourDigitCode);
-        Assert.assertTrue(fourDigitCode.matches(regex));
+        Integer code = generateFourDigitPartyCode();
+        Assert.assertTrue(code >= 0 && code <= 9999);
     }
 }
