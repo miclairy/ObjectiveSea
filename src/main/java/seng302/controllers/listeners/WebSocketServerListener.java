@@ -1,7 +1,8 @@
 package seng302.controllers.listeners;
 
 import seng302.data.AC35StreamMessage;
-
+import seng302.data.ServerPacketBuilder;
+import seng302.data.registration.RegistrationResponseStatus;
 import javax.xml.bind.DatatypeConverter;
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -15,8 +16,6 @@ import java.util.regex.Pattern;
 import static seng302.data.AC35StreamField.HEADER_SOURCE_ID;
 import static seng302.data.AC35StreamField.MESSAGE_LENGTH;
 import static seng302.data.AC35StreamField.MESSAGE_TYPE;
-import static seng302.data.AC35StreamMessage.BOAT_ACTION_MESSAGE;
-import static seng302.data.AC35StreamMessage.REGISTRATION_REQUEST;
 
 /**
  * Server listener to connect and communicate with a web socket client.
@@ -61,6 +60,17 @@ public class WebSocketServerListener extends AbstractServerListener {
                             }
                         case REQUEST_AVAILABLE_RACES:
                             parseRequestRacesMessage(body);
+                            // TODO remove this
+                            //TEST
+                            ServerPacketBuilder builder = new ServerPacketBuilder();
+                            byte[] sendpacket = builder.createRegistrationResponsePacket(101, RegistrationResponseStatus.PLAYER_SUCCESS);
+                            byte[] wrappedPacket = builder.wrapPacket(sendpacket);
+                            socket.getOutputStream().write(wrappedPacket);
+                            try {
+                                Thread.sleep(2000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                             break;
                     }
                 } else{
@@ -79,6 +89,8 @@ public class WebSocketServerListener extends AbstractServerListener {
     }
 
     private void parseRequestRacesMessage(byte[] body) {
+        System.out.println("Parsing message");
+        System.out.println(Arrays.toString(body));
     }
 
     private byte[] extractHeader(byte[] packet) {
