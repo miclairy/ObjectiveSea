@@ -58,7 +58,7 @@ addIntIntoByteArray = function (array, start, numBytes, item) {
  * Creates a WebSocket connection to the Game Recorder Server
  */
 function createGameRecorderSocket() {
-    mySocket = new WebSocket("ws://132.181.16.17:2827"); // 2827 is the port game server runs on
+    mySocket = new WebSocket("ws://127.0.0.1:2827"); // 2827 is the port game server runs on
     mySocket.binaryType = 'arraybuffer';
 
     mySocket.onerror = function (event) {

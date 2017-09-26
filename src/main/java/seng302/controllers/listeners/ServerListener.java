@@ -1,26 +1,17 @@
 package seng302.controllers.listeners;
 
 
-import seng302.controllers.listeners.AbstractServerListener;
 import seng302.data.AC35StreamMessage;
 import seng302.data.CourseName;
 import seng302.utilities.ConnectionUtils;
 import seng302.views.AvailableRace;
 
-import javax.xml.bind.DatatypeConverter;
-import java.io.*;
 import java.io.BufferedInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.Arrays;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static seng302.data.AC35StreamField.*;
 import static seng302.data.AC35StreamField.HOST_GAME_CURRENT_PLAYERS;
@@ -43,7 +34,8 @@ public class ServerListener extends AbstractServerListener {
      */
     @Override
     public void run() {
-        while(clientConnected){
+        boolean receivedCode = false;
+        while(clientConnected && !receivedCode){
             try {
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
@@ -52,7 +44,7 @@ public class ServerListener extends AbstractServerListener {
                 int messageTypeValue = byteArrayRangeToInt(header, MESSAGE_TYPE.getStartIndex(), MESSAGE_TYPE.getEndIndex());
                 int sourceId = byteArrayRangeToInt(header, HEADER_SOURCE_ID.getStartIndex(), HEADER_SOURCE_ID.getEndIndex());
                 AC35StreamMessage messageType = AC35StreamMessage.fromInteger(messageTypeValue);
-
+                System.out.println(messageType);
                 byte[] body = new byte[messageLength];
                 dataInput.readFully(body);
                 byte[] crc = new byte[CRC_LENGTH];
@@ -72,6 +64,13 @@ public class ServerListener extends AbstractServerListener {
                             if (sourceId != -1) {
                                 parseBoatActionMessage(body);
                             }
+                            break;
+                        case PARTY_MODE_CODE_MESSAGE:
+                            parseRoomCodeMessage(body);
+                            receivedCode = true;
+                            break;
+                        default:
+                            System.out.println("Unknown");
                     }
                 } else{
                     System.out.println("Incorrect CRC");
@@ -124,5 +123,4 @@ public class ServerListener extends AbstractServerListener {
         setChanged();
         notifyObservers(raceToRemove);
     }
-
 }

@@ -56,12 +56,15 @@ public class GameRecorder implements Observer {
 
             }
         } else if(observable instanceof AbstractServerListener){
+            System.out.println("received update");
+            AbstractServerListener serverListener = (AbstractServerListener)observable;
+
             if (arg instanceof RegistrationType) {
                 if (arg.equals(REQUEST_RUNNING_GAMES)) {
-                    respondToRequestForGames((AbstractServerListener) observable);
+                    respondToRequestForGames(serverListener.getSocket());
                 }
             } else if (arg instanceof AvailableRace) {
-                updateAvailableRace(((AvailableRace) arg));
+                updateAvailableRace(((AvailableRace) arg), serverListener.getSocket());
             }
         }
     }
@@ -69,14 +72,15 @@ public class GameRecorder implements Observer {
     /**
      * Runs through the entire list of available races, updating the ones that have had changes
      * @param newRace the new available race
+     * @param socket the socket to respond to
      */
-    private void updateAvailableRace(AvailableRace newRace){
+    private void updateAvailableRace(AvailableRace newRace, Socket socket){
         if (newRace.isDeleted()) {
             removeAvailableRace(newRace);
             return;
         }
         if (newRace.isPartyGame()) {
-            updatePartyGame(newRace);
+            updatePartyGame(newRace, socket);
         } else {
             updateNormalRace(newRace);
         }
@@ -85,8 +89,9 @@ public class GameRecorder implements Observer {
     /**
      * Adds or updates a party game to the availablePartyGames hashmap
      * @param newRace the race to add or update
+     * @param socket the socket to send the response to
      */
-    private void updatePartyGame(AvailableRace newRace) {
+    private void updatePartyGame(AvailableRace newRace, Socket socket) {
         boolean updatedRace = updateRaceIfExists(newRace, availablePartyGames.values());
         if (!updatedRace) {
             Integer code = MathUtils.generateFourDigitPartyCode();
@@ -95,13 +100,15 @@ public class GameRecorder implements Observer {
             }
             newRace.setCode(code);
             availablePartyGames.put(code, newRace);
-            sendRoomCodeResponse(newRace.getIpAddress(), newRace.getPort(), code);
+            sendRoomCodeResponse(socket, code);
+        } else{
+            System.out.println("Received again");
         }
     }
 
-    private void sendRoomCodeResponse(String ip, Integer port, Integer code) {
+    private void sendRoomCodeResponse(Socket socket, Integer code) {
         byte[] packet = packetBuilder.createPartyModeRoomCodeMessage(code);
-        connectionManager.sendToClient(-1, packet);
+        connectionManager.sendToSocket(socket, packet);
     }
 
     /**
@@ -174,15 +181,13 @@ public class GameRecorder implements Observer {
 
     /**
      * Respond to a request for running games
-     * @param serverListener the serverListener with the clients socket
+     * @param socket the clients socket
      */
-    private void respondToRequestForGames(AbstractServerListener serverListener) {
-        connectionManager.addMainMenuConnection(nextHostID, serverListener.getSocket());
+    private void respondToRequestForGames(Socket socket) {
         for(AvailableRace race : availableRaces) {
             byte[] racePacket = packetBuilder.createGameRegistrationPacket(race.getPacket());
-            connectionManager.sendToClient(nextHostID, racePacket);
+            connectionManager.sendToSocket(socket, racePacket);
         }
-        nextHostID++;
     }
 
     /**

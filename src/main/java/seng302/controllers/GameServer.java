@@ -8,6 +8,7 @@ import seng302.data.registration.RegistrationType;
 import seng302.models.*;
 import seng302.utilities.ConnectionUtils;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
@@ -23,8 +24,6 @@ import static seng302.data.AC35StreamXMLMessage.REGATTA_XML_MESSAGE;
 import static seng302.data.registration.RegistrationResponseStatus.OUT_OF_SLOTS;
 import static seng302.data.registration.RegistrationResponseStatus.RACE_UNAVAILABLE;
 import static seng302.data.registration.RegistrationResponseStatus.SPECTATOR_SUCCESS;
-
-import java.util.Random;
 
 /**
  * Created by dda40 on 11/09/17.
@@ -45,25 +44,31 @@ public class GameServer implements Runnable, Observer {
     private Thread raceUpdaterThread;
     private CollisionManager collisionManager;
     private ClientSender gameRecorderConnection;
+    private Integer roomCode;
+    private Socket gameRecorderSocket;
 
     public GameServer(ServerOptions options) throws IOException {
         this.options = options;
         packetBuilder = new ServerPacketBuilder();
         connectionManager = new ConnectionManager(options.getPort(), true);
         connectionManager.addObserver(this);
-        if (options.isMultiplayer()) {
+        if (options.isOnline()) {
             connectToGameRecorder();
         }
         setupNewRaceUpdater(options);
         createPacketForGameRecorder();
+        if(options.isPartyMode()){
+            waitForRoomCode(gameRecorderSocket);
+        }
     }
+
 
     /**
      * Attempts to connect to the Game Recorder server as defined in ConnectionUtils.
      * If there's no connection to the Game Recorder, catches the Exception and leaves gameRecorderConnection as null
      */
     private void connectToGameRecorder() {
-        Socket gameRecorderSocket = null;
+        gameRecorderSocket = null;
         try {
             gameRecorderSocket = new Socket();
             gameRecorderSocket.connect(new InetSocketAddress(ConnectionUtils.getGameRecorderIP(), ConnectionUtils.getGameRecorderPort()), 1000);
@@ -71,6 +76,17 @@ public class GameServer implements Runnable, Observer {
         } catch (ConnectException e) {
             System.err.println("Game Server cannot connect to Game Recorder.");
         } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void waitForRoomCode(Socket gameRecorderSocket) {
+        ServerListener gameRecorderListener = null;
+        try {
+            gameRecorderListener = new ServerListener(gameRecorderSocket, new BufferedInputStream(gameRecorderSocket.getInputStream()));
+            gameRecorderListener.addObserver(this);
+            gameRecorderListener.run();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -297,7 +313,7 @@ public class GameServer implements Runnable, Observer {
      */
     private Boolean anotherCompetitorAllowed(int numCompetitors) {
         int competitorsAllowed = 1;
-        if (options.isMultiplayer()) {
+        if (options.isOnline()) {
             return true;
         }
         if (!options.getAIDifficulty().equals(AIDifficulty.NO_AI)) {
@@ -352,6 +368,8 @@ public class GameServer implements Runnable, Observer {
             if(arg instanceof RegistrationType){
                 System.out.println("Server: Adding player to game");
                 manageRegistration((AbstractServerListener) observable, (RegistrationType) arg);
+            } else if(arg instanceof Integer){
+                roomCode = (Integer) arg;
             }
         }
     }
@@ -397,7 +415,7 @@ public class GameServer implements Runnable, Observer {
      */
     private void addSpectatorToRace(AbstractServerListener serverListener) {
         RegistrationResponseStatus response = SPECTATOR_SUCCESS;
-        if(!options.getMode().equals(GameMode.PARTYGAME)){
+        if(!options.isPartyMode()){
             if (!raceUpdaterThread.isAlive() || !options.isMultiplayer()) {
                 response = RACE_UNAVAILABLE;
             } else if (nextViewerID >= MAX_SPECTATORS) {
@@ -412,6 +430,10 @@ public class GameServer implements Runnable, Observer {
             nextViewerID++;
         } else {
             connectionManager.removeConnection(nextViewerID);
+        }
+        if (options.isPartyMode()){
+            byte[] roomCodePacket = packetBuilder.createPartyModeRoomCodeMessage(roomCode);
+            connectionManager.sendToClients(roomCodePacket);
         }
     }
 

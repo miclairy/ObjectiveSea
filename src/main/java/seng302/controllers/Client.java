@@ -98,4 +98,6 @@ public abstract class Client implements Runnable, Observer {
     public ClientSender getSender() {
         return sender;
     }
+
+
 }

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Observable;
 import java.util.TreeMap;
@@ -91,10 +92,6 @@ public class ConnectionManager extends Observable implements Runnable {
         sendAllXMLsToClient(newId);
     }
 
-    public void addMainMenuConnection(int newId, Socket socket) {
-        clients.put(newId, socket);
-    }
-
     /**
      * Closes the server socket and all client connections.
      */
@@ -133,6 +130,16 @@ public class ConnectionManager extends Observable implements Runnable {
             socket.close();
             clients.remove(connectionID);
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendToSocket(Socket socket, byte[] packet) {
+        try{
+            DataOutputStream clientOutput = new DataOutputStream(socket.getOutputStream());
+            clientOutput.write(packet);
+            System.out.println(Arrays.toString(packet));
+        } catch (IOException e){
             e.printStackTrace();
         }
     }

@@ -13,8 +13,8 @@ import java.util.Objects;
 
 public class ConnectionUtils {
     private static GameClient client;
-    private static final String GAME_RECORDER_IP = "132.181.16.17";
-    private static final int GAME_RECORDER_PORT = 2827;
+    private static final String GAME_RECORDER_IP = "127.0.0.1";
+    private static final int GAME_RECORDER_PORT = 2826;
     public static final int DEFAULT_GAME_PORT = 2828;
     private static GameServer server;
     private static final String IP_REGEX = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";

@@ -90,6 +90,7 @@ public class Controller implements Initializable, Observer {
     @FXML private Label tutorialContent;
     @FXML public Label lblNextMark;
     @FXML private GridPane nextMarkGrid;
+    @FXML private Label lblPartyCode;
 
     //FPS Counter
     private SimpleStringProperty fpsString = new SimpleStringProperty();
@@ -210,6 +211,7 @@ public class Controller implements Initializable, Observer {
         }
         if(options.getGameMode().equals(GameMode.PARTYGAME)){
             partyModeBox.setVisible(true);
+            lblPartyCode.setText(GameClient.getRoomCode().toString());
             partyModeBox.toFront();
         }else{
 

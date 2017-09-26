@@ -6,8 +6,6 @@ import seng302.utilities.ConnectionUtils;
 import seng302.utilities.TimeUtils;
 
 import java.io.*;
-import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import java.util.*;
 
 import static seng302.data.AC35StreamField.*;
@@ -306,8 +304,8 @@ public class ServerPacketBuilder extends PacketBuilder {
     }
 
     public byte[] createPartyModeRoomCodeMessage(Integer code) {
-        byte[] header = super.createHeader(PARTY_MODE_CODE);
-        byte[] body = new byte[PARTY_MODE_CODE.getLength()];
+        byte[] header = super.createHeader(PARTY_MODE_CODE_MESSAGE);
+        byte[] body = new byte[PARTY_MODE_CODE_MESSAGE.getLength()];
         addFieldToByteArray(body, PARTY_MODE_ROOM_CODE, code);
         return generatePacket(header, body);
     }

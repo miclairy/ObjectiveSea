@@ -145,4 +145,10 @@ public abstract class Listener extends Observable implements Runnable{
     public InputStream getDataStream() {
         return dataStream;
     }
+
+    public void parseRoomCodeMessage(byte[] body){
+        Integer roomCode = byteArrayRangeToInt(body, PARTY_MODE_ROOM_CODE.getStartIndex(), PARTY_MODE_ROOM_CODE.getEndIndex());
+        setChanged();
+        notifyObservers(roomCode);
+    }
 }

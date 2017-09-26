@@ -19,7 +19,6 @@ public class ServerOptions {
     private Integer port;
     private String raceXML;
     private boolean isTutorial;
-    private GameMode mode;
     private Integer numRacesToRun;
     private AIDifficulty aiDifficulty = AIDifficulty.NO_AI;
     private GameMode gameMode = GameMode.MULTIPLAYER;
@@ -59,7 +58,7 @@ public class ServerOptions {
         raceXML = DEFAULT_COURSE;
         isTutorial = false;
         numRacesToRun = 1;
-        this.mode = mode;
+        gameMode = mode;
     }
 
     public Double getSpeedScale() {
@@ -143,16 +142,20 @@ public class ServerOptions {
         return this.aiDifficulty;
     }
 
-    public GameMode getMode() {
-        return mode;
+    public GameMode getGameMode() {
+        return gameMode;
     }
 
-    public Boolean isMultiplayer() {
-        return gameMode.equals(GameMode.MULTIPLAYER);
+    public Boolean isOnline() {
+        return gameMode == GameMode.MULTIPLAYER || gameMode == GameMode.PARTYGAME;
     }
 
     public Boolean isPartyMode() {
-        return mode.equals(GameMode.PARTYGAME);
+        return gameMode == GameMode.PARTYGAME;
+    }
+
+    public Boolean isMultiplayer() {
+        return gameMode == GameMode.MULTIPLAYER;
     }
 
 }
