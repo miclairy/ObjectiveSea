@@ -1,5 +1,6 @@
 package seng302.controllers;
 
+import javafx.animation.FadeTransition;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -78,7 +79,6 @@ public class KeyInputController extends Observable {
     private void generateUserFeedback(){
         double optimumHeading = userBoat.getTackOrGybeHeading(race.getCourse(), polarTable);
         double boatHeading = userBoat.getHeading();
-        System.out.println(optimumHeading + " " + boatHeading);
         if(optimumHeading == -1){
             controller.setUserHelpLabel("No Sail Zone, cannot tack or gybe", Color.web("#f47777"));
         }else{
