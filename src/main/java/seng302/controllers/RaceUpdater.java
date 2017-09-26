@@ -159,17 +159,17 @@ public class RaceUpdater implements Runnable {
      * Updates the status of the race from WARNING to STARTED based on the race times
      */
     private void updateRaceStartStatus() {
-        if(millisBeforeStart < WARNING_SIGNAL_TIME_IN_MS && millisBeforeStart > PREPARATORY_SIGNAL_TIME_IN_MS) {
-            race.updateRaceStatus(WARNING);
-        }else if(millisBeforeStart < PREPARATORY_SIGNAL_TIME_IN_MS && millisBeforeStart > 0){
-            race.updateRaceStatus(RaceStatus.PREPARATORY);
-        } else if (millisBeforeStart < 0 && race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
+        if (race.getRaceStatus().equals(STARTED) || millisBeforeStart < 0 && race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
             race.updateRaceStatus(RaceStatus.STARTED);
             for(Boat boat : race.getCompetitors()){
                 if(!boat.getStatus().equals(BoatStatus.DNF)){
                     boat.setStatus(BoatStatus.RACING);
                 }
             }
+        }else if(millisBeforeStart < WARNING_SIGNAL_TIME_IN_MS && millisBeforeStart > PREPARATORY_SIGNAL_TIME_IN_MS) {
+            race.updateRaceStatus(WARNING);
+        }else if(millisBeforeStart < PREPARATORY_SIGNAL_TIME_IN_MS && millisBeforeStart > 0){
+            race.updateRaceStatus(RaceStatus.PREPARATORY);
         }
     }
 
@@ -414,8 +414,7 @@ public class RaceUpdater implements Runnable {
      * Sets the race status to started so we don't have to wait around for the prerace countdown
      * Currently used in tutorial mode.
      */
-    public void skipPrerace() {
-        race.updateRaceStatus(STARTED);
+    public void skipPrerace() {race.updateRaceStatus(STARTED);
     }
 
     /**
