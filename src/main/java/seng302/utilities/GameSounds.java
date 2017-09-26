@@ -135,8 +135,8 @@ public class GameSounds {
             case 4: selectedVoiceOver = chris_mateies;
                     break;
             case 5: selectedVoiceOver = sam_over_that;
-                samFX = true;
-                break;
+                    samFX = true;
+                    break;
         }
     }
 
