@@ -68,6 +68,7 @@ public class WebSocketServerListener extends AbstractServerListener {
      */
     private byte[] generateResponseText(String data) {
         Matcher match = Pattern.compile("Sec-WebSocket-Key: (.*)").matcher(data);
+        match.find();
         byte[] response = null;
         try{
             match.find();

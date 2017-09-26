@@ -85,9 +85,9 @@ public class SelectionController extends Observable {
                     updateRotation();
                 }
             }
+            DisplayUtils.moveToPoint(trackingBoat.getBoat().getCurrentPosition());
             setChanged();
             notifyObservers(true);
-            DisplayUtils.moveToPoint(trackingBoat.getBoat().getCurrentPosition());
         }
 
     }
