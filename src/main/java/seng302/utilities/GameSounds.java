@@ -79,8 +79,10 @@ public class GameSounds {
     private double volume = 0.9;
     private boolean isMusicOn = true;
     private double fxVolume = 1.0;
+    private double volumeThresholdReduction = 15;
     private FloatControl gainControl;
     private boolean playingSound = false;
+    private boolean samFX = false;
 
     public void mainMenuMusic() {
         selectedMusic = "/musicFiles/gameMusic/MainMenuMusic.wav";
@@ -133,7 +135,8 @@ public class GameSounds {
             case 4: selectedVoiceOver = chris_mateies;
                     break;
             case 5: selectedVoiceOver = sam_over_that;
-                    break;
+                samFX = true;
+                break;
         }
     }
 
@@ -152,8 +155,10 @@ public class GameSounds {
             case 2: selectedVoiceOver = louis_board;
                 break;
             case 3: selectedVoiceOver = sam_get_disqualified;
+                samFX = true;
                 break;
             case 4: selectedVoiceOver = sam_board;
+                samFX = true;
                 break;
         }
     }
@@ -169,8 +174,10 @@ public class GameSounds {
             case 2: selectedVoiceOver = louis_be_shot;
                 break;
             case 3: selectedVoiceOver = sam_cant_leave;
+                samFX = true;
                 break;
             case 4: selectedVoiceOver = sam_be_shot;
+                samFX = true;
                 break;
         }
     }
@@ -184,6 +191,7 @@ public class GameSounds {
             case 1: selectedVoiceOver = louis_pointless_race;
                 break;
             case 2: selectedVoiceOver = sam_pointless_race;
+                samFX = true;
                 break;
         }
     }
@@ -197,6 +205,7 @@ public class GameSounds {
             case 1: selectedVoiceOver = louis_been_taken;
                 break;
             case 2: selectedVoiceOver = sam_been_taken;
+                samFX = true;
                 break;
             case 3: selectedVoiceOver = chris_lost_this_race;
                 break;
@@ -209,6 +218,7 @@ public class GameSounds {
             case 1: selectedVoiceOver = louis_youre_last;
                 break;
             case 2: selectedVoiceOver = sam_youre_last;
+                samFX = true;
                 break;
         }
     }
@@ -235,12 +245,14 @@ public class GameSounds {
             case 1: selectedVoiceOver = louis_rubber_dingy;
                 break;
             case 2: selectedVoiceOver = sam_rubber_dingy;
+                samFX = true;
                 break;
             case 3: selectedVoiceOver = chris_rubber_dingy;
                 break;
             case 4: selectedVoiceOver = louis_live_by;
                 break;
             case 5: selectedVoiceOver = sam_live_by;
+                samFX = true;
                 break;
             case 6: selectedVoiceOver = louis_oh_ship;
                 break;
@@ -267,7 +279,12 @@ public class GameSounds {
     public void playGameSound() {
         URL resource = getClass().getResource(selectedVoiceOver);
         mediaPlayer = new MediaPlayer(new Media(resource.toString()));
-        mediaPlayer.setVolume(fxVolume);
+        if(samFX) {
+            mediaPlayer.setVolume(fxVolume*1.1);
+            samFX = false;
+        } else {
+            mediaPlayer.setVolume(fxVolume*0.9);
+        }
         playingSound = true;
         mediaPlayer.setOnEndOfMedia(new Runnable() {
             @Override
@@ -322,7 +339,7 @@ public class GameSounds {
     }
 
     private void setSoundTrackVolume(){
-        double range = gainControl.getMaximum() - gainControl.getMinimum();
+        double range = gainControl.getMaximum() - gainControl.getMinimum() - volumeThresholdReduction;
         double gain = (range * volume) + gainControl.getMinimum();
         gainControl.setValue((float)gain);
     }
