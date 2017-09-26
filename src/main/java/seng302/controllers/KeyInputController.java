@@ -1,17 +1,14 @@
 package seng302.controllers;
 
-import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import seng302.data.BoatAction;
 import seng302.models.Boat;
+import seng302.models.PolarTable;
 import seng302.models.Race;
-import seng302.utilities.DisplayUtils;
-import seng302.views.DisplayTouchController;
+import seng302.utilities.PolarReader;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -29,16 +26,20 @@ public class KeyInputController extends Observable {
     private int commandInt;
     private int clientID;
     private Race race;
+    private Boat userBoat;
     private Controller controller;
+    private PolarTable polarTable;
     private final Set<KeyCode> cosumedKeyCodes = new HashSet<>(Arrays.asList(KeyCode.SPACE, KeyCode.UP, KeyCode.DOWN));
 
     /**
      * Sets up user key press handler.
      * @param scene The scene of the client
      */
-    public KeyInputController(Scene scene, Race race) {
+    public KeyInputController(Scene scene, Race race, Boat boat) {
         this.scene = scene;
         this.race = race;
+        this.userBoat = boat;
+        this.polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
         keyEventListener();
     }
 
@@ -59,7 +60,7 @@ public class KeyInputController extends Observable {
         commandInt = BoatAction.getTypeFromKeyCode(key);
         if (commandInt != -1) {
             if(key.equals(KeyCode.ENTER)){
-                controller.setUserHelpLabel("Tacking", Color.web("#4DC58B"));
+                generateUserFeedback();
             }
             setChanged();
             notifyObservers();
@@ -67,6 +68,28 @@ public class KeyInputController extends Observable {
         if (key.equals(SHIFT)){
             Boat boat = race.getBoatById(clientID);
             boat.changeSails();
+        }
+    }
+
+    /**
+     * calculates if user is tacking or gybing or unable to do either
+     * and displays feedback to the user via a label
+     */
+    private void generateUserFeedback(){
+        double optimumHeading = userBoat.getTackOrGybeHeading(race.getCourse(), polarTable);
+        double boatHeading = userBoat.getHeading();
+        System.out.println(optimumHeading + " " + boatHeading);
+        if(optimumHeading == -1){
+            controller.setUserHelpLabel("No Sail Zone, cannot tack or gybe", Color.web("#f47777"));
+        }else{
+            String feedback;
+            double TWA = Math.abs(((race.getCourse().getWindDirection() - boatHeading)));
+            if(userBoat.isTacking(TWA)){
+                feedback = "Tacking";
+            }else{
+                feedback = "Gybing";
+            }
+            controller.setUserHelpLabel(feedback, Color.web("#4DC58B"));
         }
     }
 
