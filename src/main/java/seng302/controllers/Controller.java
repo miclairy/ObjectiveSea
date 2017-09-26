@@ -617,7 +617,9 @@ public class Controller implements Initializable, Observer {
                 if(!raceViewController.hasInitializedBoats()) {
                     raceViewController.initBoatHighlight();
                     raceViewController.initializeBoats();
-                    addUserBoat();
+                    if(options.isParticipant()){
+                        addUserBoat();
+                    }
                 }
                 break;
             case STARTED:

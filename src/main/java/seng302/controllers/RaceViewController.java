@@ -466,10 +466,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     public void initBoatHighlight(){
-        boatHighlight = new Circle(0,0,10);
-        boatHighlight.setId("usersBoatHighlight");
-        boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
-        root.getChildren().add(boatHighlight);
+        if(options.isParticipant()){
+            boatHighlight = new Circle(0,0,10);
+            boatHighlight.setId("usersBoatHighlight");
+            boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
+            root.getChildren().add(boatHighlight);
+        }
     }
 
 
