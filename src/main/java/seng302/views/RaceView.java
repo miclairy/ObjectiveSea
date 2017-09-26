@@ -23,7 +23,7 @@ public class RaceView {
     private final ArrayList<Color> COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#A0D468"), Color.web("#FC6E51"),
             Color.web("#FFCE54"), Color.web("#48CFAD"), Color.web("#4FC1E9"), Color.web("#656D78"))));
 
-    private final ArrayList<Color> PARTY_COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#54ca95"), Color.web("#ff7387"),
+    private final ArrayList<Color> PARTY_COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#ff7387"), Color.web("#54ca95"),
             Color.web("#fad97b"), Color.web("#ffd6c0"), Color.web("#a79be5"), Color.web("#33414c"))));
 
     private final String BOUNDARY_COLOR = "#99DEDB";
