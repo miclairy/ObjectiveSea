@@ -3,15 +3,14 @@ package seng302.data;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.models.*;
 import seng302.utilities.ConnectionUtils;
-import seng302.utilities.TimeUtils;
 
+import javafx.scene.paint.Color;
 import java.io.*;
-import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import java.util.*;
 
 import static seng302.data.AC35StreamField.*;
 import static seng302.data.AC35StreamMessage.*;
+import static seng302.utilities.TimeUtils.convertKnotsToMmPerSecond;
 
 public class ServerPacketBuilder extends PacketBuilder {
 
@@ -107,7 +106,7 @@ public class ServerPacketBuilder extends PacketBuilder {
         addFieldToByteArray(body, EXPECTED_START_TIME, race.getStartTimeInEpochMs());
         addFieldToByteArray(body, CURRENT_TIME, race.getCurrentTimeInEpochMs());
         addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, convertHeadingToInt(race.getCourse().getWindDirection()));
-        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, TimeUtils.convertKnotsToMmPerSecond(race.getCourse().getTrueWindSpeed()));
+        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, convertKnotsToMmPerSecond(race.getCourse().getTrueWindSpeed()));
         addFieldToByteArray(body, NUMBER_OF_BOATS_IN_RACE, numBoats);
         addFieldToByteArray(body, RACE_TYPE, 2); //fleet race
 
@@ -302,6 +301,32 @@ public class ServerPacketBuilder extends PacketBuilder {
         long ip = ConnectionUtils.ipStringToLong(ConnectionUtils.getPublicIp());
         addFieldToByteArray(body, HOST_GAME_IP, ip);
         addFieldToByteArray(body, HOST_GAME_PORT, port);
+        return generatePacket(header, body);
+    }
+
+    public byte[] createWebClientInitPacket(Integer id, String boatName, Color boatColour) {
+        byte[] header = super.createHeader(WEB_CLIENT_INIT);
+        byte[] body = new byte[WEB_CLIENT_INIT.getLength()];
+        addFieldToByteArray(body, WEB_CLIENT_ID, id);
+        byte[] nameInBytes = boatName.getBytes();
+        for (int i = 0; i < nameInBytes.length && i < WEB_CLIENT_NAME.getLength(); i++) {
+            body[WEB_CLIENT_NAME.getStartIndex() + i] = nameInBytes[i];
+        }
+        body[WEB_CLIENT_COLOUR.getStartIndex()] = (byte) (boatColour.getRed() * 255);
+        body[WEB_CLIENT_COLOUR.getStartIndex() + 1] = (byte) (boatColour.getGreen() * 255);
+        body[WEB_CLIENT_COLOUR.getStartIndex() + 2] = (byte) (boatColour.getBlue() * 255);
+        return generatePacket(header, body);
+    }
+
+    public byte[] createWebClientUpdatePacket(Integer id, Double speed, int placing, int totalCompetitors, int healthPercentage) {
+        byte[] header = super.createHeader(WEB_CLIENT_UPDATE);
+        byte[] body = new byte[WEB_CLIENT_UPDATE.getLength()];
+        addFieldToByteArray(body, WEB_CLIENT_ID, id);
+        long convertedSpeed = convertKnotsToMmPerSecond(speed);
+        addFieldToByteArray(body, WEB_CLIENT_SPEED, convertedSpeed);
+        addFieldToByteArray(body, WEB_CLIENT_POSITION, placing);
+        addFieldToByteArray(body, WEB_CLIENT_TOTAL_COMPETITORS, totalCompetitors);
+        addFieldToByteArray(body, WEB_CLIENT_HEALTH, healthPercentage);
         return generatePacket(header, body);
     }
 }

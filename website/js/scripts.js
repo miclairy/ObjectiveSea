@@ -8,22 +8,22 @@ function submitButtonPressed(){
 
     requestGame($("#codeBox").val());
     if(true){
-        initControls("Emerites Team New Zealand");
-        changeColor("skyblue");
+        initControls("Emirates Team New Zealand", "skyblue");
         loadControls();
     }
 
 }
 
-function updateStats(speed, placing, health){
+function updateStats(speed, placing, totalCompetitors, health){
     console.log("updating");
     $("#boatSpeed").html(speed+"kn");
-    $("#placing").html(placing);
+    $("#placing").html(placing + " / " + totalCompetitors);
     $("#boatHealth").html(health+"%");
 }
 
-function initControls(teamName){
+function initControls(teamName, color){
     $("#boatNameText").html(teamName);
+    changeColor(color);
     $("#boatSpeed").html("0kn");
     $("#placing").html("-");
     $("#boatHealth").html("100%");
@@ -46,17 +46,5 @@ function changeColor(color){
     $(".directionArrow").css("color", color);
     $("#infoScreen").css("background-color", color);
     $("body").css("background-color", color);
-}
-
-function setBoatHealth(percentage) {
-    $("#boatHealth").html(percentage + "%");
-}
-
-function setPlacing(placing, numParticipants) {
-    $("#placing").html(placing + " / " + numParticipants);
-}
-
-function setBoatSpeed(speed) {
-    $("#boatSpeed").html(speed + "kn");
 }
 
