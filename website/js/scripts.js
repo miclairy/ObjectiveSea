@@ -15,18 +15,19 @@ let BOAT_ACTION = {
  */
 function submitButtonPressed(){
 
-
-
     requestGame($("#codeBox").val());
     if(true){
         initControls("Emerites Team New Zealand");
         changeColor("skyblue");
         loadControls();
         initButtonListeners();
-
     }
 }
 
+/**
+ * Initialises boat control buttons on website
+ * Upwind, downwind have actions for holding down
+ */
 function initButtonListeners(){
     var timeout;
     $(".boatActionPress, .boatActionHold").click(function (event) {
@@ -83,6 +84,10 @@ function changeColor(color){
     $("body").css("background-color", color);
 }
 
+/**
+ * Checks code of button pressed, sends corresponding boat action message
+ * @param name
+ */
 function createBoatActionMessage(name){
     switch(name){
         case "vmg":

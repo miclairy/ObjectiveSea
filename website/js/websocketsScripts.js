@@ -94,6 +94,12 @@ requestGame = function(code) {
     mySocket.send(byteArray.buffer);
 }
 
+
+/**
+ * Sends a boat action message to the Game Recorder
+ * @param actionCode id of boat action
+ * @param boatId id of user's boat
+ */
 sendBoatActionMessage = function(actionCode, boatId){
     let header = createHeader(MESSAGE_TYPE.BOAT_ACTION_MESSAGE.type, MESSAGE_TYPE.BOAT_ACTION_MESSAGE.length);
     let body = [0, 0, 0, 0, 0];
@@ -103,7 +109,6 @@ sendBoatActionMessage = function(actionCode, boatId){
     let packet = header.concat(body).concat(crc);
     let byteArray = new Uint8Array(packet);
     mySocket.send(byteArray.buffer);
-    console.log("packet sent");
 }
 
 
