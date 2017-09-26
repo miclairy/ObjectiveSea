@@ -65,7 +65,7 @@
 
 .btnSelection{
     -fx-padding: 10 195 10 25;
-    -fx-background-color:  white;
+    -fx-background-color: white;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
     -fx-effect: dropshadow(gaussian, #D6D6D6, 15, 0, 0, 5);
