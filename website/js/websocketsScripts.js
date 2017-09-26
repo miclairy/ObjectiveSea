@@ -15,7 +15,7 @@ let HEADER_FIELDS = {
 
 let MESSAGE_TYPE = {
     GAME_REQUEST: {type:114, length:2},
-    BOAT_ACTION_MESSAGE:{type:7, length:5},
+    BOAT_ACTION_MESSAGE:{type:100, length:5},
 }
 
 let MESSAGE_FIELD = {
