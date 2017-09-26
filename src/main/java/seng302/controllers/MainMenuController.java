@@ -176,7 +176,6 @@ public class MainMenuController implements Initializable{
         } catch (NoConnectionToServerException e) {
             System.err.println("No connection to Game Recorder.");
         }
-
     }
 
     @FXML private void loadHostOptionsPane(){
