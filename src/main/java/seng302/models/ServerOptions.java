@@ -152,7 +152,7 @@ public class ServerOptions {
     }
 
     public Boolean isPartyMode() {
-        return gameMode.equals(GameMode.PARTYGAME);
+        return mode.equals(GameMode.PARTYGAME);
     }
 
 }
