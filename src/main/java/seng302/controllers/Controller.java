@@ -80,7 +80,7 @@ public class Controller implements Initializable, Observer {
     @FXML private Label lblExitRV;
     @FXML private Label lblTrackRV;
     @FXML private VBox headsUpDisplay;
-    @FXML private VBox partyModeBox;
+    @FXML private GridPane partyModeBox;
     @FXML private VBox partyModeBoxWrapper;
     private HeadsupDisplay infoDisplay;
 
