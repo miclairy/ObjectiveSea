@@ -304,4 +304,11 @@ public class ServerPacketBuilder extends PacketBuilder {
         addFieldToByteArray(body, HOST_GAME_PORT, port);
         return generatePacket(header, body);
     }
+
+    public byte[] createPartyModeRoomCodeMessage(Integer code) {
+        byte[] header = super.createHeader(PARTY_MODE_CODE);
+        byte[] body = new byte[PARTY_MODE_CODE.getLength()];
+        addFieldToByteArray(body, PARTY_MODE_ROOM_CODE, code);
+        return generatePacket(header, body);
+    }
 }

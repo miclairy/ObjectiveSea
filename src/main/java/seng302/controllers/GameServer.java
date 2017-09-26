@@ -138,11 +138,7 @@ public class GameServer implements Runnable, Observer {
     }
 
     private boolean isPartyMode() {
-        if(options.getMode() != null){
-            return  options.getMode().equals(GameMode.PARTYGAME);
-        }else{
-            return false;
-        }
+        return options.isPartyMode();
     }
 
     /**
@@ -325,7 +321,7 @@ public class GameServer implements Runnable, Observer {
      */
     private void updateGameRecorder(ServerOptions options, String publicIp, int currentCourseIndex) {
         byte[] registerGamePacket = this.packetBuilder.createGameRegistrationPacket(options.getSpeedScale(), options.getMinParticipants(),
-                options.getPort(), publicIp, currentCourseIndex, raceUpdater.getRace().getCompetitors().size());
+                options.getPort(), publicIp, currentCourseIndex, raceUpdater.getRace().getCompetitors().size(), options.isPartyMode());
         System.out.println("GameServer: Send updates to Game Recorder" );
         gameRecorderConnection.sendToServer(registerGamePacket);
     }

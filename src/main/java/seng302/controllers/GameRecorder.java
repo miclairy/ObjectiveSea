@@ -10,6 +10,7 @@ import seng302.utilities.ConnectionUtils;
 import seng302.utilities.MathUtils;
 import seng302.views.AvailableRace;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.*;
@@ -28,7 +29,6 @@ public class GameRecorder implements Observer {
     private final ConnectionManager connectionManager;
     private ArrayList<AvailableRace> availableRaces = new ArrayList<>();
     private int nextHostID = 0;
-    private Set<Socket> sockets = new HashSet<>();
     private Thread serverListenerThread = null;
     private HashMap<Integer, AvailableRace> availablePartyGames = new HashMap<>();
 
@@ -47,9 +47,8 @@ public class GameRecorder implements Observer {
         if (observable.equals(connectionManager)) {
             if (arg instanceof Socket) {
                 Socket socket = (Socket) arg;
-                sockets.add(socket);
                 try {
-                    AbstractServerListener serverListener = ServerListener.createServerListener((Socket) arg);
+                    AbstractServerListener serverListener = ServerListener.createServerListener(socket);
                     startServerListener(serverListener);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -96,8 +95,13 @@ public class GameRecorder implements Observer {
             }
             newRace.setCode(code);
             availablePartyGames.put(code, newRace);
+            sendRoomCodeResponse(newRace.getIpAddress(), newRace.getPort(), code);
         }
+    }
 
+    private void sendRoomCodeResponse(String ip, Integer port, Integer code) {
+        byte[] packet = packetBuilder.createPartyModeRoomCodeMessage(code);
+        connectionManager.sendToClient(-1, packet);
     }
 
     /**

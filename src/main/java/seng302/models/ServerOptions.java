@@ -150,4 +150,9 @@ public class ServerOptions {
     public Boolean isMultiplayer() {
         return gameMode.equals(GameMode.MULTIPLAYER);
     }
+
+    public Boolean isPartyMode() {
+        return gameMode.equals(GameMode.PARTYGAME);
+    }
+
 }
