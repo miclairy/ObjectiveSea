@@ -70,10 +70,16 @@ public class GameRecorder implements Observer {
                 if(availablePartyGames.containsKey(roomCode)){
                     respondToRequestPartyGame(availablePartyGames.get(roomCode), serverListener.getSocket());
                 } else{
-                    System.out.println("Unknown Room Code Received");
+                    sendIncorrectRoomCodeResponse(serverListener.getSocket());
                 }
             }
         }
+    }
+
+    private void sendIncorrectRoomCodeResponse(Socket socket) {
+        byte[] packet =  packetBuilder.createGameRegistrationPacket(0d, 0, 0,  "0.0.0.0", 0, 0, false);
+        packet = packetBuilder.wrapPacket(packet);
+        connectionManager.sendToSocket(socket, packet);
     }
 
     private void respondToRequestPartyGame(AvailableRace availableRace, Socket socket) {

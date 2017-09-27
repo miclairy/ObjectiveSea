@@ -22,6 +22,10 @@ function submitButtonPressed(){
     }
 }
 
+function showWrongGameCodeMessage() {
+    $("#errorMessage").fadeIn(1000);
+}
+
 /**
  * Initialises boat control buttons on website
  * Upwind, downwind have actions for holding down
