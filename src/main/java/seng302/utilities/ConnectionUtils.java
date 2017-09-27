@@ -14,7 +14,7 @@ import java.util.Objects;
 public class ConnectionUtils {
     private static GameClient client;
     private static final String GAME_RECORDER_IP = "127.0.0.1";
-    private static final int GAME_RECORDER_PORT = 2826;
+    private static final int GAME_RECORDER_PORT = 2827;
     public static final int DEFAULT_GAME_PORT = 2828;
     private static GameServer server;
     private static final String IP_REGEX = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
@@ -52,6 +52,7 @@ public class ConnectionUtils {
     public static void initiateDisconnect(boolean isHost)  {
         client.initiateClientDisconnect();
         if(isHost){
+            System.out.println("Client: Cancelling race");
             server.initiateServerDisconnect();
         }
     }

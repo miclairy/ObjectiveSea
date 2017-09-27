@@ -3,10 +3,14 @@
  */
 
 let mySocket = null;
+let serverSocket = null;
+let myId = null;
+
 createGameRecorderSocket();
 
 let AC35_SYNC_BYTE_1 = 71;
 let AC35_SYNC_BYTE_2 = 131;
+let HEADER_LENGTH = 15;
 
 let HEADER_FIELDS = {
     MESSAGE_TYPE: {index: 2, length: 1},
@@ -15,10 +19,18 @@ let HEADER_FIELDS = {
 
 let MESSAGE_TYPE = {
     GAME_REQUEST: {type:114, length:2},
+    REGISTRATION_REQUEST:  {type:55, length:4},
+    REGISTRATION_RESPONSE: {type:56, length:5},
+    HOST_GAME_MESSAGE: {type:108, length:14}
 }
 
 let MESSAGE_FIELD = {
-    GAME_CODE: {index:0, length:2}
+    GAME_CODE: {index:0, length:2},
+    REGISTRATION_SOURCE_ID: {index:0, length:4},
+    REGISTRATION_STATUS: {index:4, length:1},
+    HOST_GAME_IP: {index:0, length:4},
+    HOST_GAME_PORT: {index:4, length:4},
+    HOST_GAME_IS_PARTY_MODE: {index:13, length:1}
 }
 
 /**
@@ -27,13 +39,7 @@ let MESSAGE_FIELD = {
  * @param messageLength The length of the payload
  */
 createHeader = function (type, messageLength) {
-    let HEADER_LENGTH = 15;
-    let header = (function (s) {
-        let a = [];
-        while (s-- > 0)
-            a.push(0);
-        return a;
-    })(HEADER_LENGTH);
+    let header = new Uint8Array(HEADER_LENGTH);
     header[0] = AC35_SYNC_BYTE_1;
     header[1] = AC35_SYNC_BYTE_2;
     this.addIntIntoByteArray(header, HEADER_FIELDS.MESSAGE_TYPE.index, HEADER_FIELDS.MESSAGE_TYPE.length, type);
@@ -41,18 +47,6 @@ createHeader = function (type, messageLength) {
     return header;
 }
 
-/**
- * Puts an int into its bytes and put them into a byte array
- * @param array The array to be put into
- * @param start The starting index to put number into
- * @param numBytes The number of bytes of the int
- * @param item The actual value of the int
- */
-addIntIntoByteArray = function (array, start, numBytes, item) {
-    for (let i = 0; i < numBytes; i++) {
-        array[start + i] = (item >> (i * 8)) & (0xFF);
-    }
-};
 
 /**
  * Creates a WebSocket connection to the Game Recorder Server
@@ -72,6 +66,49 @@ function createGameRecorderSocket() {
     mySocket.onclose = function () {
         alert("No connection to GameRecorder");
     }
+
+    mySocket.onmessage = function (event) {
+        decodePacket(new Uint8Array(event.data));
+    }
+}
+
+function sendRegistrationPacket() {
+    let header = createHeader(MESSAGE_TYPE.REGISTRATION_REQUEST.type, MESSAGE_TYPE.REGISTRATION_REQUEST.length);
+    let body = new Uint8Array(MESSAGE_TYPE.REGISTRATION_REQUEST.length);
+    addIntIntoByteArray(body, MESSAGE_FIELD.REGISTRATION_SOURCE_ID.index, MESSAGE_FIELD.REGISTRATION_SOURCE_ID.length, 1);
+    let crc = createCrc(header, body);
+    let packet = concatUint8ByteArrays(concatUint8ByteArrays(header, body), crc);
+    let byteArray = new Uint8Array(packet);
+    console.log(packet);
+    console.log(byteArray.buffer);
+    serverSocket.send(byteArray.buffer);
+    // Currently sends this packet to the gameServer and we can see the boat appear on the game. However both the game and this app
+    // crashes shortly after this happens.
+}
+/**
+ * Creates a WebSocket connection to the Game Recorder Server
+ */
+function createGameServerSocket(/*String*/ip, port) {
+    serverSocket = new WebSocket("ws://" + ip + ":" + port); // 2827 is the port game server runs on
+    serverSocket.binaryType = 'arraybuffer';
+
+    serverSocket.onerror = function (event) {
+        console.log(event);
+    }
+
+    serverSocket.onopen = function () {
+        console.log("Game Server connection established.");
+        sendRegistrationPacket();
+    };
+
+    serverSocket.onclose = function () {
+        alert("No connection to GameServer");
+    }
+
+    serverSocket.onmessage = function (event) {
+        console.log("message from server");
+        decodePacket(new Uint8Array(event.data));
+    }
 }
 
 /**
@@ -83,10 +120,10 @@ requestGame = function(code) {
         createGameRecorderSocket();
     }
     let header = createHeader(MESSAGE_TYPE.GAME_REQUEST.type, MESSAGE_TYPE.GAME_REQUEST.length);
-    let body = [0, 0];
+    let body = new Uint8Array(2);
     addIntIntoByteArray(body, MESSAGE_FIELD.GAME_CODE.index, MESSAGE_FIELD.GAME_CODE.length, code);
     let crc = createCrc(header, body);
-    let packet = header.concat(body).concat(crc);
+    let packet = concatUint8ByteArrays(concatUint8ByteArrays(header, body), crc);
     let byteArray = new Uint8Array(packet);
     mySocket.send(byteArray.buffer);
 }
@@ -99,9 +136,74 @@ requestGame = function(code) {
  */
 createCrc = function(header, body){
     let crcLength = 4;
-    let both = header.concat(body);
+    let both = concatUint8ByteArrays(header, body);
     let crc = parseInt(crc32(both), 16);
     let array = [0, 0, 0, 0];
     addIntIntoByteArray(array, 0, crcLength, crc);
     return array;
+}
+
+function decodeRegistrationResponse(body) {
+    let statusByte = body[MESSAGE_FIELD.REGISTRATION_STATUS.index];
+    if (statusByte === 1) {
+        myId = byteArrayRangeToInt(body, MESSAGE_FIELD.REGISTRATION_SOURCE_ID.index, MESSAGE_FIELD.REGISTRATION_SOURCE_ID.length);
+        console.log("My Id: " + myId);
+    } else {
+        console.log("Registration failed.");
+    }
+}
+
+function decodeHostGameMessage(body) {
+    let longIp = ToUint32(byteArrayRangeToInt(body, MESSAGE_FIELD.HOST_GAME_IP.index, MESSAGE_FIELD.HOST_GAME_PORT.length));
+    let port = byteArrayRangeToInt(body, MESSAGE_FIELD.HOST_GAME_PORT.index, MESSAGE_FIELD.HOST_GAME_PORT.length);
+    let isPartyMode = body[MESSAGE_FIELD.HOST_GAME_IS_PARTY_MODE.index];
+    let ip = ipLongToString(longIp);
+    console.log("Ip: " + ip + " Port: " + port);
+    console.log("IsPartyMode: " + isPartyMode);
+    if (isPartyMode === 1) {
+        createGameServerSocket(ip, port);
+    }
+}
+
+decodePacket = function(packet) {
+    let header = packet.subarray(0, HEADER_LENGTH);
+    let bodyLength = byteArrayRangeToInt(packet, HEADER_FIELDS.MESSAGE_LENGTH.index, HEADER_FIELDS.MESSAGE_LENGTH.length);
+    let bodyEnd = HEADER_LENGTH + bodyLength;
+    let body = packet.subarray(HEADER_LENGTH, bodyEnd);
+    let crc = packet.subarray(bodyEnd);
+    let messageType = byteArrayRangeToInt(header, HEADER_FIELDS.MESSAGE_TYPE.index, HEADER_FIELDS.MESSAGE_TYPE.length);
+    if (checkCRC(header, body, crc)){
+        switch (messageType) {
+            case MESSAGE_TYPE.HOST_GAME_MESSAGE.type:
+                console.log("Hosted game message");
+                decodeHostGameMessage(body);
+                break;
+            case MESSAGE_TYPE.REGISTRATION_RESPONSE.type:
+                console.log("Client registration");
+                decodeRegistrationResponse(body);
+                break;
+            case 120: //WebClientInit
+                console.log("Web client init");
+                break;
+            case 121: //WebClientUpdate
+                console.log("Web client update");
+                break;
+            default:
+                console.log("Message type: " + messageType);
+        }
+    } else {
+        console.error("CRC check failed")
+    }
+}
+
+checkCRC = function (header, body, crc) {
+    let expectedCRC = createCrc(header, body);
+    for (let i = 0; i < 4; i++){
+        if (expectedCRC[i] !== crc[i]){
+            console.log(expectedCRC);
+            console.log(crc);
+            return false;
+        }
+    }
+    return true;
 }

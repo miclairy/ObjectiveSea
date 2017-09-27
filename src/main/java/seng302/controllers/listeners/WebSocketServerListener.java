@@ -1,7 +1,8 @@
 package seng302.controllers.listeners;
 
 import seng302.data.AC35StreamMessage;
-
+import seng302.data.ServerPacketBuilder;
+import seng302.data.registration.RegistrationResponseStatus;
 import javax.xml.bind.DatatypeConverter;
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -12,7 +13,9 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static seng302.data.AC35StreamField.*;
+import static seng302.data.AC35StreamField.HEADER_SOURCE_ID;
+import static seng302.data.AC35StreamField.MESSAGE_LENGTH;
+import static seng302.data.AC35StreamField.MESSAGE_TYPE;
 
 /**
  * Server listener to connect and communicate with a web socket client.
@@ -57,6 +60,18 @@ public class WebSocketServerListener extends AbstractServerListener {
                             }
                         case REQUEST_AVAILABLE_RACES:
                             parseRequestRacesMessage(body);
+                            // TODO remove this
+                            //TEST
+                            ServerPacketBuilder builder = new ServerPacketBuilder();
+                            //byte[] sendpacket = builder.createRegistrationResponsePacket(101, RegistrationResponseStatus.PLAYER_SUCCESS);
+                            byte[] sendpacket = builder.createGameRegistrationPacket(0.0, 1, 2828, "127.0.0.1", -1, 0, true);
+                            byte[] wrappedPacket = builder.wrapPacket(sendpacket);
+                            socket.getOutputStream().write(wrappedPacket);
+                            try {
+                                Thread.sleep(2000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                             break;
                     }
                 } else{
@@ -78,6 +93,8 @@ public class WebSocketServerListener extends AbstractServerListener {
         Integer roomCode = byteArrayRangeToInt(body, PARTY_MODE_ROOM_CODE.getStartIndex(), PARTY_MODE_ROOM_CODE.getEndIndex());
         setChanged();
         notifyObservers(roomCode);
+        System.out.println("Parsing message");
+        System.out.println(Arrays.toString(body));
     }
 
     private byte[] extractHeader(byte[] packet) {
