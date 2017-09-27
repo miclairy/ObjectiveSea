@@ -37,6 +37,7 @@ public class HeadsupDisplay {
         this.display = display;
         this.partyPin = partyPin;
         addPartyPin();
+        AnimationUtils.toggleHiddenBoardNodes(display, false);
     }
 
     private void addPartyPin(){
