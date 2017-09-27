@@ -35,6 +35,10 @@ public class WebSocketServerListener extends AbstractServerListener {
         while(clientConnected){
             try {
                 byte[] packet = readPacket();
+                if(packet == null){
+                    clientConnected = false;
+                    break;
+                }
                 byte[] header = extractHeader(packet);
 
                 int messageLength = byteArrayRangeToInt(header, MESSAGE_LENGTH.getStartIndex(), MESSAGE_LENGTH.getEndIndex());
@@ -60,10 +64,6 @@ public class WebSocketServerListener extends AbstractServerListener {
                     }
                 } else{
                     System.out.println("Incorrect CRC");
-                }
-
-                if(packet == null){
-                    clientConnected = false;
                 }
             } catch (IOException e) {
                 clientConnected = false;
