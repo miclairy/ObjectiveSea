@@ -122,7 +122,7 @@ public class GameServer implements Runnable, Observer {
                 managerThread.start();
                 while (!raceUpdater.raceHasEnded()) {
                     if (!raceUpdater.getRace().getCompetitors().isEmpty() || isPartyMode()) {
-                        sendRaceUpdates();
+//                        sendRaceUpdates();
                     }
                     Thread.sleep((long) (SECONDS_PER_UPDATE * 1000 / options.getSpeedScale()));
                 }
@@ -279,7 +279,7 @@ public class GameServer implements Runnable, Observer {
         } else {
             packet = packetBuilder.createRegistrationResponsePacket(newId, RegistrationResponseStatus.OUT_OF_SLOTS);
         }
-        connectionManager.addConnection(newId, serverListener.getSocket());
+        connectionManager.addConnection(newId, serverListener);
         serverListener.setClientId(newId);
         connectionManager.sendToClient(newId, packet);
         if(success){
@@ -405,7 +405,7 @@ public class GameServer implements Runnable, Observer {
             }
         }
         byte[] packet = packetBuilder.createRegistrationResponsePacket(0, response);
-        connectionManager.addConnection(nextViewerID, serverListener.getSocket());
+        connectionManager.addConnection(nextViewerID, serverListener);
         connectionManager.sendToClient(nextViewerID, packet);
         if (response.equals(SPECTATOR_SUCCESS)) {
             sendAllBoatStates();
@@ -416,7 +416,6 @@ public class GameServer implements Runnable, Observer {
     }
 
     public void initiateServerDisconnect() {
-        System.out.println("Client: Cancelling race");
         byte[] gameClosePacket = packetBuilder.createGameCancelPacket(options.getPort());
         if (gameRecorderConnection != null) {
             gameRecorderConnection.sendToServer(gameClosePacket);

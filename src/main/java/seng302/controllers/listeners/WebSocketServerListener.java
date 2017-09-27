@@ -63,7 +63,8 @@ public class WebSocketServerListener extends AbstractServerListener {
                             // TODO remove this
                             //TEST
                             ServerPacketBuilder builder = new ServerPacketBuilder();
-                            byte[] sendpacket = builder.createRegistrationResponsePacket(101, RegistrationResponseStatus.PLAYER_SUCCESS);
+                            //byte[] sendpacket = builder.createRegistrationResponsePacket(101, RegistrationResponseStatus.PLAYER_SUCCESS);
+                            byte[] sendpacket = builder.createGameRegistrationPacket(0.0, 1, 2828, "127.0.0.1", -1, 0, true);
                             byte[] wrappedPacket = builder.wrapPacket(sendpacket);
                             socket.getOutputStream().write(wrappedPacket);
                             try {
