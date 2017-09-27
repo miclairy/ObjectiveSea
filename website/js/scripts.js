@@ -5,15 +5,14 @@ let BOAT_ACTION = {
     VMG: {value:1},
     SAILS : {value:2},
     TACK_GYBE : {value:4},
-    UP_WIND : {value:5},
-    DOWN_WIND : {value:6},
+    CLOCKWISE : {value:7},
+    ANTI_CLOCKWISE : {value:8},
 }
 
 /**
  * Upon button press, sends a request game packet and changes the screen to control screen.
  */
 function submitButtonPressed(){
-
     requestGame($("#codeBox").val());
     if(true){
         initControls("Emirates Team New Zealand", "skyblue");
@@ -87,6 +86,7 @@ function changeColor(color){
  * @param name
  */
 function createBoatActionMessage(name){
+    console.log(name);
     switch(name){
         case "vmg":
             sendBoatActionMessage(BOAT_ACTION.VMG.value, myId);
@@ -98,10 +98,10 @@ function createBoatActionMessage(name){
             sendBoatActionMessage(BOAT_ACTION.TACK_GYBE.value, myId);
             break;
         case "upwind":
-            sendBoatActionMessage(BOAT_ACTION.UP_WIND.value, myId);
+            sendBoatActionMessage(BOAT_ACTION.ANTI_CLOCKWISE.value, myId);
             break;
         case "downwind":
-            sendBoatActionMessage(BOAT_ACTION.DOWN_WIND.value, myId);
+            sendBoatActionMessage(BOAT_ACTION.CLOCKWISE.value, myId);
             break;
         default:
             console.log("Unknown Button Pressed");
