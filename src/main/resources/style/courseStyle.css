@@ -20,6 +20,8 @@
 #userHelp{
     -fx-text-fill: white;
     -fx-font-weight: 700;
+    -fx-font-size: 18px;
+    -fx-effect: dropshadow(gaussian, rgb(109, 177, 183), 5, 0, 0, 1);
 }
 
 #windArrow{

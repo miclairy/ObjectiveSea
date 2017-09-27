@@ -43,6 +43,7 @@ public class GameServer implements Runnable, Observer {
     private Thread raceUpdaterThread;
     private CollisionManager collisionManager;
     private ClientSender gameRecorderConnection;
+    private double speedScale = 15;
 
     public GameServer(ServerOptions options) throws IOException {
         this.options = options;
@@ -51,6 +52,9 @@ public class GameServer implements Runnable, Observer {
         connectionManager.addObserver(this);
         if (options.isMultiplayer()) {
             connectToGameRecorder();
+        }
+        if(options.getSpeedScale() > 15){
+            speedScale = options.getSpeedScale();
         }
         setupNewRaceUpdater(options);
         createPacketForGameRecorder();
@@ -122,7 +126,7 @@ public class GameServer implements Runnable, Observer {
                     if (!raceUpdater.getRace().getCompetitors().isEmpty()) {
                         sendRaceUpdates();
                     }
-                    Thread.sleep((long) (SECONDS_PER_UPDATE * 1000 / options.getSpeedScale()));
+                    Thread.sleep((long) (SECONDS_PER_UPDATE * 1000 / speedScale));
                 }
                 sendRaceUpdates(); //send one last message block with ending data
                 connectionManager.closeClientConnections();

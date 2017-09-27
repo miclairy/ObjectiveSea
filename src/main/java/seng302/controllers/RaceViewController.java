@@ -1063,6 +1063,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void moveBoat(BoatDisplay boat, CanvasCoordinate point){
         Shape icon = boat.getIcon();
+
         icon.setTranslateY(point.getY());
         icon.setTranslateX(point.getX());
         icon.setScaleX(zoomLevel);
