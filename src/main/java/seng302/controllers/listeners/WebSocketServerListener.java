@@ -13,9 +13,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static seng302.data.AC35StreamField.HEADER_SOURCE_ID;
-import static seng302.data.AC35StreamField.MESSAGE_LENGTH;
-import static seng302.data.AC35StreamField.MESSAGE_TYPE;
+import static seng302.data.AC35StreamField.*;
 
 /**
  * Server listener to connect and communicate with a web socket client.
