@@ -2,8 +2,8 @@
  * Created by cba62 on 21/09/17.
  */
 
-let mySocket = null;
-let serverSocket = null;
+let gameRecorderSocket = null;
+let gameServerSocket = null;
 let myId = null;
 
 createGameRecorderSocket();
@@ -55,22 +55,22 @@ createHeader = function (type, messageLength) {
  * Creates a WebSocket connection to the Game Recorder Server
  */
 function createGameRecorderSocket() {
-    mySocket = new WebSocket("ws://127.0.0.1:2827"); // 2827 is the port game server runs on
-    mySocket.binaryType = 'arraybuffer';
+    gameRecorderSocket = new WebSocket("ws://127.0.0.1:2827"); // 2827 is the port game recorder runs on
+    gameRecorderSocket.binaryType = 'arraybuffer';
 
-    mySocket.onerror = function (event) {
+    gameRecorderSocket.onerror = function (event) {
         console.log(event);
     }
 
-    mySocket.onopen = function () {
+    gameRecorderSocket.onopen = function () {
         console.log("WebSocket connection established.");
     };
 
-    mySocket.onclose = function () {
+    gameRecorderSocket.onclose = function () {
         alert("No connection to GameRecorder");
     }
 
-    mySocket.onmessage = function (event) {
+    gameRecorderSocket.onmessage = function (event) {
         decodePacket(new Uint8Array(event.data));
     }
 }
@@ -84,7 +84,7 @@ function sendRegistrationPacket() {
     let byteArray = new Uint8Array(packet);
     console.log(packet);
     console.log(byteArray.buffer);
-    serverSocket.send(byteArray.buffer);
+    gameServerSocket.send(byteArray.buffer);
     // Currently sends this packet to the gameServer and we can see the boat appear on the game. However both the game and this app
     // crashes shortly after this happens.
 }
@@ -92,23 +92,23 @@ function sendRegistrationPacket() {
  * Creates a WebSocket connection to the Game Recorder Server
  */
 function createGameServerSocket(/*String*/ip, port) {
-    serverSocket = new WebSocket("ws://" + ip + ":" + port); // 2827 is the port game server runs on
-    serverSocket.binaryType = 'arraybuffer';
+    gameServerSocket = new WebSocket("ws://" + ip + ":" + port); // 2827 is the port game server runs on
+    gameServerSocket.binaryType = 'arraybuffer';
 
-    serverSocket.onerror = function (event) {
+    gameServerSocket.onerror = function (event) {
         console.log(event);
     }
 
-    serverSocket.onopen = function () {
+    gameServerSocket.onopen = function () {
         console.log("Game Server connection established.");
         sendRegistrationPacket();
     };
 
-    serverSocket.onclose = function () {
+    gameServerSocket.onclose = function () {
         alert("No connection to GameServer");
     }
 
-    serverSocket.onmessage = function (event) {
+    gameServerSocket.onmessage = function (event) {
         console.log("message from server");
         decodePacket(new Uint8Array(event.data));
     }
@@ -119,7 +119,7 @@ function createGameServerSocket(/*String*/ip, port) {
  * @param code The room code entered
  */
 requestGame = function(code) {
-    if(mySocket == null){
+    if(gameRecorderSocket == null){
         createGameRecorderSocket();
     }
     let header = createHeader(MESSAGE_TYPE.GAME_REQUEST.type, MESSAGE_TYPE.GAME_REQUEST.length);
@@ -128,7 +128,7 @@ requestGame = function(code) {
     let crc = createCrc(header, body);
     let packet = concatUint8ByteArrays(concatUint8ByteArrays(header, body), crc);
     let byteArray = new Uint8Array(packet);
-    mySocket.send(byteArray.buffer);
+    gameRecorderSocket.send(byteArray.buffer);
 }
 
 
@@ -145,7 +145,8 @@ sendBoatActionMessage = function(actionCode, boatId){
     let crc = createCrc(header, body);
     let packet = concatUint8ByteArrays(concatUint8ByteArrays(header, body), crc);
     let byteArray = new Uint8Array(packet);
-    mySocket.send(byteArray.buffer);
+    console.log("Action: " + byteArray.buffer);
+    gameServerSocket.send(byteArray.buffer);
 }
 
 

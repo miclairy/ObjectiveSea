@@ -1,7 +1,6 @@
 var insults = ["probably never play this game again.", "No one has ever sailed as badly as you just did.", "you suck.", "rookie.",
     "better luck next time. Not that any of your friends will let you sail with them again.", "you died.", "Shutting down device"]
 
-let BOAT_ID = 1;
 let BOAT_ACTION = {
     VMG: {value:1},
     SAILS : {value:2},
@@ -90,19 +89,19 @@ function changeColor(color){
 function createBoatActionMessage(name){
     switch(name){
         case "vmg":
-            sendBoatActionMessage(BOAT_ACTION.VMG.value, BOAT_ID);
+            sendBoatActionMessage(BOAT_ACTION.VMG.value, myId);
             break;
         case "sails":
-            sendBoatActionMessage(BOAT_ACTION.SAILS.value, BOAT_ID);
+            sendBoatActionMessage(BOAT_ACTION.SAILS.value, myId);
             break;
         case "tackGybe":
-            sendBoatActionMessage(BOAT_ACTION.TACK_GYBE.value, BOAT_ID);
+            sendBoatActionMessage(BOAT_ACTION.TACK_GYBE.value, myId);
             break;
         case "upwind":
-            sendBoatActionMessage(BOAT_ACTION.UP_WIND.value, BOAT_ID);
+            sendBoatActionMessage(BOAT_ACTION.UP_WIND.value, myId);
             break;
         case "downwind":
-            sendBoatActionMessage(BOAT_ACTION.DOWN_WIND.value, BOAT_ID);
+            sendBoatActionMessage(BOAT_ACTION.DOWN_WIND.value, myId);
             break;
         default:
             console.log("Unknown Button Pressed");
