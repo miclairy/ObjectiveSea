@@ -77,7 +77,7 @@ public class Race extends Observable{
     }
 
     public List<Boat> getCompetitors() {
-        return Collections.unmodifiableList(this.competitors);
+        return new ArrayList<>(this.competitors);
     }
 
     public String getRegattaName() {
