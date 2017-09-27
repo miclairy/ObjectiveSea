@@ -138,7 +138,7 @@ public class GameServer implements Runnable, Observer {
                 managerThread.start();
                 while (!raceUpdater.raceHasEnded()) {
                     if (!raceUpdater.getRace().getCompetitors().isEmpty() || isPartyMode()) {
-//                        sendRaceUpdates();
+                        sendRaceUpdates();
                     }
                     Thread.sleep((long) (SECONDS_PER_UPDATE * 1000 / options.getSpeedScale()));
                 }
@@ -180,7 +180,7 @@ public class GameServer implements Runnable, Observer {
     }
 
     private void sendBoatStateMessage(Boat boat) {
-        sendPacket(packetBuilder.createBoatStateMessagePacket(boat));
+        sendPacketToNonWebClients(packetBuilder.createBoatStateMessagePacket(boat));
     }
 
     /**
@@ -190,7 +190,7 @@ public class GameServer implements Runnable, Observer {
     private void sendRaceUpdates() throws IOException {
         try {
             byte[] raceUpdateMessage = packetBuilder.createRaceUpdateMessage(raceUpdater.getRace());
-            sendPacket(raceUpdateMessage);
+            sendPacketToNonWebClients(raceUpdateMessage);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -238,10 +238,10 @@ public class GameServer implements Runnable, Observer {
         Integer currentSequenceNumber = boatSequenceNumbers.get(boat);
         if (currentSequenceNumber != null) {
             boatSequenceNumbers.put(boat, currentSequenceNumber + 1);
-            sendPacket(packetBuilder.createBoatLocationMessage(boat, raceUpdater.getRace(), currentSequenceNumber));
+            sendPacketToNonWebClients(packetBuilder.createBoatLocationMessage(boat, raceUpdater.getRace(), currentSequenceNumber));
             if (lastMarkRoundingSent.get(boat) != boat.getLastRoundedMarkIndex()) {
                 lastMarkRoundingSent.put(boat, boat.getLastRoundedMarkIndex());
-                sendPacket(packetBuilder.createMarkRoundingMessage(boat, raceUpdater.getRace()));
+                sendPacketToNonWebClients(packetBuilder.createMarkRoundingMessage(boat, raceUpdater.getRace()));
             }
         }
     }
@@ -253,7 +253,7 @@ public class GameServer implements Runnable, Observer {
      * @throws IOException needed for sending a packet that fails
      */
     private void sendYachtEventMessage(Boat boat, Race race, int incidentID, YachtEventCode eventCode) throws IOException {
-        sendPacket(packetBuilder.createYachtEventMessage(boat, race, incidentID, eventCode));
+        sendPacketToNonWebClients(packetBuilder.createYachtEventMessage(boat, race, incidentID, eventCode));
     }
 
     /**
@@ -459,10 +459,10 @@ public class GameServer implements Runnable, Observer {
     }
 
     /**
-     * Sends a header, body then generates and sends a CRC for that header and body
+     * Sends a packet to all non-web clients
      * @param packet the packet to send
      */
-    private void sendPacket(byte[] packet) {
+    private void sendPacketToNonWebClients(byte[] packet) {
         connectionManager.sendToClients(packet);
     }
 }
