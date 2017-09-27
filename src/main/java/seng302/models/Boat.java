@@ -482,6 +482,21 @@ public class Boat extends Observable implements Comparable<Boat>{
     }
 
     /**
+     * modifies players direction 3 degrees clockwise
+     */
+    public void clockwise() {
+        heading = (heading + 360 + 3) % 360;
+    }
+
+    /**
+     * modifies players direction 3 degrees anti-clockwise
+     */
+    public void antiClockwise() {
+        heading = (heading + 360 - 3) % 360;
+
+    }
+
+    /**
      * Class to store optimum headings as a pair
      */
     private class OptimumHeadings {

@@ -80,6 +80,12 @@ public abstract class AbstractServerListener extends Listener implements Runnabl
             case DOWNWIND:
                 boat.downWind(race.getCourse().getWindDirection());
                 break;
+            case CLOCKWISE:
+                boat.clockwise();
+                break;
+            case ANTI_CLOCKWISE:
+                boat.antiClockwise();
+                break;
             default:
                 break;
         }
