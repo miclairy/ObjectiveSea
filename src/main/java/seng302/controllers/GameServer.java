@@ -304,7 +304,8 @@ public class GameServer implements Runnable, Observer {
         if (serverListener instanceof WebSocketServerListener) {
             Boat boat = raceUpdater.getRace().getBoatById(newId);
             Color color = DisplayUtils.getBoatColor(newId);
-            byte[] initPacket = packetBuilder.createWebClientInitPacket(newId, boat.getName(), color);
+            String boatName = boat.getName()+ " (" + boat.getNickName() + ")";
+            byte[] initPacket = packetBuilder.createWebClientInitPacket(newId, boatName, color);
             connectionManager.sendToClient(newId, initPacket);
         }
         if(success){
