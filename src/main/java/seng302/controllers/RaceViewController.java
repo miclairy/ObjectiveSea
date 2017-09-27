@@ -174,7 +174,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void setupTutorialMode() {
         controller.hideStarterOverlay();
         initBoatHighlight();
-        initializeBoats();
         redrawCourse();
         tutorial = new Tutorial(controller, race);
         shiftArrow(false);
@@ -466,10 +465,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     public void initBoatHighlight(){
-        boatHighlight = new Circle(0,0,10);
-        boatHighlight.setId("usersBoatHighlight");
-        boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
-        root.getChildren().add(boatHighlight);
+        if(options.isParticipant()){
+            boatHighlight = new Circle(0,0,10);
+            boatHighlight.setId("usersBoatHighlight");
+            boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
+            root.getChildren().add(boatHighlight);
+        }
     }
 
 
@@ -1064,6 +1065,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void moveBoat(BoatDisplay boat, CanvasCoordinate point){
         Shape icon = boat.getIcon();
+
         icon.setTranslateY(point.getY());
         icon.setTranslateX(point.getX());
         icon.setScaleX(zoomLevel);

@@ -117,6 +117,9 @@ public class DisplaySwitcher {
 
     public void setUpTouchInputController(TouchInputController touchInputController){
         raceController.setUpTouchInputController(touchInputController);
+    }
 
+    public void setUpKeyInputController(KeyInputController keyInputController){
+        raceController.setUpKeyInputController(keyInputController);
     }
 }

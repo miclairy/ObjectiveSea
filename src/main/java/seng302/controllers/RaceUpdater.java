@@ -37,10 +37,10 @@ public class RaceUpdater implements Runnable {
     private Coordinate startingPosition;
     private boolean serverRunning;
     private boolean isPractice;
-
     private long secondsElapsed;
     private double timeOfFirstFinisher, millisBeforeStart, raceSecondsPassed;
     private boolean oneBoatHasFinished, atLeastOneBoatNotFinished;
+    private double timer;
 
     public RaceUpdater(String selectedCourse){
         collisionManager = new CollisionManager();
@@ -159,17 +159,17 @@ public class RaceUpdater implements Runnable {
      * Updates the status of the race from WARNING to STARTED based on the race times
      */
     private void updateRaceStartStatus() {
-        if(millisBeforeStart < WARNING_SIGNAL_TIME_IN_MS && millisBeforeStart > PREPARATORY_SIGNAL_TIME_IN_MS) {
-            race.updateRaceStatus(WARNING);
-        }else if(millisBeforeStart < PREPARATORY_SIGNAL_TIME_IN_MS && millisBeforeStart > 0){
-            race.updateRaceStatus(RaceStatus.PREPARATORY);
-        } else if (millisBeforeStart < 0 && race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
+        if (race.getRaceStatus().equals(STARTED) || millisBeforeStart < 0 && race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
             race.updateRaceStatus(RaceStatus.STARTED);
             for(Boat boat : race.getCompetitors()){
                 if(!boat.getStatus().equals(BoatStatus.DNF)){
                     boat.setStatus(BoatStatus.RACING);
                 }
             }
+        }else if(millisBeforeStart < WARNING_SIGNAL_TIME_IN_MS && millisBeforeStart > PREPARATORY_SIGNAL_TIME_IN_MS) {
+            race.updateRaceStatus(WARNING);
+        }else if(millisBeforeStart < PREPARATORY_SIGNAL_TIME_IN_MS && millisBeforeStart > 0){
+            race.updateRaceStatus(RaceStatus.PREPARATORY);
         }
     }
 
@@ -209,6 +209,11 @@ public class RaceUpdater implements Runnable {
                 //revert the last location update as it was a collision
                 boat.updateLocation(-raceSecondsPassed, race.getCourse());
                 boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
+                if (boat instanceof AIBoat){
+                    boat.setSailsIn(true);
+                    boat.setCurrentSpeed(0);
+                    timer = 0;
+                }
             }
             if(boat.isFinished()) {
                 boat.setSailsIn(true);
@@ -216,8 +221,12 @@ public class RaceUpdater implements Runnable {
             adjustSpeed(boat);
             if(boat instanceof AIBoat){
                 if(millisBeforeStart < AIBoat.START_MOVING_TIME_MS){
-                    boat.setSailsIn(boat.getStatus() == BoatStatus.FINISHED);
-                    boat.move(raceSecondsPassed, race.getCourse());
+                    AIBoat aiBoat = (AIBoat) boat;
+                    if (!(collisionManager.boatIsInCollision(boat)) && timer > 5) {
+                        aiBoat.setSailsIn(false);
+                    }
+                    timer += raceSecondsPassed;
+                    aiBoat.move(raceSecondsPassed, race.getCourse());
                 }
             } else {
                 boat.move(raceSecondsPassed, race.getCourse());
@@ -414,8 +423,7 @@ public class RaceUpdater implements Runnable {
      * Sets the race status to started so we don't have to wait around for the prerace countdown
      * Currently used in tutorial mode.
      */
-    public void skipPrerace() {
-        race.updateRaceStatus(STARTED);
+    public void skipPrerace() {race.updateRaceStatus(STARTED);
     }
 
     /**

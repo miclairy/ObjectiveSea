@@ -49,6 +49,7 @@ public class GameServer implements Runnable, Observer {
     private ClientSender gameRecorderConnection;
     private Integer roomCode;
     private Socket gameRecorderSocket;
+    private double speedScale = 15;
 
     public GameServer(ServerOptions options) throws IOException {
         this.options = options;
@@ -57,6 +58,9 @@ public class GameServer implements Runnable, Observer {
         connectionManager.addObserver(this);
         if (options.isOnline()) {
             connectToGameRecorder();
+        }
+        if(options.getSpeedScale() > speedScale){
+            speedScale = options.getSpeedScale();
         }
         setupNewRaceUpdater(options);
         createPacketForGameRecorder();
@@ -144,7 +148,7 @@ public class GameServer implements Runnable, Observer {
                         sendRaceUpdates();
                         if (isPartyMode()) sendWebClientUpdates();
                     }
-                    Thread.sleep((long) (SECONDS_PER_UPDATE * 1000 / options.getSpeedScale()));
+                    Thread.sleep((long) (SECONDS_PER_UPDATE * 1000 / speedScale));
                 }
                 sendRaceUpdates(); //send one last message block with ending data
                 connectionManager.closeClientConnections();
