@@ -23,10 +23,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Callback;
-import seng302.models.Boat;
-import seng302.models.ClientOptions;
-import seng302.models.Course;
-import seng302.models.Race;
+import seng302.models.*;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplayUtils;
@@ -83,6 +80,8 @@ public class Controller implements Initializable, Observer {
     @FXML private Label lblExitRV;
     @FXML private Label lblTrackRV;
     @FXML private VBox headsUpDisplay;
+    @FXML private VBox partyModeBox;
+    @FXML private VBox partyModeBoxWrapper;
     private HeadsupDisplay infoDisplay;
 
     @FXML public StackPane stackPane;
@@ -181,10 +180,57 @@ public class Controller implements Initializable, Observer {
         headsUpDisplay.setVisible(false);
         lblTrackRV.setVisible(false);
         lblExitRV.setVisible(false);
+        partyModeBox.setVisible(false);
+        setPartyBoxPosition();
 
         raceCompetitorOverview();
         startersOverlay.toFront();
         initZoom();
+    }
+
+    /**
+     * Set app options and pass them on to the RaceViewController
+     * @param options configured ClientOptions
+     * @param displaySwitcher required to allow switching back to main menu
+     * @param scene the scene in which we are being drawn
+     */
+    public void setApp(ClientOptions options, DisplaySwitcher displaySwitcher, Scene scene) {
+        this.displaySwitcher = displaySwitcher;
+        this.options = options;
+        this.scene = scene;
+        if (this.options.isHost()) {
+            String ip = ConnectionUtils.getPublicIp();
+            if (Objects.equals(ip, null)) {
+                startersOverlayTitle.setText(race.getRegattaName());
+            } else {
+                startersOverlayTitle.setText("IP: " + ip);
+            }
+        } else {
+            startersOverlayTitle.setText(race.getRegattaName());
+        }
+        if(options.getGameMode().equals(GameMode.PARTYGAME)){
+            partyModeBox.setVisible(true);
+            partyModeBox.toFront();
+        }else{
+
+        }
+
+        initZoomEventListener();
+        initKeyPressListener();
+        initTouchDisplayDrag();
+        resetHUDPosition();
+        raceViewController.setupRaceView(options);
+        initHiddenScoreboard();
+        raceViewController.updateWindArrow();
+        raceViewController.start();
+
+    }
+
+    private void setPartyBoxPosition(){
+        partyModeBoxWrapper.toFront();
+        partyModeBox.toFront();
+        partyModeBox.setLayoutX(canvasWidth / 2);
+        partyModeBox.setLayoutY(canvasHeight / 2);
     }
 
     /**
@@ -227,37 +273,6 @@ public class Controller implements Initializable, Observer {
             tutorialOverlay.setVisible(true);
             AnimationUtils.scalePop(tutorialOverlay);
         }
-    }
-
-    /**
-     * Set app options and pass them on to the RaceViewController
-     * @param options configured ClientOptions
-     * @param displaySwitcher required to allow switching back to main menu
-     * @param scene the scene in which we are being drawn
-     */
-    public void setApp(ClientOptions options, DisplaySwitcher displaySwitcher, Scene scene) {
-        this.displaySwitcher = displaySwitcher;
-        this.options = options;
-        this.scene = scene;
-        if (this.options.isHost()) {
-            String ip = ConnectionUtils.getPublicIp();
-            if (Objects.equals(ip, null)) {
-                startersOverlayTitle.setText(race.getRegattaName());
-            } else {
-                startersOverlayTitle.setText("IP: " + ip);
-            }
-        } else {
-            startersOverlayTitle.setText(race.getRegattaName());
-        }
-        initZoomEventListener();
-        initKeyPressListener();
-        initTouchDisplayDrag();
-        resetHUDPosition();
-        raceViewController.setupRaceView(options);
-        initHiddenScoreboard();
-        raceViewController.updateWindArrow();
-        raceViewController.start();
-
     }
 
     @FXML public void exitRunningRace() {
@@ -555,6 +570,7 @@ public class Controller implements Initializable, Observer {
             anchorWidth = canvasAnchor.getWidth();
             raceViewController.redrawCourse();
             raceViewController.redrawBoatPaths();
+            setPartyBoxPosition();
             btnHide.setLayoutX(canvasWidth - 485.0);
         });
         canvasAnchor.heightProperty().addListener(resizeListener);
@@ -562,6 +578,7 @@ public class Controller implements Initializable, Observer {
             canvasHeight = (double) newValue;
             anchorHeight = canvasAnchor.getHeight();
             raceViewController.redrawCourse();
+            setPartyBoxPosition();
             raceViewController.redrawBoatPaths();
 
         });
@@ -738,6 +755,7 @@ public class Controller implements Initializable, Observer {
     public void showStarterOverlay() {
         startersOverlay.toFront();
         AnimationUtils.fadeNode(startersOverlay, false);
+        AnimationUtils.fadeNode(partyModeBox, true);
     }
 
     public static void setCanvasHeight(double canvasHeight) {

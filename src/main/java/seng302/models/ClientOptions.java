@@ -31,6 +31,9 @@ public class ClientOptions {
         serverAddress = DEFAULT_ADDRESS;
         serverPort = DEFAULT_PORT;
         isParticipant = true;
+        if(mode.equals(GameMode.PARTYGAME)){
+            isParticipant = false;
+        }
         isHost = true;
         gameMode = mode;
     }
@@ -70,5 +73,9 @@ public class ClientOptions {
 
     public Boolean isHost() {
         return isHost;
+    }
+
+    public GameMode getGameMode() {
+        return gameMode;
     }
 }

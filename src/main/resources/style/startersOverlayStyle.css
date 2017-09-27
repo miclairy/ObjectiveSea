@@ -45,3 +45,29 @@
     -fx-background-insets: 0, 0;
     -fx-label-padding: 25px 20px 25px 20px;
 }
+
+#partyModeBox{
+    -fx-background-color: #2a2a2a;
+    -fx-opacity: 0.9;
+    -fx-border-radius: 30;
+    -fx-background-radius: 30;
+    -fx-effect: dropshadow(gaussian, #383838, 10, 0, 0, 3);
+}
+
+#lblPartyCode{
+    -fx-text-fill: white;
+    -fx-font-size: 90px;
+    -fx-font-weight: bold;
+}
+
+#lblPartyTitle{
+    -fx-text-fill: #93DA9F;
+    -fx-font-size: 70px;
+    -fx-font-weight: bold;
+}
+
+#lblPartyModeHelp{
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}

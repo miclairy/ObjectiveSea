@@ -329,4 +329,22 @@ public class ServerPacketBuilder extends PacketBuilder {
         addFieldToByteArray(body, WEB_CLIENT_HEALTH, healthPercentage);
         return generatePacket(header, body);
     }
+
+    public byte[] createPartyModeRoomCodeMessage(Integer code) {
+        byte[] header = super.createHeader(PARTY_MODE_CODE);
+        byte[] body = new byte[PARTY_MODE_CODE.getLength()];
+        addFieldToByteArray(body, PARTY_MODE_ROOM_CODE, code);
+        return generatePacket(header, body);
+    }
+
+    public byte[] wrapPacket(byte[] sendpacket) {
+        byte[] wrappedPacket = new byte[sendpacket.length + 2];
+        wrappedPacket[0] = (byte) 130;
+        wrappedPacket[1] = (byte) (sendpacket.length);
+        for(int i = 0; i < sendpacket.length; i++){
+            wrappedPacket[i+2] = sendpacket[i];
+        }
+        System.out.println(Arrays.toString(wrappedPacket));
+        return wrappedPacket;
+    }
 }

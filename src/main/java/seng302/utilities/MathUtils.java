@@ -4,6 +4,8 @@ import seng302.models.*;
 import seng302.models.CompoundMark;
 import seng302.models.Coordinate;
 
+import java.util.Random;
+
 import static java.lang.StrictMath.abs;
 
 /**
@@ -271,5 +273,15 @@ public class MathUtils {
     public static double distanceBetweenTwoPoints(CanvasCoordinate point1, CanvasCoordinate point2) {
         double distance = Math.sqrt(Math.pow(point1.getX()-point2.getX(), 2)+Math.pow(point1.getY()-point2.getY(), 2));
         return distance;
+    }
+
+
+    /**
+     * Generates a random 4 digit code
+     * @return 4 digit code between [0000, 9999]
+     */
+    public static Integer generateFourDigitPartyCode() {
+        Random rand = new Random();
+        return rand.nextInt(10000);
     }
 }

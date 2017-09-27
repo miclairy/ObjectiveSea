@@ -7,12 +7,20 @@ import seng302.data.CourseName;
 import seng302.utilities.ConnectionUtils;
 import seng302.views.AvailableRace;
 
+import javax.xml.bind.DatatypeConverter;
+import java.io.*;
 import java.io.BufferedInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Arrays;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static seng302.data.AC35StreamField.*;
 import static seng302.data.AC35StreamField.HOST_GAME_CURRENT_PLAYERS;
@@ -64,8 +72,9 @@ public class ServerListener extends AbstractServerListener {
                             if (sourceId != -1) {
                                 parseBoatActionMessage(body);
                             }
-                            break;
                     }
+                } else{
+                    System.out.println("Incorrect CRC");
                 }
             } catch (SocketException e) {
                 break;
@@ -97,7 +106,8 @@ public class ServerListener extends AbstractServerListener {
         int gameStatus = byteArrayRangeToInt(body, HOST_GAME_STATUS.getStartIndex(), HOST_GAME_STATUS.getEndIndex());
         int gameMinPlayers = byteArrayRangeToInt(body, HOST_GAME_REQUIRED_PLAYERS.getStartIndex(), HOST_GAME_REQUIRED_PLAYERS.getEndIndex());
         int gameCurrentPlayers = byteArrayRangeToInt(body, HOST_GAME_CURRENT_PLAYERS.getStartIndex(), HOST_GAME_CURRENT_PLAYERS.getEndIndex());
-        return new AvailableRace(CourseName.getCourseNameFromInt(courseIndex).getText(), gameCurrentPlayers, serverPort, serverIP);
+        boolean isPartyMode = byteArrayRangeToInt(body, HOST_GAME_IS_PARTY_MODE.getStartIndex(), HOST_GAME_IS_PARTY_MODE.getEndIndex()) == 1;
+        return new AvailableRace(CourseName.getCourseNameFromInt(courseIndex).getText(), gameCurrentPlayers, serverPort, serverIP, isPartyMode);
     }
 
     /**
@@ -109,7 +119,7 @@ public class ServerListener extends AbstractServerListener {
         long serverIpLong = byteArrayRangeToLong(body, HOST_GAME_IP.getStartIndex(), HOST_GAME_IP.getEndIndex());
         String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
         int port = byteArrayRangeToInt(body, HOST_GAME_PORT.getStartIndex(), HOST_GAME_PORT.getEndIndex());
-        AvailableRace raceToRemove = new AvailableRace("", 0, port, serverIP);
+        AvailableRace raceToRemove = new AvailableRace("", 0, port, serverIP, false);
         raceToRemove.setDeleted(true);
         setChanged();
         notifyObservers(raceToRemove);

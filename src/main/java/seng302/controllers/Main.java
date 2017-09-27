@@ -186,6 +186,9 @@ public class Main extends Application {
      */
     public boolean startHostedRace(String course, Double speedScale, int numParticipants, ClientOptions clientOptions, int currentCourseIndex) throws Exception {
         ServerOptions serverOptions = new ServerOptions(speedScale, numParticipants);
+        if(clientOptions.getGameMode().equals(GameMode.PARTYGAME)){
+            serverOptions = new ServerOptions(speedScale, numParticipants, GameMode.PARTYGAME);
+        }
         serverOptions.setRaceXML(course);
 
         try{

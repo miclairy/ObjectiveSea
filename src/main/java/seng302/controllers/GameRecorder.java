@@ -7,8 +7,10 @@ import seng302.data.CourseName;
 import seng302.data.ServerPacketBuilder;
 import seng302.data.registration.RegistrationType;
 import seng302.utilities.ConnectionUtils;
+import seng302.utilities.MathUtils;
 import seng302.views.AvailableRace;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.*;
@@ -27,8 +29,8 @@ public class GameRecorder implements Observer {
     private final ConnectionManager connectionManager;
     private ArrayList<AvailableRace> availableRaces = new ArrayList<>();
     private int nextHostID = 0;
-    private Set<Socket> sockets = new HashSet<>();
     private Thread serverListenerThread = null;
+    private HashMap<Integer, AvailableRace> availablePartyGames = new HashMap<>();
 
     public GameRecorder() throws IOException {
         packetBuilder = new ServerPacketBuilder();
@@ -45,9 +47,8 @@ public class GameRecorder implements Observer {
         if (observable.equals(connectionManager)) {
             if (arg instanceof Socket) {
                 Socket socket = (Socket) arg;
-                sockets.add(socket);
                 try {
-                    AbstractServerListener serverListener = ServerListener.createServerListener((Socket) arg);
+                    AbstractServerListener serverListener = ServerListener.createServerListener(socket);
                     startServerListener(serverListener);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -74,6 +75,43 @@ public class GameRecorder implements Observer {
             removeAvailableRace(newRace);
             return;
         }
+        if (newRace.isPartyGame()) {
+            updatePartyGame(newRace);
+        } else {
+            updateNormalRace(newRace);
+        }
+    }
+
+    /**
+     * Adds or updates a party game to the availablePartyGames hashmap
+     * @param newRace the race to add or update
+     */
+    private void updatePartyGame(AvailableRace newRace) {
+        boolean updatedRace = updateRaceIfExists(newRace, availablePartyGames.values());
+        if (!updatedRace) {
+            Integer code = MathUtils.generateFourDigitPartyCode();
+            while (availablePartyGames.keySet().contains(code)) {
+                code = MathUtils.generateFourDigitPartyCode();
+            }
+            newRace.setCode(code);
+            availablePartyGames.put(code, newRace);
+            sendRoomCodeResponse(newRace.getIpAddress(), newRace.getPort(), code);
+        }
+    }
+
+    private void sendRoomCodeResponse(String ip, Integer port, Integer code) {
+        byte[] packet = packetBuilder.createPartyModeRoomCodeMessage(code);
+        connectionManager.sendToClient(-1, packet);
+    }
+
+    /**
+     * Iterate through the provided available races and determine if it matches the given race.
+     * Update if we find a match.
+     * @param newRace the race to match
+     * @param availableRaces the Collection to search through
+     * @return true if we updated a race, false otherwise
+     */
+    private boolean updateRaceIfExists(AvailableRace newRace, Collection<AvailableRace> availableRaces) {
         boolean updatedRace = false;
         for (AvailableRace runningRace : availableRaces){
             if (runningRace.equals(newRace)){
@@ -82,6 +120,15 @@ public class GameRecorder implements Observer {
                 updateNumberOfBoats(runningRace, newRace.getNumBoats());
             }
         }
+        return updatedRace;
+    }
+
+    /**
+     * Adds or updates a normal game to the availableRaces list
+     * @param newRace the race to add or update
+     */
+    private void updateNormalRace(AvailableRace newRace) {
+        boolean updatedRace = updateRaceIfExists(newRace, availableRaces);
         int raceMapIndex = CourseName.getCourseIntFromName(newRace.mapNameProperty().getValue());
         if (!updatedRace && raceMapIndex != -1) {
             System.out.println("Game Recorder: Recording new server");
@@ -105,15 +152,23 @@ public class GameRecorder implements Observer {
      * @param deletedRace dummy race with matching IP and port to remove
      */
     private void removeAvailableRace(AvailableRace deletedRace){
-        AvailableRace raceToDelete = null;
+        Boolean raceDeleted = false;
         for (AvailableRace race : availableRaces) {
             if (race.equals(deletedRace)) {
-                raceToDelete = race;
+                raceDeleted = true;
+                availableRaces.remove(race);
+                System.out.println("Game Recorder: removed canceled race: " + race.getIpAddress());
+                break;
             }
         }
-        if (raceToDelete != null) {
-            availableRaces.remove(raceToDelete);
-            System.out.println("Game Recorder: removed canceled race: " + raceToDelete.getIpAddress());
+        if (!raceDeleted) {
+            for (AvailableRace race : availablePartyGames.values()) {
+                if (race.equals(deletedRace)) {
+                    availablePartyGames.remove(race.getCode());
+                    System.out.println("Game Recorder: removed canceled party game race: " + race.getIpAddress());
+                    break;
+                }
+            }
         }
     }
 
