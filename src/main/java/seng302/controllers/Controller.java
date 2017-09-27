@@ -637,6 +637,7 @@ public class Controller implements Initializable, Observer {
                     raceViewController.initializeBoats();
                     if(options.isParticipant() && options.getGameMode().equals(GameMode.PARTYGAME)){
                         this.infoDisplay = new HeadsupDisplay(String.format("%04d", GameClient.getRoomCode()), headsUpDisplay);
+                        headsUpDisplay.setVisible(true);
                     }
                 }
                 break;
