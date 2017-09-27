@@ -37,10 +37,10 @@ public class RaceUpdater implements Runnable {
     private Coordinate startingPosition;
     private boolean serverRunning;
     private boolean isPractice;
-
     private long secondsElapsed;
     private double timeOfFirstFinisher, millisBeforeStart, raceSecondsPassed;
     private boolean oneBoatHasFinished, atLeastOneBoatNotFinished;
+    private double timer;
 
     public RaceUpdater(String selectedCourse){
         collisionManager = new CollisionManager();
@@ -209,6 +209,11 @@ public class RaceUpdater implements Runnable {
                 //revert the last location update as it was a collision
                 boat.updateLocation(-raceSecondsPassed, race.getCourse());
                 boat.setCurrentSpeed(boat.getCurrentSpeed() - 0.8);
+                if (boat instanceof AIBoat){
+                    boat.setSailsIn(true);
+                    boat.setCurrentSpeed(0);
+                    timer = 0;
+                }
             }
             if(boat.isFinished()) {
                 boat.setSailsIn(true);
@@ -216,8 +221,12 @@ public class RaceUpdater implements Runnable {
             adjustSpeed(boat);
             if(boat instanceof AIBoat){
                 if(millisBeforeStart < AIBoat.START_MOVING_TIME_MS){
-                    boat.setSailsIn(boat.getStatus() == BoatStatus.FINISHED);
-                    boat.move(raceSecondsPassed, race.getCourse());
+                    AIBoat aiBoat = (AIBoat) boat;
+                    if (!(collisionManager.boatIsInCollision(boat)) && timer > 5) {
+                        aiBoat.setSailsIn(false);
+                    }
+                    timer += raceSecondsPassed;
+                    aiBoat.move(raceSecondsPassed, race.getCourse());
                 }
             } else {
                 boat.move(raceSecondsPassed, race.getCourse());
