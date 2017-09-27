@@ -35,10 +35,6 @@ public class WebSocketServerListener extends AbstractServerListener {
         while(clientConnected){
             try {
                 byte[] packet = readPacket();
-                if(packet == null){
-                    clientConnected = false;
-                    break;
-                }
                 byte[] header = extractHeader(packet);
 
                 int messageLength = byteArrayRangeToInt(header, MESSAGE_LENGTH.getStartIndex(), MESSAGE_LENGTH.getEndIndex());
@@ -157,7 +153,7 @@ public class WebSocketServerListener extends AbstractServerListener {
         byte[] key = new byte[4];
         int opcode = socketData.read();
         if(opcode == -1){
-            return null;
+            throw new IOException("Bad WebSocket Frame Opcode: " + opcode);
         }
         int length = readPacketLength();
         for(int i = 0; i < 4; i++){
