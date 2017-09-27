@@ -58,18 +58,6 @@ public class WebSocketServerListener extends AbstractServerListener {
                             }
                         case REQUEST_AVAILABLE_RACES:
                             parseRequestRacesMessage(body);
-                            // TODO remove this
-                            //TEST
-                            ServerPacketBuilder builder = new ServerPacketBuilder();
-                            //byte[] sendpacket = builder.createRegistrationResponsePacket(101, RegistrationResponseStatus.PLAYER_SUCCESS);
-                            byte[] sendpacket = builder.createGameRegistrationPacket(0.0, 1, 2828, "127.0.0.1", -1, 0, true);
-                            byte[] wrappedPacket = builder.wrapPacket(sendpacket);
-                            socket.getOutputStream().write(wrappedPacket);
-                            try {
-                                Thread.sleep(2000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
                             break;
                     }
                 } else{
@@ -144,7 +132,6 @@ public class WebSocketServerListener extends AbstractServerListener {
         match.find();
         byte[] response = null;
         try{
-            match.find();
             response = ("HTTP/1.1 101 Switching Protocols\r\n"
                     + "Connection: Upgrade\r\n"
                     + "Upgrade: websocket\r\n"

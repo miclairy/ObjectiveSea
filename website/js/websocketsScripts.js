@@ -21,7 +21,7 @@ let MESSAGE_TYPE = {
     GAME_REQUEST: {type:114, length:2},
     REGISTRATION_REQUEST:  {type:55, length:4},
     REGISTRATION_RESPONSE: {type:56, length:5},
-    HOST_GAME_MESSAGE: {type:108, length:14}
+    HOST_GAME_MESSAGE: {type:108, length:14},
     BOAT_ACTION_MESSAGE:{type:100, length:5},
 }
 
@@ -31,7 +31,7 @@ let MESSAGE_FIELD = {
     REGISTRATION_STATUS: {index:4, length:1},
     HOST_GAME_IP: {index:0, length:4},
     HOST_GAME_PORT: {index:4, length:4},
-    HOST_GAME_IS_PARTY_MODE: {index:13, length:1}
+    HOST_GAME_IS_PARTY_MODE: {index:13, length:1},
     BOAT_ACTION_SOURCE_ID:{index:0, length:4},
     BOAT_ACTION_BODY:{index:4, length:1},
 }
