@@ -1,12 +1,15 @@
 package seng302.controllers;
 
+import javafx.scene.paint.Color;
 import seng302.controllers.listeners.AbstractServerListener;
 import seng302.controllers.listeners.ServerListener;
+import seng302.controllers.listeners.WebSocketServerListener;
 import seng302.data.*;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.data.registration.RegistrationType;
 import seng302.models.*;
 import seng302.utilities.ConnectionUtils;
+import seng302.utilities.DisplayUtils;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -298,6 +301,12 @@ public class GameServer implements Runnable, Observer {
         connectionManager.addConnection(newId, serverListener);
         serverListener.setClientId(newId);
         connectionManager.sendToClient(newId, packet);
+        if (serverListener instanceof WebSocketServerListener) {
+            Boat boat = raceUpdater.getRace().getBoatById(newId);
+            Color color = DisplayUtils.getBoatColor(newId);
+            byte[] initPacket = packetBuilder.createWebClientInitPacket(newId, boat.getName(), color);
+            connectionManager.sendToClient(newId, initPacket);
+        }
         if(success){
             createPacketForGameRecorder();
             sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());

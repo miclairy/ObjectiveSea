@@ -15,11 +15,7 @@ let BOAT_ACTION = {
 function submitButtonPressed(){
 
     requestGame($("#codeBox").val());
-    if(true){
-        initControls("Emirates Team New Zealand", "skyblue");
-        loadControls();
-        initButtonListeners();
-    }
+    initButtonListeners();
 }
 
 /**

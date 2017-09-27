@@ -22,7 +22,7 @@ let MESSAGE_TYPE = {
     REGISTRATION_REQUEST:  {type:55, length:4},
     REGISTRATION_RESPONSE: {type:56, length:5},
     HOST_GAME_MESSAGE: {type:108, length:14},
-    BOAT_ACTION_MESSAGE:{type:100, length:5},
+    BOAT_ACTION_MESSAGE:{type:100, length:5}
 }
 
 let MESSAGE_FIELD = {
@@ -34,6 +34,13 @@ let MESSAGE_FIELD = {
     HOST_GAME_IS_PARTY_MODE: {index:13, length:1},
     BOAT_ACTION_SOURCE_ID:{index:0, length:4},
     BOAT_ACTION_BODY:{index:4, length:1},
+    WEB_CLIENT_ID:{index:0, length:4},
+    WEB_CLIENT_NAME:{index:4, length:30},
+    WEB_CLIENT_COLOUR:{index:34, length:3},
+    WEB_CLIENT_SPEED:{index:4, length:2},
+    WEB_CLIENT_POSITION:{index:6, length:1},
+    WEB_CLIENT_TOTAL_COMPETITORS:{index:7, length:1},
+    WEB_CLIENT_HEALTH:{index:8, length:1}
 }
 
 /**
@@ -188,6 +195,21 @@ function decodeHostGameMessage(body) {
     }
 }
 
+
+function decodeWebClientInit(body) {
+    let nameEndIndex = MESSAGE_FIELD.WEB_CLIENT_NAME.index + MESSAGE_FIELD.WEB_CLIENT_NAME.length;
+    let boatNameArray = body.subarray(MESSAGE_FIELD.WEB_CLIENT_NAME.index, nameEndIndex);
+    let boatName = charArrayToString(boatNameArray);
+    let boatColor = body.subarray(nameEndIndex, nameEndIndex + MESSAGE_FIELD.WEB_CLIENT_COLOUR.length);
+    let colorString = rgbToHex(boatColor[0], boatColor[1], boatColor[2]);
+
+    initControls(boatName, colorString);
+    loadControls();
+
+    console.log(boatName);
+    console.log(colorString);
+}
+
 decodePacket = function(packet) {
     let header = packet.subarray(0, HEADER_LENGTH);
     let bodyLength = byteArrayRangeToInt(packet, HEADER_FIELDS.MESSAGE_LENGTH.index, HEADER_FIELDS.MESSAGE_LENGTH.length);
@@ -207,6 +229,7 @@ decodePacket = function(packet) {
                 break;
             case 120: //WebClientInit
                 console.log("Web client init");
+                decodeWebClientInit(body);
                 break;
             case 121: //WebClientUpdate
                 console.log("Web client update");

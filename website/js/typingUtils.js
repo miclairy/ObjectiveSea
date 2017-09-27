@@ -54,3 +54,22 @@ byteArrayRangeToInt = function (array, beginIndex, length) {
     }
     return total;
 }
+
+
+function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+function charArrayToString(array){
+    let string = "";
+    for(let i = 0; i < array.length; i++){
+        if(array[i] === 0) break;
+        string += String.fromCharCode(array[i]);
+    }
+    return string;
+}

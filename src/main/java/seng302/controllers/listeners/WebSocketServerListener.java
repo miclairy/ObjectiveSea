@@ -1,8 +1,6 @@
 package seng302.controllers.listeners;
 
 import seng302.data.AC35StreamMessage;
-import seng302.data.ServerPacketBuilder;
-import seng302.data.registration.RegistrationResponseStatus;
 import javax.xml.bind.DatatypeConverter;
 import java.io.BufferedInputStream;
 import java.io.IOException;
