@@ -138,7 +138,6 @@ public class ConnectionManager extends Observable implements Runnable {
         try{
             DataOutputStream clientOutput = new DataOutputStream(socket.getOutputStream());
             clientOutput.write(packet);
-            System.out.println(Arrays.toString(packet));
         } catch (IOException e){
             e.printStackTrace();
         }

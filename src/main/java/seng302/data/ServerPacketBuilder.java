@@ -258,7 +258,6 @@ public class ServerPacketBuilder extends PacketBuilder {
 
     private byte[] initialiseYachtEventPacket(){
         byte[] body = new byte[YACHT_EVENT_CODE.getLength()];
-
         return body;
     }
 

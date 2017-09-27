@@ -65,8 +65,17 @@ public class GameRecorder implements Observer {
                 }
             } else if (arg instanceof AvailableRace) {
                 updateAvailableRace(((AvailableRace) arg), serverListener.getSocket());
+            } else if(arg instanceof Integer){
+                respondToRequestPartyGame(availablePartyGames.get(arg));
             }
         }
+    }
+
+    private void respondToRequestPartyGame(AvailableRace availableRace) {
+        //-1 for unknown/unused values
+        byte[] packet =  packetBuilder.createGameRegistrationPacket(-1.0, 0, availableRace.getPort(),
+                availableRace.getIpAddress(), -1, availableRace.getNumBoats(), availableRace.isPartyGame());
+//        connectionManager.send
     }
 
     /**
@@ -101,8 +110,6 @@ public class GameRecorder implements Observer {
             newRace.setCode(code);
             availablePartyGames.put(code, newRace);
             sendRoomCodeResponse(socket, code);
-        } else{
-            System.out.println("Received again");
         }
     }
 

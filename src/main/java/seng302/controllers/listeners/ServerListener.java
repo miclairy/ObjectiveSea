@@ -44,7 +44,6 @@ public class ServerListener extends AbstractServerListener {
                 int messageTypeValue = byteArrayRangeToInt(header, MESSAGE_TYPE.getStartIndex(), MESSAGE_TYPE.getEndIndex());
                 int sourceId = byteArrayRangeToInt(header, HEADER_SOURCE_ID.getStartIndex(), HEADER_SOURCE_ID.getEndIndex());
                 AC35StreamMessage messageType = AC35StreamMessage.fromInteger(messageTypeValue);
-                System.out.println(messageType);
                 byte[] body = new byte[messageLength];
                 dataInput.readFully(body);
                 byte[] crc = new byte[CRC_LENGTH];

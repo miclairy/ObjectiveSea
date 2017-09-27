@@ -12,11 +12,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static seng302.data.AC35StreamField.HEADER_SOURCE_ID;
-import static seng302.data.AC35StreamField.MESSAGE_LENGTH;
-import static seng302.data.AC35StreamField.MESSAGE_TYPE;
-import static seng302.data.AC35StreamMessage.BOAT_ACTION_MESSAGE;
-import static seng302.data.AC35StreamMessage.REGISTRATION_REQUEST;
+import static seng302.data.AC35StreamField.*;
 
 /**
  * Server listener to connect and communicate with a web socket client.
@@ -79,6 +75,9 @@ public class WebSocketServerListener extends AbstractServerListener {
     }
 
     private void parseRequestRacesMessage(byte[] body) {
+        Integer roomCode = byteArrayRangeToInt(body, PARTY_MODE_ROOM_CODE.getStartIndex(), PARTY_MODE_ROOM_CODE.getEndIndex());
+        setChanged();
+        notifyObservers(roomCode);
     }
 
     private byte[] extractHeader(byte[] packet) {

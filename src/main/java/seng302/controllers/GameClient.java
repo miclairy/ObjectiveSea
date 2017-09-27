@@ -89,7 +89,6 @@ public class GameClient extends Client{
                 serverRegistrationResponse = (RegistrationResponse) arg;
             } else if(arg instanceof Integer){
                 GameClient.roomCode = (Integer) arg;
-                System.out.println(roomCode);
             }
         } else if (o == touchInputController) {
             sendBoatTouchCommandPacket();
