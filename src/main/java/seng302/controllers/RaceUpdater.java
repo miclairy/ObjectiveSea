@@ -231,7 +231,7 @@ public class RaceUpdater implements Runnable {
             } else {
                 boat.move(raceSecondsPassed, race.getCourse());
                 Course course = race.getCourse();
-                if (race.getCourse().getCourseOrder().size() > 0 && race.getRaceStatus().equals(STARTED)) {
+                if (race.getCourse().getCourseOrder().size() > 0 && race.getRaceStatus().equals(STARTED) && !boat.isFinished()) {
                     checkMarkRounding(boat, course);
                 }
             }
@@ -303,6 +303,7 @@ public class RaceUpdater implements Runnable {
             }
         } else if (currentMark.isFinishLine()) {
             if(RoundingMechanics.boatPassedThroughCompoundMark(boat, course.getFinishLine(), previousMark.getPosition(), true)) {
+                boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
                 boat.setSailsIn(true);
                 boat.setStatus(BoatStatus.FINISHED);
                 race.updateRaceOrder();
