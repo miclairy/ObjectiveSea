@@ -174,7 +174,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void setupTutorialMode() {
         controller.hideStarterOverlay();
         initBoatHighlight();
-        initializeBoats();
         redrawCourse();
         tutorial = new Tutorial(controller, race);
         shiftArrow(false);
