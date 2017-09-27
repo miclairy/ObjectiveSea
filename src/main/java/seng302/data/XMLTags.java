@@ -33,6 +33,7 @@ public class XMLTags {
 
         //Time Attributes
         public static final String START = "Start";
+        public static final String TIME = "Time";
     }
 
     public class Course {

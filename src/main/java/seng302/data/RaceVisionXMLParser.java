@@ -195,7 +195,11 @@ public class RaceVisionXMLParser {
         race.setId(raceId);
 
         NodeList startTimeList = root.getElementsByTagName(XMLTags.Race.START_TIME);
-        String startTimeString = startTimeList.item(0).getAttributes().getNamedItem(XMLTags.Race.START).getTextContent();
+        Node startTimeNode = startTimeList.item(0).getAttributes().getNamedItem(XMLTags.Race.START);
+        if(startTimeNode == null){
+            startTimeNode = startTimeList.item(0).getAttributes().getNamedItem(XMLTags.Race.TIME);
+        }
+        String startTimeString = startTimeNode.getTextContent();
         DateTime startTime = new DateTime( startTimeString ) ;
 
         race.setStartTimeInEpochMs(startTime.getMillis());
@@ -434,9 +438,9 @@ public class RaceVisionXMLParser {
             System.err.printf("Error reading course file around tag <%s>.\n", e.getTag());
             e.printStackTrace();
         }
-        if(starters.size() < 2){
-            throw new InputMismatchException("There must be at least two boats in the race.");
-        }
+//        if(starters.size() < 2){
+//            throw new InputMismatchException("There must be at least two boats in the race.");
+//        }
         return starters;
     }
 
@@ -494,15 +498,18 @@ public class RaceVisionXMLParser {
                     Element element = (Element) node;
                     switch (element.getTagName()) {
                         case XMLTags.Regatta.REGATTA_NAME:
-                            race.setRegattaName(String.valueOf(element.getTextContent()));
+                            if(race != null){
+                                race.setRegattaName(String.valueOf(element.getTextContent()));
+                            }
                             break;
                         case XMLTags.Regatta.UTC_OFFSET:
-                            double utcOffset = Double.parseDouble(String.valueOf(element.getTextContent()));
-                            if (utcOffset <= 14 && utcOffset >= -12) {
-                                race.setUTCOffset(utcOffset);
-                            } else {
-                                throw new InputMismatchException("The UTC offset must be greater than or equal to -12 and less than or equal to 14.");
-                            }
+//                            double utcOffset = Double.parseDouble(String.valueOf(element.getTextContent()));
+//                            double utcOffset = 5;
+//                            if (utcOffset <= 14 && utcOffset >= -12) {
+//                                race.setUTCOffset(utcOffset);
+//                            } else {
+//                                throw new InputMismatchException("The UTC offset must be greater than or equal to -12 and less than or equal to 14.");
+//                            }
                             break;
                     }
                 }
