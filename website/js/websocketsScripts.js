@@ -143,7 +143,7 @@ sendBoatActionMessage = function(actionCode, boatId){
     addIntIntoByteArray(body, MESSAGE_FIELD.BOAT_ACTION_SOURCE_ID.index, MESSAGE_FIELD.BOAT_ACTION_SOURCE_ID.length, boatId);
     addIntIntoByteArray(body, MESSAGE_FIELD.BOAT_ACTION_BODY.index, MESSAGE_FIELD.BOAT_ACTION_BODY.length, actionCode);
     let crc = createCrc(header, body);
-    let packet = header.concat(body).concat(crc);
+    let packet = concatUint8ByteArrays(concatUint8ByteArrays(header, body), crc);
     let byteArray = new Uint8Array(packet);
     mySocket.send(byteArray.buffer);
 }

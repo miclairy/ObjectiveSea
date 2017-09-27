@@ -80,6 +80,7 @@ public class GameRecorder implements Observer {
         //-1 for unknown/unused values
         byte[] packet =  packetBuilder.createGameRegistrationPacket(-1.0, 0, availableRace.getPort(),
                 availableRace.getIpAddress(), -1, availableRace.getNumBoats(), availableRace.isPartyGame());
+        packet = packetBuilder.wrapPacket(packet);
         connectionManager.sendToSocket(socket, packet);
     }
 
