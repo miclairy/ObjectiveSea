@@ -142,6 +142,7 @@ public class Race extends Observable{
         Boat boat = boatIdMap.get(sourceID);
         if(boat != null){
             boat.setLastRoundedMarkIndex(roundedMarkIndex);
+            System.out.println(boat.getLastRoundedMarkIndex());
             boat.setLastRoundedMarkTime(time);
             updateRaceOrder();
         }
@@ -176,6 +177,7 @@ public class Race extends Observable{
         for (int i = 0; i < raceOrder.size(); i++) {
             Boat boat = raceOrder.get(i);
             boat.setCurrPlacing(i + 1);
+            System.out.println(boat.getName() + " " + boat.getCurrPlacing());
         }
     }
 

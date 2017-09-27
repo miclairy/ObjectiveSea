@@ -162,7 +162,7 @@ public class RaceUpdater implements Runnable {
         if (race.getRaceStatus().equals(STARTED) || millisBeforeStart < 0 && race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
             race.updateRaceStatus(RaceStatus.STARTED);
             for(Boat boat : race.getCompetitors()){
-                if(!boat.getStatus().equals(BoatStatus.DNF)){
+                if(!boat.getStatus().equals(BoatStatus.DNF) && !boat.isFinished()){
                     boat.setStatus(BoatStatus.RACING);
                 }
             }
@@ -305,6 +305,7 @@ public class RaceUpdater implements Runnable {
             if(RoundingMechanics.boatPassedThroughCompoundMark(boat, course.getFinishLine(), previousMark.getPosition(), true)) {
                 boat.setSailsIn(true);
                 boat.setStatus(BoatStatus.FINISHED);
+                race.updateRaceOrder();
             }
         } else if (!currentMark.hasTwoMarks()){
             RoundingMechanics.boatHeadingToMark(boat, currentMark, previousMark, nextMark);
