@@ -94,16 +94,23 @@ public class ClientListener extends Listener implements Runnable{
         InputStream xmlInputStream = new ByteArrayInputStream(xmlBody.getBytes());
         RaceVisionXMLParser raceVisionXMLParser = new RaceVisionXMLParser();
         xmlSequenceNumbers.put(xmlSubtype, xmlSequenceNumber);
+
         if (xmlSubtype == REGATTA_XML_MESSAGE) {
+            if (race == null) {
+                setRace(new Race());
+            }
             System.out.printf("Client: New Regatta XML Received, Sequence No: %d\n", xmlSequenceNumber);
             raceVisionXMLParser.importRegatta(xmlInputStream, race);
+
         } else if (xmlSubtype == RACE_XML_MESSAGE) {
             System.out.printf("Client: New Race XML Received, Sequence No: %d\n", xmlSequenceNumber);
-            if (race != null) {
+            if (race != null && race.getCourse() != null ) {
+                System.out.println(race);
                 setChanged();
                 Race newRace = raceVisionXMLParser.importRace(xmlInputStream);
                 notifyObservers(newRace);
             } else {
+                System.out.println(race);
                 setRace(raceVisionXMLParser.importRace(xmlInputStream));
             }
         } else if (xmlSubtype == BOAT_XML_MESSAGE) {
@@ -182,6 +189,9 @@ public class ClientListener extends Listener implements Runnable{
                         case XML_MESSAGE:
                             convertXMLMessage(body);
                             break;
+                        case REGISTRATION_RESPONSE:
+                            parseRegistrationResponseMessage(body);
+                            break;
                         default:
                             if (race != null && race.isInitialized()) {
                                 switch (messageType) {
@@ -197,9 +207,7 @@ public class ClientListener extends Listener implements Runnable{
                                     case YACHT_EVENT_CODE:
                                         parseYachtEventMessage(body);
                                         break;
-                                    case REGISTRATION_RESPONSE:
-                                        parseRegistrationResponseMessage(body);
-                                        break;
+
                                     case BOAT_STATE_MESSAGE:
                                         parseBoatStateMessage(body);
                                         break;
