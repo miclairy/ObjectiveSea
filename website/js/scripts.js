@@ -48,8 +48,7 @@ function initButtonListeners(){
 }
 
 function updateStats(speed, placing, totalCompetitors, health){
-    console.log("updating");
-    $("#boatSpeed").html(speed+"kn");
+    $("#boatSpeed").html(speed.toFixed(2)+"kn");
     $("#placing").html(placing + " / " + totalCompetitors);
     $("#boatHealth").html(health+"%");
 }

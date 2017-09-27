@@ -118,7 +118,6 @@ sendBoatActionMessage = function(actionCode, boatId){
     let crc = createCrc(header, body);
     let packet = concatUint8ByteArrays(concatUint8ByteArrays(header, body), crc);
     let byteArray = new Uint8Array(packet);
-    console.log("Action: " + byteArray.buffer);
     gameServerSocket.send(byteArray.buffer);
 }
 
@@ -155,7 +154,6 @@ function decodeHostGameMessage(body) {
     let isPartyMode = body[MESSAGE_FIELD.HOST_GAME_IS_PARTY_MODE.index];
     let ip = ipLongToString(longIp);
     console.log("Ip: " + ip + " Port: " + port);
-    console.log("IsPartyMode: " + isPartyMode);
     if(longIp === 0){
         showWrongGameCodeMessage();
     } else if (isPartyMode === 1) {
@@ -173,20 +171,15 @@ function decodeWebClientInit(body) {
 
     initControls(boatName, colorString);
     loadControls();
-
-    console.log(boatName);
-    console.log(colorString);
 }
 
 function decodeWebClientUpdate(body) {
     let boatSpeed = byteArrayRangeToInt(body, MESSAGE_FIELD.WEB_CLIENT_SPEED.index, MESSAGE_FIELD.WEB_CLIENT_SPEED.length);
-    console.log(boatSpeed);
+    let speedInKnots = boatSpeed / 514.444;
     let placing = byteArrayRangeToInt(body, MESSAGE_FIELD.WEB_CLIENT_POSITION.index, MESSAGE_FIELD.WEB_CLIENT_POSITION.length);
     let totalCompetitors = byteArrayRangeToInt(body,MESSAGE_FIELD.WEB_CLIENT_TOTAL_COMPETITORS.index, MESSAGE_FIELD.WEB_CLIENT_TOTAL_COMPETITORS.length);
-    console.log(placing + "/" + totalCompetitors);
     let boatHealth = byteArrayRangeToInt(body, MESSAGE_FIELD.WEB_CLIENT_HEALTH.index, MESSAGE_FIELD.WEB_CLIENT_HEALTH.length);
-    console.log(boatHealth);
-    updateStats(boatSpeed, placing, totalCompetitors, boatHealth);
+    updateStats(speedInKnots, placing, totalCompetitors, boatHealth);
 }
 
 decodePacket = function(packet) {
@@ -226,8 +219,6 @@ checkCRC = function (header, body, crc) {
     let expectedCRC = createCrc(header, body);
     for (let i = 0; i < 4; i++){
         if (expectedCRC[i] !== crc[i]){
-            console.log(expectedCRC);
-            console.log(crc);
             return false;
         }
     }

@@ -252,7 +252,7 @@ public class GameServer implements Runnable, Observer {
             boatSequenceNumbers.put(boat, currentSequenceNumber + 1);
             sendPacketToNonWebClients(packetBuilder.createBoatLocationMessage(boat, raceUpdater.getRace(), currentSequenceNumber));
             if (lastMarkRoundingSent.get(boat) != boat.getLastRoundedMarkIndex()) {
-                //raceUpdater.getRace().updateRaceOrder();
+                raceUpdater.getRace().updateRaceOrder();
                 lastMarkRoundingSent.put(boat, boat.getLastRoundedMarkIndex());
                 sendPacketToNonWebClients(packetBuilder.createMarkRoundingMessage(boat, raceUpdater.getRace()));
             }
