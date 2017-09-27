@@ -343,7 +343,6 @@ public class ServerPacketBuilder extends PacketBuilder {
         for(int i = 0; i < sendpacket.length; i++){
             wrappedPacket[i+2] = sendpacket[i];
         }
-        System.out.println(Arrays.toString(wrappedPacket));
         return wrappedPacket;
     }
 }

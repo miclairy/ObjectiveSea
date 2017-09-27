@@ -77,8 +77,10 @@ public class ConnectionManager extends Observable implements Runnable {
                 socket = webClients.get(id);
                 packet = wrapper.wrapPacket(packet);
             }
-            DataOutputStream clientOutput = new DataOutputStream(socket.getOutputStream());
-            clientOutput.write(packet);
+            if (socket != null) {
+                DataOutputStream clientOutput = new DataOutputStream(socket.getOutputStream());
+                clientOutput.write(packet);
+            }
         } catch (java.net.SocketException e){
             System.out.printf("Server: Client %d Disconnected\n", id);
             setChanged();

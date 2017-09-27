@@ -89,19 +89,19 @@ function createBoatActionMessage(name){
     console.log(name);
     switch(name){
         case "vmg":
-            sendBoatActionMessage(BOAT_ACTION.VMG.value, myId);
+            sendBoatActionMessage(BOAT_ACTION.VMG.value, clientId);
             break;
         case "sails":
-            sendBoatActionMessage(BOAT_ACTION.SAILS.value, myId);
+            sendBoatActionMessage(BOAT_ACTION.SAILS.value, clientId);
             break;
         case "tackGybe":
-            sendBoatActionMessage(BOAT_ACTION.TACK_GYBE.value, myId);
+            sendBoatActionMessage(BOAT_ACTION.TACK_GYBE.value, clientId);
             break;
         case "upwind":
-            sendBoatActionMessage(BOAT_ACTION.ANTI_CLOCKWISE.value, myId);
+            sendBoatActionMessage(BOAT_ACTION.ANTI_CLOCKWISE.value, clientId);
             break;
         case "downwind":
-            sendBoatActionMessage(BOAT_ACTION.CLOCKWISE.value, myId);
+            sendBoatActionMessage(BOAT_ACTION.CLOCKWISE.value, clientId);
             break;
         default:
             console.log("Unknown Button Pressed");
