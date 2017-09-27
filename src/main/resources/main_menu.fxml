@@ -558,37 +558,49 @@
                </cursor></Slider>
                 <Label fx:id="lblMusic" text="Music" GridPane.halignment="CENTER" />
                 <Label fx:id="lblSoundEffects" text="Sound Effects" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
-            <ImageView fx:id="musicOnImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+            <ImageView fx:id="musicOnImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                <image>
-                  <Image url="@graphics/soundOn.png" />
+                  <Image url="@graphics/soundOnBlue.png" />
                </image>
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
+               <GridPane.margin>
+                  <Insets left="40.0" />
+               </GridPane.margin>
             </ImageView>
-            <ImageView fx:id="musicOffImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" visible="false" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+            <ImageView fx:id="musicOffImage" fitHeight="46.0" fitWidth="39.0" pickOnBounds="true" preserveRatio="true" visible="false" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                <image>
-                  <Image url="@graphics/soundOff.png" />
+                  <Image url="@graphics/soundOffBlue.png" />
                </image>
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
+               <GridPane.margin>
+                  <Insets left="40.0" />
+               </GridPane.margin>
             </ImageView>
-            <ImageView fx:id="soundFxOnImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+            <ImageView fx:id="soundFxOnImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                <image>
-                  <Image url="@graphics/soundOn.png" />
+                  <Image url="@graphics/soundOnRed.png" />
                </image>
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
+               <GridPane.margin>
+                  <Insets left="40.0" />
+               </GridPane.margin>
             </ImageView>
-            <ImageView fx:id="soundFxOffImage" fitHeight="50.0" fitWidth="50.0" layoutX="166.0" layoutY="218.0" pickOnBounds="true" preserveRatio="true" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+            <ImageView fx:id="soundFxOffImage" fitHeight="50.0" fitWidth="39.0" layoutX="166.0" layoutY="218.0" pickOnBounds="true" preserveRatio="true" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                <image>
-                  <Image url="@graphics/soundOff.png" />
+                  <Image url="@graphics/soundOffRed.png" />
                </image>
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
+               <GridPane.margin>
+                  <Insets left="40.0" />
+               </GridPane.margin>
             </ImageView>
             </children>
          <StackPane.margin>

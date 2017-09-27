@@ -122,6 +122,9 @@
                        <padding>
                            <Insets bottom="7.0" left="20.0" right="20.0" top="7.0" />
                        </padding>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
                    </Button>
                    <Label fx:id="lblNoBoardClock" layoutX="1273.0" layoutY="52.0" pickOnBounds="false" text="Label" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="10.0" />
                    <TableView fx:id="tblPlacingsRV" layoutX="1245.0" layoutY="-21.0" prefHeight="251.0" prefWidth="400.0" visible="false" AnchorPane.rightAnchor="75.0" AnchorPane.topAnchor="50.0">
