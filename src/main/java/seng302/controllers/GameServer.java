@@ -142,6 +142,7 @@ public class GameServer implements Runnable, Observer {
                 while (!raceUpdater.raceHasEnded()) {
                     if (!raceUpdater.getRace().getCompetitors().isEmpty() || isPartyMode()) {
                         sendRaceUpdates();
+                        if (isPartyMode()) sendWebClientUpdates();
                     }
                     Thread.sleep((long) (SECONDS_PER_UPDATE * 1000 / options.getSpeedScale()));
                 }
@@ -154,6 +155,14 @@ public class GameServer implements Runnable, Observer {
         }
         System.out.println("Server: Shutting Down");
         initiateServerDisconnect();
+    }
+
+    private void sendWebClientUpdates() {
+        for (Boat boat : raceUpdater.getRace().getCompetitors()) {
+            int totalCompetitors = raceUpdater.getRace().getCompetitors().size();
+            byte[] packet = packetBuilder.createWebClientUpdatePacket(boat.getId(), boat.getCurrentSpeed(), boat.getCurrPlacing(), totalCompetitors, (int) boat.getBoatHealth());
+            connectionManager.sendToClient(boat.getId(), packet);
+        }
     }
 
     private boolean isPartyMode() {
@@ -243,6 +252,7 @@ public class GameServer implements Runnable, Observer {
             boatSequenceNumbers.put(boat, currentSequenceNumber + 1);
             sendPacketToNonWebClients(packetBuilder.createBoatLocationMessage(boat, raceUpdater.getRace(), currentSequenceNumber));
             if (lastMarkRoundingSent.get(boat) != boat.getLastRoundedMarkIndex()) {
+                //raceUpdater.getRace().updateRaceOrder();
                 lastMarkRoundingSent.put(boat, boat.getLastRoundedMarkIndex());
                 sendPacketToNonWebClients(packetBuilder.createMarkRoundingMessage(boat, raceUpdater.getRace()));
             }
@@ -301,7 +311,7 @@ public class GameServer implements Runnable, Observer {
         connectionManager.addConnection(newId, serverListener);
         serverListener.setClientId(newId);
         connectionManager.sendToClient(newId, packet);
-        if (serverListener instanceof WebSocketServerListener) {
+        if (options.isPartyMode()) {
             Boat boat = raceUpdater.getRace().getBoatById(newId);
             Color color = DisplayUtils.getBoatColor(newId);
             String boatName = boat.getName()+ " (" + boat.getNickName() + ")";

@@ -212,6 +212,17 @@ function decodeWebClientInit(body) {
     console.log(colorString);
 }
 
+function decodeWebClientUpdate(body) {
+    let boatSpeed = byteArrayRangeToInt(body, MESSAGE_FIELD.WEB_CLIENT_SPEED.index, MESSAGE_FIELD.WEB_CLIENT_SPEED.length);
+    console.log(boatSpeed);
+    let placing = byteArrayRangeToInt(body, MESSAGE_FIELD.WEB_CLIENT_POSITION.index, MESSAGE_FIELD.WEB_CLIENT_POSITION.length);
+    let totalCompetitors = byteArrayRangeToInt(body,MESSAGE_FIELD.WEB_CLIENT_TOTAL_COMPETITORS.index, MESSAGE_FIELD.WEB_CLIENT_TOTAL_COMPETITORS.length);
+    console.log(placing + "/" + totalCompetitors);
+    let boatHealth = byteArrayRangeToInt(body, MESSAGE_FIELD.WEB_CLIENT_HEALTH.index, MESSAGE_FIELD.WEB_CLIENT_HEALTH.length);
+    console.log(boatHealth);
+    updateStats(boatSpeed, placing, totalCompetitors, boatHealth);
+}
+
 decodePacket = function(packet) {
     let header = packet.subarray(0, HEADER_LENGTH);
     let bodyLength = byteArrayRangeToInt(packet, HEADER_FIELDS.MESSAGE_LENGTH.index, HEADER_FIELDS.MESSAGE_LENGTH.length);
@@ -235,6 +246,7 @@ decodePacket = function(packet) {
                 break;
             case 121: //WebClientUpdate
                 console.log("Web client update");
+                decodeWebClientUpdate(body);
                 break;
             default:
                 console.log("Message type: " + messageType);
