@@ -211,10 +211,9 @@ public class Controller implements Initializable, Observer {
         }
         if(options.getGameMode().equals(GameMode.PARTYGAME)){
             partyModeBox.setVisible(true);
-            lblPartyCode.setText(GameClient.getRoomCode().toString());
+            String paddedPartyCode = String.format("%04d", GameClient.getRoomCode());
+            lblPartyCode.setText(paddedPartyCode);
             partyModeBox.toFront();
-        }else{
-
         }
 
         initZoomEventListener();

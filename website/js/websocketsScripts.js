@@ -190,7 +190,9 @@ function decodeHostGameMessage(body) {
     let ip = ipLongToString(longIp);
     console.log("Ip: " + ip + " Port: " + port);
     console.log("IsPartyMode: " + isPartyMode);
-    if (isPartyMode === 1) {
+    if(longIp === 0){
+        showWrongGameCodeMessage();
+    } else if (isPartyMode === 1) {
         createGameServerSocket(ip, port);
     }
 }
