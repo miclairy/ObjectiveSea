@@ -38,6 +38,13 @@
     -fx-padding: 10 0 0 20;
 }
 
+#codeLabel{
+    -fx-text-fill: #93DA9F;
+    -fx-font-weight: 700;
+    -fx-font-size: 25px;
+    -fx-padding: 2 0 0 20;
+}
+
 .progress-bar > .bar {
     -fx-background-color: linear-gradient(#ff8171, #ff6c62);
     -fx-background-insets: 1 1 2 1;

@@ -20,6 +20,8 @@ public class HeadsupDisplay {
     private Label positionLabel;
     private ProgressBar healthBar;
     private Race race;
+    private String partyPin;
+
 
     public HeadsupDisplay(BoatDisplay boat, VBox display, Race race){
         this.boat = boat;
@@ -29,6 +31,24 @@ public class HeadsupDisplay {
         addInfoToDisplay();
         addListeners();
         AnimationUtils.toggleHiddenBoardNodes(display, false);
+    }
+
+    public HeadsupDisplay(String partyPin, VBox display){
+        this.display = display;
+        this.partyPin = partyPin;
+        addPartyPin();
+    }
+
+    private void addPartyPin(){
+        Label pinLabel = new Label("PartyCode");
+        pinLabel.setId("titleLabel");
+
+        Label codeLabel = new Label();
+        codeLabel.setId("codeLabel");
+        codeLabel.setText(String.valueOf(partyPin));
+
+        display.getChildren().add(pinLabel);
+        display.getChildren().add(codeLabel);
     }
 
     private void addInfoToDisplay(){

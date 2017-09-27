@@ -635,7 +635,9 @@ public class Controller implements Initializable, Observer {
                 if(!raceViewController.hasInitializedBoats()) {
                     raceViewController.initBoatHighlight();
                     raceViewController.initializeBoats();
-                    addUserBoat();
+                    if(options.isParticipant()){
+                        this.infoDisplay = new HeadsupDisplay(String.format("%04d", GameClient.getRoomCode()), headsUpDisplay);
+                    }
                 }
                 break;
             case STARTED:
