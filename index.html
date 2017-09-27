@@ -83,27 +83,27 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-6" id="vmgControl">
-          <div class="buttonText center">Autopilot</div>
+        <div class="col-md-6 boatActionPress" id="vmgControl" name="vmg">
+          <div class="buttonText center" id="vmgControlText" name="vmg">Autopilot</div>
         </div>
-        <div class="col-md-6" id="tackGybeControl">
-          <div class="buttonText center">Tack or Gybe</div>
+        <div class="col-md-6 boatActionPress" id="tackGybeControl" name="tackGybe">
+          <div class="buttonText center" id="tackGybeControlText" name="tackGybe">Tack or Gybe</div>
         </div>
       </div>
       <div class="row">
-        <div class="col-md-4" id="upwindControl">
-          <div class="center">
-            <i class="fa fa-4x fa-arrow-left directionArrow" aria-hidden="true"></i>
+        <div class="col-md-4 boatActionHold" id="upwindControl" name="upwind">
+          <div class="center" id="upwindControlCenter" name="upwind">
+            <i class="fa fa-4x fa-arrow-left directionArrow" id="upwindControlArrow" name="upwind" aria-hidden="true"></i>
           </div>
         </div>
-        <div class="col-md-4" id="sailsControls">
-          <div class="row" id="sailsOutControl" onclick="loadInfoScreen()">
-            <div class="buttonText center">Change Sails</div>
+        <div class="col-md-4" id="sailsControls" name="sails">
+          <div class="row boatActionPress" id="sailsControl" name="sails">
+            <div class="buttonText center" id="sailsControlText" name="sails">Change Sails</div>
           </div>
         </div>
-        <div class="col-md-4" id="downWindControl">
-          <div class="center">
-            <i class="fa fa-4x fa-arrow-right directionArrow" aria-hidden="true"></i>
+        <div class="col-md-4 boatActionHold" id="downWindControl" name="downwind">
+          <div class="center" id="downWindControlCenter" name="downwind">
+            <i class="fa fa-4x fa-arrow-right directionArrow" name="downwind" id="downWindControlArrow" aria-hidden="true"></i>
           </div>
         </div>
       </div>

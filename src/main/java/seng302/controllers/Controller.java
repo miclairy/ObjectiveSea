@@ -812,12 +812,12 @@ public class Controller implements Initializable, Observer {
      * sets up the user help label in the GUI
      * @param helper helper title
      */
-    public void setUserHelpLabel(String helper) {
+    public void setUserHelpLabel(String helper, Color color) {
         lblUserHelp.setOpacity(0);
         lblUserHelp.setPrefWidth(canvasWidth);
         lblUserHelp.setMaxWidth(canvasWidth);
         lblUserHelp.setMinWidth(canvasWidth);
-        lblUserHelp.setTextFill(Color.RED);
+        lblUserHelp.setTextFill(color);
         lblUserHelp.setText(helper);
         DisplayUtils.fadeInFadeOutNodeTransition(lblUserHelp, 1, 4000);
     }
@@ -1044,4 +1044,5 @@ public class Controller implements Initializable, Observer {
     public VBox getHUD() {
         return headsUpDisplay;
     }
+
 }

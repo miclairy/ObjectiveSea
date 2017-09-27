@@ -22,6 +22,7 @@ let MESSAGE_TYPE = {
     REGISTRATION_REQUEST:  {type:55, length:4},
     REGISTRATION_RESPONSE: {type:56, length:5},
     HOST_GAME_MESSAGE: {type:108, length:14}
+    BOAT_ACTION_MESSAGE:{type:100, length:5},
 }
 
 let MESSAGE_FIELD = {
@@ -31,6 +32,8 @@ let MESSAGE_FIELD = {
     HOST_GAME_IP: {index:0, length:4},
     HOST_GAME_PORT: {index:4, length:4},
     HOST_GAME_IS_PARTY_MODE: {index:13, length:1}
+    BOAT_ACTION_SOURCE_ID:{index:0, length:4},
+    BOAT_ACTION_BODY:{index:4, length:1},
 }
 
 /**
@@ -127,6 +130,25 @@ requestGame = function(code) {
     let byteArray = new Uint8Array(packet);
     mySocket.send(byteArray.buffer);
 }
+
+
+/**
+ * Sends a boat action message to the Game Recorder
+ * @param actionCode id of boat action
+ * @param boatId id of user's boat
+ */
+sendBoatActionMessage = function(actionCode, boatId){
+    let header = createHeader(MESSAGE_TYPE.BOAT_ACTION_MESSAGE.type, MESSAGE_TYPE.BOAT_ACTION_MESSAGE.length);
+    let body = [0, 0, 0, 0, 0];
+    addIntIntoByteArray(body, MESSAGE_FIELD.BOAT_ACTION_SOURCE_ID.index, MESSAGE_FIELD.BOAT_ACTION_SOURCE_ID.length, boatId);
+    addIntIntoByteArray(body, MESSAGE_FIELD.BOAT_ACTION_BODY.index, MESSAGE_FIELD.BOAT_ACTION_BODY.length, actionCode);
+    let crc = createCrc(header, body);
+    let packet = header.concat(body).concat(crc);
+    let byteArray = new Uint8Array(packet);
+    mySocket.send(byteArray.buffer);
+}
+
+
 
 /**
  * Calculates and return the CRC over the header and body
