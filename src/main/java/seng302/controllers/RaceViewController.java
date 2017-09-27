@@ -25,6 +25,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.util.Duration;
 import seng302.data.BoatStatus;
+import seng302.data.RaceStatus;
 import seng302.data.StartTimingStatus;
 import seng302.utilities.*;
 import seng302.models.*;
@@ -433,7 +434,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      * @param polarTable
      * @param boat
      */
-    private void initializeBoat(PolarTable polarTable, Boat boat) {
+    private BoatDisplay initializeBoat(PolarTable polarTable, Boat boat) {
         BoatDisplay displayBoat = new BoatDisplay(boat, polarTable);
         boat.addObserver(displayBoat);
         scoreBoardController.addBoatToSparkLine(displayBoat.getSeries());
@@ -448,6 +449,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         sail.setId("boatSail");
         displayBoat.setSail(sail);
         root.getChildren().add(sail);
+        return displayBoat;
     }
 
 
@@ -1273,7 +1275,10 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if (needsToBeAdded) {
                 if (hasInitializedBoats()) {
                     PolarTable polarTable = new PolarTable(PolarReader.getPolarsForAC35Yachts(), race.getCourse());
-                    initializeBoat(polarTable, boat);
+                    BoatDisplay boatDisplay = initializeBoat(polarTable, boat);
+                    if(race.getRaceStatus().equals(RaceStatus.STARTED)){
+                        initBoatPath(boatDisplay);
+                    }
                 }
             }
         }
