@@ -143,7 +143,6 @@ public class WebSocketServerListener extends AbstractServerListener {
         match.find();
         byte[] response = null;
         try {
-            match.find();
             response = ("HTTP/1.1 101 Switching Protocols\r\n"
                     + "Connection: Upgrade\r\n"
                     + "Upgrade: websocket\r\n"
