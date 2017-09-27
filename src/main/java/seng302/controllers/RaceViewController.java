@@ -582,7 +582,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         FadeTransition ft2 = AnimationUtils.fadeOutTransition(highlightCircle2, 600 * scale);
 
         if(isCollision) {
-            boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
             ft2.setOnFinished(AE -> {
                 boat.setCollisionInProgress(false);
                 boat.getBoat().setBoatCollideSound(false);
