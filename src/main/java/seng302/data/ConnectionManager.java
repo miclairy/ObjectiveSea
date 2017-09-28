@@ -85,7 +85,11 @@ public class ConnectionManager extends Observable implements Runnable {
             System.out.printf("Server: Client %d Disconnected\n", id);
             setChanged();
             notifyObservers(id);
-            clients.remove(id);
+            if (clients.containsKey(id)) {
+                clients.remove(id);
+            } else if (webClients.containsKey(id)) {
+                webClients.remove(id);
+            }
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
@@ -148,7 +152,7 @@ public class ConnectionManager extends Observable implements Runnable {
      */
     public void removeConnection(int connectionID) {
         try {
-            Socket socket= clients.get(connectionID);
+            Socket socket = clients.get(connectionID);
             socket.close();
             clients.remove(connectionID);
         } catch (IOException e) {

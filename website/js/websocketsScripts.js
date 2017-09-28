@@ -54,8 +54,6 @@ function sendRegistrationPacket() {
     let crc = createCrc(header, body);
     let packet = concatUint8ByteArrays(concatUint8ByteArrays(header, body), crc);
     let byteArray = new Uint8Array(packet);
-    console.log(packet);
-    console.log(byteArray.buffer);
     gameServerSocket.send(byteArray.buffer);
 }
 
@@ -77,11 +75,10 @@ function createGameServerSocket(/*String*/ip, port) {
     };
 
     gameServerSocket.onclose = function () {
-        loadInfoScreen("Disconnected from host. Refresh to join a new race");
+        loadInfoScreen("Race has ended. Refresh to join a new race");
     }
 
     gameServerSocket.onmessage = function (event) {
-        console.log("message from server");
         decodePacket(new Uint8Array(event.data));
     }
 }
@@ -139,11 +136,15 @@ createCrc = function(header, body){
 
 function decodeRegistrationResponse(body) {
     let statusByte = body[MESSAGE_FIELD.REGISTRATION_STATUS.index];
-    if (statusByte === 1) {
+    if (statusByte === 1) { //PLAYER SUCCESS
         clientId = byteArrayRangeToInt(body, MESSAGE_FIELD.REGISTRATION_SOURCE_ID.index, MESSAGE_FIELD.REGISTRATION_SOURCE_ID.length);
         console.log("My Id: " + clientId);
     } else {
-        console.log("Registration failed.");
+        if (statusByte === 11) { //OUT OF SLOTS
+            loadInfoScreen("Apologies, the race is full. Cheer for your friend instead");
+        } else {
+            console.log("Registration failed.");
+        }
     }
 }
 
@@ -191,19 +192,15 @@ decodePacket = function(packet) {
     if (checkCRC(header, body, crc)){
         switch (messageType) {
             case MESSAGE_TYPE.HOST_GAME_MESSAGE.type:
-                console.log("Hosted game message");
                 decodeHostGameMessage(body);
                 break;
             case MESSAGE_TYPE.REGISTRATION_RESPONSE.type:
-                console.log("Client registration");
                 decodeRegistrationResponse(body);
                 break;
-            case 120: //WebClientInit
-                console.log("Web client init");
+            case MESSAGE_TYPE.WEB_CLIENT_INIT.type:
                 decodeWebClientInit(body);
                 break;
-            case 121: //WebClientUpdate
-                console.log("Web client update");
+            case MESSAGE_TYPE.WEB_CLIENT_UPDATE.type:
                 decodeWebClientUpdate(body);
                 break;
             default:

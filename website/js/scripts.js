@@ -45,9 +45,13 @@ function initButtonListeners(){
 }
 
 function updateStats(speed, placing, totalCompetitors, health){
-    $("#boatSpeed").html(speed.toFixed(2)+"kn");
-    $("#placing").html(placing + " / " + totalCompetitors);
-    $("#boatHealth").html(health+"%");
+    if (health > 0) {
+        $("#boatSpeed").html(speed.toFixed(2) + "kn");
+        $("#placing").html(placing + " / " + totalCompetitors);
+        $("#boatHealth").html(health + "%");
+    } else {
+        loadInfoScreen("You are dead.");
+    }
 }
 
 function initControls(teamName, color){
@@ -64,7 +68,6 @@ function loadControls(){
 }
 
 function loadInfoScreen(message){
-    var rand = insults[Math.floor(Math.random() * insults.length)];
     $("#infoScreenText").html(message);
     $("#controls").fadeOut(1000);
     $("#infoScreen").fadeIn(1000);
@@ -82,7 +85,6 @@ function changeColor(color){
  * @param name
  */
 function createBoatActionMessage(name){
-    console.log(name);
     switch(name){
         case "vmg":
             sendBoatActionMessage(BOAT_ACTION.VMG.value, clientId);

@@ -5,6 +5,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -61,6 +62,9 @@ public class WebSocketServerListener extends AbstractServerListener {
                 } else{
                     System.out.println("Incorrect CRC");
                 }
+            } catch (IndexOutOfBoundsException e) {
+                clientConnected = false;
+                System.out.println("WebSocket has disconnected itself.");
             } catch (IOException e) {
                 clientConnected = false;
                 e.printStackTrace();
@@ -73,8 +77,6 @@ public class WebSocketServerListener extends AbstractServerListener {
         Integer roomCode = byteArrayRangeToInt(body, PARTY_MODE_ROOM_CODE.getStartIndex(), PARTY_MODE_ROOM_CODE.getEndIndex());
         setChanged();
         notifyObservers(roomCode);
-        System.out.println("Parsing message");
-        System.out.println(Arrays.toString(body));
     }
 
     private byte[] extractHeader(byte[] packet) {
@@ -95,8 +97,6 @@ public class WebSocketServerListener extends AbstractServerListener {
         System.arraycopy(packet, crcStartIndex, crc, 0, CRC_LENGTH);
         return crc;
     }
-
-
 
     /**
      * Sends the required WebSocket HTTP response to establish the handshake.

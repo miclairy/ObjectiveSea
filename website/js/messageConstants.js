@@ -16,7 +16,9 @@ let MESSAGE_TYPE = {
     REGISTRATION_REQUEST:  {type:55, length:4},
     REGISTRATION_RESPONSE: {type:56, length:5},
     HOST_GAME_MESSAGE: {type:108, length:14},
-    BOAT_ACTION_MESSAGE:{type:100, length:5}
+    BOAT_ACTION_MESSAGE:{type:100, length:5},
+    WEB_CLIENT_INIT:{type:120, length:37},
+    WEB_CLIENT_UPDATE:{type:121, length:9}
 };
 
 let MESSAGE_FIELD = {
