@@ -830,7 +830,7 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(nextMarkGrid, 430, true);
             AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
             AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false, 0.8);
-            if (options.isParticipant() && infoDisplay != null) {
+            if ((options.isParticipant() && infoDisplay != null) || !options.isParticipant() && options.getGameMode().equals(GameMode.PARTYGAME)) {
                 headsUpDisplay.setVisible(true);
             }
             scoreboardVisible = false;
