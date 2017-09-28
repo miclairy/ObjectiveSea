@@ -248,7 +248,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             moveBoatDisplay(displayBoat);
             manageBoatInformationFeatures(displayBoat);
             if(displayBoat == currentUserBoatDisplay) {
-                manageNextMarkVisuals();
+                if(!displayBoat.getBoat().isFinished()) manageNextMarkVisuals();
                 if(!congratulated && displayBoat.getBoat().getStatus() == BoatStatus.FINISHED){
                     controller.setUserHelpLabel("Congratulations, you have finished the race!", Color.web("#4DC58B"));
                     congratulated = true;
@@ -424,6 +424,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if(boatDisplay.getBoat().getId() == Main.getClient().getClientID()){
                 currentUserBoatDisplay = boatDisplay;
                 scoreBoardController.highlightUserBoat();
+                controller.addUserBoatHUD();
             }
         }
     }
@@ -582,7 +583,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         FadeTransition ft2 = AnimationUtils.fadeOutTransition(highlightCircle2, 600 * scale);
 
         if(isCollision) {
-            boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
             ft2.setOnFinished(AE -> {
                 boat.setCollisionInProgress(false);
                 boat.getBoat().setBoatCollideSound(false);
