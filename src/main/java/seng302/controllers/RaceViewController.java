@@ -1287,7 +1287,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
         scoreBoardController.updateSparkLine();
         if(!controller.isScoreboardVisible()){
             controller.refreshTable();
-            controller.refreshHUD();
+            if(!options.getGameMode().equals(GameMode.PARTYGAME)){
+                controller.refreshHUD();
+            }
         }
     }
 
