@@ -141,7 +141,8 @@ function decodeRegistrationResponse(body) {
         console.log("My Id: " + clientId);
     } else {
         if (statusByte === 11) { //OUT OF SLOTS
-            loadInfoScreen("Apologies, the race is full. Cheer for your friend instead");
+            showWrongGameCodeMessage("Apologies, the race is full. Cheer for your friend instead");
+
         } else {
             console.log("Registration failed.");
         }
@@ -155,7 +156,7 @@ function decodeHostGameMessage(body) {
     let ip = ipLongToString(longIp);
     console.log("Ip: " + ip + " Port: " + port);
     if(longIp === 0){
-        showWrongGameCodeMessage();
+        showWrongGameCodeMessage("Incorrect Room Code Entered");
     } else if (isPartyMode === 1) {
         createGameServerSocket(ip, port);
     }

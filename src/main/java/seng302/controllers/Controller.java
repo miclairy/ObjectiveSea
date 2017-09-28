@@ -661,9 +661,9 @@ public class Controller implements Initializable, Observer {
         for (Boat boat : race.getRaceOrder()) {
             if(race.isTerminated()){
                 if (boat.getStatus().equals(BoatStatus.DNF)){
-                    overViewBoatStrings.add(String.format("DNF : %s - %s : %s", boat.getNickName(), boat.getName(), boat.getFinalRaceTime()));
+                    overViewBoatStrings.add(String.format("DNF: %s: %s", boat.getName(), boat.getFinalRaceTime()));
                 } else {
-                    overViewBoatStrings.add(String.format("%d : %s - %s : %s", boat.getCurrPlacing(), boat.getNickName(), boat.getName(), boat.getFinalRaceTime()));
+                    overViewBoatStrings.add(String.format("%d: %s: %s", boat.getCurrPlacing(), boat.getName(), boat.getFinalRaceTime()));
                 }
             } else {
                 overViewBoatStrings.add(String.format("%s - %s", boat.getNickName(), boat.getName()));

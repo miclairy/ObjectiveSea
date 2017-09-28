@@ -14,7 +14,9 @@ function submitButtonPressed(){
     initButtonListeners();
 }
 
-function showWrongGameCodeMessage() {
+function showWrongGameCodeMessage(string) {
+    //Incorrect Room Code Entered
+    $("#errorMessage").html(string);
     $("#errorMessage").fadeIn(1000);
 }
 
