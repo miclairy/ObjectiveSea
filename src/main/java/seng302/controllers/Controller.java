@@ -204,6 +204,7 @@ public class Controller implements Initializable, Observer {
             startersOverlayTitle.setText(race.getRegattaName());
         }
         if(options.getGameMode().equals(GameMode.PARTYGAME)){
+            partyModeBoxWrapper.setVisible(true);
             partyModeBox.setVisible(true);
             String paddedPartyCode = String.format("%04d", GameClient.getRoomCode());
             lblPartyCode.setText(paddedPartyCode);
