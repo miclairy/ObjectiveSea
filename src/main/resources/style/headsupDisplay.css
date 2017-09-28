@@ -11,6 +11,7 @@
     -fx-border-radius: 25;
     -fx-background-radius: 25;
     -fx-opacity: 1;
+    -fx-effect: dropshadow(gaussian, rgba(56, 56, 56, 0.69), 10, 0, 0, 3);
 }
 
 #speedLabel{

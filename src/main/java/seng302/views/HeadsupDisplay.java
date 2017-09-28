@@ -37,7 +37,7 @@ public class HeadsupDisplay {
         addInfoToDisplay();
         addListeners();
         display.getStyleClass().add("headsUpDisplay");
-        AnimationUtils.toggleHiddenBoardNodes(display, false);
+        AnimationUtils.toggleHiddenBoardNodes(display, false, 0.8);
     }
 
     /**
@@ -49,12 +49,11 @@ public class HeadsupDisplay {
         display.setAlignment(Pos.CENTER);
         addPartyPin();
         display.getStyleClass().add("headsUpDisplayParty");
-        Image qr = new Image("graphics/qrCode.png");
         ImageView imvQR = new ImageView(new Image("graphics/qrCode.png"));
         imvQR.setFitHeight(100);
         imvQR.setFitWidth(100);
         display.getChildren().add(imvQR);
-        AnimationUtils.toggleHiddenBoardNodes(display, false);
+        AnimationUtils.toggleHiddenBoardNodes(display, false, 1);
     }
 
     private void addPartyPin(){

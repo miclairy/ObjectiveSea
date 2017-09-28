@@ -249,9 +249,9 @@ public class Controller implements Initializable, Observer {
         btnHide.addEventHandler(MouseEvent.MOUSE_EXITED,
                 e ->  AnimationUtils.dullNode(btnHide));
         lblNoBoardClock.addEventHandler(MouseEvent.MOUSE_ENTERED,
-                e -> AnimationUtils.toggleHiddenBoardNodes(tblPlacingsRV, false));
+                e -> AnimationUtils.toggleHiddenBoardNodes(tblPlacingsRV, false, 0.8));
         lblNoBoardClock.addEventHandler(MouseEvent.MOUSE_EXITED,
-                e -> AnimationUtils.toggleHiddenBoardNodes(tblPlacingsRV, true));
+                e -> AnimationUtils.toggleHiddenBoardNodes(tblPlacingsRV, true, 0.8));
         btnQuickMenuExit.addEventHandler(MouseEvent.MOUSE_ENTERED,
                 e -> quickMenuHighlight(true, lblExitRV, btnQuickMenuExit));
         btnQuickMenuExit.addEventHandler(MouseEvent.MOUSE_EXITED,
@@ -837,7 +837,7 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
             AnimationUtils.shiftPaneNodes(nextMarkGrid, 430, true);
             AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
-            AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
+            AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false, 0.8);
             if (options.isParticipant() && infoDisplay != null) {
                 headsUpDisplay.setVisible(true);
             }
@@ -852,7 +852,7 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(lblWindSpeed, -430, true);
             AnimationUtils.shiftPaneNodes(nextMarkGrid, -430, true);
             AnimationUtils.shiftPaneNodes(quickMenu, 115, true);
-            AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true);
+            AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true, 0.8);
             if(infoDisplay != null){
                 headsUpDisplay.setVisible(false);
             }
