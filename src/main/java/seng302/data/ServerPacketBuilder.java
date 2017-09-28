@@ -303,6 +303,12 @@ public class ServerPacketBuilder extends PacketBuilder {
         return generatePacket(header, body);
     }
 
+    /**
+     * creates a packet that is sent to the web client containing boat name and boat color
+     * @param id the id of the client
+     * @param boatName  the boat name
+     * @param boatColour the boat color
+     */
     public byte[] createWebClientInitPacket(Integer id, String boatName, Color boatColour) {
         byte[] header = super.createHeader(WEB_CLIENT_INIT);
         byte[] body = new byte[WEB_CLIENT_INIT.getLength()];
@@ -317,6 +323,9 @@ public class ServerPacketBuilder extends PacketBuilder {
         return generatePacket(header, body);
     }
 
+    /**
+     * creates a packet to send to the webclient updating it on speed, position, health
+     */
     public byte[] createWebClientUpdatePacket(Integer id, Double speed, int placing, int totalCompetitors, int healthPercentage) {
         byte[] header = super.createHeader(WEB_CLIENT_UPDATE);
         byte[] body = new byte[WEB_CLIENT_UPDATE.getLength()];
@@ -329,6 +338,9 @@ public class ServerPacketBuilder extends PacketBuilder {
         return generatePacket(header, body);
     }
 
+    /**
+     * creates a packet containing the code for a party game
+     */
     public byte[] createPartyModeRoomCodeMessage(Integer code) {
         byte[] header = super.createHeader(PARTY_MODE_CODE_MESSAGE);
         byte[] body = new byte[PARTY_MODE_CODE_MESSAGE.getLength()];
@@ -336,6 +348,10 @@ public class ServerPacketBuilder extends PacketBuilder {
         return generatePacket(header, body);
     }
 
+    /**
+     * wraps a packet so that it can be sent to a web client
+     * @param sendpacket the packet to be wrapped
+     */
     public byte[] wrapPacket(byte[] sendpacket) {
         byte[] wrappedPacket = new byte[sendpacket.length + 2];
         wrappedPacket[0] = (byte) 130;

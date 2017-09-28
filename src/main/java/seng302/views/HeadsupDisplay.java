@@ -23,6 +23,9 @@ public class HeadsupDisplay {
     private String partyPin;
 
 
+    /**
+     * creates a HUD for the current player
+     */
     public HeadsupDisplay(BoatDisplay boat, VBox display, Race race){
         this.boat = boat;
         this.display = display;
@@ -33,6 +36,9 @@ public class HeadsupDisplay {
         AnimationUtils.toggleHiddenBoardNodes(display, false);
     }
 
+    /**
+     * creates a hud containing the party code
+     */
     public HeadsupDisplay(String partyPin, VBox display){
         this.display = display;
         this.partyPin = partyPin;

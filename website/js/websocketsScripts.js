@@ -27,7 +27,7 @@ createHeader = function (type, messageLength) {
  * Creates a WebSocket connection to the Game Recorder Server
  */
 function createGameRecorderSocket() {
-    gameRecorderSocket = new WebSocket("ws://127.0.0.1:2827"); // 2827 is the port game recorder runs on
+    gameRecorderSocket = new WebSocket("ws://132.181.16.17:2827"); // 2827 is the port game recorder runs on
     gameRecorderSocket.binaryType = 'arraybuffer';
 
     gameRecorderSocket.onerror = function (event) {
@@ -39,7 +39,7 @@ function createGameRecorderSocket() {
     };
 
     gameRecorderSocket.onclose = function () {
-        alert("No connection to GameRecorder");
+        loadInfoScreen("No connection to server. Refresh to try again");
     }
 
     gameRecorderSocket.onmessage = function (event) {
@@ -57,9 +57,8 @@ function sendRegistrationPacket() {
     console.log(packet);
     console.log(byteArray.buffer);
     gameServerSocket.send(byteArray.buffer);
-    // Currently sends this packet to the gameServer and we can see the boat appear on the game. However both the game and this app
-    // crashes shortly after this happens.
 }
+
 /**
  * Creates a WebSocket connection to the Game Recorder Server
  */
@@ -78,7 +77,7 @@ function createGameServerSocket(/*String*/ip, port) {
     };
 
     gameServerSocket.onclose = function () {
-        alert("No connection to GameServer");
+        loadInfoScreen("Disconnected from host. Refresh to join a new race");
     }
 
     gameServerSocket.onmessage = function (event) {

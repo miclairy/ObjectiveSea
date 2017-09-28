@@ -1,6 +1,3 @@
-var insults = ["probably never play this game again.", "No one has ever sailed as badly as you just did.", "you suck.", "rookie.",
-    "better luck next time. Not that any of your friends will let you sail with them again.", "you died.", "Shutting down device"]
-
 let BOAT_ACTION = {
     VMG: {value:1},
     SAILS : {value:2},
@@ -66,9 +63,9 @@ function loadControls(){
     $("#controls").fadeIn(1000);
 }
 
-function loadInfoScreen(){
+function loadInfoScreen(message){
     var rand = insults[Math.floor(Math.random() * insults.length)];
-    $("#infoScreenText").html(rand);
+    $("#infoScreenText").html(message);
     $("#controls").fadeOut(1000);
     $("#infoScreen").fadeIn(1000);
 }
@@ -96,10 +93,10 @@ function createBoatActionMessage(name){
         case "tackGybe":
             sendBoatActionMessage(BOAT_ACTION.TACK_GYBE.value, clientId);
             break;
-        case "upwind":
+        case "antiClockwise":
             sendBoatActionMessage(BOAT_ACTION.ANTI_CLOCKWISE.value, clientId);
             break;
-        case "downwind":
+        case "clockwise":
             sendBoatActionMessage(BOAT_ACTION.CLOCKWISE.value, clientId);
             break;
         default:
