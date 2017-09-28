@@ -256,6 +256,7 @@ public class Race extends Observable{
         this.competitors.add(newCompetitor);
         this.observableCompetitorsList.add(newCompetitor);
         this.raceOrder.add(newCompetitor);
+        newCompetitor.setSpawnTime(currentTimeInEpochMs);
         setChanged();
         notifyObservers(UPDATED_COMPETITORS_SIGNAL);
     }

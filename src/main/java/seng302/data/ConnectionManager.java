@@ -130,6 +130,10 @@ public class ConnectionManager extends Observable implements Runnable {
         for (Socket socket : clients.values()){
             socket.close();
         }
+
+        for (Socket socket : webClients.values()){
+            socket.close();
+        }
     }
 
     private void sendAllXMLsToClient(int id) {
