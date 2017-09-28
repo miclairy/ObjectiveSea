@@ -19,6 +19,7 @@
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -37,7 +38,46 @@
            <AnchorPane fx:id="canvasAnchor" minHeight="200.0" minWidth="200.0" prefHeight="1080.0" prefWidth="1395.0" style="-fx-background-color: #aae7df;">
                <children>
                    <ImageView fx:id="mapImageView" fitHeight="88.0" fitWidth="100.0" pickOnBounds="true" />
-                   <VBox fx:id="startersOverlay" alignment="CENTER" blendMode="SRC_ATOP" prefHeight="600.0" prefWidth="400.0" styleClass="startersOverlay" stylesheets="@style/startersOverlayStyle.css" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="100.0">
+            <VBox fx:id="partyModeBoxWrapper" alignment="CENTER" layoutX="-10.0" layoutY="-7.0" mouseTransparent="true" prefHeight="1080.0" prefWidth="1920.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <GridPane fx:id="partyModeBox" maxHeight="310.0" maxWidth="550.0" minHeight="310.0" minWidth="550.0" prefHeight="310.0" prefWidth="550.0" stylesheets="@style/startersOverlayStyle.css">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints maxHeight="126.31747436523438" minHeight="10.0" prefHeight="101.20632934570312" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="191.93646240234375" minHeight="10.0" prefHeight="67.047607421875" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="166.09521484375" minHeight="10.0" prefHeight="142.952392578125" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <Label fx:id="lblPartyTitle" alignment="TOP_RIGHT" contentDisplay="RIGHT" text="Party Game">
+                           <GridPane.margin>
+                              <Insets left="30.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Label fx:id="lblPartyCode" contentDisplay="CENTER" text="9494" GridPane.rowIndex="1">
+                           <GridPane.margin>
+                              <Insets left="30.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <ImageView fitHeight="146.0" fitWidth="146.0" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+                           <image>
+                              <Image url="@graphics/qrCode.png" />
+                           </image>
+                           <GridPane.margin>
+                              <Insets bottom="20.0" right="20.0" />
+                           </GridPane.margin>
+                        </ImageView>
+                        <Label fx:id="lblPartyModeHelp" text="Head to racevision.pro and enter this code to join the race" wrapText="true" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+                           <GridPane.margin>
+                              <Insets bottom="30.0" left="30.0" right="350.0" />
+                           </GridPane.margin>
+                        </Label>
+                     </children>
+                  </GridPane>
+               </children>
+            </VBox>
+                   <VBox fx:id="startersOverlay" alignment="CENTER" blendMode="SRC_ATOP" prefHeight="600.0" prefWidth="400.0" styleClass="startersOverlay" stylesheets="@style/startersOverlayStyle.css" visible="false" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="100.0">
                        <children>
                            <Label fx:id="startersOverlayTitle" alignment="CENTER" maxWidth="400.0" minWidth="100.0" prefWidth="300.0" text="America's Cup Race">
                                <font>
@@ -106,7 +146,7 @@
                            </Label>
                        </children>
                    </AnchorPane>
-            <Pane fx:id="touchPane" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <Pane fx:id="touchPane" prefHeight="230.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <cursor>
                   <Cursor fx:constant="DEFAULT" />
                </cursor>

@@ -10,6 +10,7 @@ import seng302.utilities.DisplayUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -18,18 +19,11 @@ import java.util.List;
  */
 public class RaceView {
 
-    private int nextColorToBeUsed = 1;
-
-    private final ArrayList<Color> COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#A0D468"), Color.web("#FC6E51"),
-            Color.web("#FFCE54"), Color.web("#48CFAD"), Color.web("#4FC1E9"), Color.web("#656D78"))));
-
-    private final ArrayList<Color> PARTY_COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#ff7387"), Color.web("#54ca95"),
-            Color.web("#fad97b"), Color.web("#ffd6c0"), Color.web("#a79be5"), Color.web("#33414c"))));
-
     private final String BOUNDARY_COLOR = "#99DEDB";
-    private final String BOUNDARY_STROKE_COLOR = "#98D4D2";
 
+    private final String BOUNDARY_STROKE_COLOR = "#98D4D2";
     private final String MARK_COLOR = "#fff";
+
     private final String MARK_STROKE_COLOR = "#cdfaf4";
 
 
@@ -252,9 +246,6 @@ public class RaceView {
         return nextMarkArrow;
     }
 
-
-
-
         /**
          * Creates a JavaFX line to represent a layline
          * @param bearing the angle the line is at
@@ -276,15 +267,5 @@ public class RaceView {
         line.setId("layline");
 
         return line;
-    }
-
-    /**
-     * Assigns a color to a BoatDisplay to be used when drawing things for that boat
-     * @param boat the boat to assign a color to
-     */
-    public void assignColor(BoatDisplay boat) {
-        boat.setColor(PARTY_COLORS.get(nextColorToBeUsed));
-        nextColorToBeUsed++;
-        nextColorToBeUsed %= PARTY_COLORS.size();
     }
 }

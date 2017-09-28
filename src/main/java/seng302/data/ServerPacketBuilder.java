@@ -3,15 +3,14 @@ package seng302.data;
 import seng302.data.registration.RegistrationResponseStatus;
 import seng302.models.*;
 import seng302.utilities.ConnectionUtils;
-import seng302.utilities.TimeUtils;
 
+import javafx.scene.paint.Color;
 import java.io.*;
-import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 import java.util.*;
 
 import static seng302.data.AC35StreamField.*;
 import static seng302.data.AC35StreamMessage.*;
+import static seng302.utilities.TimeUtils.convertKnotsToMmPerSecond;
 
 public class ServerPacketBuilder extends PacketBuilder {
 
@@ -107,7 +106,7 @@ public class ServerPacketBuilder extends PacketBuilder {
         addFieldToByteArray(body, EXPECTED_START_TIME, race.getStartTimeInEpochMs());
         addFieldToByteArray(body, CURRENT_TIME, race.getCurrentTimeInEpochMs());
         addFieldToByteArray(body, RACE_COURSE_WIND_DIRECTION, convertHeadingToInt(race.getCourse().getWindDirection()));
-        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, TimeUtils.convertKnotsToMmPerSecond(race.getCourse().getTrueWindSpeed()));
+        addFieldToByteArray(body, RACE_COURSE_WIND_SPEED, convertKnotsToMmPerSecond(race.getCourse().getTrueWindSpeed()));
         addFieldToByteArray(body, NUMBER_OF_BOATS_IN_RACE, numBoats);
         addFieldToByteArray(body, RACE_TYPE, 2); //fleet race
 
@@ -260,7 +259,6 @@ public class ServerPacketBuilder extends PacketBuilder {
 
     private byte[] initialiseYachtEventPacket(){
         byte[] body = new byte[YACHT_EVENT_CODE.getLength()];
-
         return body;
     }
 
@@ -303,5 +301,64 @@ public class ServerPacketBuilder extends PacketBuilder {
         addFieldToByteArray(body, HOST_GAME_IP, ip);
         addFieldToByteArray(body, HOST_GAME_PORT, port);
         return generatePacket(header, body);
+    }
+
+    /**
+     * creates a packet that is sent to the web client containing boat name and boat color
+     * @param id the id of the client
+     * @param boatName  the boat name
+     * @param boatColour the boat color
+     */
+    public byte[] createWebClientInitPacket(Integer id, String boatName, Color boatColour) {
+        byte[] header = super.createHeader(WEB_CLIENT_INIT);
+        byte[] body = new byte[WEB_CLIENT_INIT.getLength()];
+        addFieldToByteArray(body, WEB_CLIENT_ID, id);
+        byte[] nameInBytes = boatName.getBytes();
+        for (int i = 0; i < nameInBytes.length && i < WEB_CLIENT_NAME.getLength(); i++) {
+            body[WEB_CLIENT_NAME.getStartIndex() + i] = nameInBytes[i];
+        }
+        body[WEB_CLIENT_COLOUR.getStartIndex()] = (byte) (boatColour.getRed() * 255);
+        body[WEB_CLIENT_COLOUR.getStartIndex() + 1] = (byte) (boatColour.getGreen() * 255);
+        body[WEB_CLIENT_COLOUR.getStartIndex() + 2] = (byte) (boatColour.getBlue() * 255);
+        return generatePacket(header, body);
+    }
+
+    /**
+     * creates a packet to send to the webclient updating it on speed, position, health
+     */
+    public byte[] createWebClientUpdatePacket(Integer id, Double speed, int placing, int totalCompetitors, int healthPercentage) {
+        byte[] header = super.createHeader(WEB_CLIENT_UPDATE);
+        byte[] body = new byte[WEB_CLIENT_UPDATE.getLength()];
+        addFieldToByteArray(body, WEB_CLIENT_ID, id);
+        long convertedSpeed = convertKnotsToMmPerSecond(speed);
+        addFieldToByteArray(body, WEB_CLIENT_SPEED, convertedSpeed);
+        addFieldToByteArray(body, WEB_CLIENT_POSITION, placing);
+        addFieldToByteArray(body, WEB_CLIENT_TOTAL_COMPETITORS, totalCompetitors);
+        addFieldToByteArray(body, WEB_CLIENT_HEALTH, healthPercentage);
+        return generatePacket(header, body);
+    }
+
+    /**
+     * creates a packet containing the code for a party game
+     */
+    public byte[] createPartyModeRoomCodeMessage(Integer code) {
+        byte[] header = super.createHeader(PARTY_MODE_CODE_MESSAGE);
+        byte[] body = new byte[PARTY_MODE_CODE_MESSAGE.getLength()];
+        addFieldToByteArray(body, PARTY_MODE_ROOM_CODE, code);
+        return generatePacket(header, body);
+    }
+
+    /**
+     * wraps a packet so that it can be sent to a web client
+     * @param sendpacket the packet to be wrapped
+     */
+    public byte[] wrapPacket(byte[] sendpacket) {
+        byte[] wrappedPacket = new byte[sendpacket.length + 2];
+        wrappedPacket[0] = (byte) 130;
+        wrappedPacket[1] = (byte) (sendpacket.length);
+        for(int i = 0; i < sendpacket.length; i++){
+            wrappedPacket[i+2] = sendpacket[i];
+        }
+        return wrappedPacket;
     }
 }

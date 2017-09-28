@@ -1,5 +1,6 @@
 package seng302.data;
 
+import javafx.scene.paint.Color;
 import org.junit.Test;
 import seng302.controllers.listeners.Listener;
 import seng302.data.registration.RegistrationResponseStatus;
@@ -27,7 +28,34 @@ import static seng302.controllers.listeners.Listener.byteArrayRangeToLong;
 public class ServerPacketBuilderTest {
 
     private int CRC_LENGTH = 4;
+
     private int HEADER_LENGTH = 15;
+    @Test
+    public void createWebClientInitPacket() {
+        ServerPacketBuilder builder = new ServerPacketBuilder();
+        Color color = Color.web("#EE4326");
+        byte[] fullPacket = builder.createWebClientInitPacket(101, "Emirates Team New Zealand", color);
+        byte[] body = Arrays.copyOfRange(fullPacket, HEADER_LENGTH, fullPacket.length - CRC_LENGTH); //extract body
+        int id = byteArrayRangeToInt(body, WEB_CLIENT_ID.getStartIndex(), WEB_CLIENT_ID.getEndIndex());
+        assertEquals(101, id);
+        char[] charName = new char[WEB_CLIENT_NAME.getLength()];
+        int i;
+        for (i = 0; i < charName.length; i++) {
+            char chr = (char)body[WEB_CLIENT_NAME.getStartIndex() + i];
+            charName[i] = chr;
+            if (chr == '\0') break;
+        }
+        String boatName = String.copyValueOf(charName, 0, i);
+        assertEquals("Emirates Team New Zealand", boatName);
+        //int id = byteArrayRangeToInt(body, WEB_CLIENT_ID.getStartIndex(), WEB_CLIENT_ID.getEndIndex());
+        int colStart = WEB_CLIENT_COLOUR.getStartIndex();
+        int r = byteArrayRangeToInt(body, colStart, colStart + 1);
+        int g = byteArrayRangeToInt(body, colStart + 1, colStart + 2);
+        int b = byteArrayRangeToInt(body, colStart + 2, colStart + 3);
+        assertEquals(color.getRed() * 255, r, 0.01);
+        assertEquals(color.getGreen() * 255, g, 0.01);
+        assertEquals(color.getBlue() * 255, b, 0.01);
+    }
 
     @Test
     public void createRaceUpdateMessage() throws Exception {

@@ -1,14 +1,18 @@
 package seng302.controllers.listeners;
 
+import seng302.data.AC35StreamMessage;
 import javax.xml.bind.DatatypeConverter;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static seng302.data.AC35StreamField.*;
 
 /**
  * Server listener to connect and communicate with a web socket client.
@@ -32,15 +36,66 @@ public class WebSocketServerListener extends AbstractServerListener {
         while(clientConnected){
             try {
                 byte[] packet = readPacket();
-                if(packet == null){
-                    clientConnected = false;
+                byte[] header = extractHeader(packet);
+
+                int messageLength = byteArrayRangeToInt(header, MESSAGE_LENGTH.getStartIndex(), MESSAGE_LENGTH.getEndIndex());
+                int messageTypeValue = byteArrayRangeToInt(header, MESSAGE_TYPE.getStartIndex(), MESSAGE_TYPE.getEndIndex());
+                int sourceId = byteArrayRangeToInt(header, HEADER_SOURCE_ID.getStartIndex(), HEADER_SOURCE_ID.getEndIndex());
+
+                AC35StreamMessage messageType = AC35StreamMessage.fromInteger(messageTypeValue);
+
+                byte[] body = extractBody(packet, messageLength);
+                byte[] crc = extractCRC(packet);
+                if (checkCRC(header, body, crc)) {
+                    switch (messageType) {
+                        case REGISTRATION_REQUEST:
+                            parseRegistrationRequestMessage(body);
+                            break;
+                        case BOAT_ACTION_MESSAGE:
+                            if (sourceId != -1) {
+                                parseBoatActionMessage(body);
+                            }
+                        case REQUEST_AVAILABLE_RACES:
+                            parseRequestRacesMessage(body);
+                            break;
+                    }
+                } else{
+                    System.out.println("Incorrect CRC");
                 }
+            } catch (IndexOutOfBoundsException e) {
+                clientConnected = false;
+                System.out.println("WebSocket has disconnected itself.");
             } catch (IOException e) {
                 clientConnected = false;
                 e.printStackTrace();
             }
         }
         System.out.println("Web Socket Server Listener Terminated");
+    }
+
+    private void parseRequestRacesMessage(byte[] body) {
+        Integer roomCode = byteArrayRangeToInt(body, PARTY_MODE_ROOM_CODE.getStartIndex(), PARTY_MODE_ROOM_CODE.getEndIndex());
+        setChanged();
+        notifyObservers(roomCode);
+    }
+
+    private byte[] extractHeader(byte[] packet) {
+        byte[] header = new byte[HEADER_LENGTH];
+        System.arraycopy(packet, 0, header, 0, HEADER_LENGTH);
+        return header;
+    }
+
+    private byte[] extractBody(byte[] packet, int bodyLength) {
+        byte[] body = new byte[bodyLength];
+        System.arraycopy(packet, HEADER_LENGTH, body, 0, bodyLength);
+        return body;
+    }
+
+    private byte[] extractCRC(byte[] packet) {
+        byte[] crc = new byte[CRC_LENGTH];
+        int crcStartIndex = packet.length - CRC_LENGTH;
+        System.arraycopy(packet, crcStartIndex, crc, 0, CRC_LENGTH);
+        return crc;
     }
 
     /**
@@ -98,7 +153,7 @@ public class WebSocketServerListener extends AbstractServerListener {
         byte[] key = new byte[4];
         int opcode = socketData.read();
         if(opcode == -1){
-            return null;
+            throw new IOException("Bad WebSocket Frame Opcode: " + opcode);
         }
         int length = readPacketLength();
         for(int i = 0; i < 4; i++){

@@ -1,9 +1,12 @@
 package seng302.views;
 
 import javafx.application.Platform;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -20,7 +23,12 @@ public class HeadsupDisplay {
     private Label positionLabel;
     private ProgressBar healthBar;
     private Race race;
+    private String partyPin;
 
+
+    /**
+     * creates a HUD for the current player
+     */
     public HeadsupDisplay(BoatDisplay boat, VBox display, Race race){
         this.boat = boat;
         this.display = display;
@@ -28,7 +36,36 @@ public class HeadsupDisplay {
         display.setPickOnBounds(false);
         addInfoToDisplay();
         addListeners();
-        AnimationUtils.toggleHiddenBoardNodes(display, false);
+        display.getStyleClass().add("headsUpDisplay");
+        AnimationUtils.toggleHiddenBoardNodes(display, false, 0.8);
+    }
+
+    /**
+     * creates a hud containing the party code
+     */
+    public HeadsupDisplay(String partyPin, VBox display){
+        this.display = display;
+        this.partyPin = partyPin;
+        display.setAlignment(Pos.CENTER);
+        addPartyPin();
+        display.getStyleClass().add("headsUpDisplayParty");
+        ImageView imvQR = new ImageView(new Image("graphics/qrCode.png"));
+        imvQR.setFitHeight(100);
+        imvQR.setFitWidth(100);
+        display.getChildren().add(imvQR);
+        AnimationUtils.toggleHiddenBoardNodes(display, false, 1);
+    }
+
+    private void addPartyPin(){
+        Label pinLabel = new Label("PartyCode");
+        pinLabel.setId("partyCodeTitle");
+
+        Label codeLabel = new Label();
+        codeLabel.setId("codeLabel");
+        codeLabel.setText(String.valueOf(partyPin));
+
+        display.getChildren().add(pinLabel);
+        display.getChildren().add(codeLabel);
     }
 
     private void addInfoToDisplay(){

@@ -22,6 +22,9 @@ public abstract class AbstractServerListener extends Listener implements Runnabl
     protected Race race;
     protected Integer clientId;
     protected boolean clientConnected = true;
+    protected final Integer CRC_LENGTH = 4;
+    protected static final int SYNC_BYTE_1 = 71;
+    protected static final int SYNC_BYTE_2 = 131;
 
 
     /**
@@ -79,6 +82,12 @@ public abstract class AbstractServerListener extends Listener implements Runnabl
             case DOWNWIND:
                 boat.downWind(race.getCourse().getWindDirection());
                 break;
+            case CLOCKWISE:
+                boat.clockwise();
+                break;
+            case ANTI_CLOCKWISE:
+                boat.antiClockwise();
+                break;
             default:
                 break;
         }
@@ -110,15 +119,13 @@ public abstract class AbstractServerListener extends Listener implements Runnabl
      */
     public static AbstractServerListener createServerListener(Socket socket){
         BufferedInputStream socketData;
-        int expectedSyncByte1 = 71;
-        int expectedSyncByte2 = 131;
         try{
             socketData = new BufferedInputStream(socket.getInputStream());
             socketData.mark(10);
             int sync1 = socketData.read();
             int sync2 = socketData.read();
             socketData.reset();
-            if (sync1 != expectedSyncByte1 || sync2 != expectedSyncByte2) {
+            if (sync1 != SYNC_BYTE_1 || sync2 != SYNC_BYTE_2) {
                 return new WebSocketServerListener(socket, socketData);
             } else {
                 return new ServerListener(socket, socketData);

@@ -276,7 +276,7 @@ public class AnimationUtils {
      * @param node the node to be shifted
      * @param visible whether or not it is currently visible
      */
-    public static void toggleHiddenBoardNodes(Node node, boolean visible){
+    public static void toggleHiddenBoardNodes(Node node, boolean visible, double endOpacity){
         FadeTransition fadeTransition = new FadeTransition(new Duration(200), node);
         fadeTransition.setInterpolator(Interpolator.EASE_OUT);
 
@@ -286,7 +286,7 @@ public class AnimationUtils {
         if(visible){
             translateTransition.setFromY(node.getLayoutY());
             translateTransition.setToY(node.getLayoutY() - 10);
-            fadeTransition.setFromValue(0.8);
+            fadeTransition.setFromValue(endOpacity);
             fadeTransition.setToValue(0);
             fadeTransition.setOnFinished(new EventHandler<ActionEvent>(){
                 public void handle(ActionEvent AE){
@@ -295,7 +295,7 @@ public class AnimationUtils {
         }else{
             node.setVisible(true);
             fadeTransition.setFromValue(0);
-            fadeTransition.setToValue(0.8);
+            fadeTransition.setToValue(endOpacity);
             translateTransition.setFromY(node.getLayoutY() - 10);
             translateTransition.setToY(node.getLayoutY());
         }

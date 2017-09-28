@@ -1,10 +1,14 @@
 package seng302.data;
 
+import seng302.controllers.listeners.AbstractServerListener;
+import seng302.controllers.listeners.WebSocketServerListener;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Observable;
 import java.util.TreeMap;
@@ -18,9 +22,11 @@ public class ConnectionManager extends Observable implements Runnable {
 
     private ServerSocket serverSocket;
     private Map<Integer, Socket> clients =  new ConcurrentHashMap<>();
+    private Map<Integer, Socket> webClients = new ConcurrentHashMap<>();
     private TreeMap<AC35StreamXMLMessage, byte[]> xmlMessages = new TreeMap<>();
     private boolean running = true;
     private boolean isGameServer;
+    private ServerPacketBuilder wrapper = new ServerPacketBuilder();
 
 
     public ConnectionManager(int port, boolean isGameServer) throws IOException {
@@ -64,13 +70,26 @@ public class ConnectionManager extends Observable implements Runnable {
      */
     public void sendToClient(int id, byte[] packet) {
         try{
-            DataOutputStream clientOutput = new DataOutputStream(clients.get(id).getOutputStream());
-            clientOutput.write(packet);
+            Socket socket;
+            if (clients.keySet().contains(id)) {
+                socket = clients.get(id);
+            } else {
+                socket = webClients.get(id);
+                packet = wrapper.wrapPacket(packet);
+            }
+            if (socket != null) {
+                DataOutputStream clientOutput = new DataOutputStream(socket.getOutputStream());
+                clientOutput.write(packet);
+            }
         } catch (java.net.SocketException e){
             System.out.printf("Server: Client %d Disconnected\n", id);
             setChanged();
             notifyObservers(id);
-            clients.remove(id);
+            if (clients.containsKey(id)) {
+                clients.remove(id);
+            } else if (webClients.containsKey(id)) {
+                webClients.remove(id);
+            }
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
@@ -86,13 +105,13 @@ public class ConnectionManager extends Observable implements Runnable {
         sendToClients(xmlMessage);
     }
 
-    public void addConnection(int newId, Socket socket) {
-        clients.put(newId, socket);
-        sendAllXMLsToClient(newId);
-    }
-
-    public void addMainMenuConnection(int newId, Socket socket) {
-        clients.put(newId, socket);
+    public void addConnection(int newId, AbstractServerListener serverListener) {
+        if (serverListener instanceof WebSocketServerListener) {
+            webClients.put(newId, serverListener.getSocket());
+        } else {
+            clients.put(newId, serverListener.getSocket());
+            sendAllXMLsToClient(newId);
+        }
     }
 
     /**
@@ -115,6 +134,10 @@ public class ConnectionManager extends Observable implements Runnable {
         for (Socket socket : clients.values()){
             socket.close();
         }
+
+        for (Socket socket : webClients.values()){
+            socket.close();
+        }
     }
 
     private void sendAllXMLsToClient(int id) {
@@ -129,10 +152,19 @@ public class ConnectionManager extends Observable implements Runnable {
      */
     public void removeConnection(int connectionID) {
         try {
-            Socket socket= clients.get(connectionID);
+            Socket socket = clients.get(connectionID);
             socket.close();
             clients.remove(connectionID);
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendToSocket(Socket socket, byte[] packet) {
+        try{
+            DataOutputStream clientOutput = new DataOutputStream(socket.getOutputStream());
+            clientOutput.write(packet);
+        } catch (IOException e){
             e.printStackTrace();
         }
     }

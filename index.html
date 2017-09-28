@@ -20,6 +20,8 @@
 
   <script src="website/js/scripts.js"></script>
   <script src="website/js/websocketsScripts.js"></script>
+  <script src="website/js/typingUtils.js"></script>
+  <script src="website/js/messageConstants.js"></script>
   <script src="website/js/js-crc/src/crc.js"></script>
   <link rel="shortcut icon" href="website/img/favicon.ico">
   <link rel="icon" sizes="16x16 32x32 64x64" href="website/img/favicon.ico">
@@ -50,6 +52,7 @@
         <input type="tel" name="raceCode" maxlength="4" pattern="[0-9]*" id="codeBox" placeholder="Code">
         <button id="submitCode" onclick="submitButtonPressed()">&#xf0a9</button><br>
       </div>
+      <h3 id="errorMessage" class="hidden">Incorrect Room Code Entered</h3>
   </div>
 
 
@@ -82,27 +85,27 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-6" id="vmgControl">
-          <div class="buttonText center">Autopilot</div>
+        <div class="col-md-6 boatActionPress" id="vmgControl" name="vmg">
+          <div class="buttonText center" id="vmgControlText" name="vmg">Autopilot</div>
         </div>
-        <div class="col-md-6" id="tackGybeControl">
-          <div class="buttonText center">Tack or Gybe</div>
+        <div class="col-md-6 boatActionPress" id="tackGybeControl" name="tackGybe">
+          <div class="buttonText center" id="tackGybeControlText" name="tackGybe">Tack or Gybe</div>
         </div>
       </div>
       <div class="row">
-        <div class="col-md-4" id="upwindControl">
-          <div class="center">
-            <i class="fa fa-4x fa-arrow-left directionArrow" aria-hidden="true"></i>
+        <div class="col-md-4 boatActionHold" id="upwindControl" name="antiClockwise">
+          <div class="center" id="upwindControlCenter" name="antiClockwise">
+            <i class="fa fa-4x  fa-rotate-left directionArrow" id="upwindControlArrow" name="antiClockwise" aria-hidden="true"></i>
           </div>
         </div>
-        <div class="col-md-4" id="sailsControls">
-          <div class="row" id="sailsOutControl" onclick="loadInfoScreen()">
-            <div class="buttonText center">Change Sails</div>
+        <div class="col-md-4" id="sailsControls" name="sails">
+          <div class="row boatActionPress" id="sailsControl" name="sails">
+            <div class="buttonText center" id="sailsControlText" name="sails">Change Sails</div>
           </div>
         </div>
-        <div class="col-md-4" id="downWindControl">
-          <div class="center">
-            <i class="fa fa-4x fa-arrow-right directionArrow" aria-hidden="true"></i>
+        <div class="col-md-4 boatActionHold" id="downWindControl" name="clockwise">
+          <div class="center" id="downWindControlCenter" name="clockwise">
+            <i class="fa fa-4x  fa-rotate-right directionArrow" name="clockwise" id="downWindControlArrow" aria-hidden="true"></i>
           </div>
         </div>
       </div>

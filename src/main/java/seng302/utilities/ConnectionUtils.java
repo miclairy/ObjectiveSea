@@ -52,6 +52,7 @@ public class ConnectionUtils {
     public static void initiateDisconnect(boolean isHost)  {
         client.initiateClientDisconnect();
         if(isHost){
+            System.out.println("Client: Cancelling race");
             server.initiateServerDisconnect();
         }
     }

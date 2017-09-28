@@ -439,7 +439,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         BoatDisplay displayBoat = new BoatDisplay(boat, polarTable);
         boat.addObserver(displayBoat);
         scoreBoardController.addBoatToSparkLine(displayBoat.getSeries());
-        raceView.assignColor(displayBoat);
+        displayBoat.setColor(DisplayUtils.getBoatColor(boat.getId()));
         drawBoat(displayBoat);
         displayBoats.add(displayBoat);
         selectionController.addBoatSelectionHandler(displayBoat);

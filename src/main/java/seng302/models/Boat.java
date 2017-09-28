@@ -2,6 +2,7 @@ package seng302.models;
 
 
 import javafx.beans.property.*;
+import org.joda.time.DateTime;
 import seng302.data.StartTimingStatus;
 
 import seng302.data.BoatStatus;
@@ -87,6 +88,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private double totalRotatedAmount;
     private double currRotationAmount;
     private int rotateDirection;
+    private long spawnTime = 0;
 
     public Boat(Integer id, String name, String nickName, double speed) {
         this.id = id;
@@ -479,6 +481,29 @@ public class Boat extends Observable implements Comparable<Boat>{
     public void move(Double raceSecondsPassed, Course course) {
         updateBoatHeading(raceSecondsPassed);
         updateLocation(raceSecondsPassed, course);
+    }
+
+    /**
+     * modifies players direction 3 degrees clockwise
+     */
+    public void clockwise() {
+        heading = (heading + 360 + 3) % 360;
+    }
+
+    /**
+     * modifies players direction 3 degrees anti-clockwise
+     */
+    public void antiClockwise() {
+        heading = (heading + 360 - 3) % 360;
+
+    }
+
+    public long getSpawnTime() {
+        return spawnTime;
+    }
+
+    public void setSpawnTime(long spawnTime) {
+        this.spawnTime = spawnTime;
     }
 
     /**

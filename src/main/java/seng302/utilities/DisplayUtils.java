@@ -3,6 +3,7 @@ import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.paint.Color;
 import javafx.util.Duration;
 import seng302.controllers.Controller;
 import seng302.controllers.MainMenuController;
@@ -12,6 +13,9 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 import static java.lang.Math.abs;
 
@@ -37,6 +41,11 @@ public class DisplayUtils {
     private static int prevDragY=0;
     private static int offsetX=0;
     private static int offsetY=0;
+
+    private static int nextColorToBeUsed = 1;
+    private static HashMap<Integer, Color> assignedColors = new HashMap<>();
+    private static final ArrayList<Color> PARTY_COLORS = new ArrayList<>((Arrays.asList(Color.WHITE, Color.web("#54ca95"), Color.web("#ff7387"),
+            Color.web("#fad97b"), Color.web("#ffd6c0"), Color.web("#a79be5"), Color.web("#33414c"))));
 
 
     /**
@@ -403,5 +412,19 @@ public class DisplayUtils {
 
     public static void setIsRaceView(boolean sceneChanged){
         isRaceView = sceneChanged;
+    }
+
+
+    /**
+     * Assigns a color to a BoatDisplay to be used when drawing things for that boat
+     * @param id of the boat to assign a color to
+     */
+    static public Color getBoatColor(Integer id) {
+        if (!assignedColors.keySet().contains(id)) {
+            assignedColors.put(id, PARTY_COLORS.get(nextColorToBeUsed));
+            nextColorToBeUsed++;
+            nextColorToBeUsed %= PARTY_COLORS.size();
+        }
+        return assignedColors.get(id);
     }
 }

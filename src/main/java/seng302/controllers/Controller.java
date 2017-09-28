@@ -23,10 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Callback;
 import seng302.data.RaceStatus;
-import seng302.models.Boat;
-import seng302.models.ClientOptions;
-import seng302.models.Course;
-import seng302.models.Race;
+import seng302.models.*;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.ConnectionUtils;
 import seng302.utilities.DisplayUtils;
@@ -78,6 +75,8 @@ public class Controller implements Initializable, Observer {
     @FXML private Label lblExitRV;
     @FXML private Label lblTrackRV;
     @FXML private VBox headsUpDisplay;
+    @FXML private GridPane partyModeBox;
+    @FXML private VBox partyModeBoxWrapper;
     private HeadsupDisplay infoDisplay;
 
     @FXML public StackPane stackPane;
@@ -86,6 +85,7 @@ public class Controller implements Initializable, Observer {
     @FXML private Label tutorialContent;
     @FXML public Label lblNextMark;
     @FXML private GridPane nextMarkGrid;
+    @FXML private Label lblPartyCode;
 
     //FPS Counter
     private SimpleStringProperty fpsString = new SimpleStringProperty();
@@ -175,52 +175,12 @@ public class Controller implements Initializable, Observer {
         headsUpDisplay.setVisible(false);
         lblTrackRV.setVisible(false);
         lblExitRV.setVisible(false);
+        partyModeBox.setVisible(false);
+        setPartyBoxPosition();
 
         raceCompetitorOverview();
         startersOverlay.toFront();
         initZoom();
-    }
-
-    /**
-     * adds listeners to content on the scorePanel
-     */
-    private void addRightHandSideListener(){
-        btnQuickMenuTrack.setPickOnBounds(true);
-        btnQuickMenuExit.setPickOnBounds(true);
-        rightHandSide.addEventHandler(MouseEvent.MOUSE_ENTERED,
-                e -> AnimationUtils.focusNode(rightHandSide));
-        rightHandSide.addEventHandler(MouseEvent.MOUSE_EXITED,
-                e ->  AnimationUtils.dullNode(rightHandSide));
-        btnHide.addEventHandler(MouseEvent.MOUSE_ENTERED,
-                e -> AnimationUtils.focusNode(btnHide));
-        btnHide.addEventHandler(MouseEvent.MOUSE_EXITED,
-                e ->  AnimationUtils.dullNode(btnHide));
-        lblNoBoardClock.addEventHandler(MouseEvent.MOUSE_ENTERED,
-                e -> AnimationUtils.toggleHiddenBoardNodes(tblPlacingsRV, false));
-        lblNoBoardClock.addEventHandler(MouseEvent.MOUSE_EXITED,
-                e -> AnimationUtils.toggleHiddenBoardNodes(tblPlacingsRV, true));
-        btnQuickMenuExit.addEventHandler(MouseEvent.MOUSE_ENTERED,
-                e -> quickMenuHighlight(true, lblExitRV, btnQuickMenuExit));
-        btnQuickMenuExit.addEventHandler(MouseEvent.MOUSE_EXITED,
-                e -> quickMenuHighlight(false, lblExitRV, btnQuickMenuExit));
-        btnQuickMenuTrack.addEventHandler(MouseEvent.MOUSE_ENTERED,
-                e ->  quickMenuHighlight(true, lblTrackRV, btnQuickMenuTrack));
-        btnQuickMenuTrack.addEventHandler(MouseEvent.MOUSE_EXITED,
-                e -> quickMenuHighlight(false, lblTrackRV, btnQuickMenuTrack));
-    }
-
-    /**
-     * shows a tutorial overlay on the screen
-     * @param title the title shown in the overlay
-     * @param content the tutorial content shown in the overlay
-     */
-    public void showTutorialOverlay(String title, String content){
-        if(!tutorialContent.getText().equals(content) || !tutorialOverlayTitle.getText().equals(title)){
-            tutorialOverlayTitle.setText(title);
-            tutorialContent.setText(content);
-            tutorialOverlay.setVisible(true);
-            AnimationUtils.scalePop(tutorialOverlay);
-        }
     }
 
     /**
@@ -243,6 +203,13 @@ public class Controller implements Initializable, Observer {
         } else {
             startersOverlayTitle.setText(race.getRegattaName());
         }
+        if(options.getGameMode().equals(GameMode.PARTYGAME)){
+            partyModeBox.setVisible(true);
+            String paddedPartyCode = String.format("%04d", GameClient.getRoomCode());
+            lblPartyCode.setText(paddedPartyCode);
+            partyModeBox.toFront();
+        }
+
         initZoomEventListener();
         initKeyPressListener();
         initTouchDisplayDrag();
@@ -251,6 +218,56 @@ public class Controller implements Initializable, Observer {
         initHiddenScoreboard();
         raceViewController.updateWindArrow();
         raceViewController.start();
+
+    }
+
+    private void setPartyBoxPosition(){
+        partyModeBoxWrapper.toFront();
+        partyModeBox.toFront();
+        partyModeBox.setLayoutX(canvasWidth / 2);
+        partyModeBox.setLayoutY(canvasHeight / 2);
+    }
+
+    /**
+     * adds listeners to content on the scorePanel
+     */
+    private void addRightHandSideListener(){
+        btnQuickMenuTrack.setPickOnBounds(true);
+        btnQuickMenuExit.setPickOnBounds(true);
+        rightHandSide.addEventHandler(MouseEvent.MOUSE_ENTERED,
+                e -> AnimationUtils.focusNode(rightHandSide));
+        rightHandSide.addEventHandler(MouseEvent.MOUSE_EXITED,
+                e ->  AnimationUtils.dullNode(rightHandSide));
+        btnHide.addEventHandler(MouseEvent.MOUSE_ENTERED,
+                e -> AnimationUtils.focusNode(btnHide));
+        btnHide.addEventHandler(MouseEvent.MOUSE_EXITED,
+                e ->  AnimationUtils.dullNode(btnHide));
+        lblNoBoardClock.addEventHandler(MouseEvent.MOUSE_ENTERED,
+                e -> AnimationUtils.toggleHiddenBoardNodes(tblPlacingsRV, false, 0.8));
+        lblNoBoardClock.addEventHandler(MouseEvent.MOUSE_EXITED,
+                e -> AnimationUtils.toggleHiddenBoardNodes(tblPlacingsRV, true, 0.8));
+        btnQuickMenuExit.addEventHandler(MouseEvent.MOUSE_ENTERED,
+                e -> quickMenuHighlight(true, lblExitRV, btnQuickMenuExit));
+        btnQuickMenuExit.addEventHandler(MouseEvent.MOUSE_EXITED,
+                e -> quickMenuHighlight(false, lblExitRV, btnQuickMenuExit));
+        btnQuickMenuTrack.addEventHandler(MouseEvent.MOUSE_ENTERED,
+                e ->  quickMenuHighlight(true, lblTrackRV, btnQuickMenuTrack));
+        btnQuickMenuTrack.addEventHandler(MouseEvent.MOUSE_EXITED,
+                e -> quickMenuHighlight(false, lblTrackRV, btnQuickMenuTrack));
+    }
+
+    /**
+     * shows a tutorial overlay on the screen
+     * @param title the title shown in the overlay
+     * @param content the tutorial content shown in the overlay
+     */
+    public void showTutorialOverlay(String title, String content){
+        if(!tutorialContent.getText().equals(content) || !tutorialOverlayTitle.getText().equals(title)){
+            tutorialOverlayTitle.setText(title);
+            tutorialContent.setText(content);
+            tutorialOverlay.setVisible(true);
+            AnimationUtils.scalePop(tutorialOverlay);
+        }
     }
 
     @FXML public void exitRunningRace() {
@@ -548,6 +565,7 @@ public class Controller implements Initializable, Observer {
             anchorWidth = canvasAnchor.getWidth();
             raceViewController.redrawCourse();
             raceViewController.redrawBoatPaths();
+            setPartyBoxPosition();
             btnHide.setLayoutX(canvasWidth - 485.0);
         });
         canvasAnchor.heightProperty().addListener(resizeListener);
@@ -555,6 +573,7 @@ public class Controller implements Initializable, Observer {
             canvasHeight = (double) newValue;
             anchorHeight = canvasAnchor.getHeight();
             raceViewController.redrawCourse();
+            setPartyBoxPosition();
             raceViewController.redrawBoatPaths();
 
         });
@@ -604,6 +623,9 @@ public class Controller implements Initializable, Observer {
         switch (race.getRaceStatus()) {
             case WARNING:
                 showStarterOverlay();
+                if(!options.isParticipant() && options.getGameMode().equals(GameMode.PARTYGAME)){
+                    this.infoDisplay = new HeadsupDisplay(String.format("%04d", GameClient.getRoomCode()), headsUpDisplay);
+                }
                 break;
             case PREPARATORY:
                 hideStarterOverlay();
@@ -730,6 +752,7 @@ public class Controller implements Initializable, Observer {
     public void showStarterOverlay() {
         startersOverlay.toFront();
         AnimationUtils.fadeNode(startersOverlay, false);
+        AnimationUtils.fadeNode(partyModeBox, true);
     }
 
     public static void setCanvasHeight(double canvasHeight) {
@@ -805,7 +828,7 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(lblWindSpeed, 430, true);
             AnimationUtils.shiftPaneNodes(nextMarkGrid, 430, true);
             AnimationUtils.shiftPaneNodes(quickMenu, -115, true);
-            AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false);
+            AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, false, 0.8);
             if (options.isParticipant() && infoDisplay != null) {
                 headsUpDisplay.setVisible(true);
             }
@@ -820,7 +843,7 @@ public class Controller implements Initializable, Observer {
             AnimationUtils.shiftPaneNodes(lblWindSpeed, -430, true);
             AnimationUtils.shiftPaneNodes(nextMarkGrid, -430, true);
             AnimationUtils.shiftPaneNodes(quickMenu, 115, true);
-            AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true);
+            AnimationUtils.toggleHiddenBoardNodes(lblNoBoardClock, true, 0.8);
             if(infoDisplay != null){
                 headsUpDisplay.setVisible(false);
             }

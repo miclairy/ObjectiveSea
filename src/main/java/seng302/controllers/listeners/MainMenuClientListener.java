@@ -58,7 +58,7 @@ public class MainMenuClientListener extends Listener implements Runnable{
                         parseHostedGameMessage(body);
                     }
                 } else {
-                    System.err.println("Incorrect CRC. Message Ignored.");
+                    System.err.println("Incorrect CRC. Message Ignored: " + messageType);
                 }
             } catch (SocketTimeoutException e){
                 disconnectClient();

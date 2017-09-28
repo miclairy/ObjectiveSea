@@ -26,6 +26,7 @@ public class GameClient extends Client{
     private ClientOptions options;
     private static List<Integer> tutorialKeys = new ArrayList<Integer>();
     private static Runnable tutorialFunction = null;
+    private static Integer roomCode = 1111;
 
 
     public GameClient(ClientOptions options) throws NoConnectionToServerException, ServerRegistrationException {
@@ -86,6 +87,8 @@ public class GameClient extends Client{
                 }
             } else if (arg instanceof RegistrationResponse) {
                 serverRegistrationResponse = (RegistrationResponse) arg;
+            } else if(arg instanceof Integer){
+                GameClient.roomCode = (Integer) arg;
             }
         } else if (o == touchInputController) {
             sendBoatTouchCommandPacket();
@@ -169,5 +172,9 @@ public class GameClient extends Client{
 
     public ClientOptions getOptions() {
         return options;
+    }
+
+    public static Integer getRoomCode() {
+        return roomCode;
     }
 }

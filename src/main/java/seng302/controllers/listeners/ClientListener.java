@@ -1,6 +1,5 @@
 package seng302.controllers.listeners;
 
-import seng302.controllers.listeners.Listener;
 import seng302.data.*;
 import seng302.data.registration.RegistrationResponse;
 import seng302.data.registration.RegistrationResponseStatus;
@@ -206,6 +205,8 @@ public class ClientListener extends Listener implements Runnable{
                                     case HOST_GAME_MESSAGE:
                                         parseHostedGameMessage(body);
                                         break;
+                                    case PARTY_MODE_CODE_MESSAGE:
+                                        parseRoomCodeMessage(body);
                                 }
                             }
                     }

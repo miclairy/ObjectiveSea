@@ -13,7 +13,8 @@ import java.util.Set;
 public enum BoatAction {
 
     BOAT_VMG(1, KeyCode.SPACE), SAILS_IN(2, KeyCode.SHIFT), SAILS_OUT(3, KeyCode.SHIFT), TACK_GYBE(4, KeyCode.ENTER),
-    UPWIND(5, KeyCode.PAGE_UP, KeyCode.UP), DOWNWIND(6, KeyCode.PAGE_DOWN, KeyCode.DOWN);
+    UPWIND(5, KeyCode.PAGE_UP, KeyCode.UP), DOWNWIND(6, KeyCode.PAGE_DOWN, KeyCode.DOWN),
+    CLOCKWISE(7, null), ANTI_CLOCKWISE(8, null);
 
     private final int type;
     private final Set<KeyCode> keycodes = new HashSet<>();
@@ -38,7 +39,7 @@ public enum BoatAction {
         int returnCode = -1;
         for (BoatAction action : BoatAction.values()){
             for(KeyCode keycode : action.keycodes) {
-                if (keycode.equals(code)) {
+                if (keycode != null && keycode.equals(code)) {
                     returnCode = action.type;
                 }
             }

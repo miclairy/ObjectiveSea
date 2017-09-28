@@ -120,7 +120,8 @@ public abstract class Listener extends Observable implements Runnable{
         int gameStatus = byteArrayRangeToInt(body, HOST_GAME_STATUS.getStartIndex(), HOST_GAME_STATUS.getEndIndex());
         int gameMinPlayers = byteArrayRangeToInt(body, HOST_GAME_REQUIRED_PLAYERS.getStartIndex(), HOST_GAME_REQUIRED_PLAYERS.getEndIndex());
         int gameCurrentPlayers = byteArrayRangeToInt(body, HOST_GAME_CURRENT_PLAYERS.getStartIndex(), HOST_GAME_CURRENT_PLAYERS.getEndIndex());
-        AvailableRace availableRace = new AvailableRace(CourseName.getCourseNameFromInt(courseIndex).getText(), gameCurrentPlayers, serverPort, serverIP);
+        boolean isPartyGame = byteArrayRangeToInt(body, HOST_GAME_IS_PARTY_MODE.getStartIndex(), HOST_GAME_IS_PARTY_MODE.getEndIndex()) == 1;
+        AvailableRace availableRace = new AvailableRace(CourseName.getCourseNameFromInt(courseIndex).getText(), gameCurrentPlayers, serverPort, serverIP, isPartyGame);
         setChanged();
         notifyObservers(availableRace);
     }
@@ -143,5 +144,11 @@ public abstract class Listener extends Observable implements Runnable{
 
     public InputStream getDataStream() {
         return dataStream;
+    }
+
+    public void parseRoomCodeMessage(byte[] body){
+        Integer roomCode = byteArrayRangeToInt(body, PARTY_MODE_ROOM_CODE.getStartIndex(), PARTY_MODE_ROOM_CODE.getEndIndex());
+        setChanged();
+        notifyObservers(roomCode);
     }
 }

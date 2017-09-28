@@ -18,12 +18,15 @@ public class AvailableRace {
     private String ipAddress;
     private byte[] packet;
     private boolean deleted = false;
+    private boolean isPartyGame = false;
+    private Integer code = -1;
 
-    public AvailableRace(String mapName, Integer numBoats, int port, String ipAddress){
+    public AvailableRace(String mapName, Integer numBoats, int port, String ipAddress, boolean isPartyGame){
         this.mapName = new SimpleStringProperty(mapName);
         this.numBoats = new SimpleIntegerProperty(numBoats);
         this.port = port;
         this.ipAddress = ipAddress;
+        this.isPartyGame = isPartyGame;
     }
 
     public StringProperty mapNameProperty() { return mapName; }
@@ -72,5 +75,17 @@ public class AvailableRace {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public boolean isPartyGame() {
+        return isPartyGame;
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
     }
 }

@@ -6,6 +6,7 @@ import seng302.data.RaceStatus;
 import seng302.data.RaceVisionXMLParser;
 import seng302.models.*;
 import seng302.utilities.MathUtils;
+import seng302.utilities.TimeUtils;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -20,6 +21,7 @@ public class CollisionManager {
     public static final Double MARK_SENSITIVITY = 0.03;
     private static final Double AT_FAULT_DELTA = 30.0;
     private static final Double COLLISION_DELTA = 60.0;
+    private static final int SPAWN_IMMUNITY_SECONDS = 30;
     private Penalties penalties = new Penalties();
     private Polygon boundary = null;
 
@@ -55,6 +57,9 @@ public class CollisionManager {
         boats.addAll(race.getCompetitors());
         for (int i = 0; i < boats.size(); i++) {
             Boat boat = boats.get(i);
+            if (race.getCurrentTimeInEpochMs() - boat.getSpawnTime() < TimeUtils.secondsToMilliseconds(SPAWN_IMMUNITY_SECONDS)) {
+                continue;
+            }
             if(boat.getStatus() != BoatStatus.DNF && !boat.isFinished() && boat.getStatus() != BoatStatus.DISQUALIFIED) {
                 for (int j = i + 1; j < boats.size(); j++) {
                     Boat otherBoat = boats.get(j);

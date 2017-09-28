@@ -48,6 +48,19 @@ public class ServerOptions {
         numRacesToRun = 1;
     }
 
+    /**
+     * Constructor for custom host game
+     */
+    public ServerOptions(Double speedScale, int minParticipants, GameMode mode){
+        this.speedScale = speedScale;
+        this.minParticipants = minParticipants;
+        port = DEFAULT_PORT;
+        raceXML = DEFAULT_COURSE;
+        isTutorial = false;
+        numRacesToRun = 1;
+        gameMode = mode;
+    }
+
     public Double getSpeedScale() {
         return speedScale;
     }
@@ -129,7 +142,20 @@ public class ServerOptions {
         return this.aiDifficulty;
     }
 
-    public Boolean isMultiplayer() {
-        return gameMode.equals(GameMode.MULTIPLAYER);
+    public GameMode getGameMode() {
+        return gameMode;
     }
+
+    public Boolean isOnline() {
+        return gameMode == GameMode.MULTIPLAYER || gameMode == GameMode.PARTYGAME;
+    }
+
+    public Boolean isPartyMode() {
+        return gameMode == GameMode.PARTYGAME;
+    }
+
+    public Boolean isMultiplayer() {
+        return gameMode == GameMode.MULTIPLAYER;
+    }
+
 }

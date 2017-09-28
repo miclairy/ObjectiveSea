@@ -24,8 +24,8 @@ public class RaceUpdater implements Runnable {
 
     private final double SECONDS_PER_UPDATE = 0.02;
     private double scaleFactor = 1;
-    private final double WARNING_SIGNAL_TIME_IN_MS = (1000 * 60 * 6);
-    private final double PREPARATORY_SIGNAL_TIME_IN_MS = (1000 * 60 * 5);
+    private final double WARNING_SIGNAL_TIME_IN_MS = (1000 * 60 * 3);
+    private final double PREPARATORY_SIGNAL_TIME_IN_MS = (1000 * 60 * 2);
     private final double MIN_WIND_SPEED = 6.0;
     private final double MAX_WIND_SPEED = 24.0;
     private final double MAX_EXTRA_TIME = TimeUtils.secondsToMilliseconds(TimeUtils.convertMinutesToSeconds(10.0));

@@ -1,7 +1,6 @@
 package seng302.controllers.listeners;
 
 
-import seng302.controllers.listeners.AbstractServerListener;
 import seng302.data.AC35StreamMessage;
 import seng302.data.CourseName;
 import seng302.utilities.ConnectionUtils;
@@ -35,7 +34,8 @@ public class ServerListener extends AbstractServerListener {
      */
     @Override
     public void run() {
-        while(clientConnected){
+        boolean receivedCode = false;
+        while(clientConnected && !receivedCode){
             try {
                 byte[] header = new byte[HEADER_LENGTH];
                 dataInput.readFully(header);
@@ -44,7 +44,6 @@ public class ServerListener extends AbstractServerListener {
                 int messageTypeValue = byteArrayRangeToInt(header, MESSAGE_TYPE.getStartIndex(), MESSAGE_TYPE.getEndIndex());
                 int sourceId = byteArrayRangeToInt(header, HEADER_SOURCE_ID.getStartIndex(), HEADER_SOURCE_ID.getEndIndex());
                 AC35StreamMessage messageType = AC35StreamMessage.fromInteger(messageTypeValue);
-
                 byte[] body = new byte[messageLength];
                 dataInput.readFully(body);
                 byte[] crc = new byte[CRC_LENGTH];
@@ -65,7 +64,15 @@ public class ServerListener extends AbstractServerListener {
                                 parseBoatActionMessage(body);
                             }
                             break;
+                        case PARTY_MODE_CODE_MESSAGE:
+                            parseRoomCodeMessage(body);
+                            receivedCode = true;
+                            break;
+                        default:
+                            System.out.println("Unknown");
                     }
+                } else{
+                    System.out.println("Incorrect CRC");
                 }
             } catch (SocketException e) {
                 break;
@@ -97,7 +104,8 @@ public class ServerListener extends AbstractServerListener {
         int gameStatus = byteArrayRangeToInt(body, HOST_GAME_STATUS.getStartIndex(), HOST_GAME_STATUS.getEndIndex());
         int gameMinPlayers = byteArrayRangeToInt(body, HOST_GAME_REQUIRED_PLAYERS.getStartIndex(), HOST_GAME_REQUIRED_PLAYERS.getEndIndex());
         int gameCurrentPlayers = byteArrayRangeToInt(body, HOST_GAME_CURRENT_PLAYERS.getStartIndex(), HOST_GAME_CURRENT_PLAYERS.getEndIndex());
-        return new AvailableRace(CourseName.getCourseNameFromInt(courseIndex).getText(), gameCurrentPlayers, serverPort, serverIP);
+        boolean isPartyMode = byteArrayRangeToInt(body, HOST_GAME_IS_PARTY_MODE.getStartIndex(), HOST_GAME_IS_PARTY_MODE.getEndIndex()) == 1;
+        return new AvailableRace(CourseName.getCourseNameFromInt(courseIndex).getText(), gameCurrentPlayers, serverPort, serverIP, isPartyMode);
     }
 
     /**
@@ -109,10 +117,9 @@ public class ServerListener extends AbstractServerListener {
         long serverIpLong = byteArrayRangeToLong(body, HOST_GAME_IP.getStartIndex(), HOST_GAME_IP.getEndIndex());
         String serverIP = ConnectionUtils.ipLongToString(serverIpLong);
         int port = byteArrayRangeToInt(body, HOST_GAME_PORT.getStartIndex(), HOST_GAME_PORT.getEndIndex());
-        AvailableRace raceToRemove = new AvailableRace("", 0, port, serverIP);
+        AvailableRace raceToRemove = new AvailableRace("", 0, port, serverIP, false);
         raceToRemove.setDeleted(true);
         setChanged();
         notifyObservers(raceToRemove);
     }
-
 }
