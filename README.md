@@ -1,5 +1,6 @@
 <h1>Objective Sea</h1>
-
+ 
+ 
 <h2>Starting the Game</h2>
 On opening Objective Sea, players may choose to play in either Single Player, Practice or Live Game (multiplayer) mode. <br>
 To play a live game, players must currently either enter a port and click the 'Host' button to start a server, or enter the IP and port of an already running server. When hosting, you will be able to select which course you would like to race on.
