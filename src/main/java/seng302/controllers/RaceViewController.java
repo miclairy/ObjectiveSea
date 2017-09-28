@@ -174,7 +174,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
     private void setupTutorialMode() {
         controller.hideStarterOverlay();
         initBoatHighlight();
-        initializeBoats();
         redrawCourse();
         tutorial = new Tutorial(controller, race);
         shiftArrow(false);
@@ -249,7 +248,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             moveBoatDisplay(displayBoat);
             manageBoatInformationFeatures(displayBoat);
             if(displayBoat == currentUserBoatDisplay) {
-                manageNextMarkVisuals();
+                if(!displayBoat.getBoat().isFinished()) manageNextMarkVisuals();
                 if(!congratulated && displayBoat.getBoat().getStatus() == BoatStatus.FINISHED){
                     controller.setUserHelpLabel("Congratulations, you have finished the race!", Color.web("#4DC58B"));
                     congratulated = true;
@@ -425,6 +424,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if(boatDisplay.getBoat().getId() == Main.getClient().getClientID()){
                 currentUserBoatDisplay = boatDisplay;
                 scoreBoardController.highlightUserBoat();
+                controller.addUserBoatHUD();
             }
         }
     }
@@ -466,10 +466,12 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     public void initBoatHighlight(){
-        boatHighlight = new Circle(0,0,10);
-        boatHighlight.setId("usersBoatHighlight");
-        boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
-        root.getChildren().add(boatHighlight);
+        if(options.isParticipant()){
+            boatHighlight = new Circle(0,0,10);
+            boatHighlight.setId("usersBoatHighlight");
+            boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
+            root.getChildren().add(boatHighlight);
+        }
     }
 
 
@@ -581,7 +583,6 @@ public class RaceViewController extends AnimationTimer implements Observer {
         FadeTransition ft2 = AnimationUtils.fadeOutTransition(highlightCircle2, 600 * scale);
 
         if(isCollision) {
-            boatHighlight.setFill(RED_HIGHTLIGHT_COLOR);
             ft2.setOnFinished(AE -> {
                 boat.setCollisionInProgress(false);
                 boat.getBoat().setBoatCollideSound(false);
@@ -1064,6 +1065,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
      */
     private void moveBoat(BoatDisplay boat, CanvasCoordinate point){
         Shape icon = boat.getIcon();
+
         icon.setTranslateY(point.getY());
         icon.setTranslateX(point.getX());
         icon.setScaleX(zoomLevel);

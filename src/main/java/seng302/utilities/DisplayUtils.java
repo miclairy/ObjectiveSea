@@ -30,6 +30,7 @@ public class DisplayUtils {
     public static final int DRAG_TOLERANCE = 45;
     private static final int FIFTY_NINE_MINUTES_MS = 3540000;
     public static boolean isRaceView = true;
+    private static boolean displayPromptRunning = false;
 
     public static double zoomLevel = 1;
     private static int prevDragX=0;
@@ -336,13 +337,18 @@ public class DisplayUtils {
         fadeTransition3.setDuration(new Duration(800));
         fadeTransition3.setFromValue(endOpacity);
         fadeTransition3.setToValue(previousOpacity);
+        fadeTransition3.setOnFinished(event -> displayPromptRunning = false);
 
-        fadeTransition.play();
         fadeTransition.setOnFinished(event -> {
             fadeTransition2.play();
             fadeTransition2.setOnFinished(event1 -> fadeTransition3.play());
         });
 
+
+        if(!displayPromptRunning){
+            fadeTransition.play();
+            displayPromptRunning = true;
+        }
     }
 
     /**

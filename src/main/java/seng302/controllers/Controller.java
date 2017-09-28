@@ -7,7 +7,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.SortedList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
@@ -23,6 +22,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Callback;
+import seng302.data.RaceStatus;
 import seng302.models.Boat;
 import seng302.models.ClientOptions;
 import seng302.models.Course;
@@ -34,14 +34,10 @@ import seng302.data.BoatStatus;
 import seng302.utilities.*;
 import seng302.utilities.TimeUtils;
 import seng302.views.BoatDisplay;
-import seng302.views.DisplayTouchController;
 import seng302.views.HeadsupDisplay;
 
 
-import java.io.*;
-
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.*;
 
 import static java.lang.Math.abs;
@@ -69,7 +65,6 @@ public class Controller implements Initializable, Observer {
     @FXML public Label lblWindSpeed;
     @FXML public Circle windCircle;
     @FXML public Circle nextMarkCircle;
-    @FXML public SplitPane splitPane;
     @FXML private Button btnHide;
     @FXML private Button btnQuickMenuTrack;
     @FXML private Button btnQuickMenuExit;
@@ -108,7 +103,6 @@ public class Controller implements Initializable, Observer {
 
     private static double anchorHeight;
     private static double anchorWidth;
-    private static String timeZone;
     private final String BOAT_CSS = "/style/boatStyle.css";
     private final String COURSE_CSS = "/style/courseStyle.css";
     private final String STARTERS_CSS = "/style/startersOverlayStyle.css";
@@ -257,7 +251,6 @@ public class Controller implements Initializable, Observer {
         initHiddenScoreboard();
         raceViewController.updateWindArrow();
         raceViewController.start();
-
     }
 
     @FXML public void exitRunningRace() {
@@ -617,7 +610,6 @@ public class Controller implements Initializable, Observer {
                 if(!raceViewController.hasInitializedBoats()) {
                     raceViewController.initBoatHighlight();
                     raceViewController.initializeBoats();
-                    addUserBoat();
                 }
                 break;
             case STARTED:
@@ -841,6 +833,11 @@ public class Controller implements Initializable, Observer {
         touchInputController.setUp(root, touchPane, this);
     }
 
+    public void setUpKeyInputController(KeyInputController keyInputController) {
+        keyInputController.setController(this);
+    }
+
+
     public class ColoredTextListCell extends ListCell<String> {
         @Override
         protected void updateItem(String item, boolean empty) {
@@ -965,7 +962,7 @@ public class Controller implements Initializable, Observer {
         tblPlacingsRV.setItems(sortedList);
     }
 
-    public void addUserBoat(){
+    public void addUserBoatHUD(){
         this.infoDisplay = new HeadsupDisplay(raceViewController.getCurrentUserBoatDisplay(), headsUpDisplay, race);
     }
 
