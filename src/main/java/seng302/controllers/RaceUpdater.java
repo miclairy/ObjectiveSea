@@ -162,7 +162,7 @@ public class RaceUpdater implements Runnable {
         if (race.getRaceStatus().equals(STARTED) || millisBeforeStart < 0 && race.getRaceStatus().equals(RaceStatus.PREPARATORY)){
             race.updateRaceStatus(RaceStatus.STARTED);
             for(Boat boat : race.getCompetitors()){
-                if(!boat.getStatus().equals(BoatStatus.DNF)){
+                if(!boat.getStatus().equals(BoatStatus.DNF) && !boat.isFinished()){
                     boat.setStatus(BoatStatus.RACING);
                 }
             }
@@ -231,7 +231,7 @@ public class RaceUpdater implements Runnable {
             } else {
                 boat.move(raceSecondsPassed, race.getCourse());
                 Course course = race.getCourse();
-                if (race.getCourse().getCourseOrder().size() > 0 && race.getRaceStatus().equals(STARTED)) {
+                if (race.getCourse().getCourseOrder().size() > 0 && race.getRaceStatus().equals(STARTED) && !boat.isFinished()) {
                     checkMarkRounding(boat, course);
                 }
             }
@@ -303,8 +303,10 @@ public class RaceUpdater implements Runnable {
             }
         } else if (currentMark.isFinishLine()) {
             if(RoundingMechanics.boatPassedThroughCompoundMark(boat, course.getFinishLine(), previousMark.getPosition(), true)) {
+                boat.setLastRoundedMarkIndex(boat.getLastRoundedMarkIndex() + 1);
                 boat.setSailsIn(true);
                 boat.setStatus(BoatStatus.FINISHED);
+                race.updateRaceOrder();
             }
         } else if (!currentMark.hasTwoMarks()){
             RoundingMechanics.boatHeadingToMark(boat, currentMark, previousMark, nextMark);
