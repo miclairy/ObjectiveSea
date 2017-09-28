@@ -315,14 +315,14 @@ public class GameServer implements Runnable, Observer {
         connectionManager.addConnection(newId, serverListener);
         serverListener.setClientId(newId);
         connectionManager.sendToClient(newId, packet);
-        if (options.isPartyMode()) {
-            Boat boat = raceUpdater.getRace().getBoatById(newId);
-            Color color = DisplayUtils.getBoatColor(newId);
-            String boatName = boat.getName()+ " (" + boat.getNickName() + ")";
-            byte[] initPacket = packetBuilder.createWebClientInitPacket(newId, boatName, color);
-            connectionManager.sendToClient(newId, initPacket);
-        }
         if(success){
+            if (options.isPartyMode()) {
+                Boat boat = raceUpdater.getRace().getBoatById(newId);
+                Color color = DisplayUtils.getBoatColor(newId);
+                String boatName = boat.getName()+ " (" + boat.getNickName() + ")";
+                byte[] initPacket = packetBuilder.createWebClientInitPacket(newId, boatName, color);
+                connectionManager.sendToClient(newId, initPacket);
+            }
             createPacketForGameRecorder();
             sendXmlMessage(RACE_XML_MESSAGE, options.getRaceXML());
             sendAllBoatStates();
