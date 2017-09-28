@@ -168,13 +168,13 @@ public class MainMenuController implements Initializable{
 
     public void setApp(Main main, GameSounds sounds) throws ServerFullException {
         this.main = main;
+        this.gameSounds = sounds;
+        setUpSoundSliders();
+        setUpSoundImages();
         try {
             this.client = new MainMenuClient();
             mainMenuClientThread = new Thread(client);
             mainMenuClientThread.start();
-            this.gameSounds = sounds;
-            setUpSoundSliders();
-            setUpSoundImages();
         } catch (NoConnectionToServerException e) {
             System.err.println("No connection to Game Recorder.");
         }

@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 <?import java.lang.Double?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
@@ -19,7 +26,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Polygon?>
 
-<StackPane fx:id="stackPane" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/menuStyle.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.MainMenuController">
+<StackPane fx:id="stackPane" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/menuStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.MainMenuController">
     <children>
         <ImageView fx:id="imvBackground" fitHeight="1080.0" fitWidth="1920.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <image>
@@ -484,6 +491,9 @@
                            <GridPane.margin>
                               <Insets top="130.0" />
                            </GridPane.margin>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
                         </Button>
                         <Button fx:id="easyAIbtn" mnemonicParsing="false" onAction="#easyAI" prefWidth="150.0" styleClass="AIBtn" text="Easy" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
                            <padding>
@@ -492,6 +502,9 @@
                            <GridPane.margin>
                               <Insets top="190.0" />
                            </GridPane.margin>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
                         </Button>
                         <Button fx:id="hardAIbtn" mnemonicParsing="false" onAction="#hardAI" prefWidth="150.0" styleClass="AIBtn" text="Hard" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
                            <padding>
@@ -500,6 +513,9 @@
                            <GridPane.margin>
                               <Insets top="250.0" />
                            </GridPane.margin>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
                         </Button>
                         <Label styleClass="paneTitle" text="Select Difficulty">
                            <GridPane.margin>
@@ -543,29 +559,59 @@
                     <GridPane.margin>
                         <Insets />
                     </GridPane.margin>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
                 </Slider>
-                <Slider fx:id="fxSlider" blockIncrement="0.1" max="1.0" maxHeight="150.0" orientation="VERTICAL" prefHeight="150.0" prefWidth="20.0" value="1.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+                <Slider fx:id="fxSlider" blockIncrement="0.1" max="1.0" maxHeight="150.0" orientation="VERTICAL" prefHeight="150.0" prefWidth="20.0" value="1.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor></Slider>
                 <Label fx:id="lblMusic" text="Music" GridPane.halignment="CENTER" />
                 <Label fx:id="lblSoundEffects" text="Sound Effects" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
-            <ImageView fx:id="musicOnImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+            <ImageView fx:id="musicOnImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                <image>
-                  <Image url="@graphics/soundOn.png" />
+                  <Image url="@graphics/soundOnBlue.png" />
                </image>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <GridPane.margin>
+                  <Insets left="40.0" />
+               </GridPane.margin>
             </ImageView>
-            <ImageView fx:id="musicOffImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" visible="false" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+            <ImageView fx:id="musicOffImage" fitHeight="46.0" fitWidth="39.0" pickOnBounds="true" preserveRatio="true" visible="false" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                <image>
-                  <Image url="@graphics/soundOff.png" />
+                  <Image url="@graphics/soundOffBlue.png" />
                </image>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <GridPane.margin>
+                  <Insets left="40.0" />
+               </GridPane.margin>
             </ImageView>
-            <ImageView fx:id="soundFxOnImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+            <ImageView fx:id="soundFxOnImage" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                <image>
-                  <Image url="@graphics/soundOn.png" />
+                  <Image url="@graphics/soundOnRed.png" />
                </image>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <GridPane.margin>
+                  <Insets left="40.0" />
+               </GridPane.margin>
             </ImageView>
-            <ImageView fx:id="soundFxOffImage" fitHeight="50.0" fitWidth="50.0" layoutX="166.0" layoutY="218.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+            <ImageView fx:id="soundFxOffImage" fitHeight="50.0" fitWidth="39.0" layoutX="166.0" layoutY="218.0" pickOnBounds="true" preserveRatio="true" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                <image>
-                  <Image url="@graphics/soundOff.png" />
+                  <Image url="@graphics/soundOffRed.png" />
                </image>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <GridPane.margin>
+                  <Insets left="40.0" />
+               </GridPane.margin>
             </ImageView>
             </children>
          <StackPane.margin>

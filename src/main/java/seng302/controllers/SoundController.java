@@ -71,16 +71,18 @@ public class SoundController implements Runnable {
      * @param boat boat that has been hit
      */
     public void hasHitBoat(Boat boat) {
-        if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 5000) && boat.isBoatCollideSound()) {
-            if ((boat.getBoatHealth() <= 20) && boat.getId().equals(clientID)) {
-                DisplaySwitcher.getGameSounds().boatDamage();
-                DisplaySwitcher.getGameSounds().playGameSound();
-            } else {
-                DisplaySwitcher.getGameSounds().hitBoat();
-                DisplaySwitcher.getGameSounds().playGameSound();
+        if(boat.getId().equals(clientID)) {
+            if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 5000) && boat.isBoatCollideSound()) {
+                if (boat.getBoatHealth() <= 20) {
+                    DisplaySwitcher.getGameSounds().boatDamage();
+                    DisplaySwitcher.getGameSounds().playGameSound();
+                } else {
+                    DisplaySwitcher.getGameSounds().hitBoat();
+                    DisplaySwitcher.getGameSounds().playGameSound();
+                }
+                boat.setBoatCollideSound(false);
+                boat.setTimeSinceLastCollision(System.currentTimeMillis());
             }
-            boat.setBoatCollideSound(false);
-            boat.setTimeSinceLastCollision(System.currentTimeMillis());
         }
     }
 
@@ -89,18 +91,20 @@ public class SoundController implements Runnable {
      * @param boat boat that has hit a mark
      */
     public void hasHitMark(Boat boat) {
-        if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 5000) && boat.isMarkCollideSound()) {
-            if (boat.getBoatHealth() <= 20 && boat.getId().equals(clientID)) {
-                DisplaySwitcher.getGameSounds().boatDamage();
-                DisplaySwitcher.getGameSounds().playGameSound();
-            } else {
-                DisplaySwitcher.getGameSounds().playBuoySound();
-                DisplaySwitcher.getGameSounds().playGameSound();
-                DisplaySwitcher.getGameSounds().hitMark();
-                DisplaySwitcher.getGameSounds().playGameSound();
+        if(boat.getId().equals(clientID)) {
+            if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 5000) && boat.isMarkCollideSound()) {
+                if (boat.getBoatHealth() <= 20) {
+                    DisplaySwitcher.getGameSounds().boatDamage();
+                    DisplaySwitcher.getGameSounds().playGameSound();
+                } else {
+                    DisplaySwitcher.getGameSounds().playBuoySound();
+                    DisplaySwitcher.getGameSounds().playGameSound();
+                    DisplaySwitcher.getGameSounds().hitMark();
+                    DisplaySwitcher.getGameSounds().playGameSound();
+                }
+                boat.setMarkCollideSound(false);
+                boat.setTimeSinceLastCollision(System.currentTimeMillis());
             }
-            boat.setMarkCollideSound(false);
-            boat.setTimeSinceLastCollision(System.currentTimeMillis());
         }
     }
 
@@ -109,18 +113,18 @@ public class SoundController implements Runnable {
      * @param boat boat that is out of bounds
      */
     private void isOutOfBounds(Boat boat){
-        if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 5000) && boat.isOutOfBoundsSound()) {
-            if (boat.getBoatHealth() <= 20 && boat.getId().equals(clientID)) {
-                DisplaySwitcher.getGameSounds().boatDamage();
-                DisplaySwitcher.getGameSounds().playGameSound();
-            } else {
-                DisplaySwitcher.getGameSounds().playBuoySound();
-                DisplaySwitcher.getGameSounds().playGameSound();
-                DisplaySwitcher.getGameSounds().hitBoundary();
-                DisplaySwitcher.getGameSounds().playGameSound();
+        if(boat.getId().equals(clientID)) {
+            if ((System.currentTimeMillis() - boat.getTimeSinceLastCollision() > 5000) && boat.isOutOfBoundsSound()) {
+                if (boat.getBoatHealth() <= 20) {
+                    DisplaySwitcher.getGameSounds().boatDamage();
+                    DisplaySwitcher.getGameSounds().playGameSound();
+                } else {
+                    DisplaySwitcher.getGameSounds().hitBoundary();
+                    DisplaySwitcher.getGameSounds().playGameSound();
+                }
+                boat.setOutOfBoundsSound(false);
+                boat.setTimeSinceLastCollision(System.currentTimeMillis());
             }
-            boat.setOutOfBoundsSound(false);
-            boat.setTimeSinceLastCollision(System.currentTimeMillis());
         }
     }
 
