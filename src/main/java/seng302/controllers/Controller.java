@@ -629,15 +629,18 @@ public class Controller implements Initializable, Observer {
         switch (race.getRaceStatus()) {
             case WARNING:
                 showStarterOverlay();
+                if(!options.isParticipant() && options.getGameMode().equals(GameMode.PARTYGAME)){
+                    this.infoDisplay = new HeadsupDisplay(String.format("%04d", GameClient.getRoomCode()), headsUpDisplay);
+                }
                 break;
             case PREPARATORY:
                 hideStarterOverlay();
                 if(!raceViewController.hasInitializedBoats()) {
                     raceViewController.initBoatHighlight();
                     raceViewController.initializeBoats();
-                    if(options.isParticipant() && options.getGameMode().equals(GameMode.PARTYGAME)){
-                        this.infoDisplay = new HeadsupDisplay(String.format("%04d", GameClient.getRoomCode()), headsUpDisplay);
-                    }
+                }
+                if(raceViewController.getCurrentUserBoatDisplay() != null){
+                    addUserBoat();
                 }
                 break;
             case STARTED:
