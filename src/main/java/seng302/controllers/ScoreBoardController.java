@@ -169,7 +169,7 @@ public class ScoreBoardController {
         fxSlider.setValue(fxSliderValue);
         addButtonListeners(btnTrack);
         addButtonListeners(btnExit);
-        scoreBoard.getSelectionModel().select(1);
+        scoreBoard.getSelectionModel().select(0);
     }
 
     /**

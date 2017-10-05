@@ -238,6 +238,15 @@ public class MainMenuController implements Initializable{
         tblAvailableRaces.getSelectionModel().selectedItemProperty().addListener(
                 (obs, oldRace, newRace) -> disableJoinButtons(newRace == null)
         );
+        tblAvailableRaces.setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getClickCount() == 2) {
+                try {
+                    joinAsParticipant();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @FXML private void backToOnline(){
