@@ -755,6 +755,8 @@ public class MainMenuController implements Initializable{
         musicOffImage.setVisible(gameSounds.getVolume() == 0.0);
         soundFxOnImage.setVisible(!soundFxIsMute);
         soundFxOffImage.setVisible(soundFxIsMute);
+        musicSliderValue = gameSounds.getVolume();
+        fxSliderValue = gameSounds.getFxVolume();
         musicSlider.setValue(musicSliderValue);
         fxSlider.setValue(fxSliderValue);
     }
@@ -793,6 +795,10 @@ public class MainMenuController implements Initializable{
                 }
             }
             fxSliderValue = (Double) newValue;
+        });
+
+        fxSlider.setOnMouseReleased(event -> {
+            gameSounds.playFXSound();
         });
     }
 

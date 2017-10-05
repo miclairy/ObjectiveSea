@@ -386,6 +386,10 @@ public class ScoreBoardController {
             }
             fxSliderValue = (Double) newValue;
         });
+
+        fxSlider.setOnMouseReleased(event -> {
+            gameSounds.playFXSound();
+        });
     }
 
     private void toggleMusicImages(boolean showMusicOnImage){
