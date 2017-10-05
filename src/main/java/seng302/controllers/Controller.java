@@ -163,7 +163,7 @@ public class Controller implements Initializable, Observer {
 
         createCanvasAnchorListeners();
         scoreBoardController.setControllers(this, raceViewController, race, selectionController, DisplaySwitcher.getScene());
-        scoreBoardController.setUp();
+        scoreBoardController.setUp(DisplaySwitcher.getGameSounds());
         fpsString.set("..."); //set to "..." while fps count loads
         fpsLabel.textProperty().bind(fpsString);
         lblNoBoardClock.textProperty().bind(raceTimerString);

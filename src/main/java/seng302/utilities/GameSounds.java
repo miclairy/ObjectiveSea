@@ -333,7 +333,7 @@ public class GameSounds {
 
     public double getVolume(){return volume;}
 
-    public double getFxVolume(){return volume;}
+    public double getFxVolume(){return fxVolume;}
 
 }
 
