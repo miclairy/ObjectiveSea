@@ -1076,7 +1076,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         icon.getTransforms().clear();
         icon.getTransforms().add(new Rotate(boat.getBoat().getHeading()));
 
-        if(boat.equals(currentUserBoatDisplay)){
+        if(boat.equals(currentUserBoatDisplay) && (options.getGameMode().equals(GameMode.MULTIPLAYER))){
             boatHighlight.setTranslateY(point.getY());
             boatHighlight.setTranslateX(point.getX());
             boatHighlight.setScaleX(zoomLevel*1.5);
