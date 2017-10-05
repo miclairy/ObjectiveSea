@@ -425,7 +425,9 @@ public class RaceViewController extends AnimationTimer implements Observer {
             if(boatDisplay.getBoat().getId() == Main.getClient().getClientID()){
                 currentUserBoatDisplay = boatDisplay;
                 scoreBoardController.highlightUserBoat();
-                controller.addUserBoatHUD();
+                if(options.requiresPlayerHUD()){
+                    controller.addUserBoatHUD();
+                }
             }
         }
     }
@@ -468,14 +470,13 @@ public class RaceViewController extends AnimationTimer implements Observer {
     }
 
     public void initBoatHighlight(){
-        if(options.isParticipant()){
+        if(options.isParticipant() && options.getGameMode().equals(GameMode.MULTIPLAYER)){
             boatHighlight = new Circle(0,0,10);
             boatHighlight.setId("usersBoatHighlight");
             boatHighlight.setFill(DEFAULT_HIGHTLIGHT_COLOR);
             root.getChildren().add(boatHighlight);
         }
     }
-
 
     /**
      * changes the color of the boat highlight to update as the boat is about to receive a penalty
@@ -1075,7 +1076,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         icon.getTransforms().clear();
         icon.getTransforms().add(new Rotate(boat.getBoat().getHeading()));
 
-        if(boat.equals(currentUserBoatDisplay)){
+        if(boat.equals(currentUserBoatDisplay) && (options.getGameMode().equals(GameMode.MULTIPLAYER))){
             boatHighlight.setTranslateY(point.getY());
             boatHighlight.setTranslateX(point.getX());
             boatHighlight.setScaleX(zoomLevel*1.5);
@@ -1287,7 +1288,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         scoreBoardController.updateSparkLine();
         if(!controller.isScoreboardVisible()){
             controller.refreshTable();
-            if(!options.getGameMode().equals(GameMode.PARTYGAME)){
+            if(options.requiresPlayerHUD()){
                 controller.refreshHUD();
             }
         }
