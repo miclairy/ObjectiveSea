@@ -75,6 +75,13 @@ public class ClientOptions {
         return isHost;
     }
 
+    public Boolean requiresPlayerHUD(){
+        if(gameMode.equals(GameMode.MULTIPLAYER) || gameMode.equals(GameMode.SINGLEPLAYER)){
+            return true;
+        }
+        return false;
+    }
+
     public GameMode getGameMode() {
         return gameMode;
     }
