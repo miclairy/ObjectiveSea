@@ -1,12 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
 <?import java.lang.Double?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
@@ -28,7 +21,7 @@
 
 <StackPane fx:id="stackPane" prefHeight="1080.0" prefWidth="1920.0" stylesheets="@style/menuStyle.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="seng302.controllers.MainMenuController">
     <children>
-        <ImageView fx:id="imvBackground" fitHeight="1080.0" fitWidth="1920.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <ImageView fx:id="imvBackground" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <image>
                 <Image url="@graphics/menuBackground.png" />
             </image>

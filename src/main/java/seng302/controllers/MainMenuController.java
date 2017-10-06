@@ -10,6 +10,9 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -31,6 +34,7 @@ import seng302.views.CourseMap;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -149,6 +153,8 @@ public class MainMenuController implements Initializable{
         columnMap.setStyle( "-fx-alignment: CENTER;");
         columnParticipants.setStyle( "-fx-alignment: CENTER;");
         tblAvailableRaces.setPlaceholder(new Label("No Available Races"));
+        imvBackground.setFitWidth(Toolkit.getDefaultToolkit().getScreenSize().getWidth());
+        imvBackground.setFitHeight(Toolkit.getDefaultToolkit().getScreenSize().getHeight());
     }
 
     /**
@@ -779,9 +785,13 @@ public class MainMenuController implements Initializable{
      * Shows controls overlay
      */
     @FXML private void showControls(){
-        AnimationUtils.fadeNode(imvControls, imvControls.isVisible());
-        AnimationUtils.fadeNode(menuAnchor, menuAnchor.isVisible());
-        AnimationUtils.fadeNode(dropShadowAnchor, dropShadowAnchor.isVisible());
+        if(menuAnchor.isVisible()) {
+            AnimationUtils.switchPaneFade(menuAnchor, imvControls);
+            AnimationUtils.fadeNode(dropShadowAnchor, dropShadowAnchor.isVisible());
+        } else {
+            AnimationUtils.switchPaneFade(imvControls, menuAnchor);
+            AnimationUtils.fadeNode(dropShadowAnchor, dropShadowAnchor.isVisible());
+        }
     }
 
 
@@ -876,12 +886,21 @@ public class MainMenuController implements Initializable{
 
     private void setUpDeselection(){
         imvBackground.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            if(settingsGrid.isVisible()){
+            if (settingsGrid.isVisible()){
                 AnimationUtils.fadeNode(settingsGrid, true);
             }
-            if(imvControls.isVisible()) {
-                AnimationUtils.fadeNode(menuAnchor, false);
-                AnimationUtils.fadeNode(imvControls, true);
+            if (imvControls.isVisible()) {
+                AnimationUtils.switchPaneFade(imvControls, menuAnchor);
+                AnimationUtils.fadeNode(dropShadowAnchor, dropShadowAnchor.isVisible());
+            }
+        });
+
+        menuAnchor.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if (settingsGrid.isVisible()){
+                AnimationUtils.fadeNode(settingsGrid, true);
+            }
+            if (imvControls.isVisible()) {
+                AnimationUtils.switchPaneFade(imvControls, menuAnchor);
                 AnimationUtils.fadeNode(dropShadowAnchor, dropShadowAnchor.isVisible());
             }
         });

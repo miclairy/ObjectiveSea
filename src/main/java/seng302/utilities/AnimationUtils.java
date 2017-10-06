@@ -20,6 +20,8 @@ import seng302.views.Arrow;
  */
 public class AnimationUtils {
 
+    private static boolean transitionFinished = true;
+
     /**
      * scales a collision node shape in and out to create explosion effect
      * @param node a circle representing the collision area
@@ -146,19 +148,31 @@ public class AnimationUtils {
      * @param node2 the node to fade in
      */
     public static void switchPaneFade(Node node1, Node node2){
-        FadeTransition fadeTransition1 = new FadeTransition(new Duration(300), node1);
-        fadeTransition1.setFromValue(1);
-        fadeTransition1.setToValue(0);
-        fadeTransition1.setInterpolator(Interpolator.EASE_OUT);
-        fadeTransition1.setOnFinished(new EventHandler<ActionEvent>(){public void handle(ActionEvent AE){node1.setVisible(false); }});
+        if(transitionFinished) {
+            transitionFinished = false;
+            FadeTransition fadeTransition1 = new FadeTransition(new Duration(300), node1);
+            fadeTransition1.setFromValue(1);
+            fadeTransition1.setToValue(0);
+            fadeTransition1.setInterpolator(Interpolator.EASE_OUT);
 
-        FadeTransition fadeTransition2 = new FadeTransition(new Duration(300), node2);
-        fadeTransition2.setFromValue(0);
-        fadeTransition2.setToValue(1);
-        fadeTransition2.setInterpolator(Interpolator.EASE_OUT);
-        node2.setVisible(true);
-        ParallelTransition pt = new ParallelTransition(fadeTransition1, fadeTransition2);
-        pt.play();
+            FadeTransition fadeTransition2 = new FadeTransition(new Duration(300), node2);
+            fadeTransition2.setFromValue(0);
+            fadeTransition2.setToValue(1);
+            fadeTransition2.setInterpolator(Interpolator.EASE_OUT);
+            fadeTransition1.setOnFinished(new EventHandler<ActionEvent>() {
+                public void handle(ActionEvent actionEvent) {
+                    node1.setVisible(false);
+                }
+            });
+            fadeTransition2.setOnFinished(new EventHandler<ActionEvent>() {
+                public void handle(ActionEvent actionEvent) {
+                    transitionFinished = true;
+                }
+            });
+            node2.setVisible(true);
+            ParallelTransition pt = new ParallelTransition(fadeTransition1, fadeTransition2);
+            pt.play();
+        }
     }
 
     /**
