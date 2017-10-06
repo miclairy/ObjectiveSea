@@ -80,7 +80,7 @@ public class Controller implements Initializable, Observer {
     private HeadsupDisplay infoDisplay;
 
     @FXML public StackPane stackPane;
-    @FXML private AnchorPane tutorialOverlay;
+    @FXML private VBox tutorialOverlay;
     @FXML private Label tutorialOverlayTitle;
     @FXML private Label tutorialContent;
     @FXML public Label lblNextMark;
@@ -131,6 +131,9 @@ public class Controller implements Initializable, Observer {
     private boolean moveHUD = false;
     private boolean hasHUDXMoved = false;
     private boolean hasHUDYMoved = false;
+    private boolean moveTutorial = false;
+    private boolean hasTutorialXMoved = false;
+    private boolean hasTutorialYMoved = false;
     private ArrayList<BoatDisplay> boatDisplayArrayList = new ArrayList<>();
     private BoatDisplay currentDisplayBoat;
     private boolean dragging = false;
@@ -177,6 +180,7 @@ public class Controller implements Initializable, Observer {
         lblExitRV.setVisible(false);
         partyModeBox.setVisible(false);
         setPartyBoxPosition();
+        setTutorialOverlayPosition();
 
         raceCompetitorOverview();
         startersOverlay.toFront();
@@ -214,7 +218,7 @@ public class Controller implements Initializable, Observer {
         initZoomEventListener();
         initKeyPressListener();
         initTouchDisplayDrag();
-        resetHUDPosition();
+        resetVBoxPosition();
         raceViewController.setupRaceView(options);
         initHiddenScoreboard();
         raceViewController.updateWindArrow();
@@ -227,6 +231,12 @@ public class Controller implements Initializable, Observer {
         partyModeBox.toFront();
         partyModeBox.setLayoutX(canvasWidth / 2);
         partyModeBox.setLayoutY(canvasHeight / 2);
+    }
+
+    private void setTutorialOverlayPosition() {
+        tutorialOverlay.toFront();
+        tutorialOverlay.setLayoutX(canvasWidth - tutorialOverlay.getMaxWidth() - 105);
+        tutorialOverlay.setLayoutY(67);
     }
 
     /**
@@ -303,6 +313,22 @@ public class Controller implements Initializable, Observer {
         this.hasHUDYMoved = hasHUDYMoved;
     }
 
+    public boolean hasTutorialXMoved() {
+        return hasTutorialXMoved;
+    }
+
+    public void setTutorialXMoved(boolean hasTutorialXMoved) {
+        this.hasTutorialXMoved = hasTutorialXMoved;
+    }
+
+    public boolean hasTutorialYMoved() {
+        return hasTutorialYMoved;
+    }
+
+    public void setTutorialYMoved(boolean hasTutorialYMoved) {
+        this.hasTutorialYMoved = hasTutorialYMoved;
+    }
+
     private static class Delta {
         public static double x;
         public static double y;
@@ -331,6 +357,12 @@ public class Controller implements Initializable, Observer {
                 moveHUD = true;
                 DisplayUtils.externalTouchEvent = true;
             }
+            if(checkTutorialClick(event)) {
+                dragging = true;
+                tutorialOverlay.setCursor(Cursor.MOVE);
+                moveTutorial = true;
+                DisplayUtils.externalTouchEvent = true;
+            }
         });
 
         canvasAnchor.setOnMouseDragged(event -> {
@@ -343,6 +375,11 @@ public class Controller implements Initializable, Observer {
                 DisplayUtils.externalDragEvent = true;
                 hasHUDXMoved = false;
                 hasHUDYMoved = false;
+            } else if(moveTutorial) {
+                moveTutorial(event);
+                DisplayUtils.externalDragEvent = true;
+                hasTutorialXMoved = false;
+                hasTutorialYMoved = false;
             } else if (DisplayUtils.zoomLevel != 1 && !event.isSynthesized() && !DisplayUtils.externalDragEvent) {
                 dragCourse(event);
             }
@@ -354,6 +391,7 @@ public class Controller implements Initializable, Observer {
             headsUpDisplay.setCursor(Cursor.HAND);
             moveAnnotation = false;
             moveHUD = false;
+            moveTutorial = false;
             DisplayUtils.externalTouchEvent = false;
             DisplayUtils.externalDragEvent = false;
         });
@@ -399,6 +437,21 @@ public class Controller implements Initializable, Observer {
     }
 
     /**
+     * Checks to see if the mouse is clicked onto the tutorialOverlay or not.
+     * @param event Mouse event to check if the mouse is clicked on the tutorialOverlay
+     * @return boolean that is true if the mouse click is on the tutorialOverlay or false if it is not.
+     */
+    private boolean checkTutorialClick(MouseEvent event) {
+        double tutorialXPosition = event.getX() - tutorialOverlay.getLayoutX();
+        double tutorialYPosition = event.getY() - tutorialOverlay.getLayoutY();
+        double tutorialWidth = tutorialOverlay.getWidth();
+        double tutorialHeight = tutorialOverlay.getHeight();
+
+        return (tutorialXPosition <= tutorialWidth && tutorialXPosition >= 0 &&
+                tutorialYPosition <= tutorialHeight && tutorialYPosition >= 0);
+    }
+
+    /**
      * Takes the mouse event x and y coordinates if the mouse is clicked on an annotation and moves the annotation
      * correctly in accordance to the position of the mouse.
      * @param event Mouse event to get the x and y coordinates of the mouse to set correct placement.
@@ -418,7 +471,7 @@ public class Controller implements Initializable, Observer {
     }
 
     /**
-     * Takes the mouse event x and y coordinates if the mouse is clicked on the HUD and moves the annotation
+     * Takes the mouse event x and y coordinates if the mouse is clicked on the HUD and moves the vbox
      * correctly in accordance to the position of the mouse.
      * @param event Mouse event to get the x and y coordinates of the mouse to set correct placement.
      */
@@ -438,16 +491,43 @@ public class Controller implements Initializable, Observer {
     }
 
     /**
+     * Takes the mouse event x and y coordinates if the mouse is clicked on the tutorialOverlay and moves the vbox
+     * correctly in accordance to the position of the mouse.
+     * @param event Mouse event to get the x and y coordinates of the mouse to set correct placement.
+     */
+    private void moveTutorial(MouseEvent event) {
+        if(zoomLevel > 1 || (zoomLevel <= 1 && !isOutsideBounds(tutorialOverlay))) {
+            if (abs(event.getX() - Delta.x) < DRAG_TOLERANCE &&
+                    abs(event.getY() - Delta.y) < DRAG_TOLERANCE) {
+                double scaledChangeX = (event.getX() - Delta.x);
+                double scaledChangeY = (event.getY() - Delta.y);
+                tutorialOverlay.relocate(tutorialOverlay.getLayoutX() + scaledChangeX, tutorialOverlay.getLayoutY() + scaledChangeY);
+            } else {
+                dragCourse(event);
+            }
+        }
+        Delta.x = event.getX();
+        Delta.y = event.getY();
+    }
+
+    /**
      * Checks to see if the mouse is clicked on the HUD, and if so, if double click resets the HUD to its default
      * position in the top left corner.
      */
-    private void resetHUDPosition() {
+    private void resetVBoxPosition() {
         canvasAnchor.setOnMouseClicked(event -> {
             if(checkHUDClick(event)) {
                 if (event.getClickCount() == 2) {
                     hasHUDXMoved = false;
                     hasHUDYMoved = false;
                     headsUpDisplay.relocate(150, 10);
+                }
+            }
+            if(checkTutorialClick(event)) {
+                if (event.getClickCount() == 2) {
+                    hasTutorialXMoved = false;
+                    hasTutorialYMoved = false;
+                    tutorialOverlay.relocate(canvasWidth - tutorialOverlay.getMaxWidth() - 105, 67);
                 }
             }
         });
@@ -567,6 +647,7 @@ public class Controller implements Initializable, Observer {
             raceViewController.redrawCourse();
             raceViewController.redrawBoatPaths();
             setPartyBoxPosition();
+            setTutorialOverlayPosition();
             btnHide.setLayoutX(canvasWidth - 485.0);
         });
         canvasAnchor.heightProperty().addListener(resizeListener);
@@ -575,6 +656,7 @@ public class Controller implements Initializable, Observer {
             anchorHeight = canvasAnchor.getHeight();
             raceViewController.redrawCourse();
             setPartyBoxPosition();
+            setTutorialOverlayPosition();
             raceViewController.redrawBoatPaths();
 
         });
@@ -1045,5 +1127,10 @@ public class Controller implements Initializable, Observer {
     public VBox getHUD() {
         return headsUpDisplay;
     }
+
+    public VBox getTutorialOverlay() {
+        return tutorialOverlay;
+    }
+
 
 }

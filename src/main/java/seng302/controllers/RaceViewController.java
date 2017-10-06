@@ -308,6 +308,7 @@ public class RaceViewController extends AnimationTimer implements Observer {
         }
         moveBoatAnnotation(boatDisplay.getAnnotation(), point, boatDisplay);
         moveHUD(controller.getHUD());
+        moveTutorialOverlay(controller.getTutorialOverlay());
         manageStartTiming(boatDisplay);
         if(boatDisplay.getBoat().getStatus().equals(BoatStatus.DNF) || boatDisplay.getBoat().isFinished()){
             boatDisplay.unFocus();
@@ -867,6 +868,36 @@ public class RaceViewController extends AnimationTimer implements Observer {
             outsideY += headsUpDisplay.getBoundsInParent().getMaxY() - Controller.getCanvasHeight();
         }
         headsUpDisplay.relocate((headsUpDisplay.getLayoutX() - outsideX), (headsUpDisplay.getLayoutY() - outsideY));
+    }
+
+    /**
+     * This function checks to see if the tutorialOverlay is outside of the game screen and if so snaps it inside onto either
+     * the X or the Y axies.
+     * @param tutorialOverlay The VBox of the tutorialOverlay which is being clicked on.
+     */
+    private void moveTutorialOverlay(VBox tutorialOverlay) {
+        //check if outside bounds
+        double outsideX = 0;
+        double outsideY = 0;
+
+        if(tutorialOverlay.getBoundsInParent().getMaxX() > Controller.getCanvasWidth()){
+            outsideX += tutorialOverlay.getBoundsInParent().getMaxX() - Controller.getCanvasWidth();
+            controller.setTutorialXMoved(true);
+        } else if (tutorialOverlay.getBoundsInParent().getMinX() < 0){
+            outsideX += tutorialOverlay.getBoundsInParent().getMinX();
+        }
+        if(tutorialOverlay.getBoundsInParent().getMaxY() > Controller.getCanvasHeight()){
+            outsideY += tutorialOverlay.getBoundsInParent().getMaxY() - Controller.getCanvasHeight();
+            controller.setTutorialYMoved(true);
+        } else if (tutorialOverlay.getBoundsInParent().getMinY() < 0){
+            outsideY += tutorialOverlay.getBoundsInParent().getMinY();
+        }
+        if(controller.hasTutorialXMoved()) {
+            outsideX += tutorialOverlay.getBoundsInParent().getMaxX() - Controller.getCanvasWidth();
+        } else if(controller.hasTutorialYMoved()) {
+            outsideY += tutorialOverlay.getBoundsInParent().getMaxY() - Controller.getCanvasHeight();
+        }
+        tutorialOverlay.relocate((tutorialOverlay.getLayoutX() - outsideX), (tutorialOverlay.getLayoutY() - outsideY));
     }
 
     /**
