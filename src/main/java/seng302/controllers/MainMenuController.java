@@ -153,8 +153,10 @@ public class MainMenuController implements Initializable{
         columnMap.setStyle( "-fx-alignment: CENTER;");
         columnParticipants.setStyle( "-fx-alignment: CENTER;");
         tblAvailableRaces.setPlaceholder(new Label("No Available Races"));
-        imvBackground.setFitWidth(Toolkit.getDefaultToolkit().getScreenSize().getWidth());
-        imvBackground.setFitHeight(Toolkit.getDefaultToolkit().getScreenSize().getHeight());
+        if (!System.getProperty("os.name").startsWith("Mac")) {
+            imvBackground.setFitWidth(Toolkit.getDefaultToolkit().getScreenSize().getWidth());
+            imvBackground.setFitHeight(Toolkit.getDefaultToolkit().getScreenSize().getHeight());
+        }
     }
 
     /**
