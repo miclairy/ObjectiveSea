@@ -157,6 +157,7 @@ public class MainMenuController implements Initializable{
             imvBackground.setFitWidth(Toolkit.getDefaultToolkit().getScreenSize().getWidth());
             imvBackground.setFitHeight(Toolkit.getDefaultToolkit().getScreenSize().getHeight());
         }
+        //dropShadowAnchor.setOpacity(0);
     }
 
     /**
@@ -789,10 +790,8 @@ public class MainMenuController implements Initializable{
     @FXML private void showControls(){
         if(menuAnchor.isVisible()) {
             AnimationUtils.switchPaneFade(menuAnchor, imvControls);
-            AnimationUtils.fadeNode(dropShadowAnchor, dropShadowAnchor.isVisible());
         } else {
             AnimationUtils.switchPaneFade(imvControls, menuAnchor);
-            AnimationUtils.fadeNode(dropShadowAnchor, dropShadowAnchor.isVisible());
         }
     }
 
@@ -893,7 +892,6 @@ public class MainMenuController implements Initializable{
             }
             if (imvControls.isVisible()) {
                 AnimationUtils.switchPaneFade(imvControls, menuAnchor);
-                AnimationUtils.fadeNode(dropShadowAnchor, dropShadowAnchor.isVisible());
             }
         });
 
@@ -903,7 +901,12 @@ public class MainMenuController implements Initializable{
             }
             if (imvControls.isVisible()) {
                 AnimationUtils.switchPaneFade(imvControls, menuAnchor);
-                AnimationUtils.fadeNode(dropShadowAnchor, dropShadowAnchor.isVisible());
+            }
+        });
+
+        imvControls.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if (settingsGrid.isVisible()){
+                AnimationUtils.fadeNode(settingsGrid, true);
             }
         });
     }
