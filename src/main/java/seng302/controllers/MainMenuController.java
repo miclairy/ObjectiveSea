@@ -157,7 +157,6 @@ public class MainMenuController implements Initializable{
             imvBackground.setFitWidth(Toolkit.getDefaultToolkit().getScreenSize().getWidth());
             imvBackground.setFitHeight(Toolkit.getDefaultToolkit().getScreenSize().getHeight());
         }
-        //dropShadowAnchor.setOpacity(0);
     }
 
     /**
