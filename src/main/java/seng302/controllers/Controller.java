@@ -142,6 +142,8 @@ public class Controller implements Initializable, Observer {
 
     private final double FOCUSED_ZOOMSLIDER_OPACITY = 0.8;
     private final double IDLE_ZOOMSLIDER_OPACITY = 0.4;
+    private final double TUTORIAL_OVERLAY_X_OFFSET = 105;
+    private final double TUTORIAL_OVERLAY_Y_OFFSET = 67;
 
     private SoundController soundController;
     private Scene scene;
@@ -235,8 +237,8 @@ public class Controller implements Initializable, Observer {
 
     private void setTutorialOverlayPosition() {
         tutorialOverlay.toFront();
-        tutorialOverlay.setLayoutX(canvasWidth - tutorialOverlay.getMaxWidth() - 105);
-        tutorialOverlay.setLayoutY(67);
+        tutorialOverlay.setLayoutX(canvasWidth - tutorialOverlay.getMaxWidth() - TUTORIAL_OVERLAY_X_OFFSET);
+        tutorialOverlay.setLayoutY(TUTORIAL_OVERLAY_Y_OFFSET);
     }
 
     /**
