@@ -10,6 +10,9 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -31,6 +34,7 @@ import seng302.views.CourseMap;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -149,6 +153,10 @@ public class MainMenuController implements Initializable{
         columnMap.setStyle( "-fx-alignment: CENTER;");
         columnParticipants.setStyle( "-fx-alignment: CENTER;");
         tblAvailableRaces.setPlaceholder(new Label("No Available Races"));
+        if (!System.getProperty("os.name").startsWith("Mac")) {
+            imvBackground.setFitWidth(Toolkit.getDefaultToolkit().getScreenSize().getWidth());
+            imvBackground.setFitHeight(Toolkit.getDefaultToolkit().getScreenSize().getHeight());
+        }
     }
 
     /**
@@ -238,6 +246,15 @@ public class MainMenuController implements Initializable{
         tblAvailableRaces.getSelectionModel().selectedItemProperty().addListener(
                 (obs, oldRace, newRace) -> disableJoinButtons(newRace == null)
         );
+        tblAvailableRaces.setOnMouseClicked(mouseEvent -> {
+            if(mouseEvent.getClickCount() == 2) {
+                try {
+                    joinAsParticipant();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @FXML private void backToOnline(){
@@ -755,6 +772,8 @@ public class MainMenuController implements Initializable{
         musicOffImage.setVisible(gameSounds.getVolume() == 0.0);
         soundFxOnImage.setVisible(!soundFxIsMute);
         soundFxOffImage.setVisible(soundFxIsMute);
+        musicSliderValue = gameSounds.getVolume();
+        fxSliderValue = gameSounds.getFxVolume();
         musicSlider.setValue(musicSliderValue);
         fxSlider.setValue(fxSliderValue);
     }
@@ -768,9 +787,11 @@ public class MainMenuController implements Initializable{
      * Shows controls overlay
      */
     @FXML private void showControls(){
-        AnimationUtils.fadeNode(imvControls, imvControls.isVisible());
-        AnimationUtils.fadeNode(menuAnchor, menuAnchor.isVisible());
-        AnimationUtils.fadeNode(dropShadowAnchor, dropShadowAnchor.isVisible());
+        if(menuAnchor.isVisible()) {
+            AnimationUtils.switchPaneFade(menuAnchor, imvControls);
+        } else {
+            AnimationUtils.switchPaneFade(imvControls, menuAnchor);
+        }
     }
 
 
@@ -793,6 +814,10 @@ public class MainMenuController implements Initializable{
                 }
             }
             fxSliderValue = (Double) newValue;
+        });
+
+        fxSlider.setOnMouseReleased(event -> {
+            gameSounds.playFXSound();
         });
     }
 
@@ -861,13 +886,26 @@ public class MainMenuController implements Initializable{
 
     private void setUpDeselection(){
         imvBackground.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
-            if(settingsGrid.isVisible()){
+            if (settingsGrid.isVisible()){
                 AnimationUtils.fadeNode(settingsGrid, true);
             }
-            if(imvControls.isVisible()) {
-                AnimationUtils.fadeNode(menuAnchor, false);
-                AnimationUtils.fadeNode(imvControls, true);
-                AnimationUtils.fadeNode(dropShadowAnchor, dropShadowAnchor.isVisible());
+            if (imvControls.isVisible()) {
+                AnimationUtils.switchPaneFade(imvControls, menuAnchor);
+            }
+        });
+
+        menuAnchor.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if (settingsGrid.isVisible()){
+                AnimationUtils.fadeNode(settingsGrid, true);
+            }
+            if (imvControls.isVisible()) {
+                AnimationUtils.switchPaneFade(imvControls, menuAnchor);
+            }
+        });
+
+        imvControls.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+            if (settingsGrid.isVisible()){
+                AnimationUtils.fadeNode(settingsGrid, true);
             }
         });
     }

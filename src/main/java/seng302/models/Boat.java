@@ -77,7 +77,7 @@ public class Boat extends Observable implements Comparable<Boat>{
     private long timeTillMark;
     private long timeTillFinish;
     private Integer id;
-    private boolean sailsIn = false;
+    private boolean sailsIn = true;
     private boolean sailsNeedUpdate = false;
     private boolean inGate = false;
 

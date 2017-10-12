@@ -18,6 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Slider;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.util.Callback;
@@ -27,6 +28,7 @@ import seng302.models.Boat;
 import seng302.utilities.AnimationUtils;
 import seng302.utilities.DisplaySwitcher;
 import seng302.utilities.DisplayUtils;
+import seng302.utilities.GameSounds;
 import seng302.views.BoatDisplay;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart.Series;
@@ -78,12 +80,22 @@ public class ScoreBoardController {
     @FXML private TableColumn<Boat, String> columnStatus;
     @FXML private CheckBox VirtualStartlineToggle;
     @FXML private ProgressBar boatHealth;
+    @FXML private Slider musicSlider;
+    @FXML private Slider fxSlider;
+    @FXML private ImageView musicOnImage;
+    @FXML private ImageView musicOffImage;
+    @FXML private ImageView soundFxOnImage;
+    @FXML private ImageView soundFxOffImage;
 
     private ObservableList<Boat> competitors = FXCollections.observableArrayList();
 
     private final Color UNSELECTED_BOAT_COLOR = Color.WHITE;
     private final Color SELECTED_BOAT_COLOR = Color.rgb(77, 197, 138);
     private Scene scene;
+    private static double musicSliderValue = 1.0;
+    private static double fxSliderValue = 1.0;
+    private static boolean soundFxIsMute;
+    private static GameSounds gameSounds;
 
 
 
@@ -112,12 +124,15 @@ public class ScoreBoardController {
         }
     }
 
-    public void setUp(){
+    public void setUp(GameSounds sounds){
+        this.gameSounds = sounds;
         race = GameClient.getRace();
         setUpTable();
         raceTimerLabel.textProperty().bind(parent.raceTimerString);
         setupAnnotationControl();
         setupSparkLine();
+        setUpSoundSliders();
+        setUpSoundImages();
         annotationsSlider.setLabelFormatter(new StringConverter<Double>() {
             @Override
             public String toString(Double n) {
@@ -144,10 +159,17 @@ public class ScoreBoardController {
         });
 
         annotationsSlider.setValue(1);
-
+        musicOnImage.setVisible(!(gameSounds.getVolume() == 0.0));
+        musicOffImage.setVisible(gameSounds.getVolume() == 0.0);
+        soundFxOnImage.setVisible(!soundFxIsMute);
+        soundFxOffImage.setVisible(soundFxIsMute);
+        musicSliderValue = gameSounds.getVolume();
+        fxSliderValue = gameSounds.getFxVolume();
+        musicSlider.setValue(musicSliderValue);
+        fxSlider.setValue(fxSliderValue);
         addButtonListeners(btnTrack);
         addButtonListeners(btnExit);
-        scoreBoard.getSelectionModel().select(1);
+        scoreBoard.getSelectionModel().select(0);
     }
 
     /**
@@ -343,4 +365,79 @@ public class ScoreBoardController {
     public CheckBox getCoursePathToggle() {
         return coursePathToggle;
     }
+
+    private void setUpSoundSliders(){
+        musicSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(musicOnImage.isVisible()) {
+                gameSounds.setVolume((Double) newValue);
+                if (newValue.equals(0.0)) {
+                    toggleMusicImages(false);
+                }
+            }
+            musicSliderValue = (Double) newValue;
+        });
+
+        fxSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(soundFxOnImage.isVisible()) {
+                gameSounds.setFxVolume((Double) newValue);
+                if (newValue.equals(0.0)) {
+                    toggleSoundFxImages(false);
+                }
+            }
+            fxSliderValue = (Double) newValue;
+        });
+
+        fxSlider.setOnMouseReleased(event -> {
+            gameSounds.playFXSound();
+        });
+    }
+
+    private void toggleMusicImages(boolean showMusicOnImage){
+        musicOnImage.setVisible(showMusicOnImage);
+        musicOffImage.setVisible(!showMusicOnImage);
+    }
+
+    private void toggleSoundFxImages(boolean showSoundFxOnImage){
+        soundFxOnImage.setVisible(showSoundFxOnImage);
+        soundFxOffImage.setVisible(!showSoundFxOnImage);
+    }
+
+    private void setUpSoundImages(){
+        musicOnImage.setOnMouseClicked((MouseEvent event) ->{
+            muteMusic();
+        });
+        musicOffImage.setOnMouseClicked((MouseEvent event) ->{
+            unMuteMusic();
+        });
+        soundFxOnImage.setOnMouseClicked((MouseEvent event) ->{
+            muteSoundFx();
+        });
+        soundFxOffImage.setOnMouseClicked((MouseEvent event) ->{
+            unMuteSoundFx();
+        });
+    }
+
+    private void muteMusic(){
+        gameSounds.setVolume(0.0);
+        toggleMusicImages(false);
+    }
+
+    private void unMuteMusic(){
+        gameSounds.setVolume(musicSliderValue);
+        toggleMusicImages(true);
+    }
+
+    private void muteSoundFx(){
+        soundFxIsMute = true;
+        gameSounds.setFxVolume(0.0);
+        toggleSoundFxImages(false);
+    }
+
+    private void unMuteSoundFx(){
+        soundFxIsMute = false;
+        gameSounds.setFxVolume(fxSliderValue);
+        toggleSoundFxImages(true);
+    }
+
+
 }

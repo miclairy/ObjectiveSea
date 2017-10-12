@@ -1,5 +1,6 @@
 package seng302.utilities;
 
+import javafx.scene.input.MouseEvent;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
@@ -318,6 +319,10 @@ public class GameSounds {
     }
 
     private void setSoundTrackVolume(){
+        if (System.getProperty("os.name").startsWith("Linux")) {
+            volumeThresholdReduction = 0;
+        }
+
         double range = gainControl.getMaximum() - gainControl.getMinimum() - volumeThresholdReduction;
         double gain = (range * volume) + gainControl.getMinimum();
         gainControl.setValue((float)gain);
@@ -325,6 +330,9 @@ public class GameSounds {
 
     public void setFxVolume(double volume){
         fxVolume = volume;
+    }
+
+    public void playFXSound() {
         if(!playingSound){
             firstPlace();
             playGameSound();
@@ -333,7 +341,7 @@ public class GameSounds {
 
     public double getVolume(){return volume;}
 
-    public double getFxVolume(){return volume;}
+    public double getFxVolume(){return fxVolume;}
 
 }
 
