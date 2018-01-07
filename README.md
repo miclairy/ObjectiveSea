@@ -1,3 +1,5 @@
+<h2> This was a full year university group project with 9 contributors. <h2>
+
 <h1>Objective Sea</h1>
  
  
